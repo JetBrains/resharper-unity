@@ -1,5 +1,4 @@
-using System.Diagnostics;
-using System.IO;
+using System;
 using JetBrains.Diagnostics;
 using JetBrains.Diagnostics.Internal;
 using JetBrains.Lifetimes;
@@ -12,11 +11,22 @@ namespace JetBrains.Rider.Unity.Editor.Logger
         {
             if (selectedLoggingLevel > LoggingLevel.OFF)
             {
-                var fileLogFactory = Log.CreateFileLogFactory(Lifetime.Eternal, PluginEntryPoint.LogPath, true, selectedLoggingLevel);
+                var lifetimeDefinition = Lifetime.Eternal.CreateNested();
+                var lifetime = lifetimeDefinition.Lifetime;
+                AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
+                {
+                    lifetimeDefinition.Terminate();
+                };
+                
+                var fileLogFactory = Log.CreateFileLogFactory(lifetime, PluginEntryPoint.LogPath, true, selectedLoggingLevel);
                 fileLogFactory.Handlers += message =>
                 {
-                    if (message.Level == LoggingLevel.ERROR || message.Level == LoggingLevel.FATAL)
-                        MainThreadDispatcher.Instance.Queue(() => UnityEngine.Debug.LogError(message.FormattedMessage));
+                    if (lifetime.IsAlive && !(message.Level == LoggingLevel.ERROR || message.Level == LoggingLevel.FATAL))
+                        MainThreadDispatcher.Instance.Queue(() =>
+                        {
+                            if (lifetime.IsAlive)
+                                UnityEngine.Debug.LogError(message.FormattedMessage);
+                        });
                 };
                 Log.DefaultFactory = fileLogFactory;
             }
