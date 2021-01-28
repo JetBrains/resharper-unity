@@ -20,9 +20,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             var components = psiPath.MakeRelativeTo(solutionPath).Components.ToArray();
 
             var sb = new StringBuilder();
-            // skip "../Assets/
+            // skip "Assets/
 
-            for (int i = 2; i < components.Length - 1; i++)
+            for (int i = 1; i < components.Length - 1; i++)
             {
                 sb.Append(components[i]);
                 sb.Append('/');
