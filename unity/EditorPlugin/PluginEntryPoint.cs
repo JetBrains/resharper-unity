@@ -153,7 +153,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         var executingAssembly = Assembly.GetExecutingAssembly();
         var location = executingAssembly.Location;
-        Debug.Log($"Rider plugin \"{executingAssembly.GetName().Name}\" initialized{(string.IsNullOrEmpty(location)? "" : " from: " + location )}. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogInitializer.LogPath}.");
+        Debug.Log($"Rider plugin \"{executingAssembly.GetName().Name}\" initialized{(string.IsNullOrEmpty(location)? "" : " from: " + location )}. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
       }
 
       var protocolInstanceJsonPath = Path.GetFullPath("Library/ProtocolInstance.json");
@@ -747,7 +747,12 @@ namespace JetBrains.Rider.Unity.Editor
 
       return new[] {editorLogpath, playerLogPath};
     }
-    
+
+    private static readonly string ourBaseLogPath = !UnityUtils.IsInRiderTests
+        ? Path.GetTempPath()
+        : new FileInfo(UnityUtils.UnityEditorLogPath).Directory.FullName;
+
+    internal static readonly string LogPath = Path.Combine(Path.Combine(ourBaseLogPath, "Unity3dRider"), $"EditorPlugin.{Process.GetCurrentProcess().Id}.log");
     internal static OnOpenAssetHandler OpenAssetHandler;
 
     // Creates and deletes Library/EditorInstance.json containing info about unity instance. Unity 2017.1+ writes this
