@@ -21,7 +21,7 @@ namespace JetBrains.Rider.Unity.Editor.Logger
                 var fileLogFactory = Log.CreateFileLogFactory(lifetime, PluginEntryPoint.LogPath, true, selectedLoggingLevel);
                 fileLogFactory.Handlers += message =>
                 {
-                    if (lifetime.IsAlive && !(message.Level == LoggingLevel.ERROR || message.Level == LoggingLevel.FATAL))
+                    if (lifetime.IsAlive && (message.Level == LoggingLevel.ERROR || message.Level == LoggingLevel.FATAL))
                         MainThreadDispatcher.Instance.Queue(() =>
                         {
                             if (lifetime.IsAlive)
