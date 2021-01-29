@@ -51,7 +51,7 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                         if (!UnityInstallationFinder.getInstance(project).requiresRiderPackage())
                             content = "Make sure Rider $marketingVersion is set as the External Editor in Unity preferences."
                         val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
-                        startChildOnUi {
+                        startChildOnUi { _ ->
                             Notifications.Bus.notify(notification, project)
                             project.solution.frontendBackendModel.unityEditorConnected.whenTrue(it) { notification.expire() }
                         }
