@@ -1,6 +1,9 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.wm.ToolWindow
+import com.intellij.util.ui.update.MergingUpdateQueue
+import com.intellij.util.ui.update.Update
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.Signal
@@ -12,9 +15,14 @@ import com.jetbrains.rider.model.unity.LogEventType
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 
-class UnityLogPanelModel(lifetime: Lifetime, val project: Project) {
+class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: ToolWindow) {
     private val lock = Object()
     private val maxItemsCount = 10000
+
+    private val mergingUpdateQueue = MergingUpdateQueue("UnityLogPanelModel->onChanged", 500, true, toolWindow.component).setRestartTimerOnAdd(false)
+    private val mergingUpdateQueueAction: Update = object : Update("UnityLogPanelView->onChanged") {
+        override fun run() = onChanged.fire(getVisibleEvents())
+    }
 
     inner class TypeFilters {
         private var showErrors = true
@@ -165,7 +173,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project) {
     val onChanged = Signal<List<LogEvent>>()
     val onCleared = Signal.Void()
 
-    fun fire() = onChanged.fire(getVisibleEvents())
+    fun fire() = mergingUpdateQueue.queue(mergingUpdateQueueAction)
 
     var selectedItem : LogPanelItem? = null
 
