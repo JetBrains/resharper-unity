@@ -232,9 +232,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
 
     private fun refreshList(newEvents: List<LogPanelItem>) {
         eventList.riderModel.clear()
-        for (event in newEvents) {
-            eventList.riderModel.addElement(event)
-        }
+        eventList.riderModel.addAll(0, newEvents)
 
         if (logModel.selectedItem != null) {
             eventList.setSelectedValue(logModel.selectedItem, true)
