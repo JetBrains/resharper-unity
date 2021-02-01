@@ -17,7 +17,7 @@ import com.jetbrains.rider.projectView.solution
 
 class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: ToolWindow) {
     private val lock = Object()
-    private val maxItemsCount = 10000
+    val maxItemsCount = 10000
 
     private val mergingUpdateQueue = MergingUpdateQueue("UnityLogPanelModel->onChanged", 250, true, toolWindow.component).setRestartTimerOnAdd(false)
     private val mergingUpdateQueueAction: Update = object : Update("UnityLogPanelView->onChanged") {
@@ -135,7 +135,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
             synchronized(lock) {
                 if (allEvents.count() > maxItemsCount)
                 {
-                    onFirstRemoved.fire(maxItemsCount)
+                    onFirstRemoved.fire()
                     allEvents.removeFirst()
                 }
                 allEvents.add(event)
@@ -174,7 +174,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
     var timeFilters = TimeFilters()
 
     val onAdded = Signal<LogEvent>()
-    val onFirstRemoved = Signal<Int>()
+    val onFirstRemoved = Signal.Void()
     val onChanged = Signal<List<LogEvent>>()
     val onCleared = Signal.Void()
 
