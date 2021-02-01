@@ -19,9 +19,12 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
     private val lock = Object()
     private val maxItemsCount = 10000
 
-    private val mergingUpdateQueue = MergingUpdateQueue("UnityLogPanelModel->onChanged", 500, true, toolWindow.component).setRestartTimerOnAdd(false)
+    private val mergingUpdateQueue = MergingUpdateQueue("UnityLogPanelModel->onChanged", 250, true, toolWindow.component).setRestartTimerOnAdd(false)
     private val mergingUpdateQueueAction: Update = object : Update("UnityLogPanelView->onChanged") {
-        override fun run() = onChanged.fire(getVisibleEvents())
+        override fun run() {
+            if (toolWindow.isVisible)
+                onChanged.fire(getVisibleEvents())
+        }
     }
 
     inner class TypeFilters {
@@ -132,7 +135,8 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
             synchronized(lock) {
                 if (allEvents.count() > maxItemsCount)
                 {
-                    clear()
+                    onFirstRemoved.fire(maxItemsCount)
+                    allEvents.removeFirst()
                 }
                 allEvents.add(event)
             }
@@ -170,6 +174,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
     var timeFilters = TimeFilters()
 
     val onAdded = Signal<LogEvent>()
+    val onFirstRemoved = Signal<Int>()
     val onChanged = Signal<List<LogEvent>>()
     val onCleared = Signal.Void()
 

@@ -198,6 +198,12 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
 
     val panel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)
 
+
+    private fun removeFirstFromList(maxItemsCount:Int) {
+        if (eventList.riderModel.size() > maxItemsCount)
+            eventList.riderModel.remove(0)
+    }
+
     private fun addToList(newEvent: LogEvent) {
         if (logModel.mergeSimilarItems.value) {
             val existing = eventList.riderModel.elements().toList().singleOrNull {
@@ -266,6 +272,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
                 refreshList(list)
             }
         }
+        logModel.onFirstRemoved.advise(lifetime) {removeFirstFromList(it)}
 
         if (toolWindow is ToolWindowEx) {
             toolWindow.setAdditionalGearActions(DefaultActionGroup().apply {
