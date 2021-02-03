@@ -49,12 +49,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.QuickD
             Assert.IsTrue(quickDocService.CanShowQuickDoc(context), "No QuickDoc available");
             quickDocService.ResolveGoto(context, (presenter, language) => ExecuteWithGold(projectFile, writer =>
             {
-                var html = presenter.GetHtml(language).Text;
-                Assert.NotNull(html);
-                var startIdx = html.IndexOf("  <head>", StringComparison.Ordinal);
-                var endIdx = html.IndexOf("</head>", StringComparison.Ordinal) + "</head>".Length;
-                Assert.AreEqual(string.CompareOrdinal(html, endIdx, "\n<body>", 0, "\n<body>".Length), 0);
-                writer.Write(html.Remove(startIdx, endIdx - startIdx + 1));
+                var text = presenter.GetHtml(language).Text?.Text;
+                Assert.NotNull(text);
+                var startIdx = text.IndexOf("  <head>", StringComparison.Ordinal);
+                var endIdx = text.IndexOf("</head>", StringComparison.Ordinal) + "</head>".Length;
+                Assert.AreEqual(string.CompareOrdinal(text, endIdx, "\n<body>", 0, "\n<body>".Length), 0);
+                writer.Write(text.Remove(startIdx, endIdx - startIdx + 1));
             }));
             if (exception != null)
                 throw exception;

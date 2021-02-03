@@ -21,13 +21,11 @@ import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.scale.JBUIScale
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rider.model.unity.LogEvent
 import com.jetbrains.rider.model.unity.LogEventMode
 import com.jetbrains.rider.model.unity.LogEventType
@@ -44,7 +42,6 @@ import java.awt.Font
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
-import java.beans.PropertyChangeListener
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.swing.*
@@ -201,6 +198,12 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
 
     val panel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)
 
+
+    private fun removeFirstFromList() {
+        if (eventList.riderModel.size() > logModel.maxItemsCount)
+            eventList.riderModel.remove(0)
+    }
+
     private fun addToList(newEvent: LogEvent) {
         if (logModel.mergeSimilarItems.value) {
             val existing = eventList.riderModel.elements().toList().singleOrNull {
@@ -229,9 +232,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
 
     private fun refreshList(newEvents: List<LogPanelItem>) {
         eventList.riderModel.clear()
-        for (event in newEvents) {
-            eventList.riderModel.addElement(event)
-        }
+        eventList.riderModel.addAll(0, newEvents)
 
         if (logModel.selectedItem != null) {
             eventList.setSelectedValue(logModel.selectedItem, true)
@@ -269,6 +270,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
                 refreshList(list)
             }
         }
+        logModel.onFirstRemoved.advise(lifetime) {removeFirstFromList() }
 
         if (toolWindow is ToolWindowEx) {
             toolWindow.setAdditionalGearActions(DefaultActionGroup().apply {
