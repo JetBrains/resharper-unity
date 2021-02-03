@@ -30,7 +30,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 case UnitTestLaunchPreference.NUnit:
                     return HostProviderAvailability.Available;
                 case UnitTestLaunchPreference.PlayMode:
-                    return HostProviderAvailability.Nonexistent;
                 case UnitTestLaunchPreference.EditMode:
                 {
                     var unityVersion = UnityVersion.Parse(frontendBackendModel.UnityApplicationData.Maybe.ValueOrDefault?.ApplicationVersion ?? string.Empty);
