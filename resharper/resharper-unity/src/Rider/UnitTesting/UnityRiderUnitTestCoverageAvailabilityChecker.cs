@@ -29,6 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             {
                 case UnitTestLaunchPreference.NUnit:
                     return HostProviderAvailability.Available;
+                case UnitTestLaunchPreference.Both:
                 case UnitTestLaunchPreference.PlayMode:
                 case UnitTestLaunchPreference.EditMode:
                 {
