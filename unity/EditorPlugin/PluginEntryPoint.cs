@@ -15,6 +15,7 @@ using JetBrains.Rd.Base;
 using JetBrains.Rd.Impl;
 using JetBrains.Rd.Tasks;
 using JetBrains.Rider.Model.Unity;
+using JetBrains.Rider.Unity.Editor.Logger;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Rider.Unity.Editor.Utils;
 using UnityEditor;
@@ -42,7 +43,7 @@ namespace JetBrains.Rider.Unity.Editor
       if (UnityUtils.IsInBatchModeAndNotInRiderTests)
         return;
 
-      PluginSettings.InitLog(); // init log before doing any logging
+      LogInitializer.InitLog(PluginSettings.SelectedLoggingLevel); // init log before doing any logging
       UnityEventLogSender.Start(); // start collecting Unity messages asap
 
       ourPluginSettings = new PluginSettings();
