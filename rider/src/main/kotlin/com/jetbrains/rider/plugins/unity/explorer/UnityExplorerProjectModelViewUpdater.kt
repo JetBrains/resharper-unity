@@ -9,8 +9,8 @@ import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManagerListener
 import com.jetbrains.rider.plugins.unity.util.findFile
 import com.jetbrains.rider.projectView.ProjectModelViewUpdater
-import com.jetbrains.rider.projectView.nodes.ProjectModelNode
 import com.jetbrains.rider.projectView.views.SolutionViewVisitor
+import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 
 class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewUpdater(project) {
 
@@ -42,21 +42,27 @@ class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewU
         }
     }
 
-    override fun update(node: ProjectModelNode?) {
-        node?.getVirtualFile()?.let {
-            pane?.refresh(SolutionViewVisitor.createFor(it), false, false)
+    override fun update(entity: ProjectModelEntity?) {
+        entity?.let {
+            pane?.refresh(SolutionViewVisitor.createForRefresh(it), allowLoading = false, structure = false)
         }
     }
 
-    override fun updateWithChildren(node: ProjectModelNode?) {
-        node?.getVirtualFile()?.let {
-            pane?.refresh(SolutionViewVisitor.createFor(it), false, true)
+    override fun update(virtualFile: VirtualFile?) {
+        virtualFile?.let {
+            pane?.refresh(SolutionViewVisitor.createForRefresh(it), allowLoading = false, structure = false)
+        }
+    }
+
+    override fun updateWithChildren(entity: ProjectModelEntity?) {
+        entity?.let {
+            pane?.refresh(SolutionViewVisitor.createForRefresh(it), allowLoading = false, structure = true)
         }
     }
 
     override fun updateWithChildren(virtualFile: VirtualFile?) {
         virtualFile?.let {
-            pane?.refresh(SolutionViewVisitor.createFor(it), false, true)
+            pane?.refresh(SolutionViewVisitor.createForRefresh(it), allowLoading = false, structure = true)
         }
     }
 
@@ -81,6 +87,6 @@ class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewU
                 }
                 return TreeVisitor.Action.SKIP_CHILDREN
             }
-        }, false, true)
+        }, allowLoading = false, structure = true)
     }
 }

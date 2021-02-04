@@ -4,26 +4,26 @@ Rename file
 -Project
  -Assets
   References
-  -Assets/AsmdefResponse
-   -Assets/AsmdefResponse/NewDirectory1
-    Assets/AsmdefResponse/NewDirectory1/zero
-   -Assets/AsmdefResponse/SS
-    Assets/AsmdefResponse/SS/AsmdefResponse2.asmdef
-    Assets/AsmdefResponse/SS/rrr.cs
-   Assets/AsmdefResponse/AsmdefResponse.asmdef
-   Assets/AsmdefResponse/NewBehaviourScript_renamed.cs
-  -Assets/Dir1
-   Assets/Dir1/ClassInDir1.cs
-  -Assets/NewDirectory1
-   Assets/NewDirectory1/zero
-  -Assets/Scripts
-   -Assets/Scripts/Editor
-    -Assets/Scripts/Editor/NewDirectory1
-     Assets/Scripts/Editor/NewDirectory1/zero
-    Assets/Scripts/Editor/XMLUtilities.cs
-   -Assets/Scripts/NewDirectory1
-    Assets/Scripts/NewDirectory1/zero
-  Assets/Class1.cs
+  -AsmdefResponse
+   -NewDirectory1
+    zero
+   -SS
+    AsmdefResponse2.asmdef
+    rrr.cs
+   AsmdefResponse.asmdef
+   NewBehaviourScript_renamed.cs
+  -Dir1
+   ClassInDir1.cs
+  -NewDirectory1
+   zero
+  -Scripts
+   -Editor
+    -NewDirectory1
+     zero
+    XMLUtilities.cs
+   -NewDirectory1
+    zero
+  Class1.cs
 
 
 

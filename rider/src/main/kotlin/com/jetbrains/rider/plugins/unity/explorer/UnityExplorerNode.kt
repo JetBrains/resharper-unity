@@ -1,16 +1,18 @@
 package com.jetbrains.rider.plugins.unity.explorer
 
-import com.intellij.icons.AllIcons
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vcs.FileStatus
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
+import com.intellij.workspaceModel.ide.WorkspaceModel
+import com.intellij.workspaceModel.ide.impl.virtualFile
 import com.jetbrains.rider.plugins.unity.packageManager.PackageData
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.projectDir
-import com.jetbrains.rider.projectView.ProjectModelViewHost
+import com.jetbrains.rider.projectView.calculateFileSystemIcon
 import com.jetbrains.rider.projectView.ideaInterop.RiderScratchProjectViewPane
 import com.jetbrains.rider.projectView.nodes.*
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
@@ -19,6 +21,8 @@ import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
 import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
 import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerCustomization
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
+import com.jetbrains.rider.projectView.workspace.*
+import com.jetbrains.rider.projectView.workspace.impl.WorkspaceEntityErrorsSupport
 import icons.UnityIcons
 import java.awt.Color
 import javax.swing.Icon
@@ -77,10 +81,6 @@ class UnityExplorerRootNode(project: Project, private val packageManager: Packag
     }
 }
 
-interface IProjectModeNodesOwner {
-    val nodes: Sequence<IProjectModelNode>
-}
-
 enum class AncestorNodeType {
     Assets,
     UserEditablePackage,
@@ -98,16 +98,19 @@ open class UnityExplorerNode(project: Project,
                              virtualFile: VirtualFile,
                              nestedFiles: List<NestingNode<VirtualFile>>,
                              protected val descendentOf: AncestorNodeType)
-    : FileSystemNodeBase(project, virtualFile, nestedFiles), IProjectModeNodesOwner {
+    : FileSystemNodeBase(project, virtualFile, nestedFiles) {
 
-    override val nodes: Sequence<IProjectModelNode>
-        get() {
-            val nodes = ProjectModelViewHost.getInstance(myProject).getItemsByVirtualFile(virtualFile)
-            if (nodes.any()) return nodes.asSequence()
-            return sequenceOf(super.node)
+    override val entities: List<ProjectModelEntity>
+        get() = WorkspaceModel
+            .getInstance(myProject)
+            .getProjectModelEntities(file, myProject)
+            .toList()
+
+    public override fun hasProblemFileBeneath() : Boolean {
+        return Registry.`is`("projectView.showHierarchyErrors") && entities.any {
+            WorkspaceEntityErrorsSupport.getInstance(myProject).hasErrors(it)
         }
-
-    public override fun hasProblemFileBeneath() = nodes.any { (it as? ProjectModelNode)?.hasErrors() == true }
+    }
 
     override fun update(presentation: PresentationData) {
         if (!virtualFile.isValid) return
@@ -148,7 +151,7 @@ open class UnityExplorerNode(project: Project,
         = descendentOf != AncestorNodeType.FileSystem && file.isDirectory && file.name.endsWith("~")
 
     protected fun addProjects(presentation: PresentationData) {
-        val projectNames = nodes   // One node for each project that this directory is part of
+        val projectNames = entities   // One node for each project that this directory is part of
                 .mapNotNull { containingProjectNode(it) }
                 .map(::stripDefaultProjectPrefix)
                 .filter { it.isNotEmpty() }
@@ -166,27 +169,27 @@ open class UnityExplorerNode(project: Project,
         }
     }
 
-    private fun stripDefaultProjectPrefix(it: ProjectModelNode): String {
+    private fun stripDefaultProjectPrefix(it: ProjectModelEntity): String {
         // Assembly-CSharp => ""
         // Assembly-CSharp-Editor => Editor
         // Assembly-CSharp.Player => Player
         return it.name.removePrefix(UnityExplorer.DefaultProjectPrefix).removePrefix("-").removePrefix(".")
     }
 
-    private fun containingProjectNode(node: IProjectModelNode): ProjectModelNode? {
+    private fun containingProjectNode(entity: ProjectModelEntity): ProjectModelEntity? {
         if (descendentOf == AncestorNodeType.FileSystem) {
             return null
         }
 
-        if (node is ProjectModelNode && node.isProject())
+        if (entity.isProject())
             return null
 
-        val projectNode = node.containingProject() ?: return null
+        val projectEntity = entity.containingProjectEntity() ?: return null
 
         // Show the project on the owner of the assembly definition file
-        val dir = node.getVirtualFile()
+        val dir = entity.url?.virtualFile
         if (dir != null && hasAssemblyDefinitionFile(dir)) {
-            return projectNode
+            return projectEntity
         }
 
         // Hide the project if we're under an assembly definition - the first .asmdef we meet is the root of this project
@@ -202,13 +205,13 @@ open class UnityExplorerNode(project: Project,
             // If the project is -firstpass, hide if this node is under Plugins, Standard Assets or Pro Standard Assets
             // If the project is -Editor-firstpass, see if this node is under an Editor folder that is itself under
             //   Plugins, Standard Assets, Pro Standard Assets
-            if (projectNode.name == UnityExplorer.DefaultProjectPrefix + "-Editor" && isUnderEditorFolder()) {
+            if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-Editor" && isUnderEditorFolder()) {
                 return null
             }
-            if (projectNode.name == UnityExplorer.DefaultProjectPrefix + "-firstpass" && isUnderFirstpassFolder()) {
+            if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-firstpass" && isUnderFirstpassFolder()) {
                 return null
             }
-            if (projectNode.name == UnityExplorer.DefaultProjectPrefix + "-Editor-firstpass") {
+            if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-Editor-firstpass") {
                 val editor = findAncestor(this.parent as? FileSystemNodeBase?, "Editor")
                 if (editor != null && isUnderFirstpassFolder(editor)) {
                     return null
@@ -216,7 +219,7 @@ open class UnityExplorerNode(project: Project,
             }
         }
 
-        return projectNode
+        return projectEntity
     }
 
     private fun forEachAncestor(root: FileSystemNodeBase?, action: FileSystemNodeBase.() -> Boolean): FileSystemNodeBase? {
@@ -296,12 +299,7 @@ open class UnityExplorerNode(project: Project,
             }
         }
 
-        return try {
-            // Make sure that errors fetching the icon can't kill the explorer - RIDER-43038
-            virtualFile.calculateFileSystemIcon(project!!)
-        } catch (ex: Throwable) {
-            AllIcons.FileTypes.Any_type
-        }
+        return virtualFile.calculateFileSystemIcon(myProject)
     }
 
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<NestingNode<VirtualFile>>): FileSystemNodeBase {

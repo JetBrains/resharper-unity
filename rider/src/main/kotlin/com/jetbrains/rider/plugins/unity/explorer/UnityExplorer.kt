@@ -9,7 +9,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
-import com.jetbrains.rider.projectView.nodes.IProjectModelNode
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
 import com.jetbrains.rider.projectView.views.actions.SolutionViewToggleAction
@@ -62,10 +61,6 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
     }
 
     override fun isInitiallyVisible() = project.isUnityProject()
-
-    override fun getSelectedProjectModelNodes(): Array<IProjectModelNode> {
-        return getSelectedNodes().filterIsInstance<IProjectModeNodesOwner>().flatMap { it.nodes.asIterable() }.toTypedArray()
-    }
 
     override fun writeExternal(element: Element) {
         super.writeExternal(element)

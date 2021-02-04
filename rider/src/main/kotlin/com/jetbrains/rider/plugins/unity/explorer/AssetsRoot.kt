@@ -6,71 +6,52 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
+import com.intellij.workspaceModel.ide.WorkspaceModel
+import com.intellij.workspaceModel.ide.impl.virtualFile
 import com.jetbrains.rd.util.getOrCreate
 import com.jetbrains.rider.model.*
-import icons.UnityIcons
-import com.jetbrains.rider.projectView.ProjectModelViewHost
-import com.jetbrains.rider.projectView.nodes.*
-import com.jetbrains.rider.projectView.views.ISolutionModelNodeOwner
+import com.jetbrains.rider.projectView.ProjectModelStatuses
 import com.jetbrains.rider.projectView.views.addAdditionalText
+import com.jetbrains.rider.projectView.views.presentSyncNode
+import com.jetbrains.rider.projectView.workspace.*
+import icons.UnityIcons
 
 class AssetsRoot(project: Project, virtualFile: VirtualFile)
     : UnityExplorerNode(project, virtualFile, listOf(), AncestorNodeType.Assets) {
 
     private val referenceRoot = ReferenceRoot(project)
-    private val solutionNode = ProjectModelViewHost.getInstance(project).solutionNode
 
     override fun update(presentation: PresentationData) {
         if (!virtualFile.isValid) return
         presentation.addText("Assets", SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(UnityIcons.Explorer.AssetsRoot)
 
-        val descriptor = solutionNode.descriptor as? RdSolutionDescriptor ?: return
-        val state = getAggregateSolutionState(descriptor)
-        when (state) {
-            RdSolutionState.Loading -> presentation.addAdditionalText("loading...")
-            RdSolutionState.Sync -> presentation.addAdditionalText("synchronizing...")
-            RdSolutionState.Ready -> {
-                if (descriptor.projectsCount.failed + descriptor.projectsCount.unloaded > 0) {
-                    presentProjectsCount(presentation, descriptor.projectsCount, true)
+        val solutionEntity = WorkspaceModel.getInstance(myProject).getSolutionEntity() ?: return
+        val descriptor = solutionEntity.descriptor as? RdSolutionDescriptor ?: return
+
+        if (isSolutionOrProjectsSync()) {
+            presentation.presentSyncNode()
+        } else {
+            when (descriptor.state) {
+                RdSolutionState.Default -> {
+                    if (descriptor.projectsCount.failed + descriptor.projectsCount.unloaded > 0) {
+                        presentProjectsCount(presentation, descriptor.projectsCount, true)
+                    }
                 }
+                RdSolutionState.WithErrors -> presentation.addAdditionalText("load failed")
+                RdSolutionState.WithWarnings -> presentProjectsCount(presentation, descriptor.projectsCount, true)
             }
-            RdSolutionState.ReadyWithErrors -> presentation.addAdditionalText("load failed")
-            RdSolutionState.ReadyWithWarnings -> presentProjectsCount(presentation, descriptor.projectsCount, true)
-            else -> {}
         }
     }
 
-    private fun getAggregateSolutionState(descriptor: RdSolutionDescriptor): RdSolutionState {
-        var state = descriptor.state
+    private fun isSolutionOrProjectsSync(): Boolean {
+        val projectModelStatuses = ProjectModelStatuses.getInstance(myProject)
+        if (projectModelStatuses.isSolutionInSync()) return true
 
-        // Solution loading/synchronizing takes precedence
-        if (state == RdSolutionState.Loading || state == RdSolutionState.Sync) {
-            return state
+        val projects = WorkspaceModel.getInstance(myProject).findProjects()
+        return projects.any { project ->
+            projectModelStatuses.getProjectStatus(project) != null
         }
-
-        state = RdSolutionState.Ready
-        val children = solutionNode.getChildren(withInternalItems = false, performExpand = false)
-        for (child in children) {
-            if (child.isProject()) {
-                val projectDescriptor = child.descriptor as? RdProjectDescriptor ?: continue
-
-                // Aggregate project loading and sync. Loading takes precedence over sync
-                if (projectDescriptor.state == RdProjectState.Loading) {
-                    state = RdSolutionState.Loading
-                }
-                else if (projectDescriptor.state == RdProjectState.Sync && state != RdSolutionState.Loading) {
-                    state = RdSolutionState.Sync
-                }
-            }
-        }
-
-        // Make sure we don't miss solution ReadWithErrors
-        if (state == RdSolutionState.Ready) {
-            state = descriptor.state
-        }
-
-        return state
     }
 
     private fun presentProjectsCount(presentation: PresentationData, count: RdProjectsCount, showZero: Boolean) {
@@ -106,13 +87,15 @@ class ReferenceRoot(project: Project) : AbstractTreeNode<Any>(project, key) {
 
     override fun getChildren(): MutableCollection<AbstractTreeNode<*>> {
         val referenceNames = hashMapOf<String, ReferenceItemNode>()
-        val visitor = object : ProjectModelNodeVisitor() {
-            override fun visitReference(node: ProjectModelNode): Result {
-                if (node.isAssemblyReference()) {
-                    if (node.getVirtualFile() != null) {
-                        val item = referenceNames.getOrCreate(node.location.toString(),
-                            { ReferenceItemNode(project!!, node.name, node.getVirtualFile()!!, arrayListOf()) })
-                        item.keys.add(node.key)
+        val visitor = object : ProjectModelEntityVisitor() {
+            override fun visitReference(entity: ProjectModelEntity): Result {
+                if (entity.isAssemblyReference()) {
+                    val virtualFile = entity.url?.virtualFile
+                    if (virtualFile != null) {
+                        val item = referenceNames.getOrCreate(entity.descriptor.location.toString(), {
+                            ReferenceItemNode(project!!, entity.descriptor.name, virtualFile, arrayListOf())
+                        })
+                        item.entityReferences.add(entity.toReference())
                     }
                 }
                 return Result.Stop
@@ -132,8 +115,8 @@ class ReferenceItemNode(
     project: Project,
     private val referenceName: String,
     virtualFile: VirtualFile,
-    val keys: ArrayList<ProjectModelNodeKey>
-) : UnityExplorerNode(project, virtualFile, listOf(), AncestorNodeType.Assets), ISolutionModelNodeOwner, IProjectModeNodesOwner {
+    override val entityReferences: ArrayList<ProjectModelEntityReference>
+) : UnityExplorerNode(project, virtualFile, listOf(), AncestorNodeType.Assets) {
 
     override fun isAlwaysLeaf() = true
 
@@ -147,14 +130,11 @@ class ReferenceItemNode(
     }
 
     // Allows View In Assembly Explorer and Properties actions to work
-    override val node: IProjectModelNode
-        get() = ProjectModelViewHost.getInstance(myProject).getItemById(keys.first().id)!!
+    override val entities: List<ProjectModelEntity>
+        get() = entityReferences.mapNotNull { it.getEntity(project!!) }
 
-    override val nodes: Sequence<IProjectModelNode>
-        get() {
-            // Note that we lie here, and only return the first item. All actions that work on reference items work on
-            // single items, not multiple. Most nodes reference the same file, but will be different references for the
-            // sake of e.g. copy local
-            return sequenceOf(node)
-        }
+    override val entity: ProjectModelEntity?
+        get() = entities.firstOrNull()
+    override val entityReference: ProjectModelEntityReference?
+        get() = entityReferences.firstOrNull()
 }
