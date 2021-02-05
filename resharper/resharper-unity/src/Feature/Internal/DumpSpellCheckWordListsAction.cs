@@ -59,12 +59,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
 
                     foreach (var typeMember in typeElement.GetMembers())
                     {
-                        if (!typeMember.CanBeVisibleToSolution() || typeMember is IConstructor)
+                        if (!ShouldProcessTypeMember(typeMember))
                             continue;
 
-                        // Don't use enum values as abbreviations - avoids false positives with ALL_UPPER_CASE style
-                        var abbr = typeElement is IEnum ? new JetHashSet<string>() : abbreviations;
-                        AddWords(wordsPerAssembly, abbr, assemblyPsiModule, typeMember.ShortName);
+                        if (typeElement is IEnum)
+                        {
+                            // Don't use any enum values as abbreviations. Avoids false positives with ALL_UPPER_CASE style
+                            AddWords(wordsPerAssembly, new JetHashSet<string>(), assemblyPsiModule,
+                                typeMember.ShortName);
+                        }
+                        else
+                        {
+                            AddWords(wordsPerAssembly, abbreviations, assemblyPsiModule, typeMember.ShortName);
+                        }
 
                         // TODO: Include parameter names?
                         // Respeller will not check parameter names of overriding or implementing functions, so this is
@@ -94,6 +101,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
 
             // Remove the non-abbreviations
             unknownAbbreviations.Remove("TEXTMESHPRO");
+            unknownAbbreviations.Remove("GRAIDENT");
+
+            // Remove known typos or exclusions. Yes, this is all done by hand
+            RemoveTyposAndExclusions(unknownWords);
 
             // Dump all words for diagnostics
             Dumper.DumpToNotepad(w =>
@@ -107,7 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
                     w.WriteLine();
 
                     foreach (var word in words.OrderBy(IdentityFunc<string>.Instance))
-                        w.WriteLine(word);
+                        w.WriteLine(word.ToLowerInvariant());
                     w.WriteLine();
                 }
             });
@@ -120,7 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
                 w.WriteLine();
 
                 foreach (var abbreviation in unknownAbbreviations.OrderBy(IdentityFunc<string>.Instance))
-                    w.WriteLine(abbreviation);
+                    w.WriteLine(abbreviation.ToUpperInvariant());
             });
 
             // Dump all unknown words, minus abbreviations, for use as a dictionary
@@ -134,7 +145,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
                 w.WriteLine(dictionary.Count);    // Hunspell dictionaries start with the number of words
 
                 foreach (var word in dictionary.OrderBy(IdentityFunc<string>.Instance))
-                    w.WriteLine(word);
+                    w.WriteLine(word.ToLowerInvariant());
             });
         }
 
@@ -142,7 +153,53 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
         {
             var name = assemblyPsiModule.Assembly.AssemblyName.Name;
             return !name.StartsWith("System") && !name.StartsWith("Microsoft") && name != "netstandard" &&
-                   name != "JetBrains.Annotations";
+                   name != "mscorlib" && !name.StartsWith("nunit") && name != "JetBrains.Annotations" &&
+                   name != "Unity.Rider.Editor";
+        }
+
+        private static bool ShouldProcessTypeMember(ITypeMember typeMember)
+        {
+            // Note that UnityEditor has a lot of InternalsVisibleTo, including for Unity.Collections and Unity.Entities
+            // so make sure these projects are not part of the solution used to run this action!
+            if (!typeMember.CanBeVisibleToSolution() || typeMember is IConstructor || typeMember is IAccessor)
+                return false;
+
+            // Ignore Unity.Mathematics swizzling operators (all combinations of x,y,z and w)
+            if (IsSwizzlingProperty(typeMember))
+                return false;
+
+            if (typeMember.GetContainingType() is IEnum enumTypeElement)
+            {
+                if (typeMember.ShortName == "iPhoneAndiPad" || typeMember.ShortName == "SetiPhoneLaunchScreenType")
+                    return false; // "andi", "seti"
+
+                // Don't do anything with the AdvertisingNetwork enum. It's full of weird names that would be nice to
+                // not show typos for in comments (e.g. AerServ), but we have to split that into words, so we get "aer"
+                // and "serv" as words in the dictionary, which are not useful
+                // Same goes for Stores
+                if (enumTypeElement.GetClrName().FullName == "UnityEngine.Analytics.AdvertisingNetwork"
+                    || enumTypeElement.GetClrName().FullName == "UnityEngine.Monetization.Store")
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool IsSwizzlingProperty(ITypeMember typeMember)
+        {
+            // E.g. Unity.Mathematics.bool2.wwww
+            if (!(typeMember is IProperty))
+                return false;
+
+            if (typeMember.GetContainingType()?.GetContainingNamespace().QualifiedName != "Unity.Mathematics")
+                return false;
+
+            if (typeMember.ShortName.Length != 4)
+                return false;
+
+            return typeMember.ShortName.All(letter => letter == 'x' || letter == 'y' || letter == 'z' || letter == 'w');
         }
 
         private static void AddWords(OneToSetMap<string, string> wordsPerAssembly, JetHashSet<string> abbreviations,
@@ -156,6 +213,85 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
                 else
                     wordsPerAssembly.Add(assemblyPsiModule.Assembly.AssemblyName.Name, textPart.Text);
             }
+        }
+
+        private static void RemoveTyposAndExclusions(ICollection<string> unknownWords)
+        {
+            // ReSharper disable StringLiteralTypo
+            unknownWords.Remove("adaptor");
+            unknownWords.Remove("contoller");
+            unknownWords.Remove("corlib");
+            unknownWords.Remove("deprected");
+            unknownWords.Remove("doesnt");
+            unknownWords.Remove("dont");
+            unknownWords.Remove("hugarian");
+            unknownWords.Remove("iconwarning");
+            unknownWords.Remove("joyn");
+            unknownWords.Remove("jvalue");
+            unknownWords.Remove("memoryless");
+            unknownWords.Remove("mikk");
+            unknownWords.Remove("modelview");
+            unknownWords.Remove("normalizesafe");
+            unknownWords.Remove("occlucion");
+            unknownWords.Remove("pptr");
+            unknownWords.Remove("projectsafe");
+            unknownWords.Remove("ptitle");
+            unknownWords.Remove("quat");
+            unknownWords.Remove("recieve");
+            unknownWords.Remove("recv");
+            unknownWords.Remove("regen");
+            unknownWords.Remove("resonace");
+            unknownWords.Remove("rolloff");
+            unknownWords.Remove("serbo");
+            unknownWords.Remove("smallcaps");
+            unknownWords.Remove("smartupdate");
+            unknownWords.Remove("smoothstep");
+            unknownWords.Remove("textfirst");
+            unknownWords.Remove("texure");
+            unknownWords.Remove("theshold");
+            unknownWords.Remove("timeu");
+            unknownWords.Remove("treshold");
+            unknownWords.Remove("vdecl");
+            unknownWords.Remove("xywh");
+            unknownWords.Remove("zoomer");
+
+            // Maths
+            unknownWords.Remove("asdouble");
+            unknownWords.Remove("asfloat");
+            unknownWords.Remove("asint");
+            unknownWords.Remove("aslong");
+            unknownWords.Remove("asuint");
+            unknownWords.Remove("asulong");
+            unknownWords.Remove("ceillog");
+            unknownWords.Remove("ceilpow");
+            unknownWords.Remove("cmax");
+            unknownWords.Remove("cmin");
+            unknownWords.Remove("cnoise");
+            unknownWords.Remove("countbits");
+            unknownWords.Remove("csum");
+            unknownWords.Remove("distancesq");
+            unknownWords.Remove("floorlog");
+            unknownWords.Remove("frac");
+            unknownWords.Remove("hashwide");
+            unknownWords.Remove("isfinite");
+            unknownWords.Remove("isinf");
+            unknownWords.Remove("ispow");
+            unknownWords.Remove("lengthsq");
+            unknownWords.Remove("lzcnt");
+            unknownWords.Remove("modf");
+            unknownWords.Remove("pnoise");
+            unknownWords.Remove("psrdnoise");
+            unknownWords.Remove("psrnoise");
+            unknownWords.Remove("reversebits");
+            unknownWords.Remove("rsqrt");
+            unknownWords.Remove("snoise");
+            unknownWords.Remove("srdnoise");
+            unknownWords.Remove("srnoise");
+            unknownWords.Remove("trunc");
+            unknownWords.Remove("tzcnt");
+            unknownWords.Remove("unitexp");
+            unknownWords.Remove("unitlog");
+            // ReSharper restore StringLiteralTypo
         }
     }
 }

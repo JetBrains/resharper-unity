@@ -20,17 +20,21 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Add context actions to show call tree for performance critical, expensive and Burst compiled methods ([RIDER-35169](https://youtrack.jetbrains.com/issue/RIDER-35169), [#1995](https://github.com/JetBrains/resharper-unity/pull/1995))
 - Rider: Add Code Vision actions to show call tree for performance critical, expensive and Burst compiled methods ([RIDER-35169](https://youtrack.jetbrains.com/issue/RIDER-35169), [#1995](https://github.com/JetBrains/resharper-unity/pull/1995))
 - Rider: Add custom debugger type views for `SerializedObject` and `SerializedProperty` ([#1991](https://github.com/JetBrains/resharper-unity/pull/1991))
+- Rider: Show Unity editor plugin errors and exceptions in Unity console, not just log ([RIDER-54352](https://youtrack.jetbrains.com/issue/RIDER-54352), [#2012](https://github.com/JetBrains/resharper-unity/pull/2012))
 
 ### Changed
 
 - Mark `UxmlFactory` derived classes as implicitly used ([RIDER-54860](https://youtrack.jetbrains.com/issue/RIDER-54860), [#2002](https://github.com/JetBrains/resharper-unity/pull/2002))
+- Remove warnings for `try` and `foreach` in Burst analysis. These are supported since Burst 1.4 ([#2015](https://github.com/JetBrains/resharper-unity/issues/2015), [#1378](https://github.com/JetBrains/resharper-unity/issues/1378), [#2017](https://github.com/JetBrains/resharper-unity/pull/2017))
 - Rider: Unity file templates are grouped into "Unity Class" and "Unity Shader" ([#1983](https://github.com/JetBrains/resharper-unity/pull/1983))
 - Rider: Quick doc link for online pages now uses the version specific search page ([#2005](https://github.com/JetBrains/resharper-unity/issues/2005), [#2006](https://github.com/JetBrains/resharper-unity/pull/2006))
 - Rider: Double click on assembly files in Unity Explorer will add the file to Assembly Explorer ([RIDER-54873](https://youtrack.jetbrains.com/issue/RIDER-54873), [#1996](https://github.com/JetBrains/resharper-unity/pull/1996))
 - Rider: Improve wording on notifications when Rider is not set as Unity's External Editor ([#1958](https://github.com/JetBrains/resharper-unity/pull/1958))
+- Rider: Improve performance adding log events to Unity tool window ([RIDER-57100](https://youtrack.jetbrains.com/issue/RIDER-57100), [#2014](https://github.com/JetBrains/resharper-unity/pull/2014))
 
 ### Fixed
 
+- Fix missing entries from ReSharper's Unity specific dictionary ([#1737](https://github.com/JetBrains/resharper-unity/issues/1737), [#1809](https://github.com/JetBrains/resharper-unity/issues/1809), [#2008](https://github.com/JetBrains/resharper-unity/pull/2008))
 - Fix creation of `.meta` files in the root of the `Packages` folder, and in `file:` based packages ([#2000](https://github.com/JetBrains/resharper-unity/pull/2000))
 - Fix suggested name collision when creating a field to cache a property index ([RIDER-55185](https://youtrack.jetbrains.com/issue/RIDER-55185), [#2002](https://github.com/JetBrains/resharper-unity/pull/2002))
 - Fix stored asset file names to be relative to solution directory ([RIDER-54695](https://youtrack.jetbrains.com/issue/RIDER-54695), [#2002](https://github.com/JetBrains/resharper-unity/pull/2002))
@@ -39,6 +43,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix issue launching Unity when debugging and editor isn't running ([RIDER-52498](https://youtrack.jetbrains.com/issue/RIDER-52498), [#1920](https://github.com/JetBrains/resharper-unity/pull/1920))
 - Rider: Fix exception in protocol file watcher ([DEXP-559833](https://youtrack.jetbrains.com/issue/DEXP-559833), [#1942](https://github.com/JetBrains/resharper-unity/pull/1942))
 - Rider: Fix exception with multiple assemblies with the same name ([RIDER-54876](https://youtrack.jetbrains.com/issue/RIDER-54876), [#1953](https://github.com/JetBrains/resharper-unity/pull/1953))
+- Rider: Fix exception with feedback provider on welcome screen ([#2013](https://github.com/JetBrains/resharper-unity/pull/2013))
 - Rider: Fix mouse focus issue when opening Rider full screen on macOS ([RIDER-55501](https://youtrack.jetbrains.com/issue/RIDER-55501), [#1980](https://github.com/JetBrains/resharper-unity/pull/1980))
 - Rider: Fix files in `Packages` folder showing the non-project dialog when being modified ([#1997](https://github.com/JetBrains/resharper-unity/pull/1997))
 
