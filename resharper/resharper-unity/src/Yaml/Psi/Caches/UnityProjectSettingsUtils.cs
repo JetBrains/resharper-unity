@@ -15,14 +15,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public static string GetUnityPathFor([NotNull] IPsiSourceFile psiSourceFile)
         {
             var solution = psiSourceFile.GetSolution();
-            var solutionPath = solution.SolutionFilePath;
+            var solutionPath = solution.SolutionDirectory;
             var psiPath = psiSourceFile.GetLocation();
             var components = psiPath.MakeRelativeTo(solutionPath).Components.ToArray();
 
             var sb = new StringBuilder();
-            // skip "../Assets/
+            // skip "Assets/
 
-            for (int i = 2; i < components.Length - 1; i++)
+            for (int i = 1; i < components.Length - 1; i++)
             {
                 sb.Append(components[i]);
                 sb.Append('/');

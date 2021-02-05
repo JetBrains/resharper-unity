@@ -31,12 +31,9 @@ class UssDocumentationProvider : DocumentationProvider {
         return null
     }
 
+    // todo: recheck after the compilation fix
     private fun findDocumentationElement(element: PsiElement): PsiElement? {
-        var docElement: PsiElement? = element
-        if (!CssUtil.isCssDeclaration(element) || CssPsiUtil.isInFunction(element)) {
-            docElement = CssDocumentationProvider.getDocumentationElement(element)
-        }
-        return docElement
+        return element
     }
 
     private fun generateDoc(descriptorText: String?,

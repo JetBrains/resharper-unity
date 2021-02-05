@@ -14,19 +14,29 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Added
 
+- Add Find Usages support for methods and properties used in animations ([#488](https://github.com/JetBrains/resharper-unity/issues/488), [RIDER-43464](https://youtrack.jetbrains.com/issue/RIDER-43464), [RIDER-43338](https://youtrack.jetbrains.com/issue/RIDER-43338), [#1982](https://github.com/JetBrains/resharper-unity/pull/1982))
+- Add completion and validation of animation state names in `Animator.Play` methods ([RIDER-17449](https://youtrack.jetbrains.com/issue/RIDER-17449), [#1982](https://github.com/JetBrains/resharper-unity/pull/1982))
 - Add gutter icons to show Burst compiled methods ([#1995](https://github.com/JetBrains/resharper-unity/pull/1995))
-- Add context actions to show call tree for performance critical, expensive and Burst compiled methods ([#1995](https://github.com/JetBrains/resharper-unity/pull/1995))
-- Rider: Add Code Vision actions to show call tree for performance critical, expensive and Burst compiled methods ([#1995](https://github.com/JetBrains/resharper-unity/pull/1995))
+- Add context actions to show call tree for performance critical, expensive and Burst compiled methods ([RIDER-35169](https://youtrack.jetbrains.com/issue/RIDER-35169), [#1995](https://github.com/JetBrains/resharper-unity/pull/1995))
+- Rider: Add Code Vision actions to show call tree for performance critical, expensive and Burst compiled methods ([RIDER-35169](https://youtrack.jetbrains.com/issue/RIDER-35169), [#1995](https://github.com/JetBrains/resharper-unity/pull/1995))
 - Rider: Add custom debugger type views for `SerializedObject` and `SerializedProperty` ([#1991](https://github.com/JetBrains/resharper-unity/pull/1991))
 
 ### Changed
 
+- Mark `UxmlFactory` derived classes as implicitly used ([RIDER-54860](https://youtrack.jetbrains.com/issue/RIDER-54860), [#2002](https://github.com/JetBrains/resharper-unity/pull/2002))
 - Rider: Unity file templates are grouped into "Unity Class" and "Unity Shader" ([#1983](https://github.com/JetBrains/resharper-unity/pull/1983))
+- Rider: Quick doc link for online pages now uses the version specific search page ([#2005](https://github.com/JetBrains/resharper-unity/issues/2005), [#2006](https://github.com/JetBrains/resharper-unity/pull/2006))
 - Rider: Double click on assembly files in Unity Explorer will add the file to Assembly Explorer ([RIDER-54873](https://youtrack.jetbrains.com/issue/RIDER-54873), [#1996](https://github.com/JetBrains/resharper-unity/pull/1996))
+- Rider: Improve wording on notifications when Rider is not set as Unity's External Editor ([#1958](https://github.com/JetBrains/resharper-unity/pull/1958))
 
 ### Fixed
 
 - Fix missing entries from ReSharper's Unity specific dictionary ([#1737](https://github.com/JetBrains/resharper-unity/issues/1737), [#1809](https://github.com/JetBrains/resharper-unity/issues/1809), [#2008](https://github.com/JetBrains/resharper-unity/pull/2008))
+- Fix creation of `.meta` files in the root of the `Packages` folder, and in `file:` based packages ([#2000](https://github.com/JetBrains/resharper-unity/pull/2000))
+- Fix suggested name collision when creating a field to cache a property index ([RIDER-55185](https://youtrack.jetbrains.com/issue/RIDER-55185), [#2002](https://github.com/JetBrains/resharper-unity/pull/2002))
+- Fix stored asset file names to be relative to solution directory ([RIDER-54695](https://youtrack.jetbrains.com/issue/RIDER-54695), [#2002](https://github.com/JetBrains/resharper-unity/pull/2002))
+- Rider: Fix location of context menu shown when clicking Unity Code Vision links ([RIDER-49573](https://youtrack.jetbrains.com/issue/RIDER-49573), [#2002](https://github.com/JetBrains/resharper-unity/pull/2002))
+- Rider: Fix missing error indicator for `.asmdef` files ([#2002](https://github.com/JetBrains/resharper-unity/pull/2002))
 - Rider: Fix issue launching Unity when debugging and editor isn't running ([RIDER-52498](https://youtrack.jetbrains.com/issue/RIDER-52498), [#1920](https://github.com/JetBrains/resharper-unity/pull/1920))
 - Rider: Fix exception in protocol file watcher ([DEXP-559833](https://youtrack.jetbrains.com/issue/DEXP-559833), [#1942](https://github.com/JetBrains/resharper-unity/pull/1942))
 - Rider: Fix exception with multiple assemblies with the same name ([RIDER-54876](https://youtrack.jetbrains.com/issue/RIDER-54876), [#1953](https://github.com/JetBrains/resharper-unity/pull/1953))
