@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.QuickD
                 .AddRule("Test", ProjectModelDataConstants.SOLUTION, x => solution)
                 .AddRule("Test", TextControlDataConstants.TEXT_CONTROL, x => control)
                 .AddRule("Test", DocumentModelDataConstants.DOCUMENT, x => control.Document)
-                .AddRule("Test", DocumentModelDataConstants.EDITOR_CONTEXT, x => new DocumentEditorContext(new DocumentOffset(control.Document, control.Caret.Position.Value.ToDocOffset())));
+                .AddRule("Test", DocumentModelDataConstants.EDITOR_CONTEXT, x => new DocumentEditorContext(new DocumentOffset(control.Document, control.Caret.Offset())));
             return actionManager.DataContexts.CreateWithDataRules(control.Lifetime, dataRules);
         }
 
