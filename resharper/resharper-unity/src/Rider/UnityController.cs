@@ -98,7 +98,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
             // no protocol connection - try to fallback to EditorInstance.json
             var processIdString = EditorInstanceJson.TryGetValue(EditorInstanceJsonPath, "process_id");
-            return processIdString == null ? (int?) null : Convert.ToInt32(processIdString);
+            if (processIdString == null)
+                return null;
+
+            // Check exists of process if it was killed by manual and EditorInstance.json wasn't deleted
+            var pid = Convert.ToInt32(processIdString);
+            return PlatformUtil.ProcessExists(pid) ? pid : (int?) null;
         }
         
         public Task<int> WaitConnectedUnityProcessId(Lifetime lifetime)
