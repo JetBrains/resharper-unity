@@ -1,32 +1,29 @@
-using System.Collections.Generic;
-using System.Linq;
-using JetBrains.Application.PersistentMap;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.Serialization;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptUsages
 {
     // TODO : Right now, we use it only for scripts, but we could calculate deps not only for scripts
-    public readonly struct AssetScriptUsages : IScriptUsage
+    public readonly struct AssetScriptUsage : IScriptUsage
     {
         // TODO, local reference deps
         public LocalReference Location { get; }
         public ExternalReference UsageTarget { get; }
 
-        public AssetScriptUsages(LocalReference location, ExternalReference usageTarget)
+        public AssetScriptUsage(LocalReference location, ExternalReference usageTarget)
         {
             Location = location;
             UsageTarget = usageTarget;
         }
 
-        public bool Equals(AssetScriptUsages other)
+        public bool Equals(AssetScriptUsage other)
         {
             return Location.Equals(other.Location) && UsageTarget.Equals(other.UsageTarget);
         }
 
         public override bool Equals(object obj)
         {
-            return obj is AssetScriptUsages other && Equals(other);
+            return obj is AssetScriptUsage other && Equals(other);
         }
 
         public override int GetHashCode()
@@ -43,10 +40,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             UsageTarget.WriteTo(writer);
         }
 
-        public static AssetScriptUsages ReadFrom(UnsafeReader reader)
+        public static AssetScriptUsage ReadFrom(UnsafeReader reader)
         {
             var localReference = HierarchyReferenceUtil.ReadLocalReferenceFrom(reader);
-            return new AssetScriptUsages(localReference, HierarchyReferenceUtil.ReadExternalReferenceFrom(reader));
+            return new AssetScriptUsage(localReference, HierarchyReferenceUtil.ReadExternalReferenceFrom(reader));
         }
         
     }
