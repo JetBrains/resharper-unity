@@ -1,10 +1,12 @@
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
+using JetBrains.Core;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.IDE;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.Rd.Base;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model.Unity;
@@ -55,6 +57,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                         backendUnityHost.BackendUnityModel.ViewNotNull(unityProjectLifetime,
                             AdviseUnityToFrontendModel);
                     }
+                    
+                    model.WaitConnectionAndSetPlay.Set(b =>
+                    {
+                        backendUnityHost.BackendUnityModel.AdviseOnce(unityProjectLifetime, unityModel =>
+                        {
+                            unityModel.PlayControls.Play.SetValue(b);
+                        });
+                        return Unit.Instance;
+                    });
                 }
             });
         }

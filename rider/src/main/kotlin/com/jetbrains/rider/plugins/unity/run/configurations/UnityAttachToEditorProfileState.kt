@@ -46,7 +46,7 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityEx
                                 // pass value to backend, which will push Unity to enter play mode.
                                 executionEnvironment.project.solution.frontendBackendModel.playControls.play.set(true)
                             }, terminationAction = {
-                                executionEnvironment.project.solution.frontendBackendModel.playControls.play.set(false)
+                                executionEnvironment.project.solution.frontendBackendModel.waitConnectionAndSetPlay.start(lifetime, false)
                             })
                         }
                     }
