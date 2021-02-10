@@ -2,19 +2,20 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using JetBrains.Application.Components;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.Unity;
-using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.Launch;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 {
-    public class UnityTaskRunnerHostController : ITaskRunnerHostController
+    [SolutionComponent]
+    public class UnityTaskRunnerHostControllerExtension : ITaskRunnerHostControllerExtension
     {
         private static readonly Key<LifetimeDefinition> ourLifetimeDefinitionKey = new Key<LifetimeDefinition>("UnityTaskRunnerHostController.CancelPrepareForRun");
         
@@ -24,66 +25,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         private readonly IUnityController myUnityController;
         private readonly IShellLocks myShellLocks;
-        private readonly ITaskRunnerHostController myInnerHostController;
+        private readonly string[] myAvailableProviders;
         private readonly object myStartUnitySync = new object();
         private Task myStartUnityTask;
 
-        public UnityTaskRunnerHostController(ITaskRunnerHostController innerHostController,
-                                             IShellLocks shellLocks,
-                                             IUnityController unityController,
-                                             string taskRunnerName)
+        public UnityTaskRunnerHostControllerExtension(IShellLocks shellLocks,
+                                                      IUnityController unityController,
+                                                      RunHostProvider runHostProvider,
+                                                      DebugHostProvider debugHostProvider)
         {
-            myShellLocks = shellLocks ?? throw  new ArgumentNullException(nameof(shellLocks));
-            myInnerHostController = innerHostController ?? throw  new ArgumentNullException(nameof(innerHostController));
-            myUnityController = unityController ?? throw  new ArgumentNullException(nameof(unityController));
+            myShellLocks = shellLocks.NotNull();
+            myUnityController = unityController.NotNull();
+            myAvailableProviders = new[] { runHostProvider.ID, debugHostProvider.ID };
             myStartUnityTask = Task.CompletedTask;
-            TaskRunnerName = taskRunnerName ?? throw new ArgumentNullException(nameof(taskRunnerName));
         }
 
-        public string TaskRunnerName { get; }
-        
-        public void Dispose() => myInnerHostController.Dispose();
-
-        public string HostId => myInnerHostController.HostId;
-
-        public void SupplementContainer(ComponentContainer container) 
-            => myInnerHostController.SupplementContainer(container);
-
-        public Task AfterLaunchStarted() => myInnerHostController.AfterLaunchStarted();
-
-        public Task BeforeLaunchFinished() => myInnerHostController.BeforeLaunchFinished();
-
-        public ClientControllerInfo GetClientControllerInfo(IUnitTestRun run) 
-            => myInnerHostController.GetClientControllerInfo(run);
-        
-        public Task CleanupAfterRun(IUnitTestRun run) => myInnerHostController.CleanupAfterRun(run);
-
-        public void Cancel(IUnitTestRun run)
+        public bool IsApplicable(IUnitTestRun run)
         {
-            CancelPrepareForRun(run);
-            myInnerHostController.Cancel(run);
+            var isUnity = myUnityController.IsUnityEditorUnitTestRunStrategy(run.RunStrategy);
+            return isUnity && myAvailableProviders.Contains(run.HostController.HostId);
         }
 
-        public void Abort(IUnitTestRun run)
-        {
-            CancelPrepareForRun(run);
-            myInnerHostController.Abort(run);
-        }
+        public ClientControllerInfo GetClientControllerInfo(IUnitTestRun run, ITaskRunnerHostController next) => null;
 
-        public IPreparedProcess StartProcess(ProcessStartInfo startInfo, IUnitTestRun run, ILogger logger) 
-            => myInnerHostController.StartProcess(startInfo, run, logger);
-
-        public virtual Type[] GetSupplementaryContainerAttributeTypes() => null;
-
-        public async Task PrepareForRun(IUnitTestRun run)
+        public async Task PrepareForRun(IUnitTestRun run, ITaskRunnerHostController next)
         {
             var lifetimeDef = Lifetime.Define();
             run.PutData(ourLifetimeDefinitionKey, lifetimeDef);
-            
-            await myInnerHostController.PrepareForRun(run).ConfigureAwait(false);
-
-            if (!myUnityController.IsUnityEditorUnitTestRunStrategy(run.RunStrategy))
-                return;
 
             lock (myStartUnitySync)
             {
@@ -98,15 +66,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             
             await myStartUnityTask.ConfigureAwait(false);
         }
-        
+
+        public Task CleanupAfterRun(IUnitTestRun run, ITaskRunnerHostController next) => Task.CompletedTask;
+
+        public void Cancel(IUnitTestRun run) => run.GetData(ourLifetimeDefinitionKey)?.Terminate();
+
         private Task StartUnityIfNeed(Lifetime lifetime)
         {
             var message = string.Format(StartUnityEditorQuestionMessage, 
-                                              TaskRunnerName, 
+                                              "run", 
                                               myUnityController.GetPresentableUnityVersion());
             var needStart = MessageBox.ShowYesNo(message, PluginName);
             if (!needStart)
-                throw new Exception(string.Format(NotAvailableUnityEditorMessage, TaskRunnerName));
+                throw new Exception(string.Format(NotAvailableUnityEditorMessage, "run"));
 
             var commandLines = myUnityController.GetUnityCommandline();
             var unityPath = commandLines.First();
@@ -120,7 +92,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             
             return myUnityController.WaitConnectedUnityProcessId(lifetime);
         }
-
-        private static void CancelPrepareForRun(IUnitTestRun run) => run.GetData(ourLifetimeDefinitionKey)?.Terminate();
     }
 }
