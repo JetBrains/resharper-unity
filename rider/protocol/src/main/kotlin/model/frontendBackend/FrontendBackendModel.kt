@@ -17,6 +17,36 @@ import model.lib.Library
 // Callback is an RPC method (with return value) that is implemented by the frontend/called by the backend
 @Suppress("unused")
 object FrontendBackendModel : Ext(SolutionModel.Solution) {
+
+    private val UnityPackageSource = enum {
+        +"Unknown"
+        +"BuiltIn"
+        +"Registry"
+        +"Embedded"
+        +"Local"
+        +"LocalTarball"
+        +"Git"
+    }
+
+    private val UnityPackage = structdef {
+        field("id", string)
+        field("version", string)
+        field("packageFolderPath", string.nullable)
+        field("source", UnityPackageSource)
+        field("displayName", string)
+        field("description", string.nullable)
+        field("dependencies", array(structdef("unityPackageDependency") {
+            field("id", string)
+            field("version", string)
+        }))
+        field("tarballLocation", string.nullable)
+        field("gitDetails", structdef("unityGitDetails") {
+            field("url", string)
+            field("hash", string.nullable)
+            field("revision", string.nullable)
+        }.nullable)
+    }
+
     private val UnitTestLaunchPreference = enum {
         +"NUnit"
         +"EditMode"
@@ -25,10 +55,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
     }
 
     private val shaderInternScope = internScope()
-
     private val shaderContextDataBase = baseclass {}
     private val autoShaderContextData = classdef extends shaderContextDataBase {}
-
     private val shaderContextData = classdef extends shaderContextDataBase {
         field("path", string.interned(shaderInternScope))
         field("name", string.interned(shaderInternScope))
@@ -42,6 +70,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
     init {
         setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.model.unity.frontendBackend")
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.FrontendBackend")
+
+        property("hasUnityReference", bool).documentation = "True when the current project is a Unity project. Either full Unity project or class library"
 
         // Connection to Unity editor
         property("unityEditorConnected", bool).documentation = "Is the backend/Unity protocol connected?"
@@ -61,12 +91,10 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
             property("mergeParameters", string)
         })
 
-        // Misc backend/fronted context
-        property("hasUnityReference", bool).documentation = "True when the current project is a Unity project. Either full Unity project or class library"
-        property("externalDocContext", string).documentation = "Fully qualified type or method name at the location of the text caret. Used for external help URL"
-
         field("playControls", Library.PlayControls)
         field("consoleLogging", Library.ConsoleLogging)
+
+        map("packages", string, UnityPackage)
 
         // Unit testing
         property("unitTestPreference", UnitTestLaunchPreference.nullable).documentation = "Selected unit testing mode. Everything is handled by the backend, but this setting is from a frontend combobox"
@@ -102,6 +130,9 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         sink("onEditorModelOutOfSync", void)
         callback("attachDebuggerToUnityEditor", void, bool).documentation = "Tell the frontend to attach the debugger to the Unity editor. Used for debugging unit tests"
         callback("allowSetForegroundWindow", void, bool).documentation = "Tell the frontend to call AllowSetForegroundWindow for the current Unity editor process ID. Called before the backend tells Unity to show itself"
+
+        // Misc backend/fronted context
+        property("externalDocContext", string).documentation = "Fully qualified type or method name at the location of the text caret. Used for external help URL"
 
         // Only used in integration tests
         property("riderFrontendTests", bool)

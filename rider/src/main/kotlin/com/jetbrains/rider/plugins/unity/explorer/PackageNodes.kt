@@ -14,8 +14,10 @@ import com.jetbrains.rider.projectView.views.*
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 import icons.UnityIcons
 
-class PackagesRootNode(project: Project, private val packageManager: PackageManager)
-    : UnityExplorerFileSystemNode(project, packageManager.packagesFolder, emptyList(), AncestorNodeType.FileSystem) {
+class PackagesRootNode(project: Project, packagesFolder: VirtualFile)
+    : UnityExplorerFileSystemNode(project, packagesFolder, emptyList(), AncestorNodeType.FileSystem) {
+
+    private val packageManager = PackageManager.getInstance(myProject)
 
     override fun update(presentation: PresentationData) {
         if (!virtualFile.isValid) return
@@ -28,14 +30,17 @@ class PackagesRootNode(project: Project, private val packageManager: PackageMana
         // Add file system children, which will include embedded packages
         val children = super.calculateChildren()
 
-        // Also include any local (file: based) packages, plus all unresolved packages
-        packageManager.localPackages.forEach { addPackageNode(children, it) }
-        packageManager.unknownPackages.forEach { addPackageNode(children, it) }
+        val allPackages = packageManager.getPackages()
 
-        // Add a root node for modules and referenced packages
-        if (packageManager.immutablePackages.any()) {
+        // Add the "Read Only" node for modules and referenced packages. Don't add the node if we haven't loaded
+        // packages yet
+        if (allPackages.any { it.source.isReadOnly() }) {
             children.add(0, ReadOnlyPackagesRootNode(myProject, packageManager))
         }
+
+        // Also include any local (file: based) packages, plus all unresolved packages
+        allPackages.filter { it.source == PackageSource.Local }.forEach { addPackageNode(children, it) }
+        allPackages.filter { it.source == PackageSource.Unknown }.forEach { addPackageNode(children, it) }
 
         return children
     }
@@ -43,9 +48,8 @@ class PackagesRootNode(project: Project, private val packageManager: PackageMana
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<NestingNode<VirtualFile>>): FileSystemNodeBase {
         // If the child folder is an embedded package, add it as a package node
         if (virtualFile.isDirectory) {
-            packageManager.getPackageData(virtualFile)?.let {
-                val embeddedPackageData = PackageData(it.name, virtualFile, it.details, PackageSource.Embedded)
-                return PackageNode(myProject, packageManager, virtualFile, embeddedPackageData)
+            packageManager.tryGetPackage(virtualFile)?.let {
+                return PackageNode(myProject, packageManager, virtualFile, it)
             }
         }
         return super.createNode(virtualFile, nestedFiles)
@@ -82,7 +86,7 @@ class PackageNode(project: Project, private val packageManager: PackageManager, 
         }
     }
 
-    override fun getName() = packageData.details.displayName
+    override fun getName() = packageData.displayName
 
     override fun update(presentation: PresentationData) {
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
@@ -102,12 +106,17 @@ class PackageNode(project: Project, private val packageManager: PackageManager, 
             PackageSource.Local -> "<br/><br/>Folder location: ${virtualFile.path}"
             PackageSource.LocalTarball -> "<br/><br/>Tarball location: ${packageData.tarballLocation}"
             PackageSource.Git -> {
-                var text = "<br/><br/>Git URL: ${packageData.gitDetails?.url}"
-                if (!packageData.gitDetails?.hash.isNullOrEmpty()) {
-                    text += "<br/>Hash: ${packageData.gitDetails?.hash}"
+                var text = "<br/><br/>"
+                text += if (!packageData.gitUrl.isNullOrEmpty()) {
+                    "Git URL: ${packageData.gitUrl}"
+                } else {
+                    "Unknown Git URL"
                 }
-                if (!packageData.gitDetails?.revision.isNullOrEmpty()) {
-                    text += "<br/>Revision: ${packageData.gitDetails?.revision}"
+                if (!packageData.gitHash.isNullOrEmpty()) {
+                    text += "<br/>Hash: ${packageData.gitHash}"
+                }
+                if (!packageData.gitRevision.isNullOrEmpty()) {
+                    text += "<br/>Revision: ${packageData.gitRevision}"
                 }
                 text
             }
@@ -123,7 +132,7 @@ class PackageNode(project: Project, private val packageManager: PackageManager, 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val children = super.calculateChildren()
 
-        if (packageData.details.dependencies.isNotEmpty()) {
+        if (packageData.dependencies.isNotEmpty()) {
             children.add(0, PackageDependenciesRoot(myProject, packageManager, packageData))
         }
 
@@ -146,7 +155,7 @@ class PackageDependenciesRoot(project: Project, private val packageManager: Pack
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val children = mutableListOf<AbstractTreeNode<*>>()
-        for ((name, version) in packageData.details.dependencies) {
+        for ((name, version) in packageData.dependencies) {
             children.add(PackageDependencyItemNode(myProject, packageManager, name, version))
         }
         return children
@@ -155,11 +164,11 @@ class PackageDependenciesRoot(project: Project, private val packageManager: Pack
     override fun contains(file: VirtualFile) = false
 }
 
-class PackageDependencyItemNode(project: Project, private val packageManager: PackageManager, private val packageName: String, version: String)
-    : SolutionViewNode<Any>(project, "$packageName@$version") {
+class PackageDependencyItemNode(project: Project, private val packageManager: PackageManager, private val packageId: String, version: String)
+    : SolutionViewNode<Any>(project, "$packageId@$version") {
 
     init {
-        myName = "$packageName@$version"
+        myName = "$packageId@$version"
     }
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> = mutableListOf()
@@ -171,14 +180,10 @@ class PackageDependencyItemNode(project: Project, private val packageManager: Pa
         presentation.setIcon(UnityIcons.Explorer.PackageDependency)
     }
 
-    override fun canNavigate(): Boolean {
-        return packageManager.getPackageData(packageName) != null
-    }
-
+    override fun canNavigate() = packageManager.tryGetPackage(packageId)?.packageFolder != null
     override fun navigate(requestFocus: Boolean) {
-        val packageData = packageManager.getPackageData(packageName)
-        if (packageData?.packageFolder == null) return
-        myProject.navigateToSolutionView(packageData.packageFolder, requestFocus)
+        val packageFolder = packageManager.tryGetPackage(packageId)?.packageFolder ?: return
+        myProject.navigateToSolutionView(packageFolder, requestFocus)
     }
 }
 
@@ -197,13 +202,10 @@ class ReadOnlyPackagesRootNode(project: Project, private val packageManager: Pac
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val children = mutableListOf<AbstractTreeNode<*>>()
 
-        if (packageManager.hasBuiltInPackages) {
-            children.add(BuiltinPackagesRootNode(myProject, packageManager))
-        }
+        // If we have any packages, we'll have modules
+        children.add(BuiltinPackagesRootNode(myProject, packageManager))
 
-        for (packageData in packageManager.immutablePackages) {
-            if (packageData.source == PackageSource.BuiltIn) continue
-
+        for (packageData in packageManager.getPackages().filter { it.source.isReadOnly() && it.source != PackageSource.BuiltIn }) {
             if (packageData.packageFolder == null) {
                 children.add(UnknownPackageNode(myProject, packageData))
             }
@@ -235,9 +237,9 @@ class BuiltinPackagesRootNode(project: Project, private val packageManager: Pack
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val children = mutableListOf<AbstractTreeNode<*>>()
-        for (packageData in packageManager.immutablePackages) {
-            if (packageData.source != PackageSource.BuiltIn) continue
+        for (packageData in packageManager.getPackages().filter { it.source == PackageSource.BuiltIn }) {
 
+            // All modules should have a package folder, or it means we haven't been able to resolve it
             if (packageData.packageFolder == null) {
                 children.add(UnknownPackageNode(myProject, packageData))
             }
@@ -260,7 +262,7 @@ class BuiltinPackagesRootNode(project: Project, private val packageManager: Pack
 // Note that a module can have dependencies. Perhaps we want to always show this as a folder, including the Dependencies
 // node?
 class BuiltinPackageNode(project: Project, private val packageData: PackageData)
-    : UnityExplorerFileSystemNode(project, packageData.packageFolder!!, emptyList(), AncestorNodeType.ReadOnlyPackage) {
+    : UnityExplorerFileSystemNode(project, packageData.packageFolder!!, emptyList(), AncestorNodeType.ReadOnlyPackage), Comparable<AbstractTreeNode<*>> {
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
 
@@ -301,7 +303,7 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
         }
     }
 
-    override fun getName() = packageData.details.displayName
+    override fun getName() = packageData.displayName
 
     override fun update(presentation: PresentationData) {
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
@@ -314,6 +316,11 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
         if (tooltip != name) {
             presentation.tooltip = tooltip
         }
+    }
+
+    override fun compareTo(other: AbstractTreeNode<*>): Int {
+        // Compare by display name, rather than the default file name
+        return String.CASE_INSENSITIVE_ORDER.compare(name, other.name)
     }
 }
 
@@ -328,7 +335,7 @@ class UnknownPackageNode(project: Project, private val packageData: PackageData)
         }
     }
 
-    override fun getName() = packageData.details.displayName
+    override fun getName() = packageData.displayName
     override fun getChildren(): MutableCollection<out AbstractTreeNode<Any>> = arrayListOf()
     override fun isAlwaysLeaf() = true
 
@@ -337,41 +344,38 @@ class UnknownPackageNode(project: Project, private val packageData: PackageData)
         presentation.setIcon(icon)
 
         // Description can be an error message
-        if (packageData.details.description.isNotEmpty()) {
-            presentation.tooltip = formatDescription(packageData)
+        if (packageData.description?.isNotEmpty() == true) {
+            presentation.tooltip = formatDescription(packageData.description)
         }
     }
 }
 
-private fun getPackageTooltip(name: String, packageData: PackageData): String {
-    var tooltip = name
-    if (packageData.details.version.isNotEmpty()) {
-        tooltip += " ${packageData.details.version}"
+private fun getPackageTooltip(displayName: String, packageData: PackageData): String {
+    var tooltip = displayName
+    if (packageData.version.isNotEmpty()) {
+        tooltip += " ${packageData.version}"
     }
-    if (name != packageData.details.canonicalName) {
-        tooltip += "<br/>${packageData.details.canonicalName}"
+    if (displayName != packageData.id) {
+        tooltip += "<br/>${packageData.id}"
     }
-    if (packageData.details.author.isNotEmpty()) {
-        tooltip += "<br/>${packageData.details.author}"
-    }
-    if (packageData.details.description.isNotEmpty()) {
-        tooltip += "<br/><br/>" + formatDescription(packageData)
+    if (packageData.description?.isNotEmpty() == true) {
+        tooltip += "<br/><br/>" + formatDescription(packageData.description)
     }
     return tooltip
 }
 
-private fun formatDescription(packageData: PackageData): String {
-    val description =  packageData.details.description.replace("\n", "<br/>").let {
+private fun formatDescription(description: String): String {
+    val text = description.replace("\n", "<br/>").let {
         StringUtil.shortenTextWithEllipsis(it, 600, 0, true)
     }
 
     // Very crude. This should really be measured by font + pixels, not characters.
     // Hopefully we can replace all of this with QuickDoc though, which has smarter wrapping.
-    val shouldWrap = StringUtil.splitByLines(packageData.details.description).any { it.length > 50 }
+    val shouldWrap = StringUtil.splitByLines(text).any { it.length > 50 }
     return if (shouldWrap) {
-        "<div width=\"500\">$description</div>"
+        "<div width=\"500\">$text</div>"
     }
     else {
-        description
+        text
     }
 }
