@@ -1,7 +1,6 @@
 package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.ide.projectView.PresentationData
-import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vcs.FileStatus
@@ -10,76 +9,19 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.intellij.workspaceModel.ide.impl.virtualFile
 import com.jetbrains.rider.plugins.unity.packageManager.PackageData
-import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
-import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.calculateFileSystemIcon
-import com.jetbrains.rider.projectView.ideaInterop.RiderScratchProjectViewPane
-import com.jetbrains.rider.projectView.nodes.*
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.NestingNode
-import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
-import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
 import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerCustomization
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
-import com.jetbrains.rider.projectView.workspace.*
+import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
+import com.jetbrains.rider.projectView.workspace.containingProjectEntity
+import com.jetbrains.rider.projectView.workspace.getProjectModelEntities
 import com.jetbrains.rider.projectView.workspace.impl.WorkspaceEntityErrorsSupport
+import com.jetbrains.rider.projectView.workspace.isProject
 import icons.UnityIcons
 import java.awt.Color
 import javax.swing.Icon
-
-class UnityExplorerRootNode(project: Project, private val packageManager: PackageManager)
-    : SolutionViewRootNodeBase(project) {
-
-    override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
-        val assetsFolder = myProject.projectDir.findChild("Assets")!!
-        val assetsNode = AssetsRoot(myProject, assetsFolder)
-
-        val nodes = mutableListOf<AbstractTreeNode<*>>(assetsNode)
-
-        if (packageManager.hasPackages) {
-            nodes.add(PackagesRoot(myProject, packageManager))
-        }
-
-        if (ConfigureScratchesAction.showScratchesInExplorer(myProject)) {
-            nodes.add(RiderScratchProjectViewPane.createNode(myProject))
-        }
-
-        return nodes
-    }
-
-    override fun createComparator(): Comparator<AbstractTreeNode<*>> {
-        val comparator = super.createComparator()
-        return Comparator { node1, node2 ->
-            val sortKey1 = getSortKey(node1)
-            val sortKey2 = getSortKey(node2)
-
-            if (sortKey1 != sortKey2) {
-                return@Comparator sortKey1.compareTo(sortKey2)
-            }
-
-            comparator.compare(node1, node2)
-        }
-    }
-
-    private fun getSortKey(node: AbstractTreeNode<*>): Int {
-        // Nodes of the same type should be sorted as the same. Different types should be in this order (although some
-        // are in different levels of the hierarchy)
-        return when (node) {
-            is AssetsRoot -> 1
-            is PackagesRoot -> 2
-            is ReferenceRoot -> 3
-            is ReadOnlyPackagesRoot -> 4
-            is BuiltinPackagesRoot -> 5
-            is PackageNode -> 6
-            is DependenciesRoot -> 7
-            is DependencyItemNode -> 8
-            is BuiltinPackageNode -> 9
-            is UnknownPackageNode -> 100
-            is UnityExplorerNode -> 1000
-            else -> 10000
-        }
-    }
-}
 
 enum class AncestorNodeType {
     Assets,
@@ -94,10 +36,11 @@ enum class AncestorNodeType {
     }
 }
 
-open class UnityExplorerNode(project: Project,
-                             virtualFile: VirtualFile,
-                             nestedFiles: List<NestingNode<VirtualFile>>,
-                             protected val descendentOf: AncestorNodeType)
+@Suppress("UnstableApiUsage")
+open class UnityExplorerFileSystemNode(project: Project,
+                                       virtualFile: VirtualFile,
+                                       nestedFiles: List<NestingNode<VirtualFile>>,
+                                       protected val descendentOf: AncestorNodeType)
     : FileSystemNodeBase(project, virtualFile, nestedFiles) {
 
     override val entities: List<ProjectModelEntity>
@@ -114,6 +57,7 @@ open class UnityExplorerNode(project: Project,
 
     override fun update(presentation: PresentationData) {
         if (!virtualFile.isValid) return
+
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(calculateIcon())
 
@@ -272,7 +216,7 @@ open class UnityExplorerNode(project: Project,
                     return UnityIcons.Explorer.EditorFolder
                 }
 
-                if (parent is AssetsRoot) {
+                if (parent is AssetsRootNode) {
                     val rootSpecialIcon = when (name.toLowerCase()) {
                         "editor default resources" -> UnityIcons.Explorer.EditorDefaultResourcesFolder
                         "gizmos" -> UnityIcons.Explorer.GizmosFolder
@@ -303,7 +247,7 @@ open class UnityExplorerNode(project: Project,
     }
 
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<NestingNode<VirtualFile>>): FileSystemNodeBase {
-        return UnityExplorerNode(project!!, virtualFile, nestedFiles, descendentOf)
+        return UnityExplorerFileSystemNode(myProject, virtualFile, nestedFiles, descendentOf)
     }
 
     override fun getVirtualFileChildren(): List<VirtualFile> {
