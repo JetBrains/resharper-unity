@@ -6,6 +6,7 @@ using JetBrains.DocumentModel;
 using JetBrains.IDE;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.Rd.Base;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model.Unity;
@@ -56,17 +57,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                         backendUnityHost.BackendUnityModel.ViewNotNull(unityProjectLifetime,
                             AdviseUnityToFrontendModel);
                     }
-                    
-                    model.WaitConnectionAndSetPlay.Set(b =>
-                    {
-                        backendUnityHost.BackendUnityModel.AdviseUntil(unityProjectLifetime, unityModel =>
-                        {
-                            if (unityModel == null) return false;
-                            unityModel.PlayControls.SetPlay.Fire(b);
-                            return true;
-                        });
-                        return Unit.Instance;
-                    });
                 }
             });
         }
@@ -179,7 +169,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         private static void AdvisePlayControls(in Lifetime lifetime, BackendUnityModel backendUnityModel,
                                                FrontendBackendModel frontendBackendModel)
         {
-            backendUnityModel.PlayControls.GetPlay.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Play);
+            backendUnityModel.PlayControls.GetPlay.Advise(lifetime, val =>
+            {
+                frontendBackendModel.PlayControls.Play.Value = val;
+                frontendBackendModel.PlayControlsInitialized.SetValue(true);
+            });
             backendUnityModel.PlayControls.GetPause.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Pause);
         }
 
