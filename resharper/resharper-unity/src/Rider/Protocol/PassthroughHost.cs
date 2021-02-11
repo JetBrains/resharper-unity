@@ -60,9 +60,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                     
                     model.WaitConnectionAndSetPlay.Set(b =>
                     {
-                        backendUnityHost.BackendUnityModel.AdviseOnce(unityProjectLifetime, unityModel =>
+                        backendUnityHost.BackendUnityModel.AdviseUntil(unityProjectLifetime, unityModel =>
                         {
+                            if (unityModel == null) return false;
                             unityModel.PlayControls.Play.SetValue(b);
+                            return true;
                         });
                         return Unit.Instance;
                     });
