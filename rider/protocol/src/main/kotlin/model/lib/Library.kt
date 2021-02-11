@@ -58,9 +58,7 @@ object Library : Root() {
         field("stackTrace", string)
     }
 
-    val PlayControls = aggregatedef("PlayControls") {
-        property("play", bool)
-        property("pause", bool)
+    val Controls = aggregatedef("Controls") {
         signal("step", void)
     }
 

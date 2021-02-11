@@ -1,10 +1,10 @@
 package model.frontendBackend
 
-import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
 import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
+import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rider.model.nova.ide.SolutionModel.RdDocumentId
 import model.lib.Library
 
@@ -38,6 +38,10 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         field("startLine", int)
     }
 
+    val PlayControls = aggregatedef("PlayControls") {
+        property("play", bool)
+        property("pause", bool)
+    }
 
     init {
         setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.model.unity.frontendBackend")
@@ -65,7 +69,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("hasUnityReference", bool).documentation = "True when the current project is a Unity project. Either full Unity project or class library"
         property("externalDocContext", string).documentation = "Fully qualified type or method name at the location of the text caret. Used for external help URL"
 
-        field("playControls", Library.PlayControls)
+        field("playControls", PlayControls)
+        field("controls", Library.Controls)
         field("consoleLogging", Library.ConsoleLogging)
 
         // Unit testing

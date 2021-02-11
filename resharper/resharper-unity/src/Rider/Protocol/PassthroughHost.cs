@@ -6,7 +6,6 @@ using JetBrains.DocumentModel;
 using JetBrains.IDE;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.Rd.Base;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model.Unity;
@@ -63,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                         backendUnityHost.BackendUnityModel.AdviseUntil(unityProjectLifetime, unityModel =>
                         {
                             if (unityModel == null) return false;
-                            unityModel.PlayControls.Play.SetValue(b);
+                            unityModel.PlayControls.SetPlay.Fire(b);
                             return true;
                         });
                         return Unit.Instance;
@@ -89,11 +88,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             // Step is simply since it's a non-stateful ISource<T>
             var backendUnityModelProperty = myBackendUnityHost.BackendUnityModel;
 
-            frontendBackendModel.PlayControls.Play.FlowChangesIntoRdDeferred(lifetime,
-                () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.Play);
-            frontendBackendModel.PlayControls.Pause.FlowChangesIntoRdDeferred(lifetime,
-                () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.Pause);
-            frontendBackendModel.PlayControls.Step.Advise(lifetime, () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.Step.Fire());
+            frontendBackendModel.PlayControls.Play.FlowChangesIntoRdDeferred2(lifetime,
+                () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.SetPlay);
+            frontendBackendModel.PlayControls.Pause.FlowChangesIntoRdDeferred2(lifetime,
+                () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.SetPause);
+            frontendBackendModel.Controls.Step.Advise(lifetime, () => backendUnityModelProperty.Maybe.ValueOrDefault?.Controls.Step.Fire());
 
             // Called from frontend to generate the UIElements schema files
             frontendBackendModel.GenerateUIElementsSchema.Set((l, u) =>
@@ -180,8 +179,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         private static void AdvisePlayControls(in Lifetime lifetime, BackendUnityModel backendUnityModel,
                                                FrontendBackendModel frontendBackendModel)
         {
-            backendUnityModel.PlayControls.Play.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Play);
-            backendUnityModel.PlayControls.Pause.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Pause);
+            backendUnityModel.PlayControls.GetPlay.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Play);
+            backendUnityModel.PlayControls.GetPause.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Pause);
         }
 
         private static void AdviseConsoleEvents(in Lifetime lifetime, BackendUnityModel backendUnityModel,

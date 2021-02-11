@@ -108,6 +108,13 @@ object BackendUnityModel: Root() {
         field("outputPath", string)
     }
 
+    val PlayControls = aggregatedef("PlayControls") {
+        signal("setPlay", bool)
+        sink("getPlay", bool)
+        signal("setPause", bool)
+        sink("getPause", bool)
+    }
+
     init {
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.BackendUnity")
 
@@ -147,7 +154,8 @@ object BackendUnityModel: Root() {
         // Rider application settings (frontend)
         property("riderProcessId", int).documentation = "The process ID of the frontend, set by the backend. Unity uses this in a call to AllowSetForegroundWindow, so that Rider can bring itself to the foreground when opening a file"
 
-        field("playControls", Library.PlayControls)
+        field("playControls", PlayControls)
+        field("controls", Library.Controls)
         field("consoleLogging", Library.ConsoleLogging)
 
         // Actions called from the backend to Unity
