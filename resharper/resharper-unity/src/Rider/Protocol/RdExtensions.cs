@@ -61,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             source.Advise(lifetime, val => target.Value = val);
         }
 
-        public static void FlowChangesIntoRdDeferred2<TValue>(
+        public static void FlowChangesIntoRdDeferred<TValue>(
             [NotNull] this IViewableProperty<TValue> source,
             Lifetime lifetime,
             [NotNull] Func<ISignal<TValue>> nullableTargetCreator)

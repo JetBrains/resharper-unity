@@ -88,9 +88,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             // Step is simply since it's a non-stateful ISource<T>
             var backendUnityModelProperty = myBackendUnityHost.BackendUnityModel;
 
-            frontendBackendModel.PlayControls.Play.FlowChangesIntoRdDeferred2(lifetime,
+            frontendBackendModel.PlayControls.Play.FlowChangesIntoRdDeferred(lifetime,
                 () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.SetPlay);
-            frontendBackendModel.PlayControls.Pause.FlowChangesIntoRdDeferred2(lifetime,
+            frontendBackendModel.PlayControls.Pause.FlowChangesIntoRdDeferred(lifetime,
                 () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.SetPause);
             frontendBackendModel.Controls.Step.Advise(lifetime, () => backendUnityModelProperty.Maybe.ValueOrDefault?.Controls.Step.Fire());
 
