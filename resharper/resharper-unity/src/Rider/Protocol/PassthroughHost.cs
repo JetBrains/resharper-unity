@@ -169,11 +169,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         private static void AdvisePlayControls(in Lifetime lifetime, BackendUnityModel backendUnityModel,
                                                FrontendBackendModel frontendBackendModel)
         {
-            backendUnityModel.PlayControls.GetPlay.Advise(lifetime, val =>
-            {
-                frontendBackendModel.PlayControls.Play.Value = val;
-                frontendBackendModel.PlayControlsInitialized.SetValue(true);
-            });
+            backendUnityModel.PlayControls.GetPlay.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Play);
+            backendUnityModel.PlayControls.GetPlay.Advise(lifetime, _ => frontendBackendModel.PlayControlsInitialized.SetValue(true));
             backendUnityModel.PlayControls.GetPause.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Pause);
         }
 
