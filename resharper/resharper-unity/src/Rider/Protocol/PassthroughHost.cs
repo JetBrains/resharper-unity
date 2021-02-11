@@ -170,8 +170,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                                                FrontendBackendModel frontendBackendModel)
         {
             backendUnityModel.PlayControls.GetPlay.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Play);
-            backendUnityModel.PlayControls.GetPlay.Advise(lifetime, _ => frontendBackendModel.PlayControlsInitialized.SetValue(true));
             backendUnityModel.PlayControls.GetPause.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Pause);
+            // PlayControlsInitialized states that PlayControls state in frontend-backend protocol corresponds to Unity state
+            backendUnityModel.PlayControls.GetPlay.Advise(lifetime, _ => frontendBackendModel.PlayControlsInitialized.SetValue(true));
         }
 
         private static void AdviseConsoleEvents(in Lifetime lifetime, BackendUnityModel backendUnityModel,

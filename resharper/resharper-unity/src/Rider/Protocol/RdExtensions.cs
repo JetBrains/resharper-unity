@@ -70,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             source.Advise(lifetime, args =>
             {
                 var target = nullableTargetCreator();
-                if (target != null) target.Fire( source.Value);
+                if (target != null) target.Fire(source.Value);
             });
         }
     }
