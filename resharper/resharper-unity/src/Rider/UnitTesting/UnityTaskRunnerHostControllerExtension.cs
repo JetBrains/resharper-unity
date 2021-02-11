@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,25 +26,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         private readonly IUnityController myUnityController;
         private readonly IShellLocks myShellLocks;
-        private readonly string[] myAvailableProviders;
+        private readonly IDictionary<string, string> myAvailableProviders;
         private readonly object myStartUnitySync = new object();
         private Task myStartUnityTask;
 
         public UnityTaskRunnerHostControllerExtension(IShellLocks shellLocks,
-                                                      IUnityController unityController,
-                                                      RunHostProvider runHostProvider,
-                                                      DebugHostProvider debugHostProvider)
+                                                      IUnityController unityController)
         {
             myShellLocks = shellLocks.NotNull();
             myUnityController = unityController.NotNull();
-            myAvailableProviders = new[] { runHostProvider.ID, debugHostProvider.ID };
             myStartUnityTask = Task.CompletedTask;
+            myAvailableProviders = new Dictionary<string, string>
+            { 
+                { WellKnownHostProvidersIds.RunProviderId, "Run" },
+                { WellKnownHostProvidersIds.DebugProviderId, "Debug" }
+            };
         }
 
         public bool IsApplicable(IUnitTestRun run)
         {
             var isUnity = myUnityController.IsUnityEditorUnitTestRunStrategy(run.RunStrategy);
-            return isUnity && myAvailableProviders.Contains(run.HostController.HostId);
+            return isUnity && myAvailableProviders.ContainsKey(run.HostController.HostId);
         }
 
         public ClientControllerInfo GetClientControllerInfo(IUnitTestRun run, ITaskRunnerHostController next) => null;
@@ -60,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     var unityEditorProcessId = myUnityController.TryGetUnityProcessId();
                     return unityEditorProcessId.HasValue
                         ? Task.CompletedTask
-                        : myShellLocks.Tasks.StartNew(lifetimeDef.Lifetime, Scheduling.FreeThreaded, () => StartUnityIfNeed(lifetimeDef.Lifetime));
+                        : myShellLocks.Tasks.StartNew(lifetimeDef.Lifetime, Scheduling.FreeThreaded, () => StartUnityIfNeed(lifetimeDef.Lifetime, run.HostController.HostId));
                 }, lifetimeDef.Lifetime, TaskContinuationOptions.None, myShellLocks.Tasks.GuardedMainThreadScheduler).Unwrap();
             }
             
@@ -71,19 +74,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public void Cancel(IUnitTestRun run) => run.GetData(ourLifetimeDefinitionKey)?.Terminate();
 
-        private Task StartUnityIfNeed(Lifetime lifetime)
+        private Task StartUnityIfNeed(Lifetime lifetime, string hostControllerId)
         {
             var message = string.Format(StartUnityEditorQuestionMessage, 
-                                              "run", 
+                                              myAvailableProviders[hostControllerId], 
                                               myUnityController.GetPresentableUnityVersion());
             var needStart = MessageBox.ShowYesNo(message, PluginName);
             if (!needStart)
-                throw new Exception(string.Format(NotAvailableUnityEditorMessage, "run"));
+                throw new Exception(string.Format(NotAvailableUnityEditorMessage, myAvailableProviders[hostControllerId]));
 
             var commandLines = myUnityController.GetUnityCommandline();
             var unityPath = commandLines.First();
             var unityArgs = string.Join(" ", commandLines.Skip(1));
-            var process = new Process
+            var process = new Process()
             {
                 StartInfo = new ProcessStartInfo(unityPath, unityArgs)
             };
