@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Application.Threading;
-using JetBrains.Application.Threading.Tasks;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Host.Features.BackgroundTasks;
 using JetBrains.ReSharper.Host.Features.Unity;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.Launch;
@@ -24,17 +24,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private const string NotAvailableUnityEditorMessage = "Unable to {0} tests: Unity Editor is not running";
         private const string StartUnityEditorQuestionMessage = "To {0} unit tests, you should first run Unity Editor. Do you want to Start Unity {1} now?";
 
+        private readonly Lifetime myLifetime;
         private readonly IUnityController myUnityController;
+        private readonly RiderBackgroundTaskHost myRiderBackgroundTaskHost;
         private readonly IShellLocks myShellLocks;
         private readonly IDictionary<string, string> myAvailableProviders;
         private readonly object myStartUnitySync = new object();
         private Task myStartUnityTask;
 
-        public UnityTaskRunnerHostControllerExtension(IShellLocks shellLocks,
-                                                      IUnityController unityController)
+        public UnityTaskRunnerHostControllerExtension(Lifetime lifetime,
+                                                      IShellLocks shellLocks,
+                                                      IUnityController unityController,
+                                                      RiderBackgroundTaskHost riderBackgroundTaskHost)
         {
+            myLifetime = lifetime;
             myShellLocks = shellLocks.NotNull();
             myUnityController = unityController.NotNull();
+            myRiderBackgroundTaskHost = riderBackgroundTaskHost;
             myStartUnityTask = Task.CompletedTask;
             myAvailableProviders = new Dictionary<string, string>
             { 
@@ -53,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public async Task PrepareForRun(IUnitTestRun run, ITaskRunnerHostController next)
         {
-            var lifetimeDef = Lifetime.Define();
+            var lifetimeDef = myLifetime.CreateNested();
             run.PutData(ourLifetimeDefinitionKey, lifetimeDef);
 
             lock (myStartUnitySync)
@@ -61,9 +67,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 myStartUnityTask = myStartUnityTask.ContinueWith(_ =>
                 {
                     var unityEditorProcessId = myUnityController.TryGetUnityProcessId();
-                    return unityEditorProcessId.HasValue
-                        ? Task.CompletedTask
-                        : myShellLocks.Tasks.StartNew(lifetimeDef.Lifetime, Scheduling.FreeThreaded, () => StartUnityIfNeed(lifetimeDef.Lifetime, run.HostController.HostId));
+                    if (unityEditorProcessId.HasValue)
+                        return Task.CompletedTask;
+                    
+                    
+                    var message = string.Format(StartUnityEditorQuestionMessage, 
+                                                     myAvailableProviders[run.HostController.HostId],
+                                                     myUnityController.GetPresentableUnityVersion());
+            
+                    if (!MessageBox.ShowYesNo(message, PluginName))
+                        throw new Exception(string.Format(NotAvailableUnityEditorMessage, myAvailableProviders[run.HostController.HostId]));
+                    
+                    myRiderBackgroundTaskHost.CreateIndicator(lifetimeDef.Lifetime, false, false, "Start Unity Editor");
+                    var startUnityTask = StartUnity(lifetimeDef.Lifetime);
+                    startUnityTask.ContinueWith(x =>   lifetimeDef.Terminate(), myLifetime, TaskContinuationOptions.None, myShellLocks.Tasks.Scheduler);
+                    
+                    return startUnityTask;
                 }, lifetimeDef.Lifetime, TaskContinuationOptions.None, myShellLocks.Tasks.GuardedMainThreadScheduler).Unwrap();
             }
             
@@ -74,15 +93,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public void Cancel(IUnitTestRun run) => run.GetData(ourLifetimeDefinitionKey)?.Terminate();
 
-        private Task StartUnityIfNeed(Lifetime lifetime, string hostControllerId)
+        private Task StartUnity(Lifetime lifetime)
         {
-            var message = string.Format(StartUnityEditorQuestionMessage, 
-                                              myAvailableProviders[hostControllerId], 
-                                              myUnityController.GetPresentableUnityVersion());
-            var needStart = MessageBox.ShowYesNo(message, PluginName);
-            if (!needStart)
-                throw new Exception(string.Format(NotAvailableUnityEditorMessage, myAvailableProviders[hostControllerId]));
-
             var commandLines = myUnityController.GetUnityCommandline();
             var unityPath = commandLines.First();
             var unityArgs = string.Join(" ", commandLines.Skip(1));
