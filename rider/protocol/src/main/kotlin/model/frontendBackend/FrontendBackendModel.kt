@@ -96,7 +96,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         source("enableYamlParsing", void).documentation = "Override the heuristic to re-enable YAML parsing on large projects"
         source("showFileInUnity", string).documentation = "Focus Unity, focus the Project window and select and ping the given file path"
         call("generateUIElementsSchema", void, bool).documentation = "Tell the Unity backend to generate UIElement schema"
-        call("waitConnectionAndSetPlay", bool, void).documentation = "Wait for connection and switch PlayMode On/Off"
 
         // Actions called from the backend to the frontend
         sink("activateRider", void).documentation = "Tell Rider to bring itself to the foreground. Called when opening a file from Unity"
