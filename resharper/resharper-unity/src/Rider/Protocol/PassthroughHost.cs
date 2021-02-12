@@ -5,6 +5,7 @@ using JetBrains.DocumentModel;
 using JetBrains.IDE;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.Rd.Base;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model.Unity;
@@ -169,6 +170,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         {
             backendUnityModel.PlayControls.Play.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Play);
             backendUnityModel.PlayControls.Pause.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Pause);
+            // PlayControlsInitialized states that PlayControls state in frontend-backend protocol corresponds to Unity state
+            backendUnityModel.PlayControls.Play.Advise(lifetime, _ => frontendBackendModel.PlayControlsInitialized.SetValue(true));
         }
 
         private static void AdviseConsoleEvents(in Lifetime lifetime, BackendUnityModel backendUnityModel,

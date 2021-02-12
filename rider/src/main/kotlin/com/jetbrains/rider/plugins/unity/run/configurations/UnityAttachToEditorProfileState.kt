@@ -5,8 +5,10 @@ import com.intellij.execution.Executor
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.diagnostic.Logger
+import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
+import com.jetbrains.rd.util.reactive.adviseUntil
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
@@ -46,7 +48,14 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityEx
                                 // pass value to backend, which will push Unity to enter play mode.
                                 executionEnvironment.project.solution.frontendBackendModel.playControls.play.set(true)
                             }, terminationAction = {
-                                executionEnvironment.project.solution.frontendBackendModel.playControls.play.set(false)
+                                val project = executionEnvironment.project
+                                val model = project.solution.frontendBackendModel
+                                model.playControlsInitialized.adviseUntil(project.lifetime){ initialized ->
+                                    if (!initialized)
+                                        return@adviseUntil false
+                                    model.playControls.play.set(false)
+                                    return@adviseUntil true
+                                }
                             })
                         }
                     }

@@ -45,6 +45,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
         // Connection to Unity editor
         property("unityEditorConnected", bool).documentation = "Is the backend/Unity protocol connected?"
+        property("playControlsInitialized", bool).documentation = "Have we got playControls state from Unity?"
         property("unityEditorState", Library.UnityEditorState)
 
         property("unityApplicationData", Library.UnityApplicationData)
