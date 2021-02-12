@@ -13,4 +13,12 @@ public class NewBehaviourScript : MonoBehaviour
              
         }
     }
+    
+    void Update3([CanBeNull]NewBehaviourScript script)
+    {
+        if (!script)
+            return;
+
+        var foo = script.x;
+    }
 }
