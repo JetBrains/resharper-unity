@@ -1,10 +1,12 @@
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
+using JetBrains.Core;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.IDE;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.Rd.Base;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model.Unity;
@@ -77,10 +79,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             var backendUnityModelProperty = myBackendUnityHost.BackendUnityModel;
 
             frontendBackendModel.PlayControls.Play.FlowChangesIntoRdDeferred(lifetime,
-                () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.Play);
+                () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.SetPlay);
             frontendBackendModel.PlayControls.Pause.FlowChangesIntoRdDeferred(lifetime,
-                () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.Pause);
-            frontendBackendModel.PlayControls.Step.Advise(lifetime, () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.Step.Fire());
+                () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.SetPause);
+            frontendBackendModel.Controls.Step.Advise(lifetime, () => backendUnityModelProperty.Maybe.ValueOrDefault?.Controls.Step.Fire());
 
             // Called from frontend to generate the UIElements schema files
             frontendBackendModel.GenerateUIElementsSchema.Set((l, u) =>
@@ -167,8 +169,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         private static void AdvisePlayControls(in Lifetime lifetime, BackendUnityModel backendUnityModel,
                                                FrontendBackendModel frontendBackendModel)
         {
-            backendUnityModel.PlayControls.Play.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Play);
-            backendUnityModel.PlayControls.Pause.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Pause);
+            backendUnityModel.PlayControls.GetPlay.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Play);
+            backendUnityModel.PlayControls.GetPause.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Pause);
+            // PlayControlsInitialized states that PlayControls state in frontend-backend protocol corresponds to Unity state
+            backendUnityModel.PlayControls.GetPlay.Advise(lifetime, _ => frontendBackendModel.PlayControlsInitialized.SetValue(true));
         }
 
         private static void AdviseConsoleEvents(in Lifetime lifetime, BackendUnityModel backendUnityModel,

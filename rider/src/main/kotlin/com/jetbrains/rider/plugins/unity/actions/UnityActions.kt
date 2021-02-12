@@ -45,7 +45,7 @@ class PauseInUnityAction : ToggleAction(), DumbAware {
 class StepInUnityAction : AnAction(), DumbAware {
 
     override fun actionPerformed(e: AnActionEvent) {
-        e.getFrontendBackendModel()?.playControls?.step?.fire(Unit)
+        e.getFrontendBackendModel()?.controls?.step?.fire(Unit)
     }
 
     override fun update(e: AnActionEvent) {

@@ -639,25 +639,18 @@ namespace JetBrains.Rider.Unity.Editor
         MainThreadDispatcher.Instance.Queue(() =>
         {
           var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
-
-          if (!model.PlayControls.Play.HasValue() || model.PlayControls.Play.HasValue() && model.PlayControls.Play.Value != isPlaying)
-          {
-            ourLogger.Verbose("Reporting play mode change to model: {0}", isPlaying);
-            model.PlayControls.Play.SetValue(isPlaying);
-          }
+          ourLogger.Verbose("Reporting play mode change to model: {0}", isPlaying);
+          model.PlayControls.GetPlay(isPlaying);
 
           var isPaused = EditorApplication.isPaused;
-          if (!model.PlayControls.Pause.HasValue() || model.PlayControls.Pause.HasValue() && model.PlayControls.Pause.Value != isPaused)
-          {
-            ourLogger.Verbose("Reporting pause mode change to model: {0}", isPaused);
-            model.PlayControls.Pause.SetValue(isPaused);
-          }
-        });
+          ourLogger.Verbose("Reporting pause mode change to model: {0}", isPaused);
+          model.PlayControls.GetPause(isPaused);
+          });
       });
 
       syncPlayState();
 
-      model.PlayControls.Play.Advise(connectionLifetime, play =>
+      model.PlayControls.SetPlay.Advise(connectionLifetime, play =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
@@ -670,7 +663,7 @@ namespace JetBrains.Rider.Unity.Editor
         });
       });
 
-      model.PlayControls.Pause.Advise(connectionLifetime, pause =>
+      model.PlayControls.SetPause.Advise(connectionLifetime, pause =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
@@ -679,7 +672,7 @@ namespace JetBrains.Rider.Unity.Editor
         });
       });
 
-      model.PlayControls.Step.Advise(connectionLifetime, x =>
+      model.Controls.Step.Advise(connectionLifetime, x =>
       {
         MainThreadDispatcher.Instance.Queue(EditorApplication.Step);
       });
