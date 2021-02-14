@@ -230,6 +230,10 @@ open class UnityExplorerFileSystemNode(project: Project,
     }
 
     private fun calculateIcon(): Icon? {
+        if (isIgnoredFolder(virtualFile) || (virtualFile.isDirectory && descendentOf == AncestorNodeType.IgnoredFolder)) {
+            return UnityIcons.Explorer.UnloadedFolder
+        }
+
         if (descendentOf != AncestorNodeType.FileSystem) {
             // Under Packages, the only special folder is "Resources". As per Maxime @ Unity:
             // "Resources folders work the same in packages as under Assets, but that's mostly it. Editor folders have no
@@ -268,10 +272,6 @@ open class UnityExplorerFileSystemNode(project: Project,
             if (isHiddenFolder(virtualFile)) {
                 return UnityIcons.Explorer.UnloadedFolder
             }
-        }
-
-        if (isIgnoredFolder(virtualFile) || (virtualFile.isDirectory && descendentOf == AncestorNodeType.IgnoredFolder)) {
-            return UnityIcons.Explorer.UnloadedFolder
         }
 
         return virtualFile.calculateFileSystemIcon(myProject)
