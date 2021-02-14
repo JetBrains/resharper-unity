@@ -303,10 +303,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
 
                 // From observation, Unity treats package folders in the Packages folder as actual packages, even if they're
                 // not registered in manifest.json. They must have a */package.json file, in the root of the package itself
-                foreach (var child in myPackagesFolder.GetChildren())
+                foreach (var child in myPackagesFolder.GetChildDirectories())
                 {
-                    var packageData = GetPackageDataFromFolder(child.RelativePath.Name, child.GetAbsolutePath(),
-                        PackageSource.Embedded);
+                    // The folder name is not reliable to act as ID, so we'll use the ID from package.json. All other
+                    // packages get the ID from manifest.json or packages-lock.json. This is assumed to be the same as
+                    // the ID in package.json
+                    var packageData = GetPackageDataFromFolder(null, child, PackageSource.Embedded);
                     if (packageData != null)
                         packages[packageData.Id] = packageData;
                 }
@@ -582,7 +584,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         }
 
         [CanBeNull]
-        private PackageData GetPackageDataFromFolder(string id,
+        private PackageData GetPackageDataFromFolder([CanBeNull] string id,
                                                      [NotNull] FileSystemPath packageFolder,
                                                      PackageSource packageSource,
                                                      [CanBeNull] GitDetails gitDetails = null,
@@ -597,8 +599,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
                     {
                         var packageJson = PackageJson.FromJson(packageJsonFile.ReadAllText2().Text);
                         var packageDetails = PackageDetails.FromPackageJson(packageJson, packageFolder);
-                        return new PackageData(id, packageFolder, packageJsonFile.FileModificationTimeUtc,
-                            packageDetails, packageSource, gitDetails, tarballLocation);
+                        return new PackageData(id ?? packageDetails.CanonicalName, packageFolder,
+                            packageJsonFile.FileModificationTimeUtc, packageDetails, packageSource, gitDetails,
+                            tarballLocation);
                     }
                     catch (Exception e)
                     {
