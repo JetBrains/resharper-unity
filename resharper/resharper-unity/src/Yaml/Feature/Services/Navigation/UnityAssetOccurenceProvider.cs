@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi.Search;
 
@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             if (declaredElementPointer is null) return null;
             switch (unityScriptsFindResults.ScriptUsage)
             {
-                case AssetScriptUsages assetScriptUsage:
+                case AssetScriptUsage assetScriptUsage:
                     var guid = assetScriptUsage.UsageTarget.ExternalAssetGuid;
                     var owningElementLocation = unityScriptsFindResults.OwningElemetLocation;
                     return new UnityScriptsOccurrence(file, declaredElementPointer, owningElementLocation, guid);
