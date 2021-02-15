@@ -3,9 +3,7 @@ package com.jetbrains.rider.plugins.unity.notifications
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.Application
 import com.intellij.openapi.application.ApplicationInfo
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.openapi.vfs.VirtualFile
@@ -14,6 +12,8 @@ import com.intellij.util.ui.EdtInvocationManager
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.ide.model.RdVirtualSolution
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
+import com.jetbrains.rd.platform.util.launchNonUrgentBackground
+import com.jetbrains.rd.platform.util.withUiContext
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rider.UnityProjectDiscoverer
@@ -46,19 +46,19 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
             val marketingVersion = ApplicationInfo.getInstance().fullVersion
             var content = "Make sure \"JetBrains Rider Editor\" is installed in Unity’s Package Manager and Rider $marketingVersion is set as the External Editor."
             if (solutionDescription is RdExistingSolution) { // proper solution
-                it.startNonUrgentBackgroundAsync {
+                it.launchNonUrgentBackground {
                     // Sometimes in Unity "External Script Editor" is set to "Open by file extension"
                     // We check that Library/EditorInstance.json is present, but protocol connection was not initialized
                     if (EditorInstanceJson.getInstance(project).status == EditorInstanceJsonStatus.Valid && !project.solution.frontendBackendModel.unityEditorConnected.valueOrDefault(false)) {
                         if (!UnityInstallationFinder.getInstance(project).requiresRiderPackage())
                             content = "Make sure Rider $marketingVersion is set as the External Editor in Unity preferences."
                         val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
-                        ApplicationManager.getApplication().invokeLater {
+                        withUiContext { ->
                             Notifications.Bus.notify(notification, project)
                             project.solution.frontendBackendModel.unityEditorConnected.whenTrue(it) { notification.expire() }
                         }
                     }
-                }.noAwait()
+                }
             }
             else if (solutionDescription is RdVirtualSolution) { // opened as folder
                 val adviceText = " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
