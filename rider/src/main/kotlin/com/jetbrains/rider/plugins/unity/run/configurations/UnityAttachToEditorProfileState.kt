@@ -5,6 +5,7 @@ import com.intellij.execution.Executor
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.diagnostic.Logger
+import com.jetbrains.rd.platform.util.withLongBackgroundContext
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rider.debugger.DebuggerHelperHost
@@ -19,7 +20,6 @@ import com.jetbrains.rider.run.IDebuggerOutputListener
 import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
 import com.jetbrains.rider.util.NetUtils
-import com.jetbrains.rider.util.startLongBackgroundAsync
 
 class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityExeDebugProfileState, private val remoteConfiguration: UnityAttachToEditorRunConfiguration, executionEnvironment: ExecutionEnvironment)
     : MonoConnectRemoteProfileState(remoteConfiguration, executionEnvironment) {
@@ -60,7 +60,7 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityEx
     }
 
     override suspend fun createWorkerRunInfo(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
-        lifetime.startLongBackgroundAsync {
+        withLongBackgroundContext(lifetime) {
             if (!remoteConfiguration.updatePidAndPort()) {
                 logger.trace("Have not found Unity, would start a new Unity Editor instead.")
 
@@ -68,7 +68,7 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityEx
                 remoteConfiguration.port = NetUtils.findFreePort(500013, setOf(port))
                 remoteConfiguration.address = "127.0.0.1"
             }
-        }.await()
+        }
 
         val cmd = super.createWorkerRunInfo(lifetime, helper, port)
         cmd.commandLine.withUnityExtensionsEnabledEnvironment(project)
