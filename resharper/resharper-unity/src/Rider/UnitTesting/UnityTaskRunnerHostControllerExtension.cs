@@ -57,42 +57,45 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public ClientControllerInfo GetClientControllerInfo(IUnitTestRun run, ITaskRunnerHostController next) => null;
 
-        public async Task PrepareForRun(IUnitTestRun run, ITaskRunnerHostController next)
+        public Task PrepareForRun(IUnitTestRun run, ITaskRunnerHostController next)
         {
             var lifetimeDef = myLifetime.CreateNested();
             run.PutData(ourLifetimeDefinitionKey, lifetimeDef);
 
             lock (myStartUnitySync)
             {
-                myStartUnityTask = myStartUnityTask.ContinueWith(_ =>
-                {
-                    var unityEditorProcessId = myUnityController.TryGetUnityProcessId();
-                    if (unityEditorProcessId.HasValue)
-                        return Task.CompletedTask;
-                    
-                    
-                    var message = string.Format(StartUnityEditorQuestionMessage, 
-                                                     myAvailableProviders[run.HostController.HostId],
-                                                     myUnityController.GetPresentableUnityVersion());
-            
-                    if (!MessageBox.ShowYesNo(message, PluginName))
-                        throw new Exception(string.Format(NotAvailableUnityEditorMessage, myAvailableProviders[run.HostController.HostId]));
-                    
-                    myRiderBackgroundTaskHost.CreateIndicator(lifetimeDef.Lifetime, false, false, "Start Unity Editor");
-                    var startUnityTask = StartUnity(lifetimeDef.Lifetime);
-                    startUnityTask.ContinueWith(x =>   lifetimeDef.Terminate(), myLifetime, TaskContinuationOptions.None, myShellLocks.Tasks.Scheduler);
-                    
-                    return startUnityTask;
-                }, lifetimeDef.Lifetime, TaskContinuationOptions.None, myShellLocks.Tasks.GuardedMainThreadScheduler).Unwrap();
+                WrapStartUnityTask(() => PrepareForRunInternal(lifetimeDef, run));
+                WrapStartUnityTask(() => next.PrepareForRun(run));
+                
+                return myStartUnityTask;
             }
-            
-            await myStartUnityTask.ConfigureAwait(false);
         }
 
-        public Task CleanupAfterRun(IUnitTestRun run, ITaskRunnerHostController next) => Task.CompletedTask;
+        public Task CleanupAfterRun(IUnitTestRun run, ITaskRunnerHostController next) => next.CleanupAfterRun(run);
 
         public void Cancel(IUnitTestRun run) => run.GetData(ourLifetimeDefinitionKey)?.Terminate();
 
+        private Task PrepareForRunInternal(LifetimeDefinition lifetimeDefinition, IUnitTestRun run)
+        {
+            var unityEditorProcessId = myUnityController.TryGetUnityProcessId();
+            if (unityEditorProcessId.HasValue)
+                return Task.CompletedTask;
+                    
+                    
+            var message = string.Format(StartUnityEditorQuestionMessage, 
+                myAvailableProviders[run.HostController.HostId],
+                myUnityController.GetPresentableUnityVersion());
+            
+            if (!MessageBox.ShowYesNo(message, PluginName))
+                throw new Exception(string.Format(NotAvailableUnityEditorMessage, myAvailableProviders[run.HostController.HostId]));
+                    
+            myRiderBackgroundTaskHost.CreateIndicator(lifetimeDefinition.Lifetime, false, false, "Start Unity Editor");
+            var startUnityTask = StartUnity(lifetimeDefinition.Lifetime);
+            startUnityTask.ContinueWith(x =>   lifetimeDefinition.Terminate(), myLifetime, TaskContinuationOptions.None, myShellLocks.Tasks.Scheduler);
+                    
+            return startUnityTask;
+        }
+        
         private Task StartUnity(Lifetime lifetime)
         {
             var commandLines = myUnityController.GetUnityCommandline();
@@ -106,6 +109,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             process.Start();
             
             return myUnityController.WaitConnectedUnityProcessId(lifetime);
+        }
+
+        private void WrapStartUnityTask(Func<Task> run)
+        {
+            myStartUnityTask = myStartUnityTask.ContinueWith(_ => run(),
+                                               myLifetime,
+                                                             TaskContinuationOptions.None,
+                                                             myShellLocks.Tasks.Scheduler).Unwrap();
         }
     }
 }
