@@ -50,7 +50,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix exception with feedback provider on welcome screen ([#2013](https://github.com/JetBrains/resharper-unity/pull/2013))
 - Rider: Fix mouse focus issue when opening Rider full screen on macOS ([RIDER-55501](https://youtrack.jetbrains.com/issue/RIDER-55501), [#1980](https://github.com/JetBrains/resharper-unity/pull/1980))
 - Rider: Fix files in `Packages` folder showing the non-project dialog when being modified ([#1997](https://github.com/JetBrains/resharper-unity/pull/1997))
-Rider: Fix incorrectly creating Attach to Editor and Play run configuration for library projects ([#2019](https://github.com/JetBrains/resharper-unity/pull/2019))
+- Rider: Fix package resolution when dependency uses higher version than referenced ([#1786](https://github.com/JetBrains/resharper-unity/issues/1786), [#2024](https://github.com/JetBrains/resharper-unity/pull/2024))
+- Rider: Fix incorrectly creating Attach to Editor and Play run configuration for library projects ([#2019](https://github.com/JetBrains/resharper-unity/pull/2019))
 
 
 
