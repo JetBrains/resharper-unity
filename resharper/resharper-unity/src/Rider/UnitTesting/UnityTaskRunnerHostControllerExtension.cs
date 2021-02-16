@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
+using JetBrains.Application.UI.Controls;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -27,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         private readonly Lifetime myLifetime;
         private readonly IUnityController myUnityController;
-        private readonly RiderBackgroundTaskHost myRiderBackgroundTaskHost;
+        private readonly IBackgroundProgressIndicatorManager myBackgroundProgressIndicatorManager;
         private readonly IShellLocks myShellLocks;
         private readonly IDictionary<string, string> myAvailableProviders;
         private readonly object myStartUnitySync = new object();
@@ -36,12 +37,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         public UnityTaskRunnerHostControllerExtension(Lifetime lifetime,
                                                       IShellLocks shellLocks,
                                                       IUnityController unityController,
-                                                      RiderBackgroundTaskHost riderBackgroundTaskHost)
+                                                      IBackgroundProgressIndicatorManager backgroundProgressIndicatorManager)
         {
             myLifetime = lifetime;
             myShellLocks = shellLocks.NotNull();
             myUnityController = unityController.NotNull();
-            myRiderBackgroundTaskHost = riderBackgroundTaskHost;
+            myBackgroundProgressIndicatorManager = backgroundProgressIndicatorManager.NotNull();
             myStartUnityTask = Task.CompletedTask;
             myAvailableProviders = new Dictionary<string, string>
             { 
@@ -114,7 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private void ShowProgress(Lifetime lifetime, Task task)
         {
             var innerLifeDef = lifetime.CreateNested();
-            myRiderBackgroundTaskHost.CreateIndicator(innerLifeDef.Lifetime, false, false, "Start Unity Editor");
+            myBackgroundProgressIndicatorManager.CreateIndicator(innerLifeDef.Lifetime, false, false, "Start Unity Editor");
             task.ContinueWith(x =>   innerLifeDef.Terminate(), myLifetime, TaskContinuationOptions.None, myShellLocks.Tasks.Scheduler);
         }
         
