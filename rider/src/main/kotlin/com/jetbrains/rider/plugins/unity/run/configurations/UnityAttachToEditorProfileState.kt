@@ -10,6 +10,7 @@ import com.jetbrains.rd.platform.util.withLongBackgroundContext
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.adviseUntil
+import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
@@ -44,8 +45,10 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityEx
                     debugProcess.initializeDebuggerTask.debuggerInitializingState.advise(lt) {
                         if (it == DebuggerInitializingState.Initialized) {
                             logger.info("Pass value to backend, which will push Unity to enter play mode.")
+                            var prevState = false
                             lt.bracket(opening = {
                                 // pass value to backend, which will push Unity to enter play mode.
+                                prevState = executionEnvironment.project.solution.frontendBackendModel.playControls.play.valueOrDefault(false)
                                 executionEnvironment.project.solution.frontendBackendModel.playControls.play.set(true)
                             }, terminationAction = {
                                 val project = executionEnvironment.project
@@ -53,7 +56,7 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityEx
                                 model.playControlsInitialized.adviseUntil(project.lifetime){ initialized ->
                                     if (!initialized)
                                         return@adviseUntil false
-                                    model.playControls.play.set(false)
+                                    model.playControls.play.set(prevState)
                                     return@adviseUntil true
                                 }
                             })
