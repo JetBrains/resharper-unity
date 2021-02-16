@@ -27,6 +27,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 - Mark `UxmlFactory` derived classes as implicitly used ([RIDER-54860](https://youtrack.jetbrains.com/issue/RIDER-54860), [#2002](https://github.com/JetBrains/resharper-unity/pull/2002))
 - Remove warnings for `try` and `foreach` in Burst analysis. These are supported since Burst 1.4 ([#2015](https://github.com/JetBrains/resharper-unity/issues/2015), [#1378](https://github.com/JetBrains/resharper-unity/issues/1378), [#2017](https://github.com/JetBrains/resharper-unity/pull/2017))
+- Rider: Support code coverage for Unity play mode tests ([#2016](https://github.com/JetBrains/resharper-unity/pull/2016))
 - Rider: Unity file templates are grouped into "Unity Class" and "Unity Shader" ([#1983](https://github.com/JetBrains/resharper-unity/pull/1983))
 - Rider: Quick doc link for online pages now uses the version specific search page ([#2005](https://github.com/JetBrains/resharper-unity/issues/2005), [#2006](https://github.com/JetBrains/resharper-unity/pull/2006))
 - Rider: Double click on assembly files in Unity Explorer will add the file to Assembly Explorer ([RIDER-54873](https://youtrack.jetbrains.com/issue/RIDER-54873), [#1996](https://github.com/JetBrains/resharper-unity/pull/1996))
@@ -49,6 +50,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix exception with feedback provider on welcome screen ([#2013](https://github.com/JetBrains/resharper-unity/pull/2013))
 - Rider: Fix mouse focus issue when opening Rider full screen on macOS ([RIDER-55501](https://youtrack.jetbrains.com/issue/RIDER-55501), [#1980](https://github.com/JetBrains/resharper-unity/pull/1980))
 - Rider: Fix files in `Packages` folder showing the non-project dialog when being modified ([#1997](https://github.com/JetBrains/resharper-unity/pull/1997))
+Rider: Fix incorrectly creating Attach to Editor and Play run configuration for library projects ([#2019](https://github.com/JetBrains/resharper-unity/pull/2019))
 
 
 
