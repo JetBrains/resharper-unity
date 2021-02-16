@@ -27,7 +27,7 @@ class UnityWorkspaceModelUpdater(private val project: Project) {
         application.invokeLater {
             rebuildWorkspaceModel()
 
-            // Listen for external packages that we should index
+            // Listen for external packages that we should index. Called on the UI thread
             PackageManager.getInstance(project).addListener(object : PackageManagerListener {
                 override fun onPackagesUpdated() {
                     rebuildWorkspaceModel()
@@ -46,8 +46,8 @@ class UnityWorkspaceModelUpdater(private val project: Project) {
         val packagesModuleEntity = builder.addRiderModuleEntity(PackagesModuleName, RiderUnityEntitySource)
 
         // TODO: WORKSPACEMODEL
-        // We want to include list of specifal files (by extensions comes from unity editor) 
-        // in the content mode. It is better to do it on backed via backend PackageManager
+        // We want to include list of special files (by extensions comes from unity editor)
+        // in the content model. It is better to do it on backed via backend PackageManager
 
         builder.addContentRootEntity(
             project.solutionDirectory.resolve("Packages").toVirtualFileUrl(virtualFileUrlManager), listOf(), listOf("*.meta", "*.tmp"), packagesModuleEntity
@@ -56,11 +56,11 @@ class UnityWorkspaceModelUpdater(private val project: Project) {
             project.solutionDirectory.resolve("ProjectSettings").toVirtualFileUrl(virtualFileUrlManager), listOf(), listOf("*.meta", "*.tmp"), packagesModuleEntity
         )
 
-        val packages = PackageManager.getInstance(project).allPackages
+        val packages = PackageManager.getInstance(project).getPackages()
         if (packages.any()) {
             for (packageData in packages) {
                 val packageFolder = packageData.packageFolder ?: continue
-                if (packageData.source !in arrayOf(PackageSource.BuiltIn, PackageSource.Embedded, PackageSource.Unknown)) {
+                if (packageData.source !in arrayOf(PackageSource.Embedded, PackageSource.Unknown)) {
                     builder.addContentRootEntity(
                         packageFolder.toVirtualFileUrl(virtualFileUrlManager), listOf(), listOf("*.meta", "*.tmp"), packagesModuleEntity
                     )

@@ -10,7 +10,7 @@ import com.jetbrains.rider.model.RdProjectModelDumpFlags
 import com.jetbrains.rider.model.RdProjectModelDumpParams
 import com.jetbrains.rider.model.projectModelTasks
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
-import com.jetbrains.rider.plugins.unity.explorer.UnityExplorerNode
+import com.jetbrains.rider.plugins.unity.explorer.UnityExplorerFileSystemNode
 import com.jetbrains.rider.projectView.actions.renameAction.RiderRenameItemHandler
 import com.jetbrains.rider.projectView.moveProviders.RiderCutProvider
 import com.jetbrains.rider.projectView.moveProviders.RiderDeleteProvider
@@ -105,7 +105,7 @@ fun createDataContextFor2(project: Project, paths: Array<Array<String>>): DataCo
 fun findReq(path: Array<String>, project: Project): AbstractTreeNode<*> {
     val viewPane = UnityExplorer.getInstance(project)
     val solutionNode = viewPane.model.root
-    val fileNodes = viewPane.model.root.children.filterIsInstance<UnityExplorerNode>()
+    val fileNodes = viewPane.model.root.children.filterIsInstance<UnityExplorerFileSystemNode>()
     val solutionNodeName = solutionNode.name
 
     if (path.count() == 1) {

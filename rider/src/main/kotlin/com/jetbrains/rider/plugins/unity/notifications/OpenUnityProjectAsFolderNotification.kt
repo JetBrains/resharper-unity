@@ -28,6 +28,7 @@ import com.jetbrains.rider.projectView.SolutionManager
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
 import com.jetbrains.rider.util.*
+import kotlinx.coroutines.CoroutineStart
 import javax.swing.event.HyperlinkEvent
 
 class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
@@ -63,8 +64,12 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
             else if (solutionDescription is RdVirtualSolution) { // opened as folder
                 val adviceText = " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
                 val contentWoSolution =
-                    // todo: hasPackage is unreliable, when PackageManager is still in progress, revisit this after PackageManager is moved to backend
-                    if (UnityInstallationFinder.getInstance(project).requiresRiderPackage() && !PackageManager.getInstance(project).hasPackage("com.unity.ide.rider")){
+                    // todo: hasPackage is unreliable, when PackageManager is still in progress
+                    // Revisit this after PackageManager is moved to backend
+                    // MTE: There is an inherent race condition here. Packages can be updated at any time, so we can't
+                    // be sure that PackageManager is fully loaded at this time.
+                    if (UnityInstallationFinder.getInstance(project).requiresRiderPackage()
+                        && !PackageManager.getInstance(project).hasPackage("com.unity.ide.rider")) {
                         content
                     }
                     else if (solutionDescription.projectFilePaths.isEmpty()) {

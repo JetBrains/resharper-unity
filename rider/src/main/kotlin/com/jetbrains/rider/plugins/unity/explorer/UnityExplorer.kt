@@ -8,7 +8,6 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.jetbrains.rider.isUnityProject
-import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
 import com.jetbrains.rider.projectView.views.actions.SolutionViewToggleAction
@@ -17,7 +16,7 @@ import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerVi
 import icons.UnityIcons
 import org.jdom.Element
 
-class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplorerRootNode(project, PackageManager.getInstance(project))) {
+class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRootNode(project)) {
 
     companion object {
         const val ID = "UnityExplorer"
@@ -34,6 +33,10 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
 
         fun tryGetInstance(project: Project): UnityExplorer? {
             return ProjectView.getInstance(project).getProjectViewPaneById(ID) as? UnityExplorer
+        }
+
+        private fun createRootNode(project: Project): UnityExplorerRootNode {
+            return UnityExplorerRootNode(project)
         }
     }
 
@@ -53,7 +56,7 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
         val root = tree.model.root
         val count = tree.model.getChildCount(root)
         for (i in 0..count) {
-            if (tree.model.getChild(root, i) is PackagesRoot) {
+            if (tree.model.getChild(root, i) is PackagesRootNode) {
                 return true
             }
         }

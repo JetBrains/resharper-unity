@@ -1,7 +1,7 @@
 package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.ide.projectView.PresentationData
-import com.intellij.ide.util.treeView.AbstractTreeNode
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vcs.FileStatus
@@ -10,81 +10,27 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.intellij.workspaceModel.ide.impl.virtualFile
 import com.jetbrains.rider.plugins.unity.packageManager.PackageData
-import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
-import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.calculateFileSystemIcon
-import com.jetbrains.rider.projectView.ideaInterop.RiderScratchProjectViewPane
-import com.jetbrains.rider.projectView.nodes.*
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.NestingNode
-import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
-import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
+import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerCustomization
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
-import com.jetbrains.rider.projectView.workspace.*
+import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
+import com.jetbrains.rider.projectView.workspace.containingProjectEntity
+import com.jetbrains.rider.projectView.workspace.getProjectModelEntities
 import com.jetbrains.rider.projectView.workspace.impl.WorkspaceEntityErrorsSupport
+import com.jetbrains.rider.projectView.workspace.isProject
 import icons.UnityIcons
 import java.awt.Color
 import javax.swing.Icon
-
-class UnityExplorerRootNode(project: Project, private val packageManager: PackageManager)
-    : SolutionViewRootNodeBase(project) {
-
-    override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
-        val assetsFolder = myProject.projectDir.findChild("Assets")!!
-        val assetsNode = AssetsRoot(myProject, assetsFolder)
-
-        val nodes = mutableListOf<AbstractTreeNode<*>>(assetsNode)
-
-        if (packageManager.hasPackages) {
-            nodes.add(PackagesRoot(myProject, packageManager))
-        }
-
-        if (ConfigureScratchesAction.showScratchesInExplorer(myProject)) {
-            nodes.add(RiderScratchProjectViewPane.createNode(myProject))
-        }
-
-        return nodes
-    }
-
-    override fun createComparator(): Comparator<AbstractTreeNode<*>> {
-        val comparator = super.createComparator()
-        return Comparator { node1, node2 ->
-            val sortKey1 = getSortKey(node1)
-            val sortKey2 = getSortKey(node2)
-
-            if (sortKey1 != sortKey2) {
-                return@Comparator sortKey1.compareTo(sortKey2)
-            }
-
-            comparator.compare(node1, node2)
-        }
-    }
-
-    private fun getSortKey(node: AbstractTreeNode<*>): Int {
-        // Nodes of the same type should be sorted as the same. Different types should be in this order (although some
-        // are in different levels of the hierarchy)
-        return when (node) {
-            is AssetsRoot -> 1
-            is PackagesRoot -> 2
-            is ReferenceRoot -> 3
-            is ReadOnlyPackagesRoot -> 4
-            is BuiltinPackagesRoot -> 5
-            is PackageNode -> 6
-            is DependenciesRoot -> 7
-            is DependencyItemNode -> 8
-            is BuiltinPackageNode -> 9
-            is UnknownPackageNode -> 100
-            is UnityExplorerNode -> 1000
-            else -> 10000
-        }
-    }
-}
 
 enum class AncestorNodeType {
     Assets,
     UserEditablePackage,
     ReadOnlyPackage,
+    IgnoredFolder,
+    References,
     FileSystem;  // A folder in Packages that isn't a package. Gets no special treatment
 
     companion object {
@@ -94,10 +40,11 @@ enum class AncestorNodeType {
     }
 }
 
-open class UnityExplorerNode(project: Project,
-                             virtualFile: VirtualFile,
-                             nestedFiles: List<NestingNode<VirtualFile>>,
-                             protected val descendentOf: AncestorNodeType)
+@Suppress("UnstableApiUsage")
+open class UnityExplorerFileSystemNode(project: Project,
+                                       virtualFile: VirtualFile,
+                                       nestedFiles: List<NestingNode<VirtualFile>>,
+                                       protected val descendentOf: AncestorNodeType)
     : FileSystemNodeBase(project, virtualFile, nestedFiles) {
 
     override val entities: List<ProjectModelEntity>
@@ -114,11 +61,24 @@ open class UnityExplorerNode(project: Project,
 
     override fun update(presentation: PresentationData) {
         if (!virtualFile.isValid) return
+
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(calculateIcon())
 
         FileSystemExplorerCustomization.getExtensions(myProject).forEach {
             it.updateNode(presentation, file, this)
+        }
+
+        // Mark ignored file types. This is mainly so we can highlight that hidden folders are completely ignored. We
+        // have lots of non-indexed files in Assets and Packages, but they still appear in Find in Files when we check
+        // 'non-solution items'. Ignored file types are completely ignored, and don't show up at all. The default `*~`
+        // pattern matches Unity's hidden folder pattern, but can be used for e.g. `Samples~` and `Documentation~`.
+        // Make it clear that the folder is ignored/excluded/not indexed
+        val ignored = FileTypeManager.getInstance().isFileIgnored(virtualFile)
+        if (ignored || descendentOf == AncestorNodeType.IgnoredFolder) {
+            // TODO: Consider wording
+            // We can usually still search for a file that is not indexed. An ignored file is completely excluded
+            presentation.addText(" ${SolutionViewPaneBase.TextSeparator} ignored ${SolutionViewPaneBase.TextSeparator} no index", SimpleTextAttributes.GRAYED_ATTRIBUTES)
         }
 
         // Add additional info for directories
@@ -128,13 +88,18 @@ open class UnityExplorerNode(project: Project,
         }
 
         // Add tooltip for non-imported folders (anything ending with tilde). Also, show the full name if we're hiding
-        // the tilde suffix
+        // the tilde suffix.
         if (isHiddenFolder(virtualFile)) {
-            var tooltip = if (presentation.tooltip.isNullOrEmpty()) "" else "<br/>"
+            var tooltip = if (presentation.tooltip.isNullOrEmpty()) "" else presentation.tooltip + "<br/>"
             if (!SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
                 tooltip += virtualFile.name + "<br/>"
             }
             presentation.tooltip = tooltip + "This folder is not imported into the asset database"
+        }
+
+        if (ignored) {
+            val tooltip = if (presentation.tooltip.isNullOrEmpty()) "" else presentation.tooltip + "<br/>"
+            presentation.tooltip = tooltip + "This folder matches an Ignored File and Folders pattern"
         }
     }
 
@@ -147,8 +112,13 @@ open class UnityExplorerNode(project: Project,
         return super.getName()
     }
 
+    // Hidden from Unity's asset database
     private fun isHiddenFolder(file: VirtualFile)
         = descendentOf != AncestorNodeType.FileSystem && file.isDirectory && file.name.endsWith("~")
+
+    // Ignored by IDE
+    private fun isIgnoredFolder(file: VirtualFile)
+        = file.isDirectory && FileTypeManager.getInstance().isFileIgnored(virtualFile)
 
     protected fun addProjects(presentation: PresentationData) {
         val projectNames = entities   // One node for each project that this directory is part of
@@ -225,8 +195,9 @@ open class UnityExplorerNode(project: Project,
     private fun forEachAncestor(root: FileSystemNodeBase?, action: FileSystemNodeBase.() -> Boolean): FileSystemNodeBase? {
         var node: FileSystemNodeBase? = root
         while (node != null) {
-            if (node.action())
+            if (node.action()) {
                 return node
+            }
             node = node.parent as? FileSystemNodeBase
         }
         return null
@@ -259,6 +230,10 @@ open class UnityExplorerNode(project: Project,
     }
 
     private fun calculateIcon(): Icon? {
+        if (isIgnoredFolder(virtualFile) || (virtualFile.isDirectory && descendentOf == AncestorNodeType.IgnoredFolder)) {
+            return UnityIcons.Explorer.UnloadedFolder
+        }
+
         if (descendentOf != AncestorNodeType.FileSystem) {
             // Under Packages, the only special folder is "Resources". As per Maxime @ Unity:
             // "Resources folders work the same in packages as under Assets, but that's mostly it. Editor folders have no
@@ -272,7 +247,7 @@ open class UnityExplorerNode(project: Project,
                     return UnityIcons.Explorer.EditorFolder
                 }
 
-                if (parent is AssetsRoot) {
+                if (parent is AssetsRootNode) {
                     val rootSpecialIcon = when (name.toLowerCase()) {
                         "editor default resources" -> UnityIcons.Explorer.EditorDefaultResourcesFolder
                         "gizmos" -> UnityIcons.Explorer.GizmosFolder
@@ -303,7 +278,12 @@ open class UnityExplorerNode(project: Project,
     }
 
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<NestingNode<VirtualFile>>): FileSystemNodeBase {
-        return UnityExplorerNode(project!!, virtualFile, nestedFiles, descendentOf)
+        val desc = if (isIgnoredFolder(virtualFile) || (!virtualFile.isDirectory && isIgnoredFolder(virtualFile.parent))) {
+            AncestorNodeType.IgnoredFolder
+        } else {
+            descendentOf
+        }
+        return UnityExplorerFileSystemNode(myProject, virtualFile, nestedFiles, desc)
     }
 
     override fun getVirtualFileChildren(): List<VirtualFile> {
@@ -327,13 +307,17 @@ open class UnityExplorerNode(project: Project,
         }
 
         /* Files and folders ending with '~' are ignored by the asset importer. Files with '~' are usually backup files,
-           but Unity uses folders that end with '~' as a way of distributing files that are not to be imported. This is
-           usually `Documentation~` inside packages (https://docs.unity3d.com/Manual/cus-layout.html), but it can also
-           be used for distributing code, too. This code will not be treated as assets by Unity, but will still be added
-           to the generated .csproj files to allow for use as e.g. command line tools
+           so should be hidden. Unity uses folders that end with '~' as a way of distributing files that are not to be
+           imported. This is usually `Documentation~` inside packages (https://docs.unity3d.com/Manual/cus-layout.html),
+           but it can also be used for distributing code, too (e.g. `Samples~`). This code will not be treated as assets
+           by Unity, but will still be added to the generated .csproj files to allow for use as e.g. command line tools
         */
         if (isHiddenFolder(file)) {
             return UnityExplorer.getInstance(myProject).showTildeFolders
+        }
+
+        if (!file.isDirectory && file.name.endsWith("~")) {
+            return false
         }
 
         return true

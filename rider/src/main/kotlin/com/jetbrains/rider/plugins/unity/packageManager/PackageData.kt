@@ -1,6 +1,11 @@
 package com.jetbrains.rider.plugins.unity.packageManager
 
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.jetbrains.rider.model.unity.frontendBackend.UnityPackage
+import com.jetbrains.rider.model.unity.frontendBackend.UnityPackageDependency
+import com.jetbrains.rider.model.unity.frontendBackend.UnityPackageSource
+import java.nio.file.Paths
 
 enum class PackageSource {
     Unknown,
@@ -14,73 +19,56 @@ enum class PackageSource {
     fun isEditable(): Boolean {
         return this == Embedded || this == Local
     }
-}
 
-data class PackageData(val name: String, val packageFolder: VirtualFile?, val details: PackageDetails,
-                       val source: PackageSource, val gitDetails: GitDetails? = null, val tarballLocation: String? = null) {
-    companion object {
-        fun unknown(name: String, version: String, source: PackageSource = PackageSource.Unknown): PackageData {
-            return PackageData(name, null, PackageDetails(name, "$name@$version", version,
-                    "Cannot resolve package '$name' with version '$version'", "", mapOf()), source)
-        }
+    fun isReadOnly(): Boolean {
+        return !isEditable() && this != Unknown
     }
 }
 
-// Canonical name is the name from package.json, or the package's folder name if missing
-// Display name is the display name from package.json, falling back to package.json name and then folder name
-// For unresolved packages, name is the name from manifest.json and display name is name@version from manifest.json
-data class PackageDetails(val canonicalName: String, val displayName: String, val version: String,
-                          val description: String, val author: String, val dependencies: Map<String, String>) {
+data class PackageData(val id: String,
+                       val version: String,
+                       val packageFolder: VirtualFile?,
+                       val source: PackageSource,
+                       val displayName: String,
+                       val description: String?,
+                       val dependencies: Map<String, String>,
+                       val tarballLocation: String?,
+                       val gitUrl: String?,
+                       val gitHash: String?,
+                       val gitRevision: String?) {
     companion object {
-        fun fromPackageJson(packageFolder: VirtualFile, packageJson: PackageJson?): PackageDetails? {
-            if (packageJson == null) return null
-            val name = packageJson.name ?: packageFolder.name
-            return PackageDetails(name, packageJson.displayName
-                    ?: name, packageJson.version ?: "",
-                    packageJson.description ?: "", getAuthor(packageJson.author), packageJson.dependencies ?: mapOf())
+        fun fromUnityPackage(unityPackage: UnityPackage): PackageData {
+            return PackageData(unityPackage.id,
+                unityPackage.version,
+                getPackagesFolder(unityPackage.packageFolderPath),
+                toPackageSource(unityPackage.source),
+                unityPackage.displayName,
+                unityPackage.description,
+                getDependencies(unityPackage.dependencies),
+                unityPackage.tarballLocation,
+                unityPackage.gitDetails?.url,
+                unityPackage.gitDetails?.hash,
+                unityPackage.gitDetails?.revision)
         }
 
-        private fun getAuthor(author: Any?): String {
-            if (author == null)
-                return ""
+        private fun getPackagesFolder(path: String?): VirtualFile? {
+            if (path == null) return null
+            return VfsUtil.findFile(Paths.get(path), true)
+        }
 
-            if (author is String)
-                return author
-
-
-            if (author is Map<*, *>) {
-               return author["name"] as String? ?: "";
+        private fun toPackageSource(unityPackageSource: UnityPackageSource): PackageSource {
+            return when (unityPackageSource) {
+                UnityPackageSource.Unknown -> PackageSource.Unknown
+                UnityPackageSource.BuiltIn -> PackageSource.BuiltIn
+                UnityPackageSource.Registry -> PackageSource.Registry
+                UnityPackageSource.Embedded -> PackageSource.Embedded
+                UnityPackageSource.Local -> PackageSource.Local
+                UnityPackageSource.LocalTarball -> PackageSource.LocalTarball
+                UnityPackageSource.Git -> PackageSource.Git
             }
-
-            return "";
         }
+
+        private fun getDependencies(dependencies: Array<UnityPackageDependency>) =
+            dependencies.associate { it.id to it.version }
     }
 }
-
-data class GitDetails(val url: String, val hash: String, val revision: String?)
-
-// Git lock details have moved to packages-lock.json in Unity 2019.4+
-class LockDetails(val hash: String?, val revision: String?)
-class ManifestJson(val dependencies: Map<String, String>, val testables: Array<String>?, val registry: String?, val lock: Map<String, LockDetails>?)
-
-
-// Other properties are available: category, keywords, unity (supported version)
-data class PackageJson(val name: String?, val displayName: String?, val version: String?, val description: String?,
-                       val author: Any?, val dependencies: Map<String, String>?)
-
-
-// packages-lock.json (note the 's', this isn't NPM's package-lock.json)
-// This was introduced in Unity 2019.4 and appears to be a full list of packages, dependencies and transitive
-// dependencies. It also contains the git hash for git based packages.
-// By observation:
-// * `source` can be `builtin`, `registry`, `embedded`, `git`. Likely also includes other members of PackageSource, such
-//    as local and local tarball
-// * `version` is a semver value for `builtin`, `registry`, a `file:` url for `embedded` and a url for `git`
-// * `url` is only available for registry packages, and is the url of the registry, e.g. https://packages.unity.com
-// * `hash` is the commit hash for git packages
-// * `dependencies` is a map of package name to version
-// * `depth` is unknown, but could be an indicator of a transitive dependency rather than a direct dependency. E.g.
-//    a package only used as a dependency of another package can have a depth of 1, while the parent package has a depth
-//    of 0
-class PackagesLockDependency(val version: String, val depth: Int?, val source: String?, val dependencies: Map<String, String>, val url: String?, val hash: String?)
-class PackagesLockJson(val dependencies: Map<String, PackagesLockDependency>)

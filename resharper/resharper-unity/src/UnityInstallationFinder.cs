@@ -26,13 +26,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var bestChoice = TryGetBestChoice(version, possibleWithVersion);
             if (bestChoice != null)
                 return bestChoice;
-            
+
             // best choice not found by version - try version by path then
             var pathForSolution = unityVersion.GetActualAppPathForSolution();
             var versionByAppPath = UnityVersion.GetVersionByAppPath(pathForSolution);
             if (versionByAppPath!=null)
                 possibleWithVersion.Add(new UnityInstallationInfo(versionByAppPath, pathForSolution));
-            
+
             // check best choice again, since newly added version may be best one
             bestChoice = TryGetBestChoice(version, possibleWithVersion);
             if (bestChoice != null)
@@ -87,6 +87,24 @@ namespace JetBrains.ReSharper.Plugins.Unity
             }
             ourLogger.Error("Unknown runtime platform");
             return FileSystemPath.Empty;
+        }
+
+        // TODO: We shouldn't have to pass in appPath here
+        // But appPath is being calculated by UnityVersion, not UnityInstallationFinder
+        [NotNull]
+        public static FileSystemPath GetBuiltInPackagesFolder([NotNull] FileSystemPath applicationPath)
+        {
+            return applicationPath.IsEmpty
+                ? applicationPath
+                : GetApplicationContentsPath(applicationPath).Combine("Resources/PackageManager/BuiltInPackages");
+        }
+
+        [NotNull]
+        public static FileSystemPath GetPackageManagerDefaultManifest(FileSystemPath applicationPath)
+        {
+            return applicationPath.IsEmpty
+                ? applicationPath
+                : GetApplicationContentsPath(applicationPath).Combine("Resources/PackageManager/Editor/manifest.json");
         }
 
         private static List<UnityInstallationInfo> GetPossibleInstallationInfos()
@@ -234,7 +252,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             var referencePathElement = documentElement.ChildElements()
                 .Where(a => a.Name == "ItemGroup").SelectMany(b => b.ChildElements())
-                .Where(c => c.Name == "Reference" && 
+                .Where(c => c.Name == "Reference" &&
                             (c.GetAttribute("Include").Equals("UnityEngine") // we can't use StartsWith here, some "UnityEngine*" libs are in packages
                              || c.GetAttribute("Include").Equals("UnityEngine.CoreModule") // Dll project may have this reference instead of UnityEngine.dll
                              || c.GetAttribute("Include").Equals("UnityEditor")))
@@ -287,7 +305,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             // For Player Projects it might be: Editor/Data/PlaybackEngines/LinuxStandaloneSupport/Variations/mono/Managed/UnityEngine.dll
             // For Editor: Editor\Data\Managed\UnityEngine.dll
             // Or // Editor\Data\Managed\UnityEngine\UnityEngine.dll
-            
+
             var path = filePath;
             while (!path.IsEmpty)
             {
@@ -327,13 +345,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     break;
             }
         }
-        
+
         public static List<FileSystemPath> GetPossibleMonoPaths()
         {
             var possibleApplicationPaths = GetPossibleApplicationPaths();
             switch (PlatformUtil.RuntimePlatform)
             {
-                // dotTrace team uses these constants to detect unity's mono. 
+                // dotTrace team uses these constants to detect unity's mono.
                 // If you want change any constant, please notify dotTrace team
                 case PlatformUtil.Platform.MacOsX:
                 {

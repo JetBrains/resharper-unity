@@ -82,7 +82,7 @@ class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewU
         // Note that refresh will never refresh the root node, only its children
         pane?.refresh(object : SolutionViewVisitor() {
             override fun visit(node: AbstractTreeNode<*>): TreeVisitor.Action {
-                if (node is PackagesRoot) {
+                if (node is PackagesRootNode) {
                     return TreeVisitor.Action.INTERRUPT
                 }
                 return TreeVisitor.Action.SKIP_CHILDREN
