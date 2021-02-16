@@ -57,6 +57,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                         backendUnityHost.BackendUnityModel.ViewNotNull(unityProjectLifetime,
                             AdviseUnityToFrontendModel);
                     }
+                    
+                    backendUnityHost.BackendUnityModel.Advise(lifetime, backendUnityModel =>
+                    {
+                        // https://github.com/JetBrains/resharper-unity/pull/2023
+                        if (backendUnityModel == null) frontendBackendHost.Model?.PlayControlsInitialized.SetValue(false);
+                    });
                 }
             });
         }
@@ -171,7 +177,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         {
             backendUnityModel.PlayControls.Play.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Play);
             backendUnityModel.PlayControls.Pause.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Pause);
-            // PlayControlsInitialized states that PlayControls state in frontend-backend protocol corresponds to Unity state
+            // https://github.com/JetBrains/resharper-unity/pull/2023
             backendUnityModel.PlayControls.Play.Advise(lifetime, _ => frontendBackendModel.PlayControlsInitialized.SetValue(true));
         }
 

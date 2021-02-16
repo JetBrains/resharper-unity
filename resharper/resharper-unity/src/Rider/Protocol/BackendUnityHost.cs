@@ -69,13 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                 // (not actually passthrough)
                 var frontendBackendModel = frontendBackendHost.Model.NotNull("frontendBackendHost.Model != null");
                 BackendUnityModel.FlowIntoRdSafe(lifetime,
-                    backendUnityModel =>
-                    {
-                        var res = backendUnityModel != null;
-                        // when connection to Unity disappears, state of PlayControls in the Frontend-Backend protocol may not correspond to state in Unity
-                        if (!res) frontendBackendHost.Model?.PlayControlsInitialized.SetValue(false);
-                        return res;
-                    },
+                    backendUnityModel => backendUnityModel != null,
                     frontendBackendModel.UnityEditorConnected);
             }
         }
