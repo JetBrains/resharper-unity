@@ -313,7 +313,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
                         packages[packageData.Id] = packageData;
                 }
 
-                // Calculate the transitive dependencies. This is all based on observation
+                // Calculate the transitive dependencies. Based on observation, we simply go with the highest available
                 var packagesToProcess = new List<PackageData>(packages.Values);
                 while (packagesToProcess.Count > 0)
                 {
@@ -638,43 +638,74 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         {
             var dependencies = new Dictionary<string, JetSemanticVersion>();
 
-            // Find the highest requested version of each dependency of each package being processed
+            // Find the highest requested version of each dependency of each package being processed. Check all
+            // dependencies, even if we've already resolved it, in case we find a higher version
             foreach (var packageData in packagesToProcess)
             {
-                foreach (var (id, version) in packageData.PackageDetails.Dependencies)
+                foreach (var (id, versionString) in packageData.PackageDetails.Dependencies)
                 {
-                    // If it's been previously resolved, there's nothing more to do. Note that skipping it here means
-                    // it's not processed further, including dependencies
-                    if (resolvedPackages.ContainsKey(id))
-                    {
-                        // TODO: If the dependency is a higher version, update it
-                        // See https://github.com/JetBrains/resharper-unity/issues/1786
-                        continue;
-                    }
-
-                    dependencies.TryGetValue(id, out var lastVersion);
-                    JetSemanticVersion.TryParse(version, out var thisVersion);
-                    if (thisVersion == null || (lastVersion != null && lastVersion >= thisVersion))
+                    // Embedded packages take precedence over any version
+                    if (IsEmbeddedPackage(id, resolvedPackages))
                         continue;
 
-                    EditorPackageDetails editorPackageDetails = null;
-                    myGlobalManifest?.Packages.TryGetValue(id, out editorPackageDetails);
-                    var minimumVersionString = editorPackageDetails?.MinimumVersion ?? string.Empty;
-                    dependencies[id] = JetSemanticVersion.TryParse(minimumVersionString, out var minimumAllowedVersion)
-                                       && minimumAllowedVersion > thisVersion
-                        ? minimumAllowedVersion
-                        : thisVersion;
+                    if (!JetSemanticVersion.TryParse(versionString, out var dependencyVersion))
+                        continue;
+
+                    var currentMaxVersion = GetCurrentMaxVersion(id, dependencies);
+                    var minimumVersion = GetMinimumVersion(id);
+
+                    dependencies[id] = Max(dependencyVersion, Max(currentMaxVersion, minimumVersion));
                 }
             }
 
-            // Now find all the packages for all of those dependencies
             var newPackages = new List<PackageData>();
             foreach (var (id, version) in dependencies)
             {
-                newPackages.Add(GetPackageData(id, version.ToString(), registry, builtInPackagesFolder, null));
+                if (version > GetResolvedVersion(id, resolvedPackages))
+                    newPackages.Add(GetPackageData(id, version.ToString(), registry, builtInPackagesFolder, null));
             }
 
             return newPackages;
+        }
+
+        private static bool IsEmbeddedPackage(string id, Dictionary<string, PackageData> resolvedPackages)
+        {
+            return resolvedPackages.TryGetValue(id, out var packageData) &&
+                   packageData.Source == PackageSource.Embedded;
+        }
+
+        private static JetSemanticVersion GetCurrentMaxVersion(
+            string id, IReadOnlyDictionary<string, JetSemanticVersion> dependencies)
+        {
+            return dependencies.TryGetValue(id, out var version) ? version : JetSemanticVersion.Empty;
+        }
+
+        private JetSemanticVersion GetMinimumVersion(string id)
+        {
+            EditorPackageDetails editorPackageDetails = null;
+            if (myGlobalManifest?.Packages.TryGetValue(id, out editorPackageDetails) == true
+                && JetSemanticVersion.TryParse(editorPackageDetails?.MinimumVersion, out var version))
+            {
+                return version;
+            }
+
+            return JetSemanticVersion.Empty;
+        }
+
+        private static JetSemanticVersion GetResolvedVersion(string id, Dictionary<string, PackageData> resolvedPackages)
+        {
+            if (resolvedPackages.TryGetValue(id, out var packageData) &&
+                JetSemanticVersion.TryParse(packageData.PackageDetails.Version, out var version))
+            {
+                return version;
+            }
+
+            return JetSemanticVersion.Empty;
+        }
+
+        private static JetSemanticVersion Max(JetSemanticVersion v1, JetSemanticVersion v2)
+        {
+            return v1 > v2 ? v1 : v2;
         }
     }
 }
