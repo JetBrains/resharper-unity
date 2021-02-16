@@ -50,7 +50,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                 {
                     AdviseFrontendToUnityModel(unityProjectLifetime, model);
 
-                    // Advise the backend/Unity model as high priority so we can add our subscriptions first
+                    // Advise the backend/Unity model as high priority so we get called back before other subscribers.
+                    // This allows us to populate the protocol on reconnection before other subscribes start to advise
                     using (Signal.PriorityAdviseCookie.Create())
                     {
                         backendUnityHost.BackendUnityModel.ViewNotNull(unityProjectLifetime,

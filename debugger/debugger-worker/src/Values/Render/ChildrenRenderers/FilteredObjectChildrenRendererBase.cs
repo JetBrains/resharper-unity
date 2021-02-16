@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             // but allows us to split enumerating, sorting, and rendering into separate steps so we can also insert
             // filtering.
             return options.FlattenHierarchy
-                ? ChildrenRenderingUtil.CollectMembersByOverridingRules(valueRole, token)
+                ? ChildrenRenderingUtil.CollectMembersByOverridingRules(valueRole, options, token)
                 : GetPropertiesAndFields(valueRole);
         }
 

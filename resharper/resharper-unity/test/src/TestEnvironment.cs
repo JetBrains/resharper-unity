@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Environment;
-using JetBrains.Application.License2;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;
 using JetBrains.TestFramework.Application.Zones;
 using JetBrains.TestFramework.Utils;
 using JetBrains.Util;
+using JetBrains.Util.Logging;
 using NUnit.Framework;
 
 #if RIDER
@@ -56,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         {
             try
             {
-                // SetupLogging();
+                SetupLogging();
                 SetJetTestPackagesDir();
                 HackTestDataInNugets.ApplyPatches();
 
@@ -80,10 +79,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             var assemblyPath = FileSystemPath.Parse(url.AbsolutePath);
             var assemblyDir = assemblyPath.Directory;
             var configFile = assemblyDir.CombineWithShortName(assemblyPath.NameWithoutExtension + "_log.xml");
-
-            // /resharper/build/tests.rider/bin/Debug/net461/JetBrains.ReSharper.Plugins.Unity.Tests.Rider_log.log
-            // Note that the logger will delete all files with basename.*, e.g. Rider.dll !!!!??!?!
-            var logfile = assemblyDir.CombineWithShortName(assemblyPath.NameWithoutExtension + "_log.log");
+            var testsFolder = Logger.LogFolderPath / "ReSharperTests";
+            var logfile = testsFolder.CombineWithShortName(assemblyPath.NameWithoutExtension + "_log.log");
             logfile.DeleteFile();
 
             // Set to TRACE to get logging on basically everything (including component containers)

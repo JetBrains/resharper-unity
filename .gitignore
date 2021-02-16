@@ -71,7 +71,6 @@ rider/**/out/*
 
 # Traditional C# excludes
 **/.vs/
-**/Packages/*
 *.suo
 *.user
 [Bb]in

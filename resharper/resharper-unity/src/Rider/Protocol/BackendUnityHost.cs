@@ -11,12 +11,19 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
 using JetBrains.Rd.Tasks;
+using JetBrains.ReSharper.Plugins.Unity.Packages;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 {
+    // This component manages subscriptions to the backend/Unity protocol
+    // * BackendUnityHost should subscribe to the protocol and push into a component, or subscribe to a component and
+    //   push into the protocol
+    // * Use PassthroughHost to set up subscriptions between frontend and Unity
+    // * Avoid using BackendUnityModel for subscriptions. It should be used to get values and start tasks
+    // These guidelines help avoid introducing circular dependencies. Subscriptions should be handled by the host
     [SolutionComponent]
     public class BackendUnityHost
     {
@@ -24,13 +31,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 
         private UnityEditorState myEditorState;
 
-        // The property value will be null when the backend/Unity protocol is not available
+        // Do not use for subscriptions! Should only be used to read values and start tasks.
+        // The property's value will be null when the backend/Unity protocol is not available
         [NotNull]
         public readonly ViewableProperty<BackendUnityModel> BackendUnityModel = new ViewableProperty<BackendUnityModel>(null);
 
+        // TODO: Remove FrontendBackendHost. It's too easy to get circular dependencies
         public BackendUnityHost(Lifetime lifetime, ILogger logger,
                                 FrontendBackendHost frontendBackendHost,
-                                IThreading threading, IIsApplicationActiveState isApplicationActiveState,
+                                IThreading threading,
+                                IIsApplicationActiveState isApplicationActiveState,
+                                PackageManager packageManager,
                                 JetBrains.Application.ActivityTrackingNew.UsageStatistics usageStatistics)
         {
             myUsageStatistics = usageStatistics;
@@ -40,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             BackendUnityModel.ViewNotNull(lifetime, (modelLifetime, backendUnityModel) =>
             {
                 InitialiseModel(backendUnityModel);
-                AdviseModel(backendUnityModel, modelLifetime);
+                AdviseModel(backendUnityModel, modelLifetime, packageManager);
                 StartPollingUnityEditorState(backendUnityModel, modelLifetime, frontendBackendHost, threading,
                     isApplicationActiveState, logger);
             });
@@ -74,6 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             return myEditorState != UnityEditorState.Refresh && myEditorState != UnityEditorState.Disconnected;
         }
 
+        // Push values into the protocol
         private static void InitialiseModel(BackendUnityModel backendUnityModel)
         {
             SetConnectionPollHandler(backendUnityModel);
@@ -99,9 +111,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             }
         }
 
-        private void AdviseModel(BackendUnityModel backendUnityModel, in Lifetime modelLifetime)
+        // Subscribe to changes from the protocol
+        private void AdviseModel(BackendUnityModel backendUnityModel, Lifetime modelLifetime,
+                                 PackageManager packageManager)
         {
+            AdvisePackages(backendUnityModel, modelLifetime, packageManager);
             TrackActivity(backendUnityModel, modelLifetime);
+        }
+
+        private void AdvisePackages(BackendUnityModel backendUnityModel, Lifetime modelLifetime,
+                                    PackageManager packageManager)
+        {
+            backendUnityModel.UnityApplicationData.Advise(modelLifetime, _ =>
+            {
+                // When the backend gets new application data, refresh packages, so we can be up to date with
+                // builtin packages. Note that we don't refresh when we lose the model. This means we're
+                // potentially viewing stale builtin packages, but that's ok. It's better than clearing all packages
+                packageManager.RefreshPackages();
+            });
         }
 
         private void TrackActivity(BackendUnityModel backendUnityModel, Lifetime modelLifetime)

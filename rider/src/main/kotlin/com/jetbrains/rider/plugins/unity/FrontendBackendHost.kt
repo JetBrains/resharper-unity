@@ -19,6 +19,7 @@ import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.model.unity.LogEvent
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
+import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
@@ -94,6 +95,14 @@ class FrontendBackendHost(project: Project) : ProtocolSubscribedProjectComponent
                 task.set(AllowUnitySetForegroundWindow(id))
 
             task
+        }
+
+        model.packages.adviseAddRemove(projectComponentLifetime) { action, id, p ->
+            val packageManager = PackageManager.getInstance(project)
+            when (action) {
+                AddRemove.Add -> packageManager.addPackage(id, p)
+                AddRemove.Remove -> packageManager.removePackage(id)
+            }
         }
     }
 
