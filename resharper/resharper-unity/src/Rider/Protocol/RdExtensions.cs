@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             Lifetime lifetime,
             [NotNull] IViewableProperty<TValue> target)
         {
-            source.Advise(lifetime, _ => target.Value = source.Value);
+            source.Advise(lifetime, val => target.Value = val);
         }
 
         public static void FlowIntoRdSafe<TValue, TResult>(
@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             Func<TValue, TResult> converter,
             [NotNull] IViewableProperty<TResult> target)
         {
-            source.Advise(lifetime, _ => target.Value = converter(source.Value));
+            source.Advise(lifetime, val => target.Value = converter(val));
         }
 
         public static void FlowChangesIntoRdDeferred<TValue>(
@@ -59,10 +59,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             [NotNull] Func<IViewableProperty<TValue>> nullableTargetCreator)
         {
             // If the source has a value, Advise will immediately try to set it on target
-            source.Advise(lifetime, args =>
+            source.Advise(lifetime, val =>
             {
                 var target = nullableTargetCreator();
-                if (target != null) target.Value = source.Value;
+                if (target != null) target.Value = val;
             });
         }
     }
