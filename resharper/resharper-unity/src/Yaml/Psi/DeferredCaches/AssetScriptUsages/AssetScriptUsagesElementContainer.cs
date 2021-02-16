@@ -13,7 +13,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptUsages
 {
     [SolutionComponent]
     public class AssetScriptUsagesElementContainer : IScriptUsagesElementContainer
@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 
         public IUnityAssetDataElement CreateDataElement(IPsiSourceFile sourceFile)
         {
-            return new AssetUsagesDataElement();
+            return new AssetScriptUsagesDataElement();
         }
 
         public bool IsApplicable(IPsiSourceFile currentAssetSourceFile)
@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
                 if (entries == null)
                     return null;
                 
-                var result = new LocalList<AssetScriptUsages>();
+                var result = new LocalList<AssetScriptUsage>();
                 foreach (var entry in entries)
                 {
                     if (!entry.Key.MatchesPlainScalarText("m_Script"))
@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 
                     var deps = entry.Content.Value.ToHierarchyReference(currentAssetSourceFile);
                     if (deps is ExternalReference externalReference)
-                        result.Add(new AssetScriptUsages(new LocalReference(currentAssetSourceFile.Ptr().Id, anchor), externalReference));
+                        result.Add(new AssetScriptUsage(new LocalReference(currentAssetSourceFile.Ptr().Id, anchor), externalReference));
                 }
 
                 return result;
@@ -79,10 +79,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 
         public void Drop(IPsiSourceFile currentAssetSourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElement unityAssetDataElement)
         {
-            var dataElement = unityAssetDataElement as AssetUsagesDataElement;
+            var dataElement = unityAssetDataElement as AssetScriptUsagesDataElement;
             foreach (var assetUsagePointer in dataElement.EnumerateAssetUsages())
             {
-                if (!(assetUsagePointer is AssetScriptUsages assetScriptUsages)) continue;
+                if (!(assetUsagePointer is AssetScriptUsage assetScriptUsages)) continue;
                 var guid = assetScriptUsages.UsageTarget.ExternalAssetGuid;
                 myUsagesCount.Remove(guid);
                 myUsageToSourceFiles.Remove(guid, currentAssetSourceFile);
@@ -94,10 +94,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
         public void Merge(IPsiSourceFile currentAssetSourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElementPointer unityAssetDataElementPointer, IUnityAssetDataElement unityAssetDataElement)
         {
             myPointers[currentAssetSourceFile] = unityAssetDataElementPointer;
-            var dataElement = unityAssetDataElement as AssetUsagesDataElement;
+            var dataElement = unityAssetDataElement as AssetScriptUsagesDataElement;
             foreach (var assetUsagePointer in dataElement.EnumerateAssetUsages())
             {
-                if (!(assetUsagePointer is AssetScriptUsages assetScriptUsages)) continue;
+                if (!(assetUsagePointer is AssetScriptUsage assetScriptUsages)) continue;
                 var guid = assetScriptUsages.UsageTarget.ExternalAssetGuid;
                 myUsagesCount.Add(guid);
                 myUsageToSourceFiles.Add(guid, currentAssetSourceFile);
@@ -138,7 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
         public IEnumerable<IScriptUsage> GetScriptUsagesFor(IPsiSourceFile sourceFile, ITypeElement declaredElement)
         {
             myShellLocks.AssertReadAccessAllowed();
-            var element = myPointers[sourceFile].GetElement(sourceFile, Id) as AssetUsagesDataElement;
+            var element = myPointers[sourceFile].GetElement(sourceFile, Id) as AssetScriptUsagesDataElement;
             if (element == null) return Enumerable.Empty<IScriptUsage>();
             var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
             if (guid == null) return Enumerable.Empty<IScriptUsage>();

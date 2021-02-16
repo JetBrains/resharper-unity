@@ -1,34 +1,33 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
-using JetBrains.ReSharper.Psi;
 using JetBrains.Serialization;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptUsages
 {
     [PolymorphicMarshaller]
-    public class AssetUsagesDataElement : IUnityAssetDataElement
+    public class AssetScriptUsagesDataElement : IUnityAssetDataElement
     {
-        private readonly List<AssetScriptUsages> myAssetUsages;
+        private readonly List<AssetScriptUsage> myAssetUsages;
         
         [UsedImplicitly] public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
         private static object Read(UnsafeReader reader)
         {
             var count = reader.ReadInt32();
-            var result = new AssetUsagesDataElement(count);
+            var result = new AssetScriptUsagesDataElement(count);
 
             for (int i = 0; i < count; i++)
-                result.myAssetUsages.Add(AssetScriptUsages.ReadFrom(reader));
+                result.myAssetUsages.Add(AssetScriptUsage.ReadFrom(reader));
 
             return result;
         }
 
         [UsedImplicitly]
-        public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as AssetUsagesDataElement);
+        public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as AssetScriptUsagesDataElement);
 
-        private static void Write(UnsafeWriter writer, AssetUsagesDataElement value)
+        private static void Write(UnsafeWriter writer, AssetScriptUsagesDataElement value)
         {
             writer.Write(value.myAssetUsages.Count);
             foreach (var v in value.myAssetUsages)
@@ -37,13 +36,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             }
         }
 
-        public AssetUsagesDataElement() : this(10)
+        public AssetScriptUsagesDataElement() : this(10)
         {
         }
 
-        private AssetUsagesDataElement(int elementsCount)
+        private AssetScriptUsagesDataElement(int elementsCount)
         {
-            myAssetUsages = new List<AssetScriptUsages>(elementsCount);
+            myAssetUsages = new List<AssetScriptUsage>(elementsCount);
         }
 
         public string ContainerId => nameof(AssetScriptUsagesElementContainer);
@@ -52,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             if (data == null)
                 return;
 
-            var usages = (LocalList<AssetScriptUsages>) data;
+            var usages = (LocalList<AssetScriptUsage>) data;
             foreach (var usage in usages)
             {
                 myAssetUsages.Add(usage);
@@ -60,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
         }
         
         [NotNull]
-        public IEnumerable<AssetScriptUsages> EnumerateAssetUsages()
+        public IEnumerable<AssetScriptUsage> EnumerateAssetUsages()
         {
             foreach (var assetUsage in myAssetUsages)
             {

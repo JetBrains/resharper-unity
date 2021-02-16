@@ -94,9 +94,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.IosUsbDebugging
             }
         }
 
+        public bool IsApplicable(DebuggerStartInfoBase modelStartInfo)
+        {
+            return false;
+        }
+
         public StartInfo GetStartInfo(Lifetime lifetime, DebuggerStartInfoBase modelStartInfo, SessionProperties properties)
         {
             return StartInfo.Empty;
+        }
+
+        public bool ShouldBreakStartUp(DebuggerStartInfoBase sessionModelStartInfo, out string reason)
+        {
+            reason = null;
+            return false;
         }
 
         private bool CanFindDevice(string deviceId)
