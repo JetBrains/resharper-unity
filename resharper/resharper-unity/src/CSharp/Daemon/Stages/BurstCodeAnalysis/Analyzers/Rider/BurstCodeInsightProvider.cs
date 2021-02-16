@@ -14,13 +14,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     public class BurstCodeInsightProvider : AbstractUnityCodeInsightProvider
     {
         public BurstCodeInsightProvider(FrontendBackendHost frontendBackendHost,
-            BulbMenuComponent bulbMenu, UnitySolutionTracker tracker)
+                                        BulbMenuComponent bulbMenu,
+                                        UnitySolutionTracker tracker)
             : base(frontendBackendHost, bulbMenu)
         { 
             RelativeOrderings = tracker.IsUnityProject.HasTrueValue()
-            
-            ? new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingBefore(ReferencesCodeInsightsProvider.Id)}
-            : new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingLast()};
+                ? new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingBefore(ReferencesCodeInsightsProvider.Id)}
+                : new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingLast()};
         }
 
         public override string ProviderId => BurstCodeAnalysisUtil.BURST_DISPLAY_NAME;

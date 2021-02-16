@@ -55,6 +55,24 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
+## 2020.3.3
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net203-rtm-2020.3.1-rtm-2020.3.2...net203)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/43?closed=1)
+
+### Fixed
+
+- Fix exception and missing namespace suppression when running plugin in `inspectcode` ([#2003](https://github.com/JetBrains/resharper-unity/pull/2003))
+- Rider: Allow disabling Burst context Code Vision ([#1985](https://github.com/JetBrains/resharper-unity/pull/1985))
+
+
+
+## 2020.3.2
+* Released: [2020-12-30](https://blog.jetbrains.com/dotnet/2020/12/30/rider-resharper-2020-3-2-release/)
+* Build: 2020.3.1.136
+* [No code changes](https://github.com/JetBrains/resharper-unity/compare/net203-rtm-2020.3.1...net203-rtm-2020.3.1-rtm-2020.3.2)
+
+
+
 ## 2020.3.1
 * Released: [2020-12-24](https://blog.jetbrains.com/dotnet/2020/12/24/resharper-rider-2020-3-1/)
 * Build: 2020.3.1.132
