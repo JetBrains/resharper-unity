@@ -21,6 +21,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Add Code Vision actions to show call tree for performance critical, expensive and Burst compiled methods ([RIDER-35169](https://youtrack.jetbrains.com/issue/RIDER-35169), [#1995](https://github.com/JetBrains/resharper-unity/pull/1995))
 - Rider: Add custom debugger type views for `SerializedObject` and `SerializedProperty` ([#1991](https://github.com/JetBrains/resharper-unity/pull/1991))
 - Rider: Show Unity editor plugin errors and exceptions in Unity console, not just log ([RIDER-54352](https://youtrack.jetbrains.com/issue/RIDER-54352), [#2012](https://github.com/JetBrains/resharper-unity/pull/2012))
+- Rider: Add marker to ignored folders in Unity Explorer ([#2024](https://github.com/JetBrains/resharper-unity/pull/2024))
 
 ### Changed
 
@@ -31,6 +32,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Double click on assembly files in Unity Explorer will add the file to Assembly Explorer ([RIDER-54873](https://youtrack.jetbrains.com/issue/RIDER-54873), [#1996](https://github.com/JetBrains/resharper-unity/pull/1996))
 - Rider: Improve wording on notifications when Rider is not set as Unity's External Editor ([#1958](https://github.com/JetBrains/resharper-unity/pull/1958))
 - Rider: Improve performance adding log events to Unity tool window ([RIDER-57100](https://youtrack.jetbrains.com/issue/RIDER-57100), [#2014](https://github.com/JetBrains/resharper-unity/pull/2014))
+- Rider: Improve discovery and display of packages in Unity Explorer ([#2024](https://github.com/JetBrains/resharper-unity/pull/2024))
+- Rider: Stop showing VCS status colours in Unity Explorer References node ([#2024](https://github.com/JetBrains/resharper-unity/pull/2024))
 
 ### Fixed
 
