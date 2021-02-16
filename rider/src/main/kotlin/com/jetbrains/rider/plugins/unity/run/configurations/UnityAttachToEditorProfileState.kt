@@ -51,6 +51,8 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityEx
                                 prevState = executionEnvironment.project.solution.frontendBackendModel.playControls.play.valueOrDefault(false)
                                 executionEnvironment.project.solution.frontendBackendModel.playControls.play.set(true)
                             }, terminationAction = {
+                                // if termination happens before the protocol connection is made, the value is lost
+                                // we want to wait for the connection, wait for the value from Unity and only then set our value
                                 val project = executionEnvironment.project
                                 val model = project.solution.frontendBackendModel
                                 model.playControlsInitialized.adviseUntil(project.lifetime){ initialized ->
