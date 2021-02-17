@@ -52,6 +52,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix files in `Packages` folder showing the non-project dialog when being modified ([#1997](https://github.com/JetBrains/resharper-unity/pull/1997))
 - Rider: Fix package resolution when dependency uses higher version than referenced ([#1786](https://github.com/JetBrains/resharper-unity/issues/1786), [#2024](https://github.com/JetBrains/resharper-unity/pull/2024))
 - Rider: Fix incorrectly creating Attach to Editor and Play run configuration for library projects ([#2019](https://github.com/JetBrains/resharper-unity/pull/2019))
+- Rider: Fix not returning to edit mode when stopping Attach to Editor and Play debug session ([RIDER-50085](https://youtrack.jetbrains.com/issue/RIDER-50085), [#2023](https://github.com/JetBrains/resharper-unity/pull/2023))
 
 
 
