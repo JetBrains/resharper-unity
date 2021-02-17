@@ -21,9 +21,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private readonly ILogger myLogger;
         private IProjectItem myLastAddedItem;
 
-        public MetaFileTracker(Lifetime lifetime, ChangeManager changeManager, ISolution solution, ILogger logger, 
-            ISolutionLoadTasksScheduler solutionLoadTasksScheduler,
-            UnitySolutionTracker unitySolutionTracker)
+        public MetaFileTracker(Lifetime lifetime, ChangeManager changeManager, ISolution solution, ILogger logger,
+                               ISolutionLoadTasksScheduler solutionLoadTasksScheduler,
+                               UnitySolutionTracker unitySolutionTracker)
         {
             mySolution = solution;
             myLogger = logger;
@@ -31,9 +31,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             solutionLoadTasksScheduler.EnqueueTask(new SolutionLoadTask("AdviseForChanges", SolutionLoadTaskKinds.AfterDone,
                 () =>
                 {
-                    if (!unitySolutionTracker.IsUnityGeneratedProject.Value)
+                    if (!unitySolutionTracker.IsUnityProjectFolder.Value)
                         return;
-                    
+
                     changeManager.RegisterChangeProvider(lifetime, this);
                     changeManager.AddDependency(lifetime, this, solution);
                 }));
@@ -91,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 // never do this, and b) you can't delete a project from Visual Studio/Rider, only remove it
                 if (projectChange.IsRemoved)
                     return;
-                
+
                 // Don't recurse if this project isn't a Unity project. Note that we don't do this
                 // for the IsRemoved case above, as the project doesn't have a solution at that point,
                 // and IsUnityProject will throw
@@ -153,7 +153,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 if (rootFolder.Location.Equals(solution.SolutionDirectory.Combine(ProjectExtensions.PackagesFolder))
                        && !change.OldParentFolder.Location.Equals(solution.SolutionDirectory.Combine(ProjectExtensions.PackagesFolder))) // exclude direct children of PackagesFolder
                     return true;
-                return change.OldParentFolder.IsLinked; // support local package linked by relative path 
+                return change.OldParentFolder.IsLinked; // support local package linked by relative path
             }
 
             private static IProjectFolder GetRootFolder(IProjectItem item)
