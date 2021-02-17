@@ -8,4 +8,9 @@
     <explicitIncludes />
     <explicitExcludes />
   </component>
+  <component name="WorkspaceUserModelUpdater">
+    <attachedFolders />
+    <explicitIncludes />
+    <explicitExcludes />
+  </component>
 </project>
