@@ -1,6 +1,5 @@
 package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss
 
-import com.intellij.css.util.CssPsiUtil
 import com.intellij.lang.documentation.DocumentationProvider
 import com.intellij.openapi.util.Couple
 import com.intellij.psi.PsiElement
@@ -8,7 +7,6 @@ import com.intellij.psi.css.CssDescriptorOwner
 import com.intellij.psi.css.descriptor.CssElementDescriptor
 import com.intellij.psi.css.descriptor.CssValueOwnerDescriptor
 import com.intellij.psi.css.impl.util.CssDocumentationProvider
-import com.intellij.psi.css.impl.util.CssUtil
 import com.intellij.psi.css.impl.util.MdnDocumentationUtil
 import com.intellij.psi.css.impl.util.table.CssDescriptorsUtil
 
@@ -31,10 +29,8 @@ class UssDocumentationProvider : DocumentationProvider {
         return null
     }
 
-    // todo: recheck after the compilation fix
-    private fun findDocumentationElement(element: PsiElement): PsiElement? {
-        return element
-    }
+    private fun findDocumentationElement(element: PsiElement) =
+        CssDocumentationProvider.findDocumentationElement(element)
 
     private fun generateDoc(descriptorText: String?,
                             documentationElement: PsiElement,
