@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Collections.Viewable;
@@ -12,6 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
     public class UnitySolutionTracker
     {
         private readonly ISolution mySolution;
+
         public readonly ViewableProperty<bool> IsUnityProjectFolder = new ViewableProperty<bool>();
         public readonly ViewableProperty<bool> IsUnityGeneratedProject = new ViewableProperty<bool>();
         public readonly ViewableProperty<bool> IsUnityProject = new ViewableProperty<bool>();
@@ -46,24 +48,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private void OnChangeAction(FileSystemChangeDelta delta)
         {
             if (delta.ChangeType == FileSystemChangeType.ADDED || delta.ChangeType == FileSystemChangeType.DELETED)
-            {
                 SetValues();
-            }
         }
 
-        private void OnChangeActionProjectSettingsFolder (FileSystemChangeDelta delta)
+        private void OnChangeActionProjectSettingsFolder(FileSystemChangeDelta delta)
         {
-            if (delta.NewPath.Name == "ProjectSettings" || delta.NewPath.Name == "ProjectVersion.txt" || delta.NewPath.ExtensionNoDot=="asset"
-                ||
-                delta.OldPath.Name == "ProjectSettings" || delta.OldPath.Name == "ProjectVersion.txt" || delta.OldPath.ExtensionNoDot=="asset")
-            {
+            if (IsInterestingProjectSettingsFile(delta.NewPath) || IsInterestingProjectSettingsFile(delta.OldPath))
                 OnChangeAction(delta);
-            }
+        }
+
+        private static bool IsInterestingProjectSettingsFile(IPath path)
+        {
+            // Don't rely on correct casing. We expect Unity to generate the names correctly, but they could be edited
+            // by other tooling that doesn't respect case. We've seen similar problems with solution names (see below)
+            return string.Equals(path.Name, "ProjectSettings", StringComparison.OrdinalIgnoreCase)
+                   || string.Equals(path.Name, "ProjectVersion.txt", StringComparison.OrdinalIgnoreCase)
+                   || string.Equals(path.ExtensionNoDot, "asset", StringComparison.OrdinalIgnoreCase);
         }
 
         private bool SolutionNameMatchesUnityProjectName()
         {
-            return mySolution.SolutionFilePath.NameWithoutExtension == mySolution.SolutionDirectory.Name;
+            // https://github.com/JetBrains/resharper-unity/issues/2027
+            // It is very unusual for the solution file to not match the case of the folder it's generated in, but it is
+            // a potential situation. Perhaps the user has edited/renamed the solution file manually, or the folder, or
+            // some other tooling has done something. If we don't match case, we'll break meta file handling, which is
+            // very bad.
+            // Furthermore, loading a solution from Rider's recent solution list keeps the old case, so even if things
+            // have been renamed to match, we'll still have incorrect casing here. So let's just do case insensitive.
+            return string.Equals(mySolution.SolutionFilePath.NameWithoutExtension, mySolution.SolutionDirectory.Name,
+                StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool HasUnityFileStructure(FileSystemPath solutionDir)

@@ -42,6 +42,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Fix creation of `.meta` files in the root of the `Packages` folder, and in `file:` based packages ([#2000](https://github.com/JetBrains/resharper-unity/pull/2000))
 - Fix suggested name collision when creating a field to cache a property index ([RIDER-55185](https://youtrack.jetbrains.com/issue/RIDER-55185), [#2002](https://github.com/JetBrains/resharper-unity/pull/2002))
 - Fix stored asset file names to be relative to solution directory ([RIDER-54695](https://youtrack.jetbrains.com/issue/RIDER-54695), [#2002](https://github.com/JetBrains/resharper-unity/pull/2002))
+- Fix meta files not being updated correctly if solution name doesn't match folder name exactly ([#2027](https://github.com/JetBrains/resharper-unity/issues/2027), [#2030](https://github.com/JetBrains/resharper-unity/pull/2030))
 - Rider: Fix location of context menu shown when clicking Unity Code Vision links ([RIDER-49573](https://youtrack.jetbrains.com/issue/RIDER-49573), [#2002](https://github.com/JetBrains/resharper-unity/pull/2002))
 - Rider: Fix missing error indicator for `.asmdef` files ([#2002](https://github.com/JetBrains/resharper-unity/pull/2002))
 - Rider: Fix issue launching Unity when debugging and editor isn't running ([RIDER-52498](https://youtrack.jetbrains.com/issue/RIDER-52498), [#1920](https://github.com/JetBrains/resharper-unity/pull/1920))
