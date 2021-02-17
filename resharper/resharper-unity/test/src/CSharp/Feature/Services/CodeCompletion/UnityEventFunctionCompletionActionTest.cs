@@ -14,26 +14,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.CodeCo
 
         // Test what happens when the user types e.g. `void OnAnim{caret}` without an accessibility modifier. The result
         // depends on the code style setting for default private modifier. Default for the test class is explicit
+        [Ignore("Tests are flaky. See https://jetbrains.slack.com/archives/C4J1R63C3/p1612886840030800?thread_ts=1612772416.010100&cid=C4J1R63C3")]
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
         public void ImplicitAccessibilityModifier01() { DoNamedTest(); }
+        [Ignore("Tests are flaky. See https://jetbrains.slack.com/archives/C4J1R63C3/p1612886840030800?thread_ts=1612772416.010100&cid=C4J1R63C3")]
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
         public void ImplicitAccessibilityModifier02() { DoNamedTest(); }
+        [Ignore("Tests are flaky. See https://jetbrains.slack.com/archives/C4J1R63C3/p1612886840030800?thread_ts=1612772416.010100&cid=C4J1R63C3")]
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
         public void ImplicitAccessibilityModifier03() { DoNamedTest(); }
+        [Ignore("Tests are flaky. See https://jetbrains.slack.com/archives/C4J1R63C3/p1612886840030800?thread_ts=1612772416.010100&cid=C4J1R63C3")]
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
         public void ImplicitAccessibilityModifier04() { DoNamedTest(); }
+        [Ignore("Tests are flaky. See https://jetbrains.slack.com/archives/C4J1R63C3/p1612886840030800?thread_ts=1612772416.010100&cid=C4J1R63C3")]
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
         public void ImplicitAccessibilityModifier05() { DoNamedTest(); }
+        [Ignore("Tests are flaky. See https://jetbrains.slack.com/archives/C4J1R63C3/p1612886840030800?thread_ts=1612772416.010100&cid=C4J1R63C3")]
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
         public void ImplicitAccessibilityModifier06() { DoNamedTest(); }
+        [Ignore("Tests are flaky. See https://jetbrains.slack.com/archives/C4J1R63C3/p1612886840030800?thread_ts=1612772416.010100&cid=C4J1R63C3")]
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
         public void ImplicitAccessibilityModifier07() { DoNamedTest(); }
+        [Ignore("Tests are flaky. See https://jetbrains.slack.com/archives/C4J1R63C3/p1612886840030800?thread_ts=1612772416.010100&cid=C4J1R63C3")]
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
         public void ImplicitAccessibilityModifier08() { DoNamedTest(); }
+        [Ignore("Tests are flaky. See https://jetbrains.slack.com/archives/C4J1R63C3/p1612886840030800?thread_ts=1612772416.010100&cid=C4J1R63C3")]
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
         public void ImplicitAccessibilityModifier09() { DoNamedTest(); }
+        [Ignore("Tests are flaky. See https://jetbrains.slack.com/archives/C4J1R63C3/p1612886840030800?thread_ts=1612772416.010100&cid=C4J1R63C3")]
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
         public void ImplicitAccessibilityModifier10() { DoNamedTest(); }
+        [Ignore("Tests are flaky. See https://jetbrains.slack.com/archives/C4J1R63C3/p1612886840030800?thread_ts=1612772416.010100&cid=C4J1R63C3")]
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
         public void ImplicitAccessibilityModifier11() { DoNamedTest(); }
 
