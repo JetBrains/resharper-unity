@@ -259,10 +259,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 try
                 {
                     var guid = Guid.NewGuid();
-                                        var timestamp = (long)(DateTime.UtcNow - ourUnixTime).TotalSeconds;
-                                        var le = myDocumentLineEndingsDetector.DetectLineEnding(mySolution, null, null);
-                                        DoUnderTransaction("Unity::CreateMetaFile", () => path.WriteAllText($"fileFormatVersion: 2{le}guid: {guid:N}{le}timeCreated: {timestamp}"));
-                                        myLogger.Info("*** resharper-unity: Meta added {0}", path);
+                    var timestamp = (long) (DateTime.UtcNow - ourUnixTime).TotalSeconds;
+                    var le = myDocumentLineEndingsDetector.DetectLineEnding(mySolution, null, null);
+                    DoUnderTransaction("Unity::CreateMetaFile", () => path.WriteAllText($"fileFormatVersion: 2{le}guid: {guid:N}{le}timeCreated: {timestamp}"));
+                    myLogger.Info("*** resharper-unity: Meta added {0}", path);
                 }
                 catch (Exception e)
                 {
