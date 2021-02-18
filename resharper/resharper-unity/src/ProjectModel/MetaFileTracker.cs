@@ -7,6 +7,7 @@ using JetBrains.DocumentManagers.Transactions;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Tasks;
+using JetBrains.ReSharper.Psi.EditorConfig;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 
@@ -19,14 +20,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
         private readonly ISolution mySolution;
         private readonly ILogger myLogger;
+        private readonly DocumentLineEndingsDetector myDocumentLineEndingsDetector;
         private IProjectItem myLastAddedItem;
 
         public MetaFileTracker(Lifetime lifetime, ChangeManager changeManager, ISolution solution, ILogger logger,
                                ISolutionLoadTasksScheduler solutionLoadTasksScheduler,
-                               UnitySolutionTracker unitySolutionTracker)
+                               UnitySolutionTracker unitySolutionTracker,
+                               DocumentLineEndingsDetector documentLineEndingsDetector)
         {
             mySolution = solution;
             myLogger = logger;
+            myDocumentLineEndingsDetector = documentLineEndingsDetector;
 
             solutionLoadTasksScheduler.EnqueueTask(new SolutionLoadTask("AdviseForChanges", SolutionLoadTaskKinds.AfterDone,
                 () =>
@@ -48,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
             try
             {
-                projectModelChange.Accept(new Visitor(this, myLogger));
+                projectModelChange.Accept(new Visitor(this, myLogger, mySolution, myDocumentLineEndingsDetector));
             }
             catch (Exception e)
             {
@@ -66,11 +70,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         {
             private readonly MetaFileTracker myMetaFileTracker;
             private readonly ILogger myLogger;
+            private readonly DocumentLineEndingsDetector myDocumentLineEndingsDetector;
+            private readonly ISolution mySolution;
 
-            public Visitor(MetaFileTracker metaFileTracker, ILogger logger)
+            public Visitor(MetaFileTracker metaFileTracker, ILogger logger, ISolution solution, DocumentLineEndingsDetector documentLineEndingsDetector)
             {
                 myMetaFileTracker = metaFileTracker;
                 myLogger = logger;
+                myDocumentLineEndingsDetector = documentLineEndingsDetector;
+                mySolution = solution;
             }
 
             // Note that this method is called recursively, for projects, folders and files
@@ -251,9 +259,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 try
                 {
                     var guid = Guid.NewGuid();
-                    var timestamp = (long)(DateTime.UtcNow - ourUnixTime).TotalSeconds;
-                    DoUnderTransaction("Unity::CreateMetaFile", () => path.WriteAllText($"fileFormatVersion: 2{Environment.NewLine}guid: {guid:N}{Environment.NewLine}timeCreated: {timestamp}"));
-                    myLogger.Info("*** resharper-unity: Meta added {0}", path);
+                                        var timestamp = (long)(DateTime.UtcNow - ourUnixTime).TotalSeconds;
+                                        var le = myDocumentLineEndingsDetector.DetectLineEnding(mySolution, null, null);
+                                        DoUnderTransaction("Unity::CreateMetaFile", () => path.WriteAllText($"fileFormatVersion: 2{le}guid: {guid:N}{le}timeCreated: {timestamp}"));
+                                        myLogger.Info("*** resharper-unity: Meta added {0}", path);
                 }
                 catch (Exception e)
                 {
