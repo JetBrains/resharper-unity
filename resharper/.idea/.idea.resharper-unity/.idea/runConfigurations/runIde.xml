@@ -7,6 +7,7 @@
     <envs>
       <env name="ASPNETCORE_ENVIRONMENT" value="Development" />
       <env name="ASPNETCORE_URLS" value="http://localhost:5000" />
+      <env name="RESHARPER_HOST_DEBUG_SELF" value="1" />
     </envs>
     <option name="USE_EXTERNAL_CONSOLE" value="0" />
     <option name="USE_MONO" value="0" />
@@ -19,7 +20,7 @@
     <option name="PROJECT_TFM" value=".NETFramework,Version=v4.6.1" />
     <browser url="http://localhost:5000" />
     <method v="2">
-      <option name="Build" enabled="true" />
+      <option name="Build" />
     </method>
   </configuration>
 </component>
