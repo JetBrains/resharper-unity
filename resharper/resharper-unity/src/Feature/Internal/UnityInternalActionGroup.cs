@@ -1,5 +1,5 @@
+using JetBrains.Application.UI.Actions.InternalMenu;
 using JetBrains.Application.UI.ActionSystem.ActionsRevised.Menu;
-using JetBrains.IDE.Internal;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
 {
