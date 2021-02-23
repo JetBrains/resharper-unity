@@ -126,33 +126,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
 
         public void RefreshPackages() => ScheduleRefresh();
 
-        private void ScheduleRefresh() => myGroupingEvent.FireIncoming();
+        private void ScheduleRefresh()
+        {
+            myLogger.Trace("Scheduling package refresh");
+            myGroupingEvent.FireIncoming();
+        }
 
 
         [Guard(Rgc.Guarded)]
         private void DoRefresh()
         {
+            myLogger.Trace("DoRefresh");
+
             // If we're reacting to changes in manifest.json, give Unity a chance to update and refresh packages-lock.json
             if (!AreFilesReadyForReading())
             {
+                myLogger.Verbose("Not ready to read packages-lock.json. Rescheduling refresh to give Unity time to update the file");
                 ScheduleRefresh();
                 return;
             }
 
+            // We only get null if something has gone wrong, such as invalid or missing files (already logged). If we
+            // read the files successfully, we'd at least have an empty list. If something is wrong, don't wipe out the
+            // current list of packages. It's better to show outdated information than nothing at all
             var newPackages = GetPackages();
-            if (newPackages == null)
-            {
-                // Something's gone wrong. E.g. invalid JSON files. If things were ok, we'd at least get an empty list.
-                // Don't wipe out the current packages, it's better to show outdated info rather than nothing. It should
-                // be fixed soon enough, when the game won't start in Unity
-                return;
-            }
-
-            myLogger.DoActivity("UpdatePackages", null, () => UpdatePackages(newPackages));
+            if (newPackages != null)
+                myLogger.DoActivity("UpdatePackages", null, () => UpdatePackages(newPackages));
         }
 
         private bool AreFilesReadyForReading()
         {
+            // We're ready to start reading if both packages-lock.json and manifest.json exist, and packages-lock.json
+            // is either already up to date, or is old enough to be skipped. If manifest.json is only slightly newer,
+            // then we're not ready - we'll give Unity a chance to update packages-lock.json before we read
             if (!myPackagesLockPath.ExistsFile || !myManifestPath.ExistsFile)
                 return true;
 
@@ -161,17 +167,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
 
         private bool IsPackagesLockUpToDate()
         {
+            // We should have already checked this. Don't check again in release mode, as it will hit the disk
+            Assertion.Assert(myPackagesLockPath.ExistsFile, "myPackagesLockPath.ExistsFile");
+            Assertion.Assert(myManifestPath.ExistsFile, "myManifestPath.ExistsFile");
+
             return myPackagesLockPath.FileModificationTimeUtc >= myManifestPath.FileModificationTimeUtc;
         }
 
         private bool ShouldSkipPackagesLock()
         {
+            // We should have already checked this. Don't check again in release mode, as it will hit the disk
+            Assertion.Assert(myPackagesLockPath.ExistsFile, "myPackagesLockPath.ExistsFile");
+            Assertion.Assert(myManifestPath.ExistsFile, "myManifestPath.ExistsFile");
+
             // Has Unity taken too long to update packages-lock.json? If it's taken longer that 2 seconds to update, we
             // fall back to manifest.json. If Unity isn't running, is going slow or doesn't get notified of the change
             // to manifest.json, we'll fall back and still show up to date results. When Unity catches up, we'll get a
             // file change notification on packages-lock.json and update to canonical results.
-            // Two seconds is a good default, as Unity appears to resolve packages before reloading the AppDomain
-
+            // Two seconds is a good default, as Unity resolves packages before reloading the AppDomain
             return myManifestPath.FileModificationTimeUtc - myPackagesLockPath.FileModificationTimeUtc >
                    TimeSpan.FromSeconds(2);
         }
@@ -237,7 +250,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         private List<PackageData> GetPackagesFromPackagesLockJson()
         {
             if (!myPackagesLockPath.ExistsFile)
+            {
+                myLogger.Verbose("packages-lock.json does not exist");
                 return null;
+            }
 
             if (myManifestPath.ExistsFile && ShouldSkipPackagesLock())
             {
@@ -266,7 +282,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         private List<PackageData> GetPackagesFromManifestJson()
         {
             if (!myManifestPath.ExistsFile)
+            {
+                // This is not really expected, unless we're on an older Unity that doesn't support package manager
+                myLogger.Info("manifest.json does not exist");
                 return null;
+            }
 
             myLogger.Verbose("Getting packages from manifest.json");
 
@@ -336,7 +356,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
 
         private void LogWhySkippedPackagesLock(ManifestJson projectManifest)
         {
-            if (ShouldSkipPackagesLock())
+            if (myPackagesLockPath.ExistsFile && ShouldSkipPackagesLock())
             {
                 if (projectManifest.EnableLockFile.HasValue && !projectManifest.EnableLockFile.Value)
                 {
@@ -348,7 +368,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
                         "packages-lock.json is not supported by this version of Unity. Perhaps the file is from a newer version?");
                 }
 
-                // Most likely reason now is that Unity isn't running
+                myLogger.Info("packages-lock.json skipped. Most likely reason: Unity not running");
             }
         }
 
