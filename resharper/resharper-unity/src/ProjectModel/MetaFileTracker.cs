@@ -137,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             private static bool ShouldHandleChange(ProjectItemChange change)
             {
                 // String comparisons, treat as expensive if we're doing this very frequently
-                return IsAssetOrPackage(change) && !IsItemMetaFile(change);
+                return IsAssetOrPackage(change) && !IsItemMetaFile(change) && !IsHiddenAsset(change);
             }
 
             private static bool IsAssetOrPackage(ProjectItemChange change)
@@ -166,6 +166,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             private static bool IsItemMetaFile(ProjectItemChange change)
             {
                 return change.ProjectItem.Name.EndsWith(".meta", StringComparison.OrdinalIgnoreCase);
+            }
+
+            private static bool IsHiddenAsset(ProjectItemChange change)
+            {
+                // See "Hidden Assets" on this page: https://docs.unity3d.com/Manual/SpecialFolders.html
+                return change.ProjectItem.Name.EndsWith("~", StringComparison.Ordinal)
+                    || change.ProjectItem.Name.StartsWith(".", StringComparison.Ordinal)
+                    || (change.ProjectItem as IProjectFile)?.Name.EndsWith(".tmp", StringComparison.OrdinalIgnoreCase) == true
+                    || change.ProjectItem.Name.Equals("cvs");
             }
 
             private bool OnItemRenamed(ProjectItemChange change)
