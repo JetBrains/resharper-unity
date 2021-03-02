@@ -91,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var inheritedMethods = baseTypeElement.GetAllClassMembers<IMethod>().ToList();
             var shouldFunctionGenerateMethod = ShouldGenerateMethod(context);
             var knownTypesCache = context.BasicContext.Solution.GetComponent<KnownTypesCache>();
-            
+
             var addedFunctions = new HashSet<string>();
 
             foreach (var function in unityApi.GetEventFunctions(typeElement, actualVersion))
@@ -123,7 +123,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
         private static bool HasDifferentParameterLists(
             [NotNull] UnityEventFunction function,
-            [NotNull] CSharpCodeCompletionContext context, 
+            [NotNull] CSharpCodeCompletionContext context,
             [NotNull] KnownTypesCache knownTypesCache)
         {
             var unterminatedContext = context.UnterminatedContext;
@@ -134,7 +134,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var functionParameters = function.Parameters;
             var currentMethodParameters = methodDeclaration.Params;
             if (currentMethodParameters == null) return false;
-            
+
             if (functionParameters.Length != currentMethodParameters.ParameterDeclarations.Count) return true;
 
             var typeConversionRule = currentMethodParameters.GetTypeConversionRule();
@@ -147,7 +147,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 var conversion = typeConversionRule.ClassifyImplicitConversion(currentMethodParameter.Type, functionParameter.TypeSpec.AsIType(knownTypesCache, module));
                 if (conversion.Kind != ConversionKind.Identity) return true;
             }
-            
+
             return false;
         }
 
@@ -156,11 +156,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var unterminatedContext = context.UnterminatedContext;
             var methodDeclaration = unterminatedContext.TreeNode?.GetContainingNode<IMethodDeclaration>();
 
-            if (methodDeclaration?.Body == null) return true;
+            if (methodDeclaration?.Body == null)
+            {
+                // If we're renaming the entire method name, we end up with two broken method declarations, one with a
+                // missing method body, immediately followed by another with a missing name, but the first meaningful
+                // child - the parameter list from the original method, and the return value in the second - is a tuple
+                // type usage
+                foreach (var treeNode in context.NodeInFile.ContainingNodes(true))
+                {
+                    if (treeNode.IsFiltered())
+                    {
+                        var prevMeaningfulSibling = treeNode.GetPreviousMeaningfulSiblingThroughWhitespaceAndComments();
+                        var nextMeaningfulSibling = treeNode.GetNextMeaningfulSibling();
+
+                        if (prevMeaningfulSibling is IMethodDeclaration prevMethod
+                            && nextMeaningfulSibling is IMethodDeclaration nextMethod
+                            && prevMethod.Body == null
+                            && nextMethod.Body != null
+                            && nextMethod.GetNextMeaningfulChild(null) is ITupleTypeUsage)
+                        {
+                            return !(prevMethod.GetContainingTypeDeclaration() is IClassLikeDeclaration);
+                        }
+                    }
+                }
+
+                return true;
+            }
 
             if (!(methodDeclaration.GetContainingTypeDeclaration() is IClassLikeDeclaration))
                 return true;
-            
+
             return false;
         }
 
@@ -286,7 +311,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             // this situation - it's not a real method, and a DeclaredElementInfo would try to store a pointer to it,
             // and be unable to recreate it when it's needed.
             var textualInfo = new UnityEventFunctionTextualInfo(generationContext.MemberReplaceRanges, shouldGenerateMethod, text, text) {Ranges = context.CompletionRanges};
-            
+
             var lookupItem = LookupItemFactory.CreateLookupItem(textualInfo)
                 .WithPresentation(item =>
                 {
@@ -777,12 +802,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                     if (!elementRange.IsValid()) return DocumentRange.InvalidRange;
 
                     var anchorDeclarationNameRange = GetDeclarationNameRange(anchorDeclaration);
-
-                    var declarationNameLine = anchorDeclarationNameRange.StartOffset.ToDocumentCoords().Line;
-                    var selectionLine = selectedRange.EndOffset.ToDocumentCoords().Line;
-                    if (declarationNameLine != selectionLine)
+                    if (anchorDeclarationNameRange.IsValid())
                     {
-                        return elementRange.SetEndTo(selectedRange.EndOffset);
+                        var declarationNameLine = anchorDeclarationNameRange.StartOffset.ToDocumentCoords().Line;
+                        var selectionLine = selectedRange.EndOffset.ToDocumentCoords().Line;
+                        if (declarationNameLine != selectionLine)
+                        {
+                            return elementRange.SetEndTo(selectedRange.EndOffset);
+                        }
                     }
 
                     return elementRange;
@@ -909,8 +936,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         public bool ShouldGenerateMethod { get; }
 
         public UnityEventFunctionTextualInfo(
-            TextLookupRanges memberReplaceRanges, 
-            bool shouldGenerateMethod, 
+            TextLookupRanges memberReplaceRanges,
+            bool shouldGenerateMethod,
             [NotNull] string text,
             [NotNull] string identity)
             : base(text, identity)
