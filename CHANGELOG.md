@@ -38,6 +38,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Fixed
 
+- Fix broken code generation when replacing the entire name of an existing event function ([#2040](https://github.com/JetBrains/resharper-unity/pull/2040))
 - Fix missing entries from ReSharper's Unity specific dictionary ([#1737](https://github.com/JetBrains/resharper-unity/issues/1737), [#1809](https://github.com/JetBrains/resharper-unity/issues/1809), [#2008](https://github.com/JetBrains/resharper-unity/pull/2008))
 - Fix creation of `.meta` files in the root of the `Packages` folder, and in `file:` based packages ([#2000](https://github.com/JetBrains/resharper-unity/pull/2000))
 - Fix suggested name collision when creating a field to cache a property index ([RIDER-55185](https://youtrack.jetbrains.com/issue/RIDER-55185), [#2002](https://github.com/JetBrains/resharper-unity/pull/2002))
