@@ -7,7 +7,7 @@ shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=StateMachineBehaviour, ValidateFileName=True
 scopes: UnityFileTemplateSectionMarker;InUnityCSharpProject
-uitag: Unity Class
+uitag: Unity Script
 parameterOrder: HEADER, (CLASS), (NAMESPACE)
 HEADER-expression: fileheader()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension()

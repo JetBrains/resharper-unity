@@ -7,7 +7,7 @@ shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=AssetPostprocessor, ValidateFileName=True
 scopes: UnityFileTemplateSectionMarker;InUnityCSharpEditorFolder
-uitag: Unity Class
+uitag: Unity Script
 parameterOrder: HEADER, (CLASS), (NAMESPACE)
 HEADER-expression: fileheader()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension
