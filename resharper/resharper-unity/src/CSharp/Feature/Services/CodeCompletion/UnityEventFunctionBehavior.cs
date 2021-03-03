@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var updateMethodDeclaration = TextControlToPsi.GetElement<IMethodDeclaration>(solution, textControl);
             if (!Info.ShouldGenerateMethod)
             {
-                UpdateExistingMethod(updateMethodDeclaration, psiServices);
+                UpdateExistingMethod(updateMethodDeclaration, nameRange, textControl, psiServices);
                 return;
             }
 
@@ -130,10 +130,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             }
         }
 
-        private void UpdateExistingMethod([CanBeNull] IDeclaration methodDeclaration, IPsiServices psiServices)
+        private void UpdateExistingMethod([CanBeNull] IDeclaration methodDeclaration, DocumentRange nameRange,
+                                          ITextControl textControl, IPsiServices psiServices)
         {
             if (methodDeclaration == null)
                 return;
+
+            // Replacing the entire name of a method first deletes the current name identifier, and leaves us with two
+            // broken method declarations - one trying to parse up to the name, and one trying to parse after it. The
+            // first doesn't have a name or a body, and the second confuses the parameter list as a tuple return type,
+            // and also doesn't have a name. It does have a body. The current caret position gives us the second broken
+            // method declaration.
+            // We can't just update the PSI, because it's too broken. If we try to set the name of either declaration,
+            // there's nothing to replace, so the PSI will just add a child to the end of the list of valid children.
+            // For the first declaration, that doesn't include the whitespace after the return type, so we end up with
+            // something like: private voidUpdate () { }. For the second declaration, it adds the name identifier after
+            // the body.
+            // We already know the insert location, so we just add as text. This doesn't affect changing part of an
+            // existing name, because that part name means we have one valid method declaration, which we can easily
+            // update
+            if (methodDeclaration.GetPreviousMeaningfulSiblingThroughWhitespaceAndComments() is
+                    IMethodDeclaration prevMethod && prevMethod.Body == null &&
+                methodDeclaration.GetNextMeaningfulChild(null) is ITupleTypeUsage)
+            {
+                using (WriteLockCookie.Create())
+                    textControl.Document.InsertText(nameRange.StartOffset, myEventFunction.Name);
+                return;
+            }
 
             using (var cookie = new PsiTransactionCookie(psiServices, DefaultAction.Rollback, "UpdateExistingMethod"))
             using (WriteLockCookie.Create())
