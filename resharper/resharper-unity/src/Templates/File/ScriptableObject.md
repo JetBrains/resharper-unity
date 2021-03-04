@@ -7,7 +7,7 @@ shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=ScriptableObject, ValidateFileName=True
 scopes: UnityFileTemplateSectionMarker;InUnityCSharpProject
-uitag: Unity Class
+uitag: Unity Script
 parameterOrder: HEADER, (CLASS), (NAMESPACE), FILENAME, MENUNAME
 HEADER-expression: fileheader()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension()
