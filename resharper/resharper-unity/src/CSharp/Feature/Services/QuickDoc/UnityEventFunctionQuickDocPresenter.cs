@@ -69,6 +69,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             var details = CreateMemberElement(element);
             if (!string.IsNullOrWhiteSpace(description))
                 details.CreateLeafElementWithValue("summary", description);
+
+            var externalDocElement = details.CreateLeafElementWithValue("a", $"`{element.ShortName}` on docs.unity3d.com");
+            externalDocElement.CreateAttributeWithNonEmptyValue("href",
+                $"https://docs.unity3d.com/ScriptReference/30_search.html?q={element.ShortName}");
+
             return details;
         }
 
