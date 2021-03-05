@@ -14,10 +14,10 @@ import java.nio.file.Path
 class UnityDocumentationProvider : DocumentationProvider {
 
     override fun getUrlFor(p0: PsiElement?, p1: PsiElement?): MutableList<String>? {
-        val project = p0?.project
-        val context = project?.solution?.frontendBackendModel?.externalDocContext?.valueOrNull
-        if (context != null && !context.isNullOrBlank())
-            return arrayListOf(getUrlForContext(context, project))
+//        val project = p0?.project
+//        val context = project?.solution?.frontendBackendModel?.externalDocContext?.valueOrNull
+//        if (context != null && !context.isNullOrBlank())
+//            return arrayListOf(getUrlForContext(context, project))
         return null
     }
 
