@@ -14,18 +14,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
     [SolutionComponent]
     public class UnityCompiledElementXmlDocProvider : MonoCompiledElementXmlDocProvider
     {
-        private static readonly DeclaredElementPresenterStyle MSDN_STYLE =
-            new DeclaredElementPresenterStyle
-            {
-                ShowEntityKind = EntityKindForm.NONE,
-                ShowName = NameStyle.QUALIFIED,
-                ShowTypeParameters = TypeParameterStyle.CLR
-            };
-        
+        private readonly UnityExternalDocumentationLinkProvider myUnityExternalDocumentationLinkProvider;
+
         public UnityCompiledElementXmlDocProvider(RiderApplicationRuntime applicationRuntime, ILogger logger,
-            Lifetime lifetime, ISettingsStore settingsStore, ISolution solution, IThreading threading)
+            Lifetime lifetime, ISettingsStore settingsStore, ISolution solution, IThreading threading, UnityExternalDocumentationLinkProvider unityExternalDocumentationLinkProvider)
             : base(applicationRuntime, logger, lifetime, settingsStore, solution, threading)
         {
+            myUnityExternalDocumentationLinkProvider = unityExternalDocumentationLinkProvider;
         }
 
         public override XmlNode GetXmlDoc(CompiledElementBase element, bool inherit)
@@ -33,37 +28,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             var result = base.GetXmlDoc(element, inherit);
             if (result == null)
                 return null;
-            
-            var hostName = "docs.unity3d.com";
-            if (element is CompiledTypeElement el)
-            {
-                var moduleName = el.Module.Name;
-                if (moduleName.StartsWith("UnityEngine") || moduleName.StartsWith("UnityEditor")) 
-                    AddExternalDocumentationLink( $"https://{hostName}/ScriptReference/30_search.html?q={el.ShortName}", hostName, el.ShortName, result);
-            }
-            else if (element is Member m)
-            {
-                var moduleName = m.Module.Name;
-                if (moduleName.StartsWith("UnityEngine") || moduleName.StartsWith("UnityEditor")) 
-                    AddExternalDocumentationLink( $"https://{hostName}/ScriptReference/30_search.html?q={m.ShortName}", hostName, m.ShortName, result);
-            }
-            return result;
-        }
-        
-        // todo: remove, once sdk one gets public
-        private void AddExternalDocumentationLink(string url, string hostName, string shortName,
-            XmlNode externalDocNode)
-        {
-            var document = externalDocNode.OwnerDocument;
-            if (document == null)
-                return;
 
-            var node = document.CreateNode(XmlNodeType.Element, "a", "");
-            var href = document.CreateAttribute("href");
-            href.Value = url;
-            node.Attributes?.Append(href);
-            node.InnerText = $"`{shortName}` on {hostName}";
-            externalDocNode.AppendChild(node);
+            if (element is IDeclaredElement el)
+            {
+                var moduleName = element.Module.Name;
+                if (moduleName.StartsWith("UnityEngine") || moduleName.StartsWith("UnityEditor"))
+                    myUnityExternalDocumentationLinkProvider.AddExternalDocumentationLink(result, el.ShortName);
+            }
+
+            return result;
         }
     }
 }

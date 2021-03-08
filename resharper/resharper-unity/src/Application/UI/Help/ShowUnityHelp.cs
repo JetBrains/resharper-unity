@@ -49,13 +49,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
             return keyword.Substring(12);
         }
 
+        public string HostName = "docs.unity3d.com";
+        
         [NotNull]
-        private Uri GetUri(string keyword)
+        public Uri GetUri(string keyword)
         {
             var documentationRoot = GetDocumentationRoot();
             return GetFileUri(documentationRoot, $"ScriptReference/{keyword}.html")
                    ?? GetFileUri(documentationRoot, $"ScriptReference/{keyword.Replace('.', '-')}.html")
-                   ?? new Uri($"https://docs.unity3d.com/ScriptReference/30_search.html?q={keyword}");
+                   ?? new Uri($"https://{HostName}{GetVersionSpecificPieceOfUrl()}/ScriptReference/30_search.html?q={keyword}");
+        }
+        
+        private string GetVersionSpecificPieceOfUrl()
+        {
+            var version = mySolutionsManager.Solution?.GetComponent<UnityVersion>().ActualVersionForSolution.Value;
+            if (version == null)
+                return string.Empty;
+            
+            // Version before 2017.1 has different format of version:
+            // https://docs.unity3d.com/560/Documentation/ScriptReference/MonoBehaviour.html
+            if (version < new Version(2017, 1))
+                return $"/{version.Major}{version.Minor}0/Documentation";
+            return $"{version.ToString(2)}/Documentation";
         }
 
         [NotNull]
