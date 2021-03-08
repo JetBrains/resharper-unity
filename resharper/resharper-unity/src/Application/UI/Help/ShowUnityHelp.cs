@@ -70,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
             // https://docs.unity3d.com/560/Documentation/ScriptReference/MonoBehaviour.html
             if (version < new Version(2017, 1))
                 return $"/{version.Major}{version.Minor}0/Documentation";
-            return $"{version.ToString(2)}/Documentation";
+            return $"/{version.ToString(2)}/Documentation";
         }
 
         [NotNull]
