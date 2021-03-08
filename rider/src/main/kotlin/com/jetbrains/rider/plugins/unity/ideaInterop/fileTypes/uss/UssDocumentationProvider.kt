@@ -1,7 +1,6 @@
 package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss
 
 import com.intellij.lang.documentation.DocumentationProvider
-import com.intellij.openapi.util.Couple
 import com.intellij.psi.PsiElement
 import com.intellij.psi.css.CssDescriptorOwner
 import com.intellij.psi.css.descriptor.CssElementDescriptor
@@ -46,9 +45,10 @@ class UssDocumentationProvider : DocumentationProvider {
             val presentableName = latestDescriptor.presentableName
             val doc = latestDescriptor.description
             if (latestDescriptor is CssValueOwnerDescriptor) {
-                val valueDesc = latestDescriptor.valuePresentableDescription
-                if (valueDesc != null) {
-                    return MdnDocumentationUtil.buildDoc(presentableName, doc, null, listOf(Couple.of("Values:", valueDesc)))
+                val valuesDescription = latestDescriptor.valuesDescription
+                val formalSyntax = latestDescriptor.formalSyntax
+                if (valuesDescription != null) {
+                    return MdnDocumentationUtil.buildDoc(presentableName, doc, null, formalSyntax, valuesDescription)
                 }
             }
             return if (doc.isNotEmpty()) {

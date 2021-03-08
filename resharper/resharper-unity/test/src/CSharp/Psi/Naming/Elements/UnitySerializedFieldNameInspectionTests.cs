@@ -1,4 +1,4 @@
-using JetBrains.ReSharper.Feature.Services.Naming;
+using JetBrains.ReSharper.Daemon.Specific.NamingConsistencyCheck;
 using JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis;
 using NUnit.Framework;
 
