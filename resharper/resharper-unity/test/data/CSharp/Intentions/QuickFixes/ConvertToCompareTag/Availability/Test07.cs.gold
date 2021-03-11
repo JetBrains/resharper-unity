@@ -4,7 +4,7 @@ public class Foo : MonoBehaviour
 {
     public void Method()
     {
-        if (|tag == |"Whatever"|(0)|(1) || |tag == |"Something"|(2)|(3)) { }
+        if (|tag == |"Whatever"|(0)|(1) ||||(2) |tag == |"Something"|(3)|(4)) { }
     }
 }
 
@@ -17,11 +17,17 @@ Convert to 'CompareTag'
 --Convert to 'CompareTag' in solution
 1: The tag is not defined in the 'Tags & Layers'. Expression will return 'false'.
 NO QUICKFIXES
-2: Explicit string comparison is inefficient, use 'CompareTag' instead
+2: Merge into logical pattern
+QUICKFIXES:
+Merge into pattern
+--Merge into pattern in file
+--Merge into pattern in project
+--Merge into pattern in solution
+3: Explicit string comparison is inefficient, use 'CompareTag' instead
 QUICKFIXES:
 Convert to 'CompareTag'
 --Convert to 'CompareTag' in file
 --Convert to 'CompareTag' in project
 --Convert to 'CompareTag' in solution
-3: The tag is not defined in the 'Tags & Layers'. Expression will return 'false'.
+4: The tag is not defined in the 'Tags & Layers'. Expression will return 'false'.
 NO QUICKFIXES

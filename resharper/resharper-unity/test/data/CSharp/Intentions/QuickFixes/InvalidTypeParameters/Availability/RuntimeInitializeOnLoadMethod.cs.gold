@@ -14,7 +14,7 @@ QUICKFIXES:
 Remove type parameters
 1: Type parameter 'T1' is never used
 QUICKFIXES:
-Remove redundant type parameter T1
+Remove redundant type parameter 'T1'
 2: Type parameter 'T2' is never used
 QUICKFIXES:
-Remove redundant type parameter T2
+Remove redundant type parameter 'T2'
