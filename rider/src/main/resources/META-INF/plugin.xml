@@ -274,6 +274,11 @@
             icon="UnityIcons.Actions.StartUnity"
             text="Show in Unity">
       <add-to-group group-id="SolutionExplorerPopupMenu" anchor="after" relative-to-action="RiderRevealFile"/>
+    </action>
+    <action id="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityFromExplorerAction"
+            class="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityFromExplorerAction"
+            icon="UnityIcons.Actions.StartUnity"
+            text="Unity">
       <add-to-group group-id="RevealGroup" anchor="last"/>
     </action>
   </actions>

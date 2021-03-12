@@ -14,7 +14,7 @@ import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solution
 import java.io.File
 
-class ShowFileInUnityAction : DumbAwareAction() {
+open class ShowFileInUnityAction : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         val file = getFile(e) ?: return
@@ -46,4 +46,9 @@ class ShowFileInUnityAction : DumbAwareAction() {
             model.showFileInUnity.fire(File(file.path).relativeTo(File(project.projectDir.path)).invariantSeparatorsPath)
         }
     }
+}
+
+class ShowFileInUnityFromExplorerAction: ShowFileInUnityAction() {
+    // This action should be used in Explorers (Solution/FileSystem/UnityExplorer) where we do not want to have 'open in' IDEA action group
+    // See RiderRevealFileAction and RIDER-52651
 }
