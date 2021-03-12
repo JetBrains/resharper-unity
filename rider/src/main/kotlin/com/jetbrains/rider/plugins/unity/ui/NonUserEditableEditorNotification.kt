@@ -12,7 +12,7 @@ import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityFromProjectViewAction
+import com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityAction
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.util.isNonEditableUnityFile
 import com.jetbrains.rider.projectView.solution
@@ -44,7 +44,7 @@ class NonUserEditableEditorNotification : EditorNotifications.Provider<EditorNot
         val model = project.solution.frontendBackendModel
 
         val link = panel.createActionLabel("Show in Unity") {
-            ShowFileInUnityFromProjectViewAction.execute(project, file)
+            ShowFileInUnityAction.execute(project, file)
         }
 
         link.isVisible = project.isConnectedToEditor()
