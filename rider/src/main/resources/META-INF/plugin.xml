@@ -271,9 +271,8 @@
     </group>
     <action class="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityFromProjectViewAction"
             id="ShowFileInUnityFromProjectView"
-            text="Show Opened File in Unity"
             icon="UnityIcons.Actions.StartUnity">
-      <add-to-group group-id="ProjectViewToolbar" anchor="before" relative-to-action="SelectInProjectView"/>
+      <add-to-group group-id="SolutionExplorerPopupMenu" anchor="after" relative-to-action="RiderRevealFile"/>
     </action>
   </actions>
 

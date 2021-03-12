@@ -44,7 +44,7 @@ class NonUserEditableEditorNotification : EditorNotifications.Provider<EditorNot
         val model = project.solution.frontendBackendModel
 
         val link = panel.createActionLabel("Show in Unity") {
-            ShowFileInUnityFromProjectViewAction.showFileInUnity(project, file)
+            ShowFileInUnityFromProjectViewAction.execute(project, file)
         }
 
         link.isVisible = project.isConnectedToEditor()
