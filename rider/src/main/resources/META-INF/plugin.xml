@@ -269,6 +269,12 @@
               text="Dump Spell Check Word Lists"
               internal="true" />
     </group>
+    <action class="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityFromProjectViewAction"
+            id="ShowFileInUnityFromProjectView"
+            text="Show Opened File in Unity"
+            icon="UnityIcons.Actions.StartUnity">
+      <add-to-group group-id="ProjectViewToolbar" anchor="before" relative-to-action="SelectInProjectView"/>
+    </action>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
