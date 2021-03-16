@@ -26,6 +26,7 @@ open class ShowFileInUnityAction : DumbAwareAction() {
     override fun update(e: AnActionEvent) {
         val project = e.project ?: return
         // see `com.intellij.ide.actions.RevealFileAction.update`
+        // Cleanup context menu on selection (IDEA-245559)
         val editor = e.getData(CommonDataKeys.EDITOR)
         e.presentation.isEnabledAndVisible = project.isUnityProjectFolder() && getFile(e) != null &&
                 (!ActionPlaces.isPopupPlace(e.place) || editor == null || !editor.selectionModel.hasSelection())
