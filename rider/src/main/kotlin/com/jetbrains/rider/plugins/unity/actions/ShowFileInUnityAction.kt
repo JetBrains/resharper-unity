@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.actions
 
 import com.intellij.ide.actions.RevealFileAction
+import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.project.DumbAwareAction
@@ -24,7 +25,11 @@ open class ShowFileInUnityAction : DumbAwareAction() {
 
     override fun update(e: AnActionEvent) {
         val project = e.project ?: return
-        e.presentation.isVisible = project.isUnityProjectFolder()
+        // see `com.intellij.ide.actions.RevealFileAction.update`
+        val editor = e.getData(CommonDataKeys.EDITOR)
+        e.presentation.isEnabledAndVisible = project.isUnityProjectFolder() && getFile(e) != null &&
+                (!ActionPlaces.isPopupPlace(e.place) || editor == null || !editor.selectionModel.hasSelection())
+
         e.presentation.isEnabled = project.isConnectedToEditor()
         super.update(e)
     }
