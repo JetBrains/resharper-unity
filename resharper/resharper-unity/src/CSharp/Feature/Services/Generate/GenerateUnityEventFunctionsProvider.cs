@@ -4,10 +4,10 @@ using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.CSharp.Generate;
 using JetBrains.ReSharper.Feature.Services.Generate;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures;
@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
 
         public override void Populate(CSharpGeneratorContext context)
         {
-            if (!context.Project.IsUnityProject())
+            if (!context.ClassDeclaration.IsFromUnityProject())
                 return;
 
             if (!(context.ClassDeclaration.DeclaredElement is IClass typeElement))
@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
             var factory = CSharpElementFactory.GetInstance(context.ClassDeclaration);
             var elements = new List<GeneratorDeclaredElement>();
 
-            var unityVersion = myUnityVersion.GetActualVersion(context.Project);
+            var unityVersion = myUnityVersion.GetActualVersion(context.ClassDeclaration.GetProject());
             var eventFunctions = myUnityApi.GetEventFunctions(typeElement, unityVersion);
 
             foreach (var eventFunction in eventFunctions.OrderBy(e => e.Name, new UnityEventFunctionComparer()))
