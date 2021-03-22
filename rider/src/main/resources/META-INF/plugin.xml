@@ -30,9 +30,6 @@
     <!--suppress PluginXmlValidity -->
     <ignoredFileProvider implementation="com.jetbrains.rider.plugins.unity.UnityIgnoredFileProvider"/>
 
-    <!-- This has to be order="first", as the default Rider handler returns an empty list instead of null, and IJ considers that handled -->
-    <lang.documentationProvider language="C#" implementationClass="com.jetbrains.rider.plugins.unity.quickDoc.UnityDocumentationProvider" order="first" />
-
     <!-- For future reference, fileTypeFactory[@id] defines the name used in the @language attributes of the other
          registration elements. This @id MUST match the value returned by FileType.getName() - case sensitive! -->
 

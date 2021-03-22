@@ -1,12 +1,17 @@
 using System.Xml;
 using JetBrains.Application.UI.Help;
-using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Navigation;
 using JetBrains.ReSharper.Feature.Services.QuickDoc;
 using JetBrains.ReSharper.Feature.Services.QuickDoc.Providers;
 using JetBrains.ReSharper.Feature.Services.QuickDoc.Render;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
+#if RIDER
+using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Host.Features.QuickDoc.XmlDocLink;
+using JetBrains.ReSharper.Plugins.Unity.Application.UI.Help;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp;
+#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 {
@@ -70,8 +75,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             if (!string.IsNullOrWhiteSpace(description))
             {
                 details.CreateLeafElementWithValue("summary", description);
-                element.GetPsiServices().Solution.GetComponent<UnityExternalDocumentationLinkProvider>()
-                    .AddExternalDocumentationLink(details, element.ShortName);
+#if RIDER
+                var uri = element.GetPsiServices().Solution.GetComponent<UnityCompiledElementOnlineHelpProvider>().GetUrl(element);
+                if (uri != null) 
+                    CompiledElementXmlDocLinkManager.AppendExternalDocumentationLink(uri, ShowUnityHelp.HostName, element.ShortName, details);
+#endif
             }
 
             return details;

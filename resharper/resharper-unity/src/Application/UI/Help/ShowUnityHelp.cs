@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
             return keyword.Substring(12);
         }
 
-        public string HostName = "docs.unity3d.com";
+        public static string HostName = "docs.unity3d.com";
         
         [NotNull]
         public Uri GetUri(string keyword)
