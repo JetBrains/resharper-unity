@@ -3,6 +3,6 @@
     <!-- This is the nuget package version. AssemblyVersion and AssemblyFileVersion are parsed from this.
          Note that the build number cannot be zero, or it is dropped, e.g. 1.0.0.0 becomes 1.0.0
          See https://github.com/NuGet/Home/issues/3050 -->
-    <Version Condition="'$(Version)'==''">2021.1.0.9998</Version>
+    <Version Condition="'$(Version)'==''">2021.2.0.9998</Version>
   </PropertyGroup>
 </Project>

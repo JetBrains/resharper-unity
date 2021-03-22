@@ -12,12 +12,10 @@ import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityAction
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
-import com.jetbrains.rider.plugins.unity.util.Utils.Companion.AllowUnitySetForegroundWindow
 import com.jetbrains.rider.plugins.unity.util.isNonEditableUnityFile
-import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solution
-import java.io.File
 
 class NonUserEditableEditorNotification : EditorNotifications.Provider<EditorNotificationPanel>(), DumbAware {
 
@@ -46,11 +44,7 @@ class NonUserEditableEditorNotification : EditorNotifications.Provider<EditorNot
         val model = project.solution.frontendBackendModel
 
         val link = panel.createActionLabel("Show in Unity") {
-            val value = model.unityApplicationData.valueOrNull?.unityProcessId
-            if (value != null)
-                AllowUnitySetForegroundWindow(value)
-
-            model.showFileInUnity.fire(File(file.path).relativeTo(File(project.projectDir.path)).invariantSeparatorsPath)
+            ShowFileInUnityAction.execute(project, file)
         }
 
         link.isVisible = project.isConnectedToEditor()
