@@ -24,7 +24,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
         {
             if (kind != HelpSystem.HelpKind.Msdn) return false;
             if (!IsUnityKeyword(keyword)) return false;
-
             keyword = StripPrefix(keyword);
 
             var uri = GetUri(keyword);
@@ -55,6 +54,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
         [NotNull]
         public Uri GetUri(string keyword)
         {
+
+
             var documentationRoot = GetDocumentationRoot();
             return GetFileUri(documentationRoot, $"ScriptReference/{keyword}.html")
                    ?? GetFileUri(documentationRoot, $"ScriptReference/{keyword.Replace('.', '-')}.html")
