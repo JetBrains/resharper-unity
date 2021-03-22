@@ -24,23 +24,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly FrontendBackendModel myFrontendBackendModel;
 
         public UnityNUnitServiceProvider(ISolution solution,
-                                         IPsiModules psiModules,
-                                         ISymbolCache symbolCache,
-                                         IUnitTestElementIdFactory idFactory,
-                                         IUnitTestElementManager elementManager,
-                                         NUnitTestProvider provider,
-                                         IUnitTestingSettings settings,
-                                         ISettingsStore settingsStore,
-                                         ISettingsOptimization settingsOptimization,
-                                         ISettingsCache settingsCache,
-                                         UnitTestingCachingService cachingService,
-                                         INUnitTestParametersProvider testParametersProvider,
-                                         FrontendBackendHost frontendBackendHost,
-                                         BackendUnityHost backendUnityHost,
-                                         RunViaUnityEditorStrategy runViaUnityEditorStrategy,
-                                         UnitySolutionTracker unitySolutionTracker)
-            : base(solution, psiModules, symbolCache, idFactory, elementManager, provider, settings, settingsStore,
-                settingsOptimization, settingsCache, cachingService, testParametersProvider)
+            IPsiModules psiModules,
+            ISymbolCache symbolCache,
+            IUnitTestElementIdFactory idFactory,
+            IUnitTestElementManager elementManager,
+            NUnitTestProvider provider,
+            IUnitTestingSettings settings,
+            ISettingsStore settingsStore,
+            ISettingsOptimization settingsOptimization,
+            ISettingsCache settingsCache,
+            UnitTestingCachingService cachingService,
+            INUnitTestParametersProvider testParametersProvider,
+            FrontendBackendHost frontendBackendHost,
+            BackendUnityHost backendUnityHost,
+            RunViaUnityEditorStrategy runViaUnityEditorStrategy,
+            UnitySolutionTracker unitySolutionTracker)
+            : base(solution,
+                psiModules,
+                symbolCache,
+                idFactory,
+                elementManager,
+                provider,
+                cachingService)
         {
             // Only in tests
             if (!frontendBackendHost.IsAvailable)
@@ -57,14 +62,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return IsUnityUnitTestStrategy() ? myUnityEditorStrategy : base.GetRunStrategy(element);
         }
 
-        public static bool IsUnityUnitTestStrategy(UnitySolutionTracker unitySolutionTracker, FrontendBackendModel frontendBackendModel, BackendUnityHost backendUnityHost)
+        public static bool IsUnityUnitTestStrategy(UnitySolutionTracker unitySolutionTracker,
+            FrontendBackendModel frontendBackendModel, BackendUnityHost backendUnityHost)
         {
             if (!unitySolutionTracker.IsUnityProjectFolder.HasTrueValue())
                 return false;
 
             // first run from gutter mark should try to run in Unity by default. https://github.com/JetBrains/resharper-unity/issues/605
-            return !frontendBackendModel.UnitTestPreference.HasValue() && backendUnityHost.BackendUnityModel.Value != null ||
-                   (frontendBackendModel.UnitTestPreference.HasValue() && frontendBackendModel.UnitTestPreference.Value != UnitTestLaunchPreference.NUnit);
+            return !frontendBackendModel.UnitTestPreference.HasValue() &&
+                   backendUnityHost.BackendUnityModel.Value != null ||
+                   (frontendBackendModel.UnitTestPreference.HasValue() &&
+                    frontendBackendModel.UnitTestPreference.Value != UnitTestLaunchPreference.NUnit);
         }
 
         public bool IsUnityUnitTestStrategy()

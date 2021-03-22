@@ -1,0 +1,5 @@
+<assembly name="UnityEngine.TestRunner">
+  <member name="T:UnityEngine.TestTools.UnitySetUpAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+</assembly>
