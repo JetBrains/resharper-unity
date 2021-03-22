@@ -70,8 +70,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             if (!string.IsNullOrWhiteSpace(description))
             {
                 details.CreateLeafElementWithValue("summary", description);
-                var component = element.GetPsiServices().Solution.GetComponent<UnityExternalDocumentationLinkProvider>();
-                component.AddExternalDocumentationLink(details, element.ShortName);
+                element.GetPsiServices().Solution.GetComponent<UnityExternalDocumentationLinkProvider>()
+                    .AddExternalDocumentationLink(details, element.ShortName);
             }
 
             return details;

@@ -4,6 +4,7 @@ using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.QuickDoc;
+using JetBrains.ReSharper.Host.Features.QuickDoc.XmlDocLink;
 using JetBrains.ReSharper.Host.Features.Toolset;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Impl.Reflection2;
@@ -17,8 +18,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
         private readonly UnityExternalDocumentationLinkProvider myUnityExternalDocumentationLinkProvider;
 
         public UnityCompiledElementXmlDocProvider(RiderApplicationRuntime applicationRuntime, ILogger logger,
-            Lifetime lifetime, ISettingsStore settingsStore, ISolution solution, IThreading threading, UnityExternalDocumentationLinkProvider unityExternalDocumentationLinkProvider)
-            : base(applicationRuntime, logger, lifetime, settingsStore, solution, threading)
+            Lifetime lifetime, ISettingsStore settingsStore, ISolution solution, IThreading threading, 
+            UnityExternalDocumentationLinkProvider unityExternalDocumentationLinkProvider,
+            CompiledElementXmlDocLinkManager compiledElementXmlDocLink)
+            : base(
+                applicationRuntime,
+                logger,
+                lifetime,
+                threading,
+                compiledElementXmlDocLink)
         {
             myUnityExternalDocumentationLinkProvider = unityExternalDocumentationLinkProvider;
         }
