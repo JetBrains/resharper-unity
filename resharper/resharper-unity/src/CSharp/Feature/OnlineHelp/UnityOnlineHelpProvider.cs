@@ -1,56 +1,47 @@
 using System;
-using JetBrains.ProjectModel;
+using JetBrains.Application;
 using JetBrains.ReSharper.Feature.Services.OnlineHelp;
 using JetBrains.ReSharper.Psi;
-using JetBrains.Util;
-using JetBrains.Util.Dotnet.TargetFrameworkIds;
+using JetBrains.ReSharper.Psi.Modules;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
 {
-  [SolutionComponent]
-  public class UnityOnlineHelpProvider : IOnlineHelpProvider
-  {
-    public Uri GetUrl(ICompiledElement element,
-      TargetFrameworkId targetFrameworkId,
-      FileSystemPath assemblyLocation)
+    [ShellComponent]
+    public class UnityOnlineHelpProvider : IOnlineHelpProvider
     {
-      if (assemblyLocation == null || !assemblyLocation.ExistsFile)
-        return null;
+        private static Uri GetUnityUri(ICompiledElement element)
+        {
+            var searchableText = element.GetSearchableText();
+            return searchableText == null
+                ? null
+                : new Uri($"http://www.unity.com/search?q={Uri.EscapeDataString(searchableText)}");
+        }
 
-      if (!(assemblyLocation.Name.StartsWith("UnityEngine") || assemblyLocation.Name.StartsWith("UnityEditor")))
-        return null;
-      return GetUnityUri(element);
-    }
+        public Uri GetUrl(IDeclaredElement element)
+        {
+            if (element is ICompiledElement el)
+            {
+                if (!(el.Module is IAssemblyPsiModule module)) return null;
+                if (!(element is ITypeElement || element is ITypeMember)) return null;
 
-    public int GetPriority()
-    {
-      return 20;
-    }
+                var assemblyLocation = module.Assembly.Location;
+                if (assemblyLocation == null || !assemblyLocation.ExistsFile)
+                    return null;
 
-    public bool IsAsync()
-    {
-      return false;
-    }
-    
-    public static Uri GetUnityUri(ICompiledElement element)
-    {
-      var searchableText = element.GetSearchableText();
-      return searchableText == null
-        ? null
-        : new Uri($"http://www.unity.com/search?q={Uri.EscapeDataString(searchableText)}");
-    }
+                if (!(assemblyLocation.Name.StartsWith("UnityEngine") || assemblyLocation.Name.StartsWith("UnityEditor")))
+                    return null;
+                return GetUnityUri(el);
+            }
 
-    public Uri GetUrl(IDeclaredElement element)
-    {
-        throw new NotImplementedException();
-    }
+            return null;
+        }
 
-    public bool IsAvailable(IDeclaredElement element)
-    {
-        throw new NotImplementedException();
-    }
+        public bool IsAvailable(IDeclaredElement element)
+        {
+            return true;
+        }
 
-    public int Priority { get; }
-    public bool ShouldValidate { get; }
-  }
+        public int Priority => 20;
+        public bool ShouldValidate => false;
+    }
 }
