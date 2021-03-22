@@ -49,17 +49,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
             return keyword.Substring(12);
         }
 
-        public static string HostName = "docs.unity3d.com";
-        
         [NotNull]
         public Uri GetUri(string keyword)
         {
-
-
             var documentationRoot = GetDocumentationRoot();
             return GetFileUri(documentationRoot, $"ScriptReference/{keyword}.html")
                    ?? GetFileUri(documentationRoot, $"ScriptReference/{keyword.Replace('.', '-')}.html")
-                   ?? new Uri($"https://{HostName}{GetVersionSpecificPieceOfUrl()}/ScriptReference/30_search.html?q={keyword}");
+                   ?? new Uri($"https://docs.unity3d.com{GetVersionSpecificPieceOfUrl()}/ScriptReference/30_search.html?q={keyword}");
         }
         
         private string GetVersionSpecificPieceOfUrl()

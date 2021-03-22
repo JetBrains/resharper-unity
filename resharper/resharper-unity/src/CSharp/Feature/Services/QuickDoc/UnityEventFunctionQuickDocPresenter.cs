@@ -8,8 +8,8 @@ using JetBrains.ReSharper.Feature.Services.QuickDoc.Render;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Application.UI.Help;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp;
+using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 {
@@ -75,14 +75,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
                 details.CreateLeafElementWithValue("summary", description);
                 var uri = element.GetPsiServices().Solution.GetComponent<UnityOnlineHelpProvider>().GetUrl(element);
                 if (uri != null)
-                    AppendExternalDocumentationLink(uri, ShowUnityHelp.HostName, element.ShortName, details);
+                    AppendExternalDocumentationLink(uri, element.ShortName, details);
             }
 
             return details;
         }
 
         // copied from `CompiledElementXmlDocLinkManager`
-        private static void AppendExternalDocumentationLink(Uri url, string hostName, string shortName,
+        private static void AppendExternalDocumentationLink(Uri url, string shortName,
             XmlNode externalDocNode)
         {
             var document = externalDocNode.OwnerDocument;
@@ -94,7 +94,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             var href = document.CreateAttribute("href");
             href.Value = url.AbsoluteUri;
             node.Attributes?.Append(href);
-            node.InnerText = $"`{shortName}` on {hostName}";
+            node.InnerText = url.IsFile
+                ? $"External documentation for `{shortName}`"
+                : $"`{shortName}` on {url.Host.RemoveStart("www.")}";
+            
             footer.AppendChild(node);
             externalDocNode.AppendChild(footer);
         }
