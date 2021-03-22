@@ -1,3 +1,4 @@
+using System;
 using System.Xml;
 using JetBrains.Application.UI.Help;
 using JetBrains.ReSharper.Feature.Services.Navigation;
@@ -6,12 +7,9 @@ using JetBrains.ReSharper.Feature.Services.QuickDoc.Providers;
 using JetBrains.ReSharper.Feature.Services.QuickDoc.Render;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
-#if RIDER
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Host.Features.QuickDoc.XmlDocLink;
 using JetBrains.ReSharper.Plugins.Unity.Application.UI.Help;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp;
-#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 {
@@ -75,14 +73,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             if (!string.IsNullOrWhiteSpace(description))
             {
                 details.CreateLeafElementWithValue("summary", description);
-#if RIDER
-                var uri = element.GetPsiServices().Solution.GetComponent<UnityCompiledElementOnlineHelpProvider>().GetUrl(element);
-                if (uri != null) 
-                    CompiledElementXmlDocLinkManager.AppendExternalDocumentationLink(uri, ShowUnityHelp.HostName, element.ShortName, details);
-#endif
+                var uri = element.GetPsiServices().Solution.GetComponent<UnityOnlineHelpProvider>().GetUrl(element);
+                if (uri != null)
+                    AppendExternalDocumentationLink(uri, ShowUnityHelp.HostName, element.ShortName, details);
             }
 
             return details;
+        }
+
+        // copied from `CompiledElementXmlDocLinkManager`
+        private static void AppendExternalDocumentationLink(Uri url, string hostName, string shortName,
+            XmlNode externalDocNode)
+        {
+            var document = externalDocNode.OwnerDocument;
+            if (document == null)
+                return;
+
+            var footer = document.CreateNode(XmlNodeType.Element, "footer", "");
+            var node = document.CreateNode(XmlNodeType.Element, "a", "");
+            var href = document.CreateAttribute("href");
+            href.Value = url.AbsoluteUri;
+            node.Attributes?.Append(href);
+            node.InnerText = $"`{shortName}` on {hostName}";
+            footer.AppendChild(node);
+            externalDocNode.AppendChild(footer);
         }
 
         private XmlElement CreateMemberElement(IDeclaredElement element)

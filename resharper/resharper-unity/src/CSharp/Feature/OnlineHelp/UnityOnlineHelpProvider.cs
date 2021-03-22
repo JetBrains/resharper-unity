@@ -19,6 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
 
         public Uri GetUrl(IDeclaredElement element)
         {
+            if (!IsAvailable(element)) return null;
             var unityApi = element.GetSolution().GetComponent<UnityApi>();
             var name = element.GetUnityEventFunctionName(unityApi);
             if (!ShowUnityHelp.IsUnityKeyword(name)) return null;

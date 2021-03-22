@@ -2,8 +2,8 @@ using System;
 using JetBrains.Application;
 using JetBrains.ReSharper.Feature.Services.OnlineHelp;
 using JetBrains.ReSharper.Plugins.Unity.Application.UI.Help;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Modules;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
 {
@@ -16,26 +16,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
         {
             myShowUnityHelp = showUnityHelp;
         }
-        
-        public override bool IsAvailable(IDeclaredElement element)
-        {
-            return element.IsFromUnityProject() && base.IsAvailable(element);
-        }
 
         public override Uri GetUrl(ICompiledElement element)
         {
-            if (!(element.Module is IAssemblyPsiModule module)) return null;
-            if (!(element is ITypeElement || element is ITypeMember)) return null;
-
-            if (!element.IsFromUnityProject()) return null;
-
-            var assemblyLocation = module.Assembly.Location;
-            if (assemblyLocation == null || !assemblyLocation.ExistsFile)
-                return null;
-
-            if (!(assemblyLocation.Name.StartsWith("UnityEngine") || assemblyLocation.Name.StartsWith("UnityEditor")))
-                return null;
-            
+            if (!element.GetSolution().HasUnityReference()) return null;
+            if (!element.IsBuiltInUnityClass()) return null;
             var searchableText = element.GetSearchableText();
             return searchableText == null
                 ? null
