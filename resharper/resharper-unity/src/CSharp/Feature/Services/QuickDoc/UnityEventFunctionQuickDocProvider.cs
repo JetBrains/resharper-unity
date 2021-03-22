@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using JetBrains.Application.DataContext;
-using JetBrains.Application.UI.Components.Theming;
 using JetBrains.Application.UI.Help;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers;
@@ -15,7 +14,6 @@ using JetBrains.ReSharper.Feature.Services.Util;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 {

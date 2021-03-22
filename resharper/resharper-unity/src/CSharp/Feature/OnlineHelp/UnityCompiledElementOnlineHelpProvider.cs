@@ -16,11 +16,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
         {
             myShowUnityHelp = showUnityHelp;
         }
+        
+        public override bool IsAvailable(IDeclaredElement element)
+        {
+            return element.IsFromUnityProject() && base.IsAvailable(element);
+        }
 
         public override Uri GetUrl(ICompiledElement element)
         {
             if (!(element.Module is IAssemblyPsiModule module)) return null;
             if (!(element is ITypeElement || element is ITypeMember)) return null;
+
+            if (!element.IsFromUnityProject()) return null;
 
             var assemblyLocation = module.Assembly.Location;
             if (assemblyLocation == null || !assemblyLocation.ExistsFile)

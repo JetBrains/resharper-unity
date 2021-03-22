@@ -37,13 +37,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
         public double Priority => 0;
         public HelpSystem.HelpKind[] SupportedKinds => new[] {HelpSystem.HelpKind.Msdn};
 
-        private static bool IsUnityKeyword(string keyword)
+        public static bool IsUnityKeyword(string keyword)
         {
-            return keyword.StartsWith("UnityEngine.", StringComparison.OrdinalIgnoreCase)
-                   || keyword.StartsWith("UnityEditor.", StringComparison.OrdinalIgnoreCase);
+            return keyword !=null && 
+                   (keyword.StartsWith("UnityEngine.", StringComparison.OrdinalIgnoreCase)
+                   || keyword.StartsWith("UnityEditor.", StringComparison.OrdinalIgnoreCase));
         }
 
-        private static string StripPrefix(string keyword)
+        public static string StripPrefix(string keyword)
         {
             // We know the string starts with `UnityEngine.` or `UnityEditor.`
             return keyword.Substring(12);
