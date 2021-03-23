@@ -85,6 +85,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
         private static void AppendExternalDocumentationLink(Uri url, string shortName,
             XmlNode externalDocNode)
         {
+            if (url == null)
+                return;
+            
             var document = externalDocNode.OwnerDocument;
             if (document == null)
                 return;

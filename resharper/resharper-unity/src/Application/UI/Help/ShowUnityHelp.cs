@@ -86,7 +86,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
                 return null;
 
             var fileSystemPath = documentationRoot/htmlPath;
-            return fileSystemPath.ExistsFile ? fileSystemPath.ToUri() : null;
+            return fileSystemPath.IsAbsolute && fileSystemPath.ExistsFile ? fileSystemPath.ToUri() : null;
         }
     }
 }
