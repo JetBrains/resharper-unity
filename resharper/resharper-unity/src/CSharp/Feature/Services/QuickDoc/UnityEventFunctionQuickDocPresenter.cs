@@ -74,8 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             {
                 details.CreateLeafElementWithValue("summary", description);
                 var uri = element.GetPsiServices().Solution.GetComponent<UnityOnlineHelpProvider>().GetUrl(element);
-                if (uri != null)
-                    AppendExternalDocumentationLink(uri, element.ShortName, details);
+                AppendExternalDocumentationLink(uri, element.ShortName, details);
             }
 
             return details;
