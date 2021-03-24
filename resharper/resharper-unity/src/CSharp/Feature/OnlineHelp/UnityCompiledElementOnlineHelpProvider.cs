@@ -35,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
 
             return myShowUnityHelp.GetUri(searchableText);
         }
-        
+
         [Pure, CanBeNull]
         private static string GetSearchableText(ICompiledElement compiledElement)
         {
@@ -43,7 +43,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
             {
                 return compiledElement.ShortName;
             }
-            return ShowUnityHelp.StripPrefix(compiledElement.GetSearchableText());
+
+            if (compiledElement is IProperty property)
+            {
+                var containingType = property.GetContainingType();
+                if (containingType != null)
+                    return ShowUnityHelp.FormatDocumentationKeyword(containingType.GetClrName() + "-" + property.ShortName);
+            }
+
+            return ShowUnityHelp.FormatDocumentationKeyword(compiledElement.GetSearchableText());
         }
 
         public override int Priority => 10;
