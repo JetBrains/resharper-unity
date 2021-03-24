@@ -23,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
             var unityApi = element.GetSolution().GetComponent<UnityApi>();
             var keyword = element.GetUnityEventFunctionName(unityApi);
             keyword = ShowUnityHelp.FormatDocumentationKeyword(keyword);
+            if (keyword == null) return null;
             return myShowUnityHelp.GetUri(keyword);
         }
 

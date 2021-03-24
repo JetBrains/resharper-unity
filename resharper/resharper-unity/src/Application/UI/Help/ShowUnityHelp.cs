@@ -59,14 +59,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
         }
 
         [NotNull]
-        public Uri GetUri(string keyword)
+        public Uri GetUri([NotNull] string keyword)
         {
             var documentationRoot = GetDocumentationRoot();
             return GetFileUri(documentationRoot, $"ScriptReference/{keyword}.html")
                    ?? GetFileUri(documentationRoot, $"ScriptReference/{keyword.Replace('.', '-')}.html")
                    ?? new Uri($"https://docs.unity3d.com{GetVersionSpecificPieceOfUrl()}/ScriptReference/30_search.html?q={keyword}");
         }
-        
+
         private string GetVersionSpecificPieceOfUrl()
         {
             var version = mySolutionsManager.Solution?.GetComponent<UnityVersion>().ActualVersionForSolution.Value;
