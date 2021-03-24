@@ -1,4 +1,3 @@
-using System;
 using System.Xml;
 using JetBrains.Application.UI.Help;
 using JetBrains.ReSharper.Feature.Services.Navigation;
@@ -9,7 +8,6 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp;
-using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 {
@@ -70,38 +68,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
                 description = myEventFunction.GetParameter(myParameterName)?.Description;
 
             var details = CreateMemberElement(element);
-            if (!string.IsNullOrWhiteSpace(description))
-            {
-                details.CreateLeafElementWithValue("summary", description);
-                var uri = element.GetPsiServices().Solution.GetComponent<UnityOnlineHelpProvider>().GetUrl(element);
-                AppendExternalDocumentationLink(uri, element.ShortName, details);
-            }
+            if (string.IsNullOrWhiteSpace(description)) return details;
+            details.CreateLeafElementWithValue("summary", description);
+            if (!element.GetPsiServices().Solution.HasComponent<IXmlDocLinkAppender>()) return details;
+            var uri = element.GetPsiServices().Solution.GetComponent<UnityOnlineHelpProvider>().GetUrl(element);
+            element.GetPsiServices().Solution.GetComponent<IXmlDocLinkAppender>().AppendExternalDocumentationLink(uri, element.ShortName, details);
 
             return details;
-        }
-
-        // copied from `CompiledElementXmlDocLinkManager`
-        private static void AppendExternalDocumentationLink(Uri url, string shortName,
-            XmlNode externalDocNode)
-        {
-            if (url == null)
-                return;
-            
-            var document = externalDocNode.OwnerDocument;
-            if (document == null)
-                return;
-
-            var footer = document.CreateNode(XmlNodeType.Element, "footer", "");
-            var node = document.CreateNode(XmlNodeType.Element, "a", "");
-            var href = document.CreateAttribute("href");
-            href.Value = url.AbsoluteUri;
-            node.Attributes?.Append(href);
-            node.InnerText = url.IsFile
-                ? $"External documentation for `{shortName}`"
-                : $"`{shortName}` on {url.Host.RemoveStart("www.")}";
-            
-            footer.AppendChild(node);
-            externalDocNode.AppendChild(footer);
         }
 
         private XmlElement CreateMemberElement(IDeclaredElement element)
