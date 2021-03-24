@@ -78,7 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (unityEventFunction == null)
                 return null;
 
-            return unityEventFunction.TypeName.GetFullNameFast() + "." + element.ShortName;
+            return unityEventFunction.TypeName.GetFullNameFast() + "." + method.ShortName; // RIDER-60297
         }
 
         public static bool IsUnityComponent(this ITypeElement typeElement, out bool isBuiltin)
