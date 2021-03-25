@@ -79,7 +79,7 @@
     <PsiLanguageNames Include="ShaderLab">
       <Visible>False</Visible>
     </PsiLanguageNames>
-    <CsLex Include="ShaderLab\Psi\Parsing\ShaderLab.lex" References="JsonNew\Psi\Parsing\Chars.lex" />
+    <CsLex Include="ShaderLab\Psi\Parsing\ShaderLab.lex" References="ShaderLab\Psi\Parsing\Chars.lex" />
     <TokenGenerator Include="ShaderLab\Psi\Parsing\ShaderLabTokenType.Tokens.xml">
       <OutputFile>ShaderLab\Psi\Parsing\ShaderLabTokenType.Tokens.generated.cs</OutputFile>
     </TokenGenerator>
