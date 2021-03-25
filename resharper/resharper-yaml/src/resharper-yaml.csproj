@@ -18,7 +18,7 @@
     <PsiLanguageNames Include="Yaml">
       <Visible>False</Visible>
     </PsiLanguageNames>
-    <CsLex Include="Psi\Parsing\Yaml.lex" />
+    <CsLex Include="Psi\Parsing\Yaml.lex" References="Psi\Parsing\Chars.lex"/>
     <TokenGenerator Include="Psi\Parsing\YamlTokenType.Tokens.xml">
       <OutputFile>Psi\Parsing\YamlTokenType.Tokens.generated.cs</OutputFile>
     </TokenGenerator>
