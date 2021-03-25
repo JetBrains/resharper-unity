@@ -1,4 +1,4 @@
-﻿%include PsiTasks/Unicode.lex
+﻿%include Unicode.lex
 
 NULL_CHAR=\u0000
 
