@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
             return element.IsFromUnityProject();
         }
 
-        public int Priority => 20;
+        public int Priority => 20; // for now there are no other providers like this one
         public bool ShouldValidate => false;
     }
 }

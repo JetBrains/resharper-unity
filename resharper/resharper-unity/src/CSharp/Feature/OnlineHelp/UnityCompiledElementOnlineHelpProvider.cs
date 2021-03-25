@@ -53,8 +53,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
 
             return ShowUnityHelp.FormatDocumentationKeyword(compiledElement.GetSearchableText());
         }
-
-        public override int Priority => 10;
+        
+        // same priority as MsdnOnlineHelpProvider,
+        // but this provider only applies to Unity* assemblies and MSDN only applies to Microsoft/Mono
+        public override int Priority => 10; 
         public override bool ShouldValidate => false;
     }
 }
