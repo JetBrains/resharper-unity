@@ -189,5 +189,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
         timeFilters.onChanged.advise(lifetime) { fire() }
         events.onChanged.advise(lifetime) { fire() }
         mergeSimilarItems.advise(lifetime) { fire() }
+        project.solution.frontendBackendModel.consoleLogging.lastInitTime.advise(lifetime){ fire() }
+        project.solution.frontendBackendModel.consoleLogging.lastPlayTime.advise(lifetime){ fire() }
     }
 }
