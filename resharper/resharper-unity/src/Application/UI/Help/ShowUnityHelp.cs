@@ -24,7 +24,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
         {
             if (kind != HelpSystem.HelpKind.Msdn) return false;
             if (!IsUnityKeyword(keyword)) return false;
-
             keyword = StripPrefix(keyword);
 
             var uri = GetUri(keyword);
@@ -49,13 +48,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
             return keyword.Substring(12);
         }
 
+        public static string FormatDocumentationKeyword(string keyword)
+        {
+            if (keyword == null)
+                return null;
+
+            if (IsUnityKeyword(keyword))
+                return StripPrefix(keyword);
+            return keyword;
+        }
+
         [NotNull]
-        private Uri GetUri(string keyword)
+        public Uri GetUri([NotNull] string keyword)
         {
             var documentationRoot = GetDocumentationRoot();
             return GetFileUri(documentationRoot, $"ScriptReference/{keyword}.html")
                    ?? GetFileUri(documentationRoot, $"ScriptReference/{keyword.Replace('.', '-')}.html")
-                   ?? new Uri($"https://docs.unity3d.com/ScriptReference/30_search.html?q={keyword}");
+                   ?? new Uri($"https://docs.unity3d.com{GetVersionSpecificPieceOfUrl()}/ScriptReference/30_search.html?q={keyword}");
+        }
+
+        private string GetVersionSpecificPieceOfUrl()
+        {
+            var version = mySolutionsManager.Solution?.GetComponent<UnityVersion>().ActualVersionForSolution.Value;
+            if (version == null)
+                return string.Empty;
+            
+            // Version before 2017.1 has different format of version:
+            // https://docs.unity3d.com/560/Documentation/ScriptReference/MonoBehaviour.html
+            if (version < new Version(2017, 1))
+                return $"/{version.Major}{version.Minor}0/Documentation";
+            return $"/{version.ToString(2)}/Documentation";
         }
 
         [NotNull]
@@ -63,7 +85,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
         {
             var appPath = mySolutionsManager.Solution?.GetComponent<UnityVersion>().GetActualAppPathForSolution();
             var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(appPath);
-            return contentsPath.Combine(@"Documentation/en");
+            var root = contentsPath.Combine("Documentation");
+            var englishRoot = root.Combine("en");
+            if (!englishRoot.ExistsDirectory)
+                return root.GetChildDirectories().FirstOrDefault(englishRoot);
+            return englishRoot;
         }
 
         [CanBeNull]
@@ -73,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
                 return null;
 
             var fileSystemPath = documentationRoot/htmlPath;
-            return fileSystemPath.ExistsFile ? fileSystemPath.ToUri() : null;
+            return fileSystemPath.IsAbsolute && fileSystemPath.ExistsFile ? fileSystemPath.ToUri() : null;
         }
     }
 }

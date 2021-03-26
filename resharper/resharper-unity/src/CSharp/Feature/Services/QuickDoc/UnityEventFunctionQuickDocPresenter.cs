@@ -1,5 +1,4 @@
 using System.Xml;
-using JetBrains.Application.UI.Components.Theming;
 using JetBrains.Application.UI.Help;
 using JetBrains.ReSharper.Feature.Services.Navigation;
 using JetBrains.ReSharper.Feature.Services.QuickDoc;
@@ -7,6 +6,8 @@ using JetBrains.ReSharper.Feature.Services.QuickDoc.Providers;
 using JetBrains.ReSharper.Feature.Services.QuickDoc.Render;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
+using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 {
@@ -67,8 +68,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
                 description = myEventFunction.GetParameter(myParameterName)?.Description;
 
             var details = CreateMemberElement(element);
-            if (!string.IsNullOrWhiteSpace(description))
-                details.CreateLeafElementWithValue("summary", description);
+            if (string.IsNullOrWhiteSpace(description)) return details;
+            details.CreateLeafElementWithValue("summary", description);
+            if (!element.GetPsiServices().Solution.HasComponent<IXmlDocLinkAppender>()) return details;
+            var uri = element.GetPsiServices().Solution.GetComponent<UnityOnlineHelpProvider>().GetUrl(element);
+            element.GetPsiServices().Solution.GetComponent<IXmlDocLinkAppender>().AppendExternalDocumentationLink(uri, element.ShortName, details);
+
             return details;
         }
 

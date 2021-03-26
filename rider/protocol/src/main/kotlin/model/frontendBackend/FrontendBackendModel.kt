@@ -132,9 +132,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         callback("attachDebuggerToUnityEditor", void, bool).documentation = "Tell the frontend to attach the debugger to the Unity editor. Used for debugging unit tests"
         callback("allowSetForegroundWindow", void, bool).documentation = "Tell the frontend to call AllowSetForegroundWindow for the current Unity editor process ID. Called before the backend tells Unity to show itself"
 
-        // Misc backend/fronted context
-        property("externalDocContext", string).documentation = "Fully qualified type or method name at the location of the text caret. Used for external help URL"
-
         // Only used in integration tests
         property("riderFrontendTests", bool)
         call("runMethodInUnity", Library.RunMethodData, Library.RunMethodResult)
