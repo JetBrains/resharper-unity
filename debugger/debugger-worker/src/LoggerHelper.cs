@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
             where TValue : class
         {
             var message = EvaluatorExceptionThrownExceptionHelper.GetThrownExceptionMessage(exception, frame,
-                valueServices, valueFetchOptions, logger);
+                valueServices, valueFetchOptions.WithOverridden(o => o.AllowTargetInvoke = true), logger);
             if (exception.ExceptionTypeName == "UnityEngine.UnityException")
             {
                 // We're expecting this if we e.g. call GetActiveScene from a MonoBehaviour constructor. Log the

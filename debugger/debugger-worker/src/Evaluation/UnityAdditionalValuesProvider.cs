@@ -66,6 +66,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
         {
             return myLogger.CatchEvaluatorException<TValue, IValueReference<TValue>>(() =>
                 {
+                    // Make sure we can evaluate. This is set automatically for GetChildren. We'll allow it here, too.
+                    // If the user wishes to stop this, they can disable specific settings in the Unity settings page
+                    var newOptions = mySession.EvaluationOptions.WithOverridden(o => o.AllowTargetInvoke = true);
+
                     var sceneManagerType = myValueServices.GetReifiedType(frame,
                                                "UnityEngine.SceneManagement.SceneManager, UnityEngine.CoreModule")
                                            ?? myValueServices.GetReifiedType(frame,
@@ -87,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
                     // GetActiveScene can throw a UnityException if we call it from the wrong location, such as the
                     // constructor of a MonoBehaviour
                     var activeScene =
-                        sceneManagerType.CallStaticMethod(frame, mySession.EvaluationOptions, getActiveSceneMethod);
+                        sceneManagerType.CallStaticMethod(frame, newOptions, getActiveSceneMethod);
                     if (activeScene == null)
                     {
                         myLogger.Warn("Unexpected response: SceneManager.GetActiveScene() == null");
@@ -99,42 +103,48 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
                         "Active scene", ValueOriginKind.Property,
                         ValueFlags.None | ValueFlags.IsReadOnly | ValueFlags.IsDefaultTypePresentation, frame,
                         myValueServices.RoleFactory);
-                }, exception => myLogger.LogThrownUnityException(exception, frame, myValueServices, mySession.EvaluationOptions));
+                },
+                exception => myLogger.LogThrownUnityException(exception, frame, myValueServices, mySession.EvaluationOptions));
         }
 
         [CanBeNull]
         private IValueReference<TValue> GetThisGameObjectForMonoBehaviour(IStackFrame frame)
         {
             return myLogger.CatchEvaluatorException<TValue, IValueReference<TValue>>(() =>
-            {
-                var thisObj = frame.GetThis(mySession.EvaluationOptions);
-                if (thisObj?.DeclaredType?.FindTypeThroughHierarchy("UnityEngine.MonoBehaviour") == null)
-                    return null;
-
-                if (!(thisObj.GetPrimaryRole(mySession.EvaluationOptions) is IObjectValueRole<TValue> role))
                 {
-                    myLogger.Warn("Unable to get 'this' as object value");
-                    return null;
-                }
+                    // Make sure we can evaluate. The debugger overrides this for GetChildren, we'll allow it here, too.
+                    // make Make sure we an can ate the Message perty, even if cit evaluation is // If the user wishes to stop this, they can disable specific settings in the Unity settings page
+                    var newOptions = mySession.EvaluationOptions.WithOverridden(o => o.AllowTargetInvoke = true);
 
-                var gameObjectReference = role.GetInstancePropertyReference("gameObject", true);
-                if (gameObjectReference == null)
-                {
-                    myLogger.Warn("Unable to get 'this.gameObject' as a property reference");
-                    return null;
-                }
+                    var thisObj = frame.GetThis(newOptions);
+                    if (thisObj?.DeclaredType?.FindTypeThroughHierarchy("UnityEngine.MonoBehaviour") == null)
+                        return null;
 
-                var gameObject = gameObjectReference.GetValue(mySession.EvaluationOptions);
-                var gameObjectType = gameObjectReference.GetValueType(mySession.EvaluationOptions,
-                    myValueServices.ValueMetadataProvider);
+                    if (!(thisObj.GetPrimaryRole(newOptions) is IObjectValueRole<TValue> role))
+                    {
+                        myLogger.Warn("Unable to get 'this' as object value");
+                        return null;
+                    }
 
-                // Don't show type for each child game object. It's always "GameObject", and we know they're game
-                // objects from the synthetic group.
-                return new SimpleValueReference<TValue>(gameObject, gameObjectType, "this.gameObject",
-                    ValueOriginKind.Property,
-                    ValueFlags.None | ValueFlags.IsDefaultTypePresentation | ValueFlags.IsReadOnly, frame,
-                    myValueServices.RoleFactory);
-            }, exception => myLogger.LogThrownUnityException(exception, frame, myValueServices, mySession.EvaluationOptions));
+                    var gameObjectReference = role.GetInstancePropertyReference("gameObject", true);
+                    if (gameObjectReference == null)
+                    {
+                        myLogger.Warn("Unable to get 'this.gameObject' as a property reference");
+                        return null;
+                    }
+
+                    var gameObject = gameObjectReference.GetValue(newOptions);
+                    var gameObjectType = gameObjectReference.GetValueType(newOptions,
+                        myValueServices.ValueMetadataProvider);
+
+                    // Don't show type for each child game object. It's always "GameObject", and we know they're game
+                    // objects from the synthetic group.
+                    return new SimpleValueReference<TValue>(gameObject, gameObjectType, "this.gameObject",
+                        ValueOriginKind.Property,
+                        ValueFlags.None | ValueFlags.IsDefaultTypePresentation | ValueFlags.IsReadOnly, frame,
+                        myValueServices.RoleFactory);
+                },
+                exception => myLogger.LogThrownUnityException(exception, frame, myValueServices, mySession.EvaluationOptions));
         }
     }
 }
