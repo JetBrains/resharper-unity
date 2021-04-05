@@ -131,7 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
                 // Log as warning, not error - there's nothing the user can do, and we're likely to encounter this with
                 // device builds
                 myLogger.Warn(ex,
-                    comment: $"Unable to evaluate debugger display string for type ${instanceType.GetGenericTypeDefinition().FullName}: ${debuggerDisplayString}. " +
+                    comment: $"Unable to evaluate debugger display string for type {instanceType.GetGenericTypeDefinition().FullName}: {debuggerDisplayString}. " +
                              "Expected behaviour on devices due to stripping");
                 return null;
             }

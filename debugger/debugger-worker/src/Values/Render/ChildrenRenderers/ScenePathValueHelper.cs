@@ -49,15 +49,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                     var targetTransformRole = targetTransformReference?.AsObjectSafe(options);
                     // Search in bases - transform might be a RectTransform or a Transform, and root is defined on Transform
                     var rootTransformReference = targetTransformRole?.GetInstancePropertyReference("root", true);
+                    var rootTransformRole = rootTransformReference?.AsObjectSafe(options);
 
-                    if (targetTransformReference == null || rootTransformReference == null)
+                    if (targetTransformRole == null || rootTransformRole == null)
                     {
-                        logger.Warn("Unable to evaluate gameObject.transform and/or gameObject.root. Unexpected.");
+                        logger.Warn("Unable to evaluate gameObject.transform and/or gameObject.transform.root or values are null.");
                         return null;
                     }
 
-                    var rootTransformName = rootTransformReference.AsObjectSafe(options)
-                        ?.GetInstancePropertyReference("name", true)
+                    var rootTransformName = rootTransformRole.GetInstancePropertyReference("name", true)
                         ?.AsStringSafe(options)?.GetString() ?? "";
 
                     var pathValue = animationUtilityType.CallStaticMethod(frame, options, method,

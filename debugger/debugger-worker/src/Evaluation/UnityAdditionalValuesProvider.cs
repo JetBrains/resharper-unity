@@ -84,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
                         .FirstOrDefault(m => m.IsStatic && m.Parameters.Length == 0 && m.Name == "GetActiveScene");
                     if (getActiveSceneMethod == null)
                     {
-                        myLogger.Warn("Unable to find SceneManager.GetActiveScene");
+                        myLogger.Warn("Unable to find SceneManager.GetActiveScene method");
                         return null;
                     }
 
@@ -129,10 +129,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
                     var gameObjectReference = role.GetInstancePropertyReference("gameObject", true);
                     if (gameObjectReference == null)
                     {
-                        myLogger.Warn("Unable to get 'this.gameObject' as a property reference");
+                        myLogger.Warn("Unable to find 'this.gameObject' as a property reference");
                         return null;
                     }
 
+                    // There's a chance that `gameObject` will throw a UnityException because we're not allowed to call
+                    // it here (e.g. MonoBehaviour ctor), so invoke the method now rather than returning a decorated
+                    // version of the property value reference. We'll catch the exception and react gracefully. Note
+                    // that if the gameObject property returned null (it won't), we'd still get a valid value here.
                     var gameObject = gameObjectReference.GetValue(newOptions);
                     var gameObjectType = gameObjectReference.GetValueType(newOptions,
                         myValueServices.ValueMetadataProvider);

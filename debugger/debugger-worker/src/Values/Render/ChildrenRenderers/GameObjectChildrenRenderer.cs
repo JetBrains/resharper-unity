@@ -272,7 +272,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                     var gameObject = childTransform?.GetInstancePropertyReference("gameObject", true)
                         ?.AsObjectSafe(options);
                     if (gameObject == null)
-                        return new ErrorValue("Game Object", "Unable to retrieve child game object");
+                        return new ErrorValue("Game Object", "Unable to find child gameObject, or value is null");
 
                     var name = gameObject.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
                         ?.GetString() ?? "Game Object";
