@@ -21,6 +21,9 @@ using TypeSystem;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ChildrenRenderers
 {
+    // Replaces the default children renderer for UnityEngine.GameObject. Filters out deprecated properties and adds a
+    // Scene Path value, showing the path to the component's gameObject in the scene. Also adds "Components" and
+    // "Children" groups to show added components and child game objects.
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
     public class GameObjectChildrenRenderer<TValue> : DeprecatedPropertyFilteringChildrenRendererBase<TValue>
         where TValue : class
@@ -36,12 +39,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             m.Parameters[0].Type.Is("UnityEngine.Object"));
 
         private readonly IUnityOptions myUnityOptions;
-        private readonly ILogger myLogger;
 
-        public GameObjectChildrenRenderer(IUnityOptions unityOptions, ILogger logger)
+        public GameObjectChildrenRenderer(IUnityOptions unityOptions)
         {
             myUnityOptions = unityOptions;
-            myLogger = logger;
         }
 
         protected override bool IsApplicable(IMetadataTypeLite type, IPresentationOptions options,
@@ -55,11 +56,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                                                                  IPresentationOptions options,
                                                                  IUserDataHolder dataHolder, CancellationToken token)
         {
-            var scenePathValue = ScenePathValueHelper.GetScenePathValue(valueRole, options, ValueServices, myLogger);
+            var scenePathValue = ScenePathValueHelper.GetScenePathValue(valueRole, options, ValueServices, Logger);
             if (scenePathValue != null) yield return scenePathValue;
 
-            yield return new GameObjectComponentsGroup(valueRole, ValueServices, myLogger);
-            yield return new GameObjectChildrenGroup(valueRole, ValueServices, myLogger);
+            yield return new GameObjectComponentsGroup(valueRole, ValueServices, Logger);
+            yield return new GameObjectChildrenGroup(valueRole, ValueServices, Logger);
 
             foreach (var valueEntity in base.GetChildren(valueRole, instanceType, options, dataHolder, token))
                 yield return valueEntity;
@@ -84,18 +85,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             public override IEnumerable<IValueEntity> GetChildren(IPresentationOptions options,
                                                                   CancellationToken token = new CancellationToken())
             {
-                try
-                {
-                    return GetChildrenImpl(options);
-                }
-                catch (Exception e)
-                {
-                    myLogger.Error(e);
-                    return EmptyList<IValueEntity>.Enumerable;
-                }
+                // Eagerly enumerate the iterator to make sure we catch the exceptions correctly
+                return myLogger.CatchEvaluatorException<TValue, IEnumerable<IValueEntity>>(
+                           () => GetChildrenImpl(options).ToList(),
+                           exception => myLogger.LogThrownUnityException(exception,
+                               myGameObjectRole.ValueReference.OriginatingFrame, myValueServices, options))
+                       ?? EmptyList<IValueEntity>.Enumerable;
             }
 
-            private IEnumerable<IValueEntity> GetChildrenImpl(IPresentationOptions options)
+            private IEnumerable<IValueEntity> GetChildrenImpl(IValueFetchOptions options)
             {
                 var frame = myGameObjectRole.ValueReference.OriginatingFrame;
                 var componentType =
@@ -207,15 +205,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             public override IEnumerable<IValueEntity> GetChildren(IPresentationOptions options,
                                                                   CancellationToken token = new CancellationToken())
             {
-                try
-                {
-                    return GetChildrenImpl(options, token);
-                }
-                catch (Exception e)
-                {
-                    myLogger.Error(e);
-                    return EmptyList<IValueEntity>.Enumerable;
-                }
+                // Keep an eye on iterators and enumeration: we need to eagerly evaluate GetChildrenImpl so we can catch
+                // any exceptions. The return value of GetChildren is eagerly evaluated, so we're not changing any
+                // semantics. But remember that chunked groups are lazily evaluated, and need try/catch
+                return myLogger.CatchEvaluatorException<TValue, IEnumerable<IValueEntity>>(
+                           () => GetChildrenImpl(options, token).ToList(),
+                           exception => myLogger.LogThrownUnityException(exception,
+                               myGameObjectRole.ValueReference.OriginatingFrame, myValueServices, options))
+                       ?? EmptyList<IValueEntity>.Enumerable;
             }
 
             private IEnumerable<IValueEntity> GetChildrenImpl(IPresentationOptions options, CancellationToken token)
@@ -259,23 +256,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
 
             protected override IValue GetElementValueAt(IObjectValueRole<TValue> collection, int index, IValueFetchOptions options)
             {
-                var frame = myGameObjectRole.ValueReference.OriginatingFrame;
-                var indexValue = myValueServices.ValueFactory.CreatePrimitive(frame, options, index);
-                var childTransformValue = collection.CallInstanceMethod(myGetChildMethod, indexValue);
-                var childTransform = new SimpleValueReference<TValue>(childTransformValue,
-                    frame, myValueServices.RoleFactory).AsObjectSafe(options);
-                var gameObject = childTransform?.GetInstancePropertyReference("gameObject", true)
-                    ?.AsObjectSafe(options);
-                if (gameObject == null)
-                    return new ErrorValue("Game Object", "Unable to retrieve child game object");
+                try
+                {
+                    var frame = myGameObjectRole.ValueReference.OriginatingFrame;
+                    var indexValue = myValueServices.ValueFactory.CreatePrimitive(frame, options, index);
+                    var childTransformValue = collection.CallInstanceMethod(myGetChildMethod, indexValue);
+                    var childTransform = new SimpleValueReference<TValue>(childTransformValue,
+                        frame, myValueServices.RoleFactory).AsObjectSafe(options);
+                    var gameObject = childTransform?.GetInstancePropertyReference("gameObject", true)
+                        ?.AsObjectSafe(options);
+                    if (gameObject == null)
+                        return new ErrorValue("Game Object", "Unable to retrieve child game object");
 
-                var name = gameObject.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
-                    ?.GetString() ?? "Game Object";
+                    var name = gameObject.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
+                        ?.GetString() ?? "Game Object";
 
-                // Tell the value presenter to not show the name field, we're already showing it as the key. Also don't
-                // show the type - a GameObject's child can only be a GameObject
-                return new CalculatedValueReferenceDecorator<TValue>(gameObject.ValueReference,
-                    myValueServices.RoleFactory, name, false, false).ToValue(myValueServices);
+                    // Tell the value presenter to not show the name field, we're already showing it as the key. Also don't
+                    // show the type - a GameObject's child can only be a GameObject
+                    return new CalculatedValueReferenceDecorator<TValue>(gameObject.ValueReference,
+                        myValueServices.RoleFactory, name, false, false).ToValue(myValueServices);
+                }
+                catch (Exception e)
+                {
+                    // We must always return a value, as we're effectively showing the contents of an array here. We're
+                    // possibly also being evaluated lazily, thanks to chunked arrays, so can't rely on the caller
+                    // catching exceptions.
+                    myLogger.LogExceptionSilently(e);
+                    return myValueServices.ValueRenderers.GetValueStubForException(e, "Game Object",
+                               collection.ValueReference.OriginatingFrame) as IValue
+                           ?? new ErrorValue("Game Object", "Unable to retrieve child game object");
+                }
             }
         }
     }

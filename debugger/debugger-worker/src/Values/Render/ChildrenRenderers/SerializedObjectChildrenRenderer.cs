@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReferences;
@@ -15,6 +14,8 @@ using Mono.Debugging.Soft;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ChildrenRenderers
 {
+    // Adds a "Children" group to UnityEditor.SerializedObject to show child serialised properties. Does not replace the
+    // default children renderer
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
     public class SerializedObjectChildrenRenderer<TValue> : ChildrenRendererBase<TValue, IObjectValueRole<TValue>>
         where TValue : class
@@ -46,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                                                                  IUserDataHolder dataHolder,
                                                                  CancellationToken token)
         {
-            yield return new ChildrenGroup(valueRole, ValueServices, myLogger);
+            return new[] {new ChildrenGroup(valueRole, ValueServices, myLogger)};
         }
 
         private class ChildrenGroup : ValueGroupBase
@@ -68,29 +69,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             public override IEnumerable<IValueEntity> GetChildren(IPresentationOptions options,
                                                                   CancellationToken token = new CancellationToken())
             {
-                try
-                {
-                    return GetChildrenImpl(options);
-                }
-                catch (Exception e)
-                {
-                    myLogger.Error(e);
-                    return EmptyList<IValueEntity>.Enumerable;
-                }
+                return myLogger.CatchEvaluatorException<TValue, IEnumerable<IValueEntity>>(
+                           () => GetChildrenImpl(options),
+                           exception => myLogger.LogThrownUnityException(exception,
+                               mySerializedObjectRole.ValueReference.OriginatingFrame, myValueServices, options))
+                       ?? EmptyList<IValueEntity>.Enumerable;
             }
 
-            private IEnumerable<IValueEntity> GetChildrenImpl(IValueFetchOptions options)
+            private IValueEntity[] GetChildrenImpl(IValueFetchOptions options)
             {
                 if (!TryInvokeGetIterator(mySerializedObjectRole, options, out var serializedPropertyRole))
-                    yield break;
+                    return EmptyArray<IValueEntity>.Instance;
 
                 var name = serializedPropertyRole.GetInstancePropertyReference("name")
                     ?.AsStringSafe(options)?.GetString() ?? "Child";
 
                 // Tell the value presenter to hide the name field, as we're using it for the key name. Also hide the
                 // type presentation - of course it's a SerializedProperty
-                yield return new CalculatedValueReferenceDecorator<TValue>(serializedPropertyRole.ValueReference,
-                    myValueServices.RoleFactory, name, false, false).ToValue(myValueServices);
+                return new IValueEntity[]
+                {
+                    new CalculatedValueReferenceDecorator<TValue>(serializedPropertyRole.ValueReference,
+                        myValueServices.RoleFactory, name, false, false).ToValue(myValueServices)
+                };
 
                 // Technically, we should now repeatedly call Copy() and Next(false) until Next returns false so that we
                 // show all child properties of the SerializedObject. But empirically, there is only one direct child of

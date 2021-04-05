@@ -12,17 +12,17 @@ using Mono.Debugging.Soft;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ChildrenRenderers
 {
+    // Replaces the default children renderer for UnityEngine.Component. Filters out deprecated properties and adds a
+    // Scene Path value, showing the path to the component's gameObject in the scene.
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
     public class ComponentChildrenRenderer<TValue> : DeprecatedPropertyFilteringChildrenRendererBase<TValue>
         where TValue : class
     {
         private readonly IUnityOptions myUnityOptions;
-        private readonly ILogger myLogger;
 
-        public ComponentChildrenRenderer(IUnityOptions unityOptions, ILogger logger)
+        public ComponentChildrenRenderer(IUnityOptions unityOptions)
         {
             myUnityOptions = unityOptions;
-            myLogger = logger;
         }
 
         protected override bool IsApplicable(IMetadataTypeLite type, IPresentationOptions options,
@@ -49,13 +49,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
         }
 
         [CanBeNull]
-        private IValueEntity GetGameObjectScenePath(IObjectValueRole<TValue> componentRole, IPresentationOptions options)
+        private IValueEntity GetGameObjectScenePath(IObjectValueRole<TValue> componentRole,
+                                                    IPresentationOptions options)
         {
-            var gameObjectRole =
-                componentRole.GetInstancePropertyReference("gameObject", true)?.AsObjectSafe(options);
-            if (gameObjectRole == null)
-                return null;
-            return ScenePathValueHelper.GetScenePathValue(gameObjectRole, options, ValueServices, myLogger);
+            var gameObjectRole = Logger.CatchEvaluatorException<TValue, IObjectValueRole<TValue>>(
+                () => componentRole.GetInstancePropertyReference("gameObject", true)
+                    ?.AsObjectSafe(options),
+                exception => Logger.LogThrownUnityException(exception, componentRole.ValueReference.OriginatingFrame,
+                    ValueServices, options));
+            return ScenePathValueHelper.GetScenePathValue(gameObjectRole, options, ValueServices, Logger);
         }
     }
 }
