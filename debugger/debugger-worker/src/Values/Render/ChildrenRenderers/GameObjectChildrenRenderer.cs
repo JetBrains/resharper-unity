@@ -14,6 +14,7 @@ using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.CallStacks;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
+using Mono.Debugging.Evaluation;
 using Mono.Debugging.Soft;
 using TypeSystem;
 
@@ -175,9 +176,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                             return stringValueRole.GetString();
                         }
                     }
+                    catch (EvaluatorAbortedException e)
+                    {
+                        myLogger.LogExceptionSilently(e);
+                    }
                     catch (Exception e)
                     {
-                        myLogger.Error(e, "Unable to fetch object names for {0}", componentValue);
+                        myLogger.Warn(e, ExceptionOrigin.Algorithmic,
+                            $"Unable to fetch object names for {componentValue}");
                     }
                 }
 

@@ -20,6 +20,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
             {
                 return action();
             }
+            catch (EvaluatorAbortedException e)
+            {
+                // Evaluation has been aborted, e.g. the user has continued before evaluation has completed
+                logger.LogExceptionSilently(e);
+            }
             catch (EvaluatorExceptionThrownException<TValue> e)
             {
                 // The code being evaluated threw an exception. This might be expected, might not
