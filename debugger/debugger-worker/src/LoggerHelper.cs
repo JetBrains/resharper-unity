@@ -51,9 +51,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
         {
             var message = EvaluatorExceptionThrownExceptionHelper.GetThrownExceptionMessage(exception, frame,
                 valueServices, valueFetchOptions.WithOverridden(o => o.AllowTargetInvoke = true), logger);
-            if (exception.ExceptionTypeName == "UnityEngine.UnityException")
+            if (exception.ExceptionTypeName == "UnityEngine.UnityException"
+                || exception.ExceptionTypeName == "UnityEngine.MissingComponentException"
+                || exception.ExceptionTypeName == "UnityEngine.MissingReferenceException"
+                || exception.ExceptionTypeName == "UnityEngine.UnassignedReferenceException")
             {
-                // We're expecting this if we e.g. call GetActiveScene from a MonoBehaviour constructor. Log the
+                // These exceptions are possible while we evaluate our extra data. They are (mostly) expected and can be
+                // handled gracefully. Log silently and fall back.
+                //
+                // Note that several of these exceptions are thrown from Unity's "null" Object instances - a valid C#
+                // instance that isn't bound to a native object. When a Unity API is called on these instances, they
+                // will through the appropriate exception. Stepping into a method on these instances will try to
+                // evaluate our extra data with the "null" instance as `this` and we can see `this`, `this.gameObject`
+                // or something like `gameObject.transform` throw the exception, which can be very confusing.
+                //
+                // * UnityException. General purpose, usually means we've called an API when it's not valid
+                //   e.g. calling GetActiveScene from the ctor of a MonoBehaviour
+                // * MissingComponentException. Calling GetComponent<T> for a Component that isn't attached to the
+                //   GameObject will return a "null" instance which throws MissingComponentException when accessing APIs
+                // * MissingReferenceException. Accessing a Unity Object that is still a valid C# object but has been
+                //   destroyed
+                // * UnassignedReferenceException. A serialised field that is not bound to a native object is given a
+                //   "null" instance that throws UnassignedReferenceException when an API is called.
                 logger.Verbose(exception, comment: message);
             }
             else
