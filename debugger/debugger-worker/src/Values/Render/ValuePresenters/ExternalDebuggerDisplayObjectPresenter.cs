@@ -47,7 +47,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
 
             // Default is ({x}, {y}, {z}, {w}) to F1 precision. Euler angles is more useful
             {"UnityEngine.Quaternion", "eulerAngles: {eulerAngles}"},
-            {"UnityEngine.MeshFilter", "vertex count: {sharedMesh.vertexCount}"},
+            {"UnityEngine.Mesh", "vertex count: {vertexCount}"},
+            {"UnityEngine.MeshFilter", "shared mesh: ({sharedMesh})"},
             {"UnityEngine.SceneManagement.Scene", "{name} ({path})"},
 
             // Local values, as shown in the Inspector
