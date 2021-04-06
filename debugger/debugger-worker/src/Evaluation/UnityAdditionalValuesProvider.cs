@@ -113,7 +113,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
             return myLogger.CatchEvaluatorException<TValue, IValueReference<TValue>>(() =>
                 {
                     // Make sure we can evaluate. The debugger overrides this for GetChildren, we'll allow it here, too.
-                    // make Make sure we an can ate the Message perty, even if cit evaluation is // If the user wishes to stop this, they can disable specific settings in the Unity settings page
+                    // If the user wishes to stop this, they can disable specific settings in the Unity settings page
                     var newOptions = mySession.EvaluationOptions.WithOverridden(o => o.AllowTargetInvoke = true);
 
                     var thisObj = frame.GetThis(newOptions);
