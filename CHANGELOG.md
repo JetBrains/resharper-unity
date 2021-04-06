@@ -8,8 +8,21 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 Since 2018.1, the version numbers and release cycle match Rider's versions and release dates. The plugin is always bundled with Rider, but is released for ReSharper separately. Sometimes the ReSharper version isn't released. This is usually because the changes are not applicable to ReSharper, but also by mistake.
 
+## 2021.1.1
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net211-rtm-2011.1.0...net211)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/46?closed=1)
+
+### Fixed
+
+- Rider: Gracefully handle Unity API exceptions in debugger extensions - `UnityException`, `MissingComponentException`, `MissingReferenceException`, `UnassignedReferenceException` ([RIDER-60794](https://youtrack.jetbrains.com/issue/RIDER-60794), [RIDER-60795](https://youtrack.jetbrains.com/issue/RIDER-60795), [DEXP-585430](https://youtrack.jetbrains.com/issue/DEXP-585430), [DEXP-534612](https://youtrack.jetbrains.com/issue/DEXP-534612), [DEXP-558487](https://youtrack.jetbrains.com/issue/DEXP-558487), [#2057](https://github.com/JetBrains/resharper-unity/pull/2057))
+- Rider: Fix incorrect reporting of `EvaluatorAbortedException` control flow exception ([DEXP-570625](https://youtrack.jetbrains.com/issue/DEXP-570265), [#2057](https://github.com/JetBrains/resharper-unity/pull/2057))
+- Rider: Fix exceptions thrown when by Unity debugger extensions when implicit evaluation is disabled ([RIDER-60798](https://youtrack.jetbrains.com/issue/RIDER-60798), [#2057](https://github.com/JetBrains/resharper-unity/pull/2057))
+- Rider: Fix some null reference exceptions when evaluating Unity debugger extensions ([DEXP-561412](https://youtrack.jetbrains.com/issue/DEXP-561412), [DEXP-577753](https://youtrack.jetbrains.com/issue/DEXP-577753), [#2507](https://github.com/JetBrains/resharper-unity/pull/2057))
+
+
+
 ## 2021.1.0
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net203...net211)
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net203...net211-rtm-2021.1.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/42?closed=1)
 
 ### Added
