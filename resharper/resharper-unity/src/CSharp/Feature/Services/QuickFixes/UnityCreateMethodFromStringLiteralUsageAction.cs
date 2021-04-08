@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             var node = Reference?.GetTreeNode().NotNull("node != null");
             var provider = new MemberSignatureProvider(node.GetPsiServices(), CSharpLanguage.Instance);
             var predefinedType = node.GetPsiModule().GetPredefinedType();
-            var signature = provider.CreateFromTypes(predefinedType.IEnumerator, GetParameterTypes(), node.GetSourceFile());
+            var signature = provider.CreateFromTypes(predefinedType.IEnumerator, GetParameterTypes(), node.GetSourceFile(), node.IsNullableAnnotationsContextEnabled());
             
             return new CreateMethodDeclarationContext
             {
