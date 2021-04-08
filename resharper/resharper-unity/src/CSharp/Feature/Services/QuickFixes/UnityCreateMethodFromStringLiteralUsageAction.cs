@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Intentions.CreateDeclaration;
 using JetBrains.ReSharper.Feature.Services.Intentions.DataProviders;
@@ -70,7 +69,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 Target = GetTarget()
             };
         }
-        
 
         private IDeclaredType[] GetParameterTypes()
         {
