@@ -5,7 +5,6 @@ using JetBrains.Annotations;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Progress;
-using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
@@ -16,7 +15,6 @@ using JetBrains.ProjectModel.Properties.Common;
 using JetBrains.ProjectModel.Tasks;
 using JetBrains.ProjectModel.Transaction;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
@@ -58,9 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                                                  ProjectFilePropertiesFactory projectFilePropertiesFactory,
                                                  UnityYamlPsiSourceFileFactory psiSourceFileFactory,
                                                  UnityExternalFilesModuleFactory moduleFactory,
-                                                 UnityYamlDisableStrategy unityYamlDisableStrategy,
-                                                 ISettingsSchema settingsSchema,
-                                                 SettingsLayersProvider settingsLayersProvidert)
+                                                 UnityYamlDisableStrategy unityYamlDisableStrategy)
         {
             myLifetime = lifetime;
             myLogger = logger;
