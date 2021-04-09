@@ -10,17 +10,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
     [SolutionComponent]
     public class ShowMarkerOnStaticMethodSettings : IUnityProjectSettingsProvider
     {
-        private readonly SettingsSchema mySettingsSchema;
+        private readonly ISettingsSchema mySettingsSchema;
         private readonly ILogger myLogger;
+        private readonly bool myInTests;
 
-        public ShowMarkerOnStaticMethodSettings(SettingsSchema settingsSchema, ILogger logger)
+        public ShowMarkerOnStaticMethodSettings(ISettingsSchema settingsSchema, ILogger logger, bool inTests = false)
         {
             mySettingsSchema = settingsSchema;
             myLogger = logger;
+            myInTests = inTests;
         }
 
         public void InitialiseProjectSettings(Lifetime projectLifetime, IProject project, ISettingsStorageMountPoint mountPoint)
         {
+            if (myInTests)
+                return;
+            
             // hide, because for Unity projects this wouldn't work.
             // for Unity we have `UnityRunMarkerProvider` instead.
             var entry = mySettingsSchema.GetScalarEntry((RunMarkerSettings o) => o.ShowMarkerOnStaticMethods);
