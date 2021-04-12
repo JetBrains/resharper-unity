@@ -499,8 +499,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             
             var testNames = elements
                 .OfType<NUnitElementBase>()
-                .Where(a => a.RunState != RunState.Explicit 
-                            || a.RunState == RunState.Explicit && run.Launch.Criterion.Explicit.Contains(a))
+                .Where(a => a.RunState != RunState.Explicit || run.Launch.Criterion.Explicit.Contains(a))
                 .Select(p => p.Id.Id).ToList();
             
             filters.Add(new TestFilter(((UnityRuntimeEnvironment) run.RuntimeEnvironment).Project.Name, testNames, groups, categories));
