@@ -7,12 +7,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
     [Language(typeof(ShaderLabLanguage))]
     public class ShaderLabLanguageSpecificDaemonBehaviour : ILanguageSpecificDaemonBehavior
     {
-        public ErrorStripeRequest InitialErrorStripe(IPsiSourceFile sourceFile)
+        public ErrorStripeRequestWithDescription InitialErrorStripe(IPsiSourceFile sourceFile)
         {
-            return !sourceFile.Properties.ShouldBuildPsi || !sourceFile.Properties.ProvidesCodeModel ||
-                   !sourceFile.PrimaryPsiLanguage.Is<ShaderLabLanguage>()
-                ? ErrorStripeRequest.NONE
-                : ErrorStripeRequest.STRIPE_AND_ERRORS;
+            if (sourceFile.PrimaryPsiLanguage.Is<ShaderLabLanguage>())
+            {
+                var properties = sourceFile.Properties;
+                if (!properties.ShouldBuildPsi) return ErrorStripeRequestWithDescription.CreateNoneNoPsi(properties);
+                if (!properties.ProvidesCodeModel) return ErrorStripeRequestWithDescription.CreateNoneNoCodeModel(properties);
+                return ErrorStripeRequestWithDescription.StripeAndErrors;
+            }
+
+            return ErrorStripeRequestWithDescription.None("File's primary language in not ShaderLab");
         }
 
         public bool CanShowErrorBox => true;

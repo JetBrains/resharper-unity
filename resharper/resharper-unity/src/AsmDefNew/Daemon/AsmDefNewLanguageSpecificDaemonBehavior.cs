@@ -7,12 +7,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Daemon
     [Language(typeof(JsonNewLanguage))]
     public class AsmDefNewLanguageSpecificDaemonBehavior: ILanguageSpecificDaemonBehavior
     {
-        public ErrorStripeRequest InitialErrorStripe(IPsiSourceFile sourceFile)
+        public ErrorStripeRequestWithDescription InitialErrorStripe(IPsiSourceFile sourceFile)
         {
-            return !sourceFile.Properties.ShouldBuildPsi || !sourceFile.Properties.ProvidesCodeModel ||
-                   !sourceFile.PrimaryPsiLanguage.Is<JsonNewLanguage>()
-                ? ErrorStripeRequest.NONE
-                : ErrorStripeRequest.STRIPE_AND_ERRORS;
+            if (sourceFile.PrimaryPsiLanguage.Is<JsonNewLanguage>())
+            {
+                var properties = sourceFile.Properties;
+                if (!properties.ShouldBuildPsi) return ErrorStripeRequestWithDescription.CreateNoneNoPsi(properties);
+                if (!properties.ProvidesCodeModel) return ErrorStripeRequestWithDescription.CreateNoneNoCodeModel(properties);
+                return ErrorStripeRequestWithDescription.StripeAndErrors;
+            }
+
+            return ErrorStripeRequestWithDescription.None("File's primary language in not Json");
         }
 
         public bool CanShowErrorBox => true;

@@ -7,12 +7,17 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
   [Language(typeof(YamlLanguage))]
   public class YamlLanguageSpecificDaemonBehaviour : LanguageSpecificDaemonBehavior
   {
-    public override ErrorStripeRequest InitialErrorStripe(IPsiSourceFile sourceFile)
+    public override ErrorStripeRequestWithDescription InitialErrorStripe(IPsiSourceFile sourceFile)
     {
-      return !sourceFile.Properties.ShouldBuildPsi || !sourceFile.Properties.ProvidesCodeModel
-             || !sourceFile.PrimaryPsiLanguage.Is<YamlLanguage>()
-        ? ErrorStripeRequest.NONE
-        : ErrorStripeRequest.STRIPE_AND_ERRORS;
+      if (sourceFile.PrimaryPsiLanguage.Is<YamlLanguage>())
+      {
+        var properties = sourceFile.Properties;
+        if (!properties.ShouldBuildPsi) return ErrorStripeRequestWithDescription.CreateNoneNoPsi(properties);
+        if (!properties.ProvidesCodeModel) return ErrorStripeRequestWithDescription.CreateNoneNoCodeModel(properties);
+        return ErrorStripeRequestWithDescription.StripeAndErrors;
+      }
+
+      return ErrorStripeRequestWithDescription.None("File's primary language in not Yaml");
     }
   }
 }
