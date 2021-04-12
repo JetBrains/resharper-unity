@@ -39,7 +39,7 @@ class UnityDebuggerOutputListener(val project: Project, private val host: String
                 }
             }
 
-            val debugNotification = XDebuggerManagerImpl.NOTIFICATION_GROUP.createNotification(text, NotificationType.ERROR)
+            val debugNotification = XDebuggerManagerImpl.getNotificationGroup().createNotification(text, NotificationType.ERROR)
 
             debugNotification.setListener { notification, hyperlinkEvent ->
                 if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED)
