@@ -267,13 +267,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
                     StartTests(run, tcs, taskLifetime);
                     
-                    // todo: restore after RSRP-483699 is done
                     // set results for explicit tests
-                    // var explicitTests = run.Elements.Where(a => a.Explicit && !run.Launch.Criterion.Explicit.Contains(a));
-                    // foreach (var element in explicitTests)
-                    // {
-                    //     myUnitTestResultManager.TestFinishing(element, run.Launch.Session, element.ExplicitReason, UnitTestStatus.Ignored);
-                    // }
+                    var explicitTests = run.Elements.OfType<NUnitElementBase>().Where(a => a.RunState == RunState.Explicit && !run.Launch.Criterion.Explicit.Contains(a));
+                    foreach (var element in explicitTests)
+                    {
+                        myUnitTestResultManager.TestFinishing(element, run.Launch.Session, "Test should be run explicitly", UnitTestStatus.Ignored);
+                    }
                 });
             }, cancellationToken);
         }
@@ -497,8 +496,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             var groups = new List<string>();
             var categories = new List<string>();
             
-            var testNames = elements// todo: restore after RSRP-483699 is done
-                                    // .Where(a => !a.Explicit || run.Launch.Criterion.Explicit.Contains(a))
+            var testNames = elements
+                .OfType<NUnitElementBase>()
+                .Where(a => a.RunState != RunState.Explicit || a.RunState == RunState.Explicit && run.Launch.Criterion.Explicit.Contains(a))
                 .Select(p => p.Id.Id).ToList();
             
             filters.Add(new TestFilter(((UnityRuntimeEnvironment) run.RuntimeEnvironment).Project.Name, testNames, groups, categories));
