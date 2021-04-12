@@ -9,7 +9,6 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
   {
     public override ErrorStripeRequestWithDescription InitialErrorStripe(IPsiSourceFile sourceFile)
     {
-      
       if (sourceFile.PrimaryPsiLanguage.Is<YamlLanguage>())
       {
         var properties = sourceFile.Properties;
