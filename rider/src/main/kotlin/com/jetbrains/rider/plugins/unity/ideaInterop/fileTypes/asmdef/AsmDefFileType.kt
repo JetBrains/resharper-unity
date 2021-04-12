@@ -11,4 +11,5 @@ object AsmDefFileType : JsonFileType() {
     override fun getDescription() = "Assembly Definition File (Unity)"
     override fun getIcon() = UnityIcons.FileTypes.AsmDef
     override fun getName() = "AsmDef"
+    override fun getDisplayName() = "AsmDef"
 }
