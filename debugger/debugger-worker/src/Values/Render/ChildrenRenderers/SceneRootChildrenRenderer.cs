@@ -17,6 +17,7 @@ using Mono.Debugging.Soft;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ChildrenRenderers
 {
+    // Adds an additional "Game Objects" child to the Scene type. Does not override the default children renderer.
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
     public class SceneRootChildrenRenderer<TValue> : ChildrenRendererBase<TValue, IObjectValueRole<TValue>>
         where TValue : class
@@ -26,12 +27,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             new MethodSelector(m => m.Name == "GetRootGameObjects" && m.Parameters.Length == 0);
 
         private readonly IUnityOptions myUnityOptions;
-        private readonly ILogger myLogger;
 
-        public SceneRootChildrenRenderer(IUnityOptions unityOptions, ILogger logger)
+        public SceneRootChildrenRenderer(IUnityOptions unityOptions)
         {
             myUnityOptions = unityOptions;
-            myLogger = logger;
         }
 
         public override int Priority => UnityRendererUtil.ChildrenRendererPriority;
@@ -53,7 +52,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             var getRootObjectsMethod = valueRole.ReifiedType.MetadataType.GetMethods()
                 .FirstOrDefault(ourGetRootGameObjectsSelector);
             if (getRootObjectsMethod != null)
-                yield return new GameObjectsGroup(valueRole, getRootObjectsMethod, ValueServices, myLogger);
+                return new[] {new GameObjectsGroup(valueRole, getRootObjectsMethod, ValueServices, Logger)};
+            return EmptyList<IValueEntity>.Enumerable;
         }
 
         private class GameObjectsGroup : ChunkedValueGroupBase<IArrayValueRole<TValue>>
@@ -75,15 +75,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
 
             public override IEnumerable<IValueEntity> GetChildren(IPresentationOptions options, CancellationToken token = new CancellationToken())
             {
-                try
-                {
-                    return GetChildrenImpl(options, token);
-                }
-                catch (Exception e)
-                {
-                    myLogger.Error(e);
-                    return EmptyList<IValueEntity>.Enumerable;
-                }
+                // Keep an eye on iterators and enumeration: we need to eagerly evaluate GetChildrenImpl so we can catch
+                // any exceptions. The return value of GetChildren is eagerly evaluated, so we're not changing any
+                // semantics. But remember that chunked groups are lazily evaluated, and need try/catch
+                return myLogger.CatchEvaluatorException<TValue, IEnumerable<IValueEntity>>(
+                           () => GetChildrenImpl(options, token).ToList(),
+                           exception => myLogger.LogThrownUnityException(exception,
+                               mySceneValueRole.ValueReference.OriginatingFrame, myValueServices, options))
+                       ?? EmptyList<IValueEntity>.Enumerable;
             }
 
             private IEnumerable<IValueEntity> GetChildrenImpl(IPresentationOptions options, CancellationToken token)
@@ -122,23 +121,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
 
             private IValue GetElementValue(IValueReference<TValue> elementReference, IValueFetchOptions options)
             {
-                var elementRole = elementReference.AsObjectSafe(options);
-                if (elementRole == null)
-                    return null;
-
-                var isNameFromValue = true;
-                var name = elementRole.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
-                    ?.GetString();
-                if (name == null)
+                try
                 {
-                    name = "Game Object";
-                    isNameFromValue = false;
-                }
+                    var elementRole = elementReference.AsObjectSafe(options);
+                    if (elementRole == null)
+                        return null;
 
-                // Tell the value presenter to hide the name field, if we're using it for the key. Also hide the default
-                // type presentation - we know it's a GameObject, it's under a group called "Game Objects"
-                return new CalculatedValueReferenceDecorator<TValue>(elementRole.ValueReference,
-                    myValueServices.RoleFactory, name, !isNameFromValue, false).ToValue(myValueServices);
+                    var isNameFromValue = true;
+                    var name = elementRole.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
+                        ?.GetString();
+                    if (name == null)
+                    {
+                        name = "Game Object";
+                        isNameFromValue = false;
+                    }
+
+                    // Tell the value presenter to hide the name field, if we're using it for the key. Also hide the default
+                    // type presentation - we know it's a GameObject, it's under a group called "Game Objects"
+                    return new CalculatedValueReferenceDecorator<TValue>(elementRole.ValueReference,
+                        myValueServices.RoleFactory, name, !isNameFromValue, false).ToValue(myValueServices);
+                }
+                catch (Exception e)
+                {
+                    // We must always return a value, as we're effectively showing the contents of an array here. We're
+                    // possibly also being evaluated lazily, thanks to chunked arrays, so can't rely on the caller
+                    // catching exceptions.
+                    myLogger.LogExceptionSilently(e);
+                    return myValueServices.ValueRenderers.GetValueStubForException(e, "Game Object",
+                               elementReference.OriginatingFrame) as IValue
+                           ?? new ErrorValue("Game Object", "Error retrieving child game object");
+                }
             }
         }
     }
