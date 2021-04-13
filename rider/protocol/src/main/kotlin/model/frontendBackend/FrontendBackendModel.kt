@@ -136,5 +136,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("riderFrontendTests", bool)
         call("runMethodInUnity", Library.RunMethodData, Library.RunMethodResult)
         property("isDeferredCachesCompletedOnce", bool)
+
+        call ("hasUnsavedScenes", void, bool)
+        call("saveScenes", void, bool)
     }
 }
