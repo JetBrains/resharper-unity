@@ -8,12 +8,13 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 Since 2018.1, the version numbers and release cycle match Rider's versions and release dates. The plugin is always bundled with Rider, but is released for ReSharper separately. Sometimes the ReSharper version isn't released. This is usually because the changes are not applicable to ReSharper, but also by mistake.
 
-## 2021.1.1
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net211-rtm-2011.1.0...net211)
+## 2021.1.2
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net211-rtm-2021.1.0-rtm-2021.1.1...net211)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/46?closed=1)
 
 ### Fixed
 
+- Fix exception breaking highlighting in Unity.Mathematics generated files ([RIDER-61025](https://youtrack.jetbrains.com/issue/RIDER-61025), [#2067](https://github.com/JetBrains/resharper-unity/pull/2067))
 - Rider: Gracefully handle Unity API exceptions in debugger extensions - `UnityException`, `MissingComponentException`, `MissingReferenceException`, `UnassignedReferenceException` ([RIDER-60794](https://youtrack.jetbrains.com/issue/RIDER-60794), [RIDER-60795](https://youtrack.jetbrains.com/issue/RIDER-60795), [DEXP-585430](https://youtrack.jetbrains.com/issue/DEXP-585430), [DEXP-534612](https://youtrack.jetbrains.com/issue/DEXP-534612), [DEXP-558487](https://youtrack.jetbrains.com/issue/DEXP-558487), [#2057](https://github.com/JetBrains/resharper-unity/pull/2057))
 - Rider: Fix incorrect reporting of `EvaluatorAbortedException` control flow exception ([DEXP-570625](https://youtrack.jetbrains.com/issue/DEXP-570265), [#2057](https://github.com/JetBrains/resharper-unity/pull/2057))
 - Rider: Fix exceptions thrown when by Unity debugger extensions when implicit evaluation is disabled ([RIDER-60798](https://youtrack.jetbrains.com/issue/RIDER-60798), [#2057](https://github.com/JetBrains/resharper-unity/pull/2057))
@@ -21,9 +22,20 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
+## 2021.1.1
+* Released: [2021-04-10](https://blog.jetbrains.com/dotnet/2021/04/10/rider-resharper-2021-1-1-released/)
+* Build: 2021.1.0.114
+* [No code changes](https://github.com/JetBrains/resharper-unity/compare/net211-rtm-2021.1.0...net211-rtm-2021.1.0-rtm-2021.1.1)
+
+
+
 ## 2021.1.0
+* Released: [2021-04-08](https://blog.jetbrains.com/dotnet/2021/04/08/rider-2021-1-release/)
+* Build: 2021.1.0.113
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net203...net211-rtm-2021.1.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/42?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net211-rtm-2021.1.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2021.1.0.114)
 
 ### Added
 
