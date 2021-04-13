@@ -21,13 +21,13 @@ class DumpUnityExplorerAction : DumpAction("Dump Unity Explorer") {
             writer.append("  ".repeat(indent))
             writer.append(m.name)
             writer.append(" ")
-            writer.appendln(m.value.toString())
+            writer.appendLine(m.value.toString())
             if (m.children.any()) {
                 if (m is AbstractTreeNode<*>)
                     dumpReq(m,indent + 1, writer)
                 else
                 {
-                    writer.appendln(" unexpected node: " + m.toString())
+                    writer.appendLine(" unexpected node: $m")
                 }
             }
         }
