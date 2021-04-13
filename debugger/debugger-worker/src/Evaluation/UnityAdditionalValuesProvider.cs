@@ -46,7 +46,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
 
         public IEnumerable<IValueEntity> GetAdditionalLocals(IStackFrame frame)
         {
-            if (!myUnityOptions.ExtensionsEnabled)
+            // Do nothing if "Allow property evaluations..." option is disabled.
+            // The debugger works in two steps - get value entities/references, and then get value presentation.
+            // Evaluation is always allowed in the first step, but depends on user options for the second. This allows
+            // evaluation to calculate children, e.g. expanding the Results node of IEnumerable, but presentation might
+            // require clicking "refresh". We should be returning un-evaluated value references here.
+            // TODO: Make "Active Scene" and "this.gameObject" lazy in 212
+            if (!myUnityOptions.ExtensionsEnabled || !mySession.EvaluationOptions.AllowTargetInvoke)
                 yield break;
 
             // Add "Active Scene" as a top level item to mimic the Hierarchy window in Unity
@@ -66,10 +72,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
         {
             return myLogger.CatchEvaluatorException<TValue, IValueReference<TValue>>(() =>
                 {
-                    // Make sure we can evaluate. This is set automatically for GetChildren. We'll allow it here, too.
-                    // If the user wishes to stop this, they can disable specific settings in the Unity settings page
-                    var newOptions = mySession.EvaluationOptions.WithOverridden(o => o.AllowTargetInvoke = true);
-
                     var sceneManagerType = myValueServices.GetReifiedType(frame,
                                                "UnityEngine.SceneManagement.SceneManager, UnityEngine.CoreModule")
                                            ?? myValueServices.GetReifiedType(frame,
@@ -91,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
                     // GetActiveScene can throw a UnityException if we call it from the wrong location, such as the
                     // constructor of a MonoBehaviour
                     var activeScene =
-                        sceneManagerType.CallStaticMethod(frame, newOptions, getActiveSceneMethod);
+                        sceneManagerType.CallStaticMethod(frame, mySession.EvaluationOptions, getActiveSceneMethod);
                     if (activeScene == null)
                     {
                         myLogger.Warn("Unexpected response: SceneManager.GetActiveScene() == null");
@@ -112,15 +114,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
         {
             return myLogger.CatchEvaluatorException<TValue, IValueReference<TValue>>(() =>
                 {
-                    // Make sure we can evaluate. The debugger overrides this for GetChildren, we'll allow it here, too.
-                    // If the user wishes to stop this, they can disable specific settings in the Unity settings page
-                    var newOptions = mySession.EvaluationOptions.WithOverridden(o => o.AllowTargetInvoke = true);
-
-                    var thisObj = frame.GetThis(newOptions);
+                    var thisObj = frame.GetThis(mySession.EvaluationOptions);
                     if (thisObj?.DeclaredType?.FindTypeThroughHierarchy("UnityEngine.MonoBehaviour") == null)
                         return null;
 
-                    if (!(thisObj.GetPrimaryRole(newOptions) is IObjectValueRole<TValue> role))
+                    if (!(thisObj.GetPrimaryRole(mySession.EvaluationOptions) is IObjectValueRole<TValue> role))
                     {
                         myLogger.Warn("Unable to get 'this' as object value");
                         return null;
@@ -137,8 +135,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
                     // it here (e.g. MonoBehaviour ctor), so invoke the method now rather than returning a decorated
                     // version of the property value reference. We'll catch the exception and react gracefully. Note
                     // that if the gameObject property returned null (it won't), we'd still get a valid value here.
-                    var gameObject = gameObjectReference.GetValue(newOptions);
-                    var gameObjectType = gameObjectReference.GetValueType(newOptions,
+                    var gameObject = gameObjectReference.GetValue(mySession.EvaluationOptions);
+                    var gameObjectType = gameObjectReference.GetValueType(mySession.EvaluationOptions,
                         myValueServices.ValueMetadataProvider);
 
                     // Don't show type for each child game object. It's always "GameObject", and we know they're game

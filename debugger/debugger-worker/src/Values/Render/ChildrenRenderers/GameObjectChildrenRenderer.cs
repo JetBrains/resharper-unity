@@ -11,6 +11,7 @@ using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend.Values;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
+using Mono.Debugging.Client;
 using Mono.Debugging.Client.CallStacks;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
@@ -39,10 +40,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             m.IsStatic && m.Name == "GetInspectorTitle" && m.Parameters.Length == 1 &&
             m.Parameters[0].Type.Is("UnityEngine.Object"));
 
+        private readonly IDebuggerSession mySession;
         private readonly IUnityOptions myUnityOptions;
 
-        public GameObjectChildrenRenderer(IUnityOptions unityOptions)
+        public GameObjectChildrenRenderer(IDebuggerSession session, IUnityOptions unityOptions)
         {
+            mySession = session;
             myUnityOptions = unityOptions;
         }
 
@@ -55,10 +58,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
         protected override IEnumerable<IValueEntity> GetChildren(IObjectValueRole<TValue> valueRole,
                                                                  IMetadataTypeLite instanceType,
                                                                  IPresentationOptions options,
-                                                                 IUserDataHolder dataHolder, CancellationToken token)
+                                                                 IUserDataHolder dataHolder,
+                                                                 CancellationToken token)
         {
-            var scenePathValue = ScenePathValueHelper.GetScenePathValue(valueRole, options, ValueServices, Logger);
-            if (scenePathValue != null) yield return scenePathValue;
+            // GetChildren is always called with evaluation enabled (e.g. to calculate IEnumerable's "Results" node).
+            // If the user has disabled "Allow property evaluation..."  we shouldn't show the "Scene Path" item.
+            // Ideally, we should add it with a "Refresh" link to calculate it if required. This involves returning a
+            // reference to calculate the value rather than calculating it eagerly.
+            // TODO: Make "Scene Path" lazy in 212
+            if (mySession.EvaluationOptions.AllowTargetInvoke)
+            {
+                var scenePathValue = ScenePathValueHelper.GetScenePathValue(valueRole, options, ValueServices, Logger);
+                if (scenePathValue != null) yield return scenePathValue;
+            }
 
             yield return new GameObjectComponentsGroup(valueRole, ValueServices, Logger);
             yield return new GameObjectChildrenGroup(valueRole, ValueServices, Logger);
