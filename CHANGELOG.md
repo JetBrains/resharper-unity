@@ -14,6 +14,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Fixed
 
+- Fix missing implicit include of UnityGC.cginc in non-surface shaders ([RIDER-60508](https://youtrack.jetbrains.com/issue/RIDER-60508), [#2069](https://github.com/JetBrains/resharper-unity/pull/2069))
 - Fix exception breaking highlighting in Unity.Mathematics generated files ([RIDER-61025](https://youtrack.jetbrains.com/issue/RIDER-61025), [#2067](https://github.com/JetBrains/resharper-unity/pull/2067))
 - Rider: Gracefully handle Unity API exceptions in debugger extensions - `UnityException`, `MissingComponentException`, `MissingReferenceException`, `UnassignedReferenceException` ([RIDER-60794](https://youtrack.jetbrains.com/issue/RIDER-60794), [RIDER-60795](https://youtrack.jetbrains.com/issue/RIDER-60795), [DEXP-585430](https://youtrack.jetbrains.com/issue/DEXP-585430), [DEXP-534612](https://youtrack.jetbrains.com/issue/DEXP-534612), [DEXP-558487](https://youtrack.jetbrains.com/issue/DEXP-558487), [#2057](https://github.com/JetBrains/resharper-unity/pull/2057))
 - Rider: Fix incorrect reporting of `EvaluatorAbortedException` control flow exception ([DEXP-570625](https://youtrack.jetbrains.com/issue/DEXP-570265), [#2057](https://github.com/JetBrains/resharper-unity/pull/2057))
