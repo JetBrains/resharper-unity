@@ -134,6 +134,8 @@
     <solutionManagerExtensions implementation="com.jetbrains.rider.plugins.unity.workspace.UnitySolutionManagerExtensions"/>
 
     <diff.merge.external.AutomaticExternalMergeTool implementation="com.jetbrains.rider.plugins.unity.diff.UnityYamlAutomaticExternalMergeTool"/>
+
+    <checkinHandlerFactory implementation="com.jetbrains.rider.plugins.unity.vcs.UnsavedSceneCheckinHandlerFactory"/>
   </extensions>
 
   <project-components>
