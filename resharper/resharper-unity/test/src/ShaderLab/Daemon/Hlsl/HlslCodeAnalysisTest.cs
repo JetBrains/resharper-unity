@@ -1,4 +1,4 @@
-using JetBrains.ReSharper.Psi.Cpp.Daemon;
+using JetBrains.ReSharper.Feature.Services.Cpp.Daemon.Highlightings;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Daemon.Hlsl

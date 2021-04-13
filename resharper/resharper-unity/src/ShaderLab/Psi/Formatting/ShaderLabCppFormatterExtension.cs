@@ -64,6 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Formatting
       public string OpeningHighlightingId => null;
 
       public string ClosingHighlightingId => null;
+      public bool IgnoreRegionIfClosingNodeIsNull { get; }
     }
     
     public static string GetIndentInCgProgram(ITreeNode node)
