@@ -37,7 +37,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
             if (processKind == DaemonProcessKind.VISIBLE_DOCUMENT)
             {
                 var collectUsageProcess = daemonProcess.GetStageProcess<CollectUsagesStageProcess>().NotNull();
-                myGraphDataElement = collectUsageProcess.SwaExtensionsUsageDataInfo[CallGraphSwaExtensionProvider.Id].As<CallGraphDataElement>();
+                if (collectUsageProcess.SwaExtensionsUsageDataInfo.TryGetValue(CallGraphSwaExtensionProvider.Id, out var dataElement))
+                    myGraphDataElement = dataElement.As<CallGraphDataElement>();
             }
 
             myStack.Push(new BoundContextTag(CallGraphContextTag.NONE, null));
