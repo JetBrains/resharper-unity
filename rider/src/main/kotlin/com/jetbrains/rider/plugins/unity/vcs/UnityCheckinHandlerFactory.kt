@@ -45,7 +45,7 @@ private class UnresolvedMergeCheckHandler(
 
     private fun askUser(): ReturnResult {
         val answer = Messages.showYesNoDialog(
-            panel.component, "Commit anyway?",
+            panel.component, "Continue anyway?",
             "Unsaved Scenes in Unity", Messages.getWarningIcon()
         )
         return if (answer != Messages.YES) ReturnResult.CANCEL else ReturnResult.COMMIT
