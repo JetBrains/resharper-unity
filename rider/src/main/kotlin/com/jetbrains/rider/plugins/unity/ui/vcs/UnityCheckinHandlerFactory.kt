@@ -1,9 +1,8 @@
-package com.jetbrains.rider.plugins.unity.vcs
+package com.jetbrains.rider.plugins.unity.ui.vcs
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vcs.CheckinProjectPanel
-import com.intellij.openapi.vcs.VcsConfiguration
 import com.intellij.openapi.vcs.changes.CommitContext
 import com.intellij.openapi.vcs.changes.CommitExecutor
 import com.intellij.openapi.vcs.changes.ui.BooleanCommitOption
@@ -20,35 +19,38 @@ import com.jetbrains.rider.projectView.solution
  */
 class UnsavedSceneCheckinHandlerFactory : CheckinHandlerFactory() {
     override fun createHandler(panel: CheckinProjectPanel, commitContext: CommitContext): CheckinHandler =
-        UnresolvedMergeCheckHandler(panel, commitContext)
+        UnresolvedMergeCheckHandler(panel)
 }
 
 private val logger = Logger.getInstance(UnsavedSceneCheckinHandlerFactory::class.java)
 
 private class UnresolvedMergeCheckHandler(
-    private val panel: CheckinProjectPanel,
-    private val commitContext: CommitContext
+    private val panel: CheckinProjectPanel
 ) : CheckinHandler() {
 
     private val project = panel.project
-    val configuration = VcsConfiguration.getInstance(project)
-
+    private val settings = UnityCheckinState.getService(project)
     override fun getBeforeCheckinConfigurationPanel(): RefreshableOnComponent =
-        BooleanCommitOption(panel, "Check unsaved scenes", false, configuration::REFORMAT_BEFORE_PROJECT_COMMIT)
+        BooleanCommitOption(panel, "Check unsaved Unity scenes", false,
+            settings::checkUnsavedScenes)
 
     override fun beforeCheckin(
         executor: CommitExecutor?,
         additionalDataConsumer: PairConsumer<Any, Any>
     ): ReturnResult {
-        var providerResult = false
-        try {
-            providerResult = panel.project.solution.frontendBackendModel.hasUnsavedScenes
-                .sync(Unit, RpcTimeouts(200L, 200L))
-        } catch (t: Throwable) {
-            logger.warn("Unable to fetch hasUnsavedScenes")
+        if (settings.checkUnsavedScenes)
+        {
+            var providerResult = false
+            try {
+                providerResult = panel.project.solution.frontendBackendModel.hasUnsavedScenes
+                    .sync(Unit, RpcTimeouts(200L, 200L))
+            } catch (t: Throwable) {
+                logger.warn("Unable to fetch hasUnsavedScenes")
+            }
+
+            if (providerResult) return askUser()
         }
 
-        if (providerResult) return askUser()
         return ReturnResult.COMMIT
     }
 
