@@ -3,10 +3,13 @@ package com.jetbrains.rider.plugins.unity.vcs
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vcs.CheckinProjectPanel
+import com.intellij.openapi.vcs.VcsConfiguration
 import com.intellij.openapi.vcs.changes.CommitContext
 import com.intellij.openapi.vcs.changes.CommitExecutor
+import com.intellij.openapi.vcs.changes.ui.BooleanCommitOption
 import com.intellij.openapi.vcs.checkin.CheckinHandler
 import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory
+import com.intellij.openapi.vcs.ui.RefreshableOnComponent
 import com.intellij.util.PairConsumer
 import com.jetbrains.rd.framework.impl.RpcTimeouts
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
@@ -27,6 +30,12 @@ private class UnresolvedMergeCheckHandler(
     private val commitContext: CommitContext
 ) : CheckinHandler() {
 
+    private val project = panel.project
+    val configuration = VcsConfiguration.getInstance(project)
+
+    override fun getBeforeCheckinConfigurationPanel(): RefreshableOnComponent =
+        BooleanCommitOption(panel, "Check unsaved scenes", false, configuration::REFORMAT_BEFORE_PROJECT_COMMIT)
+
     override fun beforeCheckin(
         executor: CommitExecutor?,
         additionalDataConsumer: PairConsumer<Any, Any>
@@ -36,7 +45,7 @@ private class UnresolvedMergeCheckHandler(
             providerResult = panel.project.solution.frontendBackendModel.hasUnsavedScenes
                 .sync(Unit, RpcTimeouts(200L, 200L))
         } catch (t: Throwable) {
-            logger.warn("Error fetching hasUnsavedScenes")
+            logger.warn("Unable to fetch hasUnsavedScenes")
         }
 
         if (providerResult) return askUser()
