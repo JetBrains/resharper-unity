@@ -42,7 +42,7 @@ private class UnresolvedMergeCheckHandler(
         {
             var providerResult = false
             try {
-                providerResult = panel.project.solution.frontendBackendModel.hasUnsavedScenes
+                providerResult = project.solution.frontendBackendModel.hasUnsavedScenes
                     .sync(Unit, RpcTimeouts(200L, 200L))
             } catch (t: Throwable) {
                 logger.warn("Unable to fetch hasUnsavedScenes")
@@ -55,10 +55,20 @@ private class UnresolvedMergeCheckHandler(
     }
 
     private fun askUser(): ReturnResult {
-        val answer = Messages.showYesNoDialog(
-            panel.component, "Continue anyway?",
-            "Unsaved Scenes in Unity", Messages.getWarningIcon()
+        val actionNum = Messages.showDialog(
+            project, "Unsaved changes would be missed in commit", "Unsaved Unity Scenes",
+            arrayOf("Continue without Saving", "Cancel", "Save Scenes and Commit"), 2, Messages.getWarningIcon()
         )
-        return if (answer != Messages.YES) ReturnResult.CANCEL else ReturnResult.COMMIT
+        if (actionNum == 0) return ReturnResult.COMMIT
+        else if (actionNum == 1) return ReturnResult.CANCEL
+        try {
+            if (project.solution.frontendBackendModel.saveScenes
+                .sync(Unit, RpcTimeouts(200L, 200L)))
+                return ReturnResult.COMMIT
+        } catch (t: Throwable) {
+            logger.error("Unable to saveScenes", t)
+        }
+
+        return ReturnResult.CANCEL
     }
 }
