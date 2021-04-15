@@ -79,9 +79,10 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             row {
                 button("Add player address manually...", actionListener = { enterCustomIp() })
             }
-            commentRow("Please ensure both the <i>Development Build</i> and <i>Script Debugging</i> options are checked in Unity's <i>Build Settings</i> dialog. " +
+            commentRow("<p>Please ensure both the <i>Development Build</i> and <i>Script Debugging</i> options are checked in Unity's <i>Build Settings</i> dialog. " +
                 "Device players must be visible to the current network and firewall rules need to allow incoming UDP messages for the current process. " +
-                "Apple USB devices require iTunes or the Apple Mobile Device service to be installed.")
+                "Apple USB devices require iTunes or the Apple Mobile Device service to be installed.</p> " +
+                "<p>See the <a href=\"https://jb.gg/unity-troubleshoot-debug\">troubleshooting guide</a> for more details.</p>")
         }.apply { preferredSize = Dimension(650, 450) }
 
         isOKActionEnabled = false
@@ -133,7 +134,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             row("Port:") { portField() }
         }
 
-        val dialog = dialog(
+        @Suppress("DialogTitleCapitalization") val dialog = dialog(
                 title = "Add Unity process",
                 panel = panel,
                 project = project,
