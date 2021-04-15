@@ -45,7 +45,7 @@ private class UnresolvedMergeCheckHandler(
                 providerResult = project.solution.frontendBackendModel.hasUnsavedScenes
                     .sync(Unit, RpcTimeouts(200L, 200L))
             } catch (t: Throwable) {
-                logger.warn("Unable to fetch hasUnsavedScenes")
+                logger.warn("Unable to fetch hasUnsavedScenes", t)
             }
 
             if (providerResult) return askUser()
