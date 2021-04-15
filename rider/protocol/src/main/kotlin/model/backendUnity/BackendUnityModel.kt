@@ -173,6 +173,5 @@ object BackendUnityModel: Root() {
         call("runUnitTestLaunch", void, bool).documentation = "Start the unit test session. Results are fired via UnitTestLaunch.TestResult"
 
         call ("hasUnsavedScenes", void, bool)
-        call("saveScenes", void, bool)
     }
 }

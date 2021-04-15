@@ -55,12 +55,16 @@ private class UnresolvedMergeCheckHandler(
     }
 
     private fun askUser(): ReturnResult {
-        val actionNum = Messages.showDialog(
-            project, "Unsaved changes in Unity would not be committed", "Unsaved Unity Scenes",
-            arrayOf("Cancel", "Commit Anyway"), 1, Messages.getWarningIcon()
+        val dialogResult = Messages.showOkCancelDialog(
+            project,
+            "Unsaved changes in Unity scenes will not be included in the commit",
+            "Unsaved Unity Scenes",
+            "Commit Anyway",
+            "Cancel",
+            Messages.getWarningIcon()
         )
 
-        if (actionNum == 1) return ReturnResult.COMMIT
+        if (dialogResult == Messages.OK) return ReturnResult.COMMIT
         return ReturnResult.CANCEL
     }
 }

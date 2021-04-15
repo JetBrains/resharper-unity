@@ -138,6 +138,5 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("isDeferredCachesCompletedOnce", bool)
 
         call ("hasUnsavedScenes", void, bool)
-        call("saveScenes", void, bool)
     }
 }

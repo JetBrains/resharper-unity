@@ -39,35 +39,6 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       });
       
       GetUnsavedChangesInScenes(modelAndLifetime);
-      SaveScenes(modelAndLifetime);
-    }
-
-    private static void SaveScenes(UnityModelAndLifetime modelAndLifetime)
-    {
-        modelAndLifetime.Model.SaveScenes.Set(rdVoid =>
-        {
-            try
-            {
-                var count = SceneManager.sceneCount;
-                var scenes = new List<Scene>();
-                for (var i = 0; i < count; i++)
-                {
-                    var sceneAtIndex = SceneManager.GetSceneAt(i);
-                    if (sceneAtIndex.isDirty)
-                    {
-                        scenes.Add(sceneAtIndex);
-                    }
-                }
-
-                EditorSceneManager.SaveScenes(scenes.ToArray());
-                return true;
-            }
-            catch (Exception e)
-            {
-                ourLogger.Error("Exception during SaveScenes request", e);
-                return false;
-            }
-        });
     }
 
     private static void GetUnsavedChangesInScenes(UnityModelAndLifetime modelAndLifetime)
