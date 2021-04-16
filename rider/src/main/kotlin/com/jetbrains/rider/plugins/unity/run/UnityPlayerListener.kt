@@ -48,7 +48,7 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
 \s\[Id]\s(?<id>[^:]+)(:(?<debuggerPort>\d+))?
 \s\[Debug]\s(?<debug>\d+)
 (\s\[PackageName]\s(?<packageName>.*?)
-  (\s\[ProjectName]\s(?<projectName>.*)?)
+  (\s\[ProjectName]\s(?<projectName>.*))
 )?
 """, Pattern.COMMENTS)
     }
@@ -183,7 +183,10 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
 
                         val channel = key.channel() as DatagramChannel
                         val hostAddress = channel.receive(buffer) as InetSocketAddress
-                        val descriptor = String(buffer.array(), 0, buffer.position() - 1)
+
+                        // The UDP message may or may not be already null terminated. Unity players seem to all include
+                        // it, but the support script doesn't. We shouldn't rely on it being there.
+                        val descriptor = String(buffer.array(), 0, buffer.position()).trimEnd('\u0000')
 
                         if (logger.isTraceEnabled) {
                             logger.trace("Got heartbeat on ${channel.remoteAddress} from $hostAddress: $descriptor")
