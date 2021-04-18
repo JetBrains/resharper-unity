@@ -352,8 +352,17 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
         private fun isFirstItem(node: UnityProcessTreeNode) = node.previousSibling == null
         private fun isChildProcess(node: UnityProcessTreeNode) = node.parent is UnityProcessTreeNode
-        private fun getPreviousSiblingProjectName(node: UnityProcessTreeNode) =
-            (node.previousSibling as? UnityProcessTreeNode)?.process?.projectName ?: UNKNOWN_PROJECTS
+
+        private fun getPreviousSiblingProjectName(node: UnityProcessTreeNode): String {
+            return (node.previousSibling as? UnityProcessTreeNode)?.let {
+                if (it.process is UnityIosUsbProcess) {
+                    USB_DEVICES
+                }
+                else {
+                    it.process.projectName
+                }
+            } ?: UNKNOWN_PROJECTS
+        }
 
         /**
          * When the item is selected then we use default tree's selection foreground.
