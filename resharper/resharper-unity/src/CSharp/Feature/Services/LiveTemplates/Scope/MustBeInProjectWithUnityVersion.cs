@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
 
         public override IEnumerable<Pair<string, string>> EnumerateCustomProperties()
         {
-            yield return new Pair<string, string>(VersionProperty, myActualVersion.ToString(3));
+            yield return new Pair<string, string>(VersionProperty, myActualVersion.ToString());
         }
 
         public override string ToString()

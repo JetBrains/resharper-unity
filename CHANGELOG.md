@@ -20,6 +20,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 - Fix missing implicit include of UnityGC.cginc in non-surface shaders ([RIDER-60508](https://youtrack.jetbrains.com/issue/RIDER-60508), [#2069](https://github.com/JetBrains/resharper-unity/pull/2069))
 - Fix exception breaking highlighting in Unity.Mathematics generated files ([RIDER-61025](https://youtrack.jetbrains.com/issue/RIDER-61025), [#2067](https://github.com/JetBrains/resharper-unity/pull/2067))
+- Fix exception that prevented macros being saved with the AsmDef file template ([RIDER-61376](https://youtrack.jetbrains.com/issue/RIDER-61376), [#2073](https://github.com/JetBrains/resharper-unity/pull/2073))
 - Rider: Fix USB iOS debugging ([#2072](https://github.com/JetBrains/resharper-unity/pull/2072))
 - Rider: Fix grouping issue in "Attach to Unity Process" dialog ([#2059](https://github.com/JetBrains/resharper-unity/issues/2059), [#2072](https://github.com/JetBrains/resharper-unity/pull/2072))
 - Rider: Fix minor rendering issue in "Attach to Unity Process" dialog ([#2072](https://github.com/JetBrains/resharper-unity/pull/2072))
