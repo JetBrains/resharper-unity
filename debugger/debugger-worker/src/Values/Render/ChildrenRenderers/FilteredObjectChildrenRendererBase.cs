@@ -15,10 +15,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
     public abstract class FilteredObjectChildrenRendererBase<TValue> : ChildrenRendererBase<TValue, IObjectValueRole<TValue>>
         where TValue : class
     {
-        protected override IEnumerable<IValueEntity> GetChildren(IObjectValueRole<TValue> valueRole,
+        [NotNull]
+        protected override IEnumerable<IValueEntity> GetChildren([NotNull] IObjectValueRole<TValue> valueRole,
                                                                  IMetadataTypeLite instanceType,
                                                                  IPresentationOptions options,
-                                                                 IUserDataHolder dataHolder, CancellationToken token)
+                                                                 IUserDataHolder dataHolder,
+                                                                 CancellationToken token)
         {
             var references = EnumerateChildren(valueRole, options, token);
             references = FilterChildren(references);
@@ -26,7 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             return RenderChildren(valueRole, references, options, token);
         }
 
-        protected IEnumerable<IValueReference<TValue>> EnumerateChildren(IObjectValueRole<TValue> valueRole,
+        [NotNull]
+        protected IEnumerable<IValueReference<TValue>> EnumerateChildren([NotNull] IObjectValueRole<TValue> valueRole,
                                                                          IPresentationOptions options,
                                                                          CancellationToken token)
         {

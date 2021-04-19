@@ -3,6 +3,7 @@ using MetadataLite.API;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.CallStacks;
+using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReferences
@@ -42,10 +43,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReference
 
         public virtual void SetValue(TValue value, IValueFetchOptions options)
         {
+            if ((DefaultFlags & ValueFlags.IsReadOnly) != 0)
+                throw ValueErrors.ReadOnlyReference();
             myValueReferenceImplementation.SetValue(value, options);
         }
 
-        public virtual bool IsWriteable => myValueReferenceImplementation.IsWriteable;
+        public virtual bool IsWriteable =>
+            (DefaultFlags & ValueFlags.IsReadOnly) == 0 && myValueReferenceImplementation.IsWriteable;
 
         public virtual ValueOriginKind OriginKind => myValueReferenceImplementation.OriginKind;
 

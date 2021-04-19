@@ -18,23 +18,24 @@ using Mono.Debugging.Soft;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ChildrenRenderers
 {
+    // Replaces the default children renderer for UnityEditor.SerializedProperty. Filters out properties that are not
+    // relevant to the property (e.g. longValue for a string property). Also adds a "Children" group for complex objects
+    // and a group for array or fixed size buffer elements.
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
     public class SerializedPropertyChildrenRenderer<TValue> : FilteredObjectChildrenRendererBase<TValue>
         where TValue : class
     {
         private readonly IUnityOptions myUnityOptions;
-        private readonly ILogger myLogger;
         private readonly OneToSetMap<SerializedPropertyKind, string> myPerTypeFieldNames;
         private readonly ISet<SerializedPropertyKind> myHandledPropertyTypes;
         private readonly ISet<string> myKnownFieldNames;
 
-        public SerializedPropertyChildrenRenderer(IUnityOptions unityOptions, ILogger logger)
+        public SerializedPropertyChildrenRenderer(IUnityOptions unityOptions)
         {
             myUnityOptions = unityOptions;
-            myLogger = logger;
             myPerTypeFieldNames = GetPerTypeFieldNames();
             myHandledPropertyTypes = myPerTypeFieldNames.Keys.ToSet();
-            myHandledPropertyTypes.Add(SerializedPropertyKind.Generic);   // Special handling
+            myHandledPropertyTypes.Add(SerializedPropertyKind.Generic); // Special handling
             myKnownFieldNames = myPerTypeFieldNames.Values.ToSet();
         }
 
@@ -53,7 +54,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
         protected override IEnumerable<IValueEntity> GetChildren(IObjectValueRole<TValue> valueRole,
                                                                  IMetadataTypeLite instanceType,
                                                                  IPresentationOptions options,
-                                                                 IUserDataHolder dataHolder, CancellationToken token)
+                                                                 IUserDataHolder dataHolder,
+                                                                 CancellationToken token)
+        {
+            // Keep an eye on iterators and enumeration: we need to eagerly evaluate GetChildrenImpl so we can catch any
+            // exceptions. The return value of GetChildren is eagerly evaluated, so we're not changing any semantics
+            return Logger.CatchEvaluatorException<TValue, IEnumerable<IValueEntity>>(
+                       () => GetChildrenImpl(valueRole, instanceType, options, dataHolder, token).ToList(),
+                       exception =>
+                           Logger.LogThrownUnityException(exception, valueRole.ValueReference.OriginatingFrame,
+                               ValueServices, options))
+                   ?? base.GetChildren(valueRole, instanceType, options, dataHolder, token);
+        }
+
+        private IEnumerable<IValueEntity> GetChildrenImpl(IObjectValueRole<TValue> valueRole,
+                                                          IMetadataTypeLite instanceType,
+                                                          IPresentationOptions options,
+                                                          IUserDataHolder dataHolder,
+                                                          CancellationToken token)
         {
             var enumValueObject = valueRole.GetInstancePropertyReference("propertyType")
                 ?.AsObjectSafe(options)?.GetEnumValue(options);
@@ -93,7 +111,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                 yield return valueEntity;
 
             if (!Util.TryEvaluatePrimitiveProperty(valueRole, "hasChildren", options, out bool hasChildren))
-                myLogger.Warn("Cannot evaluate hasChildren for serializedProperty");
+                Logger.Warn("Cannot evaluate hasChildren for serializedProperty");
             else if (hasChildren)
             {
                 // Arrays, fixed buffer arrays and strings (which are arrays) all say they have children. They don't.
@@ -110,27 +128,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                 // node, and would only include the "Size" node over the existing array/fixed buffer element group.
                 // For now, just ignore these special properties and leave it to the array/fixed buffer element group.
                 if (!isArray && !isFixedBuffer && propertyType != SerializedPropertyKind.String)
-                    yield return new ChildrenGroup(valueRole, ValueServices, myLogger);
+                    yield return new ChildrenGroup(valueRole, ValueServices, Logger);
             }
 
             if (isArray)
             {
                 if (!Util.TryEvaluatePrimitiveProperty(valueRole, "arraySize", options, out int arraySize))
-                    myLogger.Warn("Cannot evaluate arraySize for serializedProperty");
+                    Logger.Warn("Cannot evaluate arraySize for serializedProperty");
                 else if (arraySize > 0)
                 {
                     yield return new ArrayElementsGroup(valueRole, arraySize,
-                        MethodSelectors.SerializedProperty_GetArrayElementAtIndex, ValueServices, myLogger);
+                        MethodSelectors.SerializedProperty_GetArrayElementAtIndex, ValueServices, Logger);
                 }
             }
             else if (isFixedBuffer)
             {
                 if (!Util.TryEvaluatePrimitiveProperty(valueRole, "fixedBufferSize", options, out int fixedBufferSize))
-                    myLogger.Warn("Cannot evaluate fixedBufferSize for serializedProperty");
+                    Logger.Warn("Cannot evaluate fixedBufferSize for serializedProperty");
                 else if (fixedBufferSize > 0)
                 {
                     yield return new ArrayElementsGroup(valueRole, fixedBufferSize,
-                        MethodSelectors.SerializedProperty_GetFixedBufferElementAtIndex, ValueServices, myLogger);
+                        MethodSelectors.SerializedProperty_GetFixedBufferElementAtIndex, ValueServices, Logger);
                 }
             }
 
@@ -329,15 +347,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
 
             public override IEnumerable<IValueEntity> GetChildren(IPresentationOptions options, CancellationToken token = new CancellationToken())
             {
-                try
-                {
-                    return GetChildrenImpl(options, token);
-                }
-                catch (Exception e)
-                {
-                    myLogger.Error(e);
-                    return EmptyList<IValueEntity>.Enumerable;
-                }
+                // Keep an eye on iterators and enumeration: we need to eagerly evaluate GetChildrenImpl so we can catch
+                // any exceptions. The return value of GetChildren is eagerly evaluated, so we're not changing any
+                // semantics. But remember that chunked groups are lazily evaluated, and need try/catch
+                return myLogger.CatchEvaluatorException<TValue, IEnumerable<IValueEntity>>(
+                           () => GetChildrenImpl(options, token).ToList(),
+                           exception => myLogger.LogThrownUnityException(exception,
+                               mySerializedPropertyRole.ValueReference.OriginatingFrame, myValueServices, options))
+                       ?? EmptyList<IValueEntity>.Enumerable;
             }
 
             private IEnumerable<IValueEntity> GetChildrenImpl(IPresentationOptions options, CancellationToken token)
@@ -367,17 +384,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
 
             protected override IValue GetElementValueAt(IObjectValueRole<TValue> collection, int index, IValueFetchOptions options)
             {
-                var frame = mySerializedPropertyRole.ValueReference.OriginatingFrame;
-                var indexValue = myValueServices.ValueFactory.CreatePrimitive(frame, options, index);
-                var childSerializedPropertyValue = collection.CallInstanceMethod(myGetElementMethod, indexValue);
-                var valueReference = new SimpleValueReference<TValue>(childSerializedPropertyValue,
-                    mySerializedPropertyRole.ReifiedType.MetadataType, $"[{index}]", ValueOriginKind.ArrayElement,
-                    ValueFlags.None | ValueFlags.IsReadOnly, frame, myValueServices.RoleFactory);
+                var name = $"[{index}]";
+                try
+                {
+                    var frame = mySerializedPropertyRole.ValueReference.OriginatingFrame;
+                    var indexValue = myValueServices.ValueFactory.CreatePrimitive(frame, options, index);
+                    var childSerializedPropertyValue = collection.CallInstanceMethod(myGetElementMethod, indexValue);
+                    var valueReference = new SimpleValueReference<TValue>(childSerializedPropertyValue,
+                        mySerializedPropertyRole.ReifiedType.MetadataType, name, ValueOriginKind.ArrayElement,
+                        ValueFlags.None | ValueFlags.IsReadOnly, frame, myValueServices.RoleFactory);
 
-                // Tell the value presenter to hide the name, because it's always "data" (DefaultName is the key name)
-                // Also hide the type presentation - they can only ever be SerializedProperty instances
-                return new CalculatedValueReferenceDecorator<TValue>(valueReference, myValueServices.RoleFactory,
-                    valueReference.DefaultName, false, false).ToValue(myValueServices);
+                    // Tell the value presenter to hide the name, because it's always "data" (DefaultName is the key name)
+                    // Also hide the type presentation - they can only ever be SerializedProperty instances
+                    return new CalculatedValueReferenceDecorator<TValue>(valueReference, myValueServices.RoleFactory,
+                        valueReference.DefaultName, false, false).ToValue(myValueServices);
+                }
+                catch (Exception e)
+                {
+                    // We must always return a value, as we're effectively showing the contents of an array here. We're
+                    // possibly also being evaluated lazily, thanks to chunked arrays, so can't rely on the caller
+                    // catching exceptions.
+                    myLogger.LogExceptionSilently(e);
+                    return myValueServices.ValueRenderers.GetValueStubForException(e, name,
+                               collection.ValueReference.OriginatingFrame) as IValue
+                           ?? new ErrorValue(name, "Unable to retrieve child serialized property");
+                }
             }
         }
 
@@ -400,15 +431,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             public override IEnumerable<IValueEntity> GetChildren(IPresentationOptions options,
                                                                   CancellationToken token = new CancellationToken())
             {
-                try
-                {
-                    return GetChildrenImpl(options, token);
-                }
-                catch (Exception e)
-                {
-                    myLogger.Error(e);
-                    return EmptyList<IValueEntity>.Enumerable;
-                }
+                // Keep an eye on iterators and enumeration: we need to eagerly evaluate GetChildrenImpl so we can catch
+                // any exceptions. The return value of GetChildren is eagerly evaluated, so we're not changing any
+                // semantics. This group is not chunked
+                return myLogger.CatchEvaluatorException<TValue, IEnumerable<IValueEntity>>(
+                           () => GetChildrenImpl(options, token).ToList(),
+                           exception => myLogger.LogThrownUnityException(exception,
+                               mySerializedPropertyRole.ValueReference.OriginatingFrame, myValueServices, options))
+                       ?? EmptyList<IValueEntity>.Enumerable;
             }
 
             private IEnumerable<IValueEntity> GetChildrenImpl(IValueFetchOptions options, CancellationToken token)
