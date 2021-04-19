@@ -9,7 +9,7 @@ using JetBrains.Core;
 using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Host.Features.BackgroundTasks;
+using JetBrains.ReSharper.Host.Core.Features.BackgroundTasks;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
@@ -120,15 +120,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 animatorContainer.GetElementsNames(location, declaredElement, out var names, out var isStateMachine) &&
                 names != null)
             {
-                return new AnimatorFindUsagesResult(names, 
-                    isStateMachine ? AnimatorUsageType.StateMachine : AnimatorUsageType.State, needExpand, 
+                return new AnimatorFindUsagesResult(names,
+                    isStateMachine ? AnimatorUsageType.StateMachine : AnimatorUsageType.State, needExpand,
                     pathFromAsset, fileName, extension);
             }
             if (path.ExtensionWithDot.EndsWith(UnityYamlFileExtensions.AssetFileExtensionWithDot))
             {
                 return new AssetFindUsagesResult(needExpand, pathFromAsset, fileName, extension);
             }
-            
+
             if (path.IsAnimFile())
             {
                 return new AnimationFindUsagesResult(needExpand, pathFromAsset, fileName, extension);
@@ -173,7 +173,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             public UnityUsagesFinderConsumer(AssetHierarchyProcessor assetHierarchyProcessor,
                                              [NotNull] AnimatorScriptUsagesElementContainer animatorContainer,
-                                             IPersistentIndexManager persistentIndexManager, 
+                                             IPersistentIndexManager persistentIndexManager,
                                              FileSystemPath solutionDirectoryPath,
                                              [NotNull] IDeclaredElement declaredElement)
             {

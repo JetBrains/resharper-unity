@@ -2,8 +2,8 @@ using System;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
-using JetBrains.ReSharper.Host.Features.Dialog;
-using JetBrains.ReSharper.Host.Features.Settings.OptionsPage.CSharpFileLayout;
+using JetBrains.Rider.Backend.Features.Dialog;
+using JetBrains.Rider.Backend.Features.Settings.OptionsPage.CSharpFileLayout;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Settings

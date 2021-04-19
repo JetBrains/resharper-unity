@@ -1,5 +1,5 @@
 using JetBrains.ReSharper.Daemon.SyntaxHighlighting;
-using JetBrains.ReSharper.Host.Features.SyntaxHighlighting;
+using JetBrains.ReSharper.Host.Core.Features.SyntaxHighlighting;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi;
 

@@ -1,14 +1,12 @@
-using System;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Host.Platform.Icons;
+using JetBrains.ReSharper.Host.Core.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.Rider
 {
@@ -40,9 +38,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 var result = false;
                 var boundStore = mySettingsStore.BoundSettingsStore;
                 var providerId = myBurstCodeInsightProvider.ProviderId;
-                
+
                 RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, () => result = base.IsGutterMarkEnabled, out _);
-                
+
                 return result;
             }
         }
@@ -56,8 +54,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             var boundStore = mySettingsStore.BoundSettingsStore;
             var providerId = myBurstCodeInsightProvider.ProviderId;
             void Fallback() => base.Analyze(methodDeclaration, consumer, context);
-            
-            return isBurstIconsEnabled 
+
+            return isBurstIconsEnabled
                    && RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, Fallback, out _);
         }
 

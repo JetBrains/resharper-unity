@@ -1,6 +1,6 @@
 using JetBrains.Application;
-using JetBrains.ReSharper.Host.Features.Daemon;
-using JetBrains.ReSharper.Host.Features.Daemon.Registration;
+using JetBrains.ReSharper.Host.Core.Features.Daemon;
+using JetBrains.ReSharper.Host.Core.Features.Daemon.Registration;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages;
 using JetBrains.Rider.Model.HighlighterRegistration;
 

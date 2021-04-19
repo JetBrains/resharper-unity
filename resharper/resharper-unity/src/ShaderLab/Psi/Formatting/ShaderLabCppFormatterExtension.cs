@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Formatting
     {
       formattingInfoProvider.RegisterIndentingRules(new ShaderLabIndentingRule());
     }
-    
+
     public class ShaderLabIndentingRule : IIndentingRule
     {
       private readonly INodePattern myNodePattern;
@@ -54,18 +54,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Formatting
         Assertion.Assert(node is CppFile, "node is CppFile");
 
         var cgProgram = (node.Parent as IInjectedFileHolder)?.OriginalNode.PrevSibling;
-        
+
         var s = GetIndentInCgProgram(cgProgram);
         return new ConstantOptionNode(
           new IndentOptionValue(IndentType.AfterFirstToken | IndentType.AbsoluteIndent | IndentType.NonAdjustable, 0, s));
       }
-      
+
 
       public string OpeningHighlightingId => null;
 
       public string ClosingHighlightingId => null;
+
+      public bool IgnoreRegionIfClosingNodeIsNull => false;
     }
-    
+
     public static string GetIndentInCgProgram(ITreeNode node)
     {
       var indent = new StringBuilder();

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Host.Features.CodeInsights.Providers;
+using JetBrains.ReSharper.Host.Core.Features.CodeInsights.Providers;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                                         BulbMenuComponent bulbMenu,
                                         UnitySolutionTracker tracker)
             : base(frontendBackendHost, bulbMenu)
-        { 
+        {
             RelativeOrderings = tracker.IsUnityProject.HasTrueValue()
                 ? new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingBefore(ReferencesCodeInsightsProvider.Id)}
                 : new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingLast()};

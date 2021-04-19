@@ -76,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                     // TODO: Let's avoid #defines
 #if RIDER
                     var provider = solution.GetComponent<JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights.UnityCodeInsightProvider>();
-                    return settings.GetIndexedValue((JetBrains.ReSharper.Host.Platform.CodeInsights.CodeInsightsSettings key) => key.DisabledProviders,
+                    return settings.GetIndexedValue((JetBrains.ReSharper.Host.Core.Platform.CodeInsights.CodeInsightsSettings key) => key.DisabledProviders,
                         provider.ProviderId);
 #else
                     return true;
