@@ -5,13 +5,13 @@ using JetBrains.Core;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Features.Inspections.Bookmarks.NumberedBookmarks;
-using JetBrains.ReSharper.Host.Features.Notifications;
-using JetBrains.ReSharper.Host.Features.ProjectModel;
-using JetBrains.ReSharper.Host.Features.TextControls;
 using JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Rider.Backend.Features.Notifications;
+using JetBrains.Rider.Backend.Features.ProjectModel;
+using JetBrains.Rider.Backend.Features.TextControls;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
 
@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
                                          UnitySolutionTracker solutionTracker,
                                          ISolution solution,
                                          AsmDefNameCache asmDefNameCache,
-                                         [CanBeNull] TextControlHost textControlHost = null,
+                                         [CanBeNull] RiderTextControlHost textControlHost = null,
                                          [CanBeNull] SolutionLifecycleHost solutionLifecycleHost = null,
                                          [CanBeNull] NotificationPanelHost notificationPanelHost = null)
         {

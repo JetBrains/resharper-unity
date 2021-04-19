@@ -3,10 +3,10 @@ using JetBrains.Application;
 using JetBrains.Application.Components;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Host.Features;
-using JetBrains.ReSharper.Host.Features.UnitTesting;
+using JetBrains.ReSharper.Host.Core.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.UnitTestFramework;
+using JetBrains.Rider.Backend.Features.UnitTesting;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting

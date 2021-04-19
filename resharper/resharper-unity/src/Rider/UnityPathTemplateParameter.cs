@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application;
-using JetBrains.ReSharper.Host.Features.ProjectModel.ProjectTemplates.DotNetExtensions;
-using JetBrains.ReSharper.Host.Features.ProjectModel.ProjectTemplates.DotNetTemplates;
+using JetBrains.Rider.Backend.Features.ProjectModel.ProjectTemplates.DotNetExtensions;
+using JetBrains.Rider.Backend.Features.ProjectModel.ProjectTemplates.DotNetTemplates;
 using JetBrains.Rider.Model;
 using JetBrains.Util;
 
@@ -23,10 +23,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 return content;
             }
-            
+
             var possiblePaths = UnityInstallationFinder.GetPossibleMonoPaths().Select(a=>a.Directory.Combine("Managed/UnityEngine.dll")).Where(b => b.ExistsFile).ToArray();
             var options = new List<RdProjectTemplateGroupOption>();
-            
+
             foreach (var path in possiblePaths)
             {
                 var optionContext = new Dictionary<string, string>(context) {{Name, path.FullPath}};
@@ -39,8 +39,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 possiblePaths.Any()?"Custom":"Custom (Unity installation was not found)",
                 null,
                 new RdProjectTemplateTextParameter(Name, "Custom path", null, Tooltip, RdTextParameterStyle.FileChooser, content)));
-            
-            return new RdProjectTemplateGroupParameter(Name, "UnityEngineDll", 
+
+            return new RdProjectTemplateGroupParameter(Name, "UnityEngineDll",
                 possiblePaths.Any()?possiblePaths.Last().FullPath:string.Empty, null, options);
         }
     }
@@ -48,11 +48,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [ShellComponent]
     public class UnityPathParameterProvider : IDotNetTemplateParameterProvider
     {
-        public int Priority
-        {
-            get { return 50; }
-        }
-    
+        public int Priority => 50;
+
         public IReadOnlyCollection<DotNetTemplateParameter> Get()
         {
             return new[] {new UnityPathTemplateParameter()};

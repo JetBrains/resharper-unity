@@ -1,10 +1,10 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
-using JetBrains.ReSharper.Host.Features.Usages;
-using JetBrains.ReSharper.Host.Platform.Icons;
+using JetBrains.ReSharper.Host.Core.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
 using JetBrains.ReSharper.Psi;
+using JetBrains.Rider.Backend.Features.Usages;
 using JetBrains.UI.Icons;
 using JetBrains.Util;
 
@@ -60,8 +60,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
                 return UnityFileTypeThemedIcons.FileUnityMeta.Id;
             if (location.IsControllerFile())
                 return UnityFileTypeThemedIcons.FileAnimatorController.Id;
-            return location.IsAnimFile() 
-                ? UnityFileTypeThemedIcons.FileAnimationClip.Id 
+            return location.IsAnimFile()
+                ? UnityFileTypeThemedIcons.FileAnimationClip.Id
                 : UnityFileTypeThemedIcons.FileUnity.Id;
         }
 

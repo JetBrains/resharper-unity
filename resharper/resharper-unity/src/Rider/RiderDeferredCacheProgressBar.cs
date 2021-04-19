@@ -6,7 +6,7 @@ using JetBrains.Collections.Viewable;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Host.Features.BackgroundTasks;
+using JetBrains.ReSharper.Host.Core.Features.BackgroundTasks;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     myLocks.Tasks.StartNew(myLifetime, Scheduling.MainDispatcher, () => lifetimeDef.Terminate());
                 });
-                
+
                 var count = myCache.FilesToProcess.Count;
                 var processedCount = 0;
                 var progress = new Property<double>(startLifetime, "DeferredCacheProgressBarProgress", 0);
@@ -49,16 +49,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     if (count != 0)
                         progress.Value = Math.Min(0.99, ((double) processedCount) / count);
                 });
-                
+
                 var description = new Property<string>(startLifetime, "DeferredCacheProgressBarDescription", "Processing assets");
                 var task = RiderBackgroundTaskBuilder.Create()
                     .WithTitle("Calculating asset index")
                     .WithDescription(description)
                     .WithProgress(progress)
                     .Build();
-                
+
                 CurrentFile.AdviseNotNull(startLifetime, v => { description.Value = $"Processing {v.DisplayName}"; });
-                
+
                 myLocks.Tasks.StartNew(startLifetime, Scheduling.MainDispatcher,
                     () => { myRiderBackgroundTaskHost.AddNewTask(lifetimeDef.Lifetime, task); });
             }

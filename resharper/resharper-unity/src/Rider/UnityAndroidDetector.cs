@@ -2,7 +2,7 @@ using System.Linq;
 using JetBrains.Application;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties.Managed;
-using JetBrains.ReSharper.Host.Features.ProjectModel.View;
+using JetBrains.ReSharper.Host.Core.Features.ProjectModel.View;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var project = projectFile.GetProject();
             if (project == null)
                 return base.TryAddUserData(projectFile, out name, out value);
-            
+
             foreach (var configuration in project.ProjectProperties.ActiveConfigurations.Configurations.OfType<IManagedProjectConfiguration>())
             {
                 var defines = configuration.DefineConstants;
@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     return true;
                 }
             }
-            
+
             name = null;
             value = null;
             return base.TryAddUserData(projectFile, out name, out value);

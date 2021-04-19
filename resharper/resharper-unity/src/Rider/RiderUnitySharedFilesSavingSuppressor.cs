@@ -6,7 +6,7 @@ using JetBrains.DocumentModel;
 using JetBrains.DocumentModel.Impl;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Host.Features.Documents;
+using JetBrains.ReSharper.Host.Core.Features.Documents;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Util;
 
@@ -74,7 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (modifiedProjectFile == null)
                 return false;
 
-            var documentModel = modifiedProjectFile.GetData(DocumentHost.DocumentModelKey);
+            var documentModel = modifiedProjectFile.GetData(DocumentHostBase.DocumentModelKey);
             return documentModel != null && !documentModel.TextControls.IsEmpty();
         }
     }

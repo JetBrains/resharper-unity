@@ -10,12 +10,12 @@ using JetBrains.Core;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
-using JetBrains.ReSharper.Host.Features;
-using JetBrains.ReSharper.Host.Features.Unity;
+using JetBrains.ReSharper.Host.Core.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
+using JetBrains.Rider.Backend.Features.Unity;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
 
@@ -105,7 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var pid = Convert.ToInt32(processIdString);
             return PlatformUtil.ProcessExists(pid) ? pid : (int?) null;
         }
-        
+
         public Task<int> WaitConnectedUnityProcessId(Lifetime lifetime)
         {
             var source = new TaskCompletionSource<int>();

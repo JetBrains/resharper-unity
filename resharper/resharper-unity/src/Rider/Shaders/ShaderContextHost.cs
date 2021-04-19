@@ -5,12 +5,12 @@ using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Host.Features.Documents;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Rider.Backend.Features.Documents;
 using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
         private readonly ISolution mySolution;
         private readonly IPsiFiles myPsiFiles;
         private readonly CppGlobalSymbolCache myCppGlobalSymbolCache;
-        private readonly DocumentHost myDocumentHost;
+        private readonly RiderDocumentHost myDocumentHost;
         private readonly ShaderContextCache myShaderContextCache;
         private readonly ShaderContextDataPresentationCache myShaderContextDataPresentationCache;
 
@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
                                  ShaderContextCache shaderContextCache,
                                  ShaderContextDataPresentationCache shaderContextDataPresentationCache, ILogger logger,
                                  [CanBeNull] FrontendBackendHost frontendBackendHost = null,
-                                 [CanBeNull] DocumentHost documentHost = null)
+                                 [CanBeNull] RiderDocumentHost documentHost = null)
         {
             mySolution = solution;
             myPsiFiles = psiFiles;
