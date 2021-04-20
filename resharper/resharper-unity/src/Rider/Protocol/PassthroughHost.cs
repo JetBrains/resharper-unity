@@ -110,6 +110,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                     ? RdTask<RunMethodResult>.Cancelled()
                     : backendUnityModel.RunMethodInUnity.Start(l, data).ToRdTask(l);
             });
+            
+            frontendBackendModel.HasUnsavedScenes.Set((l, u) =>
+                backendUnityModelProperty.Maybe.ValueOrDefault?.HasUnsavedScenes.Start(l, u).ToRdTask(l));
         }
 
         private void AdviseUnityToFrontendModel(Lifetime lifetime, BackendUnityModel backendUnityModel)

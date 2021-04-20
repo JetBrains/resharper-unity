@@ -171,5 +171,7 @@ object BackendUnityModel: Root() {
         // Unit testing
         property("unitTestLaunch", UnitTestLaunch).documentation = "Set the details of the current unit test session"
         call("runUnitTestLaunch", void, bool).documentation = "Start the unit test session. Results are fired via UnitTestLaunch.TestResult"
+
+        call ("hasUnsavedScenes", void, bool)
     }
 }

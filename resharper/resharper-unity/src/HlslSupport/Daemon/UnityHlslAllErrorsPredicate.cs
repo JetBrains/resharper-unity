@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Daemon
         private readonly IProperty<bool> mySuppressShaderErrors;
         private readonly IProperty<bool> mySuppressShaderErrorsInRenderPipeline;
 
-        public UnityHlslAllErrorsPredicate(Lifetime lifetime, ISolution solution,
+        public UnityHlslAllErrorsPredicate(Lifetime lifetime,
                                            UnitySolutionTracker unitySolutionTracker,
                                            IApplicationWideContextBoundSettingStore settingsStore)
         {
