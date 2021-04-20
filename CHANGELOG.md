@@ -8,8 +8,19 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 Since 2018.1, the version numbers and release cycle match Rider's versions and release dates. The plugin is always bundled with Rider, but is released for ReSharper separately. Sometimes the ReSharper version isn't released. This is usually because the changes are not applicable to ReSharper, but also by mistake.
 
+## 2021.1.3
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net211-rtm-2021.1.2...net211)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/47?closed=1)
+
+### Fixed
+
+- Rider: Only add Unity folders to index for Unity packages ([#2076](https://github.com/JetBrains/resharper-unity/pull/2076))
+- Rider: Clean up indexed folders added in previous versions ([#2076](https://github.com/JetBrains/resharper-unity/pull/2076))
+
+
+
 ## 2021.1.2
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net211-rtm-2021.1.0-rtm-2021.1.1...net211)
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net211-rtm-2021.1.0-rtm-2021.1.1...net211-rtm-2021.1.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/46?closed=1)
 
 ### Changed
