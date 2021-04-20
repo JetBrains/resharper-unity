@@ -98,7 +98,7 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                             // and if it's set to false, we get prompted if we want to open in new or same frame. We
                             // don't care - we want to close this project, so new frame or reusing means nothing
                             e.project?.let { ProjectManagerEx.getInstanceEx().closeAndDispose(it) }
-                            val newProject = SolutionManager.openExistingSolution(null, true, solutionFile) ?: return
+                            val newProject = SolutionManager.openExistingSolution(null, true, solutionFile, true, true) ?: return
 
                             // Opening as folder saves settings to `.idea/.idea.{folder}`. This includes the last selected
                             // solution view pane, which will be file system. A Unity generated solution will use the
