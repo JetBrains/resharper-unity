@@ -15,9 +15,14 @@ import com.jetbrains.rider.plugins.unity.packageManager.PackageManagerListener
 import com.jetbrains.rider.plugins.unity.packageManager.PackageSource
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
-import com.jetbrains.rider.projectView.workspace.getOrCreateRiderModuleEntity
+import com.jetbrains.rider.projectView.workspace.impl.addRiderModuleEntity
 
 class UnityWorkspaceModelUpdater(private val project: Project) {
+
+    companion object {
+        private const val PackagesModuleName = "UnityPackages"
+    }
+
     init {
         application.invokeLater {
             rebuildWorkspaceModel()
@@ -38,7 +43,7 @@ class UnityWorkspaceModelUpdater(private val project: Project) {
         val builder = WorkspaceEntityStorageBuilder.create()
         val virtualFileUrlManager = VirtualFileUrlManager.getInstance(project)
 
-        val packagesModuleEntity = builder.getOrCreateRiderModuleEntity()
+        val packagesModuleEntity = builder.addRiderModuleEntity(PackagesModuleName, RiderUnityEntitySource)
 
         // TODO: WORKSPACEMODEL
         // We want to include list of special files (by extensions comes from unity editor)
