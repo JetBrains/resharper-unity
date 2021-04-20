@@ -1,8 +1,6 @@
-
 package com.jetbrains.rider.plugins.unity.workspace
 
 import com.intellij.openapi.project.Project
-import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.intellij.workspaceModel.ide.getInstance
 import com.intellij.workspaceModel.ide.impl.toVirtualFileUrl
 import com.intellij.workspaceModel.storage.WorkspaceEntityStorageBuilder
@@ -16,6 +14,7 @@ import com.jetbrains.rider.plugins.unity.packageManager.PackageSource
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
 import com.jetbrains.rider.projectView.workspace.getOrCreateRiderModuleEntity
+import com.jetbrains.rider.projectView.workspace.impl.WorkspaceModelEditingFacade
 
 class UnityWorkspaceModelUpdater(private val project: Project) {
     init {
@@ -64,7 +63,7 @@ class UnityWorkspaceModelUpdater(private val project: Project) {
         }
 
         application.runWriteAction {
-            val projectModel = WorkspaceModel.getInstance(project)
+            val projectModel = WorkspaceModelEditingFacade.getInstance(project).getWorkspaceModelForEditing()
             projectModel.updateProjectModel { x -> x.replaceBySource({ it is RiderUnityEntitySource }, builder) }
         }
     }
