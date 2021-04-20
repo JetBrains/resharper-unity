@@ -8,7 +8,7 @@
 
   <!-- Notes:
        * The code reads `inherit`, but it's not used or supported anywhere
-       * USS's <length> is not the same as CSS's <length. USS does not require a unit. When specified it has to be `px`
+       * USS's <length> is not the same as CSS's <length>. USS does not require a unit. When specified it has to be `px`
        * USS will also treat a `px` <length> as a float, which means it can be applied to a property that should only
          accept <number>. This implementation detail is ignored in this file
        * Initial values in this file are for latest version, and have not been looked at in previous versions
