@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Host.Features.ProjectModel.SharedProjects;
+using JetBrains.ReSharper.Host.Core.Features.ProjectModel.SharedProjects;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
 

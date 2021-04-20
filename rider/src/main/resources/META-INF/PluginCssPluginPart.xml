@@ -8,7 +8,6 @@
     <lang.syntaxHighlighter language="USS" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssSyntaxHighlighter" />
     <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssFileBreadcrumbsProvider" />
     <css.elementDescriptorProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.codeInsight.css.UssCssElementDescriptorProvider" order="first" />
-    <css.cssInspectionFilter language="USS" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.codeInsight.css.inspections.UssCssInspectionFilter"/>
     <css.cssIntentionFilter language="USS" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.codeInsight.css.inspections.UssCssIntentionFilter"/>
     <!-- Override the CSS documentation for USS files -->
     <lang.documentationProvider language="CSS" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssDocumentationProvider" order="first"/>

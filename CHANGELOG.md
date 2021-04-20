@@ -12,9 +12,58 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net211...net212)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/45?closed=1)
 
+### Changed
+
+- Methods marked with `[UnitySetUp]` are treated as in use ([#2048](https://github.com/JetBrains/resharper-unity/issues/2048), [#2047](https://github.com/JetBrains/resharper-unity/pull/2047))
+
+### Fixed
+
+- Rider: Hide run marker gutter icons for static methods in Unity projects ([RIDER-55734](https://youtrack.jetbrains.com/issue/RIDER-55734), [#2063](https://github.com/JetBrains/resharper-unity/pull/2063))
+- Rider: Error in Unity tool window log is not cleared ([RIDER-59689](https://youtrack.jetbrains.com/issue/RIDER-59689), [#2051](https://github.com/JetBrains/resharper-unity/pull/2051))
+- Rider: External Documentation action now works with Unity API ([#2050](https://github.com/JetBrains/resharper-unity/pull/2050))
+- Rider: Fix wrong page opening in external documentation ([RIDER-57745](https://youtrack.jetbrains.com/issue/RIDER-57745), [#2050](https://github.com/JetBrains/resharper-unity/pull/2050))
+- Rider: External documentation for method parameter now navigates to documentation for method ([https://youtrack.jetbrains.com/issue/RIDER-60297](https://youtrack.jetbrains.com/issue/RIDER-60297), [#2050](https://github.com/JetBrains/resharper-unity/pull/2050))
+- Rider: Show localised external Unity documentation if English isn't available ([RIDER-55737](https://youtrack.jetbrains.com/issue/RIDER-55737), [#2050](https://github.com/JetBrains/resharper-unity/pull/2050))
+
+
+
+## 2021.1.2
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net211-rtm-2021.1.0-rtm-2021.1.1...net211)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/46?closed=1)
+
+### Changed
+
+- Rider: Add link to troubleshooting document to the "Attach to Unity Process" debug dialog ([#2072](https://github.com/JetBrains/resharper-unity/pull/2067))
+
+### Fixed
+
+- Fix missing implicit include of UnityGC.cginc in non-surface shaders ([RIDER-60508](https://youtrack.jetbrains.com/issue/RIDER-60508), [#2069](https://github.com/JetBrains/resharper-unity/pull/2069))
+- Fix exception breaking highlighting in Unity.Mathematics generated files ([RIDER-61025](https://youtrack.jetbrains.com/issue/RIDER-61025), [#2067](https://github.com/JetBrains/resharper-unity/pull/2067))
+- Fix exception that prevented macros being saved with the AsmDef file template ([RIDER-61376](https://youtrack.jetbrains.com/issue/RIDER-61376), [#2073](https://github.com/JetBrains/resharper-unity/pull/2073))
+- Rider: Fix USB iOS debugging ([#2072](https://github.com/JetBrains/resharper-unity/pull/2072))
+- Rider: Fix grouping issue in "Attach to Unity Process" dialog ([#2059](https://github.com/JetBrains/resharper-unity/issues/2059), [#2072](https://github.com/JetBrains/resharper-unity/pull/2072))
+- Rider: Fix minor rendering issue in "Attach to Unity Process" dialog ([#2072](https://github.com/JetBrains/resharper-unity/pull/2072))
+- Rider: Gracefully handle Unity API exceptions in debugger extensions - `UnityException`, `MissingComponentException`, `MissingReferenceException`, `UnassignedReferenceException` ([RIDER-60794](https://youtrack.jetbrains.com/issue/RIDER-60794), [RIDER-60795](https://youtrack.jetbrains.com/issue/RIDER-60795), [DEXP-585430](https://youtrack.jetbrains.com/issue/DEXP-585430), [DEXP-534612](https://youtrack.jetbrains.com/issue/DEXP-534612), [DEXP-558487](https://youtrack.jetbrains.com/issue/DEXP-558487), [#2057](https://github.com/JetBrains/resharper-unity/pull/2057))
+- Rider: Fix incorrect reporting of `EvaluatorAbortedException` control flow exception ([DEXP-570625](https://youtrack.jetbrains.com/issue/DEXP-570265), [#2057](https://github.com/JetBrains/resharper-unity/pull/2057))
+- Rider: Fix exceptions thrown when by Unity debugger extensions when implicit evaluation is disabled ([RIDER-60798](https://youtrack.jetbrains.com/issue/RIDER-60798), [#2057](https://github.com/JetBrains/resharper-unity/pull/2057))
+- Rider: Fix some null reference exceptions when evaluating Unity debugger extensions ([DEXP-561412](https://youtrack.jetbrains.com/issue/DEXP-561412), [DEXP-577753](https://youtrack.jetbrains.com/issue/DEXP-577753), [#2507](https://github.com/JetBrains/resharper-unity/pull/2057))
+
+
+
+## 2021.1.1
+* Released: [2021-04-10](https://blog.jetbrains.com/dotnet/2021/04/10/rider-resharper-2021-1-1-released/)
+* Build: 2021.1.0.114
+* [No code changes](https://github.com/JetBrains/resharper-unity/compare/net211-rtm-2021.1.0...net211-rtm-2021.1.0-rtm-2021.1.1)
+
+
+
 ## 2021.1.0
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net203...net211)
+* Released: [2021-04-08](https://blog.jetbrains.com/dotnet/2021/04/08/rider-2021-1-release/)
+* Build: 2021.1.0.113
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net203...net211-rtm-2021.1.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/42?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net211-rtm-2021.1.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2021.1.0.114)
 
 ### Added
 

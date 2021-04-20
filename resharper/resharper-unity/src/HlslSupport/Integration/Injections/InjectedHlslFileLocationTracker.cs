@@ -188,16 +188,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
                         includeList.Add(new CppFileLocation(myCppExternalModule, variables));
                     }
 
-
+                    var unityCG = cgIncludeFolder.Combine("UnityCG.cginc");
+                    if (unityCG.ExistsFile)
+                    {
+                        includeList.Add(new CppFileLocation(myCppExternalModule, unityCG));
+                    }
+                    
                     // from surface shader generated code
                     if (isSurface)
                     {
-                        var unityCG = cgIncludeFolder.Combine("UnityCG.cginc");
-                        if (unityCG.ExistsFile)
-                        {
-                            includeList.Add(new CppFileLocation(myCppExternalModule, unityCG));
-                        }
-
                         var lighting = cgIncludeFolder.Combine("Lighting.cginc");
                         if (lighting.ExistsFile)
                         {

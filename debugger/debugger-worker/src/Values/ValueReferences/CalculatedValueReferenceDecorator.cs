@@ -1,7 +1,6 @@
 using JetBrains.Annotations;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
-using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReferences
@@ -32,9 +31,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReference
         // Calculated value, must be read only
         public override ValueOriginKind OriginKind => ValueOriginKind.Other;
         public override ValueFlags DefaultFlags => ValueFlags.None | ValueFlags.IsReadOnly;
-        public override bool IsWriteable => false;
-
-        public override void SetValue(TValue value, IValueFetchOptions options) =>
-            throw ValueErrors.ReadOnlyReference();
     }
 }

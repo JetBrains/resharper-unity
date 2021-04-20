@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Host.Features.CodeInsights;
-using JetBrains.ReSharper.Host.Platform.Icons;
+using JetBrains.ReSharper.Host.Core.Features.CodeInsights;
+using JetBrains.ReSharper.Host.Core.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly IconHost myIconHost;
         private readonly AssetSerializationMode myAssetSerializationMode;
 
-        public RiderTypeDetector(ISolution solution, 
+        public RiderTypeDetector(ISolution solution,
                                  IApplicationWideContextBoundSettingStore settingsStore,
                                  UnityApi unityApi,
                                  AssetIndexingSupport assetIndexingSupport,

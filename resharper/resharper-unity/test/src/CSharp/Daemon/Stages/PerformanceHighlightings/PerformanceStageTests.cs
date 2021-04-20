@@ -25,6 +25,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Performan
         [Test] public void CommentRootsTest() { DoNamedTest(); }
         [Test] public void EditorClassesTest() {DoNamedTest();}
         [Test] public void CommentRootsTest2() { DoNamedTest(); }
+        // this test gold does not contain ".gen" part!
+        // gold - "SimpleGenTest.cs.gold"
+        // but test file - "SimpleGenTest.gen.cs" 
+        [Test] public void SimpleGenTest() { DoOneTest(nameof(SimpleGenTest) + ".gen"); }
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile file, IContextBoundSettingsStore settingsStore)
         {

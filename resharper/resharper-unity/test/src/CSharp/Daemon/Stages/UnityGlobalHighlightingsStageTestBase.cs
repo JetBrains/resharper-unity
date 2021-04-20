@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -33,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages
 
                 var files = swea.GetFilesToAnalyze().OrderBy(f => f.Name).ToList();
                 swea.ReanalyzeAll();
-
+                
                 ExecuteWithGold(TestMethodName + ".cs", writer =>
                 {
                     foreach (var file in files)

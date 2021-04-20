@@ -17,8 +17,7 @@ using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Features.SolutionBuilders.Prototype.Services.Execution;
 using JetBrains.Rd.Base;
-using JetBrains.ReSharper.Host.Features;
-using JetBrains.ReSharper.Host.Features.UnitTesting;
+using JetBrains.ReSharper.Host.Core.Features;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Resources.Shell;
@@ -28,6 +27,7 @@ using JetBrains.ReSharper.UnitTestFramework.Launch;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30.Elements;
+using JetBrains.Rider.Backend.Features.UnitTesting;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
@@ -266,7 +266,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     });
 
                     StartTests(run, tcs, taskLifetime);
-                    
+
                     // set results for explicit tests
                     foreach (var element in run.Elements.OfType<NUnitElementBase>().Where(a =>
                         a.RunState == RunState.Explicit && !run.Launch.Criterion.Explicit.Contains(a)))
@@ -383,7 +383,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         myUnityRefresher.Refresh(waitingLifetime, RefreshType.Force)
                             .ContinueWith(result =>
                             {
-                                if (result.Exception != null ) 
+                                if (result.Exception != null )
                                     tcs.SetException(result.Exception);
                                 myLogger.Trace("After myUnityRefresher.Refresh");
                                 waitingLifetimeDefinition.Terminate();
@@ -496,12 +496,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
             var groups = new List<string>();
             var categories = new List<string>();
-            
+
             var testNames = elements
                 .OfType<NUnitElementBase>()
                 .Where(a => a.RunState != RunState.Explicit || run.Launch.Criterion.Explicit.Contains(a))
                 .Select(p => p.Id.Id).ToList();
-            
+
             filters.Add(new TestFilter(((UnityRuntimeEnvironment) run.RuntimeEnvironment).Project.Name, testNames, groups, categories));
             return filters;
 

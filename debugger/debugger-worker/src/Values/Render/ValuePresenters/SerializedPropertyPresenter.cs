@@ -19,10 +19,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
         where TValue : class
     {
         private readonly IUnityOptions myUnityOptions;
+        private readonly ILogger myLogger;
 
-        public SerializedPropertyPresenter(IUnityOptions unityOptions)
+        public SerializedPropertyPresenter(IUnityOptions unityOptions, ILogger logger)
         {
             myUnityOptions = unityOptions;
+            myLogger = logger;
         }
 
         public override int Priority => UnityRendererUtil.ValuePresenterPriority;
@@ -37,84 +39,101 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
 
         public override IValuePresentation PresentValue(IObjectValueRole<TValue> valueRole,
                                                         IMetadataTypeLite instanceType,
-                                                        IPresentationOptions options, IUserDataHolder dataHolder,
+                                                        IPresentationOptions options,
+                                                        IUserDataHolder dataHolder,
                                                         CancellationToken token)
         {
-            var showName = (valueRole.ValueReference as CalculatedValueReferenceDecorator<TValue>)?.AllowNameInValue ?? true;
-            var showTypeName = (valueRole.ValueReference as CalculatedValueReferenceDecorator<TValue>)
-                ?.AllowDefaultTypePresentation ?? true;
-
-            var nameValuePresentation = valueRole.GetInstancePropertyReference("name")?.ToValue(ValueServices)
-                ?.GetValuePresentation(options);
-            var propertyTypeReference = valueRole.GetInstancePropertyReference("propertyType");
-            var propertyTypeValuePresentation = propertyTypeReference?.ToValue(ValueServices)?.GetValuePresentation(options);
-
-            var propertyTypeEnumValueObject = propertyTypeReference?.AsObjectSafe(options)?.GetEnumValue(options);
-            var propertyType = (SerializedPropertyKind) Enum.ToObject(typeof(SerializedPropertyKind),
-                propertyTypeEnumValueObject ?? SerializedPropertyKind.Generic);
-
-            int? arraySize = null;
-            string arrayElementType = null;
-            string genericType = null;
-            if (propertyType == SerializedPropertyKind.Generic)
-            {
-                if (Util.TryEvaluatePrimitiveProperty(valueRole, "isArray", options, out bool isArray) && isArray)
+            return myLogger.CatchEvaluatorException<TValue, IValuePresentation>(
+                () =>
                 {
-                    arraySize = valueRole.GetInstancePropertyReference("arraySize")?.AsPrimitiveSafe(options)
-                        ?.GetPrimitive<int>();
-                    arrayElementType =
-                        valueRole.GetInstancePropertyReference("arrayElementType")?.AsStringSafe(options)?.GetString();
-                }
-                else if (Util.TryEvaluatePrimitiveProperty(valueRole, "isFixedBuffer", options,
-                             out bool isFixedBuffer) &&
-                         isFixedBuffer)
-                {
-                    arraySize = valueRole.GetInstancePropertyReference("fixedBufferSize")?.AsPrimitiveSafe(options)
-                        ?.GetPrimitive<int>();
-                    arrayElementType =
-                        valueRole.GetInstancePropertyReference("arrayElementType")?.AsStringSafe(options)?.GetString();
-                }
-                else
-                {
-                    genericType = valueRole.GetInstancePropertyReference("type")?.AsStringSafe(options)?.GetString();
-                }
-            }
+                    var showName = (valueRole.ValueReference as CalculatedValueReferenceDecorator<TValue>)
+                        ?.AllowNameInValue ?? true;
+                    var showTypeName = (valueRole.ValueReference as CalculatedValueReferenceDecorator<TValue>)
+                        ?.AllowDefaultTypePresentation ?? true;
 
-            var valuePresentation = GetValuePresentation(valueRole, propertyType, options, out var extraDetail);
+                    var nameValuePresentation = valueRole.GetInstancePropertyReference("name")?.ToValue(ValueServices)
+                        ?.GetValuePresentation(options);
+                    var propertyTypeReference = valueRole.GetInstancePropertyReference("propertyType");
+                    var propertyTypeValuePresentation = propertyTypeReference?.ToValue(ValueServices)
+                        ?.GetValuePresentation(options);
 
-            var parts = PresentationBuilder.New();
-            parts.OpenBrace();
+                    var propertyTypeEnumValueObject =
+                        propertyTypeReference?.AsObjectSafe(options)?.GetEnumValue(options);
+                    var propertyType = (SerializedPropertyKind) Enum.ToObject(typeof(SerializedPropertyKind),
+                        propertyTypeEnumValueObject ?? SerializedPropertyKind.Generic);
 
-            if (showName && nameValuePresentation != null)
-            {
-                parts.Comment("name: ").Add(nameValuePresentation.Value.ToArray())
-                    .Add(ValuePresentationPart.Space);
-            }
+                    int? arraySize = null;
+                    string arrayElementType = null;
+                    string genericType = null;
+                    if (propertyType == SerializedPropertyKind.Generic)
+                    {
+                        if (Util.TryEvaluatePrimitiveProperty(valueRole, "isArray", options, out bool isArray)
+                            && isArray)
+                        {
+                            arraySize = valueRole.GetInstancePropertyReference("arraySize")
+                                ?.AsPrimitiveSafe(options)
+                                ?.GetPrimitive<int>();
+                            arrayElementType = valueRole.GetInstancePropertyReference("arrayElementType")
+                                ?.AsStringSafe(options)
+                                ?.GetString();
+                        }
+                        else if (Util.TryEvaluatePrimitiveProperty(valueRole, "isFixedBuffer", options,
+                                     out bool isFixedBuffer) && isFixedBuffer)
+                        {
+                            arraySize = valueRole.GetInstancePropertyReference("fixedBufferSize")
+                                ?.AsPrimitiveSafe(options)
+                                ?.GetPrimitive<int>();
+                            arrayElementType = valueRole.GetInstancePropertyReference("arrayElementType")
+                                ?.AsStringSafe(options)
+                                ?.GetString();
+                        }
+                        else
+                        {
+                            genericType = valueRole.GetInstancePropertyReference("type")?.AsStringSafe(options)
+                                ?.GetString();
+                        }
+                    }
 
-            parts.Comment("propertyType: ");
-            if (propertyType == SerializedPropertyKind.Generic && arraySize != null && arrayElementType != null)
-                parts.Default($"{arrayElementType}[{arraySize}]");
-            else if (genericType != null)
-                parts.Default(genericType);
-            else if (propertyTypeValuePresentation != null)
-                parts.Add(propertyTypeValuePresentation.Value.ToArray());
-            else
-                parts.Comment("(Unknown)");
+                    var valuePresentation = GetValuePresentation(valueRole, propertyType, options, out var extraDetail);
 
-            if (valuePresentation != null)
-            {
-                parts.Add(ValuePresentationPart.Space)
-                    .Comment("value: ").Add(valuePresentation.Value.ToArray());
-                if (!string.IsNullOrEmpty(extraDetail))
-                    parts.Add(ValuePresentationPart.Space).SpecialSymbol("(").Default(extraDetail).SpecialSymbol(")");
-            }
+                    var parts = PresentationBuilder.New();
+                    parts.OpenBrace();
 
-            parts.ClosedBrace();
+                    if (showName && nameValuePresentation != null)
+                    {
+                        parts.Comment("name: ").Add(nameValuePresentation.Value.ToArray())
+                            .Add(ValuePresentationPart.Space);
+                    }
 
-            // Hide the default type presentation if we've been asked to
-            var flags = !showTypeName ? ValueFlags.IsDefaultTypePresentation : 0;
-            return SimplePresentation.Create(parts.Result(), ValueResultKind.Success, ValueFlags.None | flags,
-                instanceType);
+                    parts.Comment("propertyType: ");
+                    if (propertyType == SerializedPropertyKind.Generic && arraySize != null && arrayElementType != null)
+                        parts.Default($"{arrayElementType}[{arraySize}]");
+                    else if (genericType != null)
+                        parts.Default(genericType);
+                    else if (propertyTypeValuePresentation != null)
+                        parts.Add(propertyTypeValuePresentation.Value.ToArray());
+                    else
+                        parts.Comment("(Unknown)");
+
+                    if (valuePresentation != null)
+                    {
+                        parts.Add(ValuePresentationPart.Space)
+                            .Comment("value: ").Add(valuePresentation.Value.ToArray());
+                        if (!string.IsNullOrEmpty(extraDetail))
+                        {
+                            parts.Add(ValuePresentationPart.Space).SpecialSymbol("(").Default(extraDetail)
+                                .SpecialSymbol(")");
+                        }
+                    }
+
+                    parts.ClosedBrace();
+
+                    // Hide the default type presentation if we've been asked to
+                    var flags = !showTypeName ? ValueFlags.IsDefaultTypePresentation : 0;
+                    return SimplePresentation.Create(parts.Result(), ValueResultKind.Success, ValueFlags.None | flags,
+                        instanceType);
+                },
+                exception => myLogger.LogThrownUnityException(exception, null, null, options));
         }
 
         [CanBeNull]

@@ -24,7 +24,7 @@ class AppleDeviceListener(project: Project,
 
     companion object {
         private val logger = Logger.getInstance(AppleDeviceListener::class.java)
-        private val countRegex = "^(?<count>\\d+)".toRegex()
+        private val countRegex = "^(?<count>\\d+)$".toRegex()
         private val deviceRegex = Pattern.compile("""(?<productId>[^\s]*)\s(?<deviceId>.*)""")
     }
 
@@ -57,6 +57,7 @@ class AppleDeviceListener(project: Project,
         try {
             val iosSupportPath = UnityInstallationFinder.getInstance(project).getAdditionalPlaybackEnginesRoot()?.resolve("iOSSupport")
             if (iosSupportPath != null && iosSupportPath.isDirectory()) {
+                logger.trace("Using iOSSupportPath: $iosSupportPath")
 
                 varDescriptions = loadDescriptions(iosSupportPath)
                 varProcessHandler = startListener(iosSupportPath)
@@ -71,9 +72,7 @@ class AppleDeviceListener(project: Project,
 
         processHandler = varProcessHandler
         thread = if (processHandler != null) {
-            thread {
-                processHandler.runProcess()
-            }
+            thread { processHandler.runProcess() }
         } else {
             null
         }
@@ -110,6 +109,8 @@ class AppleDeviceListener(project: Project,
     private fun loadDescriptions(iosSupportPath: Path): Map<Int, String> {
         val file = iosSupportPath.resolve("Data/iosdevices.csv")
         return if (file.exists()) {
+            logger.trace("Loading iOS device descriptions from $file")
+
             val map = mutableMapOf<Int, String>()
             try {
                 file.toFile().forEachLine {
@@ -139,6 +140,7 @@ class AppleDeviceListener(project: Project,
             map
         }
         else {
+            logger.warn("Cannot find iOS device description at $file")
             emptyMap()
         }
     }
@@ -160,22 +162,50 @@ class AppleDeviceListener(project: Project,
         val processHandler = CapturingProcessHandler(commandLine)
         val rawDevices = mutableListOf<String>()
         processHandler.addProcessListener(object : ProcessAdapter() {
-            var count = 0
+            var expectedCount = 0
+            var unexpectedText = ""
+
+            override fun processTerminated(event: ProcessEvent) {
+                logger.trace("Helper process exited. Exit code: ${event.exitCode}")
+
+                if (unexpectedText.isNotEmpty()) {
+                    logger.error("Error running $helperExe. Output:\n$unexpectedText")
+                }
+            }
 
             override fun onTextAvailable(event: ProcessEvent, key: Key<*>) {
                 // Text is split by lines and includes the trailing newline
-                if (!event.text.startsWith("[usbmuxd")) {
-                    if (count == 0) {
-                        countRegex.find(event.text)?.let {
-                            count = it.groups["count"]?.value?.toInt() ?: 0
+                // Unity's dll will output status messages beginning with `[usbmuxd`. We'll ignore these
+                // Then the helper app will output a device count on a single line, followed by each device, with a line
+                // per device, in the format `product-id device-id`. (Product ID is in hex)
+                logger.debug("Received text: ${event.text?.trimEnd()}")
 
-                            if (count == 0 && devices.isNotEmpty()) {
+                if (!event.text.startsWith("[usbmuxd")) {
+                    // Are we currently expecting a device text, or a new count?
+                    if (expectedCount == 0) {
+
+                        // Expecting a new count
+                        val match = countRegex.find(event.text)
+                        if (match != null) {
+                            unexpectedText = ""
+
+                            expectedCount = match.groups["count"]?.value?.toInt() ?: 0
+
+                            // There are no devices connected, but we still think there are. Process our (empty) list to
+                            // clean up
+                            if (expectedCount == 0 && devices.isNotEmpty()) {
                                 processDevices(rawDevices)
                             }
                         }
+                        else {
+                            unexpectedText += event.text
+                        }
                     } else {
+                        // We're expecting a device text. Read it and decrement our expected count. When the expected
+                        // count hits zero, process our collected list of device texts
                         rawDevices.add(event.text)
-                        if (--count == 0) {
+                        if (--expectedCount == 0) {
+                            logger.trace("Refreshing Apple USB devices: ${rawDevices.size}")
                             processDevices(rawDevices)
                             rawDevices.clear()
                         }
@@ -210,6 +240,7 @@ class AppleDeviceListener(project: Project,
                 }
             }
             else {
+                logger.warn("Expected device text. Could not match: $it")
                 null
             }
         }

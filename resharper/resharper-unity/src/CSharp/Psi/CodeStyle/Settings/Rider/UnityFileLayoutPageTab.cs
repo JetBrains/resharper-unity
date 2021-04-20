@@ -3,8 +3,8 @@ using JetBrains.Application.UI.Options.OptionsDialog;
 using JetBrains.IDE.UI.Extensions;
 using JetBrains.IDE.UI.Extensions.Properties;
 using JetBrains.Lifetimes;
-using JetBrains.ReSharper.Host.Features.Dialog;
-using JetBrains.ReSharper.Host.Features.Settings.OptionsPage.CSharpFileLayout;
+using JetBrains.Rider.Backend.Features.Dialog;
+using JetBrains.Rider.Backend.Features.Settings.OptionsPage.CSharpFileLayout;
 using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.UIAutomation;
 

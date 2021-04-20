@@ -1,8 +1,8 @@
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Host.Features.CodeInsights;
-using JetBrains.ReSharper.Host.Platform.Icons;
+using JetBrains.ReSharper.Host.Core.Features.CodeInsights;
+using JetBrains.ReSharper.Host.Core.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
@@ -106,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             var eventsCount = UnityEventsElementContainer.GetAssetUsagesCount(declaredElement, out var unityEventsEstimatedResult);
             var animationEventUsagesCount = myAnimationEventUsagesContainer
                 .GetEventUsagesCountFor(declaredElement, out var animationEventsEstimatedResult);
-            myUsagesCodeVisionProvider.AddHighlighting(consumer, element, declaredElement, 
+            myUsagesCodeVisionProvider.AddHighlighting(consumer, element, declaredElement,
                 animationEventUsagesCount + eventsCount, "Click to view usages in assets", "Assets usages",
                 unityEventsEstimatedResult || animationEventsEstimatedResult, iconModel);
         }

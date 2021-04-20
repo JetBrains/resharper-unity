@@ -3,8 +3,7 @@ using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Tree;
-using JetBrains.ReSharper.Host.Features.Usages;
-using JetBrains.ReSharper.Host.Platform.Icons;
+using JetBrains.ReSharper.Host.Core.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
@@ -14,6 +13,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Rider.Backend.Features.Usages;
 using JetBrains.Rider.Model;
 using JetBrains.UI.Icons;
 using JetBrains.Util;
@@ -83,14 +83,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
         public IDeclaredElement GetDeclaredElement(IOccurrence occurrence) => null;
         public IProjectItem GetProjectItem(IOccurrence occurrence) => null;
     }
-    
+
     public class AnimatorGroupingRule : UnityYamlUsageGroupingRuleBase
     {
-        public AnimatorGroupingRule([NotNull] IconHost iconHost) 
+        public AnimatorGroupingRule([NotNull] IconHost iconHost)
             : base("Animator", UnityFileTypeThemedIcons.FileAnimatorController.Id, iconHost, 10.0)
         {
         }
-    
+
         public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor)
         {
             if (!(occurrence is UnityAnimatorScriptOccurence animationEventOccurence)) return EmptyModel();
@@ -106,14 +106,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
         public override bool IsNavigateable => false;
     }
 
-    
+
     public class AnimationEventGroupingRule : UnityYamlUsageGroupingRuleBase
     {
-        public AnimationEventGroupingRule([NotNull] IconHost iconHost) 
+        public AnimationEventGroupingRule([NotNull] IconHost iconHost)
             : base("AnimationEvent", UnityFileTypeThemedIcons.FileAnimationClip.Id, iconHost, 9.0)
         {
         }
-        
+
         public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor)
         {
             if (!(occurrence is UnityAnimationEventOccurence animationEventOccurence)) return EmptyModel();
@@ -128,7 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
 
         public override bool IsNavigateable => false;
     }
-    
+
     // The priorities here put us after directory, file, namespace, type and member
     public class GameObjectUsageGroupingRule : UnityYamlUsageGroupingRuleBase
     {

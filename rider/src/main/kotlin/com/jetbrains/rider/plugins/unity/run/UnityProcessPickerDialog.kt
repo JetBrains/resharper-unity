@@ -19,6 +19,7 @@ import java.awt.Insets
 import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
 import javax.swing.*
+import javax.swing.border.EmptyBorder
 import javax.swing.tree.*
 
 class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(project) {
@@ -53,6 +54,12 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                 }
             }
 
+            // Make sure the current theme doesn't add a border/insets to the contents of the tree. This can affect the
+            // separator, which is drawn as content, and non-opaque. If it's shifted, then we'll see the item background
+            // around it, which is very obvious when the item is selected. This is not a problem with Rider's default
+            // themes, but is with IntelliJ Light and Darcula.
+            border = EmptyBorder(0, 0, 0, 0)
+
             registerKeyboardAction(okAction, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_FOCUSED)
 
             TreeSpeedSearch(this, { path -> path.lastPathComponent?.toString() }, true)
@@ -79,9 +86,10 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             row {
                 button("Add player address manually...", actionListener = { enterCustomIp() })
             }
-            commentRow("Please ensure both the <i>Development Build</i> and <i>Script Debugging</i> options are checked in Unity's <i>Build Settings</i> dialog. " +
+            commentRow("<p>Please ensure both the <i>Development Build</i> and <i>Script Debugging</i> options are checked in Unity's <i>Build Settings</i> dialog. " +
                 "Device players must be visible to the current network and firewall rules need to allow incoming UDP messages for the current process. " +
-                "Apple USB devices require iTunes or the Apple Mobile Device service to be installed.")
+                "Apple USB devices require iTunes or the Apple Mobile Device service to be installed.</p> " +
+                "<p>See the <a href=\"https://jb.gg/unity-troubleshoot-debug\">troubleshooting guide</a> for more details.</p>")
         }.apply { preferredSize = Dimension(650, 450) }
 
         isOKActionEnabled = false
@@ -133,7 +141,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             row("Port:") { portField() }
         }
 
-        val dialog = dialog(
+        @Suppress("DialogTitleCapitalization") val dialog = dialog(
                 title = "Add Unity process",
                 panel = panel,
                 project = project,
@@ -274,11 +282,14 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         }
     }
 
+    // This cell renderer contains several components:
+    // * GroupedElementsRenderer.MyComponent (myRendererComponent) - root component
+    //   * SeparatorWithText (mySeparatorComponent)
+    //   * SimpleColoredComponent (myComponent) - item component defined in this derived class
+    // * ErrorLabel (myTextLabel) - looks like it's a text label for accessibility
+    // The root myRendererComponent is drawn in the correct selected/unselected tree background
     private class GroupedProcessTreeCellRenderer : GroupedElementsRenderer.Tree() {
         override fun getTreeCellRendererComponent(tree: JTree, value: Any?, selected: Boolean, expanded: Boolean, leaf: Boolean, row: Int, hasFocus: Boolean): Component {
-
-            // Reset the state from the last render. The tree will set background colour on the renderer panel component
-            setDeselected(myRendererComponent)
 
             val itemComponent = myComponent as SimpleColoredComponent
             itemComponent.clear()
@@ -290,8 +301,11 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
             val projectName = unityProcess.projectName ?: if (unityProcess is UnityIosUsbProcess) USB_DEVICES else UNKNOWN_PROJECTS
             val hasSeparator = !isChildProcess(node) && (isFirstItem(node) || getPreviousSiblingProjectName(node) != projectName)
-            // TODO: Is there anything more useful we could show in the tooltip?
+
+            // Set up visibility and selected status. This does not (re)set the selected status of the returned
+            // myRendererComponent, which has its background set directly by the tree
             val component = configureComponent("", "", null, null, selected, hasSeparator, projectName, -1)
+            setDeselected(component)
 
             val focused = tree.hasFocus()
             if (unityProcess is UnityEditorHelper && unityProcess.roleName.isNotEmpty()) {
@@ -318,8 +332,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         }
 
         override fun createSeparator(): SeparatorWithText {
-            // The DefaultTreeUI will set the background colour of the myRendererComponent and SeparatorWithText is not
-            // painted opaque, so we'll see the selected background colour. Force painting the background
+            // The separator is not painted opaque by default but looks bad painted over a selected background
             return object: SeparatorWithText() {
                 override fun paint(g: Graphics?) {
                     g?.color = background
@@ -330,16 +343,26 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         }
 
         override fun createItemComponent(): JComponent {
-            myTextLabel = ErrorLabel() // dummy component required by base class
-            return SimpleColoredComponent().apply {
-                isOpaque = false
-            }
+            myTextLabel = ErrorLabel() // dummy component required by base class for accessibility
+
+            // Don't paint the background for the item component because we don't have a way of setting the unfocused
+            // selected colour. If we paint as non-opaque, we get myRendererComponent's background
+            return SimpleColoredComponent().apply { isOpaque = false }
         }
 
         private fun isFirstItem(node: UnityProcessTreeNode) = node.previousSibling == null
         private fun isChildProcess(node: UnityProcessTreeNode) = node.parent is UnityProcessTreeNode
-        private fun getPreviousSiblingProjectName(node: UnityProcessTreeNode) =
-            (node.previousSibling as? UnityProcessTreeNode)?.process?.projectName ?: UNKNOWN_PROJECTS
+
+        private fun getPreviousSiblingProjectName(node: UnityProcessTreeNode): String {
+            return (node.previousSibling as? UnityProcessTreeNode)?.let {
+                if (it.process is UnityIosUsbProcess) {
+                    USB_DEVICES
+                }
+                else {
+                    it.process.projectName
+                }
+            } ?: UNKNOWN_PROJECTS
+        }
 
         /**
          * When the item is selected then we use default tree's selection foreground.

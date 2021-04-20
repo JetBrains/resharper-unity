@@ -9,4 +9,8 @@
     <GenerateErrorsGenInputs Remove="$(PsiGenToolsDir)/ErrorsGen.exe" />
     <GenerateErrorsGenInputs Include="$(PsiGenToolsDir)/../ErrorsGen.exe" />
   </ItemGroup>
+  <Target Name="ReportVersion" BeforeTargets="Build">
+    <Message Importance="High" Text="Build are using version: '$(Version)'" />
+  </Target>
+
 </Project>
