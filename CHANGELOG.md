@@ -12,6 +12,19 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net211...net212)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/45?closed=1)
 
+### Changed
+
+- Methods marked with `[UnitySetUp]` are treated as in use ([#2048](https://github.com/JetBrains/resharper-unity/issues/2048), [#2047](https://github.com/JetBrains/resharper-unity/pull/2047))
+
+### Fixed
+
+- Rider: Hide run marker gutter icons for static methods in Unity projects ([RIDER-55734](https://youtrack.jetbrains.com/issue/RIDER-55734), [#2063](https://github.com/JetBrains/resharper-unity/pull/2063))
+- Rider: Error in Unity tool window log is not cleared ([RIDER-59689](https://youtrack.jetbrains.com/issue/RIDER-59689), [#2051](https://github.com/JetBrains/resharper-unity/pull/2051))
+- Rider: External Documentation action now works with Unity API ([#2050](https://github.com/JetBrains/resharper-unity/pull/2050))
+- Rider: Fix wrong page opening in external documentation ([RIDER-57745](https://youtrack.jetbrains.com/issue/RIDER-57745), [#2050](https://github.com/JetBrains/resharper-unity/pull/2050))
+- Rider: External documentation for method parameter now navigates to documentation for method ([https://youtrack.jetbrains.com/issue/RIDER-60297](https://youtrack.jetbrains.com/issue/RIDER-60297), [#2050](https://github.com/JetBrains/resharper-unity/pull/2050))
+- Rider: Show localised external Unity documentation if English isn't available ([RIDER-55737](https://youtrack.jetbrains.com/issue/RIDER-55737), [#2050](https://github.com/JetBrains/resharper-unity/pull/2050))
+
 
 
 ## 2021.1.2
