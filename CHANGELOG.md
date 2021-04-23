@@ -20,8 +20,12 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 ## 2021.1.2
+* Released: [2021-04-23](https://blog.jetbrains.com/dotnet/2021/04/23/resharper_rider_2021_1_2/)
+* Build: 2021.1.2.127
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net211-rtm-2021.1.0-rtm-2021.1.1...net211-rtm-2021.1.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/46?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net211-rtm-2021.1.2)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2021.1.2.127)
 
 ### Changed
 
