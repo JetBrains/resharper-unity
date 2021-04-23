@@ -9,22 +9,25 @@ import java.nio.file.Path
 class UnitySolutionManagerExtensions : SolutionManagerExtensions {
 
     companion object {
-        private const val CLEANUP_USER_CONTENT_MODEL_KEY = "user.content.model.migrated"
+        private const val CLEANUP_USER_CONTENT_MODEL_PREFIX = "unity.user.content.model.migrated-"
     }
 
     override fun cleanupBeforeOpen(dotIdeaDir: Path): Array<Path> {
-        // Cleanup indexLayout.xml one time while migrating to a new workspace model because
+        // Cleanup/delete indexLayout.xml one time while migrating to a new workspace model because
         //   unity plugin in versions 2020.3 and below used to write lots of generated rules in user store
-        val projectDir = dotIdeaDir.parent.parent.toFile().toVirtualFile(true)
-            ?: return arrayOf()
-        if (!UnityProjectDiscoverer.hasUnityFileStructure(projectDir))
-            return arrayOf()
 
-        // TODO: WORKSPACE enable it after testing
-//        if (PropertiesComponent.getInstance().getBoolean(CLEANUP_USER_CONTENT_MODEL_KEY))
-//            return arrayOf()
-//        PropertiesComponent.getInstance().setValue(CLEANUP_USER_CONTENT_MODEL_KEY, true)
+        // Sadly, we can't save a nice "done it" flag in the project's workspace.xml, because we don't have a Project.
+        // Save it to global config instead, with a key bound to the hash of the .idea path
+        val key = CLEANUP_USER_CONTENT_MODEL_PREFIX + dotIdeaDir.hashCode().toString(16)
+        val handledPath = PropertiesComponent.getInstance().getValue(key)
+        if (handledPath == dotIdeaDir.toString()) return emptyArray()
 
-        return super.cleanupBeforeOpen(dotIdeaDir)
+        // <projectDir>/.idea/.idea.SolutionName/.idea
+        val projectDir = dotIdeaDir.parent?.parent?.parent?.toFile()?.toVirtualFile(true) ?: return emptyArray()
+        if (!UnityProjectDiscoverer.hasUnityFileStructure(projectDir)) return emptyArray()
+
+        PropertiesComponent.getInstance().setValue(key, dotIdeaDir.toString())
+
+        return arrayOf(dotIdeaDir.resolve("indexLayout.xml"))
     }
 }
