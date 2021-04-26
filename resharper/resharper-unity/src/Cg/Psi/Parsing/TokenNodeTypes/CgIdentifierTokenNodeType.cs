@@ -1,5 +1,4 @@
 ﻿using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.Text;

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;

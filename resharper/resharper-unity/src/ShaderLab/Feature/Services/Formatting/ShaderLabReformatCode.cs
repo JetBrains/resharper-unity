@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using JetBrains.Application;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
 using JetBrains.DocumentModel;

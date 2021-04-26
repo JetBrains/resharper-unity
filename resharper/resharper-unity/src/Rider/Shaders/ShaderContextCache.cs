@@ -1,12 +1,10 @@
 using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers;
 using JetBrains.DocumentModel;
-using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;

@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using JetBrains.Diagnostics;
 
 namespace JetBrains.Rider.Unity.Editor
 {

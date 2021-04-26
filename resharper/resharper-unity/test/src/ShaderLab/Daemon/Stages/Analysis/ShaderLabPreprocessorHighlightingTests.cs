@@ -1,6 +1,4 @@
-﻿using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors;
-using JetBrains.ReSharper.Psi;
+﻿using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Daemon.Stages.Analysis

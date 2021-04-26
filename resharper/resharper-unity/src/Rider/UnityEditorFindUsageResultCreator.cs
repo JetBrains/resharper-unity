@@ -9,7 +9,7 @@ using JetBrains.Core;
 using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Host.Core.Features.BackgroundTasks;
+using JetBrains.RdBackend.Common.Features.BackgroundTasks;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;

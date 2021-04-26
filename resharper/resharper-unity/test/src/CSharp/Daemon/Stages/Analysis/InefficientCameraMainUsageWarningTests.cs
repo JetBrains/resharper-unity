@@ -1,7 +1,3 @@
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.Util;
-using NUnit.Framework;
-
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis
 {
 //    [TestUnity]

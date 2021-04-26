@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree

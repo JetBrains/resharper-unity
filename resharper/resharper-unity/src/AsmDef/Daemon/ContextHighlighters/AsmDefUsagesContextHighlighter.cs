@@ -1,12 +1,9 @@
 ﻿using System;
 using JetBrains.Annotations;
-using JetBrains.Application.Progress;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Daemon.CaretDependentFeatures;
 using JetBrains.ReSharper.Feature.Services.Contexts;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Feature.Services.Navigation.Requests;
-using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.AsmDefCommon.Feature;
@@ -16,11 +13,8 @@ using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.JavaScript.Impl.Util;
 using JetBrains.ReSharper.Psi.JavaScript.LanguageImpl.JSon;
 using JetBrains.ReSharper.Psi.JavaScript.Tree;
-using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.ContextHighlighters
 {

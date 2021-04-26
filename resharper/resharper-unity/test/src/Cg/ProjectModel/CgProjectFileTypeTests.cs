@@ -1,6 +1,5 @@
 ﻿using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Cg.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Resources.Shell;
 using NUnit.Framework;
 

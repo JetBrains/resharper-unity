@@ -1,4 +1,3 @@
-using System.Windows.Markup;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi.CSharp.Impl.CodeStyle.MemberReordering;
 using JetBrains.ReSharper.Psi.CSharp.Tree;

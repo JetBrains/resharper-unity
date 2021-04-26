@@ -5,7 +5,6 @@ using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;

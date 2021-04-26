@@ -1,7 +1,6 @@
 using System;
 using JetBrains.Application.Threading;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 

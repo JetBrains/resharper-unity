@@ -1,5 +1,4 @@
 using JetBrains.ReSharper.Daemon.CSharp.Errors;
-using JetBrains.ReSharper.Feature.Services.Daemon;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis

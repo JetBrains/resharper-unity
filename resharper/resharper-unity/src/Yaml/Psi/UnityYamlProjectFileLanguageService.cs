@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;

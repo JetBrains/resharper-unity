@@ -1,9 +1,7 @@
 ﻿﻿using JetBrains.ReSharper.Daemon.SyntaxHighlighting;
-using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
+ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Daemon;
-using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.TestFramework;
+ using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Host.Features.SyntaxHighlighting

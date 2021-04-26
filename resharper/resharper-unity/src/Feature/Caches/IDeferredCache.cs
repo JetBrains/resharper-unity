@@ -1,4 +1,3 @@
-using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches

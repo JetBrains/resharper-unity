@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using JetBrains.ReSharper.Feature.Services.Bulbs;
-using JetBrains.ReSharper.Feature.Services.Intentions;
-using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
-using JetBrains.ReSharper.Intentions.CreateFromUsage;
-using JetBrains.ReSharper.Intentions.Legacy;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
-using JetBrains.TextControl;
-using JetBrains.Util.Special;
+﻿using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes

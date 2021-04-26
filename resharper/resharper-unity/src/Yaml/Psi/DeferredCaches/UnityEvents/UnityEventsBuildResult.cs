@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents

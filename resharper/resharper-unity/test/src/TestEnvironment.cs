@@ -13,7 +13,7 @@ using JetBrains.Util.Logging;
 using NUnit.Framework;
 
 #if RIDER
-using JetBrains.ReSharper.Host.Core.Env;
+using JetBrains.RdBackend.Common.Env;
 #endif
 
 [assembly: RequiresThread(System.Threading.ApartmentState.STA)]

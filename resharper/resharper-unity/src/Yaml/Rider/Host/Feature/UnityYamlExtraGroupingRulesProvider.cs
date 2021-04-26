@@ -1,9 +1,9 @@
 using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
+using JetBrains.RdBackend.Common.Platform.Icons;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Tree;
-using JetBrains.ReSharper.Host.Core.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;

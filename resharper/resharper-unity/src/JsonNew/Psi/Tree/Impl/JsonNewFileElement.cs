@@ -1,4 +1,3 @@
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Language;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.PerformanceData;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
@@ -16,7 +15,6 @@ using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Impl.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.Util;
-using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.Caches
 {

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties.VCXProj;

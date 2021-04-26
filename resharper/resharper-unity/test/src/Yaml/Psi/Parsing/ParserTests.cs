@@ -1,5 +1,4 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
-using JetBrains.ReSharper.Plugins.Yaml.Psi;
+﻿using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 

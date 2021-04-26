@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.Collections.Viewable;
-using JetBrains.ReSharper.Host.Core.Platform.CodeInsights;
+using JetBrains.RdBackend.Common.Platform.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;

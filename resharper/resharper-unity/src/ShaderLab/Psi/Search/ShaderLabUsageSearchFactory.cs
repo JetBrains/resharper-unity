@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements;
 using JetBrains.ReSharper.Psi;

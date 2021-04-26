@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 

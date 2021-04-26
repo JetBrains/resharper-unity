@@ -13,7 +13,6 @@ using JetBrains.ReSharper.Psi.Impl.Shared;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.ReSharper.TestFramework.Components.Psi;
-using JetBrains.Util;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing

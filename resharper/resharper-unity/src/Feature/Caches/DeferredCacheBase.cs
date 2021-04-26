@@ -1,6 +1,5 @@
 using JetBrains.Application.PersistentMap;
 using JetBrains.Application.Threading;
-using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;

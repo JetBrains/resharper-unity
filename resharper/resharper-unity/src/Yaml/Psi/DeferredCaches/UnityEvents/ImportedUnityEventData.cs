@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using JetBrains.Application.PersistentMap;
 using JetBrains.Collections;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
 using JetBrains.Serialization;
 using JetBrains.Util;
 

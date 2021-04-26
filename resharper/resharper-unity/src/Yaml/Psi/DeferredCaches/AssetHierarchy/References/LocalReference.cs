@@ -1,7 +1,3 @@
-using System;
-using JetBrains.Annotations;
-using JetBrains.Application.PersistentMap;
-using JetBrains.Serialization;
 using JetBrains.Util.Maths;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References

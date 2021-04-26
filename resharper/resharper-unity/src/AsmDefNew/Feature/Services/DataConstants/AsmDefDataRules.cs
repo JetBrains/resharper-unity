@@ -9,7 +9,6 @@ using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Feature.Services.DataConstants
 {

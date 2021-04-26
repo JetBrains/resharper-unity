@@ -2,7 +2,7 @@ using System.Linq;
 using JetBrains.Application;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties.Managed;
-using JetBrains.ReSharper.Host.Core.Features.ProjectModel.View;
+using JetBrains.RdBackend.Common.Features.ProjectModel.View;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {

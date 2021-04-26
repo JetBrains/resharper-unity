@@ -1,5 +1,5 @@
 using JetBrains.Application.BuildScript.Application.Zones;
-using JetBrains.ReSharper.Host.Core.Env;
+using JetBrains.RdBackend.Common.Env;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 {

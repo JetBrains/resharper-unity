@@ -4,7 +4,6 @@ using JetBrains.ReSharper.Feature.Services.LiveTemplates.Context;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TextControl;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Framework
 {

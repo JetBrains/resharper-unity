@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.NetworkInformation;
 using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
 using Xunit;
 

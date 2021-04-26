@@ -1,5 +1,4 @@
 ﻿using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Resources;
 using JetBrains.UI.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements

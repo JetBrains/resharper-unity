@@ -2,7 +2,6 @@ using System;
 using System.Globalization;
 using System.Text;
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodes;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Util

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
+using JetBrains.RdBackend.Common.Features.CodeInsights;
+using JetBrains.RdBackend.Common.Platform.Icons;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Host.Core.Features.CodeInsights;
-using JetBrains.ReSharper.Host.Core.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;

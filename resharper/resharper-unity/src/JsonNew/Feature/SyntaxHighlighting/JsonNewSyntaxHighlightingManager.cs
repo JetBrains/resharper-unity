@@ -1,7 +1,7 @@
 using JetBrains.Application.Settings;
+using JetBrains.RdBackend.Common.Features.SyntaxHighlighting;
 using JetBrains.ReSharper.Daemon.SyntaxHighlighting;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Host.Core.Features.SyntaxHighlighting;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;

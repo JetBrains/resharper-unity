@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
-using JetBrains.ReSharper.Psi;
 using JetBrains.Serialization;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues
 {

@@ -1,10 +1,6 @@
 using JetBrains.Diagnostics;
-using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Impl.Reflection2;
-using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 {

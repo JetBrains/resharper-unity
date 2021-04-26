@@ -1,4 +1,3 @@
-using System;
 using JetBrains.Annotations;
 using JetBrains.Application.CommandProcessing;
 using JetBrains.Application.Environment;

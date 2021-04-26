@@ -1,16 +1,8 @@
 ﻿using JetBrains.Annotations;
-using JetBrains.Application;
-using JetBrains.Application.Threading;
-using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Gen;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
-using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing
 {

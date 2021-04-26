@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences; 
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDefCommon.Feature.Services.Occurrences

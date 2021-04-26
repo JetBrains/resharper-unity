@@ -6,7 +6,7 @@ using JetBrains.DocumentModel;
 using JetBrains.DocumentModel.Impl;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Host.Core.Features.Documents;
+using JetBrains.RdBackend.Common.Features.Documents;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Util;
 

@@ -9,7 +9,6 @@ using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.ReSharper.Psi.JavaScript.Impl.Util;
 using JetBrains.ReSharper.Psi.JavaScript.LanguageImpl.JSon;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.DataConstants
 {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Host.Core.Features.CodeInsights.Providers;
+using JetBrains.RdBackend.Common.Features.CodeInsights.Providers;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;

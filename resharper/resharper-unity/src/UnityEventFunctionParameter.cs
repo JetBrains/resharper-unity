@@ -1,5 +1,4 @@
 ﻿using JetBrains.Annotations;
-using JetBrains.Metadata.Reader.API;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {

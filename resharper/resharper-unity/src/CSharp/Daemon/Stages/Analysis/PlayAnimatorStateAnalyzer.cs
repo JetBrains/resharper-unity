@@ -1,6 +1,4 @@
-using System.Linq;
 using JetBrains.Annotations;
-using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;

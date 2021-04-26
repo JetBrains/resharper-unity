@@ -3,8 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Diagnostics;
-using JetBrains.Diagnostics.Internal;
-using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Unity.Editor.Logger;
 using UnityEditor;

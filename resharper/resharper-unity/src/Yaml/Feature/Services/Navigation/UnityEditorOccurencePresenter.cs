@@ -1,12 +1,8 @@
-using System;
 using System.Drawing;
 using System.Text;
 using JetBrains.Application.UI.Controls.JetPopupMenu;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
-using JetBrains.ReSharper.Feature.Services.Presentation;
-using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation

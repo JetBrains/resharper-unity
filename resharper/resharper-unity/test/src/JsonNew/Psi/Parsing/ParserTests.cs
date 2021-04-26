@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Language;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
