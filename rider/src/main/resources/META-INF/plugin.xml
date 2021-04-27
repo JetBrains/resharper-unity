@@ -18,6 +18,8 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.UnityUIMinimizer"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater"
+                    preload="true" />
 
     <rider.defaultVcsRootPolicyExtension implementation="com.jetbrains.rider.plugins.unity.vcs.UnityDefaultVcsRootPolicyExtension" />
 

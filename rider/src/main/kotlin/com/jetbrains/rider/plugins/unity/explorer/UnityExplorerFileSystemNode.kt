@@ -9,7 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.intellij.workspaceModel.ide.impl.virtualFile
-import com.jetbrains.rider.plugins.unity.packageManager.PackageData
+import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 import com.jetbrains.rider.projectView.calculateFileSystemIcon
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.NestingNode
@@ -34,8 +34,8 @@ enum class AncestorNodeType {
     FileSystem;  // A folder in Packages that isn't a package. Gets no special treatment
 
     companion object {
-        fun fromPackageData(packageData: PackageData): AncestorNodeType {
-            return if (packageData.source.isEditable()) UserEditablePackage else ReadOnlyPackage
+        fun fromPackageData(packageEntity: UnityPackageEntity): AncestorNodeType {
+            return if (packageEntity.isEditable()) UserEditablePackage else ReadOnlyPackage
         }
     }
 }

@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.ide.projectView.PresentationData
@@ -7,17 +9,17 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
-import com.jetbrains.rider.plugins.unity.packageManager.PackageData
-import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
-import com.jetbrains.rider.plugins.unity.packageManager.PackageSource
+import com.intellij.workspaceModel.ide.WorkspaceModel
+import com.jetbrains.rider.model.unity.frontendBackend.UnityPackageSource
+import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
+import com.jetbrains.rider.plugins.unity.workspace.getPackages
+import com.jetbrains.rider.plugins.unity.workspace.tryGetPackage
 import com.jetbrains.rider.projectView.views.*
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 import icons.UnityIcons
 
 class PackagesRootNode(project: Project, packagesFolder: VirtualFile)
     : UnityExplorerFileSystemNode(project, packagesFolder, emptyList(), AncestorNodeType.FileSystem) {
-
-    private val packageManager = PackageManager.getInstance(myProject)
 
     override fun update(presentation: PresentationData) {
         if (!virtualFile.isValid) return
@@ -30,17 +32,17 @@ class PackagesRootNode(project: Project, packagesFolder: VirtualFile)
         // Add file system children, which will include embedded packages
         val children = super.calculateChildren()
 
-        val allPackages = packageManager.getPackages()
+        val allPackages = WorkspaceModel.getInstance(myProject).getPackages()
 
         // Add the "Read Only" node for modules and referenced packages. Don't add the node if we haven't loaded
         // packages yet
-        if (allPackages.any { it.source.isReadOnly() }) {
-            children.add(0, ReadOnlyPackagesRootNode(myProject, packageManager))
+        if (allPackages.any { it.isReadOnly() }) {
+            children.add(0, ReadOnlyPackagesRootNode(myProject))
         }
 
         // Also include any local (file: based) packages, plus all unresolved packages
-        allPackages.filter { it.source == PackageSource.Local }.forEach { addPackageNode(children, it) }
-        allPackages.filter { it.source == PackageSource.Unknown }.forEach { addPackageNode(children, it) }
+        allPackages.filter { it.source == UnityPackageSource.Local }.forEach { addPackageNode(children, it) }
+        allPackages.filter { it.source == UnityPackageSource.Unknown }.forEach { addPackageNode(children, it) }
 
         return children
     }
@@ -48,8 +50,8 @@ class PackagesRootNode(project: Project, packagesFolder: VirtualFile)
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<NestingNode<VirtualFile>>): FileSystemNodeBase {
         // If the child folder is an embedded package, add it as a package node
         if (virtualFile.isDirectory) {
-            packageManager.tryGetPackage(virtualFile)?.let {
-                return PackageNode(myProject, packageManager, virtualFile, it)
+            WorkspaceModel.getInstance(myProject).tryGetPackage(virtualFile.toNioPath())?.let {
+                return PackageNode(myProject, virtualFile, it)
             }
         }
         return super.createNode(virtualFile, nestedFiles)
@@ -61,32 +63,33 @@ class PackagesRootNode(project: Project, packagesFolder: VirtualFile)
         return children.any { (it as? SolutionViewNode)?.contains(file) == true }
     }
 
-    private fun addPackageNode(children: MutableList<AbstractTreeNode<*>>, thePackage: PackageData) {
-        if (thePackage.packageFolder != null) {
-            children.add(PackageNode(myProject, packageManager, thePackage.packageFolder, thePackage))
+    private fun addPackageNode(children: MutableList<AbstractTreeNode<*>>, packageEntity: UnityPackageEntity) {
+        val packageFolder = packageEntity.packageFolder
+        if (packageFolder != null) {
+            children.add(PackageNode(myProject, packageFolder, packageEntity))
         }
         else {
-            children.add(UnknownPackageNode(myProject, thePackage))
+            children.add(UnknownPackageNode(myProject, packageEntity))
         }
     }
 }
 
-class PackageNode(project: Project, private val packageManager: PackageManager, packageFolder: VirtualFile, private val packageData: PackageData)
-    : UnityExplorerFileSystemNode(project, packageFolder, emptyList(), AncestorNodeType.fromPackageData(packageData)), Comparable<AbstractTreeNode<*>> {
+class PackageNode(project: Project, packageFolder: VirtualFile, private val packageEntity: UnityPackageEntity)
+    : UnityExplorerFileSystemNode(project, packageFolder, emptyList(), AncestorNodeType.fromPackageData(packageEntity)), Comparable<AbstractTreeNode<*>> {
 
     init {
-        icon = when (packageData.source) {
-            PackageSource.Registry -> UnityIcons.Explorer.ReferencedPackage
-            PackageSource.Embedded -> UnityIcons.Explorer.EmbeddedPackage
-            PackageSource.Local -> UnityIcons.Explorer.LocalPackage
-            PackageSource.LocalTarball -> UnityIcons.Explorer.LocalTarballPackage
-            PackageSource.BuiltIn -> UnityIcons.Explorer.BuiltInPackage
-            PackageSource.Git -> UnityIcons.Explorer.GitPackage
-            PackageSource.Unknown -> UnityIcons.Explorer.UnknownPackage
+        icon = when (packageEntity.source) {
+            UnityPackageSource.Registry -> UnityIcons.Explorer.ReferencedPackage
+            UnityPackageSource.Embedded -> UnityIcons.Explorer.EmbeddedPackage
+            UnityPackageSource.Local -> UnityIcons.Explorer.LocalPackage
+            UnityPackageSource.LocalTarball -> UnityIcons.Explorer.LocalTarballPackage
+            UnityPackageSource.BuiltIn -> UnityIcons.Explorer.BuiltInPackage
+            UnityPackageSource.Git -> UnityIcons.Explorer.GitPackage
+            UnityPackageSource.Unknown -> UnityIcons.Explorer.UnknownPackage
         }
     }
 
-    override fun getName() = packageData.displayName
+    override fun getName() = packageEntity.displayName
 
     override fun update(presentation: PresentationData) {
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
@@ -100,23 +103,23 @@ class PackageNode(project: Project, private val packageManager: PackageManager, 
 
         val existingTooltip = presentation.tooltip ?: ""
 
-        var tooltip = "<html>" + getPackageTooltip(name, packageData)
-        tooltip += when (packageData.source) {
-            PackageSource.Embedded -> if (virtualFile.name != name) "<br/><br/>Folder name: ${virtualFile.name}" else ""
-            PackageSource.Local -> "<br/><br/>Folder location: ${virtualFile.path}"
-            PackageSource.LocalTarball -> "<br/><br/>Tarball location: ${packageData.tarballLocation}"
-            PackageSource.Git -> {
+        var tooltip = "<html>" + getPackageTooltip(name, packageEntity)
+        tooltip += when (packageEntity.source) {
+            UnityPackageSource.Embedded -> if (virtualFile.name != name) "<br/><br/>Folder name: ${virtualFile.name}" else ""
+            UnityPackageSource.Local -> "<br/><br/>Folder location: ${virtualFile.path}"
+            UnityPackageSource.LocalTarball -> "<br/><br/>Tarball location: ${packageEntity.tarballLocation}"
+            UnityPackageSource.Git -> {
                 var text = "<br/><br/>"
-                text += if (!packageData.gitUrl.isNullOrEmpty()) {
-                    "Git URL: ${packageData.gitUrl}"
+                text += if (!packageEntity.gitUrl.isNullOrEmpty()) {
+                    "Git URL: ${packageEntity.gitUrl}"
                 } else {
                     "Unknown Git URL"
                 }
-                if (!packageData.gitHash.isNullOrEmpty()) {
-                    text += "<br/>Hash: ${packageData.gitHash}"
+                if (!packageEntity.gitHash.isNullOrEmpty()) {
+                    text += "<br/>Hash: ${packageEntity.gitHash}"
                 }
-                if (!packageData.gitRevision.isNullOrEmpty()) {
-                    text += "<br/>Revision: ${packageData.gitRevision}"
+                if (!packageEntity.gitRevision.isNullOrEmpty()) {
+                    text += "<br/>Revision: ${packageEntity.gitRevision}"
                 }
                 text
             }
@@ -132,8 +135,8 @@ class PackageNode(project: Project, private val packageManager: PackageManager, 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val children = super.calculateChildren()
 
-        if (packageData.dependencies.isNotEmpty()) {
-            children.add(0, PackageDependenciesRoot(myProject, packageManager, packageData))
+        if (packageEntity.dependencies.isNotEmpty()) {
+            children.add(0, PackageDependenciesRoot(myProject, packageEntity))
         }
 
         return children
@@ -145,8 +148,8 @@ class PackageNode(project: Project, private val packageManager: PackageManager, 
     }
 }
 
-class PackageDependenciesRoot(project: Project, private val packageManager: PackageManager, private val packageData: PackageData)
-    : SolutionViewNode<Any>(project, packageData) {
+class PackageDependenciesRoot(project: Project, private val packageEntity: UnityPackageEntity)
+    : SolutionViewNode<Any>(project, packageEntity) {
 
     override fun update(presentation: PresentationData) {
         presentation.presentableText = "Dependencies"
@@ -155,8 +158,8 @@ class PackageDependenciesRoot(project: Project, private val packageManager: Pack
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val children = mutableListOf<AbstractTreeNode<*>>()
-        for ((name, version) in packageData.dependencies) {
-            children.add(PackageDependencyItemNode(myProject, packageManager, name, version))
+        for ((name, version) in packageEntity.dependencies) {
+            children.add(PackageDependencyItemNode(myProject, name, version))
         }
         return children
     }
@@ -164,7 +167,7 @@ class PackageDependenciesRoot(project: Project, private val packageManager: Pack
     override fun contains(file: VirtualFile) = false
 }
 
-class PackageDependencyItemNode(project: Project, private val packageManager: PackageManager, private val packageId: String, version: String)
+class PackageDependencyItemNode(project: Project, private val packageId: String, version: String)
     : SolutionViewNode<Any>(project, "$packageId@$version") {
 
     init {
@@ -180,14 +183,14 @@ class PackageDependencyItemNode(project: Project, private val packageManager: Pa
         presentation.setIcon(UnityIcons.Explorer.PackageDependency)
     }
 
-    override fun canNavigate() = packageManager.tryGetPackage(packageId)?.packageFolder != null
+    override fun canNavigate() = WorkspaceModel.getInstance(myProject).tryGetPackage(packageId)?.packageFolder != null
     override fun navigate(requestFocus: Boolean) {
-        val packageFolder = packageManager.tryGetPackage(packageId)?.packageFolder ?: return
+        val packageFolder = WorkspaceModel.getInstance(myProject).tryGetPackage(packageId)?.packageFolder ?: return
         myProject.navigateToSolutionView(packageFolder, requestFocus)
     }
 }
 
-class ReadOnlyPackagesRootNode(project: Project, private val packageManager: PackageManager)
+class ReadOnlyPackagesRootNode(project: Project)
     : SolutionViewNode<Any>(project, key) {
 
     companion object {
@@ -203,14 +206,15 @@ class ReadOnlyPackagesRootNode(project: Project, private val packageManager: Pac
         val children = mutableListOf<AbstractTreeNode<*>>()
 
         // If we have any packages, we'll have modules
-        children.add(BuiltinPackagesRootNode(myProject, packageManager))
+        children.add(BuiltinPackagesRootNode(myProject))
 
-        for (packageData in packageManager.getPackages().filter { it.source.isReadOnly() && it.source != PackageSource.BuiltIn }) {
-            if (packageData.packageFolder == null) {
-                children.add(UnknownPackageNode(myProject, packageData))
+        for (packageEntity in WorkspaceModel.getInstance(myProject).getPackages().filter { it.isReadOnly() && it.source != UnityPackageSource.BuiltIn }) {
+            val packageFolder = packageEntity.packageFolder
+            if (packageFolder == null) {
+                children.add(UnknownPackageNode(myProject, packageEntity))
             }
             else {
-                children.add(PackageNode(myProject, packageManager, packageData.packageFolder, packageData))
+                children.add(PackageNode(myProject, packageFolder, packageEntity))
             }
         }
         return children
@@ -223,7 +227,7 @@ class ReadOnlyPackagesRootNode(project: Project, private val packageManager: Pac
     }
 }
 
-class BuiltinPackagesRootNode(project: Project, private val packageManager: PackageManager)
+class BuiltinPackagesRootNode(project: Project)
     : SolutionViewNode<Any>(project, key) {
 
     companion object {
@@ -237,14 +241,14 @@ class BuiltinPackagesRootNode(project: Project, private val packageManager: Pack
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val children = mutableListOf<AbstractTreeNode<*>>()
-        for (packageData in packageManager.getPackages().filter { it.source == PackageSource.BuiltIn }) {
+        for (packageEntity in WorkspaceModel.getInstance(myProject).getPackages().filter { it.source == UnityPackageSource.BuiltIn }) {
 
             // All modules should have a package folder, or it means we haven't been able to resolve it
-            if (packageData.packageFolder == null) {
-                children.add(UnknownPackageNode(myProject, packageData))
+            if (packageEntity.packageFolder == null) {
+                children.add(UnknownPackageNode(myProject, packageEntity))
             }
             else {
-                children.add(BuiltinPackageNode(myProject, packageData))
+                children.add(BuiltinPackageNode(myProject, packageEntity))
             }
         }
         return children
@@ -261,8 +265,8 @@ class BuiltinPackagesRootNode(project: Project, private val packageManager: Pack
 // "show hidden items" enabled, in which case we show the package folder, including the package.json.
 // Note that a module can have dependencies. Perhaps we want to always show this as a folder, including the Dependencies
 // node?
-class BuiltinPackageNode(project: Project, private val packageData: PackageData)
-    : UnityExplorerFileSystemNode(project, packageData.packageFolder!!, emptyList(), AncestorNodeType.ReadOnlyPackage), Comparable<AbstractTreeNode<*>> {
+class BuiltinPackageNode(project: Project, private val packageEntity: UnityPackageEntity)
+    : UnityExplorerFileSystemNode(project, packageEntity.packageFolder!!, emptyList(), AncestorNodeType.ReadOnlyPackage), Comparable<AbstractTreeNode<*>> {
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
 
@@ -303,7 +307,7 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
         }
     }
 
-    override fun getName() = packageData.displayName
+    override fun getName() = packageEntity.displayName
 
     override fun update(presentation: PresentationData) {
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
@@ -312,7 +316,7 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
             presentation.addNonIndexedMark(myProject, virtualFile)
         }
 
-        val tooltip = getPackageTooltip(name, packageData)
+        val tooltip = getPackageTooltip(name, packageEntity)
         if (tooltip != name) {
             presentation.tooltip = tooltip
         }
@@ -325,17 +329,17 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
 }
 
 // Note that this might get a PackageData with source == PackageSource.BuiltIn
-class UnknownPackageNode(project: Project, private val packageData: PackageData)
-    : AbstractTreeNode<Any>(project, packageData) {
+class UnknownPackageNode(project: Project, private val packageEntity: UnityPackageEntity)
+    : AbstractTreeNode<Any>(project, packageEntity) {
 
     init {
-        icon = when (packageData.source) {
-            PackageSource.BuiltIn -> UnityIcons.Explorer.BuiltInPackage
+        icon = when (packageEntity.source) {
+            UnityPackageSource.BuiltIn -> UnityIcons.Explorer.BuiltInPackage
             else -> UnityIcons.Explorer.UnknownPackage
         }
     }
 
-    override fun getName() = packageData.displayName
+    override fun getName() = packageEntity.displayName
     override fun getChildren(): MutableCollection<out AbstractTreeNode<Any>> = arrayListOf()
     override fun isAlwaysLeaf() = true
 
@@ -344,22 +348,24 @@ class UnknownPackageNode(project: Project, private val packageData: PackageData)
         presentation.setIcon(icon)
 
         // Description can be an error message
-        if (packageData.description?.isNotEmpty() == true) {
-            presentation.tooltip = formatDescription(packageData.description)
+        val description = packageEntity.description
+        if (description?.isNotEmpty() == true) {
+            presentation.tooltip = formatDescription(description)
         }
     }
 }
 
-private fun getPackageTooltip(displayName: String, packageData: PackageData): String {
+private fun getPackageTooltip(displayName: String, packageEntity: UnityPackageEntity): String {
     var tooltip = displayName
-    if (packageData.version.isNotEmpty()) {
-        tooltip += " ${packageData.version}"
+    if (packageEntity.version.isNotEmpty()) {
+        tooltip += " ${packageEntity.version}"
     }
-    if (displayName != packageData.id) {
-        tooltip += "<br/>${packageData.id}"
+    if (displayName != packageEntity.id) {
+        tooltip += "<br/>${packageEntity.id}"
     }
-    if (packageData.description?.isNotEmpty() == true) {
-        tooltip += "<br/><br/>" + formatDescription(packageData.description)
+    val description = packageEntity.description
+    if (description?.isNotEmpty() == true) {
+        tooltip += "<br/><br/>" + formatDescription(description)
     }
     return tooltip
 }

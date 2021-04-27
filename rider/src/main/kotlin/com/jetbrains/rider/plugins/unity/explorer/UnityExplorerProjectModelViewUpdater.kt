@@ -1,13 +1,16 @@
+@file:Suppress("UnstableApiUsage")
+
 package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.tree.TreeVisitor
-import com.jetbrains.rd.platform.util.application
-import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
-import com.jetbrains.rider.plugins.unity.packageManager.PackageManagerListener
+import com.intellij.workspaceModel.ide.WorkspaceModelChangeListener
+import com.intellij.workspaceModel.ide.WorkspaceModelTopics
+import com.intellij.workspaceModel.storage.VersionedStorageChange
 import com.jetbrains.rider.plugins.unity.util.findFile
+import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 import com.jetbrains.rider.projectView.ProjectModelViewUpdater
 import com.jetbrains.rider.projectView.views.SolutionViewVisitor
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
@@ -17,12 +20,10 @@ class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewU
     private val pane: UnityExplorer? by lazy { UnityExplorer.tryGetInstance(project) }
 
     init {
-        // Invoke later so that we avoid a circular dependency between PackageManager, ProjectModelViewHost and any
-        // project model view updaters (us)
-        application.invokeLater {
-            val packageManager = PackageManager.getInstance(project)
-            packageManager.addListener(object : PackageManagerListener {
-                override fun onPackagesUpdated() {
+        val listener = object : WorkspaceModelChangeListener {
+            override fun changed(event: VersionedStorageChange) {
+                val changes = event.getChanges(UnityPackageEntity::class.java)
+                if (changes.any()) {
                     // Don't refresh if we've not been yet been created
                     if (pane?.tree == null) {
                         return
@@ -38,8 +39,9 @@ class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewU
                         updateFromPackagesRootNode()
                     }
                 }
-            })
+            }
         }
+        WorkspaceModelTopics.getInstance(project).subscribeImmediately(project.messageBus.connect(project), listener)
     }
 
     override fun update(entity: ProjectModelEntity?) {
