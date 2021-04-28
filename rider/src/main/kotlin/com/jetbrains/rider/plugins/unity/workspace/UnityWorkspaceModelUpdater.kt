@@ -6,8 +6,10 @@ import com.intellij.workspaceModel.ide.impl.toVirtualFileUrl
 import com.intellij.workspaceModel.storage.WorkspaceEntityStorageBuilder
 import com.intellij.workspaceModel.storage.bridgeEntities.addContentRootEntityWithCustomEntitySource
 import com.intellij.workspaceModel.storage.impl.url.toVirtualFileUrl
+import com.intellij.workspaceModel.storage.url.VirtualFileUrl
 import com.intellij.workspaceModel.storage.url.VirtualFileUrlManager
 import com.jetbrains.rd.platform.util.application
+import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManagerListener
 import com.jetbrains.rider.plugins.unity.packageManager.PackageSource
@@ -21,12 +23,14 @@ class UnityWorkspaceModelUpdater(private val project: Project) {
         application.invokeLater {
             rebuildWorkspaceModel()
 
-            // Listen for external packages that we should index. Called on the UI thread
-            PackageManager.getInstance(project).addListener(object : PackageManagerListener {
-                override fun onPackagesUpdated() {
-                    rebuildWorkspaceModel()
-                }
-            })
+            if (project.isUnityProject()) {
+                // Listen for external packages that we should index. Called on the UI thread
+                PackageManager.getInstance(project).addListener(object : PackageManagerListener {
+                    override fun onPackagesUpdated() {
+                        rebuildWorkspaceModel()
+                    }
+                })
+            }
         }
     }
 
@@ -35,29 +39,44 @@ class UnityWorkspaceModelUpdater(private val project: Project) {
         application.assertIsDispatchThread()
 
         val builder = WorkspaceEntityStorageBuilder.create()
-        val virtualFileUrlManager = VirtualFileUrlManager.getInstance(project)
 
-        val packagesModuleEntity = builder.getOrCreateRiderModuleEntity()
+        if (project.isUnityProject()) {
+            val virtualFileUrlManager = VirtualFileUrlManager.getInstance(project)
+            val packagesModuleEntity = builder.getOrCreateRiderModuleEntity()
 
-        // TODO: WORKSPACEMODEL
-        // We want to include list of special files (by extensions comes from unity editor)
-        // in the content model. It is better to do it on backed via backend PackageManager
+            // TODO: WORKSPACEMODEL
+            // We want to include list of special files (by extensions comes from unity editor)
+            // in the content model. It is better to do it on backed via backend PackageManager
 
-        builder.addContentRootEntityWithCustomEntitySource(
-            project.solutionDirectory.resolve("Packages").toVirtualFileUrl(virtualFileUrlManager), listOf(), listOf("*.meta", "*.tmp"), packagesModuleEntity
-        , RiderUnityEntitySource)
-        builder.addContentRootEntityWithCustomEntitySource(
-            project.solutionDirectory.resolve("ProjectSettings").toVirtualFileUrl(virtualFileUrlManager), listOf(), listOf("*.meta", "*.tmp"), packagesModuleEntity
-            , RiderUnityEntitySource)
+            val excludedUrls = emptyList<VirtualFileUrl>()
+            val excludedPatterns = listOf("*.meta", "*.tmp")
 
-        val packages = PackageManager.getInstance(project).getPackages()
-        if (packages.any()) {
+            builder.addContentRootEntityWithCustomEntitySource(
+                project.solutionDirectory.resolve("Packages").toVirtualFileUrl(virtualFileUrlManager),
+                excludedUrls,
+                excludedPatterns,
+                packagesModuleEntity,
+                RiderUnityEntitySource
+            )
+            builder.addContentRootEntityWithCustomEntitySource(
+                project.solutionDirectory.resolve("ProjectSettings").toVirtualFileUrl(virtualFileUrlManager),
+                excludedUrls,
+                excludedPatterns,
+                packagesModuleEntity,
+                RiderUnityEntitySource
+            )
+
+            val packages = PackageManager.getInstance(project).getPackages()
             for (packageData in packages) {
                 val packageFolder = packageData.packageFolder ?: continue
                 if (packageData.source !in arrayOf(PackageSource.Embedded, PackageSource.Unknown)) {
                     builder.addContentRootEntityWithCustomEntitySource(
-                        packageFolder.toVirtualFileUrl(virtualFileUrlManager), listOf(), listOf("*.meta", "*.tmp"), packagesModuleEntity
-                    , RiderUnityEntitySource)
+                        packageFolder.toVirtualFileUrl(virtualFileUrlManager),
+                        excludedUrls,
+                        excludedPatterns,
+                        packagesModuleEntity,
+                        RiderUnityEntitySource
+                    )
                 }
             }
         }
