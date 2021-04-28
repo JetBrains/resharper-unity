@@ -93,6 +93,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
             myPackagesLockPath = myPackagesFolder.Combine("packages-lock.json");
             myManifestPath = myPackagesFolder.Combine("manifest.json");
 
+            Updating = new Property<bool?>(lifetime, "PackageManger::Update");
+
             unitySolutionTracker.IsUnityProject.AdviseUntil(lifetime, value =>
             {
                 if (!value) return false;
@@ -113,6 +115,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
                 return true;
             });
         }
+
+        public Property<bool?> Updating { get; }
 
         // DictionaryEvents uses locks internally, so this is thread safe. It gets updated from the guarded reentrancy
         // context, so all callbacks also happen within the guarded reentrancy context
@@ -189,45 +193,56 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
                    TimeSpan.FromSeconds(2);
         }
 
-        private void UpdatePackages(IEnumerable<PackageData> newPackages)
+        private void UpdatePackages(IReadOnlyCollection<PackageData> newPackages)
         {
-            var existingPackages = myPackagesById.Keys.ToJetHashSet();
-            foreach (var packageData in newPackages)
+            if (newPackages.Count == 0)
+                return;
+
+            Updating.Value = true;
+            try
             {
-                // If the package.json file has been updated, remove the entry and add the new one. This should capture
-                // all changes to data + metadata. We don't care too much about duplicates, as this is invalid JSON and
-                // Unity complains. Last write wins, but at least we won't crash
-                if (myPackagesById.TryGetValue(packageData.Id, out var existingPackageData)
-                    && existingPackageData.PackageJsonTimestamp != packageData.PackageJsonTimestamp)
+                var existingPackages = myPackagesById.Keys.ToJetHashSet();
+                foreach (var packageData in newPackages)
                 {
-                    RemovePackage(packageData.Id);
-                }
-
-                if (!myPackagesById.ContainsKey(packageData.Id))
-                {
-                    var lifetimeDefinition = myLifetime.CreateNested();
-                    myPackagesById.Add(lifetimeDefinition.Lifetime, packageData.Id, packageData);
-
-                    // Note that myPackagesLifetimes is only accessed inside this method, so is thread safe
-                    myPackageLifetimes.Add(lifetimeDefinition.Lifetime, packageData.Id, lifetimeDefinition);
-
-                    // Refresh if any editable package.json is modified, so we pick up changes to e.g. dependencies,
-                    // display name, etc. We don't care if BuiltIn or Registry packages are modified because they're
-                    // not user editable
-                    if (packageData.Source == PackageSource.Local && packageData.PackageFolder != null)
+                    // If the package.json file has been updated, remove the entry and add the new one. This should
+                    // capture all changes to data + metadata. We don't care too much about duplicates, as this is
+                    // invalid JSON and Unity complains. Last write wins, but at least we won't crash
+                    if (myPackagesById.TryGetValue(packageData.Id, out var existingPackageData)
+                        && existingPackageData.PackageJsonTimestamp != packageData.PackageJsonTimestamp)
                     {
-                        myFileSystemTracker.AdviseFileChanges(lifetimeDefinition.Lifetime,
-                            packageData.PackageFolder.Combine("package.json"),
-                            _ => ScheduleRefresh());
+                        RemovePackage(packageData.Id);
                     }
+
+                    if (!myPackagesById.ContainsKey(packageData.Id))
+                    {
+                        var lifetimeDefinition = myLifetime.CreateNested();
+                        myPackagesById.Add(lifetimeDefinition.Lifetime, packageData.Id, packageData);
+
+                        // Note that myPackagesLifetimes is only accessed inside this method, so is thread safe
+                        myPackageLifetimes.Add(lifetimeDefinition.Lifetime, packageData.Id, lifetimeDefinition);
+
+                        // Refresh if any editable package.json is modified, so we pick up changes to e.g. dependencies,
+                        // display name, etc. We don't care if BuiltIn or Registry packages are modified because they're
+                        // not user editable
+                        if (packageData.Source == PackageSource.Local && packageData.PackageFolder != null)
+                        {
+                            myFileSystemTracker.AdviseFileChanges(lifetimeDefinition.Lifetime,
+                                packageData.PackageFolder.Combine("package.json"),
+                                _ => ScheduleRefresh());
+                        }
+                    }
+
+                    existingPackages.Remove(packageData.Id);
                 }
 
-                existingPackages.Remove(packageData.Id);
+                // Remove any left overs
+                foreach (var id in existingPackages)
+                    RemovePackage(id);
             }
-
-            // Remove any left overs
-            foreach (var id in existingPackages)
-                RemovePackage(id);
+            finally
+            {
+                Updating.Value = false;
+            }
         }
 
         private void RemovePackage(string packageId)

@@ -95,6 +95,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         field("playControls", Library.PlayControls)
         field("consoleLogging", Library.ConsoleLogging)
 
+        property("packagesUpdating", bool.nullable)
         map("packages", string, UnityPackage)
 
         // Unit testing
