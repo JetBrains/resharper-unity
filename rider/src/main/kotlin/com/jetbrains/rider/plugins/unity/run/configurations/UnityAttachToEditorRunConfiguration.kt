@@ -99,6 +99,17 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         configurationPerRunnerSettings: ConfigurationPerRunnerSettings?
     ) {
         if (runner is DotNetDebugRunner) {
+            // This method lets us check settings before run. If we throw an instance of RuntimeConfigurationError, the Run
+            // Configuration editor is displayed. It's called on the EDT, so there's not a lot we can do - e.g. we can't get
+            // a process list.
+
+            // If we already have a pid, that means this run configuration has been launched before, and we've successfully
+            // attached to a process. Use it again. If the pid is out of date (highly unlikely), we'll do our best to find
+            // the process again
+            if (pid != null) {
+                return
+            }
+
             // If we're a class library project that isn't in a Unity project folder, we can't guess at the correct project
             // to attach to, so throw an error and show the dialog. This value will be null until the backend has finished
             // loading. However, because we're a Unity run configuration, we can safely assume we're a Unity project, and if
@@ -111,19 +122,6 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
             }
         }
         super.checkRunnerSettings(runner, runnerSettings, configurationPerRunnerSettings)
-    }
-
-    override fun checkSettingsBeforeRun() {
-        // This method lets us check settings before run. If we throw an instance of RuntimeConfigurationError, the Run
-        // Configuration editor is displayed. It's called on the EDT, so there's not a lot we can do - e.g. we can't get
-        // a process list.
-
-        // If we already have a pid, that means this run configuration has been launched before, and we've successfully
-        // attached to a process. Use it again. If the pid is out of date (highly unlikely), we'll do our best to find
-        // the process again
-        if (pid != null) {
-            return
-        }
     }
 
     fun updatePidAndPort() : Boolean {
