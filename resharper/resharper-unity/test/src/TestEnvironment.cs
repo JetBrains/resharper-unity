@@ -42,7 +42,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         {
             try
             {
-                SetupLogging();
+                ConfigureLoggingFolderPath();
+                // ConfigureStartupLogging();
                 SetJetTestPackagesDir();
                 HackTestDataInNugets.ApplyPatches();
 
@@ -59,18 +60,43 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             }
         }
 
-        // Default logging is verbose, but this is useful for debugging startup, before the tests get a chance to
-        // initialise properly
-        private static void SetupLogging()
+        // The default logger outputs to $TMPDIR/JetLogs/ReSharperTests/resharper.log, which is not very helpful when
+        // we're testing more than one assembly. This sets up an environment variable to output the log to
+        // /resharper/build/{project}/logs
+        private static void ConfigureLoggingFolderPath()
         {
-            var executingAssembly = Assembly.GetExecutingAssembly();
-            var url = new Uri(executingAssembly.CodeBase);
-            var assemblyPath = FileSystemPath.Parse(url.AbsolutePath);
-            var assemblyDir = assemblyPath.Directory;
-            var configFile = assemblyDir.CombineWithShortName(assemblyPath.NameWithoutExtension + "_log.xml");
-            var testsFolder = Logger.LogFolderPath / "ReSharperTests";
-            var logfile = testsFolder.CombineWithShortName(assemblyPath.NameWithoutExtension + "_log.log");
-            logfile.DeleteFile();
+            Environment.SetEnvironmentVariable(Logger.JETLOGS_DIRECTORY_ENV_VARIABLE, GetLogsFolder().FullPath);
+        }
+
+        private static FileSystemPath GetLogsFolder()
+        {
+            // /resharper/build/{project}/bin/Debug/net461
+            var assemblyPath = FileSystemPath.Parse(Assembly.GetExecutingAssembly().Location).Directory;
+            var buildRoot = assemblyPath.Parent.Parent.Parent;
+
+            // /resharper/build/{project}/logs
+            var logsPath = buildRoot.Combine("logs");
+            if (!logsPath.ExistsDirectory)
+                logsPath.CreateDirectory();
+            return logsPath;
+        }
+
+        // BaseTestNoShell.SetUp will set up all the logging we normally need. It sets up per-test and common logs to
+        // write at VERBOSE level to files in $TMPDIR/JetLogs/ReSharperTests.
+        // However, it only starts logging once configured, which is when SetUp is called before a test starts. Use this
+        // method to log during startup, to diagnose any kind of startup issues (e.g. running tests on a Mac). This is
+        // not normally useful, and can have a significant performance impact - a ~35 second run dropped to ~29 seconds
+        // on my MacBook. This is mostly due to adding a third VERBOSE logging file appender, lots of VERBOSE logging
+        // during startup, and the cost of creating FileLogEventListener from config (getting current process ID to
+        // substitute into the file path pattern can be surprisingly expensive on my Mac when called for each test).
+        // Note that TRACE logging can be enabled per-test by overriding BaseTestNoShell.TestCategories
+        private static void ConfigureStartupLogging()
+        {
+            var logsPath = GetLogsFolder();
+            var configFile = logsPath.Combine("resharper_startup_conf.xml");
+            var logfile = logsPath.Combine("resharper_startup.log");
+            if (logfile.ExistsFile)
+                logfile.DeleteFile();
 
             // Set to TRACE to get logging on basically everything (including component containers)
             // Set to VERBOSE for most useful logging, but beware perf impact
