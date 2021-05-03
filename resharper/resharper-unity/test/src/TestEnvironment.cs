@@ -2,8 +2,6 @@
 using System.IO;
 using System.Reflection;
 using JetBrains.Application.BuildScript.Application.Zones;
-using JetBrains.Application.Environment;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;
 using JetBrains.TestFramework.Application.Zones;
@@ -30,22 +28,11 @@ using JetBrains.RdBackend.Common.Env;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests
 {
     [ZoneDefinition]
-    public interface IUnityTestZone : ITestsEnvZone
-
-    {
-    }
-
-    [ZoneActivator]
-    class CppTestZoneActivator : IActivate<ILanguageCppZone>, IActivate<PsiFeatureTestZone>
+    public interface IUnityTestZone : ITestsEnvZone, IRequire<PsiFeatureTestZone>
 #if RIDER
-        , IActivate<IRiderPlatformZone>
+        , IRequire<IRiderPlatformZone>
 #endif
-    ,IRequire<IUnityTestZone>
     {
-        public bool ActivatorEnabled()
-        {
-            return true;
-        }
     }
 
     [SetUpFixture]
@@ -59,10 +46,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
                 SetJetTestPackagesDir();
                 HackTestDataInNugets.ApplyPatches();
 
-                // Temp workaround for GacCacheController, which adds all Mono GAC paths into a dictionary without
-                // checking for duplicates
                 if (PlatformUtil.IsRunningOnMono)
+                {
+                    // Temp workaround for GacCacheController, which adds all Mono GAC paths into a dictionary without
+                    // checking for duplicates
                     Environment.SetEnvironmentVariable("MONO_GAC_PREFIX", "/foo");
+                }
             }
             catch (Exception e)
             {
