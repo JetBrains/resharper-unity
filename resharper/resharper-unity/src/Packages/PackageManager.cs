@@ -454,8 +454,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         [CanBeNull]
         private PackageData GetEmbeddedPackage(string id, string filePath)
         {
-            // Embedded packages live in the Packages folder. When reading from packages-lock.json, the filePath has a
-            // 'file:' prefix. We make sure it's the folder name when there is no packages-lock.json
+            // Embedded packages live in the Packages folder. When reading from manifest.json, filePath is the same as
+            // ID. When reading from packages-lock.json, we already know it's an embedded folder, and use the version,
+            // which has a 'file:' prefix
             var packageFolder = myPackagesFolder.Combine(filePath.TrimFromStart("file:"));
             return GetPackageDataFromFolder(id, packageFolder, PackageSource.Embedded);
         }
@@ -664,8 +665,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
             {
                 foreach (var (id, versionString) in packageData.PackageDetails.Dependencies)
                 {
-                    // Embedded packages take precedence over any version
-                    if (IsEmbeddedPackage(id, resolvedPackages))
+                    if (DoesResolvedPackageTakePrecedence(id, resolvedPackages))
                         continue;
 
                     if (!JetSemanticVersion.TryParse(versionString, out var dependencyVersion))
@@ -688,10 +688,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
             return newPackages;
         }
 
-        private static bool IsEmbeddedPackage(string id, Dictionary<string, PackageData> resolvedPackages)
+        private static bool DoesResolvedPackageTakePrecedence(string id,
+                                                              IReadOnlyDictionary<string, PackageData> resolvedPackages)
         {
+            // Some package types take precedence over any requests for another version. Basically any package that is
+            // built in or pointing at actual files
             return resolvedPackages.TryGetValue(id, out var packageData) &&
-                   packageData.Source == PackageSource.Embedded;
+                   (packageData.Source == PackageSource.Embedded
+                   || packageData.Source == PackageSource.BuiltIn
+                   || packageData.Source == PackageSource.Git
+                   || packageData.Source == PackageSource.Local
+                   || packageData.Source == PackageSource.LocalTarball);
         }
 
         private static JetSemanticVersion GetCurrentMaxVersion(
