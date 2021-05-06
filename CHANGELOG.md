@@ -17,6 +17,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Remove Unity built in package folders from Perforce content roots ([RIDER-61551](https://youtrack.jetbrains.com/issue/RIDER-61551))
 - Rider: Only add Unity folders to index for Unity packages ([#2076](https://github.com/JetBrains/resharper-unity/pull/2076))
 - Rider: Clean up indexed folders added in previous versions ([#2076](https://github.com/JetBrains/resharper-unity/pull/2076))
+- Rider: Fix unresolved git packages when the `packages-lock.json` is disabled ([#2084](https://github.com/JetBrains/resharper-unity/pull/2084))
+- Rider: Fix unresolved or incorrectly resolved package used as a dependency when `packages-lock.json` is disabled ([#2084](https://github.com/JetBrains/resharper-unity/pull/2084))
 
 
 
