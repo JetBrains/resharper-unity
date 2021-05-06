@@ -538,28 +538,46 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         private PackageData GetGitPackage(string id, string version, [CanBeNull] string hash,
                                           [CanBeNull] string revision = null)
         {
-            // If we don't have a hash, we know this isn't a git package
-            if (hash == null)
+            // For older Unity versions, manifest.json will have a hash for any git based package. For newer Unity
+            // versions, this is stored in packages-lock.json. If the lock file is disabled, then we don't get a hash
+            // and have to figure it out based on whatever is in Library/PackagesCache. We check the vesion as a git
+            // URL based on the docs: https://docs.unity3d.com/Manual/upm-git.html
+            if (hash == null && !IsGitUrl(version))
                 return null;
 
             // This must be a git package, make sure we return something
             try
             {
                 var packageFolder = myLocalPackageCacheFolder.Combine($"{id}@{hash}");
-                if (!packageFolder.ExistsDirectory)
+                if (!packageFolder.ExistsDirectory && hash != null)
                 {
                     var shortHash = hash.Substring(0, Math.Min(hash.Length, 10));
                     packageFolder = myLocalPackageCacheFolder.Combine($"{id}@{shortHash}");
                 }
 
-                return GetPackageDataFromFolder(id, packageFolder, PackageSource.Git,
-                    new GitDetails(version, hash, revision));
+                if (!packageFolder.ExistsDirectory)
+                    packageFolder = myLocalPackageCacheFolder.GetChildDirectories($"{id}@*").FirstOrDefault();
+
+                if (packageFolder != null && packageFolder.ExistsDirectory)
+                {
+                    return GetPackageDataFromFolder(id, packageFolder, PackageSource.Git,
+                        new GitDetails(version, hash, revision));
+                }
+
+                return null;
             }
             catch (Exception e)
             {
                 myLogger.Error(e, "Error resolving git package");
                 return PackageData.CreateUnknown(id, version);
             }
+        }
+
+        private static bool IsGitUrl(string version)
+        {
+            return Uri.TryCreate(version, UriKind.Absolute, out var url) &&
+                   (url.Scheme.StartsWith("git+") ||
+                    url.AbsolutePath.EndsWith(".git", StringComparison.InvariantCultureIgnoreCase));
         }
 
         [CanBeNull]
