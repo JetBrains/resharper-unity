@@ -67,6 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         private readonly FileSystemPath myPackagesFolder;
         private readonly FileSystemPath myPackagesLockPath;
         private readonly FileSystemPath myManifestPath;
+        private readonly FileSystemPath myLocalPackageCacheFolder;
 
         [CanBeNull] private FileSystemPath myLastReadGlobalManifestPath;
         [CanBeNull] private EditorManifestJson myGlobalManifest;
@@ -92,6 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
             myPackagesFolder = mySolution.SolutionDirectory.Combine("Packages");
             myPackagesLockPath = myPackagesFolder.Combine("packages-lock.json");
             myManifestPath = myPackagesFolder.Combine("manifest.json");
+            myLocalPackageCacheFolder = mySolution.SolutionDirectory.Combine("Library/PackageCache");
 
             unitySolutionTracker.IsUnityProject.AdviseUntil(lifetime, value =>
             {
@@ -102,12 +104,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
                 // Track changes to manifest.json and packages-lock.json. Also track changes in the Packages folder, but
                 // only top level, not recursively. We only want to update the packages if a new package has been added
                 // or removed
-                var packagesFolder = mySolution.SolutionDirectory.Combine("Packages");
-                fileSystemTracker.AdviseFileChanges(lifetime, packagesFolder.Combine("packages-lock.json"),
-                    _ => ScheduleRefresh());
-                fileSystemTracker.AdviseFileChanges(lifetime, packagesFolder.Combine("manifest.json"),
-                    _ => ScheduleRefresh());
-                fileSystemTracker.AdviseDirectoryChanges(lifetime, packagesFolder, false, _ => ScheduleRefresh());
+                fileSystemTracker.AdviseFileChanges(lifetime, myPackagesLockPath, _ => ScheduleRefresh());
+                fileSystemTracker.AdviseFileChanges(lifetime, myManifestPath, _ => ScheduleRefresh());
+                fileSystemTracker.AdviseDirectoryChanges(lifetime, myPackagesFolder, false, _ => ScheduleRefresh());
 
                 // We're all set up, terminate the advise
                 return true;
@@ -308,6 +307,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
                     myGlobalManifest = SafelyReadGlobalManifestFile(globalManifestPath);
                 }
 
+                // TODO: Support registry scopes
+                // Not massively important. We need the registry for a pre-2018.3 cache folder, which I think predates
+                // scopes. Post 2018.3, we should get the package from the project local cache
                 var registry = projectManifest.Registry ?? DefaultRegistryUrl;
 
                 var packages = new Dictionary<string, PackageData>();
@@ -321,8 +323,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
                         lockDetails);
                 }
 
-                // From observation, Unity treats package folders in the Packages folder as actual packages, even if they're
-                // not registered in manifest.json. They must have a */package.json file, in the root of the package itself
+                // If a child folder of Packages has a package.json file, then it's a package
                 foreach (var child in myPackagesFolder.GetChildDirectories())
                 {
                     // The folder name is not reliable to act as ID, so we'll use the ID from package.json. All other
@@ -333,17 +334,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
                         packages[packageData.Id] = packageData;
                 }
 
-                // Calculate the transitive dependencies. Based on observation, we simply go with the highest available
+                // We currently have the project dependencies. These will usually be the version requested, and will
+                // therefore have package data, as long as that data exists in the cache. However, a transitive
+                // dependency might get resolved to a higher version, so the project dependency version won't be in the
+                // cache, and that package data will be missing.
+
+                // Let's calculate the transitive dependencies.
+                // This is a very naive implementation, initially based on observation. UPM will try to resolve
+                // dependencies based on a resolution strategy. Note that this is not a conflict resolution strategy. It
+                // applies to all dependencies, even if there is only usage of that package.
+                // The default resolution strategy is "lowest". For a single package, this means get that version. For
+                // multiple packages it means get the lowest version that meets all version requirements, which
+                // translates to the highest common version.
+                // With one of the "highest*" resolution strategies, UPM will choose the highest patch, minor or major
+                // version that's available on the server. E.g. if two packages require dependency A@1.0.0 and A@1.0.5,
+                // then UPM can resolve this to A@1.0.7 or A@1.1.0 or A@20.0.0. This causes us problems because we don't
+                // have that information (although it is cached elsewhere on disk). If this dependency is used as a
+                // project dependency, then it also updates the project dependency.
+                // We fake "highest*" resolution by getting whatever version is available in Library/PackagesCache.
                 var packagesToProcess = new List<PackageData>(packages.Values);
                 while (packagesToProcess.Count > 0)
                 {
-                    var foundDependencies = GetPackagesFromDependencies(registry, builtInPackagesFolder,
-                        packages, packagesToProcess);
+                    var foundDependencies = GetPackagesFromDependencies(registry, packages, packagesToProcess);
                     foreach (var package in foundDependencies)
                         packages[package.Id] = package;
 
                     packagesToProcess = foundDependencies;
                 }
+
+                // TODO: Strip unused packages
+                // There is a chance we have introduced an extra package via a dependency that is subsequently updated.
+                // E.g. a dependency introduces A@1.0.0 which introduces B@1.0.0. If we have another package that
+                // depends on A@2.0.0 which no longer uses B, then we have an orphaned package
+                // This is an unlikely edge case, as it means we'd have to resolve the old version correctly as well as
+                // the new one. And the worst that can happen is we show an extra package in the UI
 
                 return new List<PackageData>(packages.Values);
             }
@@ -454,8 +478,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         [CanBeNull]
         private PackageData GetEmbeddedPackage(string id, string filePath)
         {
-            // Embedded packages live in the Packages folder. When reading from packages-lock.json, the filePath has a
-            // 'file:' prefix. We make sure it's the folder name when there is no packages-lock.json
+            // Embedded packages live in the Packages folder. When reading from manifest.json, filePath is the same as
+            // ID. When reading from packages-lock.json, we already know it's an embedded folder, and use the version,
+            // which has a 'file:' prefix
             var packageFolder = myPackagesFolder.Combine(filePath.TrimFromStart("file:"));
             return GetPackageDataFromFolder(id, packageFolder, PackageSource.Embedded);
         }
@@ -463,9 +488,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         [CanBeNull]
         private PackageData GetRegistryPackage(string id, string version, string registryUrl)
         {
-            // The version parameter isn't necessarily a version, and might not parse correctly. When using
-            // manifest.json to load packages, we will try to match a registry package before we try to match a git
-            // package, so the version might even be a URL
+            // When parsing manifest.json, version might be a version, or it might even be a URL for a git package
             var cacheFolder = RelativePath.TryParse($"{id}@{version}");
             if (cacheFolder.IsEmpty)
                 return null;
@@ -473,18 +496,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
             // Unity 2018.3 introduced an additional layer of caching for registry based packages, local to the
             // project, so that any edits to the files in the package only affect this project. This is primarily
             // for the API updater, which would otherwise modify files in the product wide cache
-            var packageCacheFolder = mySolution.SolutionDirectory.Combine("Library/PackageCache");
-            var packageFolder = packageCacheFolder.Combine(cacheFolder);
-            var packageData = GetPackageDataFromFolder(id, packageFolder, PackageSource.Registry);
+            var packageData = GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine(cacheFolder),
+                PackageSource.Registry);
             if (packageData != null)
                 return packageData;
 
             // Fall back to the product wide cache
-            packageCacheFolder = UnityCachesFinder.GetPackagesCacheFolder(registryUrl);
+            var packageCacheFolder = UnityCachesFinder.GetPackagesCacheFolder(registryUrl);
             if (packageCacheFolder == null || !packageCacheFolder.ExistsDirectory)
                 return null;
 
-            packageFolder = packageCacheFolder.Combine(cacheFolder);
+            var packageFolder = packageCacheFolder.Combine(cacheFolder);
             return GetPackageDataFromFolder(id, packageFolder, PackageSource.Registry);
         }
 
@@ -516,28 +538,46 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         private PackageData GetGitPackage(string id, string version, [CanBeNull] string hash,
                                           [CanBeNull] string revision = null)
         {
-            // If we don't have a hash, we know this isn't a git package
-            if (hash == null)
+            // For older Unity versions, manifest.json will have a hash for any git based package. For newer Unity
+            // versions, this is stored in packages-lock.json. If the lock file is disabled, then we don't get a hash
+            // and have to figure it out based on whatever is in Library/PackagesCache. We check the vesion as a git
+            // URL based on the docs: https://docs.unity3d.com/Manual/upm-git.html
+            if (hash == null && !IsGitUrl(version))
                 return null;
 
             // This must be a git package, make sure we return something
             try
             {
-                var packageFolder = mySolution.SolutionDirectory.Combine($"Library/PackageCache/{id}@{hash}");
-                if (!packageFolder.ExistsDirectory)
+                var packageFolder = myLocalPackageCacheFolder.Combine($"{id}@{hash}");
+                if (!packageFolder.ExistsDirectory && hash != null)
                 {
                     var shortHash = hash.Substring(0, Math.Min(hash.Length, 10));
-                    packageFolder = mySolution.SolutionDirectory.Combine($"Library/PackageCache/{id}@{shortHash}");
+                    packageFolder = myLocalPackageCacheFolder.Combine($"{id}@{shortHash}");
                 }
 
-                return GetPackageDataFromFolder(id, packageFolder, PackageSource.Git,
-                    new GitDetails(version, hash, revision));
+                if (!packageFolder.ExistsDirectory)
+                    packageFolder = myLocalPackageCacheFolder.GetChildDirectories($"{id}@*").FirstOrDefault();
+
+                if (packageFolder != null && packageFolder.ExistsDirectory)
+                {
+                    return GetPackageDataFromFolder(id, packageFolder, PackageSource.Git,
+                        new GitDetails(version, hash, revision));
+                }
+
+                return null;
             }
             catch (Exception e)
             {
                 myLogger.Error(e, "Error resolving git package");
                 return PackageData.CreateUnknown(id, version);
             }
+        }
+
+        private static bool IsGitUrl(string version)
+        {
+            return Uri.TryCreate(version, UriKind.Absolute, out var url) &&
+                   (url.Scheme.StartsWith("git+") ||
+                    url.AbsolutePath.EndsWith(".git", StringComparison.InvariantCultureIgnoreCase));
         }
 
         [CanBeNull]
@@ -586,7 +626,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
                     var timestamp = (long) (tarballPath.FileModificationTimeUtc - DateTimeEx.UnixEpoch).TotalMilliseconds;
                     var hash = GetMd5OfString(tarballPath.FullPath).Substring(0, 12).ToLowerInvariant();
 
-                    var packageFolder = mySolution.SolutionDirectory.Combine($"Library/PackageCache/{id}@{hash}-{timestamp}");
+                    var packageFolder = myLocalPackageCacheFolder.Combine($"{id}@{hash}-{timestamp}");
                     var tarballLocation = tarballPath.StartsWith(mySolution.SolutionDirectory)
                         ? tarballPath.RemovePrefix(mySolution.SolutionDirectory.Parent)
                         : tarballPath;
@@ -652,7 +692,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         }
 
         private List<PackageData> GetPackagesFromDependencies([NotNull] string registry,
-                                                              [NotNull] FileSystemPath builtInPackagesFolder,
                                                               Dictionary<string, PackageData> resolvedPackages,
                                                               List<PackageData> packagesToProcess)
         {
@@ -664,8 +703,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
             {
                 foreach (var (id, versionString) in packageData.PackageDetails.Dependencies)
                 {
-                    // Embedded packages take precedence over any version
-                    if (IsEmbeddedPackage(id, resolvedPackages))
+                    if (DoesResolvedPackageTakePrecedence(id, resolvedPackages))
                         continue;
 
                     if (!JetSemanticVersion.TryParse(versionString, out var dependencyVersion))
@@ -678,20 +716,65 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
                 }
             }
 
+            ICollection<FileSystemPath> cachedPackages = null;
             var newPackages = new List<PackageData>();
             foreach (var (id, version) in dependencies)
             {
                 if (version > GetResolvedVersion(id, resolvedPackages))
-                    newPackages.Add(GetPackageData(id, version.ToString(), registry, builtInPackagesFolder, null));
+                {
+                    if (cachedPackages == null) cachedPackages = myLocalPackageCacheFolder.GetChildDirectories();
+
+                    // We know this is a registry package, so try to get it from the local cache. It might be missing:
+                    // 1) the cache hasn't been built yet
+                    // 2) the package has been resolved with one of the "highest*" strategies and a newer version has
+                    //    been downloaded from the UPM server. Check for any "id@" folders, and use that as the version.
+                    //    If it's in the local cache, it's the (last) resolved version. If Unity isn't running and the
+                    //    manifest is out of date, we can only do a best effort attempt at showing the right packages.
+                    //    We need Unity to resolve. We'll refresh once Unity has started again.
+                    // So:
+                    // 1) Check for the exact version in the local cache
+                    // 2) Check for any version in the local cache
+                    // 3) Check for the exact version in the global cache
+                    PackageData packageData = null;
+                    var exact = $"{id}@{version}";
+                    var prefix = $"{id}@";
+                    foreach (var packageFolder in cachedPackages)
+                    {
+                        if (packageFolder.Name.Equals(exact, StringComparison.InvariantCultureIgnoreCase)
+                            || packageFolder.Name.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            packageData = GetPackageDataFromFolder(id, packageFolder, PackageSource.Registry);
+                            if (packageData != null)
+                                break;
+                        }
+                    }
+
+                    if (packageData == null)
+                    {
+                        var packageFolder = UnityCachesFinder.GetPackagesCacheFolder(registry)?.Combine(exact);
+                        if (packageFolder != null)
+                            packageData = GetPackageDataFromFolder(id, packageFolder, PackageSource.Registry);
+                    }
+
+                    if (packageData != null)
+                        newPackages.Add(packageData);
+                }
             }
 
             return newPackages;
         }
 
-        private static bool IsEmbeddedPackage(string id, Dictionary<string, PackageData> resolvedPackages)
+        private static bool DoesResolvedPackageTakePrecedence(string id,
+                                                              IReadOnlyDictionary<string, PackageData> resolvedPackages)
         {
+            // Some package types take precedence over any requests for another version. Basically any package that is
+            // built in or pointing at actual files
             return resolvedPackages.TryGetValue(id, out var packageData) &&
-                   packageData.Source == PackageSource.Embedded;
+                   (packageData.Source == PackageSource.Embedded
+                   || packageData.Source == PackageSource.BuiltIn
+                   || packageData.Source == PackageSource.Git
+                   || packageData.Source == PackageSource.Local
+                   || packageData.Source == PackageSource.LocalTarball);
         }
 
         private static JetSemanticVersion GetCurrentMaxVersion(
