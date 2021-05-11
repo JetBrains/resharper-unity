@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Elements
 
         protected UnityNamedElement(string name, string presentableName, Func<IDeclaredElement, bool> isApplicable,
                         NamingRule namingRule)
-            : base(name, presentableName, isApplicable)
+            : base(name, presentableName, isApplicable, modifier:RoslynNamingSymbolModifier.UntranslatableToRoslyn)
         {
             myNamingRule = namingRule;
         }
