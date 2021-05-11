@@ -7,14 +7,11 @@ using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
-using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
-using JetBrains.ReSharper.Psi.Impl.CodeStyle;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
 using JetBrains.Util;
-using Lex;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.QuickFixes
 {

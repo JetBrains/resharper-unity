@@ -1,7 +1,6 @@
 using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
-using JetBrains.RdBackend.Common.Platform.Icons;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Tree;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
@@ -14,6 +13,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.E
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Backend.Features.Usages;
+using JetBrains.Rider.Backend.Platform.Icons;
 using JetBrains.Rider.Model;
 using JetBrains.UI.Icons;
 using JetBrains.Util;
