@@ -12,9 +12,14 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net211...net212)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/45?closed=1)
 
+### Added
+
+- Rider: Warn if trying to commit with unsaved scenes ([#1077](https://github.com/JetBrains/resharper-unity/issues/1077), [RIDER-60824](https://youtrack.jetbrains.com/issue/RIDER-60824), [#2071](https://github.com/JetBrains/resharper-unity/pull/2071))
+
 ### Changed
 
 - Methods marked with `[UnitySetUp]` are treated as in use ([#2048](https://github.com/JetBrains/resharper-unity/issues/2048), [#2047](https://github.com/JetBrains/resharper-unity/pull/2047))
+- Rider: Group Unity run configurations in the run config dialog ([#2081](https://github.com/JetBrains/resharper-unity/pull/2081))
 
 ### Fixed
 
@@ -24,6 +29,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix wrong page opening in external documentation ([RIDER-57745](https://youtrack.jetbrains.com/issue/RIDER-57745), [#2050](https://github.com/JetBrains/resharper-unity/pull/2050))
 - Rider: External documentation for method parameter now navigates to documentation for method ([https://youtrack.jetbrains.com/issue/RIDER-60297](https://youtrack.jetbrains.com/issue/RIDER-60297), [#2050](https://github.com/JetBrains/resharper-unity/pull/2050))
 - Rider: Show localised external Unity documentation if English isn't available ([RIDER-55737](https://youtrack.jetbrains.com/issue/RIDER-55737), [#2050](https://github.com/JetBrains/resharper-unity/pull/2050))
+- Rider: Fix packages occasionally not showing or updating in Unity Explorer when Unity is not running ([RIDER-62558](https://youtrack.jetbrains.com/issue/RIDER-62558), [#2085](https://github.com/JetBrains/resharper-unity/pull/2085))
 
 
 

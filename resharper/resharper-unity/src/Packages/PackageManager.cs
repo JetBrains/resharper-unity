@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using JetBrains.Annotations;
+using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Collections;
 using JetBrains.Collections.Viewable;
@@ -61,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         private readonly ILogger myLogger;
         private readonly UnityVersion myUnityVersion;
         private readonly IFileSystemTracker myFileSystemTracker;
-        private readonly GroupingEvent myGroupingEvent;
+        private readonly GroupingEvent myDoRefreshGroupingEvent, myWaitForPackagesLockJsonGroupingEvent;
         private readonly DictionaryEvents<string, PackageData> myPackagesById;
         private readonly Dictionary<string, LifetimeDefinition> myPackageLifetimes;
         private readonly FileSystemPath myPackagesFolder;
@@ -83,9 +84,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
             myUnityVersion = unityVersion;
             myFileSystemTracker = fileSystemTracker;
 
-            // Refresh the packages in the guarded context, safe from reentrancy.
-            myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "Unity::PackageManager",
+            // Refresh the packages in the guarded context, safe from reentrancy
+            myDoRefreshGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "Unity::PackageManager",
                 TimeSpan.FromMilliseconds(500), Rgc.Guarded, DoRefresh);
+            myWaitForPackagesLockJsonGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime,
+                "Unity::PackageManager::WaitForPackagesLockJson", TimeSpan.FromMilliseconds(2000), Rgc.Guarded,
+                DoRefresh);
 
             myPackagesById = new DictionaryEvents<string, PackageData>(lifetime, "Unity::PackageManager");
             myPackageLifetimes = new Dictionary<string, LifetimeDefinition>();
@@ -101,12 +105,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
 
                 ScheduleRefresh();
 
-                // Track changes to manifest.json and packages-lock.json. Also track changes in the Packages folder, but
-                // only top level, not recursively. We only want to update the packages if a new package has been added
-                // or removed
-                fileSystemTracker.AdviseFileChanges(lifetime, myPackagesLockPath, _ => ScheduleRefresh());
-                fileSystemTracker.AdviseFileChanges(lifetime, myManifestPath, _ => ScheduleRefresh());
-                fileSystemTracker.AdviseDirectoryChanges(lifetime, myPackagesFolder, false, _ => ScheduleRefresh());
+                // Track changes to the Packages folder, non-recursively. This will handle manifest.json,
+                // packages-lock.json and any folders that are added/deleted/renamed
+                fileSystemTracker.AdviseDirectoryChanges(lifetime, myPackagesFolder, false, OnPackagesFolderUpdate);
 
                 // We're all set up, terminate the advise
                 return true;
@@ -128,22 +129,52 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         private void ScheduleRefresh()
         {
             myLogger.Trace("Scheduling package refresh");
-            myGroupingEvent.FireIncoming();
+            myDoRefreshGroupingEvent.FireIncoming();
         }
 
+        private void OnPackagesFolderUpdate(FileSystemChangeDelta change)
+        {
+            var manifestChange = change.FindChangeDelta(myManifestPath) != null;
+            var lockChange = change.FindChangeDelta(myPackagesLockPath) != null;
+
+            if (manifestChange && !lockChange)
+            {
+                // We prefer to use packages-lock.json, as it's more accurate than manifest.json. So if the manifest is
+                // changed without also changing the lock file, fire the delayed refresh event, to give Unity a chance
+                // to resolve the change changed packages and update the lock file.
+                // If we get a subsequent notification for the lock file, we'll cancel the delayed refresh and fire the
+                // normal refresh, and use the more accurate lock file to populate our packages list.
+                // If we don't get a notification (perhaps Unity isn't running, or the user hasn't yet switched back to
+                // Unity) the delayed refresh will still update, using the less accurate method based on manifest.json
+                if (myPackagesLockPath.ExistsFile && myManifestPath.ExistsFile &&
+                    myManifestPath.FileModificationTimeUtc > myPackagesLockPath.FileModificationTimeUtc)
+                {
+                    myLogger.Trace("manifest.json modified and is newer than packages-lock.json. Scheduling delayed refresh");
+                    myWaitForPackagesLockJsonGroupingEvent.FireIncoming();
+                }
+                else
+                {
+                    myLogger.Trace("manifest.json modified. No need to wait for packages-lock.json. Scheduling normal refresh");
+                    myDoRefreshGroupingEvent.FireIncoming();
+                }
+            }
+            else if (lockChange)
+            {
+                myLogger.Trace("packages-lock.json modified. Cancelling delayed refresh. Scheduling normal refresh");
+                myWaitForPackagesLockJsonGroupingEvent.CancelIncoming();
+                myDoRefreshGroupingEvent.FireIncoming();
+            }
+            else
+            {
+                myLogger.Trace("Other file modification in Packages folder. Scheduling normal refresh");
+                myDoRefreshGroupingEvent.FireIncoming();
+            }
+        }
 
         [Guard(Rgc.Guarded)]
         private void DoRefresh()
         {
             myLogger.Trace("DoRefresh");
-
-            // If we're reacting to changes in manifest.json, give Unity a chance to update and refresh packages-lock.json
-            if (!AreFilesReadyForReading())
-            {
-                myLogger.Verbose("Not ready to read packages-lock.json. Rescheduling refresh to give Unity time to update the file");
-                ScheduleRefresh();
-                return;
-            }
 
             // We only get null if something has gone wrong, such as invalid or missing files (already logged). If we
             // read the files successfully, we'd at least have an empty list. If something is wrong, don't wipe out the
@@ -151,41 +182,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
             var newPackages = GetPackages();
             if (newPackages != null)
                 myLogger.DoActivity("UpdatePackages", null, () => UpdatePackages(newPackages));
-        }
-
-        private bool AreFilesReadyForReading()
-        {
-            // We're ready to start reading if both packages-lock.json and manifest.json exist, and packages-lock.json
-            // is either already up to date, or is old enough to be skipped. If manifest.json is only slightly newer,
-            // then we're not ready - we'll give Unity a chance to update packages-lock.json before we read
-            if (!myPackagesLockPath.ExistsFile || !myManifestPath.ExistsFile)
-                return true;
-
-            return IsPackagesLockUpToDate() || ShouldSkipPackagesLock();
-        }
-
-        private bool IsPackagesLockUpToDate()
-        {
-            // We should have already checked this. Don't check again in release mode, as it will hit the disk
-            Assertion.Assert(myPackagesLockPath.ExistsFile, "myPackagesLockPath.ExistsFile");
-            Assertion.Assert(myManifestPath.ExistsFile, "myManifestPath.ExistsFile");
-
-            return myPackagesLockPath.FileModificationTimeUtc >= myManifestPath.FileModificationTimeUtc;
-        }
-
-        private bool ShouldSkipPackagesLock()
-        {
-            // We should have already checked this. Don't check again in release mode, as it will hit the disk
-            Assertion.Assert(myPackagesLockPath.ExistsFile, "myPackagesLockPath.ExistsFile");
-            Assertion.Assert(myManifestPath.ExistsFile, "myManifestPath.ExistsFile");
-
-            // Has Unity taken too long to update packages-lock.json? If it's taken longer that 2 seconds to update, we
-            // fall back to manifest.json. If Unity isn't running, is going slow or doesn't get notified of the change
-            // to manifest.json, we'll fall back and still show up to date results. When Unity catches up, we'll get a
-            // file change notification on packages-lock.json and update to canonical results.
-            // Two seconds is a good default, as Unity resolves packages before reloading the AppDomain
-            return myManifestPath.FileModificationTimeUtc - myPackagesLockPath.FileModificationTimeUtc >
-                   TimeSpan.FromSeconds(2);
         }
 
         private void UpdatePackages(IEnumerable<PackageData> newPackages)
@@ -254,7 +250,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
                 return null;
             }
 
-            if (myManifestPath.ExistsFile && ShouldSkipPackagesLock())
+            if (myManifestPath.ExistsFile &&
+                myManifestPath.FileModificationTimeUtc > myPackagesLockPath.FileModificationTimeUtc)
             {
                 myLogger.Info("packages-lock.json is out of date. Skipping");
                 return null;
@@ -380,11 +377,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
 
         private void LogWhySkippedPackagesLock(ManifestJson projectManifest)
         {
-            if (myPackagesLockPath.ExistsFile && ShouldSkipPackagesLock())
+            // We know myManifestPath exists
+            if (myPackagesLockPath.ExistsFile &&
+                myManifestPath.FileModificationTimeUtc > myPackagesLockPath.FileModificationTimeUtc)
             {
                 if (projectManifest.EnableLockFile.HasValue && !projectManifest.EnableLockFile.Value)
                 {
-                    myLogger.Info("packages-lock.json is disabled in manifest.json. Old file needs deleting");
+                    myLogger.Info("packages-lock.json is out of date. Lock file is disabled in manifest.json. Old file needs deleting");
                 }
                 else if (myUnityVersion.ActualVersionForSolution.Value < new Version(2019, 3))
                 {
@@ -392,7 +391,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
                         "packages-lock.json is not supported by this version of Unity. Perhaps the file is from a newer version?");
                 }
 
-                myLogger.Info("packages-lock.json skipped. Most likely reason: Unity not running");
+                myLogger.Info("packages-lock.json out of date. Most likely reason: Unity not running");
             }
         }
 
