@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
@@ -33,42 +32,23 @@ namespace JetBrains.ReSharper.Plugins.Unity
         };
 
         private readonly UnityVersion myUnityVersion;
+        private readonly UnityTypeCache myUnityTypeCache;
+        private readonly UnityTypesProvider myUnityTypesProvider;
         private readonly KnownTypesCache myKnownTypesCache;
-        private readonly Lazy<UnityTypes> myTypes;
 
-        public UnityApi(UnityVersion unityVersion, KnownTypesCache knownTypesCache)
+        public UnityApi(UnityVersion unityVersion, UnityTypeCache unityTypeCache, UnityTypesProvider unityTypesProvider, KnownTypesCache knownTypesCache)
         {
             myUnityVersion = unityVersion;
+            myUnityTypeCache = unityTypeCache;
+            myUnityTypesProvider = unityTypesProvider;
             myKnownTypesCache = knownTypesCache;
-            myTypes = Lazy.Of(() =>
-            {
-                var apiXml = new ApiXml();
-                return apiXml.LoadTypes();
-            }, true);
         }
-
-        [NotNull]
-        private IEnumerable<UnityType> GetBaseUnityTypes([CanBeNull] ITypeElement type)
-        {
-            if (type?.Module is IProjectPsiModule projectPsiModule)
-            {
-                var unityVersion = myUnityVersion.GetActualVersion(projectPsiModule.Project);
-                return GetBaseUnityTypes(type, unityVersion);
-            }
-            return EmptyArray<UnityType>.Instance;
-        }
-
-        [NotNull]
-        private IEnumerable<UnityType> GetBaseUnityTypes([NotNull] ITypeElement type, Version unityVersion)
-        {
-            var types = myTypes.Value;
-            unityVersion = types.NormaliseSupportedVersion(unityVersion);
-            return GetBaseUnityTypes(types, type, unityVersion);
-        }
-
         public bool IsUnityType([CanBeNull] ITypeElement type)
         {
-            return GetBaseUnityTypes(type).Any();
+            if (type == null)
+                return false;
+            return myUnityTypeCache.IsUnityType(type);
+            // return UnityTypeUtils.GetBaseUnityTypes(type, myUnityVersion, myUnityTypesProvider, myKnownTypesCache).Any();
         }
 
         public bool IsComponentSystemType([CanBeNull] ITypeElement typeElement)
@@ -234,9 +214,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public IEnumerable<UnityEventFunction> GetEventFunctions(ITypeElement type, Version unityVersion)
         {
-            var types = myTypes.Value;
+            var types = myUnityTypesProvider.Types;
             unityVersion = types.NormaliseSupportedVersion(unityVersion);
-            foreach (var unityType in GetBaseUnityTypes(types, type, unityVersion))
+            foreach (var unityType in UnityTypeUtils.GetBaseUnityTypes(myUnityTypesProvider, type, unityVersion, myKnownTypesCache))
             {
                 foreach (var function in unityType.GetEventFunctions(unityVersion))
                     yield return function;
@@ -268,7 +248,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var containingType = method.GetContainingType();
             if (containingType == null) return null;
 
-            foreach (var type in GetBaseUnityTypes(containingType, unityVersion))
+            foreach (var type in UnityTypeUtils.GetBaseUnityTypes(containingType, unityVersion, myUnityTypesProvider, myKnownTypesCache))
             {
                 foreach (var function in type.GetEventFunctions(unityVersion))
                 {
@@ -283,16 +263,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public Version GetNormalisedActualVersion(IProject project)
         {
-            return myTypes.Value.NormaliseSupportedVersion(myUnityVersion.GetActualVersion(project));
-        }
-
-        private IEnumerable<UnityType> GetBaseUnityTypes(UnityTypes types, ITypeElement type, Version normalisedVersion)
-        {
-            return types.Types.Where(t =>
-            {
-                using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
-                    return t.SupportsVersion(normalisedVersion) && type.IsDescendantOf(t.GetTypeElement(myKnownTypesCache, type.Module));
-            });
+            return myUnityTypesProvider.Types.NormaliseSupportedVersion(myUnityVersion.GetActualVersion(project));
         }
 
         private static bool IsUnityBuiltinType(IType type)
