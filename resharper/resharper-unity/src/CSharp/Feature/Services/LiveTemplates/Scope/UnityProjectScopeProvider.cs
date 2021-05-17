@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application;
+using JetBrains.ProjectModel.Properties.Managed;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Context;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
@@ -69,6 +70,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
                     else
                         yield return new InUnityCSharpRuntimeFolder();
                 }
+            }
+            
+            // For a project with UNITY_EDITOR define we have to allow Editor Templates 
+            if (project != null && project.ProjectProperties.ActiveConfigurations.Configurations.OfType<IManagedProjectConfiguration>()
+                .Select(configuration => configuration.DefineConstants)
+                .All(defines => defines.Contains("UNITY_EDITOR")))
+            {
+                yield return new InUnityCSharpEditorFolder();
             }
         }
 
