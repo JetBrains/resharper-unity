@@ -10,16 +10,10 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
-import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.IRiderDebuggable
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.*
-import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.run.IDebuggerOutputListener
-import com.jetbrains.rider.run.WorkerRunInfo
-import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import javax.swing.Icon
 
@@ -36,6 +30,9 @@ fun GeneralCommandLine.withUnityExtensionsEnabledEnvironment(project: Project): 
     return this.withEnvironment("_RIDER_UNITY_ENABLE_DEBUGGER_EXTENSIONS", if (enabled) "1" else "0")
 }
 
+/**
+ * Simple [RunProfile] implementation to connect to a [UnityProcess] via the Attach To menu
+ */
 class UnityProcessRunProfile(private val project: Project, private val process: UnityProcess)
     : RunProfile, IRiderDebuggable {
 
@@ -54,7 +51,8 @@ class UnityProcessRunProfile(private val project: Project, private val process: 
             }
             is UnityRemoteConnectionDetails -> {
                 UnityAttachProfileState(MyRemoteConfiguration(process.host, process.port), environment, process.displayName,
-                    process is UnityEditor || process is UnityEditorHelper)
+                    process is UnityEditor || process is UnityEditorHelper
+                )
             }
             else -> null
         }
@@ -62,40 +60,5 @@ class UnityProcessRunProfile(private val project: Project, private val process: 
 
     private class MyRemoteConfiguration(override var address: String, override var port: Int) : RemoteConfiguration {
         override var listenPortForConnections: Boolean = false
-    }
-}
-
-open class UnityAttachProfileState(private val remoteConfiguration: RemoteConfiguration,
-                                   executionEnvironment: ExecutionEnvironment,
-                                   private val targetName: String,
-                                   val isEditor: Boolean)
-    : MonoConnectRemoteProfileState(remoteConfiguration, executionEnvironment) {
-
-    override fun getDebuggerOutputEventsListener(): IDebuggerOutputListener {
-        return UnityDebuggerOutputListener(executionEnvironment.project, remoteConfiguration.address, targetName, isEditor)
-    }
-
-    override suspend fun createWorkerRunInfo(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
-        val runCmd = super.createWorkerRunInfo(lifetime, helper, port)
-        runCmd.commandLine.withUnityExtensionsEnabledEnvironment(executionEnvironment.project)
-        return runCmd
-    }
-}
-
-class UnityAttachIosUsbProfileState(private val project: Project, private val remoteConfiguration: RemoteConfiguration,
-                                    executionEnvironment: ExecutionEnvironment, targetName: String,
-                                    private val deviceId: String)
-    : UnityAttachProfileState(remoteConfiguration, executionEnvironment, targetName, false) {
-
-    override suspend fun createWorkerRunInfo(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
-        val runCmd = super.createWorkerRunInfo(lifetime, helper, port)
-        // TODO: Can we do this over protocol?
-        // We could avoid hard coding port 12000 (Unity use this port in their debugger plugins)
-        UnityInstallationFinder.getInstance(project).getAdditionalPlaybackEnginesRoot()?.resolve("iOSSupport")?.let { proxyFolderPath ->
-            runCmd.commandLine.withEnvironment("_RIDER_UNITY_IOS_USB_PROXY_PATH", proxyFolderPath.toString())
-            runCmd.commandLine.withEnvironment("_RIDER_UNITY_IOS_USB_DEVICE_ID", deviceId)
-            runCmd.commandLine.withEnvironment("_RIDER_UNITY_IOS_USB_LOCAL_PORT", "${remoteConfiguration.port}")
-        }
-        return runCmd
     }
 }
