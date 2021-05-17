@@ -1,10 +1,19 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
+import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.RunProfileState
+import com.intellij.execution.process.ProcessAdapter
+import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.flowInto
 import com.jetbrains.rider.debugger.DebuggerHelperHost
+import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
+import com.jetbrains.rider.model.debuggerWorker.DebuggerWorkerModel
+import com.jetbrains.rider.model.unity.debuggerWorker.unityDebuggerWorkerModel
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.IDebuggerOutputListener
 import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
@@ -23,9 +32,27 @@ open class UnityAttachProfileState(private val remoteConfiguration: RemoteConfig
     : MonoConnectRemoteProfileState(remoteConfiguration, executionEnvironment) {
 
     override suspend fun createWorkerRunInfo(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
-        val runCmd = super.createWorkerRunInfo(lifetime, helper, port)
-        runCmd.commandLine.withUnityExtensionsEnabledEnvironment(executionEnvironment.project)
-        return runCmd
+        return super.createWorkerRunInfo(lifetime, helper, port)
+    }
+
+    final override suspend fun createDebuggerWorker(
+        workerCmd: GeneralCommandLine,
+        protocolModel: DebuggerWorkerModel,
+        protocolServerPort: Int,
+        projectLifetime: Lifetime
+    ): DebuggerWorkerProcessHandler {
+
+        val debuggerWorkerLifetime = projectLifetime.createNested()
+
+        val frontendBackendModel = executionEnvironment.project.solution.frontendBackendModel
+        frontendBackendModel.backendSettings.enableDebuggerExtensions.flowInto(debuggerWorkerLifetime,
+            protocolModel.unityDebuggerWorkerModel.showCustomRenderers)
+
+        return super.createDebuggerWorker(workerCmd, protocolModel, protocolServerPort, projectLifetime).apply {
+            addProcessListener(object : ProcessAdapter() {
+                override fun processTerminated(event: ProcessEvent) { debuggerWorkerLifetime.terminate() }
+            })
+        }
     }
 
     override fun getDebuggerOutputEventsListener(): IDebuggerOutputListener {

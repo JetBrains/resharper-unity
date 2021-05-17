@@ -9,6 +9,9 @@
         <AssemblyOriginatorKeyFile>..\..\..\sign.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>
     <ItemGroup>
+        <Compile Include="..\..\..\resharper\build\generated\Model\DebuggerWorker\**\*" LinkBase="Model" />
+    </ItemGroup>
+    <ItemGroup>
       <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net461" Version="1.0.0">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

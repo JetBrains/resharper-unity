@@ -2,7 +2,6 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.Executor
 import com.intellij.execution.ProgramRunnerUtil
-import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.RunProfile
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.executors.DefaultDebugExecutor
@@ -11,9 +10,7 @@ import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.debugger.IRiderDebuggable
-import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.*
-import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import javax.swing.Icon
 
@@ -23,11 +20,6 @@ fun attachToUnityProcess(project: Project, process: UnityProcess) {
         .create(project, DefaultDebugExecutor.getDebugExecutorInstance(), runProfile)
         .build()
     ProgramRunnerUtil.executeConfiguration(environment, false, true)
-}
-
-fun GeneralCommandLine.withUnityExtensionsEnabledEnvironment(project: Project): GeneralCommandLine {
-    val enabled = project.solution.frontendBackendModel.backendSettings.enableDebuggerExtensions.valueOrNull ?: false
-    return this.withEnvironment("_RIDER_UNITY_ENABLE_DEBUGGER_EXTENSIONS", if (enabled) "1" else "0")
 }
 
 /**
@@ -43,7 +35,7 @@ class UnityProcessRunProfile(private val project: Project, private val process: 
         return when (process) {
             is UnityIosUsbProcess -> {
                 // We need to tell the debugger which port to connect to. The proxy will open this port and forward
-                // travel to the on-device port of 56000. These port numbers are hardcoded, and follow what Unity does
+                // traffic to the on-device port of 56000. These port numbers are hardcoded, and follow what Unity does
                 // in their debugger plugins. There is a chance that the local 12000 port is in use, but there's not
                 // much we can do about that - we tell the proxy both port numbers and it tries to set things up.
                 UnityAttachIosUsbProfileState(project, MyRemoteConfiguration("127.0.0.1", 12000),

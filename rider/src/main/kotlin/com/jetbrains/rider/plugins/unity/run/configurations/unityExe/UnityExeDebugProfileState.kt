@@ -20,7 +20,6 @@ import com.jetbrains.rider.model.debuggerWorker.OutputMessageWithSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputType
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachProfileState
-import com.jetbrains.rider.plugins.unity.run.configurations.withUnityExtensionsEnabledEnvironment
 import com.jetbrains.rider.run.ExternalConsoleMediator
 import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
@@ -51,7 +50,6 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
         val runCommandLine = createEmptyConsoleCommandLine(exeConfiguration.parameters.useExternalConsole)
             .withEnvironment(exeConfiguration.parameters.envs)
             .withEnvironment("MONO_ARGUMENTS", "--debugger-agent=transport=dt_socket,address=127.0.0.1:${remoteConfiguration.port},server=n,suspend=y")
-            .withUnityExtensionsEnabledEnvironment(executionEnvironment.project)
             .withParentEnvironmentType(if (exeConfiguration.parameters.isPassParentEnvs) {
                 GeneralCommandLine.ParentEnvironmentType.CONSOLE
             } else {
