@@ -71,13 +71,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
                         yield return new InUnityCSharpRuntimeFolder();
                 }
             }
-            
-            // For a project with UNITY_EDITOR define we have to allow Editor Templates 
-            if (project != null && project.ProjectProperties.ActiveConfigurations.Configurations.OfType<IManagedProjectConfiguration>()
-                .Select(configuration => configuration.DefineConstants)
-                .All(defines => defines.Contains("UNITY_EDITOR")))
+
+            if (!project.IsOneOfPredefinedUnityProjects())
             {
-                yield return new InUnityCSharpEditorFolder();
+                // For a project with UNITY_EDITOR define we have to allow Editor Templates 
+                if (project != null && project.ProjectProperties.ActiveConfigurations.Configurations
+                    .OfType<IManagedProjectConfiguration>()
+                    .Select(configuration => configuration.DefineConstants)
+                    .All(defines => defines.Contains("UNITY_EDITOR")))
+                {
+                    yield return new InUnityCSharpEditorFolder();
+                }
             }
         }
 
