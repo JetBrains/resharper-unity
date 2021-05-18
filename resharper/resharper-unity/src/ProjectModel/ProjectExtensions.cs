@@ -27,7 +27,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             if (HasUnityFlavour(project))
                 return true;
 
-            var referenceTracker = project.GetComponent<UnityReferencesTracker>();
+            var referenceTracker = project.GetData(UnityReferencesTracker.UnityReferencesTrackerKey);
+            if (referenceTracker == null)
+                return false;
+            
             return referenceTracker.IsUnityProject(project);
         }
 

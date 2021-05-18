@@ -26,6 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
     [SolutionComponent]
     public class UnityReferencesTracker : IChangeProvider
     {
+        public static readonly Key<UnityReferencesTracker> UnityReferencesTrackerKey = new Key<UnityReferencesTracker>("UnityReferencesTrackerKey");
+
         // Unity 2017.3 split UnityEngine into modules. The copy in the Managed folder is the original monolithic build.
         // The Managed/UnityEngine/ folder contains the version split into modules, and generated projects reference the
         // UnityEngine.dll in this folder, as well as the modules. Managed/UnityEngine/UnityEngine.dll has a load of
@@ -110,6 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             myProjects.Projects.View(myLifetime,
                 (projectLifetime, project) =>
                 {
+                    project.PutData(UnityReferencesTrackerKey, this);
                     myAllProjectLifetimes.Add(projectLifetime, project, projectLifetime);
                     if (HasUnityReferenceOrFlavour(project))
                         myUnityProjects.Add(projectLifetime, project);
@@ -183,8 +186,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             return null;
         }
 
-        public bool IsUnityProject(IProject project)
+        public bool IsUnityProject([CanBeNull] IProject project)
         {
+            if (project == null || !project.IsValid())
+                return false;
+            // Only VSTU adds the Unity project flavour. Unity + Rider don't, so we have to look at references
+            if (project.HasUnityFlavour())
+                return true;
+            
             return myUnityProjects.Contains(project);
         }
 
