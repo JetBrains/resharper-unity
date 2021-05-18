@@ -137,8 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
             // We know that the default projects are not .asmdef based, and will obviously live in Assets, which we've
             // already processed. This is just an optimisation - if a plugin renames the projects, we'll still work ok
-            if (project.Name == "Assembly-CSharp" || project.Name == "Assembly-CSharp-Editor" ||
-                project.Name == "Assembly-CSharp-firstpass" || project.Name == "Assembly-CSharp-Editor-firstpass")
+            if (project.IsOneOfPredefinedUnityProjects())
             {
                 return;
             }
