@@ -48,7 +48,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (type == null)
                 return false;
             return myUnityTypeCache.IsUnityType(type);
-            // return UnityTypeUtils.GetBaseUnityTypes(type, myUnityVersion, myUnityTypesProvider, myKnownTypesCache).Any();
         }
 
         public bool IsComponentSystemType([CanBeNull] ITypeElement typeElement)
