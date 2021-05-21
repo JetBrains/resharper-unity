@@ -31,9 +31,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
         public override double Priority => 100;
 
         // Enables/disables the menu item
-        protected override bool IsAvaliable(CSharpGeneratorContext context)
+        protected override bool IsAvailable(CSharpGeneratorContext context)
         {
-            return context.ClassDeclaration.IsFromUnityProject() && HasUnityBaseType(context) && base.IsAvaliable(context);
+            return context.ClassDeclaration.IsFromUnityProject() && HasUnityBaseType(context) && base.IsAvailable(context);
         }
 
         protected override void Process(CSharpGeneratorContext context, IProgressIndicator progress)
