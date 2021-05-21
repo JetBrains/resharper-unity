@@ -62,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests
             var assemblyDir = assemblyPath.Directory;
             var configFile = assemblyDir.CombineWithShortName(assemblyPath.NameWithoutExtension + "_log.xml");
 
-            // /resharper/build/tests.rider/bin/Debug/net461/JetBrains.ReSharper.Plugins.Unity.Tests.Rider_log.log
+            // /resharper/build/tests.rider/bin/Debug/net472/JetBrains.ReSharper.Plugins.Unity.Tests.Rider_log.log
             // Note that the logger will delete all files with basename.*, e.g. Rider.dll !!!!??!?!
             var logfile = assemblyDir.CombineWithShortName(assemblyPath.NameWithoutExtension + "_log.log");
             logfile.DeleteFile();
