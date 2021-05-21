@@ -86,6 +86,9 @@ class UnityInstallationFinder(private val project: Project) {
         return project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.let { Paths.get(it.applicationContentsPath) }
     }
 
+    // This will *usually* return a valid value. If there's a backend<->Unity connection, we'll have the correct path.
+    // If not, we'll set the best guess from found installs and the (nearest) current version taken from ProjectSettings
+    // This will be null for non-Unity projects, or if Unity is installed to a non-standard location
     private fun tryGetApplicationPathFromProtocol(): Path? {
         if (!project.hasSolution)
             return null

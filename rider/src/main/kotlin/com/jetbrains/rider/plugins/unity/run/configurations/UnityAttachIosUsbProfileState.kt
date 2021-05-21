@@ -1,12 +1,14 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
+import com.intellij.execution.CantRunException
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.Project
+import com.intellij.util.io.isDirectory
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rider.debugger.DebuggerHelperHost
+import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
+import com.jetbrains.rider.model.unity.debuggerWorker.UnityIosUsbStartInfo
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
-import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 
 /**
@@ -17,16 +19,20 @@ class UnityAttachIosUsbProfileState(private val project: Project, private val re
                                     private val deviceId: String)
     : UnityAttachProfileState(remoteConfiguration, executionEnvironment, targetName, false) {
 
-    override suspend fun createWorkerRunInfo(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
-        val runCmd = super.createWorkerRunInfo(lifetime, helper, port)
-        // TODO: Can we do this over protocol?
-        // We could avoid hard coding port 12000 (Unity use this port in their debugger plugins)
-        UnityInstallationFinder.getInstance(project)
-            .getAdditionalPlaybackEnginesRoot()?.resolve("iOSSupport")?.let { proxyFolderPath ->
-            runCmd.commandLine.withEnvironment("_RIDER_UNITY_IOS_USB_PROXY_PATH", proxyFolderPath.toString())
-            runCmd.commandLine.withEnvironment("_RIDER_UNITY_IOS_USB_DEVICE_ID", deviceId)
-            runCmd.commandLine.withEnvironment("_RIDER_UNITY_IOS_USB_LOCAL_PORT", "${remoteConfiguration.port}")
+    override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase {
+        val iosSupportPath =
+            UnityInstallationFinder.getInstance(project).getAdditionalPlaybackEnginesRoot()?.resolve("iOSSupport")
+
+        // This shouldn't be false - if we're starting debug, that means we'll have listed the USB device, and that
+        // should mean we've already used the usbmuxd DLL from the support folder
+        if (iosSupportPath?.isDirectory() == false) {
+            throw CantRunException("Unable to find iOSSupport folder: $iosSupportPath")
         }
-        return runCmd
+
+        return UnityIosUsbStartInfo(iosSupportPath.toString(),
+            deviceId,
+            remoteConfiguration.address,
+            remoteConfiguration.port,
+            false)
     }
 }
