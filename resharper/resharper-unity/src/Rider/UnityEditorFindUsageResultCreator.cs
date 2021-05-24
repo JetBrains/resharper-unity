@@ -23,6 +23,7 @@ using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Impl.Search.Operations;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Rider.Backend.Features.BackgroundTasks;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider

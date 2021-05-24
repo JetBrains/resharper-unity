@@ -132,8 +132,8 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
     }
 
     val relPath = when {
-        SystemInfo.isWindows -> "net461/rider-dev.app/rider-dev.bat"
-        SystemInfo.isMac -> "net461/rider-dev.app"
+        SystemInfo.isWindows -> "net472/rider-dev.app/rider-dev.bat"
+        SystemInfo.isMac -> "net472/rider-dev.app"
         else -> throw Exception("Not implemented")
     }
     val cwd = File(System.getProperty("user.dir"))

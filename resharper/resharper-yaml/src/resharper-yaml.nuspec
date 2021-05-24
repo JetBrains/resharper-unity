@@ -19,7 +19,7 @@
     <tags>resharper yaml</tags>
   </metadata>
   <files>
-    <file src="..\..\build\resharper-yaml\bin\Release\net461\JetBrains.ReSharper.Plugins.Yaml.dll" target="lib" />
-    <file src="..\..\build\resharper-yaml\bin\Release\net461\JetBrains.ReSharper.Plugins.Yaml.pdb" target="lib" />
+    <file src="..\..\build\resharper-yaml\bin\Release\net472\JetBrains.ReSharper.Plugins.Yaml.dll" target="lib" />
+    <file src="..\..\build\resharper-yaml\bin\Release\net472\JetBrains.ReSharper.Plugins.Yaml.pdb" target="lib" />
   </files>
 </package>

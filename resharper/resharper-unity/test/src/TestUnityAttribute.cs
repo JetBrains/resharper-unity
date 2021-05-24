@@ -8,6 +8,7 @@ using JetBrains.ProjectModel.ProjectImplementation;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.ReSharper.TestFramework;
+using JetBrains.TestFramework;
 using JetBrains.TestFramework.JetNuGet;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
@@ -44,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class TestUnityAttribute : TestAspectAttribute, ITestLibraryReferencesProvider, ITestPackagesProvider,
-        ITestFlavoursProvider, ITestPlatformProvider, ITestFileExtensionProvider, ICustomProjectPropertyAttribute
+        ITestFlavoursProvider, ITestTargetFrameworkIdProvider, ITestFileExtensionProvider, ICustomProjectPropertyAttribute
     {
         private readonly UnityVersion myVersion;
 
