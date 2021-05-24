@@ -24,8 +24,14 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
 
     // Start the iOS USB debugging proxy before attaching
     private val unityIosUsbStartInfo = structdef extends unityStartInfoBase {
-        field("iosSupportPath", string.nullable)
-        field("iosDeviceId", string.nullable)
+        field("iosSupportPath", string)
+        field("iosDeviceId", string)
+    }
+
+    // Local UWP processes need to be allowed to accept incoming socket connections by calling
+    // CheckNetIsolation LoopbackExempt -is -n={PackageName}
+    private val unityLocalUwpStartInfo = structdef extends unityStartInfoBase {
+        field("packageName", string)
     }
 
     init {
