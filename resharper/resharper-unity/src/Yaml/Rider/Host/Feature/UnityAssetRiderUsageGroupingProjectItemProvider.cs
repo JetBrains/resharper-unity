@@ -1,10 +1,10 @@
 using JetBrains.ProjectModel;
-using JetBrains.RdBackend.Common.Platform.Icons;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Rider.Backend.Features.Usages;
+using JetBrains.Rider.Backend.Platform.Icons;
 using JetBrains.UI.Icons;
 using JetBrains.Util;
 

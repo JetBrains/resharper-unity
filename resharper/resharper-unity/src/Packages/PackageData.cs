@@ -83,10 +83,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
     public class GitDetails
     {
         [NotNull] public readonly string Url;
-        [NotNull] public readonly string Hash;
+        [CanBeNull] public readonly string Hash;
         [CanBeNull] public readonly string Revision;
 
-        public GitDetails([NotNull] string url, [NotNull] string hash, [CanBeNull] string revision)
+        public GitDetails([NotNull] string url, [CanBeNull] string hash, [CanBeNull] string revision)
         {
             Url = url;
             Hash = hash;
