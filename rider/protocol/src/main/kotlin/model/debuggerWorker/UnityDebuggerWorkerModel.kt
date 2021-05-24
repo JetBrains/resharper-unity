@@ -18,6 +18,11 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
         field("listenForConnections", bool)
     }
 
+    // Default start info. Performs the same as MonoAttachStartInfo but allows overriding some options for IL2CPP
+    private val unityStartInfo = structdef extends unityStartInfoBase {
+    }
+
+    // Start the iOS USB debugging proxy before attaching
     private val unityIosUsbStartInfo = structdef extends unityStartInfoBase {
         field("iosSupportPath", string.nullable)
         field("iosDeviceId", string.nullable)
@@ -28,5 +33,6 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.DebuggerWorker")
 
         property("showCustomRenderers", bool)
+        property("ignoreBreakOnUnhandledExceptionsForIl2Cpp", bool)
     }
 }

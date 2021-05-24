@@ -5,6 +5,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
     public interface IUnityOptions
     {
         bool ExtensionsEnabled { get; }
+        bool IgnoreBreakOnUnhandledExceptionsForIl2Cpp { get; }
     }
 
     [DebuggerGlobalComponent]
@@ -18,5 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
         }
 
         public bool ExtensionsEnabled => myHost.Model.ShowCustomRenderers.Value;
+
+        public bool IgnoreBreakOnUnhandledExceptionsForIl2Cpp =>
+            myHost.Model.IgnoreBreakOnUnhandledExceptionsForIl2Cpp.Value;
     }
 }

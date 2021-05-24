@@ -37,10 +37,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         [SettingsEntry(false, "Suppress resolve errors in HLSL.")]
         public bool SuppressShaderErrorHighlighting;
-        
+
         [SettingsEntry(false, "Suppress resolve errors in render-pipeline package in HLSL.")]
         public bool SuppressShaderErrorHighlightingInRenderPipelinePackages;
-        
+
         [SettingsEntry(GutterIconMode.CodeInsightDisabled, "Unity highlighter scheme for editor.")]
         public GutterIconMode GutterIconMode;
 
@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         [SettingsEntry(true, "Enable analysis for Burst compiler issues")]
         public bool EnableBurstCodeHighlighting;
-        
+
         [SettingsEntry(true, "Enables showing Unity icon for Burst compiled code")]
         public bool EnableIconsForBurstCode;
 
@@ -77,5 +77,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         // Debugging
         [SettingsEntry(true, "Enable debugger extensions")]
         public bool EnableDebuggerExtensions;
+
+        [SettingsEntry(true, "Ignore 'Break on Unhandled Exceptions' for IL2CPP players")]
+        public bool IgnoreBreakOnUnhandledExceptionsForIl2Cpp;
     }
 }

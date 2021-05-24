@@ -1,10 +1,6 @@
 using System;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Threading;
 using JetBrains.Debugger.Worker;
-using JetBrains.Debugger.Worker.Mono;
 using JetBrains.Debugger.Worker.SessionStartup;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.IosUsbDebugging.NativeInterop;
@@ -18,7 +14,7 @@ using Mono.Debugging.Soft;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.SessionStartup
 {
     [DebuggerGlobalComponent]
-    public class IosUsbStartInfoHandler : ModelStartInfoHandlerBase<UnityIosUsbStartInfo>
+    public class IosUsbStartInfoHandler : UnityStartInfoHandlerBase<UnityIosUsbStartInfo>
     {
         private readonly Lifetime myLifetime;
         private readonly ILogger myLogger;
@@ -36,35 +32,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.SessionStartup
             var softDebuggerStartInfo = CreateSoftDebuggerStartInfo(iosUsbStartInfo);
             return new IosUsbSessionStarter(myLifetime, iosUsbStartInfo, softDebuggerStartInfo, debuggerSessionOptions,
                 myLogger);
-        }
-
-        private static SoftDebuggerStartInfo CreateSoftDebuggerStartInfo(UnityStartInfoBase startInfo)
-        {
-            var address = IPAddress.Loopback;
-            var monoAddress = startInfo.MonoAddress;
-            if (monoAddress != null)
-            {
-                try
-                {
-                    address = Dns.GetHostAddresses(monoAddress)
-                        .FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork);
-                }
-                catch (Exception e)
-                {
-                    throw new DebuggerStartupException(e.Message, e);
-                }
-
-                if (address == null)
-                {
-                    throw new DebuggerStartupException(
-                        "Host " + monoAddress + " cannot be resolved into any IP address");
-                }
-            }
-
-            return new SoftDebuggerStartInfo((startInfo.ListenForConnections
-                    ? (SoftDebuggerStartArgs) new SoftDebuggerListenArgs(string.Empty, address, startInfo.MonoPort)
-                    : new SoftDebuggerConnectArgs(string.Empty, address, startInfo.MonoPort))
-                .SetConnectionProperties());
         }
 
         private class IosUsbSessionStarter : DebuggerSessionStarterBase

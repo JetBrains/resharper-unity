@@ -9,7 +9,9 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.flowInto
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
+import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.model.debuggerWorker.DebuggerWorkerModel
+import com.jetbrains.rider.model.unity.debuggerWorker.UnityStartInfo
 import com.jetbrains.rider.model.unity.debuggerWorker.unityDebuggerWorkerModel
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
@@ -47,6 +49,8 @@ open class UnityAttachProfileState(private val remoteConfiguration: RemoteConfig
         val frontendBackendModel = executionEnvironment.project.solution.frontendBackendModel
         frontendBackendModel.backendSettings.enableDebuggerExtensions.flowInto(debuggerWorkerLifetime,
             protocolModel.unityDebuggerWorkerModel.showCustomRenderers)
+        frontendBackendModel.backendSettings.ignoreBreakOnUnhandledExceptionsForIl2Cpp.flowInto(debuggerWorkerLifetime,
+            protocolModel.unityDebuggerWorkerModel.ignoreBreakOnUnhandledExceptionsForIl2Cpp)
 
         return super.createDebuggerWorker(workerCmd, protocolModel, protocolServerPort, projectLifetime).apply {
             addProcessListener(object : ProcessAdapter() {
@@ -62,5 +66,11 @@ open class UnityAttachProfileState(private val remoteConfiguration: RemoteConfig
             targetName,
             isEditor
         )
+    }
+
+    override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase {
+        return UnityStartInfo(remoteConfiguration.address,
+            remoteConfiguration.port,
+            remoteConfiguration.listenPortForConnections)
     }
 }
