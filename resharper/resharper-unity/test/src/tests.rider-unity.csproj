@@ -8,14 +8,15 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <JetTestProject>True</JetTestProject>
+    <!-- Force 32 bit x86 for Windows as we need to load a specific build of the Cpp assembly, and we have X86 defined
+         in the app.config. Use OS default for other platforms as Mono can't run Cpp. Mac only runs 64 bit processes -->
+    <PlatformTarget Condition="'$([MSBuild]::IsOsPlatform(Windows))' == 'True'">X86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RIDER;$(CommandLineConstants)</DefineConstants>
-    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE;RIDER;$(CommandLineConstants)</DefineConstants>
-    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="AsmDef\**" />

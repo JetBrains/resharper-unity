@@ -85,7 +85,7 @@
     <PsiLanguageNames Include="ShaderLab">
       <Visible>False</Visible>
     </PsiLanguageNames>
-    <CsLex Include="ShaderLab\Psi\Parsing\ShaderLab.lex" References="ShaderLab\Psi\Parsing\Chars.lex"/>
+    <CsLex Include="ShaderLab\Psi\Parsing\ShaderLab.lex" References="ShaderLab\Psi\Parsing\Chars.lex" />
     <TokenGenerator Include="ShaderLab\Psi\Parsing\ShaderLabTokenType.Tokens.xml">
       <OutputFile>ShaderLab\Psi\Parsing\ShaderLabTokenType.Tokens.generated.cs</OutputFile>
     </TokenGenerator>
@@ -107,7 +107,7 @@
     <PsiLanguageNames Include="JsonNew">
       <Visible>False</Visible>
     </PsiLanguageNames>
-    <CsLex Include="JsonNew\Psi\Parsing\JsonNew.lex" References="JsonNew\Psi\Parsing\Chars.lex"/>
+    <CsLex Include="JsonNew\Psi\Parsing\JsonNew.lex" References="JsonNew\Psi\Parsing\Chars.lex" />
     <TokenGenerator Include="JsonNew\Psi\Parsing\TokenNodeTypes\JsonNewTokenNodeTypes.Tokens.xml">
       <OutputFile>JsonNew\Psi\Parsing\TokenNodeTypes\JsonNewTokenNodeTypes.Tokens.generated.cs</OutputFile>
     </TokenGenerator>
