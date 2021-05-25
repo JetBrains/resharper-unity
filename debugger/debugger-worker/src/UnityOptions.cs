@@ -1,4 +1,3 @@
-using System;
 using Mono.Debugging.Autofac;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
@@ -6,16 +5,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
     public interface IUnityOptions
     {
         bool ExtensionsEnabled { get; }
+        bool IgnoreBreakOnUnhandledExceptionsForIl2Cpp { get; }
     }
 
     [DebuggerGlobalComponent]
     public class UnityOptions : IUnityOptions
     {
-        public UnityOptions()
+        private readonly UnityDebuggerWorkerHost myHost;
+
+        public UnityOptions(UnityDebuggerWorkerHost host)
         {
-            ExtensionsEnabled = Environment.GetEnvironmentVariable("_RIDER_UNITY_ENABLE_DEBUGGER_EXTENSIONS") == "1";
+            myHost = host;
         }
 
-        public bool ExtensionsEnabled { get; }
+        public bool ExtensionsEnabled => myHost.Model.ShowCustomRenderers.Value;
+
+        public bool IgnoreBreakOnUnhandledExceptionsForIl2Cpp =>
+            myHost.Model.IgnoreBreakOnUnhandledExceptionsForIl2Cpp.Value;
     }
 }
