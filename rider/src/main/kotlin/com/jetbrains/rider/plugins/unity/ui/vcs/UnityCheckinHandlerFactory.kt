@@ -11,6 +11,7 @@ import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory
 import com.intellij.openapi.vcs.ui.RefreshableOnComponent
 import com.intellij.util.PairConsumer
 import com.jetbrains.rd.framework.impl.RpcTimeouts
+import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 
@@ -30,16 +31,21 @@ private class UnresolvedMergeCheckHandler(
 
     private val project = panel.project
     private val settings = UnityCheckinState.getService(project)
-    override fun getBeforeCheckinConfigurationPanel(): RefreshableOnComponent =
-        BooleanCommitOption(panel, "Check unsaved Unity scenes", false,
-            settings::checkUnsavedScenes)
+    override fun getBeforeCheckinConfigurationPanel(): RefreshableOnComponent? {
+        if (!project.isUnityProject())
+            return null
+
+        return BooleanCommitOption(
+            panel, "Check unsaved Unity scenes", false,
+            settings::checkUnsavedScenes
+        )
+    }
 
     override fun beforeCheckin(
         executor: CommitExecutor?,
         additionalDataConsumer: PairConsumer<Any, Any>
     ): ReturnResult {
-        if (settings.checkUnsavedScenes)
-        {
+        if (settings.checkUnsavedScenes && project.isUnityProject()) {
             var providerResult = false
             try {
                 providerResult = project.solution.frontendBackendModel.hasUnsavedScenes
