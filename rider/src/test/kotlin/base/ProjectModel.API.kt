@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.project.Project
 import com.intellij.refactoring.rename.RenameHandlerRegistry
+import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.ideaInterop.vfs.VfsWriteOperationsHost
 import com.jetbrains.rider.model.RdProjectModelDumpFlags
 import com.jetbrains.rider.model.RdProjectModelDumpParams
@@ -16,7 +17,7 @@ import com.jetbrains.rider.projectView.moveProviders.RiderCutProvider
 import com.jetbrains.rider.projectView.moveProviders.RiderDeleteProvider
 import com.jetbrains.rider.projectView.moveProviders.RiderPasteProvider
 import com.jetbrains.rider.projectView.moveProviders.impl.ActionOrderType
-import com.jetbrains.rider.projectView.moveProviders.impl.ProjectModelData
+import com.jetbrains.rider.projectView.moveProviders.impl.DuplicateNameDialog
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.test.framework.TestProjectModelContext
@@ -154,15 +155,14 @@ fun cutItem2(project: Project, paths: Array<Array<String>>) {
 fun pasteItem2(project: Project, path: Array<String>, customName: String? = null, orderType : ActionOrderType? = null) {
     val dataContext = createDataContextFor2(project, arrayOf(path))
     assert(RiderPasteProvider.isPasteEnabled(dataContext)) { "Can't past elements" }
-    try { //copy to the same folder
-        ProjectModelData.predefinedCopyCustomName = customName
+    Lifetime.using {
+        DuplicateNameDialog.withCustomName(it, customName)
         if (orderType != null) {
             RiderPasteProvider.performPaste(dataContext, orderType)
         }
         else {
             RiderPasteProvider.performPaste(dataContext)
         }
-    } finally {
-        ProjectModelData.predefinedCopyCustomName = null
     }
+    waitForWorkspaceModelReady(project)
 }
