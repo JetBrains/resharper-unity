@@ -1,3 +1,4 @@
+using JetBrains.Collections.Viewable;
 using Mono.Debugging.Autofac;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
@@ -18,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
             myHost = host;
         }
 
-        public bool ExtensionsEnabled => myHost.Model.ShowCustomRenderers.Value;
+        public bool ExtensionsEnabled => myHost.Model.ShowCustomRenderers.HasTrueValue();
 
         public bool IgnoreBreakOnUnhandledExceptionsForIl2Cpp =>
             myHost.Model.IgnoreBreakOnUnhandledExceptionsForIl2Cpp.Value;
