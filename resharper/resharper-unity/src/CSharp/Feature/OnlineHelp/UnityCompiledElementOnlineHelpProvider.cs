@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
             if (!element.GetSolution().HasUnityReference()) return null;
             if (!(element.Module is IAssemblyPsiModule module)) return null;
             var assemblyLocation = module.Assembly.Location;
-            if (assemblyLocation == null || !assemblyLocation.ExistsFile)
+            if (assemblyLocation?.AssemblyPhysicalPath?.ExistsFile != true)
                 return null;
 
             if (!(assemblyLocation.Name.StartsWith("UnityEngine") || assemblyLocation.Name.StartsWith("UnityEditor")))

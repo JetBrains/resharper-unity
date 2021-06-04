@@ -29,13 +29,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Formattin
 
     public bool IsAvailableOnSelection => true;
 
-    public void SetDefaultSetting(CodeCleanupProfile profile, CodeCleanup.DefaultProfileType profileType)
+    public void SetDefaultSetting(CodeCleanupProfile profile, CodeCleanupService.DefaultProfileType profileType)
     {
       switch (profileType)
       {
-        case CodeCleanup.DefaultProfileType.FULL:
-        case CodeCleanup.DefaultProfileType.REFORMAT:
-        case CodeCleanup.DefaultProfileType.CODE_STYLE:
+        case CodeCleanupService.DefaultProfileType.FULL:
+        case CodeCleanupService.DefaultProfileType.REFORMAT:
+        case CodeCleanupService.DefaultProfileType.CODE_STYLE:
           profile.SetSetting(ourDescriptor, true);
           break;
         default:
