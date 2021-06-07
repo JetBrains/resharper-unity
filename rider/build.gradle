@@ -5,7 +5,7 @@ import com.jetbrains.rider.plugins.gradle.buildServer.BuildServerKt
 plugins {
     id 'java'
     id 'idea'
-    id 'org.jetbrains.kotlin.jvm' version '1.4.20'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.10'
     id 'org.jetbrains.intellij' // Version comes from buildSrc
     id 'org.jetbrains.changelog' version '0.6.0'
     id 'com.jetbrains.rdgen' version '0.203.161'
@@ -27,7 +27,7 @@ repositories {
 }
 
 wrapper {
-    gradleVersion = '6.6.1'
+    gradleVersion = '7.0'
     distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }
 
