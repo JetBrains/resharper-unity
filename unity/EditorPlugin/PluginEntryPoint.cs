@@ -349,7 +349,7 @@ namespace JetBrains.Rider.Unity.Editor
         var riderProtocolController = new RiderProtocolController(dispatcher, currentWireAndProtocolLifetime);
 
 #if !NET35
-        var serializers = new Serializers(lifetime, null, null);
+        var serializers = new Serializers(null, null);
 #else
         var serializers = new Serializers();
 #endif

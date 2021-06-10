@@ -127,7 +127,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                     BackwardsCompatibleWireFormat = true
                 };
 
-                var protocol = new Rd.Impl.Protocol("UnityEditorPlugin", new Serializers(thisSessionLifetime, null, null),
+                var protocol = new Rd.Impl.Protocol("UnityEditorPlugin", new Serializers(null, null),
                     new Identities(IdKind.Client), myDispatcher, wire, thisSessionLifetime)
                 {
                     ThrowErrorOnOutOfSyncModels = false
