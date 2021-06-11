@@ -54,7 +54,7 @@ class UnityWorkspacePackageUpdater(project: Project) : LifetimedProjectService(p
         logger.trace("Adding Unity package: ${unityPackage.id}")
 
         val packageFolder = unityPackage.packageFolderPath?.let { VfsUtil.findFile(Paths.get(it), true) }
-        val contentRootEntity = if (packageFolder != null && unityPackage.source !in arrayOf(UnityPackageSource.Embedded, UnityPackageSource.Unknown)) {
+        val contentRootEntity = if (packageFolder != null && unityPackage.source != UnityPackageSource.Unknown) {
             builder.addContentRootEntityWithCustomEntitySource(
                 packageFolder.toVirtualFileUrl(VirtualFileUrlManager.getInstance(project)),
                 listOf(),

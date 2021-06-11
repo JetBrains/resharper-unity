@@ -50,7 +50,7 @@ class PackagesRootNode(project: Project, packagesFolder: VirtualFile)
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<NestingNode<VirtualFile>>): FileSystemNodeBase {
         // If the child folder is an embedded package, add it as a package node
         if (virtualFile.isDirectory) {
-            WorkspaceModel.getInstance(myProject).tryGetPackage(virtualFile.toNioPath())?.let {
+            WorkspaceModel.getInstance(myProject).tryGetPackage(virtualFile)?.let {
                 return PackageNode(myProject, virtualFile, it)
             }
         }

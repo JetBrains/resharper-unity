@@ -2,6 +2,7 @@
 
 package com.jetbrains.rider.plugins.unity.workspace
 
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import java.nio.file.Path
 
@@ -23,6 +24,6 @@ fun WorkspaceModel.tryGetPackage(id: String): UnityPackageEntity? {
     return mapping.getEntities(id).filterIsInstance<UnityPackageEntity>().singleOrNull()
 }
 
-fun WorkspaceModel.tryGetPackage(packageFolder: Path): UnityPackageEntity? {
+fun WorkspaceModel.tryGetPackage(packageFolder: VirtualFile): UnityPackageEntity? {
     return getPackages().singleOrNull { it.packageFolder == packageFolder }
 }
