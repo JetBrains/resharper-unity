@@ -2,13 +2,17 @@ using System;
 using System.IO;
 using JetBrains.Application.changes;
 using JetBrains.Application.Progress;
+using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers.Transactions;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Tasks;
+using JetBrains.ReSharper.Psi.EditorConfig;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Rider.Model;
 using JetBrains.Util;
+using JetBrains.Util.Text;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 {
@@ -19,14 +23,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
         private readonly ISolution mySolution;
         private readonly ILogger myLogger;
+        private readonly SettingsModel mySettingsModel;
+        private readonly DocumentLineEndingsDetector myDocumentLineEndingsDetector;
         private IProjectItem myLastAddedItem;
 
         public MetaFileTracker(Lifetime lifetime, ChangeManager changeManager, ISolution solution, ILogger logger,
                                ISolutionLoadTasksScheduler solutionLoadTasksScheduler,
-                               UnitySolutionTracker unitySolutionTracker)
+                               UnitySolutionTracker unitySolutionTracker,
+                               SettingsModel settingsModel,
+                               DocumentLineEndingsDetector documentLineEndingsDetector)
         {
             mySolution = solution;
             myLogger = logger;
+            mySettingsModel = settingsModel;
+            myDocumentLineEndingsDetector = documentLineEndingsDetector;
 
             solutionLoadTasksScheduler.EnqueueTask(new SolutionLoadTask("AdviseForChanges", SolutionLoadTaskKinds.AfterDone,
                 () =>
@@ -48,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
             try
             {
-                projectModelChange.Accept(new Visitor(this, myLogger));
+                projectModelChange.Accept(new Visitor(this, myLogger, mySettingsModel, mySolution, myDocumentLineEndingsDetector));
             }
             catch (Exception e)
             {
@@ -66,11 +76,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         {
             private readonly MetaFileTracker myMetaFileTracker;
             private readonly ILogger myLogger;
+            private readonly ISolution mySolution;
+            private readonly DocumentLineEndingsDetector myDocumentLineEndingsDetector;
+            private readonly IViewableProperty<LineSeparators> myLineSeparator;
 
-            public Visitor(MetaFileTracker metaFileTracker, ILogger logger)
+            public Visitor(MetaFileTracker metaFileTracker, ILogger logger, SettingsModel settingsModel, ISolution solution, DocumentLineEndingsDetector documentLineEndingsDetector)
             {
                 myMetaFileTracker = metaFileTracker;
                 myLogger = logger;
+                mySolution = solution;
+                myDocumentLineEndingsDetector = documentLineEndingsDetector;
+                myLineSeparator = settingsModel.LineSeparator;
             }
 
             // Note that this method is called recursively, for projects, folders and files
@@ -260,8 +276,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 try
                 {
                     var guid = Guid.NewGuid();
-                    var timestamp = (long)(DateTime.UtcNow - ourUnixTime).TotalSeconds;
-                    DoUnderTransaction("Unity::CreateMetaFile", () => path.WriteAllText($"fileFormatVersion: 2{Environment.NewLine}guid: {guid:N}{Environment.NewLine}timeCreated: {timestamp}"));
+                    var timestamp = (long) (DateTime.UtcNow - ourUnixTime).TotalSeconds;
+
+#if RIDER
+                    var le = Host.Features.Documents.RiderDocumentOperationsImpl.ToBackend(myLineSeparator.Value).ToLineEndingString();
+                    // todo: it doesn't respect .editorConfig :(
+#else
+                    var le = myDocumentLineEndingsDetector.DetectLineEnding(mySolution, null, null);
+#endif
+                    var text = $"fileFormatVersion: 2{le}guid: {guid:N}{le}timeCreated: {timestamp}";
+                    DoUnderTransaction("Unity::CreateMetaFile", () =>
+                    {
+                        path.WriteAllText(text);
+                    });
                     myLogger.Info("*** resharper-unity: Meta added {0}", path);
                 }
                 catch (Exception e)
