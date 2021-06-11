@@ -5,7 +5,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.EventDispatcher
-import com.intellij.util.pooledThreadSingleAlarm
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.platform.util.idea.getOrCreateUserData
 import com.jetbrains.rider.model.unity.frontendBackend.UnityPackage
@@ -30,8 +29,6 @@ class PackageManager(private val project: Project) {
         private val logger = Logger.getInstance(PackageManager::class.java)
 
         fun getInstance(project: Project) = project.getOrCreateUserData(KEY) { PackageManager(project) }
-
-        private const val MILLISECONDS_BEFORE_REFRESH = 1000
     }
 
     private val packages = mutableMapOf<String, PackageData>()
@@ -41,7 +38,8 @@ class PackageManager(private val project: Project) {
     // Our only subscriber for events right now is the Unity Explorer, and that works best by refreshing a parent node
     // and getting all packages
     private val listeners = EventDispatcher.create(PackageManagerListener::class.java)
-    private val alarm = pooledThreadSingleAlarm(MILLISECONDS_BEFORE_REFRESH, project, ::notifyPackagesChanged)
+
+    private var updating = false
 
     // TODO: Threading issues adding/removing and accessing?
 
@@ -52,27 +50,39 @@ class PackageManager(private val project: Project) {
     fun tryGetPackage(packageFolder: VirtualFile): PackageData? = packagesByFolder[packageFolder]
 
     fun addPackage(id: String, pack: UnityPackage) {
+        if (!updating) {
+            logger.error("Adding Unity package $id without startUpdate")
+        }
         logger.trace("Adding Unity package: $id")
         val packageData = PackageData.fromUnityPackage(pack)
         packages[id] = packageData
         packageData.packageFolder?.let { packagesByFolder[it] = packageData }
-        scheduleNotifyPackagesChanged()
     }
 
     fun removePackage(id: String) {
+        if (!updating) {
+            logger.error("Removing Unity package $id without startUpdate")
+        }
         logger.trace("Removing Unity package: $id")
         packages.remove(id)?.let { packagesByFolder.remove(it.packageFolder) }
-        scheduleNotifyPackagesChanged()
+    }
+
+    fun startUpdate() {
+        updating = true
+    }
+
+    fun endUpdate() {
+        if (!updating) {
+            logger.warn("endUpdate called without startUpdate")
+        }
+        updating = false
+        notifyPackagesChanged()
     }
 
     // Listeners are called back on a pooled thread!
     fun addListener(listener: PackageManagerListener) {
         // Automatically scoped to project lifetime
         listeners.addListener(listener, project)
-    }
-
-    private fun scheduleNotifyPackagesChanged() {
-        alarm.cancelAndRequest()
     }
 
     private fun notifyPackagesChanged() {
