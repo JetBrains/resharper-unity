@@ -6,7 +6,7 @@ public class Foo : MonoBehaviour
 }
 
 ------------------------------------------------
-0: Accessor must declare a body because 'property' is not marked as abstract or extern. Auto-properties must define both 'get' and 'set' accessors.
+0: Accessor must declare a body because property is not marked as 'abstract' or 'extern'
 QUICKFIXES:
 Make property 'Prop' abstract
 To property with serialized backing field

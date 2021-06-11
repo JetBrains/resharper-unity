@@ -14,5 +14,9 @@ public class Derived : Base
 0: Auto-property must override all accessors of the overridden property
 QUICKFIXES:
 To property with serialized backing field
+Add 'set' accessor for 'Prop'
+--Add 'set' accessors in class 'Derived'
+--Add 'set' accessors in file
+--Add 'set' accessors in project
+--Add 'set' accessors in solution
 To property with backing field
-Add setter accessor for 'Prop'

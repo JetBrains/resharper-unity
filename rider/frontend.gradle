@@ -95,15 +95,15 @@ patchPluginXml {
 }
 
 def dotnetDllFiles = [
-    "../resharper/build/rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.dll",
-    "../resharper/build/rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.pdb",
-    "../resharper/build/rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Yaml.dll",
-    "../resharper/build/rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Yaml.pdb",
+    "../resharper/build/rider-unity/bin/$BuildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.dll",
+    "../resharper/build/rider-unity/bin/$BuildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.pdb",
+    "../resharper/build/rider-unity/bin/$BuildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.dll",
+    "../resharper/build/rider-unity/bin/$BuildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.pdb",
 ]
 
 def debuggerDllFiles = [
-    "../resharper/build/debugger/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.dll",
-    "../resharper/build/debugger/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.pdb",
+    "../resharper/build/debugger/bin/$BuildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.dll",
+    "../resharper/build/debugger/bin/$BuildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.pdb",
 ]
 
 def helperExeFiles = [
@@ -113,8 +113,8 @@ def helperExeFiles = [
 ]
 
 def helperExeNetFxFiles = [
-    "../resharper/build/ios-list-usb-devices/bin/$BuildConfiguration/net461/JetBrains.Rider.Unity.ListIosUsbDevices.exe",
-    "../resharper/build/ios-list-usb-devices/bin/$BuildConfiguration/net461/JetBrains.Rider.Unity.ListIosUsbDevices.pdb",
+    "../resharper/build/ios-list-usb-devices/bin/$BuildConfiguration/net472/JetBrains.Rider.Unity.ListIosUsbDevices.exe",
+    "../resharper/build/ios-list-usb-devices/bin/$BuildConfiguration/net472/JetBrains.Rider.Unity.ListIosUsbDevices.pdb",
 ]
 
 def unityEditorDllFiles = [
@@ -124,8 +124,8 @@ def unityEditorDllFiles = [
     "../unity/build/EditorPluginUnity56/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.pdb",
     "../unity/build/EditorPluginFull/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll",
     "../unity/build/EditorPluginFull/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.pdb",
-    "../unity/build/EditorPluginNet46/bin/$BuildConfiguration/net461/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll",
-    "../unity/build/EditorPluginNet46/bin/$BuildConfiguration/net461/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.pdb"
+    "../unity/build/EditorPluginNet46/bin/$BuildConfiguration/net472/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll",
+    "../unity/build/EditorPluginNet46/bin/$BuildConfiguration/net472/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.pdb"
 ]
 
 tasks.withType(PrepareSandboxTask).configureEach {

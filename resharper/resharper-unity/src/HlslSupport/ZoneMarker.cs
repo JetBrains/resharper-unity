@@ -4,8 +4,13 @@
 namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
 {
   [ZoneMarker]
-  public class ZoneMarker :
-    IRequire<ILanguageCppZone>
+  public class ZoneMarker : IRequire<ILanguageHlslSupportZone>
+  {
+  }
+
+  // By inheriting from ILanguageCppZone, activation is also inherited
+  [ZoneDefinition]
+  public interface ILanguageHlslSupportZone : ILanguageCppZone
   {
   }
 }

@@ -34,6 +34,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             BindSettingToProperty(lifetime, solution, host, boundStore,
                 (UnitySettings s) => s.EnableDebuggerExtensions,
                 (model, args) => model.BackendSettings.EnableDebuggerExtensions.Value = args.New);
+            BindSettingToProperty(lifetime, solution, host, boundStore,
+                (UnitySettings s) => s.IgnoreBreakOnUnhandledExceptionsForIl2Cpp,
+                (model, args) => model.BackendSettings.IgnoreBreakOnUnhandledExceptionsForIl2Cpp.Value = args.New);
         }
 
         private static void BindSettingToProperty<TKeyClass, TEntryMemberType>(

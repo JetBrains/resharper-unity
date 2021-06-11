@@ -109,10 +109,39 @@ task generateBackendUnityModel(type: tasks.getByName('rdgen').class) {
     }
 }
 
+task generateDebuggerWorkerModel(type: tasks.getByName('rdgen').class) {
+
+    // Always store models in their own folder, so the hash is only looking at the files we generate
+    def backendCsOutDir = new File(repoRoot, "resharper/build/generated/Model/DebuggerWorker")
+    def frontendKtOutDir = new File(repoRoot, "rider/src/main/gen/kotlin/com/jetbrains/rider/plugins/unity/model/debuggerWorker")
+
+    params {
+        verbose = project.gradle.startParameter.logLevel == LogLevel.INFO || project.gradle.startParameter.logLevel == LogLevel.DEBUG
+        classpath { backend.getRiderModelJar() }
+        sources "$modelSrcDir"
+        hashFolder = "$hashBaseDir/debuggerWorker"
+        packages = "model.debuggerWorker"
+
+        generator {
+            language = "kotlin"
+            transform = "asis"
+            root = "com.jetbrains.rider.model.nova.debugger.main.DebuggerRoot"
+            directory = "$frontendKtOutDir"
+        }
+
+        generator {
+            language = "csharp"
+            transform = "reversed"
+            root = "com.jetbrains.rider.model.nova.debugger.main.DebuggerRoot"
+            directory = "$backendCsOutDir"
+        }
+    }
+}
+
 task generateModels {
     group = 'protocol'
     description = 'Generates protocol models.'
-    dependsOn generateFrontendBackendModel, generateBackendUnityModel
+    dependsOn generateFrontendBackendModel, generateBackendUnityModel, generateDebuggerWorkerModel
 }
 
 compileKotlin.dependsOn generateModels

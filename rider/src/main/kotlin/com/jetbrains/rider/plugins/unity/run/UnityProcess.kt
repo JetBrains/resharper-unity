@@ -19,9 +19,12 @@ class UnityEditorHelper(displayName: String, val roleName: String, pid: Int, pro
 
 // TODO: If we know it's a local player, can we get rid of the host address and just use 127.0.0.1?
 // Could that fail with multiple local addresses? Is that even a thing?
-class UnityLocalPlayer(displayName: String, override val host: String, override val port: Int, allowDebugging: Boolean, projectName: String?)
+open class UnityLocalPlayer(displayName: String, override val host: String, override val port: Int, allowDebugging: Boolean, projectName: String?)
     : UnityProcess(displayName, allowDebugging, projectName), UnityRemoteConnectionDetails
 class UnityRemotePlayer(displayName: String, override val host: String, override val port: Int, allowDebugging: Boolean, projectName: String?)
     : UnityProcess(displayName, allowDebugging, projectName), UnityRemoteConnectionDetails
+
+class UnityLocalUwpPlayer(displayName: String, override val host: String, override val port: Int, allowDebugging: Boolean, projectName: String?, val packageName: String)
+    : UnityLocalPlayer(displayName, host, port, allowDebugging, projectName)
 
 class UnityIosUsbProcess(displayName: String, val deviceId: String) : UnityProcess(displayName, true)
