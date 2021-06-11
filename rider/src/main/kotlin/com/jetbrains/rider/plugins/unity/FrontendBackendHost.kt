@@ -4,7 +4,6 @@ import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.ide.impl.ProjectUtil
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.BitUtil
@@ -17,7 +16,6 @@ import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.model.unity.LogEvent
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
-import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
@@ -94,31 +92,10 @@ class FrontendBackendHost(project: Project) : ProtocolSubscribedProjectComponent
 
             task
         }
-
-        model.packagesUpdating.adviseNotNull(projectComponentLifetime) {
-            if (it) {
-                PackageManager.getInstance(project).startUpdate()
-            }
-            else {
-                PackageManager.getInstance(project).endUpdate()
-            }
-        }
-        model.packages.adviseAddRemove(projectComponentLifetime) { action, id, p ->
-            if (model.packagesUpdating.value != true) {
-                logger.error("Should not add/remove to packages without setting packagesUpdating first!")
-            }
-            val packageManager = PackageManager.getInstance(project)
-            when (action) {
-                AddRemove.Add -> packageManager.addPackage(id, p)
-                AddRemove.Remove -> packageManager.removePackage(id)
-            }
-        }
     }
 
     companion object {
         fun getInstance(project: Project): FrontendBackendHost = project.getComponent(FrontendBackendHost::class.java)
-
-        private val logger = Logger.getInstance(FrontendBackendHost::class.java)
     }
 }
 

@@ -9,6 +9,7 @@ import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
 import com.intellij.util.ui.EdtInvocationManager
+import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.ide.model.RdVirtualSolution
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
@@ -19,16 +20,15 @@ import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
-import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.plugins.unity.workspace.hasPackage
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionManager
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
 import com.jetbrains.rider.util.*
-import kotlinx.coroutines.CoroutineStart
 import javax.swing.event.HyperlinkEvent
 
 class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
@@ -69,7 +69,7 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                     // MTE: There is an inherent race condition here. Packages can be updated at any time, so we can't
                     // be sure that PackageManager is fully loaded at this time.
                     if (UnityInstallationFinder.getInstance(project).requiresRiderPackage()
-                        && !PackageManager.getInstance(project).hasPackage("com.unity.ide.rider")) {
+                        && !WorkspaceModel.getInstance(project).hasPackage("com.unity.ide.rider")) {
                         content
                     }
                     else if (solutionDescription.projectFilePaths.isEmpty()) {

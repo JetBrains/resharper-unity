@@ -1,8 +1,9 @@
+@file:Suppress("UnstableApiUsage")
+
 package com.jetbrains.rider.plugins.unity.workspace
 
 import com.intellij.openapi.project.Project
 import com.intellij.workspaceModel.ide.getInstance
-import com.intellij.workspaceModel.ide.impl.toVirtualFileUrl
 import com.intellij.workspaceModel.storage.WorkspaceEntityStorageBuilder
 import com.intellij.workspaceModel.storage.bridgeEntities.addContentRootEntityWithCustomEntitySource
 import com.intellij.workspaceModel.storage.impl.url.toVirtualFileUrl
@@ -10,9 +11,6 @@ import com.intellij.workspaceModel.storage.url.VirtualFileUrl
 import com.intellij.workspaceModel.storage.url.VirtualFileUrlManager
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rider.isUnityProject
-import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
-import com.jetbrains.rider.plugins.unity.packageManager.PackageManagerListener
-import com.jetbrains.rider.plugins.unity.packageManager.PackageSource
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
 import com.jetbrains.rider.projectView.workspace.getOrCreateRiderModuleEntity
@@ -21,15 +19,8 @@ import com.jetbrains.rider.projectView.workspace.impl.WorkspaceModelEditingFacad
 class UnityWorkspaceModelUpdater(private val project: Project) {
     init {
         application.invokeLater {
-            rebuildWorkspaceModel()
-
             if (project.isUnityProject()) {
-                // Listen for external packages that we should index. Called on the UI thread
-                PackageManager.getInstance(project).addListener(object : PackageManagerListener {
-                    override fun onPackagesUpdated() {
-                        rebuildWorkspaceModel()
-                    }
-                })
+                rebuildWorkspaceModel()
             }
         }
     }
@@ -37,53 +28,37 @@ class UnityWorkspaceModelUpdater(private val project: Project) {
     @Suppress("UnstableApiUsage")
     private fun rebuildWorkspaceModel() {
         application.assertIsDispatchThread()
+        if (!project.isUnityProject()) return
 
         val builder = WorkspaceEntityStorageBuilder.create()
 
-        if (project.isUnityProject()) {
-            val virtualFileUrlManager = VirtualFileUrlManager.getInstance(project)
-            val packagesModuleEntity = builder.getOrCreateRiderModuleEntity()
+        val virtualFileUrlManager = VirtualFileUrlManager.getInstance(project)
+        val packagesModuleEntity = builder.getOrCreateRiderModuleEntity()
 
-            // TODO: WORKSPACEMODEL
-            // We want to include list of special files (by extensions comes from unity editor)
-            // in the content model. It is better to do it on backed via backend PackageManager
+        // TODO: WORKSPACEMODEL
+        // We want to include list of special files (by extensions comes from unity editor)
+        // in the content model. It is better to do it on backed via backend PackageManager
 
-            val excludedUrls = emptyList<VirtualFileUrl>()
-            val excludedPatterns = listOf("*.meta", "*.tmp")
+        val excludedUrls = emptyList<VirtualFileUrl>()
+        val excludedPatterns = UNITY_EXCLUDED_PATTERNS
 
-            builder.addContentRootEntityWithCustomEntitySource(
-                project.solutionDirectory.resolve("Packages").toVirtualFileUrl(virtualFileUrlManager),
-                excludedUrls,
-                excludedPatterns,
-                packagesModuleEntity,
-                RiderUnityEntitySource
-            )
-            builder.addContentRootEntityWithCustomEntitySource(
-                project.solutionDirectory.resolve("ProjectSettings").toVirtualFileUrl(virtualFileUrlManager),
-                excludedUrls,
-                excludedPatterns,
-                packagesModuleEntity,
-                RiderUnityEntitySource
-            )
+        builder.addContentRootEntityWithCustomEntitySource(
+            project.solutionDirectory.resolve("Packages").toVirtualFileUrl(virtualFileUrlManager),
+            excludedUrls,
+            excludedPatterns,
+            packagesModuleEntity,
+            RiderUnityEntitySource)
 
-            val packages = PackageManager.getInstance(project).getPackages()
-            for (packageData in packages) {
-                val packageFolder = packageData.packageFolder ?: continue
-                if (packageData.source !in arrayOf(PackageSource.Embedded, PackageSource.Unknown)) {
-                    builder.addContentRootEntityWithCustomEntitySource(
-                        packageFolder.toVirtualFileUrl(virtualFileUrlManager),
-                        excludedUrls,
-                        excludedPatterns,
-                        packagesModuleEntity,
-                        RiderUnityEntitySource
-                    )
-                }
-            }
-        }
+        builder.addContentRootEntityWithCustomEntitySource(
+            project.solutionDirectory.resolve("ProjectSettings").toVirtualFileUrl(virtualFileUrlManager),
+            excludedUrls,
+            excludedPatterns,
+            packagesModuleEntity,
+            RiderUnityEntitySource)
 
         application.runWriteAction {
-            val projectModel = WorkspaceModelEditingFacade.getInstance(project).getWorkspaceModelForEditing()
-            projectModel.updateProjectModel { x -> x.replaceBySource({ it is RiderUnityEntitySource }, builder) }
+            val workspaceModel = WorkspaceModelEditingFacade.getInstance(project).getWorkspaceModelForEditing()
+            workspaceModel.updateProjectModel { x -> x.replaceBySource({ it is RiderUnityEntitySource }, builder) }
         }
     }
 
