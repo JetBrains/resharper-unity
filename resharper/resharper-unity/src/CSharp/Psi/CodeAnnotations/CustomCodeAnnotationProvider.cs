@@ -12,11 +12,13 @@ using JetBrains.ReSharper.Psi.Impl.Reflection2.ExternalAnnotations;
 using JetBrains.ReSharper.Psi.Impl.Special;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
+using JetBrains.Util.Caches;
+using JetBrains.Util.dataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
 {
     [SolutionComponent]
-    public class CustomCodeAnnotationProvider : ICustomCodeAnnotationProvider
+    public class CustomCodeAnnotationProvider : ICustomCodeAnnotationProvider, IInvalidatingCache
     {
         // ReSharper disable AssignNullToNotNullAttribute
         private static readonly IClrTypeName ourMustUseReturnValueAttributeFullName = new ClrTypeName(typeof(MustUseReturnValueAttribute).FullName);
@@ -31,6 +33,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
         private readonly IPredefinedTypeCache myPredefinedTypeCache;
         private readonly UnityApi myUnityApi;
 
+        [NotNull] private readonly DirectMappedCache<ITypeElement, bool> myCompiledElementsCache = new DirectMappedCache<ITypeElement, bool>(10);
+        [NotNull] private readonly DirectMappedCache<ITypeElement, bool> mySourceElementsCache = new DirectMappedCache<ITypeElement, bool>(10);
+        
         public CustomCodeAnnotationProvider(ExternalAnnotationsModuleFactory externalAnnotationsModuleFactory,
             IPredefinedTypeCache predefinedTypeCache, UnityApi unityApi)
         {
@@ -46,8 +51,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
                                                                             AttributeInstanceCollection existingAttributes)
         {
             if (GetCoroutineMustUseReturnValueAttribute(element, out var collection)) return collection;
-            if (GetPublicAPIImplicitlyUsedAttribute(element, out collection)) return collection;
-            if (GetValueRangeAttribute(element, out collection)) return collection;
+            if (GetPublicAPIImplicitlyUsedAttribute(element, existingAttributes, out collection)) return collection;
+            if (GetValueRangeAttribute(element,existingAttributes, out collection)) return collection;
 
             return EmptyList<IAttributeInstance>.Instance;
         }
@@ -85,20 +90,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
         // provider will apply [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)] to any type that
         // has the old [PublicAPI] applied
         private bool GetPublicAPIImplicitlyUsedAttribute(IClrDeclaredElement element,
+            AttributeInstanceCollection attributeInstanceCollection,
             out ICollection<IAttributeInstance> collection)
         {
             collection = EmptyList<IAttributeInstance>.InstanceList;
 
             if (!(element is ITypeElement type) || !element.IsFromUnityProject()) return false;
 
-            foreach (var attributeInstance in type.GetAttributeInstances(ourPublicAPIAttribute, false))
+            foreach (var attributeInstance in attributeInstanceCollection.GetAllOwnAttributes().Where(t => t.GetClrName().Equals(ourPublicAPIAttribute)))
             {
                 var attributeType = attributeInstance.GetAttributeType();
                 if (!(attributeType.Resolve().DeclaredElement is ITypeElement typeElement)) continue;
 
-                var meansImplicitUse = typeElement.GetAttributeInstances(ourMeansImplicitUseAttribute, false)
-                    .FirstOrDefault();
-                if (meansImplicitUse?.Constructor == null || !meansImplicitUse.Constructor.IsDefault) continue;
+                if (!CalculateMeansImplicitUse(typeElement))
+                    continue;
 
                 // The ctorArguments lambda result is not cached, so let's allocate everything up front
                 var flagsType = TypeFactory.CreateTypeByCLRName(ourImplicitUseTargetFlags, element.Module);
@@ -113,9 +118,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
             return false;
         }
 
+        private bool CalculateMeansImplicitUse(ITypeElement typeElement)
+        {
+            var resultMap = typeElement is ICompiledElement ? myCompiledElementsCache : mySourceElementsCache;
+            if (resultMap.TryGetFromCache(typeElement, out var result))
+                return result;
+
+            result = CalculateMeansImplicitUseInner(typeElement);
+            resultMap.AddToCache(typeElement, result);
+
+            return result;
+        }
+
+        private bool CalculateMeansImplicitUseInner(ITypeElement typeElement)
+        {
+            var meansImplicitUse = typeElement.GetAttributeInstances(ourMeansImplicitUseAttribute, false)
+                .FirstOrDefault();
+            if (meansImplicitUse?.Constructor == null || !meansImplicitUse.Constructor.IsDefault)
+            {
+                return false;
+            }
+
+            return true;
+        }
+        
         // Treat Unity's RangeAttribute as ReSharper's ValueRangeAttribute annotation
         private bool GetValueRangeAttribute(IClrDeclaredElement element,
-                                            out ICollection<IAttributeInstance> collection)
+            AttributeInstanceCollection attributeInstanceCollection,
+            out ICollection<IAttributeInstance> collection)
         {
             collection = EmptyList<IAttributeInstance>.InstanceList;
 
@@ -136,7 +166,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
                 return false;
             }
 
-            foreach (var attributeInstance in field.GetAttributeInstances(KnownTypes.RangeAttribute, false))
+            foreach (var attributeInstance in attributeInstanceCollection.GetAllOwnAttributes().Where(t => t.GetClrName().Equals(KnownTypes.RangeAttribute)))
             {
                 // Values are floats, but applied to an integer field. Convert to integer values
                 var unityFrom = attributeInstance.PositionParameter(0);
@@ -157,7 +187,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
                 return true;
             }
 
-            foreach (var attributeInstance in field.GetAttributeInstances(KnownTypes.MinAttribute, false))
+            foreach (var attributeInstance in attributeInstanceCollection.GetAllOwnAttributes().Where(t => t.GetClrName().Equals(KnownTypes.MinAttribute)))
             {
                 var unityMinValue = attributeInstance.PositionParameter(0);
 
@@ -292,6 +322,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
             public IEnumerable<Pair<string, AttributeValue>> NamedParameters() =>
                 EmptyList<Pair<string, AttributeValue>>.Enumerable;
             public AttributeValue NamedParameter(string name) => AttributeValue.BAD_VALUE;
+        }
+
+        public void Invalidate(PsiChangedElementType changeType)
+        {
+            if (changeType == PsiChangedElementType.CompiledContentsChanged)
+            {
+                myCompiledElementsCache.Clear();
+            }
+
+            mySourceElementsCache.Clear();
         }
     }
 }
