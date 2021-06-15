@@ -16,9 +16,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public HighlighterProperties GetProperties(RiderHighlighterDescription description)
         {
-            return new HighlighterProperties(
-                description.Kind.ToModel(), !description.NotRecyclable,
-                GreedySide.NONE, false, false, false);
+            return new HighlighterProperties(description.AttributeId, description.HighlighterID,
+                !description.NotRecyclable,false, false, false);
         }
 
         public int Priority => 0;
