@@ -42,7 +42,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
         public CodeAnnotationNullableValue? GetNullableAttribute(IDeclaredElement element) => null;
         public CodeAnnotationNullableValue? GetContainerElementNullableAttribute(IDeclaredElement element) => null;
 
-        public ICollection<IAttributeInstance> GetSpecialAttributeInstances(IClrDeclaredElement element)
+        public ICollection<IAttributeInstance> GetSpecialAttributeInstances(IClrDeclaredElement element,
+                                                                            AttributeInstanceCollection existingAttributes)
         {
             if (GetCoroutineMustUseReturnValueAttribute(element, out var collection)) return collection;
             if (GetPublicAPIImplicitlyUsedAttribute(element, out collection)) return collection;
@@ -52,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
         }
 
         private bool GetCoroutineMustUseReturnValueAttribute(IClrDeclaredElement element,
-            out ICollection<IAttributeInstance> collection)
+                                                             out ICollection<IAttributeInstance> collection)
         {
             collection = EmptyList<IAttributeInstance>.Instance;
 
@@ -184,7 +185,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
                 new AttributeValue(new ConstantValue(from, predefinedType.Long)),
                 new AttributeValue(new ConstantValue(to, predefinedType.Long))
             };
-            
+
             // We need a project for the resolve context. It's not actually used, but we still need it. The requested
             // element will be a source element, so it will definitely have a project
             if (!(element.Module.ContainingProjectModule is IProject project))
@@ -286,7 +287,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
             {
                 return paramIndex < myCtorArguments.Length ? myCtorArguments[paramIndex] : AttributeValue.BAD_VALUE;
             }
-            
+
             public int NamedParameterCount => 0;
             public IEnumerable<Pair<string, AttributeValue>> NamedParameters() =>
                 EmptyList<Pair<string, AttributeValue>>.Enumerable;

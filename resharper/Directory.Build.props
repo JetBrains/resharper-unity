@@ -29,6 +29,23 @@
     <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName.Replace("tests.", ""))\bin\$(Configuration)</OutputPath>
   </PropertyGroup>
 
+  <!-- Do not try to auto-unify referenced assembly versions. The SDK has a couple of clashes that are not easily
+       solved. E.g. the SDK has an exact reference on System.Runtime.CompilerServices.Unsafe.nupkg 4.5.3, which brings
+       in System.Runtime.CompilerServices.dll 4.0.4.1. The Microsoft.CodeAnalysis.dll references 5.0.0, which can't be
+       resolved as we're stuck on the 4.5.3 package.
+       This will normally give a warning about an unresolved version conflict, as msbuild will try to generate binding
+       redirects, but it doesn't appear to do anything else - the binding redirects might be calculated, but they're not
+       output for a class library unless we set GenerateBindingRedirectsOutputType to true. In which case, we get a
+       .dll.config file that contains the references that were auto-unified. If the reference has a conflict, it's not
+       resolved, so doesn't get output.
+       We don't actually care because we have no requirements for a specific version of a reference, and especially not
+       for a reference that could introduce a conflict. We're just a plugin and want to compile against and load the
+       versions of the assemblies used by the product. So we disable calculating binding redirects, and as a side
+       effect, remove the big warnings. -->
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+
   <Import Project="..\Packaging.props" />
   <Import Project="$(MSBuildThisFileDirectory)build\generated\DotNetSdkPath.generated.props"
           Condition="Exists('$(MSBuildThisFileDirectory)build\generated\DotNetSdkPath.generated.props')" />

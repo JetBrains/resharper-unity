@@ -12,6 +12,8 @@ object Library : Root() {
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity")
     }
 
+    override val isLibrary = true
+
     val UnityEditorState = enum {
         +"Disconnected"
         +"Idle"

@@ -124,6 +124,7 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
                 val allowDebugging = matcher.group("debug").startsWith("1")
                 val guid = matcher.group("guid").toLong()
                 val debuggerPort = matcher.group("debuggerPort")?.toIntOrNull() ?: convertPidToDebuggerPort(guid)
+                val packageName: String? = matcher.group("packageName")
                 val projectName: String? = matcher.group("projectName")
 
                 // We use hostAddress instead of ip because this is the address we actually received the multicast from.
@@ -132,7 +133,12 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
                 // address of the mobile data network, which we can't reach from the current network (if we disable
                 // mobile data it works as expected)
                 return if (isLocalAddress(hostAddress)) {
-                    UnityLocalPlayer(id, hostAddress.hostAddress, debuggerPort, allowDebugging, projectName)
+                    if (id.startsWith("UWPPlayer") && packageName != null) {
+                        UnityLocalUwpPlayer(id, hostAddress.hostAddress, debuggerPort, allowDebugging, projectName, packageName)
+                    }
+                    else {
+                        UnityLocalPlayer(id, hostAddress.hostAddress, debuggerPort, allowDebugging, projectName)
+                    }
                 }
                 else {
                     UnityRemotePlayer(id, hostAddress.hostAddress, debuggerPort, allowDebugging, projectName)

@@ -10,16 +10,12 @@ import com.intellij.util.BitUtil
 import com.intellij.xdebugger.XDebuggerManager
 import com.jetbrains.rd.framework.impl.RdTask
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
-import com.jetbrains.rd.util.reactive.AddRemove
-import com.jetbrains.rd.util.reactive.Signal
-import com.jetbrains.rd.util.reactive.adviseNotNull
-import com.jetbrains.rd.util.reactive.valueOrDefault
+import com.jetbrains.rd.util.reactive.*
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.model.unity.LogEvent
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
-import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
@@ -95,14 +91,6 @@ class FrontendBackendHost(project: Project) : ProtocolSubscribedProjectComponent
                 task.set(AllowUnitySetForegroundWindow(id))
 
             task
-        }
-
-        model.packages.adviseAddRemove(projectComponentLifetime) { action, id, p ->
-            val packageManager = PackageManager.getInstance(project)
-            when (action) {
-                AddRemove.Add -> packageManager.addPackage(id, p)
-                AddRemove.Remove -> packageManager.removePackage(id)
-            }
         }
     }
 

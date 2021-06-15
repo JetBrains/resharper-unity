@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             AddBoolOption((UnitySettings s) => s.InstallUnity3DRiderPlugin,
                 "Automatically install and update Rider's Unity editor plugin (recommended)");
             AddBoolOption((UnitySettings s) => s.AllowAutomaticRefreshInUnity, "Automatically refresh assets in Unity");
-            
+
             AddPerformanceAnalysisSection();
             AddBurstAnalysisSection();
 
@@ -82,7 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             AddHeader("Shaders");
             AddBoolOption((UnitySettings s) => s.SuppressShaderErrorHighlighting, "Suppress resolve errors of unqualified names");
-            
+
 
             AddHeader("Debugging");
             AddBoolOption((UnitySettings s) => s.EnableDebuggerExtensions,
@@ -99,13 +99,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                                "float values with full precision.");
             }
 
+            AddBoolOption((UnitySettings s) => s.IgnoreBreakOnUnhandledExceptionsForIl2Cpp,
+                "Ignore 'Break on unhandled exceptions' setting for IL2CPP players");
+            using (Indent())
+            {
+                AddCommentText("Unity's Mono 4.x runtime ignores the 'Break on unhandled exceptions' setting.\n" +
+                               "This option applies the same behaviour to IL2CPP players.");
+            }
+
             if (productConfigurations.IsInternalMode())
             {
                 AddHeader("Internal");
 
-                AddBoolOption((UnitySettings s) => s.SuppressShaderErrorHighlightingInRenderPipelinePackages, 
+                AddBoolOption((UnitySettings s) => s.SuppressShaderErrorHighlightingInRenderPipelinePackages,
                     "Suppress resolve errors in render-pipeline packages");
-                
+
                 AddBoolOption((UnitySettings s) => s.EnableCgErrorHighlighting,
                     "[Deprecated] Parse GLSL files for syntax errors (requires internal mode, and re-opening solution)");
             }
@@ -114,7 +122,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private void AddPerformanceAnalysisSection()
         {
             AddHeader("Performance analysis");
-            
+
             AddBoolOption(ourEnablePerformanceHighlightingAccessor,
                 "Enable performance analysis in frequently called code");
 
@@ -140,10 +148,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             AddHeader("Burst code analysis");
 
             AddBoolOption(ourEnableBurstHighlightingAccessor, "Enable analysis for Burst compiler issues");
-            
+
             var option = AddBoolOption((UnitySettings s) => s.EnableIconsForBurstCode,
                 "Show icons for Burst compiled called methods");
-                
+
             AddBinding(option, BindingStyle.IsEnabledProperty, ourEnableBurstHighlightingAccessor,
                 enable => enable);
         }

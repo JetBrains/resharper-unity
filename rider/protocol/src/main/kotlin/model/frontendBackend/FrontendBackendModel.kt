@@ -86,15 +86,18 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         // Settings stored in the backend
         field("backendSettings", aggregatedef("BackendSettings") {
             property("enableShaderLabHippieCompletion", bool)
-            property("enableDebuggerExtensions", bool)
 
             property("useUnityYamlMerge", bool)
             property("mergeParameters", string)
+
+            property("enableDebuggerExtensions", bool)
+            property("ignoreBreakOnUnhandledExceptionsForIl2Cpp", bool)
         })
 
         field("playControls", Library.PlayControls)
         field("consoleLogging", Library.ConsoleLogging)
 
+        property("packagesUpdating", bool.nullable)
         map("packages", string, UnityPackage)
 
         // Unit testing

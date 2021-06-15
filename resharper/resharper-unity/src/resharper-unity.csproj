@@ -1,13 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
     <!-- TODO: Fix up the .psi files so we don't get the obsolete warnings -->
     <NoWarn>0618</NoWarn>
     <LangVersion>7.3</LangVersion>
-    <!-- This is needed for ReferenceAssemblyRedirects to pick up app.config -->
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\sign.snk</AssemblyOriginatorKeyFile>
@@ -57,7 +55,7 @@
     <PsiLanguageNames Include="Cg">
       <Visible>False</Visible>
     </PsiLanguageNames>
-    <CsLex Include="Cg\Psi\Parsing\Cg.lex" References="Cg\Psi\Parsing\Chars.lex"/>
+    <CsLex Include="Cg\Psi\Parsing\Cg.lex" References="Cg\Psi\Parsing\Chars.lex" />
     <TokenGenerator Include="Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.xml">
       <OutputFile>Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs</OutputFile>
     </TokenGenerator>
@@ -133,7 +131,7 @@
   <!-- ********** -->
   <ItemGroup Label="References">
     <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.8.0" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net461" Version="1.0.0">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -162,11 +160,11 @@
   <ItemGroup>
     <ProjectReference Include="..\..\resharper-yaml\src\resharper-yaml.csproj" />
   </ItemGroup>
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props"/>
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props"/>
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Web_Core.Props"/>
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio_SinceVs10.Props"/>
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_VisualStudio_ReSpeller.Props"/>
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Web_Core.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio_SinceVs10.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_VisualStudio_ReSpeller.Props" />
   <Target Name="CppHack" AfterTargets="PrepareForRun">
     <Move SourceFiles="$(OutDir)JetBrains.ReSharper.Psi.Cpp.dll" DestinationFiles="$(OutDir)x86\JetBrains.ReSharper.Psi.Cpp.dll" />
   </Target>

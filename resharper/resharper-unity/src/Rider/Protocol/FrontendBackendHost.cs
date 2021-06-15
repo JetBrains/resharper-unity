@@ -5,6 +5,7 @@ using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 using JetBrains.RdBackend.Common.Features;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
@@ -66,6 +67,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                                            FrontendBackendModel frontendBackendModel,
                                            PackageManager packageManager)
         {
+            packageManager.Updating.FlowInto(lifetime, frontendBackendModel.PackagesUpdating);
+
             // Called in the Guarded reentrancy context
             packageManager.Packages.AddRemove.Advise(lifetime, args =>
             {

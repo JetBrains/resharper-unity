@@ -7,7 +7,7 @@ import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.annotations.TestEnvironment
-import com.jetbrains.rider.test.base.CodeLensBaseTest
+import com.jetbrains.rider.test.base.CodeLensTestBase
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
@@ -18,7 +18,7 @@ import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
 
-class PropertyCodeVisionAssetTest : CodeLensBaseTest() {
+class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     private val disableYamlDotSettingsContents = """<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	        <s:Boolean x:Key="/Default/CodeEditing/Unity/IsAssetIndexingEnabled/@EntryValue">False</s:Boolean>
