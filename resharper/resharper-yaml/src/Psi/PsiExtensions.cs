@@ -14,6 +14,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
       return node is IPlainScalarNode scalar ? scalar.Text.GetText() : null;
     }
 
+    [CanBeNull]
+    public static IBuffer GetPlainScalarTextBuffer([CanBeNull] this INode node)
+    {
+      return (node as IPlainScalarNode)?.Text.GetTextAsBuffer();
+    }
+
     public static bool MatchesPlainScalarText([CanBeNull] this INode node, string value)
     {
       if (node is IPlainScalarNode scalar)

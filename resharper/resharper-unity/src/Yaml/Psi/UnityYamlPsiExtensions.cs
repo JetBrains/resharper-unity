@@ -27,20 +27,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
                 if (result == 0)
                     return LocalReference.Null;
-                
+
                 var externalAssetGuid = flowMappingNode.FindMapEntryBySimpleKey("guid")?.Value.AsString();
 
                 if (externalAssetGuid == null)
                 {
                     if (result == 0)
                         return new LocalReference(0, 0);
-                
+
                     return new LocalReference(assetSourceFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), result);
                 }
 
                 if (Guid.TryParse(externalAssetGuid, out var guid))
                     return new ExternalReference(guid, result);
-            
+
                 return LocalReference.Null;
             }
 
@@ -51,6 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         [CanBeNull]
         public static INode GetUnityObjectPropertyValue([CanBeNull] this IYamlDocument document, [NotNull] string key)
         {
+            // Get the object's properties as a map, and find the property by name
             return FindRootBlockMapEntries(document).FindMapEntryBySimpleKey(key)?.Content.Value;
         }
 
@@ -58,15 +59,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         [CanBeNull]
         public static IBlockMappingNode FindRootBlockMapEntries([CanBeNull] this IYamlDocument document)
         {
-            // A YAML document is a block mapping node with a single entry. The key is usually the type of the object,
-            // while the value is another block mapping node. Those entries are the properties of the Unity object
+            // A YAML document has a single root body node, which can more or less be anything (scalar, map or sequence
+            // - it's in a block context, but that only affects parsing, and not much). For a Unity YAML document, the
+            // root node is a block map, with the key being the type of the serialised object (e.g. MonoBehaviour,
+            // GameObject, Transform) and the value being another block mapping mode. The entries of this map are the
+            // properties of the Unity object.
             var rootBlockMappingNode = document?.Body.BlockNode as IBlockMappingNode;
             return rootBlockMappingNode?.EntriesEnumerable.FirstOrDefault()?.Content.Value as IBlockMappingNode;
         }
 
         public static INode GetValue(this IBlockMappingNode document, string key)
         {
-            return document?.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText(key))?.Content?.Value;
+            return document.FindMapEntryBySimpleKey(key)?.Content?.Value;
         }
     }
 }
