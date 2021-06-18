@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
     [CanBeNull]
     public static string GetPlainScalarText([CanBeNull] this INode node)
     {
-      return node is IPlainScalarNode scalar ? scalar.Text.GetText() : null;
+      return (node as IPlainScalarNode)?.Text.GetText();
     }
 
     [CanBeNull]
@@ -59,6 +59,25 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
       }
 
       return null;
+    }
+
+    [CanBeNull]
+    public static T GetSimpleMapEntryValue<T>([CanBeNull] this IBlockMappingNode mapNode, string keyName)
+      where T : class, INode
+    {
+      return mapNode.FindMapEntryBySimpleKey(keyName)?.Content?.Value as T;
+    }
+
+    [CanBeNull]
+    public static string GetSimpleMapEntryPlainScalarText([CanBeNull] this IBlockMappingNode mapNode, string keyName)
+    {
+      return mapNode.FindMapEntryBySimpleKey(keyName)?.Content?.Value.GetPlainScalarText();
+    }
+
+    [CanBeNull]
+    public static string GetSimpleMapEntryPlainScalarText([CanBeNull] this IFlowMappingNode mapNode, string keyName)
+    {
+      return mapNode.FindMapEntryBySimpleKey(keyName)?.Value.GetPlainScalarText();
     }
   }
 }

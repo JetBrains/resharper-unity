@@ -128,7 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
                 var yamlFile = editorBuildSettings.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
                 Assertion.Assert(yamlFile != null, "yamlFile != null");
 
-                var scenesNode = GetSceneCollection(yamlFile);
+                var scenesNode = GetSceneCollection<INode>(yamlFile);
 
                 using (WriteLockCookie.Create(yamlFile.IsPhysical()))
                 {
@@ -136,7 +136,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
                     {
                         var blockSequenceNode = CreateBlockSequenceNode(mySceneName, myGuid, myUnityModule);
                         LowLevelModificationUtil.ReplaceChildRange(scenesNode, scenesNode, blockSequenceNode);
-                    } else if (scenesNode is IBlockSequenceNode)
+                    }
+                    else if (scenesNode is IBlockSequenceNode)
                     {
                         var blockSequenceNode = CreateBlockSequenceNode(mySceneName, myGuid, myUnityModule);
                         LowLevelModificationUtil.AddChild(scenesNode, YamlTokenType.INDENT.Create("  "));
@@ -157,7 +158,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
 
             public override string Text => $"Add '{mySceneName}' to build settings";
 
-            private IBlockSequenceNode CreateBlockSequenceNode(string sceneName, Guid guid, IPsiModule module)
+            private static IBlockSequenceNode CreateBlockSequenceNode(string sceneName, Guid guid, IPsiModule module)
             {
                 var buffer = new StringBuffer($"EditorBuildSettings:\n  m_Scenes:\n  - enabled: 1\n    path: Assets/{sceneName}.unity\n    guid: {guid:N}");
                 var languageService = YamlLanguage.Instance.LanguageService().NotNull();
@@ -165,8 +166,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
                 var file = (languageService.CreateParser(lexer, module, null) as IYamlParser)
                     .NotNull("Not yaml parser").ParseFile() as IYamlFile;
 
-                var sceneRecord = GetSceneCollection((file.Documents.First().Body.BlockNode as IBlockMappingNode)
-                    .NotNull("blockMappingNode != null")) as IBlockSequenceNode;
+                var sceneRecord = GetSceneCollection<IBlockSequenceNode>(file);
                 SandBox.CreateSandBoxFor(sceneRecord.NotNull("sceneRecord != null"), module);
                 return sceneRecord;
             }

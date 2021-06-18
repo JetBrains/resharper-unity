@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.Text;
 using JetBrains.Util;
-using static JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityProjectSettingsUtils;
+
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
     [SolutionComponent]
@@ -25,28 +25,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         public void Build(IPsiSourceFile sourceFile, ProjectSettingsCacheItem cacheItem)
         {
-            var file = sourceFile.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
-            if (file == null)
+            if (!(sourceFile.GetDominantPsiFile<YamlLanguage>() is IYamlFile file))
                 return;
 
-            var tagsArray = GetCollection(file, "TagManager", "tags");
+            var document = file.GetFirstMatchingUnityObjectDocument("TagManager");
+
+            var tagsArray = document.GetUnityObjectPropertyValue<IBlockSequenceNode>("tags");
             if (tagsArray == null)
             {
-                myLogger.Error("tagsArray != null");
+                myLogger.Error("tagsArray == null");
                 return;
             }
 
-            if (tagsArray is IBlockSequenceNode node)
+            foreach (var s in tagsArray.EntriesEnumerable)
             {
-                foreach (var s in node.Entries)
-                {
-                    var text = s.Value.GetPlainScalarText();
-                    if (!text.IsNullOrEmpty())
-                        cacheItem.Tags.Add(text);
-                }
+                var text = s.Value.GetPlainScalarText();
+                if (!text.IsNullOrEmpty())
+                    cacheItem.Tags.Add(text);
             }
 
-            if (GetCollection(file, "TagManager", "layers") is IBlockSequenceNode layersArray)
+            var layersArray = document.GetUnityObjectPropertyValue<IBlockSequenceNode>("layers");
+            if (layersArray != null)
             {
                 foreach (var s in layersArray.EntriesEnumerable)
                 {
@@ -59,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             {
                 // Older versions of Unity (not sure when, but pre-5.6) have a v1 format, where each layer is stored as
                 // a named property - "Builtin Layer 0:" to "Builtin Layer 7:" and "User Layer 8:" to "User Layer 31:"
-                var objectProperties = file.Documents[0].FindRootBlockMapEntries();
+                var objectProperties = document.GetUnityObjectProperties();
                 if (objectProperties == null)
                 {
                     myLogger.Error("Cannot find v1 or v2 layers");
