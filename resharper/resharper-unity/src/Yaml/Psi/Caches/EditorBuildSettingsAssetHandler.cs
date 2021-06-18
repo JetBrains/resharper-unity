@@ -29,32 +29,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             if (file == null)
                 return;
 
-            var scenesArray = GetSceneCollection<IBlockSequenceNode>(file);
-            if (scenesArray == null)
+            var scenesArrayNode = GetSceneCollection<INode>(file);
+            switch (scenesArrayNode)
             {
-                myLogger.Error("scenesArray == null");
-                return;
-            }
+                case null:
+                    myLogger.Error("scenesArray == null");
+                    return;
+                case IBlockSequenceNode scenesArray:
+                {
+                    foreach (var s in scenesArray.Entries)
+                    {
+                        var scene = s.Value as IBlockMappingNode;
+                        if (scene == null || scene.Entries.Count < 2)
+                            continue;
 
-            foreach (var s in scenesArray.Entries)
-            {
-                var scene = s.Value as IBlockMappingNode;
-                if (scene == null || scene.Entries.Count < 2)
-                    continue;
+                        var isEnabled = scene.GetMapEntryPlainScalarText("enabled")?.Equals("1");
 
-                var isEnabled = scene.GetMapEntryPlainScalarText("enabled")?.Equals("1");
+                        var scenePath = scene.GetMapEntryPlainScalarText("path");
+                        if (scenePath == null)
+                            continue;
 
-                var scenePath = scene.GetMapEntryPlainScalarText("path");
-                if (scenePath == null)
-                    continue;
+                        var path = GetUnityScenePathRepresentation(scenePath);
+                        if (path == null || !isEnabled.HasValue)
+                            continue;
 
-                var path = GetUnityScenePathRepresentation(scenePath);
-                if (path == null || !isEnabled.HasValue)
-                    continue;
+                        cacheItem.Scenes.SceneNamesFromBuildSettings.Add(path);
+                        if (!isEnabled.Value)
+                            cacheItem.Scenes.DisabledSceneNamesFromBuildSettings.Add(path);
+                    }
 
-                cacheItem.Scenes.SceneNamesFromBuildSettings.Add(path);
-                if (!isEnabled.Value)
-                    cacheItem.Scenes.DisabledSceneNamesFromBuildSettings.Add(path);
+                    break;
+                }
             }
         }
     }
