@@ -6,7 +6,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import java.nio.file.Path
 
-val UNITY_EXCLUDED_PATTERNS = listOf("*.meta", "*.tmp")
+val UNITY_EXCLUDED_PATTERNS = listOf("*.tmp")
 val UNITY_PACKAGE_ID_MAPPING = "rider.unity.package.id"
 
 
