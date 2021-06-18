@@ -104,7 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             if (entries == null)
                 return new UnityEventsBuildResult(modifications, new LocalList<UnityEventData>());
 
-            var scriptReference = properties.GetSimpleMapEntryValue<INode>(UnityYamlConstants.ScriptProperty)
+            var scriptReference = properties.GetMapEntryValue<INode>(UnityYamlConstants.ScriptProperty)
                     .ToHierarchyReference(currentAssetSourceFile) as ExternalReference?;
             if (scriptReference == null)
                 return new UnityEventsBuildResult(modifications, new LocalList<UnityEventData>());
@@ -121,12 +121,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                         continue;
 
                     var rootMap = entry.Content.Value as IBlockMappingNode;
-                    var persistentCallsMap = rootMap.GetSimpleMapEntryValue<IBlockMappingNode>("m_PersistentCalls");
-                    var mCalls = persistentCallsMap.GetSimpleMapEntryValue<IBlockSequenceNode>("m_Calls");
+                    var persistentCallsMap = rootMap.GetMapEntryValue<IBlockMappingNode>("m_PersistentCalls");
+                    var mCalls = persistentCallsMap.GetMapEntryValue<IBlockSequenceNode>("m_Calls");
                     if (mCalls == null)
                         continue;
 
-                    var eventTypeName = rootMap.GetSimpleMapEntryPlainScalarText("m_TypeName");
+                    var eventTypeName = rootMap.GetMapEntryPlainScalarText("m_TypeName");
                     var calls = GetCalls(currentAssetSourceFile, assetDocument, mCalls, name, eventTypeName);
 
                     result.Add(new UnityEventData(name, location, scriptReference.Value, calls.ToArray()));
@@ -147,20 +147,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 if (methodDescription == null)
                     continue;
 
-                var target = methodDescription.GetSimpleMapEntryValue<INode>("m_Target")
+                var target = methodDescription.GetMapEntryValue<INode>("m_Target")
                     .ToHierarchyReference(currentAssetSourceFile);
                 if (target == null)
                     continue;
 
-                var methodNameNode = methodDescription.GetSimpleMapEntryValue<INode>("m_MethodName");
+                var methodNameNode = methodDescription.GetMapEntryValue<INode>("m_MethodName");
                 var methodName = methodNameNode?.GetPlainScalarText();
                 if (methodName == null)
                     continue;
 
                 var methodNameRange = methodNameNode.GetTreeTextRange();
 
-                var arguments = methodDescription.GetSimpleMapEntryValue<IBlockMappingNode>("m_Arguments");
-                var modeText = methodDescription.GetSimpleMapEntryPlainScalarText("m_Mode");
+                var arguments = methodDescription.GetMapEntryValue<IBlockMappingNode>("m_Arguments");
+                var modeText = methodDescription.GetMapEntryPlainScalarText("m_Mode");
                 var argMode = EventHandlerArgumentMode.EventDefined;
                 if (int.TryParse(modeText, out var mode))
                 {
@@ -168,7 +168,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                         argMode = (EventHandlerArgumentMode)mode;
                 }
 
-                var argumentTypeName = arguments.GetSimpleMapEntryPlainScalarText("m_ObjectArgumentAssemblyTypeName");
+                var argumentTypeName = arguments.GetMapEntryPlainScalarText("m_ObjectArgumentAssemblyTypeName");
 
                 var type = argumentTypeName?.Split(',').FirstOrDefault();
                 if (argMode == EventHandlerArgumentMode.EventDefined)

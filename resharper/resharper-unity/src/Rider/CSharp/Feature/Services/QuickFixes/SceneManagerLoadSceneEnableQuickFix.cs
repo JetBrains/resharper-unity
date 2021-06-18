@@ -48,10 +48,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
                 if (scene == null)
                     continue;
 
-                var path = GetUnityScenePathRepresentation(scene.GetSimpleMapEntryPlainScalarText("path")
+                var path = GetUnityScenePathRepresentation(scene.GetMapEntryPlainScalarText("path")
                     .NotNull("EditorBuildSettings.scenes[x].path"));
                 var simple = path.Split('/').Last();
-                var isEnabledNode = scene.GetSimpleMapEntryValue<IPlainScalarNode>("enabled")
+                var isEnabledNode = scene.GetMapEntryValue<IPlainScalarNode>("enabled")
                     .NotNull("EditorBuildSettings.scenes[x].enabled");
                 var isEnabled = isEnabledNode.GetPlainScalarText()
                     .NotNull("isEnabledNode.GetPlainScalarText() != null")

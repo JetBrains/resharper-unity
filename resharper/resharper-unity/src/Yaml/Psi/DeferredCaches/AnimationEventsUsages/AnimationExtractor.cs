@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
 
         private static int ExtractSampleRateFrom([NotNull] IBlockMappingNode root)
         {
-            var sampleRateText = root.GetSimpleMapEntryPlainScalarText("m_SampleRate");
+            var sampleRateText = root.GetMapEntryPlainScalarText("m_SampleRate");
             var foundSampleRate = int.TryParse(sampleRateText, out var sampleRate);
             return foundSampleRate ? sampleRate : throw new AnimationExtractorException();
         }
@@ -88,33 +88,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
         [NotNull]
         private static string ExtractAnimationClipNameFrom([NotNull] IBlockMappingNode root)
         {
-            return root.GetSimpleMapEntryPlainScalarText("m_Name") ?? throw new AnimationExtractorException();
+            return root.GetMapEntryPlainScalarText("m_Name") ?? throw new AnimationExtractorException();
         }
 
         [CanBeNull]
         private static Guid? ExtractEventFunctionGuidFrom([NotNull] IBlockMappingNode record)
         {
-            var guidText = record.GetSimpleMapEntryValue<IFlowMappingNode>("objectReferenceParameter")
-                ?.GetSimpleMapEntryPlainScalarText("guid");
+            var guidText = record.GetMapEntryValue<IFlowMappingNode>("objectReferenceParameter")
+                ?.GetMapEntryPlainScalarText("guid");
             return guidText != null ? new Guid(guidText) : (Guid?) null;
         }
 
         private static double ExtractEventFunctionTimeFrom([NotNull] IBlockMappingNode record)
         {
-            var timeText = record.GetSimpleMapEntryPlainScalarText("time");
+            var timeText = record.GetMapEntryPlainScalarText("time");
             return double.TryParse(timeText, out var time) ? time : throw new AnimationExtractorException();
         }
 
         [CanBeNull]
         private static string ExtractEventFunctionNameFrom([NotNull] IBlockMappingNode record)
         {
-            return record.GetSimpleMapEntryPlainScalarText("functionName");
+            return record.GetMapEntryPlainScalarText("functionName");
         }
 
         [NotNull]
         private static IBlockSequenceNode ExtractAnimationEventsFrom([NotNull] IBlockMappingNode root)
         {
-            return root.GetSimpleMapEntryValue<IBlockSequenceNode>("m_Events") ??
+            return root.GetMapEntryValue<IBlockSequenceNode>("m_Events") ??
                    throw new AnimationExtractorException();
         }
 

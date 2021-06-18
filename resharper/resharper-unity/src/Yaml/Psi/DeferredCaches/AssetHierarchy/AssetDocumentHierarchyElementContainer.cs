@@ -108,9 +108,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             {
                 var modification = AssetUtils.GetPrefabModification(assetDocument.Document);
                 var parentTransform =
-                    modification?.GetSimpleMapEntryValue<INode>("m_TransformParent")
+                    modification?.GetMapEntryValue<INode>("m_TransformParent")
                         ?.ToHierarchyReference(currentAssetSourceFile) as LocalReference? ?? LocalReference.Null;
-                var modifications = modification?.GetSimpleMapEntryValue<IBlockSequenceNode>("m_Modifications");
+                var modifications = modification?.GetMapEntryValue<IBlockSequenceNode>("m_Modifications");
                 var result = new List<PrefabModification>();
                 if (modifications != null)
                 {
@@ -118,16 +118,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                     {
                         var map = entry.Value as IBlockMappingNode;
 
-                        var target = map?.GetSimpleMapEntryValue<INode>("target")
+                        var target = map?.GetMapEntryValue<INode>("target")
                             .ToHierarchyReference(currentAssetSourceFile);
                         if (target == null)
                             continue;
 
-                        var name = map.GetSimpleMapEntryPlainScalarText("propertyPath");
+                        var name = map.GetMapEntryPlainScalarText("propertyPath");
                         if (name == null)
                             continue;
 
-                        var valueNode = map.FindMapEntryBySimpleKey("value")?.Content;
+                        var valueNode = map.GetMapEntry("value")?.Content;
                         if (valueNode == null)
                             continue;
 
@@ -138,7 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                                 break;
                         }
 
-                        var objectReference = map.GetSimpleMapEntryValue<INode>("objectReference").ToHierarchyReference(currentAssetSourceFile);
+                        var objectReference = map.GetMapEntryValue<INode>("objectReference").ToHierarchyReference(currentAssetSourceFile);
 
                         var valueRange = valueNode.GetTreeTextRange();
 

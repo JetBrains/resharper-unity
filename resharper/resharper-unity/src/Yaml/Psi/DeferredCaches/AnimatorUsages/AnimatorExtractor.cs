@@ -73,10 +73,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         private static LocalList<long> ExtractChildAnchors(
             [NotNull] IBlockMappingNode root, string recordKey, string innerRecordKey)
         {
-            var anchors = root.GetSimpleMapEntryValue<IBlockSequenceNode>(recordKey)?.Entries
+            var anchors = root.GetMapEntryValue<IBlockSequenceNode>(recordKey)?.Entries
                 .SelectNotNull(t => t?.Value as IBlockMappingNode)
-                .SelectNotNull(t => t.GetSimpleMapEntryValue<IFlowMappingNode>(innerRecordKey))
-                .SelectNotNull(t => t.GetSimpleMapEntryPlainScalarText("fileID"))
+                .SelectNotNull(t => t.GetMapEntryValue<IFlowMappingNode>(innerRecordKey))
+                .SelectNotNull(t => t.GetMapEntryPlainScalarText("fileID"))
                 .SelectNotNull(t => long.TryParse(t, out var anchor) ? anchor : (long?) null);
             var list = new LocalList<long>();
             if (anchors is null) return list;
@@ -124,12 +124,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         [NotNull]
         private static string ExtractAnimatorStateNameFrom([NotNull] IBlockMappingNode root)
         {
-            return root.GetSimpleMapEntryPlainScalarText("m_Name") ?? throw new AnimatorExtractorException();
+            return root.GetMapEntryPlainScalarText("m_Name") ?? throw new AnimatorExtractorException();
         }
 
         private static LocalList<long> ExtractStateMachineBehavioursAnchorsFrom([NotNull] IBlockMappingNode root)
         {
-            var node = root.GetSimpleMapEntryValue<IBlockSequenceNode>("m_StateMachineBehaviours");
+            var node = root.GetMapEntryValue<IBlockSequenceNode>("m_StateMachineBehaviours");
             return node?.Entries.Aggregate(new LocalList<long>(), AddAnchor) ?? new LocalList<long>();
         }
 

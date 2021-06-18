@@ -75,7 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             var document = yamlFile.Documents.FirstOrDefault();
             if (document?.Body.BlockNode is IBlockMappingNode blockMappingNode)
             {
-                var guid = blockMappingNode.GetSimpleMapEntryPlainScalarText("guid");
+                var guid = blockMappingNode.GetMapEntryPlainScalarText("guid");
                 if (guid != null && Guid.TryParse(guid, out var rGuid))
                     return new MetaFileCacheItem(rGuid);
             }

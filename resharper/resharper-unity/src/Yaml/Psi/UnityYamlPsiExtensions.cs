@@ -15,14 +15,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         {
             if (node is IFlowMappingNode flowMappingNode)
             {
-                var localDocumentAnchor = flowMappingNode.GetSimpleMapEntryPlainScalarText("fileID");
+                var localDocumentAnchor = flowMappingNode.GetMapEntryPlainScalarText("fileID");
                 if (localDocumentAnchor == null || !long.TryParse(localDocumentAnchor, out var result))
                     return new LocalReference(0, 0);
 
                 if (result == 0)
                     return LocalReference.Null;
 
-                var externalAssetGuid = flowMappingNode.GetSimpleMapEntryPlainScalarText("guid");
+                var externalAssetGuid = flowMappingNode.GetMapEntryPlainScalarText("guid");
 
                 if (externalAssetGuid == null)
                 {
@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                     // such as scriptable objects, there will be only one document, most likely of the expected type.
                     // For other assets, such as scenes, there can be many documents, and can be many matching object
                     // documents. This will get the first
-                    if (map.FindMapEntryBySimpleKey(objectType) != null)
+                    if (map.GetMapEntry(objectType) != null)
                         return document;
                 }
             }
@@ -79,7 +79,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             where T : class, INode
         {
             // Get the object's properties as a map, and find the property by name
-            return GetUnityObjectProperties(document).GetSimpleMapEntryValue<T>(key);
+            return GetUnityObjectProperties(document).GetMapEntryValue<T>(key);
         }
 
         // This will open the Body chameleon
