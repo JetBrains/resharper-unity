@@ -1,20 +1,26 @@
 <idea-plugin url="https://github.com/JetBrains/resharper-unity" require-restart="true">
   <id>com.intellij.resharper.unity</id>
   <name>Unity Support</name>
-  <version>2021.2.0.9999</version>
+  <version>2021.3.0.9999</version>
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
 
-  <idea-version since-build="2021.2" />
+  <idea-version since-build="2021.3" />
 
   <depends>com.intellij.modules.rider</depends>
   <depends>com.intellij.modules.xdebugger</depends>
+  <depends>rider.intellij.plugin.appender</depends>
   <depends optional="true" config-file="PluginYamlPluginPart.xml">org.jetbrains.plugins.yaml</depends>
-  <depends optional="true" config-file="PluginAppenderPluginPart.xml">rider.intellij.plugin.appender</depends>
+  <depends optional="true" config-file="PluginAppenderPluginPart.xml">JavaScript</depends>
   <depends optional="true" config-file="PluginCssPluginPart.xml">com.intellij.css</depends>
 
   <extensionPoints>
     <extensionPoint name="unityAttachConfiguration" area="IDEA_PROJECT" interface="com.jetbrains.rider.run.configurations.unity.UnityAttachConfigurationExtension" />
   </extensionPoints>
+
+
+  <extensions defaultExtensionNs="JavaScript">
+    <packageJson.configuration.handler implementation="com.jetbrains.rider.plugins.unity.javascript.UnityPackageJsonConfiguratorHandler"/>
+  </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.UnityUIMinimizer"/>
