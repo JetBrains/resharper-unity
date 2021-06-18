@@ -40,6 +40,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
 
             var buildSettings = GetEditorBuildSettings(unityModule);
 
+            // An empty array would be an IFlowSequenceNode with no elements. We've got a disabled scene, so we know we
+            // must have an item, which will be serialised as a block sequence
             var scenes = GetSceneCollection<IBlockSequenceNode>(buildSettings.GetDominantPsiFile<YamlLanguage>() as IYamlFile);
             Assertion.Assert(scenes != null, "scene != null");
             foreach (var entry in scenes.Entries)

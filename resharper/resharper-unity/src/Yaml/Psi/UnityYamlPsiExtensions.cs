@@ -82,6 +82,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             return GetUnityObjectProperties(document).GetMapEntryValue<T>(key);
         }
 
+        // TODO: Consider adding GetUnityObjectPropertyArray
+        // This would return IBlockSequenceNode for a populated array, or IFlowSequenceNode (with no children) for an
+        // empty array. This would require adding a base ISequenceNode interface which would also help (although block
+        // sequence nodes have a Content chameleon and flow sequence nodes don't)
+
         // This will open the Body chameleon
         [CanBeNull]
         public static IBlockMappingNode GetUnityObjectProperties([CanBeNull] this IYamlDocument document)

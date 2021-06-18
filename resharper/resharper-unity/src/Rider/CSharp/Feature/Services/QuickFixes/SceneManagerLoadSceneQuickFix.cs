@@ -132,6 +132,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
 
                 using (WriteLockCookie.Create(yamlFile.IsPhysical()))
                 {
+                    // An empty array is represented by a flow sequence node with no elements. `scenes: []`
                     if (scenesNode is IFlowSequenceNode)
                     {
                         var blockSequenceNode = CreateBlockSequenceNode(mySceneName, myGuid, myUnityModule);

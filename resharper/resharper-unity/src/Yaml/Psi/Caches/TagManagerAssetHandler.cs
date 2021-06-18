@@ -30,18 +30,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
             var document = file.GetFirstMatchingUnityObjectDocument("TagManager");
 
-            var tagsArray = document.GetUnityObjectPropertyValue<IBlockSequenceNode>("tags");
-            if (tagsArray == null)
+            // An empty array will be an IFlowSequenceNode with no elements, otherwise we'll get a block sequence
+            var tagsArrayNode = document.GetUnityObjectPropertyValue<INode>("tags");
+            if (tagsArrayNode == null)
             {
                 myLogger.Error("tagsArray == null");
                 return;
             }
 
-            foreach (var s in tagsArray.EntriesEnumerable)
+            if (tagsArrayNode is IBlockSequenceNode tagsArray)
             {
-                var text = s.Value.GetPlainScalarText();
-                if (!text.IsNullOrEmpty())
-                    cacheItem.Tags.Add(text);
+                foreach (var s in tagsArray.EntriesEnumerable)
+                {
+                    var text = s.Value.GetPlainScalarText();
+                    if (!text.IsNullOrEmpty())
+                        cacheItem.Tags.Add(text);
+                }
             }
 
             var layersArray = document.GetUnityObjectPropertyValue<IBlockSequenceNode>("layers");
