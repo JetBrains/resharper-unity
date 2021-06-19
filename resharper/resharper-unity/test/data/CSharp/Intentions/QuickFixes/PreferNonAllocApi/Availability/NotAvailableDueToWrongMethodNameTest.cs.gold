@@ -11,5 +11,4 @@ public class NotAvailableDueToWrongMethodNameTest : MonoBehaviour
 ------------------------------------------------
 0: Cannot resolve symbol 'Raycas'
 QUICKFIXES:
-Change all 'Raycas'
 Change all local 'Raycas'
