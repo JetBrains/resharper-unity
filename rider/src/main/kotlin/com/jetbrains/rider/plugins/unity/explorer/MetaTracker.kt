@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.openapi.Disposable
@@ -140,7 +142,7 @@ class MetaTracker(private val project: Project) : BulkFileListener, VfsBackendRe
         val file = parent.createChildData(this, metaFileName)
         val guid = UUID.randomUUID().toString().replace("-", "").substring(0, 32)
         val timestamp = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC).toEpochSecond() // LocalDateTime to epoch seconds
-        val content = "fileFormatVersion: 2${Environment.NewLine}guid: ${guid}${Environment.NewLine}timeCreated: ${timestamp}"
+        val content = "fileFormatVersion: 2${Environment.NewLine}guid: ${guid}${Environment.NewLine}timeCreated: $timestamp"
         VfsUtil.saveText(file, content)
     }
 
