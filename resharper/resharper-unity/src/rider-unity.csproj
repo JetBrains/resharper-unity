@@ -151,6 +151,15 @@
     </EmbeddedResource>
   </ItemGroup>
   <!-- ********** -->
+  <ItemGroup Label="Remove Visual Studio or ReSharper specific files">
+    <Compile Remove="**\VisualStudio\**" />
+    <EmbeddedResource Remove="**\VisualStudio\**" />
+    <None Remove="**\VisualStudio\**" />
+    <Compile Remove="**\ReSharper\**" />
+    <EmbeddedResource Remove="**\ReSharper\**" />
+    <None Remove="**\ReSharper\**" />
+  </ItemGroup>
+  <!-- ********** -->
   <ItemGroup Label="References">
     <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.8.0" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.0">
@@ -162,15 +171,6 @@
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
     <ProjectReference Include="..\..\resharper-yaml\src\rider-yaml.csproj" />
-  </ItemGroup>
-  <!-- ********** -->
-  <ItemGroup Label="Remove Visual Studio or ReSharper specific files">
-    <Compile Remove="**\VisualStudio\**" />
-    <EmbeddedResource Remove="**\VisualStudio\**" />
-    <None Remove="**\VisualStudio\**" />
-    <Compile Remove="**\ReSharper\**" />
-    <EmbeddedResource Remove="**\ReSharper\**" />
-    <None Remove="**\ReSharper\**" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Rider_Rider.Backend.Props" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" />
