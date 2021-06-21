@@ -9,10 +9,10 @@ import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.fire
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rider.model.unity.LogEvent
-import com.jetbrains.rider.model.unity.LogEventMode
-import com.jetbrains.rider.model.unity.LogEventType
-import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.model.LogEvent
+import com.jetbrains.rider.plugins.unity.model.LogEventMode
+import com.jetbrains.rider.plugins.unity.model.LogEventType
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 
 class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: ToolWindow) {

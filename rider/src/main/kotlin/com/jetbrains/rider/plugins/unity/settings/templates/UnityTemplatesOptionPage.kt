@@ -1,4 +1,4 @@
-package com.jetbrains.rider.settings.templates
+package com.jetbrains.rider.plugins.unity.settings.templates
 
 import com.intellij.openapi.options.Configurable
 import com.jetbrains.rider.settings.simple.SimpleOptionsPage

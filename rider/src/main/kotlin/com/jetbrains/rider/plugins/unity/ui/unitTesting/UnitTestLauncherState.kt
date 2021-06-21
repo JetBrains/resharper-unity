@@ -8,8 +8,8 @@ import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.whenTrue
-import com.jetbrains.rider.model.unity.frontendBackend.UnitTestLaunchPreference
-import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnitTestLaunchPreference
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import org.jdom.Element
 

@@ -2,8 +2,8 @@ package com.jetbrains.rider.plugins.unity.toolWindow.log
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.*
-import com.jetbrains.rider.model.unity.LogEventMode
-import com.jetbrains.rider.model.unity.LogEventType
+import com.jetbrains.rider.plugins.unity.model.LogEventMode
+import com.jetbrains.rider.plugins.unity.model.LogEventType
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
 import com.jetbrains.rider.ui.RiderAction
 import icons.UnityIcons

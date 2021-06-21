@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss
+package com.jetbrains.rider.plugins.unity.css.uss
 
 import com.intellij.openapi.fileTypes.LanguageFileType
 import icons.UnityIcons

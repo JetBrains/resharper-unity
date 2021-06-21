@@ -1,4 +1,4 @@
-package com.jetbrains.rider.settings
+package com.jetbrains.rider.plugins.unity.settings
 
 import com.jetbrains.rider.settings.simple.SimpleOptionsPage
 

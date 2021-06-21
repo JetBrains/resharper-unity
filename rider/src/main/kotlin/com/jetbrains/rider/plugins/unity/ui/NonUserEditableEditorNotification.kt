@@ -10,10 +10,10 @@ import com.intellij.ui.EditorNotifications
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rider.isUnityProject
-import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityAction
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
+import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.util.isNonEditableUnityFile
 import com.jetbrains.rider.projectView.solution
 

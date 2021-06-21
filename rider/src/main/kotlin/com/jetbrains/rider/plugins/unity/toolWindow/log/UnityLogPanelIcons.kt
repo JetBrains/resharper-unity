@@ -1,7 +1,7 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
-import com.jetbrains.rider.model.unity.LogEventMode
-import com.jetbrains.rider.model.unity.LogEventType
+import com.jetbrains.rider.plugins.unity.model.LogEventMode
+import com.jetbrains.rider.plugins.unity.model.LogEventType
 import icons.UnityIcons
 
 fun LogEventType.getIcon() = when (this) {

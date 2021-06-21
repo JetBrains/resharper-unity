@@ -26,13 +26,13 @@ import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rider.model.unity.LogEvent
-import com.jetbrains.rider.model.unity.LogEventMode
-import com.jetbrains.rider.model.unity.LogEventType
+import com.jetbrains.rider.plugins.unity.model.LogEvent
+import com.jetbrains.rider.plugins.unity.model.LogEventMode
+import com.jetbrains.rider.plugins.unity.model.LogEventType
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction
 import com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction
-import com.jetbrains.rider.settings.RiderUnitySettings
+import com.jetbrains.rider.plugins.unity.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
 import net.miginfocom.swing.MigLayout

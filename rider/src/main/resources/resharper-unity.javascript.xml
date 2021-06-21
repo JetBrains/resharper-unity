@@ -1,4 +1,9 @@
-<idea-plugin>
+<idea-plugin package="com.jetbrains.rider.plugins.unity.javascript">
+  <dependencies>
+    <module name="rider-plugins-appender/javascript"/>
+    <plugin id="JavaScript"/>
+  </dependencies>
+
   <extensions defaultExtensionNs="JavaScript">
     <packageJson.configuration.handler implementation="com.jetbrains.rider.plugins.unity.javascript.UnityPackageJsonConfiguratorHandler"/>
   </extensions>

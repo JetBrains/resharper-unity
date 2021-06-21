@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.codeInsight.css
+package com.jetbrains.rider.plugins.unity.css.uss.codeInsight.css
 
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiElement
@@ -10,7 +10,7 @@ import com.intellij.psi.css.descriptor.CssPseudoSelectorDescriptor
 import com.intellij.psi.css.descriptor.value.CssValueDescriptor
 import com.intellij.psi.css.impl.descriptor.value.CssValueValidatorImpl
 import com.intellij.psi.css.impl.util.table.CssDescriptorsUtil.filterDescriptorsByContext
-import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssLanguage
+import com.jetbrains.rider.plugins.unity.css.uss.UssLanguage
 
 class UssCssElementDescriptorProvider : CssElementDescriptorProvider() {
     private val factory

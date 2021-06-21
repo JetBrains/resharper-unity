@@ -5,7 +5,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.text.CaseInsensitiveStringHashingStrategy
 import com.jetbrains.rider.ideaInterop.fileTypes.msbuild.CsprojFileType
 import com.jetbrains.rider.ideaInterop.fileTypes.sln.SolutionFileType
-import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssFileType
+import com.jetbrains.rider.plugins.unity.css.uss.UssFileType
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileType
 import gnu.trove.THashSet
 

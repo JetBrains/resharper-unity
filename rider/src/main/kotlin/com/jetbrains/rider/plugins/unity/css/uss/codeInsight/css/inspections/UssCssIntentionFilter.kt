@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.codeInsight.css.inspections
+package com.jetbrains.rider.plugins.unity.css.uss.codeInsight.css.inspections
 
 import com.intellij.psi.css.actions.CssBaseElementAtCaretIntentionAction
 import com.intellij.psi.css.actions.CssIntentionFilter

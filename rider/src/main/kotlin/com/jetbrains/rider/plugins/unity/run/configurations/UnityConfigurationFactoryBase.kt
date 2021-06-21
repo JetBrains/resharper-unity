@@ -3,8 +3,8 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.isUnityClassLibraryProject
-import com.jetbrains.rider.isUnityProjectFolder
+import com.jetbrains.rider.plugins.unity.isUnityClassLibraryProject
+import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
 import com.jetbrains.rider.run.configurations.DotNetConfigurationFactoryBase
 
 abstract class UnityConfigurationFactoryBase(type: ConfigurationType)

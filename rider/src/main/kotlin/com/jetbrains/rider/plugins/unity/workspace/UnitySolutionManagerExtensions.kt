@@ -2,7 +2,7 @@ package com.jetbrains.rider.plugins.unity.workspace
 
 import com.intellij.ide.util.PropertiesComponent
 import com.jetbrains.rdclient.util.idea.toVirtualFile
-import com.jetbrains.rider.UnityProjectDiscoverer
+import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 import com.jetbrains.rider.projectView.SolutionManagerExtensions
 import java.nio.file.Path
 

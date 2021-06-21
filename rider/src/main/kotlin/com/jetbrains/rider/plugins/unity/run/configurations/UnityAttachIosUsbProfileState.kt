@@ -7,7 +7,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.io.isDirectory
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
-import com.jetbrains.rider.model.unity.debuggerWorker.UnityIosUsbStartInfo
+import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityIosUsbStartInfo
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 

@@ -7,7 +7,7 @@ import com.intellij.codeInsight.lookup.impl.LookupManagerImpl
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 
 class CgCompletionContributor : WordCompletionContributor() {
