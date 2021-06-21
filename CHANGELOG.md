@@ -20,6 +20,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 ### Changed
 
 - Methods marked with `[UnitySetUp]` are treated as in use ([#2048](https://github.com/JetBrains/resharper-unity/issues/2048), [#2047](https://github.com/JetBrains/resharper-unity/pull/2047))
+- Improve localised caching for performance across all Unity analyses ([RIDER-62709](https://youtrack.jetbrains.com/issue/RIDER-62709), [#2106](https://github.com/JetBrains/resharper-unity/pull/2106))
+- Parse layer names for legacy projects ([#2094](https://github.com/JetBrains/resharper-unity/issues/2094), [#2107](https://github.com/JetBrains/resharper-unity/pull/2107))
 - Rider: Improve performance showing packages in Unity Explorer when reopening a project ([RIDER-61805](https://youtrack.jetbrains.com/issue/RIDER-61805), [#2105](https://github.com/JetBrains/resharper-unity/pull/2105))
 - Rider: Group Unity run configurations in the run config dialog ([#2081](https://github.com/JetBrains/resharper-unity/pull/2081))
 - Rider: Ignore "break on unhandled exception" setting for IL2CPP players ([RIDER-62321](https://youtrack.jetbrains.com/issue/RIDER-62321), [#2098](https://github.com/JetBrains/resharper-unity/pull/2098))

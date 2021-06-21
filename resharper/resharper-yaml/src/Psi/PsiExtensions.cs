@@ -11,7 +11,13 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
     [CanBeNull]
     public static string GetPlainScalarText([CanBeNull] this INode node)
     {
-      return node is IPlainScalarNode scalar ? scalar.Text.GetText() : null;
+      return (node as IPlainScalarNode)?.Text.GetText();
+    }
+
+    [CanBeNull]
+    public static IBuffer GetPlainScalarTextBuffer([CanBeNull] this INode node)
+    {
+      return (node as IPlainScalarNode)?.Text.GetTextAsBuffer();
     }
 
     public static bool MatchesPlainScalarText([CanBeNull] this INode node, string value)
@@ -26,14 +32,14 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
     }
 
     [CanBeNull]
-    public static IBlockMappingEntry FindMapEntryBySimpleKey([CanBeNull] this IBlockMappingNode mapNode, string keyName)
+    public static IBlockMappingEntry GetMapEntry([CanBeNull] this IBlockMappingNode mapNode, string simpleKey)
     {
       if (mapNode == null)
         return null;
 
       foreach (var mappingEntry in mapNode.EntriesEnumerable)
       {
-        if (mappingEntry.Key.MatchesPlainScalarText(keyName))
+        if (mappingEntry.Key.MatchesPlainScalarText(simpleKey))
           return mappingEntry;
       }
 
@@ -41,18 +47,37 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
     }
 
     [CanBeNull]
-    public static IFlowMapEntry FindMapEntryBySimpleKey([CanBeNull] this IFlowMappingNode mapNode, string keyName)
+    public static IFlowMapEntry GetMapEntry([CanBeNull] this IFlowMappingNode mapNode, string simpleKey)
     {
       if (mapNode == null)
         return null;
 
       foreach (var sequenceEntry in mapNode.EntriesEnumerable)
       {
-        if (sequenceEntry.Key.MatchesPlainScalarText(keyName))
+        if (sequenceEntry.Key.MatchesPlainScalarText(simpleKey))
           return sequenceEntry;
       }
 
       return null;
+    }
+
+    [CanBeNull]
+    public static T GetMapEntryValue<T>([CanBeNull] this IBlockMappingNode mapNode, string simpleKey)
+      where T : class, INode
+    {
+      return mapNode.GetMapEntry(simpleKey)?.Content?.Value as T;
+    }
+
+    [CanBeNull]
+    public static string GetMapEntryPlainScalarText([CanBeNull] this IBlockMappingNode mapNode, string simpleKey)
+    {
+      return mapNode.GetMapEntry(simpleKey)?.Content?.Value.GetPlainScalarText();
+    }
+
+    [CanBeNull]
+    public static string GetMapEntryPlainScalarText([CanBeNull] this IFlowMappingNode mapNode, string simpleKey)
+    {
+      return mapNode.GetMapEntry(simpleKey)?.Value.GetPlainScalarText();
     }
   }
 }

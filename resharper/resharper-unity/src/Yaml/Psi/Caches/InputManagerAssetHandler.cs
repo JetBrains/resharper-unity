@@ -4,7 +4,6 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.Util;
-using static JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityProjectSettingsUtils;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
@@ -17,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         {
             myLogger = logger;
         }
-        
+
         public bool IsApplicable(IPsiSourceFile sourceFile)
         {
             return sourceFile.Name.Equals("InputManager.asset")  && sourceFile.GetLocation().SniffYamlHeader();
@@ -25,31 +24,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         public void Build(IPsiSourceFile sourceFile, ProjectSettingsCacheItem cacheItem)
         {
+            var file = sourceFile.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
+            var inputs = file.GetUnityObjectPropertyValue<IBlockSequenceNode>("InputManager", "m_Axes");
+            if (inputs == null)
             {
-                var file = sourceFile.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
-                var inputs = GetCollection(file, "InputManager", "m_Axes");
+                myLogger.Error("inputs == null");
+                return;
+            }
 
-                if (inputs == null)
-                {
-                    myLogger.Error("inputs != null");
-                    return;
-                }
-                
-                if (inputs is IBlockSequenceNode node)
-                {
-                    foreach (var s in node.Entries)
-                    {
-                        var input = s.Value;
-                        var inputRecord = input as IBlockMappingNode;
-                        if (inputRecord == null)
-                            continue;
+            foreach (var s in inputs.Entries)
+            {
+                var input = s.Value as IBlockMappingNode;
+                if (input == null)
+                    continue;
 
-                        var name = inputRecord.Entries.FirstOrDefault(t => t.Key.GetText().Equals(UnityYamlConstants.NameProperty))?.Content.Value.GetPlainScalarText();
-                        
-                        if (!name.IsNullOrEmpty())
-                            cacheItem.Inputs.Add(name);
-                    }
-                }
+                var name = input.GetMapEntryPlainScalarText(UnityYamlConstants.NameProperty);
+                if (!name.IsNullOrEmpty())
+                    cacheItem.Inputs.Add(name);
             }
         }
     }

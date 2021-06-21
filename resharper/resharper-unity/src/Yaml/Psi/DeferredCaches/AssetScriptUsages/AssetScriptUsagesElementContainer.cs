@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
-using JetBrains.ReSharper.Plugins.Yaml.Psi;
+using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptU
             myShellLocks = shellLocks;
             myMetaFileGuidCache = metaFileGuidCache;
         }
-        
+
         private readonly CountingSet<Guid> myUsagesCount = new CountingSet<Guid>();
         private readonly OneToCompactCountingSet<Guid, IPsiSourceFile> myUsageToSourceFiles = new OneToCompactCountingSet<Guid, IPsiSourceFile>();
         private readonly Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myPointers = new Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer>();
@@ -45,31 +45,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptU
         {
             // TODO: deps for other assets
             if (AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))
-            {                
+            {
                 var anchorRaw = AssetUtils.GetAnchorFromBuffer(assetDocument.Buffer);
-                bool stripped = AssetUtils.IsStripped(assetDocument.Buffer);
+                var stripped = AssetUtils.IsStripped(assetDocument.Buffer);
                 if (stripped) // we will handle it in prefabs
                     return null;
-                
+
                 if (!anchorRaw.HasValue)
                     return null;
 
                 var anchor = anchorRaw.Value;
-                
-                var entries = assetDocument.Document.FindRootBlockMapEntries()?.Entries;
-                if (entries == null)
-                    return null;
-                
-                var result = new LocalList<AssetScriptUsage>();
-                foreach (var entry in entries)
-                {
-                    if (!entry.Key.MatchesPlainScalarText("m_Script"))
-                        continue;
 
-                    var deps = entry.Content.Value.ToHierarchyReference(currentAssetSourceFile);
-                    if (deps is ExternalReference externalReference)
-                        result.Add(new AssetScriptUsage(new LocalReference(currentAssetSourceFile.Ptr().Id, anchor), externalReference));
-                }
+                var result = new LocalList<AssetScriptUsage>();
+                var entry = assetDocument.Document.GetUnityObjectPropertyValue<INode>(UnityYamlConstants.ScriptProperty);
+                var deps = entry.ToHierarchyReference(currentAssetSourceFile);
+                if (deps is ExternalReference externalReference)
+                    result.Add(new AssetScriptUsage(new LocalReference(currentAssetSourceFile.Ptr().Id, anchor), externalReference));
 
                 return result;
             }
@@ -107,10 +98,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptU
         public int GetScriptUsagesCount(IClassLikeDeclaration classLikeDeclaration, out bool estimatedResult)
         {
             myShellLocks.AssertReadAccessAllowed();
-            
+
             // TODO : prefabs
             estimatedResult = false;
-            
+
             var sourceFile = classLikeDeclaration.GetSourceFile();
             if (sourceFile == null)
                 return 0;
@@ -125,7 +116,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptU
 
             return myUsagesCount.GetCount(guid.Value);
         }
-        
+
         public string Id => nameof(AssetScriptUsagesElementContainer);
         public int Order => 0;
         public void Invalidate()
@@ -151,7 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptU
         public LocalList<IPsiSourceFile> GetPossibleFilesWithScriptUsages(IClass scriptClass)
         {
             var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, scriptClass);
-            if (guid == null) 
+            if (guid == null)
                 return new LocalList<IPsiSourceFile>();
 
             var result = new LocalList<IPsiSourceFile>();
