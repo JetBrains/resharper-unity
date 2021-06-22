@@ -89,7 +89,11 @@ class MetaTracker(private val project: Project) : BulkFileListener, VfsBackendRe
                         actions.add(metaFile) {
                             val target = getMetaFileName(event.newValue as String)
                             val origin = VfsUtil.findFile(metaFile, true)
-                            origin?.parent?.findChild(target)?.delete(this) // remove conflicting meta file if any
+                            val conflictingMeta = origin?.parent?.findChild(target)
+                            if (conflictingMeta != null) {
+                                logger.warn("Removing conflicting meta $conflictingMeta")
+                                conflictingMeta.delete(this)
+                            }
                             origin?.rename(this, target)
                         }
                     }
