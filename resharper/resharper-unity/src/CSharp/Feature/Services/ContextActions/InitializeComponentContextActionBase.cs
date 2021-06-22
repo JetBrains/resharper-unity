@@ -124,9 +124,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             if (!(myDataProvider.GetSelectedElement<IClassLikeDeclaration>() is IClassDeclaration))
                 return false;
 
-            var typeOwner = myDataProvider.GetSelectedElement<T>();
-            var type = typeOwner?.Type.GetTypeElement();
-            if (type == null || !type.IsUnityComponent(out _))
+            var selectedField = myDataProvider.GetSelectedElement<T>() as IFieldDeclaration;
+            if (selectedField == null)
+                return false;
+
+            var fieldType = selectedField.Type.GetTypeElement();
+            if (fieldType == null)
+                return false;
+            
+            if (!fieldType.IsUnityComponent(out _))
+                return false;
+            
+            var ownerType = selectedField.DeclaredElement?.ContainingType;
+            if (ownerType == null)
+                return false;
+            
+            if (!ownerType.IsUnityComponent(out _))
                 return false;
 
             return true;
