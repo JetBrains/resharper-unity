@@ -9,6 +9,7 @@ using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Diagnostics;
+using JetBrains.Rd.Tasks;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -66,6 +67,30 @@ namespace JetBrains.Rider.Unity.Editor
       extensionStrings = list.ToArray();
 
       return extensionStrings;
+    }
+
+
+    [UsedImplicitly] // called by Rider package
+    public bool WriteFileWithRider(string path, string content)
+    {
+        var models = PluginEntryPoint.UnityModels.Where(a=>a.Lifetime.IsAlive).ToArray();
+        if (models.Any())
+        {
+            var modelLifetime = models.First();
+            var model = modelLifetime.Model;
+            try
+            {
+                model.WriteFileWithRider.Sync(new ProjectChangeArgs(path, content), RpcTimeouts.Default);
+                return true;
+            }
+            catch (Exception e)
+            {
+               myLogger.Log(LoggingLevel.ERROR, $"failed to sync {path} with Rider", e);
+               return false;
+            }
+        }
+
+        return false;
     }
 
     [UsedImplicitly] // https://github.com/JetBrains/resharper-unity/issues/475

@@ -108,6 +108,11 @@ object BackendUnityModel: Root() {
         field("outputPath", string)
     }
 
+    private val ProjectChangeArgs = structdef{
+        field("filePath", string)
+        field("content", string)
+    }
+
     init {
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.BackendUnity")
 
@@ -173,5 +178,7 @@ object BackendUnityModel: Root() {
         call("runUnitTestLaunch", void, bool).documentation = "Start the unit test session. Results are fired via UnitTestLaunch.TestResult"
 
         call ("hasUnsavedScenes", void, bool)
+
+        callback("writeFileWithRider", ProjectChangeArgs, void).documentation = "csproj / sln cnanges"
     }
 }
