@@ -26,3 +26,11 @@ public class Foo : MonoBehaviour
         Collider2D_ = GetComponent<Collider2D>();
     }
 }
+
+
+    [Serializable]
+    public class NotComponent
+    {
+        public Foo Fo{off:Add:'RequireComponent'}o;
+        public Foo Fo{off:Initialize:in:'Start'}o2;
+    }
