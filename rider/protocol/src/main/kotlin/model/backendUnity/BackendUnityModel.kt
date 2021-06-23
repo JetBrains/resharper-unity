@@ -108,7 +108,7 @@ object BackendUnityModel: Root() {
         field("outputPath", string)
     }
 
-    private val ProjectChangeArgs = structdef{
+    private val FileChangeArgs = structdef{
         field("filePath", string)
         field("content", string)
     }
@@ -179,6 +179,6 @@ object BackendUnityModel: Root() {
 
         call ("hasUnsavedScenes", void, bool)
 
-        callback("writeFileWithRider", ProjectChangeArgs, void).documentation = "csproj / sln cnanges"
+        callback("writeFileWithRider", immutableList(FileChangeArgs), bool).documentation = "csproj / sln cnanges"
     }
 }
