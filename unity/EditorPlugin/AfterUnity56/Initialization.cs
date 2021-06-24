@@ -1,10 +1,11 @@
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Rd.Tasks;
+using JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting;
 using UnityEditor;
 using UnityEngine.SceneManagement;
 
-namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
+namespace JetBrains.Rider.Unity.Editor.AfterUnity56
 {
   public static class Initialization
   {
@@ -34,7 +35,9 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         var testLauncher = new UnityEditorTestLauncher(model.UnitTestLaunch.Value, connectionLifetime);
         return testLauncher.TryLaunchUnitTests();
       });
-      
+
+      ProjectFilesSync.Sync(model, connectionLifetime);
+
       GetUnsavedChangesInScenes(modelAndLifetime);
     }
 

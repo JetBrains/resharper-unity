@@ -380,7 +380,6 @@ namespace JetBrains.Rider.Unity.Editor
           GetBuildLocation(model);
           AdviseRunMethod(model);
           GetInitTime(model);
-          ProjectFilesSync.Sync(model, connectionLifetime);
 
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);

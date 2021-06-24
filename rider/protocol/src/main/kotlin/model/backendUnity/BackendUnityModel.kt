@@ -179,6 +179,6 @@ object BackendUnityModel: Root() {
 
         call ("hasUnsavedScenes", void, bool)
 
-        callback("writeFileWithRider", immutableList(FileChangeArgs), bool).documentation = "csproj / sln cnanges"
+        property("fileChanges", immutableList(FileChangeArgs)).documentation = "csproj / sln files changes"
     }
 }

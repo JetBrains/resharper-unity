@@ -41,7 +41,7 @@
     <Compile Remove="AssetPostprocessors\SlnAssetPostprocessor.cs" />
     <Compile Remove="RiderMenu.cs" />
   </ItemGroup>
-  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props"/>
+  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" />
   <Import Project="ILRepack.targets" />
   <Import Project="Model.targets" />
 </Project>
