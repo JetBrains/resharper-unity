@@ -215,7 +215,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void AdviseFileAddedOrDeleted(FileSystemChangeDelta delta)
         {
-            if (delta.NewPath.ExtensionNoDot == "cs")
+            if (delta.NewPath.ExtensionNoDot == "cs" || delta.NewPath.ExtensionNoDot == "asmdef")
             {
                 myLogger.Verbose($"fileSystemTracker.AdviseDirectoryChanges {delta.ChangeType}, {delta.NewPath}, {delta.OldPath}");
                 myGroupingEvent.FireIncoming();

@@ -1,7 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using JetBrains.Application.Components;
 using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Components;
 using JetBrains.Collections.Viewable;
@@ -9,9 +13,15 @@ using JetBrains.Core;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.ProjectsHost;
+using JetBrains.ProjectModel.ProjectsHost.Impl;
+using JetBrains.ProjectModel.ProjectsHost.LiveTracking;
+using JetBrains.ProjectModel.ProjectsHost.SolutionHost;
+using JetBrains.ProjectModel.ProjectsHost.SolutionHost.Impl;
 using JetBrains.Rd.Base;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.Packages;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;
@@ -27,9 +37,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
     [SolutionComponent]
     public class BackendUnityHost
     {
+        private readonly ISolution mySolution;
         private readonly JetBrains.Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
 
         private UnityEditorState myEditorState;
+
+        private FileContentTracker myFileContentTracker;
+        private SolutionHost mySolutionHost;
 
         // Do not use for subscriptions! Should only be used to read values and start tasks.
         // The property's value will be null when the backend/Unity protocol is not available
@@ -42,11 +56,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                                 IThreading threading,
                                 IIsApplicationActiveState isApplicationActiveState,
                                 PackageManager packageManager,
+                                ISolution solution,
                                 JetBrains.Application.ActivityTrackingNew.UsageStatistics usageStatistics)
         {
+            mySolution = solution;
             myUsageStatistics = usageStatistics;
 
             myEditorState = UnityEditorState.Disconnected;
+            myFileContentTracker = solution.ProjectsHostContainer().GetComponent<FileContentTracker>();
+            mySolutionHost = solution.ProjectsHostContainer().GetComponent<SolutionHost>();
 
             BackendUnityModel.ViewNotNull(lifetime, (modelLifetime, backendUnityModel) =>
             {
@@ -109,6 +127,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         private void AdviseModel(BackendUnityModel backendUnityModel, Lifetime modelLifetime,
                                  PackageManager packageManager)
         {
+            // backendUnityModel.FileChanges.Advise(modelLifetime, list =>
+            // {
+            //     IEnumerable<IProjectMark> projectMarks;
+            //     using (ReadLockCookie.Create())
+            //     {
+            //         foreach (var (filePath, content) in list)
+            //         {
+            //             var location = FileSystemPath.Parse(filePath);
+            //             var projectFile = mySolution.FindProjectItemsByLocation(location).OfType<IProjectFile>().SelectBestProjectFile();
+            //             if (projectFile == null)
+            //                 location.WriteAllText(content, Encoding.UTF8);
+            //             else
+            //                 myFileContentTracker.Write(location, content);
+            //         }
+            //         projectMarks = list
+            //             .Select(a =>
+            //                 mySolution.FindProjectByProjectFilePath(FileSystemPath.Parse(a.FilePath)).GetProjectMark())
+            //             .WhereNotNull().ToArray();
+            //     }
+            //
+            //     mySolutionHost.ReloadProjectsAsync(projectMarks);
+            //     if (list.Any(a => FileSystemPath.Parse(a.FilePath).ExtensionNoDot == "sln"))
+            //         mySolutionHost.ReloadSolution();
+            // });
             AdvisePackages(backendUnityModel, modelLifetime, packageManager);
             TrackActivity(backendUnityModel, modelLifetime);
         }

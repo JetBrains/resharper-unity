@@ -45,7 +45,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
                     if (projectFile == null)
                         return;
 
-                    if (!projectFile.Location.ExtensionNoDot.Equals("csproj", StringComparison.OrdinalIgnoreCase))
+                    if (!projectFile.Location.ExtensionNoDot.Equals("csproj", StringComparison.OrdinalIgnoreCase)
+                        && !projectFile.Location.ExtensionNoDot.Equals("sln", StringComparison.OrdinalIgnoreCase))
                         return;
 
                     backendUnityHost.BackendUnityModel.ViewNotNull(lt, (modelLifetime, backendUnityModel) =>

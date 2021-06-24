@@ -173,5 +173,7 @@ object BackendUnityModel: Root() {
         call("runUnitTestLaunch", void, bool).documentation = "Start the unit test session. Results are fired via UnitTestLaunch.TestResult"
 
         call ("hasUnsavedScenes", void, bool)
+
+        property("fileChanges", immutableList(Library.FileChangeArgs)).documentation = "csproj / sln files changes"
     }
 }
