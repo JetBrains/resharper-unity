@@ -109,6 +109,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         private void AdviseModel(BackendUnityModel backendUnityModel, Lifetime modelLifetime,
                                  PackageManager packageManager)
         {
+            backendUnityModel.FileChanges.Advise(modelLifetime, list =>
+            {
+                foreach (var (filePath, content) in list)
+                {
+                    FileSystemPath.Parse(filePath).WriteAllText(content); // todo: use some better api
+                }
+            });
             AdvisePackages(backendUnityModel, modelLifetime, packageManager);
             TrackActivity(backendUnityModel, modelLifetime);
         }
