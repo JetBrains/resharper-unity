@@ -108,11 +108,6 @@ object BackendUnityModel: Root() {
         field("outputPath", string)
     }
 
-    private val FileChangeArgs = structdef{
-        field("filePath", string)
-        field("content", string)
-    }
-
     init {
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.BackendUnity")
 
@@ -179,6 +174,6 @@ object BackendUnityModel: Root() {
 
         call ("hasUnsavedScenes", void, bool)
 
-        property("fileChanges", immutableList(FileChangeArgs)).documentation = "csproj / sln files changes"
+        property("fileChanges", immutableList(Library.FileChangeArgs)).documentation = "csproj / sln files changes"
     }
 }

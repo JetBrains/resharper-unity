@@ -86,4 +86,9 @@ object Library : Root() {
         property("lastPlayTime", long)
         property("lastInitTime", long)
     }
+
+    val FileChangeArgs = structdef{
+        field("filePath", string)
+        field("content", string)
+    }
 }

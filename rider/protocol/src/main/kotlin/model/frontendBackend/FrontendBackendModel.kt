@@ -141,5 +141,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("isDeferredCachesCompletedOnce", bool)
 
         call ("hasUnsavedScenes", void, bool)
+
+        property("fileChanges", immutableList(Library.FileChangeArgs)).documentation = "csproj / sln files changes"
     }
 }

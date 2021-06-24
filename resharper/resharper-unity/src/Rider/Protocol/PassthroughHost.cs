@@ -148,6 +148,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             AdvisePlayControls(lifetime, backendUnityModel, frontendBackendModel);
             AdviseConsoleEvents(lifetime, backendUnityModel, frontendBackendModel);
             AdviseOpenFile(backendUnityModel, frontendBackendModel);
+            AdviseFileChanges(lifetime, backendUnityModel, frontendBackendModel);
+        }
+
+        private void AdviseFileChanges(Lifetime lifetime, BackendUnityModel backendUnityModel, FrontendBackendModel frontendBackendModel)
+        {
+            backendUnityModel.FileChanges.FlowIntoRdSafe(lifetime, frontendBackendModel.FileChanges);
         }
 
         private static void AdviseApplicationData(in Lifetime lifetime, BackendUnityModel backendUnityModel,
