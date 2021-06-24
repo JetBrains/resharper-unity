@@ -137,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                         var location = FileSystemPath.Parse(filePath);
                         var projectFile = mySolution.FindProjectItemsByLocation(location).OfType<IProjectFile>().SelectBestProjectFile();
                         if (projectFile == null)
-                            location.WriteAllText(content, Encoding.Unicode);
+                            location.WriteAllText(content, Encoding.UTF8);
                         else
                             myFileContentTracker.Write(location, content);
                     }
