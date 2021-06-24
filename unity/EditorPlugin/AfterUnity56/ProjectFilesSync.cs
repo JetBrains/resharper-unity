@@ -83,7 +83,10 @@ namespace JetBrains.Rider.Unity.Editor
                 var path = (string) ev.GetType().GetField("path").GetValue(ev);
                 var content = (string) ev.GetType().GetField("content").GetValue(ev);
                 if (dict.ContainsKey(path))
+                {
+                    ourLogger.Verbose($"Drop change of {path} in favour of newer one");
                     dict[path] = content;
+                }
                 else
                     dict.Add(path, content);
             }
