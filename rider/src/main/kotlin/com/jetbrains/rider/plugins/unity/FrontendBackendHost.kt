@@ -111,33 +111,32 @@ class FrontendBackendHost(project: Project) : ProtocolSubscribedProjectComponent
 
             task
         }
-//
-//        model.fileChanges.advise(projectComponentLifetime) {
-//            CommandProcessor.getInstance().executeCommand(project, {
-//                it.forEach() {
-//                    val path =Paths.get(it.filePath)
-//                    val file = VfsUtil.findFile(path, true)
-//                    if (file!=null) {
-//                        application.runWriteAction {
-//                            val document = FileDocumentManager.getInstance().getDocument(file)
-//                            if (document != null) {
-//                                document.setText(it.content)
-//                                val editor = document.getFirstEditor(project)
-//                                saveDocument(editor, file, document)
-//                            }
-//                        }
-//                    }
-//                    else {
-//                        val parentFolder = path.parent
-//                        val parentFolderVF = VfsUtil.findFile(parentFolder, true)!!
-//                        application.runWriteAction {
-//                            val f = parentFolderVF.createChildData(FrontendBackendHost, path.fileName!!.toString())
-//                            VfsUtil.saveText(f, it.content)
-//                        }
-//                    }
-//                }
-//            }, "UnityPoweredProjectFilesUpdate", null)
-//        }
+
+        model.fileChanges.advise(projectComponentLifetime) {
+            CommandProcessor.getInstance().executeCommand(project, {
+                it.forEach() {
+                    val path =Paths.get(it.filePath)
+                    val file = VfsUtil.findFile(path, true)
+                    if (file!=null) {
+                        application.runWriteAction {
+                            val document = FileDocumentManager.getInstance().getDocument(file)
+                            if (document != null) {
+                                document.setText(it.content)
+                                FileDocumentManager.getInstance().saveDocument(document)
+                            }
+                        }
+                    }
+                    else {
+                        val parentFolder = path.parent
+                        val parentFolderVF = VfsUtil.findFile(parentFolder, true)!!
+                        application.runWriteAction {
+                            val f = parentFolderVF.createChildData(FrontendBackendHost, path.fileName!!.toString())
+                            VfsUtil.saveText(f, it.content)
+                        }
+                    }
+                }
+            }, "UnityPoweredProjectFilesUpdate", null)
+        }
     }
 
     companion object {

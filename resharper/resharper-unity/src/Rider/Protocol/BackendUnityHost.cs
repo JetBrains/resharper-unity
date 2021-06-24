@@ -127,30 +127,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         private void AdviseModel(BackendUnityModel backendUnityModel, Lifetime modelLifetime,
                                  PackageManager packageManager)
         {
-            backendUnityModel.FileChanges.Advise(modelLifetime, list =>
-            {
-                IEnumerable<IProjectMark> projectMarks;
-                using (ReadLockCookie.Create())
-                {
-                    foreach (var (filePath, content) in list)
-                    {
-                        var location = FileSystemPath.Parse(filePath);
-                        var projectFile = mySolution.FindProjectItemsByLocation(location).OfType<IProjectFile>().SelectBestProjectFile();
-                        if (projectFile == null)
-                            location.WriteAllText(content, Encoding.UTF8);
-                        else
-                            myFileContentTracker.Write(location, content);
-                    }
-                    projectMarks = list
-                        .Select(a =>
-                            mySolution.FindProjectByProjectFilePath(FileSystemPath.Parse(a.FilePath)).GetProjectMark())
-                        .WhereNotNull().ToArray();
-                }
-
-                mySolutionHost.ReloadProjectsAsync(projectMarks);
-                if (list.Any(a => FileSystemPath.Parse(a.FilePath).ExtensionNoDot == "sln"))
-                    mySolutionHost.ReloadSolution();
-            });
+            // backendUnityModel.FileChanges.Advise(modelLifetime, list =>
+            // {
+            //     IEnumerable<IProjectMark> projectMarks;
+            //     using (ReadLockCookie.Create())
+            //     {
+            //         foreach (var (filePath, content) in list)
+            //         {
+            //             var location = FileSystemPath.Parse(filePath);
+            //             var projectFile = mySolution.FindProjectItemsByLocation(location).OfType<IProjectFile>().SelectBestProjectFile();
+            //             if (projectFile == null)
+            //                 location.WriteAllText(content, Encoding.UTF8);
+            //             else
+            //                 myFileContentTracker.Write(location, content);
+            //         }
+            //         projectMarks = list
+            //             .Select(a =>
+            //                 mySolution.FindProjectByProjectFilePath(FileSystemPath.Parse(a.FilePath)).GetProjectMark())
+            //             .WhereNotNull().ToArray();
+            //     }
+            //
+            //     mySolutionHost.ReloadProjectsAsync(projectMarks);
+            //     if (list.Any(a => FileSystemPath.Parse(a.FilePath).ExtensionNoDot == "sln"))
+            //         mySolutionHost.ReloadSolution();
+            // });
             AdvisePackages(backendUnityModel, modelLifetime, packageManager);
             TrackActivity(backendUnityModel, modelLifetime);
         }
