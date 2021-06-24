@@ -3,6 +3,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Occurrences.OccurrenceInformation;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
@@ -39,6 +40,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         {
             return null;
         }
+
+        public SourceFilePtr GetSourceFilePtr(IOccurrence occurrence) => occurrence.GetSourceFilePtr();
 
         public bool IsApplicable(IOccurrence occurrence)
         {
