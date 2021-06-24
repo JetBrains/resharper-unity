@@ -148,7 +148,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                 }
 
                 mySolutionHost.ReloadProjectsAsync(projectMarks);
-                mySolutionHost.ReloadSolution();
+                if (list.Any(a => FileSystemPath.Parse(a.FilePath).ExtensionNoDot == "sln"))
+                    mySolutionHost.ReloadSolution();
             });
             AdvisePackages(backendUnityModel, modelLifetime, packageManager);
             TrackActivity(backendUnityModel, modelLifetime);
