@@ -3,7 +3,6 @@ package com.jetbrains.rider.plugins.unity.explorer
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.workspaceModel.ide.WorkspaceModel
-import com.jetbrains.rd.util.assert
 import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.projectView.ProjectElementView
 import com.jetbrains.rider.projectView.ProjectEntityView
@@ -30,7 +29,9 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
     override fun getBestParentProjectModelNode(targetLocation: VirtualFile): ProjectModelEntity? {
         if (!project.isUnityProject())
             return null
-        return recursiveSearch(targetLocation) ?: super.getBestParentProjectModelNode(targetLocation)
+        if (targetLocation.isDirectory) // RIDER-64427 "New in This Directory" doesn't work
+            return recursiveSearch(targetLocation) ?: super.getBestParentProjectModelNode(targetLocation)
+        return recursiveSearch(targetLocation.parent) ?: super.getBestParentProjectModelNode(targetLocation)
     }
 
     override fun filterProjectModelNodesBeforeOperation(entities: List<ProjectModelEntity>): List<ProjectModelEntity> {
