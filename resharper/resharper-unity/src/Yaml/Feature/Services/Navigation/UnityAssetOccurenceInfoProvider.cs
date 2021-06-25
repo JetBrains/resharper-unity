@@ -40,8 +40,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         {
             return null;
         }
-
-        public SourceFilePtr GetSourceFilePtr(IOccurrence occurrence) => occurrence.GetSourceFilePtr();
+        
+        public SourceFilePtr GetSourceFilePtr(IOccurrence occurrence) =>
+            (occurrence as UnityAssetOccurrence)?.SourceFile.Ptr() ?? SourceFilePtr.Fake;
 
         public bool IsApplicable(IOccurrence occurrence)
         {
