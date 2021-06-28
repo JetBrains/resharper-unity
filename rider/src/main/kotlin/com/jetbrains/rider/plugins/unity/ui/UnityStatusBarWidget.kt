@@ -6,7 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidgetFactory
-import com.jetbrains.rider.UnityProjectDiscoverer
+import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 
 class UnityStatusBarWidget: StatusBarWidgetFactory {
     override fun getId() = UnityStatusBarIcon.StatusBarIconId

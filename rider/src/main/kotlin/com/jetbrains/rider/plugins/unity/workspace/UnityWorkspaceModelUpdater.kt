@@ -10,7 +10,7 @@ import com.intellij.workspaceModel.storage.impl.url.toVirtualFileUrl
 import com.intellij.workspaceModel.storage.url.VirtualFileUrl
 import com.intellij.workspaceModel.storage.url.VirtualFileUrlManager
 import com.jetbrains.rd.platform.util.application
-import com.jetbrains.rider.isUnityProject
+import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
 import com.jetbrains.rider.projectView.workspace.getOrCreateRiderModuleEntity

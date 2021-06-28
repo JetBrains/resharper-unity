@@ -2,8 +2,8 @@ package com.jetbrains.rider.plugins.unity.ui.unitTesting
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
-import com.jetbrains.rider.model.unity.frontendBackend.UnitTestLaunchPreference
-import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnitTestLaunchPreference
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 
 class UseNunitLauncherAction : DumbAwareAction(NUnitDescription, "Run with NUnit launcher", null) {

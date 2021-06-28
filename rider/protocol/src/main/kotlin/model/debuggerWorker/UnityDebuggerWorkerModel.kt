@@ -35,7 +35,7 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
     }
 
     init {
-        setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.model.unity.debuggerWorker")
+        setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.plugins.unity.model.debuggerWorker")
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.DebuggerWorker")
 
         property("showCustomRenderers", bool)

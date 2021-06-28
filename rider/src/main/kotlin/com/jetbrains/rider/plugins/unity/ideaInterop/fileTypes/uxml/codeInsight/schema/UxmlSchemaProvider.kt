@@ -13,7 +13,7 @@ import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.xml.XmlFile
 import com.intellij.xml.XmlSchemaProvider
 import com.jetbrains.rd.platform.util.idea.getOrCreateUserData
-import com.jetbrains.rider.isUnityProject
+import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectDir
 import java.nio.file.Paths
 

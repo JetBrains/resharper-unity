@@ -1,4 +1,4 @@
-package com.jetbrains.rider.settings
+package com.jetbrains.rider.plugins.unity.settings
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project

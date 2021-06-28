@@ -5,8 +5,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.ide.model.RdDocumentId
 import com.jetbrains.rd.util.reactive.IProperty
-import com.jetbrains.rider.model.unity.frontendBackend.ContextInfo
-import com.jetbrains.rider.model.unity.frontendBackend.ShaderContextData
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.ContextInfo
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 
 class ShaderContextSwitchAction(val project: Project, val id: RdDocumentId, val host: FrontendBackendHost,

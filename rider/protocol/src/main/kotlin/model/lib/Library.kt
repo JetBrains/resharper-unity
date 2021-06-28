@@ -8,7 +8,7 @@ import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
 object Library : Root() {
 
     init {
-        setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.model.unity")
+        setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.plugins.unity.model")
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity")
     }
 

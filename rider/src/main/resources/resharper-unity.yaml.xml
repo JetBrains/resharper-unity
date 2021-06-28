@@ -1,4 +1,7 @@
-<idea-plugin>
+<idea-plugin package="com.jetbrains.rider.plugins.unity.yaml">
+    <dependencies>
+      <plugin id="org.jetbrains.plugins.yaml"/>
+    </dependencies>
     <extensions defaultExtensionNs="com.intellij">
         <lang.syntaxHighlighterFactory language="UnityYaml" implementationClass="org.jetbrains.yaml.YAMLSyntaxHighlighterFactory" />
     </extensions>

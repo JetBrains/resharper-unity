@@ -5,7 +5,6 @@ import com.intellij.openapi.vcs.FilePath
 import com.intellij.openapi.vcs.changes.IgnoredFileDescriptor
 import com.intellij.openapi.vcs.changes.IgnoredFileProvider
 import com.intellij.openapi.vfs.VfsUtil
-import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.projectView.solutionDirectory
 import java.io.File
 

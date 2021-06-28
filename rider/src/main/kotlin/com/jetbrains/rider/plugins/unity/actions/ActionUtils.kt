@@ -1,12 +1,12 @@
 package com.jetbrains.rider.plugins.unity.actions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.jetbrains.rider.isUnityProject
-import com.jetbrains.rider.isUnityProjectFolder
-import com.jetbrains.rider.model.unity.frontendBackend.FrontendBackendModel
-import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
+import com.jetbrains.rider.plugins.unity.isUnityProject
+import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 
 fun AnActionEvent.getFrontendBackendModel(): FrontendBackendModel? {

@@ -6,7 +6,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.vfs.VfsUtil
-import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import java.io.File
 

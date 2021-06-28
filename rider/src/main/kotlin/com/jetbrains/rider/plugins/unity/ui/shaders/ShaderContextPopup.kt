@@ -14,7 +14,7 @@ import com.intellij.ui.popup.list.PopupListElementRenderer
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.util.reactive.IProperty
-import com.jetbrains.rider.model.unity.frontendBackend.ShaderContextData
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
 import icons.UnityIcons
 import java.awt.BorderLayout
 import javax.swing.JComponent

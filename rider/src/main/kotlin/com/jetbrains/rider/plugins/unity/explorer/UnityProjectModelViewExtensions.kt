@@ -3,7 +3,8 @@ package com.jetbrains.rider.plugins.unity.explorer
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.workspaceModel.ide.WorkspaceModel
-import com.jetbrains.rider.isUnityProject
+import com.jetbrains.rd.util.assert
+import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.ProjectElementView
 import com.jetbrains.rider.projectView.ProjectEntityView
 import com.jetbrains.rider.projectView.ProjectModelViewExtensions

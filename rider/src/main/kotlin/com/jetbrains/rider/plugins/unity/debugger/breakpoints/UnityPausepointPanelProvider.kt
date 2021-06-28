@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.ui.HyperlinkLabel
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.intellij.xdebugger.breakpoints.ui.XBreakpointCustomPropertiesPanel
-import com.jetbrains.rider.UnityProjectDiscoverer
+import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.IDotNetLineBreakpointCustomPanelsProvider
 import javax.swing.JComponent

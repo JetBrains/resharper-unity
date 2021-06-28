@@ -1,11 +1,12 @@
-package com.jetbrains.rider
+package com.jetbrains.rider.plugins.unity
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.platform.util.idea.LifetimedProjectService
-import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
 import com.jetbrains.rider.projectView.solutionFile

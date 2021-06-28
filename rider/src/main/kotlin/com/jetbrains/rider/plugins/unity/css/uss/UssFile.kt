@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss
+package com.jetbrains.rider.plugins.unity.css.uss
 
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.css.impl.CssFileImpl

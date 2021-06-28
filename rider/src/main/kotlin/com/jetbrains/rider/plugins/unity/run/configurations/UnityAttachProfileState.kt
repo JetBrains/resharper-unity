@@ -11,9 +11,9 @@ import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.model.debuggerWorker.DebuggerWorkerModel
-import com.jetbrains.rider.model.unity.debuggerWorker.UnityStartInfo
-import com.jetbrains.rider.model.unity.debuggerWorker.unityDebuggerWorkerModel
-import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityStartInfo
+import com.jetbrains.rider.plugins.unity.model.debuggerWorker.unityDebuggerWorkerModel
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.IDebuggerOutputListener

@@ -8,7 +8,7 @@ import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.Consumer
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rider.model.unity.UnityEditorState
+import com.jetbrains.rider.plugins.unity.model.UnityEditorState
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import icons.UnityIcons
 import java.awt.event.MouseEvent

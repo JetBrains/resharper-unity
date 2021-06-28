@@ -3,7 +3,7 @@ package com.jetbrains.rider.plugins.unity.actions
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.util.getUnityArgs
 import com.jetbrains.rider.plugins.unity.util.withDebugCodeOptimization
