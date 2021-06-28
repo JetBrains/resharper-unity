@@ -9,7 +9,6 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
-using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
@@ -315,12 +314,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         {
             var anchorRaw = AssetUtils.GetAnchorFromBuffer(document.Buffer);
             if (!anchorRaw.HasValue) return null;
-            var guid = (document.Document.FindRootBlockMapEntries()?.Entries)?
-                .Cast<IBlockMappingEntry>()
-                .Where(entry => entry != null && entry.Key.MatchesPlainScalarText("m_Script") && entry.Content != null)
-                .Select(entry => entry.Content.Value.ToHierarchyReference(file) as ExternalReference?)
-                .FirstOrDefault()?
-                .ExternalAssetGuid;
+            var script = document.Document.GetUnityObjectPropertyValue<INode>(UnityYamlConstants.ScriptProperty);
+            var guid = (script.ToHierarchyReference(file) as ExternalReference?)?.ExternalAssetGuid;
             return guid != null ? new AnimatorScript(guid.Value, anchorRaw.Value) : (AnimatorScript?) null;
         }
 

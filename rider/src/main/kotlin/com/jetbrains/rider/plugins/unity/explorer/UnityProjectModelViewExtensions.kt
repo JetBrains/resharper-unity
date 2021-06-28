@@ -30,7 +30,9 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
     override fun getBestParentProjectModelNode(targetLocation: VirtualFile): ProjectModelEntity? {
         if (!project.isUnityProject())
             return null
-        return recursiveSearch(targetLocation) ?: super.getBestParentProjectModelNode(targetLocation)
+        if (targetLocation.isDirectory) // RIDER-64427 "New in This Directory" doesn't work
+            return recursiveSearch(targetLocation) ?: super.getBestParentProjectModelNode(targetLocation)
+        return recursiveSearch(targetLocation.parent) ?: super.getBestParentProjectModelNode(targetLocation)
     }
 
     override fun filterProjectModelNodesBeforeOperation(entities: List<ProjectModelEntity>): List<ProjectModelEntity> {

@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         private AnimatorStateMachineScriptUsage ExtractStateMachine()
         {
             var referenceToAnimatorState = CreateReferenceToAnimatorState();
-            var root = ExtractRoot();
+            var root = GetUnityObjectProperties();
             var stateMachineName = ExtractAnimatorStateNameFrom(root);
             var stateMachineBehavioursAnchors = ExtractStateMachineBehavioursAnchorsFrom(root);
             var childStateMachinesAnchors = ExtractChildStateMachinesAnchors(root);
@@ -73,12 +73,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         private static LocalList<long> ExtractChildAnchors(
             [NotNull] IBlockMappingNode root, string recordKey, string innerRecordKey)
         {
-            var anchors = (root.FindMapEntryBySimpleKey(recordKey)?.Content?.Value as IBlockSequenceNode)?
-                .Entries
+            var anchors = root.GetMapEntryValue<IBlockSequenceNode>(recordKey)?.Entries
                 .SelectNotNull(t => t?.Value as IBlockMappingNode)
-                .SelectNotNull(t => t.FindMapEntryBySimpleKey(innerRecordKey)?.Content?.Value as IFlowMappingNode)
-                .SelectNotNull(t => t.FindMapEntryBySimpleKey("fileID")?.Value as IPlainScalarNode)
-                .SelectNotNull(t => long.TryParse(t?.GetPlainScalarText(), out var anchor) ? anchor : (long?) null);
+                .SelectNotNull(t => t.GetMapEntryValue<IFlowMappingNode>(innerRecordKey))
+                .SelectNotNull(t => t.GetMapEntryPlainScalarText("fileID"))
+                .SelectNotNull(t => long.TryParse(t, out var anchor) ? anchor : (long?) null);
             var list = new LocalList<long>();
             if (anchors is null) return list;
             foreach (var anchor in anchors) list.Add(anchor);
@@ -101,10 +100,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         private AnimatorStateScriptUsage ExtractUsage()
         {
             var referenceToAnimatorState = CreateReferenceToAnimatorState();
-            var root = ExtractRoot();
+            var root = GetUnityObjectProperties();
             var animatorStateName = ExtractAnimatorStateNameFrom(root);
             var stateMachineBehavioursAnchors = ExtractStateMachineBehavioursAnchorsFrom(root);
-            return new AnimatorStateScriptUsage(referenceToAnimatorState, animatorStateName, 
+            return new AnimatorStateScriptUsage(referenceToAnimatorState, animatorStateName,
                 stateMachineBehavioursAnchors);
         }
 
@@ -117,24 +116,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         }
 
         [NotNull]
-        private IBlockMappingNode ExtractRoot()
+        private IBlockMappingNode GetUnityObjectProperties()
         {
-            return myDocument.Document.FindRootBlockMapEntries() ?? throw new AnimatorExtractorException();
+            return myDocument.Document.GetUnityObjectProperties() ?? throw new AnimatorExtractorException();
         }
 
         [NotNull]
         private static string ExtractAnimatorStateNameFrom([NotNull] IBlockMappingNode root)
         {
-            var name = root.FindMapEntryBySimpleKey("m_Name")?.Content?.Value?.GetPlainScalarText();
-            if (name is null) throw new AnimatorExtractorException();
-            return name;
+            return root.GetMapEntryPlainScalarText("m_Name") ?? throw new AnimatorExtractorException();
         }
 
         private static LocalList<long> ExtractStateMachineBehavioursAnchorsFrom([NotNull] IBlockMappingNode root)
         {
-            var node = root.FindMapEntryBySimpleKey("m_StateMachineBehaviours")?.Content?.Value;
-            if (!(node is IBlockSequenceNode record)) return new LocalList<long>();
-            return record.Entries.Aggregate(new LocalList<long>(), AddAnchor);
+            var node = root.GetMapEntryValue<IBlockSequenceNode>("m_StateMachineBehaviours");
+            return node?.Entries.Aggregate(new LocalList<long>(), AddAnchor) ?? new LocalList<long>();
         }
 
         private static LocalList<long> AddAnchor(LocalList<long> anchors, [NotNull] ISequenceEntry record)
@@ -146,7 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             anchors.Add(anchor);
             return anchors;
         }
-        
+
         private class AnimatorExtractorException : Exception
         {
         }

@@ -40,29 +40,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
 
             var buildSettings = GetEditorBuildSettings(unityModule);
 
-            var scenes = GetSceneCollection(buildSettings.GetDominantPsiFile<YamlLanguage>() as IYamlFile) as IBlockSequenceNode;
+            // An empty array would be an IFlowSequenceNode with no elements. We've got a disabled scene, so we know we
+            // must have an item, which will be serialised as a block sequence
+            var scenes = GetSceneCollection<IBlockSequenceNode>(buildSettings.GetDominantPsiFile<YamlLanguage>() as IYamlFile);
             Assertion.Assert(scenes != null, "scene != null");
             foreach (var entry in scenes.Entries)
             {
-                var scene = entry.Value;
-                var sceneRecord = scene as IBlockMappingNode;
-                if (sceneRecord == null)
+                var scene = entry.Value as IBlockMappingNode;
+                if (scene == null)
                     continue;
 
-                var path = GetUnityScenePathRepresentation(
-                    (sceneRecord.Entries[1].Content.Value as IPlainScalarNode).NotNull("PlainScalarNode:1").Text.GetText());
+                var path = GetUnityScenePathRepresentation(scene.GetMapEntryPlainScalarText("path")
+                    .NotNull("EditorBuildSettings.scenes[x].path"));
                 var simple = path.Split('/').Last();
-                var isEnabledPlaneScalarNode = (sceneRecord.Entries[0].Content.Value as IPlainScalarNode).NotNull("PlainScalarNode:0");
-                var isEnabled = isEnabledPlaneScalarNode.Text.GetText().Equals("1");
+                var isEnabledNode = scene.GetMapEntryValue<IPlainScalarNode>("enabled")
+                    .NotNull("EditorBuildSettings.scenes[x].enabled");
+                var isEnabled = isEnabledNode.GetPlainScalarText()
+                    .NotNull("isEnabledNode.GetPlainScalarText() != null")
+                    .Equals("1");
                 if (!isEnabled && (path.Equals(sceneName) || simple.Equals(sceneName)))
                 {
                     using (WriteLockCookie.Create(myWarning.Argument.IsPhysical()))
                     {
                         var text = YamlTokenType.NS_PLAIN_ONE_LINE_IN.Create("1");
-                        if (isEnabledPlaneScalarNode.Text != null)
-                            LowLevelModificationUtil.ReplaceChildRange(isEnabledPlaneScalarNode.Text, isEnabledPlaneScalarNode.Text, text);
+                        if (isEnabledNode.Text != null)
+                            LowLevelModificationUtil.ReplaceChildRange(isEnabledNode.Text, isEnabledNode.Text, text);
                         else
-                            LowLevelModificationUtil.AddChild(isEnabledPlaneScalarNode.Text, text);
+                            LowLevelModificationUtil.AddChild(isEnabledNode, text);
                     }
                 }
 

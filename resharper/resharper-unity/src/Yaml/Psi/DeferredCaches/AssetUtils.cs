@@ -71,10 +71,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         public static bool IsStripped(IBuffer buffer) =>
             ourStrippedSearcher.Find(buffer, 0, Math.Min(buffer.Length, 150)) >= 0;
 
-        public static bool IsAnimatorState(IBuffer buffer) => 
+        public static bool IsAnimatorState(IBuffer buffer) =>
             ourAnimatorStateSearcher.Find(buffer, 0, Math.Min(buffer.Length, 30)) >= 0;
 
-        public static bool IsAnimatorStateMachine(IBuffer buffer) => 
+        public static bool IsAnimatorStateMachine(IBuffer buffer) =>
             ourAnimatorStateMachineSearcher.Find(buffer, 0, Math.Min(buffer.Length, 30)) >= 0;
 
         public static long? GetAnchorFromBuffer(IBuffer buffer)
@@ -205,7 +205,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         public static IBlockMappingNode GetPrefabModification(IYamlDocument yamlDocument)
         {
             // Prefab instance has a map of modifications, that stores delta of instance and prefab
-            return yamlDocument.GetUnityObjectPropertyValue(UnityYamlConstants.ModificationProperty) as IBlockMappingNode;
+            return yamlDocument.GetUnityObjectPropertyValue<IBlockMappingNode>(UnityYamlConstants.ModificationProperty);
         }
 
         public static IEnumerable<string> GetAllNamesFor(IField field)
@@ -302,7 +302,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 var sourceFile = declaration.GetSourceFile();
                 if (sourceFile == null || !sourceFile.IsValid())
                     continue;
-                        
+
                 if (!typeElement.ShortName.Equals(sourceFile.GetLocation().NameWithoutExtension))
                     continue;
 

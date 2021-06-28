@@ -30,8 +30,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         // Note that Map is a map of *meta file* to asset guid, NOT asset file!
         private readonly Dictionary<FileSystemPath, Guid> myAssetFilePathToGuid =
             new Dictionary<FileSystemPath, Guid>();
-        
-        public Signal<(IPsiSourceFile sourceFile, Guid? oldGuid, Guid? newGuid)> GuidChanged = 
+
+        public Signal<(IPsiSourceFile sourceFile, Guid? oldGuid, Guid? newGuid)> GuidChanged =
             new Signal<(IPsiSourceFile sourceFile, Guid? oldGuid, Guid? newGuid)>("GuidChanged");
 
         public MetaFileGuidCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, ILogger logger)
@@ -73,18 +73,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
             // Note that this opens the document body chameleon, but we don't care for .meta files. They're lightweight
             var document = yamlFile.Documents.FirstOrDefault();
-
             if (document?.Body.BlockNode is IBlockMappingNode blockMappingNode)
             {
-                foreach (var entry in blockMappingNode.Entries)
-                {
-                    if (entry.Key?.CompareBufferText("guid") == true && entry.Content.Value is IPlainScalarNode valueScalarNode)
-                    {
-                        var guid = valueScalarNode.Text?.GetText();
-                        if (guid != null && Guid.TryParse(guid, out var rGuid))
-                            return new MetaFileCacheItem(rGuid);
-                    }
-                }
+                var guid = blockMappingNode.GetMapEntryPlainScalarText("guid");
+                if (guid != null && Guid.TryParse(guid, out var rGuid))
+                    return new MetaFileCacheItem(rGuid);
             }
 
             return null;
@@ -103,8 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             {
                 myLogger.Error(e, "An error occured during changing guid");
             }
-            
-            
+
             RemoveFromLocalCache(sourceFile);
             AddToLocalCache(sourceFile, builtPart as MetaFileCacheItem);
             base.Merge(sourceFile, builtPart);
@@ -127,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             {
                 myLogger.Error(e, "An error occured during changing guid");
             }
-            
+
             RemoveFromLocalCache(sourceFile);
             base.Drop(sourceFile);
         }

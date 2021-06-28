@@ -17,6 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         {
             myLogger = logger;
         }
+
         public bool IsApplicable(IPsiSourceFile sourceFile)
         {
             return sourceFile.Name.Equals("EditorBuildSettings.asset") && sourceFile.GetLocation().SniffYamlHeader();
@@ -25,41 +26,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public void Build(IPsiSourceFile sourceFile, ProjectSettingsCacheItem cacheItem)
         {
             var file = sourceFile.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
-            var scenesArray = GetSceneCollection(file);
-
-            if (scenesArray == null)
-            {
-                myLogger.Error("scenesArray != null");
+            if (file == null)
                 return;
-            }
-            
-            if (scenesArray is IBlockSequenceNode node)
+
+            var scenesArrayNode = GetSceneCollection<INode>(file);
+            switch (scenesArrayNode)
             {
-                foreach (var s in node.Entries)
+                case null:
+                    myLogger.Error("scenesArray == null");
+                    return;
+                case IBlockSequenceNode scenesArray:
                 {
-                    var scene = s.Value;
-                    var sceneRecord = scene as IBlockMappingNode;
-                    if (sceneRecord == null)
-                        continue;
-
-                    if (sceneRecord.Entries.Count < 2)
-                        continue;
-                    
-                    var scenePath = sceneRecord.Entries[1].Content?.Value.GetPlainScalarText();
-                    if (scenePath == null)
-                        continue;
-
-                    var path = GetUnityScenePathRepresentation(scenePath);
-                    var isEnabledPlaneScalarNode = sceneRecord.Entries[0].Content?.Value as IPlainScalarNode;
-                    var isEnabled = isEnabledPlaneScalarNode?.Text.GetText().Equals("1");
-                    if (path == null || !isEnabled.HasValue)
-                        continue;
-                    
-                    cacheItem.Scenes.SceneNamesFromBuildSettings.Add(path);
-                    if (!isEnabled.Value)
+                    foreach (var s in scenesArray.Entries)
                     {
-                        cacheItem.Scenes.DisabledSceneNamesFromBuildSettings.Add(path);
+                        var scene = s.Value as IBlockMappingNode;
+                        if (scene == null || scene.Entries.Count < 2)
+                            continue;
+
+                        var isEnabled = scene.GetMapEntryPlainScalarText("enabled")?.Equals("1");
+
+                        var scenePath = scene.GetMapEntryPlainScalarText("path");
+                        if (scenePath == null)
+                            continue;
+
+                        var path = GetUnityScenePathRepresentation(scenePath);
+                        if (path == null || !isEnabled.HasValue)
+                            continue;
+
+                        cacheItem.Scenes.SceneNamesFromBuildSettings.Add(path);
+                        if (!isEnabled.Value)
+                            cacheItem.Scenes.DisabledSceneNamesFromBuildSettings.Add(path);
                     }
+
+                    break;
                 }
             }
         }
