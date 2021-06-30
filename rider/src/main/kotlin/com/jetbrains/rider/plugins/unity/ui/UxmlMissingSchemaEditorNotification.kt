@@ -18,8 +18,8 @@ import com.jetbrains.rd.framework.RdTaskResult
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rd.util.reactive.whenTrue
-import com.jetbrains.rider.isUnityProject
-import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.isUnityProject
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory

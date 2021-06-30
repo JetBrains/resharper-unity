@@ -13,9 +13,9 @@ import com.intellij.workspaceModel.storage.url.VirtualFileUrlManager
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.platform.util.idea.LifetimedProjectService
 import com.jetbrains.rd.util.reactive.AddRemove
-import com.jetbrains.rider.model.unity.frontendBackend.UnityPackage
-import com.jetbrains.rider.model.unity.frontendBackend.UnityPackageSource
-import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
 import com.jetbrains.rider.projectView.workspace.getOrCreateRiderModuleEntity

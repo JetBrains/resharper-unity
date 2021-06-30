@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.codeInsight.css
+package com.jetbrains.rider.plugins.unity.css.uss.codeInsight.css
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.progress.ProgressManager

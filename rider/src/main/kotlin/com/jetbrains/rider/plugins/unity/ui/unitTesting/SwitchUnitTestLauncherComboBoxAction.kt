@@ -4,9 +4,9 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
-import com.jetbrains.rider.isUnityProject
-import com.jetbrains.rider.model.unity.frontendBackend.UnitTestLaunchPreference
-import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.isUnityProject
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnitTestLaunchPreference
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import javax.swing.JComponent
 

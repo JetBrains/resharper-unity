@@ -1,9 +1,9 @@
-package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss
+package com.jetbrains.rider.plugins.unity.css.uss
 
 import com.intellij.lexer.Lexer
 import com.intellij.psi.css.impl.util.CssHighlighter
 import com.intellij.psi.css.impl.util.CssHighlighterLexer
-import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.codeInsight.css.UssCssElementDescriptorFactory
+import com.jetbrains.rider.plugins.unity.css.uss.codeInsight.css.UssCssElementDescriptorFactory
 
 class UssSyntaxHighlighter: CssHighlighter() {
 

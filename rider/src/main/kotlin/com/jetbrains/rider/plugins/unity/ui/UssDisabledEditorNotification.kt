@@ -9,7 +9,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotifications
-import com.jetbrains.rider.isUnityProject
+import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.util.isUssFile
 
 class UssDisabledEditorNotification: EditorNotifications.Provider<EditorNotificationPanel>() {

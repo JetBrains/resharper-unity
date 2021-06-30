@@ -3,7 +3,7 @@ package com.jetbrains.rider.plugins.unity.util
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.hasSolution
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Path

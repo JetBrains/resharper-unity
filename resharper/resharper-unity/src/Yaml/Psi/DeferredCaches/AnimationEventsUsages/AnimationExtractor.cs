@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
     {
         [NotNull] private readonly AssetDocument myDocument;
         [NotNull] private readonly IPsiSourceFile myFile;
-        
+
         public AnimationExtractor([NotNull] IPsiSourceFile file,
                                   [NotNull] AssetDocument document)
         {
@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
         [NotNull, ItemNotNull]
         private List<AnimationUsage> ExtractEventUsage()
         {
-            var root = ExtractRoot();
+            var root = GetUnityObjectProperties();
             var location = CreateReferenceToAnimationClip();
             var animationName = ExtractAnimationClipNameFrom(root);
             var sampleRate = ExtractSampleRateFrom(root);
@@ -54,15 +54,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
 
         private static int ExtractSampleRateFrom([NotNull] IBlockMappingNode root)
         {
-            var sampleRateText = root.FindMapEntryBySimpleKey("m_SampleRate")?.Content?.Value.GetPlainScalarText();
+            var sampleRateText = root.GetMapEntryPlainScalarText("m_SampleRate");
             var foundSampleRate = int.TryParse(sampleRateText, out var sampleRate);
             return foundSampleRate ? sampleRate : throw new AnimationExtractorException();
         }
 
         [NotNull]
-        private IBlockMappingNode ExtractRoot()
+        private IBlockMappingNode GetUnityObjectProperties()
         {
-            return myDocument.Document.FindRootBlockMapEntries() ?? throw new AnimationExtractorException();
+            return myDocument.Document.GetUnityObjectProperties() ?? throw new AnimationExtractorException();
         }
 
         [NotNull]
@@ -88,40 +88,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
         [NotNull]
         private static string ExtractAnimationClipNameFrom([NotNull] IBlockMappingNode root)
         {
-            return root.FindMapEntryBySimpleKey("m_Name")?.Content?.Value.GetPlainScalarText() ??
-                throw new AnimationExtractorException();
+            return root.GetMapEntryPlainScalarText("m_Name") ?? throw new AnimationExtractorException();
         }
 
         [CanBeNull]
         private static Guid? ExtractEventFunctionGuidFrom([NotNull] IBlockMappingNode record)
         {
-            var objectReferenceParameterRecord = record
-                .FindMapEntryBySimpleKey("objectReferenceParameter")?
-                .Content?
-                .Value as IFlowMappingNode;
-            var guidText = objectReferenceParameterRecord?
-                .FindMapEntryBySimpleKey("guid")?
-                .Value
-                .GetPlainScalarText();
+            var guidText = record.GetMapEntryValue<IFlowMappingNode>("objectReferenceParameter")
+                ?.GetMapEntryPlainScalarText("guid");
             return guidText != null ? new Guid(guidText) : (Guid?) null;
         }
 
         private static double ExtractEventFunctionTimeFrom([NotNull] IBlockMappingNode record)
         {
-            var timeText = record.FindMapEntryBySimpleKey("time")?.Content?.Value.GetPlainScalarText();
+            var timeText = record.GetMapEntryPlainScalarText("time");
             return double.TryParse(timeText, out var time) ? time : throw new AnimationExtractorException();
         }
-        
+
         [CanBeNull]
         private static string ExtractEventFunctionNameFrom([NotNull] IBlockMappingNode record)
         {
-            return record.FindMapEntryBySimpleKey("functionName")?.Content?.Value.GetPlainScalarText();
+            return record.GetMapEntryPlainScalarText("functionName");
         }
 
         [NotNull]
         private static IBlockSequenceNode ExtractAnimationEventsFrom([NotNull] IBlockMappingNode root)
         {
-            return root.FindMapEntryBySimpleKey("m_Events")?.Content?.Value as IBlockSequenceNode ??
+            return root.GetMapEntryValue<IBlockSequenceNode>("m_Events") ??
                    throw new AnimationExtractorException();
         }
 

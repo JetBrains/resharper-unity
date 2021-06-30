@@ -20,10 +20,10 @@ import com.jetbrains.rd.util.lifetime.SequentialLifetimes
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rdclient.document.getDocumentId
-import com.jetbrains.rider.UnityProjectDiscoverer
+import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 import com.jetbrains.rider.cpp.fileType.CppFileType
-import com.jetbrains.rider.model.unity.frontendBackend.ShaderContextData
-import com.jetbrains.rider.model.unity.frontendBackend.ShaderContextDataBase
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextDataBase
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import icons.UnityIcons
 import java.awt.BorderLayout

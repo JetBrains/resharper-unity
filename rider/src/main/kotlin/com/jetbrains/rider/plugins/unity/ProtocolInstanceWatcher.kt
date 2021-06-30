@@ -7,7 +7,6 @@ import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
-import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.model.RdDelta
 import com.jetbrains.rider.model.RdDeltaBatch
 import com.jetbrains.rider.model.RdDeltaType

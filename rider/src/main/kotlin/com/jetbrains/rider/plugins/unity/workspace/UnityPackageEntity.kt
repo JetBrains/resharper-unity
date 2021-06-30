@@ -12,8 +12,8 @@ import com.intellij.workspaceModel.storage.impl.WorkspaceEntityBase
 import com.intellij.workspaceModel.storage.impl.WorkspaceEntityData
 import com.intellij.workspaceModel.storage.impl.references.*
 import com.intellij.workspaceModel.storage.url.VirtualFileUrl
-import com.jetbrains.rider.model.unity.frontendBackend.UnityPackage
-import com.jetbrains.rider.model.unity.frontendBackend.UnityPackageSource
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
 
 class UnityPackageEntity(private val descriptor: UnityPackage) : WorkspaceEntityBase() {
 

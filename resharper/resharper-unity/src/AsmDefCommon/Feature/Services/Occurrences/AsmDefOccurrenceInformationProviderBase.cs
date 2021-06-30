@@ -1,3 +1,4 @@
+using JetBrains.Diagnostics;
 using JetBrains.IDE;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
@@ -6,10 +7,9 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
+namespace JetBrains.ReSharper.Plugins.Unity.AsmDefCommon.Feature.Services.Occurrences
 {
-    [SolutionFeaturePart]
-    public class UnityAssetOccurenceInfoProvider : IOccurrenceInformationProvider2
+    public class AsmDefOccurrenceInformationProviderBase<T> : IOccurrenceInformationProvider2 where T : PsiLanguageType
     {
         public IDeclaredElementEnvoy GetTypeMember(IOccurrence occurrence)
         {
@@ -33,21 +33,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 
         public TextRange GetTextRange(IOccurrence occurrence)
         {
-            return TextRange.InvalidRange;
+            var asmDefNameOccurrence = (occurrence as AsmDefNameOccurrenceBase<T>).NotNull("asmDefNameOccurrence != null");
+            return new TextRange(asmDefNameOccurrence.NavigationTreeOffset,
+                asmDefNameOccurrence.NavigationTreeOffset + asmDefNameOccurrence.Name.Length);
         }
 
         public ProjectModelElementEnvoy GetProjectModelElementEnvoy(IOccurrence occurrence)
         {
             return null;
         }
-        
-        public SourceFilePtr GetSourceFilePtr(IOccurrence occurrence) =>
-            (occurrence as UnityAssetOccurrence)?.SourceFile.Ptr() ?? SourceFilePtr.Fake;
 
-        public bool IsApplicable(IOccurrence occurrence)
-        {
-            return occurrence is UnityAssetOccurrence;
-        }
+        public SourceFilePtr GetSourceFilePtr(IOccurrence occurrence) =>
+            (occurrence as AsmDefNameOccurrenceBase<T>)?.SourceFile.Ptr() ?? SourceFilePtr.Fake;
+
+        public bool IsApplicable(IOccurrence occurrence) => occurrence is AsmDefNameOccurrenceBase<T>;
 
         public void SetTabOptions(TabOptions tabOptions, IOccurrence occurrence)
         {

@@ -68,7 +68,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
 
     init {
-        setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.model.unity.frontendBackend")
+        setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.plugins.unity.model.frontendBackend")
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.FrontendBackend")
 
         property("hasUnityReference", bool).documentation = "True when the current project is a Unity project. Either full Unity project or class library"

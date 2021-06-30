@@ -17,8 +17,8 @@ import com.jetbrains.rd.platform.util.launchNonUrgentBackground
 import com.jetbrains.rd.platform.util.withUiContext
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rd.util.reactive.whenTrue
-import com.jetbrains.rider.UnityProjectDiscoverer
-import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
