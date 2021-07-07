@@ -176,7 +176,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
                 if (string.IsNullOrEmpty(projectConfiguration.DefineConstants))
                     projectConfiguration.DefineConstants = DefineConstants;
                 else
-                    projectConfiguration.DefineConstants += ";" + DefineConstants;
+                {
+                    // Remove any UNITY_ version defines already in there. This might happen if the attribute has been
+                    // applied to a class, and then also to a method to override.
+                    projectConfiguration.DefineConstants = string.Join(";",
+                        projectConfiguration.DefineConstants.Split(';').Where(s => !s.StartsWith("UNITY_"))
+                            .Concat(DefineConstants));
+                }
 
                 context.TestLifetime.OnTermination(() => projectConfiguration.DefineConstants = oldCompilationSymbols);
             }
