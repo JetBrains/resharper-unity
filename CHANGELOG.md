@@ -25,6 +25,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Improve performance showing packages in Unity Explorer when reopening a project ([RIDER-61805](https://youtrack.jetbrains.com/issue/RIDER-61805), [#2105](https://github.com/JetBrains/resharper-unity/pull/2105))
 - Rider: Group Unity run configurations in the run config dialog ([#2081](https://github.com/JetBrains/resharper-unity/pull/2081))
 - Rider: Ignore "break on unhandled exception" setting for IL2CPP players ([RIDER-62321](https://youtrack.jetbrains.com/issue/RIDER-62321), [#2098](https://github.com/JetBrains/resharper-unity/pull/2098))
+- Rider: Ignore unhandled `ExitGUIException` while debugging the editor ([#2119](https://github.com/JetBrains/resharper-unity/pull/2119))
 - Rider: Show localised external Unity documentation if English isn't available ([RIDER-55737](https://youtrack.jetbrains.com/issue/RIDER-55737), [#2050](https://github.com/JetBrains/resharper-unity/pull/2050))
 
 ### Fixed
