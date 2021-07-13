@@ -43,12 +43,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
             myUnityProjectFileCache = unityProjectFileCache;
             mySolution = solution;
             myFileSystemTracker = fileSystemTracker;
-            
+
             // SolutionDirectory isn't absolute in tests, and will throw if used with FileSystemTracker
             mySolutionDirectory = solution.SolutionDirectory;
             if (!mySolutionDirectory.IsAbsolute)
                 mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory());
-            
+
             unitySolutionTracker.IsUnityProjectFolder.WhenTrue(lifetime, SetActualVersionForSolution);
         }
 
@@ -156,14 +156,18 @@ namespace JetBrains.ReSharper.Plugins.Unity
             {
                 foreach (var configuration in project.ProjectProperties.GetActiveConfigurations<IManagedProjectConfiguration>())
                 {
-                    // Get the constants. The tests can't set this up correctly, so they
-                    // add the Unity version as a property
-                    var defineConstants = configuration.DefineConstants;
-                    if (string.IsNullOrEmpty(defineConstants))
-                        configuration.PropertiesCollection.TryGetValue("DefineConstants", out defineConstants);
-
-                    unityVersion = UnityProjectFileCacheProvider.GetVersionFromDefines(defineConstants ?? string.Empty,
-                        unityVersion);
+                    // Get the version define from the project configuration, if set. The solution might be initialised
+                    // before the test aspect attribute has a chance to update the project configuration, so fall back
+                    // to the properties collection.
+                    var defineConstants = configuration.DefineConstants ?? string.Empty;
+                    unityVersion = UnityProjectFileCacheProvider.GetVersionFromDefines(defineConstants, unityVersion);
+                    if (unityVersion.Major == 0)
+                    {
+                        configuration.PropertiesCollection.TryGetValue("DefineConstants", out var defineConstantsProp);
+                        unityVersion =
+                            UnityProjectFileCacheProvider.GetVersionFromDefines(defineConstantsProp ?? string.Empty,
+                                unityVersion);
+                    }
                 }
             }
 
@@ -186,7 +190,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             if (string.IsNullOrEmpty(input))
                 return null;
-            
+
             const string pattern = @"(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)(?<type>[a-z])(?<revision>\d+)";
             var match = Regex.Match(input, pattern);
             var groups = match.Groups;
@@ -215,8 +219,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static string VersionToString([NotNull] Version version)
         {
             if (version == null)
-                throw new ArgumentNullException("version is null.");
-            
+                throw new ArgumentNullException(nameof(version));
+
             var type = string.Empty;
             var rev = string.Empty;
             try

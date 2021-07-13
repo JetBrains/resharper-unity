@@ -5,6 +5,8 @@ using JetBrains.Application.platforms;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Assemblies.Impl;
 using JetBrains.ProjectModel.ProjectImplementation;
+using JetBrains.ProjectModel.Properties;
+using JetBrains.ProjectModel.Propoerties;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.ReSharper.TestFramework;
@@ -163,6 +165,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
 
         public string PropertyName => "DefineConstants";
         public string PropertyValue => DefineConstants;
+
+        protected override void OnBeforeTestExecute(TestAspectContext context)
+        {
+            foreach (var activeConfiguration in context.TestProject.ProjectProperties
+                .GetActiveConfigurations<CSharpProjectConfiguration>())
+            {
+                var projectConfiguration = activeConfiguration;
+                var oldCompilationSymbols = projectConfiguration.DefineConstants;
+                if (string.IsNullOrEmpty(projectConfiguration.DefineConstants))
+                    projectConfiguration.DefineConstants = DefineConstants;
+                else
+                {
+                    // Remove any UNITY_ version defines already in there. This might happen if the attribute has been
+                    // applied to a class, and then also to a method to override.
+                    projectConfiguration.DefineConstants = string.Join(";",
+                        projectConfiguration.DefineConstants.Split(';').Where(s => !s.StartsWith("UNITY_"))
+                            .Concat(DefineConstants));
+                }
+
+                context.TestLifetime.OnTermination(() => projectConfiguration.DefineConstants = oldCompilationSymbols);
+            }
+        }
 
         // If we're not using the default test version, make sure we clean out the old Unity references. Because all
         // versions have an assembly version of 0.0, the test framework doesn't see that they're different, and they'll

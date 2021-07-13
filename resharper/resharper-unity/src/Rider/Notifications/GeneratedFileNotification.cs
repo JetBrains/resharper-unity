@@ -30,7 +30,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
                                          [CanBeNull] SolutionLifecycleHost solutionLifecycleHost = null,
                                          [CanBeNull] NotificationPanelHost notificationPanelHost = null)
         {
-            if (solutionLifecycleHost == null)
+            // TODO: Why are these [CanBeNull]?
+            if (solutionLifecycleHost == null || textControlHost == null || notificationPanelHost == null)
                 return;
 
             if (!solutionTracker.IsUnityGeneratedProject.Value)
@@ -63,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
                         {
                             var strPath = path.Components.Join("/").RemoveStart("../");
                             elements.Add(new NotificationPanelCallbackHyperlink(modelLifetime,
-                                "Edit corresponding .asmdef in Unity",
+                                "Edit corresponding .asmdef in Unity", false,
                                 () =>
                                 {
                                     frontendBackendHost.Do(t =>
