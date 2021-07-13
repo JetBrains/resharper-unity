@@ -64,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
                         {
                             var strPath = path.Components.Join("/").RemoveStart("../");
                             elements.Add(new NotificationPanelCallbackHyperlink(modelLifetime,
-                                "Edit corresponding .asmdef in Unity", true,
+                                "Edit corresponding .asmdef in Unity", false,
                                 () =>
                                 {
                                     frontendBackendHost.Do(t =>
