@@ -27,7 +27,9 @@ class UnityNavBarModelExtension : AbstractNavBarModelExtension() {
     private fun shouldHide(psiElement: PsiElement) = isMetaFile(psiElement) && !shouldShowMetaFiles(psiElement.project)
 
     private fun shouldShowMetaFiles(project: Project): Boolean {
-        return SolutionExplorerViewPane.getInstance(project).myShowAllFiles
+        val solutionPane = SolutionExplorerViewPane.tryGetInstance(project) ?: return false
+
+        return solutionPane.myShowAllFiles
     }
 
     private fun isMetaFile(psiElement: PsiElement): Boolean {
