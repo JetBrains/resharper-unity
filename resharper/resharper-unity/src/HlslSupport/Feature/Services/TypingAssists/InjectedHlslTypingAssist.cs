@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingA
         myDummyFormatter = dummyFormatter;
       var braceHandler = new InjectedHlslBraceHandler(this, dummyFormatter, false, productConfigurations.IsInternalMode());
       var quoteHandler = new CppQuoteHandler<ShaderLabLanguage>(this);
-      var deleteHandler = new CppDeleteHandler<ShaderLabLanguage>(this, dummyFormatter);
+      var deleteHandler = new CppDeleteHandler<ShaderLabLanguage>(this, dummyFormatter, braceHandler);
 
       typingAssistManager.AddTypingHandler(lifetime, '{', this, c => ExecuteTypingInCppContextOnly(c, braceHandler.HandleLeftBraceTyped),
         IsTypingHandlerAvailable);

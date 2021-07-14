@@ -1,3 +1,4 @@
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.CommandProcessing;
 using JetBrains.Application.Environment;
@@ -17,7 +18,9 @@ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CachingLexers;
 using JetBrains.ReSharper.Psi.CodeStyle;
+using JetBrains.ReSharper.Psi.Cpp.Language;
 using JetBrains.ReSharper.Psi.Cpp.Parsing;
+using JetBrains.ReSharper.Psi.Format;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.TextControl;
 using JetBrains.Util;
@@ -27,6 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.TypingAss
     [SolutionComponent]
     public class ShaderLabTypingAssist : TypingAssistLanguageBase<ShaderLabLanguage>, ITypingHandler
     {
+        [NotNull] private readonly ISolution mySolution;
         [NotNull] private readonly InjectedHlslDummyFormatter myInjectedHlslDummyFormatter;
         [NotNull] private readonly CachingLexerService myCachingLexerService;
 
@@ -48,6 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.TypingAss
                 externalIntellisenseHost,
                 skippingTypingAssist, lastTypingAssistAction, structuralRemoveManager)
         {
+            mySolution = solution;
             myInjectedHlslDummyFormatter = injectedHlslDummyFormatter;
             myCachingLexerService = cachingLexerService;
 
@@ -116,7 +121,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.TypingAss
                                     //<caret>{
 
                                     //<caret>    {
-                                    var baseIndent = myInjectedHlslDummyFormatter.GetFormatSettingsService(textControl).GetIndentStr();
+                                    var baseIndent = GetFormatSettingsService(textControl).GetIndentStr();
                                     string indent;
                                     if (cachingLexer.TokenType == ShaderLabTokenType.WHITESPACE)
                                         indent = cachingLexer.GetTokenText() + baseIndent;
@@ -171,5 +176,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.TypingAss
         }
 
         protected override IndentTypingHelper<ShaderLabLanguage> GetIndentTypingHelper() => new ShaderLabIndentTypingHelper(this);
+        
+        /// Expensive, avoid calling too many times.
+        public FormatSettingsKeyBase GetFormatSettingsService(ITextControl textControl)
+        {
+            var sourceFile = textControl.TryGetSourceFiles(mySolution).FirstOrDefault();
+            if (sourceFile == null) return FormatSettingsKeyBase.Default;
+            return sourceFile.GetFormatterSettings(ShaderLabLanguage.Instance);
+        }
     }
 }

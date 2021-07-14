@@ -2,7 +2,6 @@ using JetBrains.ReSharper.Feature.Services.Cpp.TypingAssist;
 using JetBrains.ReSharper.Feature.Services.TypingAssist;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
-using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingAssists
 {
@@ -15,9 +14,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingA
       myCppDummyFormatter = cppDummyFormatter;
     }
 
-    protected override string CalculateBaseIndent(CachingLexer lexer, ITextControl textControl)
+    protected override string CalculateBaseIndent(CppDummyFormatterContext context, CachingLexer lexer)
     {
-      return myCppDummyFormatter.CalculateInjectionIndent(lexer, textControl);
+        return myCppDummyFormatter.CalculateInjectionIndent(context, lexer);
     }
+
   }
 }
