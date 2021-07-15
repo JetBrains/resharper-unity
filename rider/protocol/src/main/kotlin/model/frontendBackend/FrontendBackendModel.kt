@@ -18,6 +18,13 @@ import model.lib.Library
 @Suppress("unused")
 object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
+    // TODO [213] share model in library, too late to change model in 212
+    private var RdOpenFileArgs = structdef {
+        field("path", string)
+        field("line", int)
+        field("col", int)
+    }
+
     private val UnityPackageSource = enum {
         +"Unknown"
         +"BuiltIn"
@@ -141,5 +148,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("isDeferredCachesCompletedOnce", bool)
 
         call ("hasUnsavedScenes", void, bool)
+
+        // Actions called from Unity to the backend
+        callback("openFileLineCol", RdOpenFileArgs, bool).documentation = "Called from Unity to quickly open a file in an existing Rider instance"
     }
 }
