@@ -27,6 +27,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Ignore "break on unhandled exception" setting for IL2CPP players ([RIDER-62321](https://youtrack.jetbrains.com/issue/RIDER-62321), [#2098](https://github.com/JetBrains/resharper-unity/pull/2098))
 - Rider: Ignore unhandled `ExitGUIException` while debugging the editor in Unity 2021.2 ([RIDER-64944](https://youtrack.jetbrains.com/issue/RIDER-64944), [#2119](https://github.com/JetBrains/resharper-unity/pull/2119))
 - Rider: Show localised external Unity documentation if English isn't available ([RIDER-55737](https://youtrack.jetbrains.com/issue/RIDER-55737), [#2050](https://github.com/JetBrains/resharper-unity/pull/2050))
+- Rider: Add size thresholds for analysis of shader files ([#2121](https://github.com/JetBrains/resharper-unity/pull/2121))
 
 ### Fixed
 
@@ -39,6 +40,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: External documentation for method parameter now navigates to documentation for method ([https://youtrack.jetbrains.com/issue/RIDER-60297](https://youtrack.jetbrains.com/issue/RIDER-60297), [#2050](https://github.com/JetBrains/resharper-unity/pull/2050))
 - Rider: Fix packages occasionally not showing or updating in Unity Explorer when Unity is not running ([RIDER-62558](https://youtrack.jetbrains.com/issue/RIDER-62558), [#2085](https://github.com/JetBrains/resharper-unity/pull/2085))
 - Rider: Fix "New in This Directory" action not working ([RIDER-64427](https://youtrack.jetbrains.com/issue/RIDER-64427), [DEXP-591679](https://youtrack.jetbrains.com/issue/DEXP-591679), [#2113](https://github.com/JetBrains/resharper-unity/pull/2113))
+- Rider: Fix out of memory exceptions when trying to view very large compiled shader files ([RIDER-65080](https://youtrack.jetbrains.com/issue/RIDER-65080), [#2121](https://github.com/JetBrains/resharper-unity/pull/2121))
 
 
 
