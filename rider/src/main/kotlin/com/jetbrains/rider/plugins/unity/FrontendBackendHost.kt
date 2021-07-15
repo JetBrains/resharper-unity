@@ -36,12 +36,7 @@ class FrontendBackendHost(project: Project) : ProtocolSubscribedProjectComponent
 
     init {
         model.activateRider.advise(projectComponentLifetime) {
-            ProjectUtil.focusProjectWindow(project, true)
-            val frame = WindowManager.getInstance().getFrame(project)
-            if (frame != null) {
-                if (BitUtil.isSet(frame.extendedState, Frame.ICONIFIED))
-                    frame.extendedState = BitUtil.set(frame.extendedState, Frame.ICONIFIED, false)
-            }
+            activateRider()
         }
 
         model.consoleLogging.onConsoleLogEvent.adviseNotNull(projectComponentLifetime) {
@@ -104,12 +99,22 @@ class FrontendBackendHost(project: Project) : ProtocolSubscribedProjectComponent
             val file = VfsUtil.findFileByIoFile(File(arg.path), false) ?: return@set RdTask.fromResult(false)
             val editors = manager.openEditor(OpenFileDescriptor(project, file, max(0, arg.line - 1), max(0, arg.col - 1)), true)
 
+            activateRider()
             RdTask.fromResult(true)
         }
     }
 
     companion object {
         fun getInstance(project: Project): FrontendBackendHost = project.getComponent(FrontendBackendHost::class.java)
+    }
+
+    private fun activateRider() {
+        ProjectUtil.focusProjectWindow(project, true)
+        val frame = WindowManager.getInstance().getFrame(project)
+        if (frame != null) {
+            if (BitUtil.isSet(frame.extendedState, Frame.ICONIFIED))
+                frame.extendedState = BitUtil.set(frame.extendedState, Frame.ICONIFIED, false)
+        }
     }
 }
 
