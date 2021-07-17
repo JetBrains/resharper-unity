@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.Navigation;
@@ -66,13 +67,17 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
       modelValue.ShowFileInUnity.Advise(connectionLifetime, result =>
       {
         if (result != null)
-        {
-          MainThreadDispatcher.Instance.Queue(() =>
+        { 
+          var matchedUnityPath = AssetDatabase.GetAllAssetPaths().FirstOrDefault(a => Path.GetFullPath(a) == result);
+          if (matchedUnityPath != null)
           {
-            ExpandMinimizedUnityWindow();
-            EditorUtility.FocusProjectWindow();
-            ShowUtil.ShowFileUsage(result);
-          });
+            MainThreadDispatcher.Instance.Queue(() =>
+            {
+              ExpandMinimizedUnityWindow();
+              EditorUtility.FocusProjectWindow();
+              ShowUtil.ShowFileUsage(matchedUnityPath);
+            });  
+          }
         }
       });
     }
