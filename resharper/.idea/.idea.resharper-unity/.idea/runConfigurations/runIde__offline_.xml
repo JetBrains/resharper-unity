@@ -1,12 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="runIde (offline)" type="DotNetProject" factoryName=".NET Project">
-    <option name="EXE_PATH" value="$PROJECT_DIR$/build/gradle-launcher/bin/Debug/net461/gradle-launcher.exe" />
+    <option name="EXE_PATH" value="$PROJECT_DIR$/build/gradle-launcher/bin/Debug/net472/gradle-launcher.exe" />
     <option name="PROGRAM_PARAMETERS" value="../../rider runIde -PskipDotnet=true --offline" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/gradle-launcher" />
     <option name="PASS_PARENT_ENVS" value="1" />
     <envs>
-      <env name="ASPNETCORE_ENVIRONMENT" value="Development" />
-      <env name="ASPNETCORE_URLS" value="http://localhost:5000" />
       <env name="RESHARPER_HOST_DEBUG_SELF" value="1" />
     </envs>
     <option name="USE_EXTERNAL_CONSOLE" value="0" />
@@ -17,7 +15,7 @@
     <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
     <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="0" />
     <option name="PROJECT_KIND" value="DotNetCore" />
-    <option name="PROJECT_TFM" value=".NETFramework,Version=v4.6.1" />
+    <option name="PROJECT_TFM" value=".NETFramework,Version=v4.7.2" />
     <browser url="http://localhost:5000" />
     <method v="2">
       <option name="Build" />

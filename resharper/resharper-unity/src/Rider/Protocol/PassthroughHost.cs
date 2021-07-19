@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
@@ -6,14 +7,15 @@ using JetBrains.IDE;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
-using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.TextControl;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures.TypedIntrinsics;
+using FrontendOpenArgs = JetBrains.Rider.Model.Unity.FrontendBackend.RdOpenFileArgs;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 {
@@ -25,6 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         private readonly IEditorManager myEditorManager;
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly FrontendBackendHost myFrontendBackendHost;
+        private readonly ILogger myLogger;
 
         public PassthroughHost(Lifetime lifetime,
                                ISolution solution,
@@ -32,13 +35,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                                IEditorManager editorManager,
                                UnitySolutionTracker unitySolutionTracker,
                                BackendUnityHost backendUnityHost,
-                               FrontendBackendHost frontendBackendHost)
+                               FrontendBackendHost frontendBackendHost,
+                               ILogger logger)
         {
             mySolution = solution;
             myThreading = threading;
             myEditorManager = editorManager;
             myBackendUnityHost = backendUnityHost;
             myFrontendBackendHost = frontendBackendHost;
+            myLogger = logger;
 
             if (!frontendBackendHost.IsAvailable)
                 return;
@@ -107,7 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             {
                 var backendUnityModel = backendUnityModelProperty.Maybe.ValueOrDefault;
                 return backendUnityModel == null
-                    ? RdTask<RunMethodResult>.Cancelled()
+                    ? Rd.Tasks.RdTask<RunMethodResult>.Cancelled()
                     : backendUnityModel.RunMethodInUnity.Start(l, data).ToRdTask(l);
             });
             
@@ -195,32 +200,53 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 
         private void AdviseOpenFile(BackendUnityModel backendUnityModel, FrontendBackendModel frontendBackendModel)
         {
-            backendUnityModel.OpenFileLineCol.Set(args =>
+            backendUnityModel.OpenFileLineCol.Set((lf, args) =>
             {
-                var result = false;
-                mySolution.Locks.ExecuteWithReadLock(() =>
+                Rd.Tasks.RdTask<bool> result = new Rd.Tasks.RdTask<bool>();
+                using (ReadLockCookie.Create())
                 {
-                    myEditorManager.OpenFile(FileSystemPath.Parse(args.Path), OpenFileOptions.DefaultActivate, myThreading,
-                        textControl =>
+                    try
+                    {
+                        var path = FileSystemPath.Parse(args.Path);
+                        if (!path.ExistsFile)
                         {
-                            var line = args.Line;
-                            var column = args.Col;
-
-                            if (line > 0 || column > 0) // avoid changing placement when it is not requested
+                            result.Set(false);
+                            return result;
+                        }
+                        
+                        // TODO 213 reuse for all files
+                        if (path.GetFileLength() > 50 * 1024 * 1024)
+                        {
+                            return frontendBackendModel.OpenFileLineCol.Start(lf, new FrontendOpenArgs(args.Path, args.Line, args.Col)).ToRdTask(lf);
+                        }
+                        
+                        myEditorManager.OpenFile(path, OpenFileOptions.DefaultActivate, myThreading,
+                            textControl =>
                             {
-                                if (line > 0) line--;
-                                if (line < 0) line = 0;
-                                if (column > 0) column--;
-                                if (column < 0) column = 0;
-                                textControl.Caret.MoveTo((Int32<DocLine>) line, (Int32<DocColumn>) column,
-                                    CaretVisualPlacement.Generic);
-                            }
+                                var line = args.Line;
+                                var column = args.Col;
 
-                            frontendBackendModel.ActivateRider();
-                            result = true;
-                        },
-                        () => result = false);
-                });
+                                if (line > 0 || column > 0) // avoid changing placement when it is not requested
+                                {
+                                    if (line > 0) line--;
+                                    if (line < 0) line = 0;
+                                    if (column > 0) column--;
+                                    if (column < 0) column = 0;
+                                    textControl.Caret.MoveTo((Int32<DocLine>) line, (Int32<DocColumn>) column,
+                                        CaretVisualPlacement.Generic);
+                                }
+
+                                frontendBackendModel.ActivateRider();
+                                result.Set(true);
+                            },
+                            () => result.Set(false));
+                    }
+                    catch (Exception e)
+                    {
+                        myLogger.Error(e);
+                        result.Set(false);
+                    }
+                }
 
                 return result;
             });
