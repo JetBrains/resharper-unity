@@ -9,7 +9,6 @@ using JetBrains.Rider.Unity.Editor.Navigation.Window;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using UnityEditor;
 using UnityEngine;
-using Object = System.Object;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
 {
