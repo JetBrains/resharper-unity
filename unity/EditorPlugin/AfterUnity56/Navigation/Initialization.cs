@@ -9,6 +9,7 @@ using JetBrains.Rider.Unity.Editor.Navigation.Window;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using UnityEditor;
 using UnityEngine;
+using Object = System.Object;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
 {
@@ -67,10 +68,19 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
 
       modelValue.ShowFileInUnity.AdviseNotNull(connectionLifetime, result =>
       {
-        var matchedUnityPath = AssetDatabase.GetAllAssetPaths()
-          .FirstOrDefault(a =>
-            new FileInfo(Path.GetFullPath(a)).FullName ==
-            new FileInfo(result).FullName); // FileInfo normalizes separators (required on Windows)
+        var fullName = new FileInfo(result).FullName;
+        // only works for Assets folder
+        var matchedUnityPath = fullName.Substring(Directory.GetParent(Application.dataPath).FullName.Length + 1);
+
+        if (fullName != new FileInfo(Path.GetFullPath(matchedUnityPath)).FullName)
+        {
+          // works for any assets including local packages, but might be slow on big projects
+          matchedUnityPath = AssetDatabase.GetAllAssetPaths()
+            .FirstOrDefault(a =>
+              new FileInfo(Path.GetFullPath(a)).FullName ==
+              fullName); // FileInfo normalizes separators (required on Windows)
+        }
+
         if (matchedUnityPath != null)
         {
           ExpandMinimizedUnityWindow();
