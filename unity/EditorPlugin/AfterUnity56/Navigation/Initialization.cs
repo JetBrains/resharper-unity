@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using JetBrains.Collections.Viewable;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.Navigation;
 using JetBrains.Rider.Unity.Editor.Navigation.Window;
@@ -17,11 +18,11 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
     {
       var modelValue = modelAndLifetime.Model;
       var connectionLifetime = modelAndLifetime.Lifetime;
-      modelValue.ShowUsagesInUnity.Advise(connectionLifetime,  findUsagesResult =>
+      modelValue.ShowUsagesInUnity.Advise(connectionLifetime, findUsagesResult =>
       {
         if (findUsagesResult != null)
         {
-          MainThreadDispatcher.Instance.Queue(() =>
+          MainThreadDispatcher.Instance.Queue(() => // todo: remove MainThreadDispatcher call - not needed
           {
             ExpandMinimizedUnityWindow();
 
@@ -52,7 +53,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
       {
         if (result != null)
         {
-          MainThreadDispatcher.Instance.Queue(() =>
+          MainThreadDispatcher.Instance.Queue(() => // todo: remove MainThreadDispatcher call - not needed
           {
             GUI.BringWindowToFront(EditorWindow.GetWindow<SceneView>().GetInstanceID());
             GUI.BringWindowToFront(EditorWindow.GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.SceneHierarchyWindow")).GetInstanceID());
@@ -64,21 +65,17 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
         }
       });
 
-      modelValue.ShowFileInUnity.Advise(connectionLifetime, result =>
+      modelValue.ShowFileInUnity.AdviseNotNull(connectionLifetime, result =>
       {
-        if (result != null)
+        var matchedUnityPath = AssetDatabase.GetAllAssetPaths()
+          .FirstOrDefault(a =>
+            new FileInfo(Path.GetFullPath(a)).FullName ==
+            new FileInfo(result).FullName); // FileInfo normalizes separators (required on Windows)
+        if (matchedUnityPath != null)
         {
-          var matchedUnityPath = AssetDatabase.GetAllAssetPaths()
-            .FirstOrDefault(a => new FileInfo(Path.GetFullPath(a)).FullName == new FileInfo(result).FullName); // FileInfo normalizes separators (required on Windows)
-          if (matchedUnityPath != null)
-          {
-            MainThreadDispatcher.Instance.Queue(() =>
-            {
-              ExpandMinimizedUnityWindow();
-              EditorUtility.FocusProjectWindow();
-              ShowUtil.ShowFileUsage(matchedUnityPath);
-            });  
-          }
+          ExpandMinimizedUnityWindow();
+          EditorUtility.FocusProjectWindow();
+          ShowUtil.ShowFileUsage(matchedUnityPath);
         }
       });
     }
