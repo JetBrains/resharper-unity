@@ -67,8 +67,9 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
       modelValue.ShowFileInUnity.Advise(connectionLifetime, result =>
       {
         if (result != null)
-        { 
-          var matchedUnityPath = AssetDatabase.GetAllAssetPaths().FirstOrDefault(a => Path.GetFullPath(a) == result);
+        {
+          var matchedUnityPath = AssetDatabase.GetAllAssetPaths()
+            .FirstOrDefault(a => new FileInfo(Path.GetFullPath(a)).FullName == new FileInfo(result).FullName); // FileInfo normalizes separators (required on Windows)
           if (matchedUnityPath != null)
           {
             MainThreadDispatcher.Instance.Queue(() =>
