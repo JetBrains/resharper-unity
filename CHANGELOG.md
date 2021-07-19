@@ -41,7 +41,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix packages occasionally not showing or updating in Unity Explorer when Unity is not running ([RIDER-62558](https://youtrack.jetbrains.com/issue/RIDER-62558), [#2085](https://github.com/JetBrains/resharper-unity/pull/2085))
 - Rider: Fix "New in This Directory" action not working ([RIDER-64427](https://youtrack.jetbrains.com/issue/RIDER-64427), [DEXP-591679](https://youtrack.jetbrains.com/issue/DEXP-591679), [#2113](https://github.com/JetBrains/resharper-unity/pull/2113))
 - Rider: Fix out of memory exceptions when trying to view very large compiled shader files ([RIDER-65080](https://youtrack.jetbrains.com/issue/RIDER-65080), [#2121](https://github.com/JetBrains/resharper-unity/pull/2121))
-
+- Rider: Fix "Show in Unity" action for local packages ([RIDER-65128](https://youtrack.jetbrains.com/issue/RIDER-65128), [#2124](https://github.com/JetBrains/resharper-unity/pull/2124))
 
 
 ## 2021.1.3
