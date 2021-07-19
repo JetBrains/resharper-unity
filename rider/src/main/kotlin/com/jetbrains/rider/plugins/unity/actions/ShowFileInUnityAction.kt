@@ -49,7 +49,7 @@ open class ShowFileInUnityAction : DumbAwareAction() {
             if (value != null)
                 Utils.AllowUnitySetForegroundWindow(value)
 
-            model.showFileInUnity.fire(File(file.path).relativeTo(File(project.projectDir.path)).invariantSeparatorsPath)
+            model.showFileInUnity.fire(file.path)
         }
     }
 }

@@ -30,8 +30,10 @@ class NonUserEditableEditorNotification : EditorNotifications.Provider<EditorNot
         if (project.isUnityProject() && isNonEditableUnityFile(file)) {
             val panel = EditorNotificationPanel()
             panel.text = "This file is internal to Unity and should not be edited manually."
-            UIUtil.invokeLaterIfNeeded {
-                addShowInUnityAction(project.lifetime, panel, file, project)
+            if (!file.extension.equals("meta", true)) {
+                UIUtil.invokeLaterIfNeeded {
+                    addShowInUnityAction(project.lifetime, panel, file, project)
+                }
             }
             return panel
         }
