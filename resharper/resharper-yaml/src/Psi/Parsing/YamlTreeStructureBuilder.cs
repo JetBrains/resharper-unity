@@ -861,7 +861,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       // Make sure we don't try to match a primary tag handle followed by ns-plain. E.g. `!foo`
       var tt = GetTokenTypeNoSkipWhitespace();
       var la = LookAheadNoSkipWhitespaces(1);
-      if (tt.IsWhitespace || ((tt == YamlTokenType.NS_WORD_CHARS || tt == YamlTokenType.NS_TAG_CHARS) &&
+      if (tt != null && tt.IsWhitespace || ((tt == YamlTokenType.NS_WORD_CHARS || tt == YamlTokenType.NS_TAG_CHARS) &&
                               la != YamlTokenType.BANG))
       {
         return ElementType.PRIMARY_TAG_HANDLE;
@@ -1492,6 +1492,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     {
       // GetTokenType skips WS, NL and comments, but let's be explicit
       var tt = GetTokenTypeNoSkipWhitespace();
+      if (tt == null)
+        return false;
       return tt == YamlTokenType.INDENT || tt == YamlTokenType.NEW_LINE || tt.IsComment || tt.IsWhitespace;
     }
 
