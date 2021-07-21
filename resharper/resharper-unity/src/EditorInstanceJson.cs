@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
     public static class EditorInstanceJson
     {
         [CanBeNull]
-        public static string TryGetValue(FileSystemPath editorInstanceJsonPath, string key)
+        public static string TryGetValue(VirtualFileSystemPath editorInstanceJsonPath, string key)
         {
             if (!editorInstanceJsonPath.ExistsFile)
                 return null;

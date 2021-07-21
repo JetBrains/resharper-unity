@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myDocumentManager = documentManager;
         }
 
-        public IExternalPsiSourceFile CreateExternalPsiSourceFile(IPsiModule psiModule, FileSystemPath path)
+        public IExternalPsiSourceFile CreateExternalPsiSourceFile(IPsiModule psiModule, VirtualFileSystemPath path)
         {
             var file = new UnityYamlExternalPsiSourceFile(myProjectFileExtensions, myProjectFileTypeCoordinator, psiModule,
                 path, Memoize(PropertiesFactory), myDocumentManager, UniversalModuleReferenceContext.Instance);

@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityPluginInstaller
     {
-        private readonly JetHashSet<FileSystemPath> myPluginInstallations;
+        private readonly JetHashSet<VirtualFileSystemPath> myPluginInstallations;
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
         private readonly IShellLocks myShellLocks;
@@ -52,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             UnitySolutionTracker unitySolutionTracker,
             UnityRefresher refresher)
         {
-            myPluginInstallations = new JetHashSet<FileSystemPath>();
+            myPluginInstallations = new JetHashSet<VirtualFileSystemPath>();
 
             myLifetime = lifetime;
             myLogger = logger;
@@ -114,7 +114,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var versionForSolution = myUnityVersion.ActualVersionForSolution.Value;
             if (versionForSolution >= new Version("2019.2")) // 2019.2+ would not work fine either without Rider package, and when package is present it loads EditorPlugin directly from Rider installation.
             {
-                var installationInfoToRemove = myDetector.GetInstallationInfo(myCurrentVersion, previousInstallationDir: FileSystemPath.Empty);
+                var installationInfoToRemove = myDetector.GetInstallationInfo(myCurrentVersion, previousInstallationDir: VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext));
                 if (!installationInfoToRemove.PluginDirectory.IsAbsolute)
                     return;
 
@@ -125,21 +125,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     {
                         myLogger.Info($"Remove {pluginDll}. Rider package should be used instead.");
                         pluginDll.DeleteFile();
-                        FileSystemPath.Parse(pluginDll.FullPath + ".meta").DeleteFile();
+                        VirtualFileSystemPath.Parse(pluginDll.FullPath + ".meta", InteractionContext.SolutionContext).DeleteFile();
 
                         // jetbrainsDir is usually "Assets\Plugins\Editor\JetBrains", however custom locations were also possible
                         var jetbrainsDir = installationInfoToRemove.PluginDirectory;
                         if (jetbrainsDir.GetChildren().Any() || jetbrainsDir.Name != "JetBrains") return;
                         jetbrainsDir.DeleteDirectoryNonRecursive();
-                        FileSystemPath.Parse(jetbrainsDir.FullPath + ".meta").DeleteFile();
+                        VirtualFileSystemPath.Parse(jetbrainsDir.FullPath + ".meta", InteractionContext.SolutionContext).DeleteFile();
                         var pluginsEditorDir = jetbrainsDir.Directory;
                         if (pluginsEditorDir.GetChildren().Any() || pluginsEditorDir.Name != "Editor") return;
                         pluginsEditorDir.DeleteDirectoryNonRecursive();
-                        FileSystemPath.Parse(pluginsEditorDir.FullPath + ".meta").DeleteFile();
+                        VirtualFileSystemPath.Parse(pluginsEditorDir.FullPath + ".meta", InteractionContext.SolutionContext).DeleteFile();
                         var pluginsDir = pluginsEditorDir.Directory;
                         if (pluginsDir.GetChildren().Any() || pluginsDir.Name != "Plugins") return;
                         pluginsDir.DeleteDirectoryNonRecursive();
-                        FileSystemPath.Parse(pluginsDir.FullPath+ ".meta").DeleteFile();
+                        VirtualFileSystemPath.Parse(pluginsDir.FullPath+ ".meta", InteractionContext.SolutionContext).DeleteFile();
                     });
                 }
                 return;
@@ -147,7 +147,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             // forcing fresh install due to being unable to provide proper setting until InputField is patched in Rider
             // ReSharper disable once ArgumentsStyleNamedExpression
-            var installationInfo = myDetector.GetInstallationInfo(myCurrentVersion, previousInstallationDir: FileSystemPath.Empty);
+            var installationInfo = myDetector.GetInstallationInfo(myCurrentVersion, previousInstallationDir: VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext));
             if (!installationInfo.ShouldInstallPlugin)
             {
                 myLogger.Info("Plugin should not be installed.");
@@ -246,7 +246,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
         }
 
-        public bool TryCopyFiles([NotNull] UnityPluginDetector.InstallationInfo installation, out FileSystemPath installedPath)
+        public bool TryCopyFiles([NotNull] UnityPluginDetector.InstallationInfo installation, out VirtualFileSystemPath installedPath)
         {
             installedPath = null;
             try
@@ -262,11 +262,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
         }
 
-        private bool DoCopyFiles([NotNull] UnityPluginDetector.InstallationInfo installation, out FileSystemPath installedPath)
+        private bool DoCopyFiles([NotNull] UnityPluginDetector.InstallationInfo installation, out VirtualFileSystemPath installedPath)
         {
             installedPath = null;
 
-            var originPaths = new List<FileSystemPath>();
+            var originPaths = new List<VirtualFileSystemPath>();
             originPaths.AddRange(installation.ExistingFiles);
 
             var backups = originPaths.ToDictionary(f => f, f => f.AddSuffix(".backup"));
@@ -335,7 +335,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
         }
 
-        private void RestoreFromBackup(Dictionary<FileSystemPath, FileSystemPath> backups)
+        private void RestoreFromBackup(Dictionary<VirtualFileSystemPath, VirtualFileSystemPath> backups)
         {
             foreach (var backup in backups)
             {

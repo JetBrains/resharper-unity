@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             }
         }
 
-        public void Run(List<DirectoryEntryData> directoryEntries)
+        public void Run(List<VirtualDirectoryEntryData> directoryEntries)
         {
             if (myAllowRunHeuristic && myShouldRunHeuristic && myAssetIndexingSupport.IsEnabled.Value)
             {
@@ -57,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         {
         }
 
-        private bool IsAnyFilePreventYamlParsing(List<DirectoryEntryData> directoryEntries)
+        private bool IsAnyFilePreventYamlParsing(List<VirtualDirectoryEntryData> directoryEntries)
         {
             foreach (var directoryEntry in directoryEntries)
             {
@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             return false;
         }
 
-        private bool IsYamlFilePreventParsing(DirectoryEntryData path)
+        private bool IsYamlFilePreventParsing(VirtualDirectoryEntryData path)
         {
             var length = path.Length;
             if (length > AssetFileSizeThreshold)

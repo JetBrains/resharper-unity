@@ -71,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
                             return;
 
                         var cppFileLocation = new CppFileLocation(
-                            new FileSystemPathWithRange(FileSystemPath.Parse(c.Path), new TextRange(c.Start, c.End)));
+                            new FileSystemPathWithRange(VirtualFileSystemPath.Parse(c.Path, InteractionContext.SolutionContext), new TextRange(c.Start, c.End)));
                         shaderContextCache.SetContext(sourceFile, cppFileLocation);
                     }
                 });

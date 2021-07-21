@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly RiderBackgroundTaskHost myBackgroundTaskHost;
         private readonly FrontendBackendHost myFrontendBackendHost;
         private readonly IPersistentIndexManager myPersistentIndexManager;
-        private readonly FileSystemPath mySolutionDirectoryPath;
+        private readonly VirtualFileSystemPath mySolutionDirectoryPath;
 
         public UnityEditorFindUsageResultCreator(Lifetime lifetime, ISolution solution,
                                                  SearchDomainFactory searchDomainFactory, IShellLocks locks,
@@ -105,7 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
-        private static AssetFindUsagesResultBase CreateRequest(FileSystemPath solutionDirPath,
+        private static AssetFindUsagesResultBase CreateRequest(VirtualFileSystemPath solutionDirPath,
                                                                AssetHierarchyProcessor assetDocumentHierarchy,
                                                                [NotNull]
                                                                AnimatorScriptUsagesElementContainer animatorContainer,
@@ -141,7 +141,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             return new HierarchyFindUsagesResult(consumer.NameParts.ToArray(), consumer.RootIndexes.ToArray(), needExpand, pathFromAsset, fileName, extension);
         }
 
-        private static bool GetPathFromAssetFolder([NotNull] FileSystemPath solutionDirPath, [NotNull] IPsiSourceFile file,
+        private static bool GetPathFromAssetFolder([NotNull] VirtualFileSystemPath solutionDirPath, [NotNull] IPsiSourceFile file,
             out string filePath, out string fileName, out string extension)
         {
             extension = null;
@@ -166,7 +166,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             private readonly AssetHierarchyProcessor myAssetHierarchyProcessor;
             [NotNull] private readonly AnimatorScriptUsagesElementContainer myAnimatorContainer;
             private readonly IPersistentIndexManager myPersistentIndexManager;
-            private readonly FileSystemPath mySolutionDirectoryPath;
+            private readonly VirtualFileSystemPath mySolutionDirectoryPath;
             private FindExecution myFindExecution = FindExecution.Continue;
             [NotNull] private readonly IDeclaredElement myDeclaredElement;
 
@@ -175,7 +175,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             public UnityUsagesFinderConsumer(AssetHierarchyProcessor assetHierarchyProcessor,
                                              [NotNull] AnimatorScriptUsagesElementContainer animatorContainer,
                                              IPersistentIndexManager persistentIndexManager,
-                                             FileSystemPath solutionDirectoryPath,
+                                             VirtualFileSystemPath solutionDirectoryPath,
                                              [NotNull] IDeclaredElement declaredElement)
             {
                 myAssetHierarchyProcessor = assetHierarchyProcessor;

@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         [NotNull] private readonly ISolution mySolution;
         private readonly string myPersistentId;
         private readonly Lifetime myLifetime;
-        private readonly CompactMap<FileSystemPath, Pair<IPsiSourceFile, LifetimeDefinition>> mySourceFiles;
+        private readonly CompactMap<VirtualFileSystemPath, Pair<IPsiSourceFile, LifetimeDefinition>> mySourceFiles;
 
         public UnityExternalFilesPsiModule([NotNull] ISolution solution, string moduleName, string persistentId,
                                            TargetFrameworkId targetFrameworkId, Lifetime lifetime)
@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myLifetime = lifetime;
             Name = moduleName;
             TargetFrameworkId = targetFrameworkId;
-            mySourceFiles = new CompactMap<FileSystemPath, Pair<IPsiSourceFile, LifetimeDefinition>>();
+            mySourceFiles = new CompactMap<VirtualFileSystemPath, Pair<IPsiSourceFile, LifetimeDefinition>>();
         }
 
         public IPsiServices GetPsiServices() => mySolution.GetPsiServices();
@@ -54,9 +54,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         public IModule ContainingProjectModule => mySolution.MiscFilesProject;
         public IEnumerable<IPsiSourceFile> SourceFiles => mySourceFiles.Values.Select(pair => pair.First);
 
-        public bool ContainsPath(FileSystemPath path) => mySourceFiles.ContainsKey(path);
+        public bool ContainsPath(VirtualFileSystemPath path) => mySourceFiles.ContainsKey(path);
 
-        public bool TryGetFileByPath(FileSystemPath path, out IPsiSourceFile file)
+        public bool TryGetFileByPath(VirtualFileSystemPath path, out IPsiSourceFile file)
         {
             file = null;
             if (mySourceFiles.TryGetValue(path, out var pair))
@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             return false;
         }
 
-        public void Add(FileSystemPath path, IPsiSourceFile file, Action<FileSystemChangeDelta> processFileChange)
+        public void Add(VirtualFileSystemPath path, IPsiSourceFile file, Action<FileSystemChangeDelta> processFileChange)
         {
             if (ContainsPath(path))
                 return;
@@ -85,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                 Assertion.Fail("Individual file change handler not supported. Use a directory change handler");
         }
 
-        public void Remove(FileSystemPath path)
+        public void Remove(VirtualFileSystemPath path)
         {
             if (!mySourceFiles.TryGetValue(path, out var pair))
                 return;

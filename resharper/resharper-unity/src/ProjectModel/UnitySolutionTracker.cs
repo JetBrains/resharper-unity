@@ -79,7 +79,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 StringComparison.OrdinalIgnoreCase);
         }
 
-        private static bool HasUnityFileStructure(FileSystemPath solutionDir)
+        private static bool HasUnityFileStructure(VirtualFileSystemPath solutionDir)
         {
             var assetsFolder = solutionDir.CombineWithShortName(ProjectExtensions.AssetsFolder);
             var projectSettingsFolder = solutionDir.CombineWithShortName(ProjectExtensions.ProjectSettingsFolder);

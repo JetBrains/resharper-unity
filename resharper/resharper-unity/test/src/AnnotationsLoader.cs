@@ -12,12 +12,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
     [ShellComponent]
     public class AnnotationsLoader : IExternalAnnotationsFileProvider
     {
-        private readonly OneToSetMap<string, FileSystemPath> myAnnotations;
+        private readonly OneToSetMap<string, VirtualFileSystemPath> myAnnotations;
 
         public AnnotationsLoader()
         {
-            myAnnotations = new OneToSetMap<string, FileSystemPath>(StringComparer.OrdinalIgnoreCase);
-            var testDataPathBase = TestUtil.GetTestDataPathBase(GetType().Assembly);
+            myAnnotations = new OneToSetMap<string, VirtualFileSystemPath>(StringComparer.OrdinalIgnoreCase);
+            var testDataPathBase = TestUtil.GetTestDataPathBase(GetType().Assembly).ToVirtualFileSystemPath();
             var annotationsPath = testDataPathBase.Parent.Parent / "src" / "annotations";
             Assertion.Assert(annotationsPath.ExistsDirectory, $"Cannot find annotations: {annotationsPath}");
             var annotationFiles = annotationsPath.GetChildFiles();
@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             }
         }
 
-        public IEnumerable<FileSystemPath> GetAnnotationsFiles(AssemblyNameInfo assemblyName = null, FileSystemPath assemblyLocation = null)
+        public IEnumerable<VirtualFileSystemPath> GetAnnotationsFiles(AssemblyNameInfo assemblyName = null, VirtualFileSystemPath assemblyLocation = null)
         {
             if (assemblyName == null)
                 return myAnnotations.Values;

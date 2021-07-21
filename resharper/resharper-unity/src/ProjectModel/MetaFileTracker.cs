@@ -247,12 +247,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                        myMetaFileTracker.myLastAddedItem.Location != change.OldLocation;
             }
 
-            private static FileSystemPath GetMetaFile(FileSystemPath location)
+            private static VirtualFileSystemPath GetMetaFile(VirtualFileSystemPath location)
             {
-                return FileSystemPath.Parse(location + ".meta");
+                return VirtualFileSystemPath.Parse(location + ".meta", InteractionContext.SolutionContext);
             }
 
-            private void CreateMetaFile(FileSystemPath path)
+            private void CreateMetaFile(VirtualFileSystemPath path)
             {
                 if (path.ExistsFile)
                     return;
@@ -271,7 +271,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 }
             }
 
-            private void RenameMetaFile(FileSystemPath oldPath, FileSystemPath newPath, string extraDetails)
+            private void RenameMetaFile(VirtualFileSystemPath oldPath, VirtualFileSystemPath newPath, string extraDetails)
             {
                 try
                 {
@@ -285,7 +285,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 }
             }
 
-            private void DeleteMetaFile(FileSystemPath path)
+            private void DeleteMetaFile(VirtualFileSystemPath path)
             {
                 try
                 {
@@ -294,7 +294,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                         DoUnderTransaction("Unity::DeleteMetaFile", () =>
                         {
 #if DEBUG
-                            path.MoveFile(FileSystemPath.Parse(path + ".deleted"), true);
+                            path.MoveFile(VirtualFileSystemPath.Parse(path + ".deleted", InteractionContext.SolutionContext), true);
 #else
                             path.DeleteFile();
 #endif

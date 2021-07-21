@@ -45,8 +45,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly UnityYamlPsiSourceFileFactory myPsiSourceFileFactory;
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
         private readonly UnityYamlDisableStrategy myUnityYamlDisableStrategy;
-        private readonly JetHashSet<FileSystemPath> myRootPaths;
-        private readonly FileSystemPath mySolutionDirectory;
+        private readonly JetHashSet<VirtualFileSystemPath> myRootPaths;
+        private readonly VirtualFileSystemPath mySolutionDirectory;
 
         public UnityExternalFilesModuleProcessor(Lifetime lifetime, ILogger logger, ISolution solution,
                                                  ChangeManager changeManager,
@@ -71,12 +71,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
             changeManager.RegisterChangeProvider(lifetime, this);
 
-            myRootPaths = new JetHashSet<FileSystemPath>();
+            myRootPaths = new JetHashSet<VirtualFileSystemPath>();
 
             // SolutionDirectory isn't absolute in tests, and will throw an exception if we use it when we call Exists
             mySolutionDirectory = solution.SolutionDirectory;
             if (!mySolutionDirectory.IsAbsolute)
-                mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory());
+                mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory().ToVirtualFileSystemPath());
 
             scheduler.EnqueueTask(new SolutionLoadTask(GetType().Name + ".Activate",
                 SolutionLoadTaskKinds.PreparePsiModules,
@@ -156,7 +156,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             }
         }
 
-        private void CollectExternalFilesForDirectory(ExternalFiles externalFiles, FileSystemPath directory)
+        private void CollectExternalFilesForDirectory(ExternalFiles externalFiles, VirtualFileSystemPath directory)
         {
             // Don't process the entire solution directory - this would process Assets and Packages for a second time,
             // and also process Temp and Library, which are likely to be huge
@@ -212,13 +212,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                 myFileSystemTracker.AdviseDirectoryChanges(myLifetime, directory, true, OnProjectDirectoryChange);
         }
 
-        private void AddExternalPsiSourceFiles(List<DirectoryEntryData> files, PsiModuleChangeBuilder builder)
+        private void AddExternalPsiSourceFiles(List<VirtualDirectoryEntryData> files, PsiModuleChangeBuilder builder)
         {
             foreach (var directoryEntry in files)
                  AddExternalPsiSourceFile(builder, directoryEntry.GetAbsolutePath());
         }
 
-        private void AddExternalPsiSourceFile(PsiModuleChangeBuilder builder, FileSystemPath path)
+        private void AddExternalPsiSourceFile(PsiModuleChangeBuilder builder, VirtualFileSystemPath path)
         {
             Assertion.AssertNotNull(myModuleFactory.PsiModule, "myModuleFactory.PsiModule != null");
             if (myModuleFactory.PsiModule.ContainsPath(path))
@@ -229,7 +229,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         }
 
 #if RIDER
-        private void AddExternalProjectFiles(List<DirectoryEntryData> files)
+        private void AddExternalProjectFiles(List<VirtualDirectoryEntryData> files)
         {
             if (files.Count == 0)
                 return;
@@ -239,7 +239,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         }
 #endif
 
-        private void AddExternalProjectFiles(List<FileSystemPath> paths)
+        private void AddExternalProjectFiles(List<VirtualFileSystemPath> paths)
         {
             if (paths.Count == 0)
                 return;
@@ -257,7 +257,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         // Add the asset file as a project file, as various features require IProjectFile. Once created, it will
         // automatically get an IPsiSourceFile created for it, and attached to our module via
         // UnityMiscFilesProjectPsiModuleProvider
-        private void AddExternalProjectFile(FileSystemPath path)
+        private void AddExternalProjectFile(VirtualFileSystemPath path)
         {
             if (mySolution.FindProjectItemsByLocation(path).Count > 0)
                 return;
@@ -288,7 +288,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                 ExcludedByNameAssetsSizes.Add(directoryEntry.Length);
         }
 
-        private static bool IsKnownBinaryAsset(DirectoryEntryData directoryEntry)
+        private static bool IsKnownBinaryAsset(VirtualDirectoryEntryData directoryEntry)
         {
             if (IsKnownBinaryAssetByName(directoryEntry.RelativePath))
                 return true;
@@ -298,7 +298,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             return false;
         }
 
-        private static bool IsKnownBinaryAsset(FileSystemPath path)
+        private static bool IsKnownBinaryAsset(VirtualFileSystemPath path)
         {
             if (IsKnownBinaryAssetByName(path))
                 return true;
@@ -336,14 +336,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                 () =>
                 {
                     var builder = new PsiModuleChangeBuilder();
-                    var projectFilesToAdd = new List<FileSystemPath>();
+                    var projectFilesToAdd = new List<VirtualFileSystemPath>();
                     ProcessFileSystemChangeDelta(delta, builder, projectFilesToAdd);
                     FlushChanges(builder, projectFilesToAdd);
                 });
         }
 
         private void ProcessFileSystemChangeDelta(FileSystemChangeDelta delta, PsiModuleChangeBuilder builder,
-            List<FileSystemPath> projectFilesToAdd)
+            List<VirtualFileSystemPath> projectFilesToAdd)
         {
             var module = myModuleFactory.PsiModule;
             if (module == null)
@@ -395,12 +395,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         }
 
         [CanBeNull]
-        private IPsiSourceFile GetYamlPsiSourceFile(IPsiModuleOnFileSystemPaths module, FileSystemPath path)
+        private IPsiSourceFile GetYamlPsiSourceFile(IPsiModuleOnFileSystemPaths module, VirtualFileSystemPath path)
         {
             return module.TryGetFileByPath(path, out var sourceFile) ? sourceFile : null;
         }
 
-        private void FlushChanges(PsiModuleChangeBuilder builder, List<FileSystemPath> projectFilesToAdd)
+        private void FlushChanges(PsiModuleChangeBuilder builder, List<VirtualFileSystemPath> projectFilesToAdd)
         {
             if (builder.IsEmpty)
                 return;
@@ -444,13 +444,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         private class ExternalFiles
         {
-            public readonly List<DirectoryEntryData> MetaFiles = new List<DirectoryEntryData>();
-            public readonly List<DirectoryEntryData> AssetFiles = new List<DirectoryEntryData>();
-            public FrugalLocalList<DirectoryEntryData> KnownBinaryAssetFiles = new FrugalLocalList<DirectoryEntryData>();
-            public FrugalLocalList<DirectoryEntryData> ExcludedByNameAssetFiles = new FrugalLocalList<DirectoryEntryData>();
-            public FrugalLocalList<FileSystemPath> Directories = new FrugalLocalList<FileSystemPath>();
+            public readonly List<VirtualDirectoryEntryData> MetaFiles = new List<VirtualDirectoryEntryData>();
+            public readonly List<VirtualDirectoryEntryData> AssetFiles = new List<VirtualDirectoryEntryData>();
+            public FrugalLocalList<VirtualDirectoryEntryData> KnownBinaryAssetFiles = new FrugalLocalList<VirtualDirectoryEntryData>();
+            public FrugalLocalList<VirtualDirectoryEntryData> ExcludedByNameAssetFiles = new FrugalLocalList<VirtualDirectoryEntryData>();
+            public FrugalLocalList<VirtualFileSystemPath> Directories = new FrugalLocalList<VirtualFileSystemPath>();
 
-            public void AddFile(DirectoryEntryData directoryEntry)
+            public void AddFile(VirtualDirectoryEntryData directoryEntry)
             {
                 if (directoryEntry.RelativePath.IsMeta())
                     MetaFiles.Add(directoryEntry);
@@ -465,7 +465,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                 }
             }
 
-            public void AddDirectory(FileSystemPath directory)
+            public void AddDirectory(VirtualFileSystemPath directory)
             {
                 Directories.Add(directory);
             }

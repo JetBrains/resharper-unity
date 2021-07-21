@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         }
 
         public void OnProjectFileChanged(IProjectFile projectFile, PsiModuleChange.ChangeType changeType,
-                                         PsiModuleChangeBuilder changeBuilder, FileSystemPath oldLocation)
+                                         PsiModuleChangeBuilder changeBuilder, VirtualFileSystemPath oldLocation)
         {
             if (projectFile == null)
                 return;

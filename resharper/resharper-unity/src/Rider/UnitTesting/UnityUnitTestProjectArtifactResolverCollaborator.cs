@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         public FileSystemPath ResolveArtifact(IProject project, TargetFrameworkId targetFrameworkId)
         {
             var dllName = project.GetOutputFilePath(targetFrameworkId).Name;
-            return project.Location.Combine("Library").Combine("ScriptAssemblies").Combine(dllName);
+            return project.Location.Combine("Library").Combine("ScriptAssemblies").Combine(dllName).ToNativeFileSystemPath();
         }
     }
 }

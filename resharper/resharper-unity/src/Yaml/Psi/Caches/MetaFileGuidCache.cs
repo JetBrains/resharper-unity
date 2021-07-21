@@ -24,12 +24,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         // We expect to only get one asset with a given guid, but copy/pasting .meta files could break that.
         // CompactOneToListMap is optimised for the typical use case of only one item per key
-        private readonly CompactOneToListMap<Guid, FileSystemPath> myAssetGuidToAssetFilePaths =
-            new CompactOneToListMap<Guid, FileSystemPath>();
+        private readonly CompactOneToListMap<Guid, VirtualFileSystemPath> myAssetGuidToAssetFilePaths =
+            new CompactOneToListMap<Guid, VirtualFileSystemPath>();
 
         // Note that Map is a map of *meta file* to asset guid, NOT asset file!
-        private readonly Dictionary<FileSystemPath, Guid> myAssetFilePathToGuid =
-            new Dictionary<FileSystemPath, Guid>();
+        private readonly Dictionary<VirtualFileSystemPath, Guid> myAssetFilePathToGuid =
+            new Dictionary<VirtualFileSystemPath, Guid>();
 
         public Signal<(IPsiSourceFile sourceFile, Guid? oldGuid, Guid? newGuid)> GuidChanged =
             new Signal<(IPsiSourceFile sourceFile, Guid? oldGuid, Guid? newGuid)>("GuidChanged");
@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         // This will usually return a single value, but there's always a chance for copy/paste
         // Also note that this returns the file path of the asset associated with the GUID, not the asset's .meta file!
-        public IList<FileSystemPath> GetAssetFilePathsFromGuid(Guid guid)
+        public IList<VirtualFileSystemPath> GetAssetFilePathsFromGuid(Guid guid)
         {
             return myAssetGuidToAssetFilePaths[guid];
         }
@@ -162,7 +162,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             }
         }
 
-        private static FileSystemPath GetAssetLocationFromMetaFile(FileSystemPath metaFileLocation)
+        private static VirtualFileSystemPath GetAssetLocationFromMetaFile(VirtualFileSystemPath metaFileLocation)
         {
             return metaFileLocation.ChangeExtension(string.Empty);
         }

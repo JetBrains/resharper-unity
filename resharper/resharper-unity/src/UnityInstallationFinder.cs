@@ -70,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         [NotNull]
-        public static FileSystemPath GetApplicationContentsPath(FileSystemPath applicationPath)
+        public static VirtualFileSystemPath GetApplicationContentsPath(VirtualFileSystemPath applicationPath)
         {
             if (applicationPath.IsNullOrEmpty())
                 return applicationPath;
@@ -86,13 +86,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
                         return applicationPath.Directory.Combine("Data");
             }
             ourLogger.Error("Unknown runtime platform");
-            return FileSystemPath.Empty;
+            return VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext);
         }
 
         // TODO: We shouldn't have to pass in appPath here
         // But appPath is being calculated by UnityVersion, not UnityInstallationFinder
         [NotNull]
-        public static FileSystemPath GetBuiltInPackagesFolder([NotNull] FileSystemPath applicationPath)
+        public static VirtualFileSystemPath GetBuiltInPackagesFolder([NotNull] VirtualFileSystemPath applicationPath)
         {
             return applicationPath.IsEmpty
                 ? applicationPath
@@ -100,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         [NotNull]
-        public static FileSystemPath GetPackageManagerDefaultManifest(FileSystemPath applicationPath)
+        public static VirtualFileSystemPath GetPackageManagerDefaultManifest(VirtualFileSystemPath applicationPath)
         {
             return applicationPath.IsEmpty
                 ? applicationPath
@@ -117,23 +117,23 @@ namespace JetBrains.ReSharper.Plugins.Unity
             }).ToList();
         }
 
-        public static List<FileSystemPath> GetPossibleApplicationPaths()
+        public static List<VirtualFileSystemPath> GetPossibleApplicationPaths()
         {
             switch (PlatformUtil.RuntimePlatform)
             {
                 case PlatformUtil.Platform.MacOsX:
                 {
-                    var appsHome = FileSystemPath.Parse("/Applications");
+                    var appsHome = VirtualFileSystemPath.Parse("/Applications", InteractionContext.SolutionContext);
                     var unityApps = appsHome.GetChildDirectories("Unity*").Select(a=>a.Combine("Unity.app")).ToList();
 
                     var defaultHubLocation = appsHome.Combine("Unity/Hub/Editor");
-                    var hubLocations = new List<FileSystemPath> {defaultHubLocation};
+                    var hubLocations = new List<VirtualFileSystemPath> {defaultHubLocation};
 
                     // Hub custom location
                     var home = Environment.GetEnvironmentVariable("HOME");
                     if (!string.IsNullOrEmpty(home))
                     {
-                        var localAppData = FileSystemPath.Parse(home).Combine("Library/Application Support");
+                        var localAppData = VirtualFileSystemPath.Parse(home, InteractionContext.SolutionContext).Combine("Library/Application Support");
                         var hubCustomLocation = GetCustomHubInstallPath(localAppData);
                         if (!hubCustomLocation.IsEmpty)
                             hubLocations.Add(hubCustomLocation);
@@ -147,12 +147,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 }
                 case PlatformUtil.Platform.Linux:
                 {
-                    var unityApps = new List<FileSystemPath>();
+                    var unityApps = new List<VirtualFileSystemPath>();
                     var homeEnv = Environment.GetEnvironmentVariable("HOME");
-                    var homes = new List<FileSystemPath> {FileSystemPath.Parse("/opt")};
+                    var homes = new List<VirtualFileSystemPath> {VirtualFileSystemPath.Parse("/opt", InteractionContext.SolutionContext)};
                     if (!string.IsNullOrEmpty(homeEnv))
                     {
-                        homes.Add(FileSystemPath.Parse(homeEnv));
+                        homes.Add(VirtualFileSystemPath.Parse(homeEnv, InteractionContext.SolutionContext));
                     }
 
                     // Old style installations
@@ -163,9 +163,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     // Installations with Unity Hub
                     if (!string.IsNullOrEmpty(homeEnv))
                     {
-                        var home = FileSystemPath.Parse(homeEnv);
+                        var home = VirtualFileSystemPath.Parse(homeEnv, InteractionContext.SolutionContext);
                         var defaultHubLocation = home.Combine("Unity/Hub/Editor");
-                        var hubLocations = new List<FileSystemPath> {defaultHubLocation};
+                        var hubLocations = new List<VirtualFileSystemPath> {defaultHubLocation};
                         // Hub custom location
                         var configPath = home.Combine(".config");
                         var customHubInstallPath = GetCustomHubInstallPath(configPath);
@@ -181,7 +181,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
                 case PlatformUtil.Platform.Windows:
                 {
-                    var unityApps = new List<FileSystemPath>();
+                    var unityApps = new List<VirtualFileSystemPath>();
 
                     var programFiles = GetProgramFiles();
                     unityApps.AddRange(
@@ -197,7 +197,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     );
 
                     // custom Hub location
-                    var appData = FileSystemPath.Parse(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+                    var appData = VirtualFileSystemPath.Parse(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), InteractionContext.SolutionContext);
                     var customHubInstallPath = GetCustomHubInstallPath(appData);
                     if (!customHubInstallPath.IsEmpty)
                     {
@@ -207,48 +207,48 @@ namespace JetBrains.ReSharper.Plugins.Unity
                         );
                     }
 
-                    var lnks = FileSystemPath.Parse(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs")
+                    var lnks = VirtualFileSystemPath.Parse(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs", InteractionContext.SolutionContext)
                         .GetChildDirectories("Unity*").SelectMany(a => a.GetChildFiles("Unity.lnk")).ToArray();
                     unityApps.AddRange(lnks
-                        .Select(ShellLinkHelper.ResolveLinkTarget)
+                        .Select(t => ShellLinkHelper.ResolveLinkTarget(t.ToNativeFileSystemPath()).ToVirtualFileSystemPath())
                         .OrderBy(c => new FileInfo(c.FullPath).CreationTime));
 
-                    foreach (var fileSystemPath in unityApps)
+                    foreach (var VirtualFileSystemPath in unityApps)
                     {
-                        ourLogger.Log(LoggingLevel.VERBOSE, "Possible unity path: " + fileSystemPath);
+                        ourLogger.Log(LoggingLevel.VERBOSE, "Possible unity path: " + VirtualFileSystemPath);
                     }
                     return unityApps.Where(a=>a.ExistsFile).Distinct().OrderBy(b=>b.FullPath).ToList();
                 }
             }
             ourLogger.Error("Unknown runtime platform");
-            return new List<FileSystemPath>();
+            return new List<VirtualFileSystemPath>();
         }
 
-        private static FileSystemPath GetCustomHubInstallPath(FileSystemPath appData)
+        private static VirtualFileSystemPath GetCustomHubInstallPath(VirtualFileSystemPath appData)
         {
             var filePath = appData.Combine("UnityHub/secondaryInstallPath.json");
             if (filePath.ExistsFile)
             {
                 var text = filePath.ReadAllText2().Text.TrimStart('"').TrimEnd('"');
-                var customHubLocation = FileSystemPath.Parse(text);
+                var customHubLocation = VirtualFileSystemPath.Parse(text, InteractionContext.SolutionContext);
                 if (customHubLocation.ExistsDirectory)
                     return customHubLocation;
             }
-            return FileSystemPath.Empty;
+            return VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext);
         }
 
-        private static FileSystemPath GetProgramFiles()
+        private static VirtualFileSystemPath GetProgramFiles()
         {
             // PlatformUtils.GetProgramFiles() will return the relevant folder for
             // the current app, not the current system. So a 32 bit app on a 64 bit
             // system will return the 32 bit Program Files. Force to get the system
             // native Program Files folder
             var environmentVariable = Environment.GetEnvironmentVariable("ProgramW6432");
-            return string.IsNullOrWhiteSpace(environmentVariable) ? FileSystemPath.Empty : FileSystemPath.TryParse(environmentVariable);
+            return string.IsNullOrWhiteSpace(environmentVariable) ? VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext) : VirtualFileSystemPath.TryParse(environmentVariable, InteractionContext.SolutionContext);
         }
 
         [CanBeNull]
-        public static FileSystemPath GetAppPathByDll(XmlElement documentElement)
+        public static VirtualFileSystemPath GetAppPathByDll(XmlElement documentElement)
         {
             var referencePathElement = documentElement.ChildElements()
                 .Where(a => a.Name == "ItemGroup").SelectMany(b => b.ChildElements())
@@ -262,7 +262,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (referencePathElement == null || string.IsNullOrEmpty(referencePathElement.InnerText))
                 return null;
 
-            var filePath = FileSystemPath.Parse(referencePathElement.InnerText);
+            var filePath = VirtualFileSystemPath.Parse(referencePathElement.InnerText, InteractionContext.SolutionContext);
             if (!filePath.IsAbsolute) // RIDER-21237
                 return null;
 
@@ -300,7 +300,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return null;
         }
 
-        private static FileSystemPath GoUpForUnityExecutable(FileSystemPath filePath, string targetName)
+        private static VirtualFileSystemPath GoUpForUnityExecutable(VirtualFileSystemPath filePath, string targetName)
         {
             // For Player Projects it might be: Editor/Data/PlaybackEngines/LinuxStandaloneSupport/Variations/mono/Managed/UnityEngine.dll
             // For Editor: Editor\Data\Managed\UnityEngine.dll
@@ -320,7 +320,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         // Asserts the given path is to the application itself, either Whatever.app/ for Mac or Whatever.exe for Windows
         [Conditional("JET_MODE_ASSERT")]
-        private static void AssertApplicationPath(FileSystemPath path)
+        private static void AssertApplicationPath(VirtualFileSystemPath path)
         {
             if (path.IsEmpty || path.Exists == FileSystemPath.Existence.Missing)
                 return;
@@ -346,7 +346,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             }
         }
 
-        public static List<FileSystemPath> GetPossibleMonoPaths()
+        public static List<VirtualFileSystemPath> GetPossibleMonoPaths()
         {
             var possibleApplicationPaths = GetPossibleApplicationPaths();
             switch (PlatformUtil.RuntimePlatform)
@@ -366,16 +366,16 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 }
             }
             ourLogger.Error("Unknown runtime platform");
-            return new List<FileSystemPath>();
+            return new List<VirtualFileSystemPath>();
         }
     }
 
     public class UnityInstallationInfo
     {
         public Version Version { get; }
-        public FileSystemPath Path { get; }
+        public VirtualFileSystemPath Path { get; }
 
-        public UnityInstallationInfo(Version version, FileSystemPath path)
+        public UnityInstallationInfo(Version version, VirtualFileSystemPath path)
         {
             Version = version;
             Path = path;

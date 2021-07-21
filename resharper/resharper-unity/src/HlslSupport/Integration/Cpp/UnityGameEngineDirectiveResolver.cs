@@ -85,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
 
                             if (source.Equals("embedded") || source.Equals("local"))
                             {
-                                var packagePath = FileSystemPath.TryParse(version.RemoveStart("file:"));
+                                var packagePath = VirtualFileSystemPath.TryParse(version.RemoveStart("file:"), InteractionContext.SolutionContext);
                                 if (packagePath.IsEmpty)
                                     continue;
 
@@ -95,13 +95,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
                                 }
                                 else
                                 {
-                                    var relativePackagePath = FileSystemPath.Parse("Packages").Combine(packagePath);
+                                    var relativePackagePath = VirtualFileSystemPath.Parse("Packages", InteractionContext.SolutionContext).Combine(packagePath);
                                     myPackageLockPaths[packageName] = relativePackagePath.FullPath;
                                 }
                             }
                             else if (source.Equals("registry"))
                             {
-                                var cachedPackagePath = FileSystemPath.Parse("Library").Combine("PackageCache")
+                                var cachedPackagePath = VirtualFileSystemPath.Parse("Library", InteractionContext.SolutionContext).Combine("PackageCache")
                                     .Combine(packageName + "@" + version);
                                 myPackageLockPaths[packageName] = cachedPackagePath.FullPath;
                             } else if (source.Equals("git"))
@@ -110,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
                                 if (hash == null)
                                     continue;
                                 
-                                var cachedPackagePath = FileSystemPath.Parse("Library").Combine("PackageCache")
+                                var cachedPackagePath = VirtualFileSystemPath.Parse("Library", InteractionContext.SolutionContext).Combine("PackageCache")
                                     .Combine(packageName + "@" + hash.Substring(0, Math.Min(hash.Length, 10)));
                                 myPackageLockPaths[packageName] = cachedPackagePath.FullPath;
                             }
@@ -156,12 +156,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
                 return null;
             
             var solutionFolder = mySolution.SolutionDirectory;
-            var localPackagePath = FileSystemPath.Parse("Packages")
+            var localPackagePath = VirtualFileSystemPath.Parse("Packages", InteractionContext.SolutionContext)
                 .Combine(packageName + "@" + version);
             if (solutionFolder.Combine(localPackagePath).Exists == FileSystemPath.Existence.File)
                 return localPackagePath.FullPath;
 
-            var cachedPackagePath = FileSystemPath.Parse("Library").Combine("PackageCache")
+            var cachedPackagePath = VirtualFileSystemPath.Parse("Library", InteractionContext.SolutionContext).Combine("PackageCache")
                 .Combine(packageName + "@" + version);
             return cachedPackagePath.FullPath;
         }

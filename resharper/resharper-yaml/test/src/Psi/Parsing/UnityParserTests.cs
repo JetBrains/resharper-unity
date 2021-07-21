@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
           if (file.IsEmpty)
             file = basePath.NotNull().Combine(files[0]);
           file = GetProcessedFilePath(file);
-          CaretPosition = new CaretPosition(file, 0);
+          CaretPosition = new CaretPosition(file.ToVirtualFileSystemPath(), 0);
         }
       }
     }

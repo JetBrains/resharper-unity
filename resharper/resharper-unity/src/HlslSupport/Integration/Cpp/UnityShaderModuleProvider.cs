@@ -190,7 +190,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
             return EmptyList<IPsiSourceFile>.Instance;
         }
 
-        public override void OnProjectFileChanged(IProjectFile projectFile, FileSystemPath oldLocation,
+        public override void OnProjectFileChanged(IProjectFile projectFile, VirtualFileSystemPath oldLocation,
             PsiModuleChange.ChangeType changeType,
             PsiModuleChangeBuilder changeBuilder)
         {
