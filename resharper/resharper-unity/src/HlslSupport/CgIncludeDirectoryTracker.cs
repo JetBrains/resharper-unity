@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
                     {
                         if (solutionCaches.PersistentProperties.TryGetValue(CG_INCLUDE_DIRECTORY_PATH, out var result))
                         {
-                            var oldPath = FileSystemPath.TryParse(result, FileSystemPathInternStrategy.INTERN);
+                            var oldPath = VirtualFileSystemPath.TryParse(result, InteractionContext.SolutionContext, FileSystemPathInternStrategy.INTERN);
                             var newPath = GetCgIncludeFolderPath(unityVersion);
                             if (!oldPath.Equals(newPath))
                             {
@@ -56,11 +56,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
         }
 
 
-        public static FileSystemPath GetCgIncludeFolderPath(UnityVersion unityVersion)
+        public static VirtualFileSystemPath GetCgIncludeFolderPath(UnityVersion unityVersion)
         {
             var path = unityVersion.GetActualAppPathForSolution();
             if (path.IsEmpty)
-                return FileSystemPath.Empty;
+                return VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext);
 
             var contentPath = UnityInstallationFinder.GetApplicationContentsPath(path);
             return contentPath.Combine("CGIncludes");

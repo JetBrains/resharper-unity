@@ -130,7 +130,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.Caches
             return base.IsApplicable(sf) && sf.IsAsmDef() && sf.IsLanguageSupported<JsonNewLanguage>();
         }
 
-        public FileSystemPath GetPathFor(string name)
+        public VirtualFileSystemPath GetPathFor(string name)
         {
             myShellLocks.AssertReadAccessAllowed();
             return myNames.GetValuesSafe(name).FirstOrDefault(null)?.GetLocation();

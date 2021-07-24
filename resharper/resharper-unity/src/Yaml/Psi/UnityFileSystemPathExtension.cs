@@ -4,7 +4,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 {
     public static class UnityFileSystemPathExtension
     {
-        public static bool SniffYamlHeader(this FileSystemPath sourceFile)
+        public static bool SniffYamlHeader(this VirtualFileSystemPath sourceFile)
         {
             var isYaml = sourceFile.ReadBinaryStream(reader =>
             {

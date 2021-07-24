@@ -12,20 +12,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
     public class PackageData
     {
         [NotNull] public readonly string Id;
-        [CanBeNull] public readonly FileSystemPath PackageFolder;
+        [CanBeNull] public readonly VirtualFileSystemPath PackageFolder;
         public readonly DateTime PackageJsonTimestamp;
         public readonly PackageDetails PackageDetails;
         public readonly PackageSource Source;
         [CanBeNull] public readonly GitDetails GitDetails;
-        [CanBeNull] public readonly FileSystemPath TarballLocation;
+        [CanBeNull] public readonly VirtualFileSystemPath TarballLocation;
 
         public PackageData([NotNull] string id,
-                           [CanBeNull] FileSystemPath packageFolder,
+                           [CanBeNull] VirtualFileSystemPath packageFolder,
                            DateTime packageJsonTimestamp,
                            PackageDetails packageDetails,
                            PackageSource source,
                            [CanBeNull] GitDetails gitDetails,
-                           [CanBeNull] FileSystemPath tarballLocation)
+                           [CanBeNull] VirtualFileSystemPath tarballLocation)
         {
             Id = id;
             PackageFolder = packageFolder;
@@ -72,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         }
 
         [NotNull]
-        internal static PackageDetails FromPackageJson([NotNull] PackageJson packageJson, FileSystemPath packageFolder)
+        internal static PackageDetails FromPackageJson([NotNull] PackageJson packageJson, VirtualFileSystemPath packageFolder)
         {
             var name = packageJson.Name ?? packageFolder.Name;
             return new PackageDetails(name, packageJson.DisplayName ?? name, packageJson.Version ?? string.Empty,

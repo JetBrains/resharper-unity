@@ -65,12 +65,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         private readonly GroupingEvent myDoRefreshGroupingEvent, myWaitForPackagesLockJsonGroupingEvent;
         private readonly DictionaryEvents<string, PackageData> myPackagesById;
         private readonly Dictionary<string, LifetimeDefinition> myPackageLifetimes;
-        private readonly FileSystemPath myPackagesFolder;
-        private readonly FileSystemPath myPackagesLockPath;
-        private readonly FileSystemPath myManifestPath;
-        private readonly FileSystemPath myLocalPackageCacheFolder;
+        private readonly VirtualFileSystemPath myPackagesFolder;
+        private readonly VirtualFileSystemPath myPackagesLockPath;
+        private readonly VirtualFileSystemPath myManifestPath;
+        private readonly VirtualFileSystemPath myLocalPackageCacheFolder;
 
-        [CanBeNull] private FileSystemPath myLastReadGlobalManifestPath;
+        [CanBeNull] private VirtualFileSystemPath myLastReadGlobalManifestPath;
         [CanBeNull] private EditorManifestJson myGlobalManifest;
 
         public PackageManager(Lifetime lifetime, ISolution solution, ILogger logger,
@@ -411,7 +411,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         }
 
         [NotNull]
-        private EditorManifestJson SafelyReadGlobalManifestFile(FileSystemPath globalManifestPath)
+        private EditorManifestJson SafelyReadGlobalManifestFile(VirtualFileSystemPath globalManifestPath)
         {
             try
             {
@@ -427,7 +427,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
 
         [NotNull]
         private PackageData GetPackageData(string id, PackagesLockDependency details,
-                                           FileSystemPath builtInPackagesFolder)
+                                           VirtualFileSystemPath builtInPackagesFolder)
         {
             try
             {
@@ -464,7 +464,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         }
 
         private PackageData GetPackageData(string id, string version, string registry,
-                                           FileSystemPath builtInPackagesFolder,
+                                           VirtualFileSystemPath builtInPackagesFolder,
                                            [CanBeNull] ManifestLockDetails lockDetails)
         {
             // Order is important here. A package can be listed in manifest.json, but if it also exists in Packages,
@@ -525,7 +525,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         }
 
         [CanBeNull]
-        private PackageData GetBuiltInPackage(string id, string version, FileSystemPath builtInPackagesFolder)
+        private PackageData GetBuiltInPackage(string id, string version, VirtualFileSystemPath builtInPackagesFolder)
         {
             // If we can identify the module root of the current project, use it to look up the module
             if (builtInPackagesFolder.ExistsDirectory)
@@ -659,10 +659,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
 
         [CanBeNull]
         private PackageData GetPackageDataFromFolder([CanBeNull] string id,
-                                                     [NotNull] FileSystemPath packageFolder,
+                                                     [NotNull] VirtualFileSystemPath packageFolder,
                                                      PackageSource packageSource,
                                                      [CanBeNull] GitDetails gitDetails = null,
-                                                     [CanBeNull] FileSystemPath tarballLocation = null)
+                                                     [CanBeNull] VirtualFileSystemPath tarballLocation = null)
         {
             if (packageFolder.ExistsDirectory)
             {
@@ -730,7 +730,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
                 }
             }
 
-            ICollection<FileSystemPath> cachedPackages = null;
+            ICollection<VirtualFileSystemPath> cachedPackages = null;
             var newPackages = new List<PackageData>();
             foreach (var (id, version) in dependencies)
             {

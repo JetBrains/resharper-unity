@@ -207,7 +207,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                 {
                     try
                     {
-                        var path = FileSystemPath.Parse(args.Path);
+                        var path = VirtualFileSystemPath.Parse(args.Path, InteractionContext.SolutionContext);
                         if (!path.ExistsFile)
                         {
                             result.Set(false);

@@ -65,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
                 : UnityFileTypeThemedIcons.FileUnity.Id;
         }
 
-        private string GetPresentablePath(FileSystemPath assetFile)
+        private string GetPresentablePath(VirtualFileSystemPath assetFile)
         {
             var solutionFolder = mySolution.SolutionFile?.Location.Parent;
             if (solutionFolder != null && solutionFolder.IsPrefixOf(assetFile))

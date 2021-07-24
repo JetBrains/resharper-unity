@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private readonly UnityProjectFileCacheProvider myUnityProjectFileCache;
         private readonly ISolution mySolution;
         private readonly IFileSystemTracker myFileSystemTracker;
-        private readonly FileSystemPath mySolutionDirectory;
+        private readonly VirtualFileSystemPath mySolutionDirectory;
         private Version myVersionFromProjectVersionTxt;
         private Version myVersionFromEditorInstanceJson;
         private static readonly ILogger ourLogger = Logger.GetLogger<UnityVersion>();
@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             // SolutionDirectory isn't absolute in tests, and will throw if used with FileSystemTracker
             mySolutionDirectory = solution.SolutionDirectory;
             if (!mySolutionDirectory.IsAbsolute)
-                mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory());
+                mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory().ToVirtualFileSystemPath());
 
             unitySolutionTracker.IsUnityProjectFolder.WhenTrue(lifetime, SetActualVersionForSolution);
         }
@@ -112,10 +112,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         [NotNull]
-        public FileSystemPath GetActualAppPathForSolution()
+        public VirtualFileSystemPath GetActualAppPathForSolution()
         {
             if (mySolution.IsVirtualSolution())
-                return FileSystemPath.Empty;
+                return VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext);
 
             foreach (var project in GetTopLevelProjectWithReadLock(mySolution))
             {
@@ -123,18 +123,18 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     if (path != null)
                         return path;
             }
-            return FileSystemPath.Empty;
+            return VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext);
         }
 
         [CanBeNull]
-        private Version TryGetApplicationPathFromEditorInstanceJson(FileSystemPath editorInstanceJsonPath)
+        private Version TryGetApplicationPathFromEditorInstanceJson(VirtualFileSystemPath editorInstanceJsonPath)
         {
             var val = EditorInstanceJson.TryGetValue(editorInstanceJsonPath, "version");
             return val != null ? Parse(val) : null;
         }
 
         [CanBeNull]
-        private Version TryGetVersionFromProjectVersion(FileSystemPath projectVersionTxtPath)
+        private Version TryGetVersionFromProjectVersion(VirtualFileSystemPath projectVersionTxtPath)
         {
             // Get the version from ProjectSettings/ProjectVersion.txt
             if (!projectVersionTxtPath.ExistsFile)
@@ -246,7 +246,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return version >= new Version(2019,2);
         }
 
-        public static Version GetVersionByAppPath(FileSystemPath appPath)
+        public static Version GetVersionByAppPath(VirtualFileSystemPath appPath)
         {
             if (appPath == null || appPath.Exists == FileSystemPath.Existence.Missing)
                 return null;

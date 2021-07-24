@@ -88,8 +88,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
             var root = contentsPath.Combine("Documentation");
             var englishRoot = root.Combine("en");
             if (!englishRoot.ExistsDirectory && root.ExistsDirectory)
-                return root.GetChildDirectories().FirstOrDefault(englishRoot);
-            return englishRoot;
+                return root.GetChildDirectories().FirstOrDefault(englishRoot).ToNativeFileSystemPath();
+            return englishRoot.ToNativeFileSystemPath();
         }
 
         [CanBeNull]

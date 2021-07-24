@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
         private readonly InjectedHlslFileLocationTracker myLocationTracker;
         private readonly DocumentManager myManager;
         private readonly ILogger myLogger;
-        private readonly DirectMappedCache<FileSystemPath, IRangeMarker> myShaderContext = new DirectMappedCache<FileSystemPath, IRangeMarker>(100);
+        private readonly DirectMappedCache<VirtualFileSystemPath, IRangeMarker> myShaderContext = new DirectMappedCache<VirtualFileSystemPath, IRangeMarker>(100);
     
         public ShaderContextCache(ISolution solution, InjectedHlslFileLocationTracker locationTracker, DocumentManager manager, ILogger logger)
         {

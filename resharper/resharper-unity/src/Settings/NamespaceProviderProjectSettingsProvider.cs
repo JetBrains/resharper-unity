@@ -85,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         private void ExcludeFolderFromNamespace(ISettingsStorageMountPoint mountPoint, string path)
         {
-            var index = NamespaceFolderProvider.GetIndexFromOldIndex(FileSystemPath.Parse(path,
+            var index = NamespaceFolderProvider.GetIndexFromOldIndex(VirtualFileSystemPath.Parse(path, InteractionContext.SolutionContext,
                 FileSystemPathInternStrategy.TRY_GET_INTERNED_BUT_DO_NOT_INTERN));
             SetIndexedValue(mountPoint, NamespaceProviderSettingsAccessor.NamespaceFoldersToSkip, index, true);
         }

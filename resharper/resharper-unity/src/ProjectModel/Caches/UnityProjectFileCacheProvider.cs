@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
 
         private readonly ISolution mySolution;
         private readonly IProjectFileDataCache myCache;
-        private readonly Dictionary<FileSystemPath, Action> myCallbacks;
+        private readonly Dictionary<VirtualFileSystemPath, Action> myCallbacks;
 
         public UnityProjectFileCacheProvider(Lifetime lifetime, ISolution solution, IProjectFileDataCache cache)
         {
@@ -29,10 +29,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
             myCache = cache;
 
             myCache.RegisterCache(lifetime, this);
-            myCallbacks = new Dictionary<FileSystemPath, Action>();
+            myCallbacks = new Dictionary<VirtualFileSystemPath, Action>();
         }
 
-        public void RegisterDataChangedCallback(Lifetime lifetime, FileSystemPath projectLocation, Action action)
+        public void RegisterDataChangedCallback(Lifetime lifetime, VirtualFileSystemPath projectLocation, Action action)
         {
             // Make sure we have a valid project file location to key off. This will be empty for e.g. solution folders,
             // Misc project and most importantly, tests
@@ -54,13 +54,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
         }
 
         [CanBeNull]
-        public FileSystemPath GetAppPath([NotNull] IProject project)
+        public VirtualFileSystemPath GetAppPath([NotNull] IProject project)
         {
             var data = myCache.GetData(this, project);
             return data?.UnityAppPath;
         }
 
-        public bool CanHandle(FileSystemPath projectFileLocation)
+        public bool CanHandle(VirtualFileSystemPath projectFileLocation)
         {
             using (ReadLockCookie.Create())
             {
@@ -76,22 +76,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
 
         public int Version => 1;
 
-        public UnityProjectDataCache Read(FileSystemPath projectFileLocation, BinaryReader reader)
+        public UnityProjectDataCache Read(VirtualFileSystemPath projectFileLocation, BinaryReader reader)
         {
             var version = System.Version.Parse(reader.ReadString());
             var explicitlySpecified = reader.ReadBoolean();
-            var unityAppPath = FileSystemPath.Parse(reader.ReadString());
+            var unityAppPath = VirtualFileSystemPath.Parse(reader.ReadString(), InteractionContext.SolutionContext);
             return new UnityProjectDataCache(version, explicitlySpecified, unityAppPath);
         }
 
-        public void Write(FileSystemPath projectFileLocation, BinaryWriter writer, UnityProjectDataCache data)
+        public void Write(VirtualFileSystemPath projectFileLocation, BinaryWriter writer, UnityProjectDataCache data)
         {
             writer.Write(data.UnityVersion.ToString());
             writer.Write(data.LangVersionExplicitlySpecified);
             writer.Write(data.UnityAppPath.FullPath);
         }
 
-        public UnityProjectDataCache BuildData(FileSystemPath projectFileLocation, XmlDocument document)
+        public UnityProjectDataCache BuildData(VirtualFileSystemPath projectFileLocation, XmlDocument document)
         {
             var documentElement = document.DocumentElement;
             if (documentElement == null || documentElement.Name != "Project")
@@ -151,7 +151,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
             return unityVersion;
         }
 
-        public Action OnDataChanged(FileSystemPath projectFileLocation, UnityProjectDataCache oldData, UnityProjectDataCache newData)
+        public Action OnDataChanged(VirtualFileSystemPath projectFileLocation, UnityProjectDataCache oldData, UnityProjectDataCache newData)
         {
             myCallbacks.TryGetValue(projectFileLocation, out var action);
             return action;
@@ -160,9 +160,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
 
     public class UnityProjectDataCache
     {
-        public static readonly UnityProjectDataCache Empty = new UnityProjectDataCache(new Version(0, 0), false, FileSystemPath.Empty);
+        public static readonly UnityProjectDataCache Empty = new UnityProjectDataCache(new Version(0, 0), false, VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext));
 
-        public UnityProjectDataCache(Version unityVersion, bool langVersionExplicitlySpecified, FileSystemPath unityAppPath)
+        public UnityProjectDataCache(Version unityVersion, bool langVersionExplicitlySpecified, VirtualFileSystemPath unityAppPath)
         {
             UnityVersion = unityVersion;
             UnityAppPath = unityAppPath;
@@ -170,7 +170,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
         }
 
         public Version UnityVersion { get; }
-        public FileSystemPath UnityAppPath { get; }
+        public VirtualFileSystemPath UnityAppPath { get; }
         public bool LangVersionExplicitlySpecified { get; }
     }
 }

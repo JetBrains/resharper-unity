@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     {
         public UnityYamlExternalPsiSourceFile([NotNull] IProjectFileExtensions projectFileExtensions,
                                               [NotNull] PsiProjectFileTypeCoordinator projectFileTypeCoordinator,
-                                              [NotNull] IPsiModule module, FileSystemPath path,
+                                              [NotNull] IPsiModule module, VirtualFileSystemPath path,
                                               [NotNull] Func<PsiSourceFileFromPath, IPsiSourceFileProperties> propertiesFactory,
                                               [NotNull] DocumentManager documentManager,
                                               [NotNull] IModuleReferenceResolveContext resolveContext)

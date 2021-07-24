@@ -21,13 +21,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myResolver = resolver;
         }
         
-        public FileSystemPath GetEditorPluginPathDir()
+        public VirtualFileSystemPath GetEditorPluginPathDir()
         {
             var assembly = Assembly.GetExecutingAssembly();
             var package = myApplicationPackages.FindPackageWithAssembly(assembly, OnError.LogException);
             var installDirectory = myResolver.GetDeployedPackageDirectory(package);
             var editorPluginPathDir = installDirectory.Parent.Combine(@"EditorPlugin");
-            return editorPluginPathDir;
+            return editorPluginPathDir.ToVirtualFileSystemPath();
         }
     }
 }

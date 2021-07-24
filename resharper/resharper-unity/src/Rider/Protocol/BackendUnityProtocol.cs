@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         private readonly IHostProductInfo myHostProductInfo;
         private readonly FrontendBackendHost myFrontendBackendHost;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
-        private readonly JetHashSet<FileSystemPath> myPluginInstallations;
+        private readonly JetHashSet<VirtualFileSystemPath> myPluginInstallations;
 
         private DateTime myLastChangeTime;
 
@@ -52,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                                     UnityVersion unityVersion, NotificationsModel notificationsModel,
                                     IHostProductInfo hostProductInfo, IFileSystemTracker fileSystemTracker)
         {
-            myPluginInstallations = new JetHashSet<FileSystemPath>();
+            myPluginInstallations = new JetHashSet<VirtualFileSystemPath>();
 
             myLifetime = lifetime;
             myLogger = logger;
@@ -101,7 +101,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             SafeExecuteOrQueueEx("CreateProtocol", () => CreateProtocol(delta.NewPath));
         }
 
-        private void CreateProtocol(FileSystemPath protocolInstancePath)
+        private void CreateProtocol(VirtualFileSystemPath protocolInstancePath)
         {
             var protocolInstance = GetProtocolInstanceData(protocolInstancePath);
             if (protocolInstance == null)
@@ -163,7 +163,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         }
 
         [CanBeNull]
-        private ProtocolInstance GetProtocolInstanceData(FileSystemPath protocolInstancePath)
+        private ProtocolInstance GetProtocolInstanceData(VirtualFileSystemPath protocolInstancePath)
         {
             if (!protocolInstancePath.ExistsFile)
                 return null;

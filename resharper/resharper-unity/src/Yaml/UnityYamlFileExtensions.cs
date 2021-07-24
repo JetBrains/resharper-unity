@@ -78,7 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
             return SimplePathEndsWith(path, MetaFileExtensionWithDot);
         }
 
-        public static bool IsMetaOrProjectSettings(ISolution solution, FileSystemPath location)
+        public static bool IsMetaOrProjectSettings(ISolution solution, VirtualFileSystemPath location)
         {
             var components = location.TryMakeRelativeTo(solution.SolutionDirectory).Components.ToArray();
             

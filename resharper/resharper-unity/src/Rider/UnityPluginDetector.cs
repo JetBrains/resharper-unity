@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
 
         [NotNull]
-        public InstallationInfo GetInstallationInfo(Version newVersion, FileSystemPath previousInstallationDir = null)
+        public InstallationInfo GetInstallationInfo(Version newVersion, VirtualFileSystemPath previousInstallationDir = null)
         {
             myLogger.Verbose("GetInstallationInfo.");
             try
@@ -86,7 +86,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
         }
         
-        private bool TryFindExistingPluginOnDiskInFolderRecursive(FileSystemPath directory, Version newVersion, [NotNull] out InstallationInfo result)
+        private bool TryFindExistingPluginOnDiskInFolderRecursive(VirtualFileSystemPath directory, Version newVersion, [NotNull] out InstallationInfo result)
         {
             myLogger.Verbose("Looking for plugin on disk: '{0}'", directory);
             
@@ -105,7 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             return true;
         }
         
-        private bool TryFindExistingPluginOnDisk(FileSystemPath directory, Version newVersion, [NotNull] out InstallationInfo result)
+        private bool TryFindExistingPluginOnDisk(VirtualFileSystemPath directory, Version newVersion, [NotNull] out InstallationInfo result)
         {
             myLogger.Verbose("Looking for plugin on disk: '{0}'", directory);
             var oldPluginFiles = directory
@@ -130,7 +130,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
 
         [NotNull]
-        private InstallationInfo GetInstallationInfoFromFoundInstallation(List<FileSystemPath> pluginFiles, Version newVersion)
+        private InstallationInfo GetInstallationInfoFromFoundInstallation(List<VirtualFileSystemPath> pluginFiles, Version newVersion)
         {
             var parentDirs = pluginFiles.Select(f => f.Directory).Distinct().ToList();
             if (parentDirs.Count > 1)
@@ -193,23 +193,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             private static readonly Version ourZeroVersion = new Version(0, 0, 0, 0);
 
             public static readonly InstallationInfo DoNotInstall = new InstallationInfo(InstallReason.DoNotInstall,
-                FileSystemPath.Empty, EmptyArray<FileSystemPath>.Instance, ourZeroVersion);
+                VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext), EmptyArray<VirtualFileSystemPath>.Instance, ourZeroVersion);
 
             public readonly InstallReason InstallReason;
 
             public bool ShouldInstallPlugin => !(InstallReason == InstallReason.DoNotInstall || InstallReason == InstallReason.UpToDate);
 
             [NotNull]
-            public readonly FileSystemPath PluginDirectory;
+            public readonly VirtualFileSystemPath PluginDirectory;
 
             [NotNull]
-            public readonly ICollection<FileSystemPath> ExistingFiles;
+            public readonly ICollection<VirtualFileSystemPath> ExistingFiles;
 
             [NotNull]
             public readonly Version ExistingVersion;
 
-            private InstallationInfo(InstallReason installReason, [NotNull] FileSystemPath pluginDirectory,
-                [NotNull] ICollection<FileSystemPath> existingFiles, [NotNull] Version existingVersion)
+            private InstallationInfo(InstallReason installReason, [NotNull] VirtualFileSystemPath pluginDirectory,
+                [NotNull] ICollection<VirtualFileSystemPath> existingFiles, [NotNull] Version existingVersion)
             {
                 var logger = Logger.GetLogger<InstallationInfo>();
                 if (!pluginDirectory.IsAbsolute && ShouldInstallPlugin)
@@ -223,40 +223,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 ExistingVersion = existingVersion;
             }
 
-            public static InstallationInfo FreshInstall(FileSystemPath installLocation)
+            public static InstallationInfo FreshInstall(VirtualFileSystemPath installLocation)
             {
-                return new InstallationInfo(InstallReason.FreshInstall, installLocation, EmptyArray<FileSystemPath>.Instance, ourZeroVersion);
+                return new InstallationInfo(InstallReason.FreshInstall, installLocation, EmptyArray<VirtualFileSystemPath>.Instance, ourZeroVersion);
             }
 
-            public static InstallationInfo UpToDate(FileSystemPath installLocation,
-                ICollection<FileSystemPath> existingPluginFiles, Version existingVersion)
+            public static InstallationInfo UpToDate(VirtualFileSystemPath installLocation,
+                ICollection<VirtualFileSystemPath> existingPluginFiles, Version existingVersion)
             {
                 return new InstallationInfo(InstallReason.UpToDate, installLocation, existingPluginFiles, existingVersion);
             }
 
-            public static InstallationInfo ShouldUpdate(FileSystemPath installLocation,
-                ICollection<FileSystemPath> existingPluginFiles, Version existingVersion)
+            public static InstallationInfo ShouldUpdate(VirtualFileSystemPath installLocation,
+                ICollection<VirtualFileSystemPath> existingPluginFiles, Version existingVersion)
             {
                 return new InstallationInfo(InstallReason.Update, installLocation, existingPluginFiles, existingVersion);
             }
 
-            public static InstallationInfo ForceUpdate(FileSystemPath installLocation,
-                ICollection<FileSystemPath> existingPluginFiles)
+            public static InstallationInfo ForceUpdate(VirtualFileSystemPath installLocation,
+                ICollection<VirtualFileSystemPath> existingPluginFiles)
             {
                 return new InstallationInfo(InstallReason.Update, installLocation, existingPluginFiles, ourZeroVersion);
             }
 
-            public static InstallationInfo ForceUpdateToDebugVersion(FileSystemPath installLocation,
-                ICollection<FileSystemPath> existingPluginFiles, Version existingVersion)
+            public static InstallationInfo ForceUpdateToDebugVersion(VirtualFileSystemPath installLocation,
+                ICollection<VirtualFileSystemPath> existingPluginFiles, Version existingVersion)
             {
                 return new InstallationInfo(InstallReason.ForceUpdateForDebug, installLocation, existingPluginFiles, existingVersion);
             }
 
             public static InstallationInfo FoundProblemWithExistingPlugins(
-                ICollection<FileSystemPath> existingPluginFiles)
+                ICollection<VirtualFileSystemPath> existingPluginFiles)
             {
                 // We've found a weird situation with existing plugins (found in multiple directories, etc.) don't install
-                return new InstallationInfo(InstallReason.DoNotInstall, FileSystemPath.Empty, existingPluginFiles, ourZeroVersion);
+                return new InstallationInfo(InstallReason.DoNotInstall, VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext), existingPluginFiles, ourZeroVersion);
             }
         }
 

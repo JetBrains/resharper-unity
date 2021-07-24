@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly Lifetime myLifetime;
         private readonly FrontendBackendModel myFrontendBackendModel;
 
-        private FileSystemPath EditorInstanceJsonPath => mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
+        private VirtualFileSystemPath EditorInstanceJsonPath => mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
 
         public UnityController(Lifetime lifetime,
                                ISolution solution,
@@ -147,7 +147,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return null;
             var unityPath = unityPathData.Value?.ApplicationPath;
             if (unityPath != null && PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
-                unityPath = FileSystemPath.Parse(unityPath).Combine("Contents/MacOS/Unity").FullPath;
+                unityPath = VirtualFileSystemPath.Parse(unityPath, InteractionContext.SolutionContext).Combine("Contents/MacOS/Unity").FullPath;
 
             return unityPath == null
                 ? null
