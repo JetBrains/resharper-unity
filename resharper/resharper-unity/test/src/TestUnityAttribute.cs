@@ -76,14 +76,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         private IEnumerable<string> GetPackageNames()
         {
             var version = ToVersionString(myVersion);
-            yield return $"resharper-unity.testlibs/{version}";
+            yield return $"JetBrains.Resharper.Unity.TestDataLibs/{version}";
             if (IncludeNetworking)
             {
                 if (myVersion == UnityVersion.Unity54)
                     throw new InvalidOperationException("Network libs not available for Unity 5.4");
                 if ((int) myVersion > (int) UnityVersion.Unity2018_4)
                     throw new InvalidOperationException("Network libs no longer supported in Unity 2019.1+");
-                yield return $"resharper-unity.testlibs.networking/{version}";
+                yield return $"JetBrains.Resharper.Unity.TestDataLibs.Networking/{version}";
             }
         }
 
