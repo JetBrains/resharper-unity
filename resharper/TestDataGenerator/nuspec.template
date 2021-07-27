@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>$name$</id>
+        <version>$version$</version>
+        <authors>JetBrains</authors>
+        <owners>JetBrains</owners>
+        <projectUrl>https://github.com/JetBrains/resharper-unity</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Unity Engine reference assemblies for test purposes only</description>
+    </metadata>
+</package>
