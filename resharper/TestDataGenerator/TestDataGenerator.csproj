@@ -15,6 +15,10 @@
 
     <ItemGroup>
       <PackageReference Include="JetBrains.Refasmer" Version="1.0.12" />
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props')" />
