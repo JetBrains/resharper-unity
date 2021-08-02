@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.G
         protected override void ExecuteSearchRequest(IDataContext context, SearchRequest searchRequest, INavigationExecutionHost host)
         {
             var provider = searchRequest.Solution.GetComponent<FindUsagesAsyncViewProviderBase>();
-            var viewFactory = provider.GetFactoryGotoUsages(searchRequest, host, this);
+            var viewFactory = provider.GetFactoryShowUsages(searchRequest, host, this);
             var executer = new SearchRequestExecuter(context, searchRequest, this, host, viewFactory);
             executer.Execute();
         }
