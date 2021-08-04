@@ -527,12 +527,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
         [CanBeNull]
         private PackageData GetBuiltInPackage(string id, string version, FileSystemPath builtInPackagesFolder)
         {
-            // If we can identify the module root of the current project, use it to look up the module
-            if (builtInPackagesFolder.ExistsDirectory)
-            {
-                var packageFolder = builtInPackagesFolder.Combine(id);
-                return GetPackageDataFromFolder(id, packageFolder, PackageSource.BuiltIn);
-            }
+            // Starting with Unity 2020.3, modules are copied into the local package cache, and compiled from there.
+            // This behaviour has been backported to 2019.4 LTS. Make sure we use the cached files, or breakpoints won't
+            // resolve, because we'll be showing different files to what's in the PDB.
+            // I don't know why the files are copied - it makes sense for registry packages to be copied so that script
+            // updater can run on them, or users can make (dangerously transient) changes. But built in packages are,
+            // well, built in, and should be up to date as far as the script updater is concerned.
+            var localCacheFolder = myLocalPackageCacheFolder.Combine($"{id}@{version}");
+            var packageData = GetPackageDataFromFolder(id, localCacheFolder, PackageSource.BuiltIn)
+                              ?? GetPackageDataFromFolder(id, builtInPackagesFolder.Combine(id), PackageSource.BuiltIn);
+            if (packageData != null)
+                return packageData;
 
             // We can't find the actual package. If we "know" it's a module/built in package, then mark it as an
             // unresolved built in package, rather than just an unresolved package. The Unity Explorer can use this to
