@@ -534,8 +534,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
             // updater can run on them, or users can make (dangerously transient) changes. But built in packages are,
             // well, built in, and should be up to date as far as the script updater is concerned.
             var localCacheFolder = myLocalPackageCacheFolder.Combine($"{id}@{version}");
-            var packageData = GetPackageDataFromFolder(id, localCacheFolder, PackageSource.BuiltIn)
-                              ?? GetPackageDataFromFolder(id, builtInPackagesFolder.Combine(id), PackageSource.BuiltIn);
+            var packageData = GetPackageDataFromFolder(id, localCacheFolder, PackageSource.BuiltIn);
+            if (packageData == null && builtInPackagesFolder.IsNotEmpty)
+                packageData = GetPackageDataFromFolder(id, builtInPackagesFolder.Combine(id), PackageSource.BuiltIn);
             if (packageData != null)
                 return packageData;
 
