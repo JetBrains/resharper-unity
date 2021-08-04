@@ -14,10 +14,15 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     public static void ShowFileUsage(string filePath)
     {
       var prefab = AssetDatabase.LoadAssetAtPath(filePath, typeof(Object));
+      ShowObjectUsage(prefab);
+    }
+
+    public static void ShowObjectUsage(Object prefab)
+    {
       Selection.activeObject = prefab;
       EditorGUIUtility.PingObject(prefab);
     }
-    
+
     public static void ShowUsageOnScene(string filePath, string sceneName, string[] path, int[] rootIndices)
     {
       var sceneCount = SceneManager.sceneCount;

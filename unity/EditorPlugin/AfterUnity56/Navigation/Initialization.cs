@@ -3,18 +3,21 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using JetBrains.Collections.Viewable;
+using JetBrains.Diagnostics;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.Navigation;
 using JetBrains.Rider.Unity.Editor.Navigation.Window;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using UnityEditor;
 using UnityEngine;
-using Object = System.Object;
+using Object = UnityEngine.Object;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
 {
   public static class Initialization
   {
+    private static readonly ILog ourLogger = Log.GetLog("Navigation.Initialization");
+
     public static void OnModelInitializationHandler(UnityModelAndLifetime modelAndLifetime)
     {
       var modelValue = modelAndLifetime.Model;
@@ -71,21 +74,28 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
         var fullName = new FileInfo(result).FullName;
         // only works for Assets folder
         var matchedUnityPath = fullName.Substring(Directory.GetParent(Application.dataPath).FullName.Length + 1);
-
-        if (fullName != new FileInfo(Path.GetFullPath(matchedUnityPath)).FullName)
+        
+        var asset = AssetDatabase.LoadAssetAtPath(matchedUnityPath, typeof(Object));
+        if (asset == null)
         {
           // works for any assets including local packages, but might be slow on big projects
           matchedUnityPath = AssetDatabase.GetAllAssetPaths()
             .FirstOrDefault(a =>
               new FileInfo(Path.GetFullPath(a)).FullName ==
               fullName); // FileInfo normalizes separators (required on Windows)
+          if (matchedUnityPath != null)
+            asset = AssetDatabase.LoadAssetAtPath(matchedUnityPath, typeof(Object));
         }
 
-        if (matchedUnityPath != null)
+        if (asset != null)
         {
           ExpandMinimizedUnityWindow();
           EditorUtility.FocusProjectWindow();
-          ShowUtil.ShowFileUsage(matchedUnityPath);
+          ShowUtil.ShowObjectUsage(asset);
+        }
+        else
+        {
+          ourLogger.Warn($"ShowFileInUnity attempt failed. No asset matched for path {result}");
         }
       });
     }
