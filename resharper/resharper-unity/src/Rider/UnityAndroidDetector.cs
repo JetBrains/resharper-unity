@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             foreach (var configuration in project.ProjectProperties.ActiveConfigurations.Configurations.OfType<IManagedProjectConfiguration>())
             {
                 var defines = configuration.DefineConstants;
-                if (defines.Contains("ANDROID") && defines.Contains("UNITY"))
+                if (defines.Contains("UNITY_ANDROID"))
                 {
                     name = "RequiredAndroidPlugin";
                     value = "true";
