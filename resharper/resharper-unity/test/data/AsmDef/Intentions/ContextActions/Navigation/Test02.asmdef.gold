@@ -17,7 +17,10 @@
       ------------------
 
 
-## GotoUsagesProvider activity:
+## GoToUnityUsagesProvider activity:
+  Tooltip was shown: Usages of 'Ref1' were not found.
+
+## ShowUsagesProvider activity:
   Async context menu shown `Usages of 'Ref1'`:
     TO: [O] "references": [ "|Ref1|", "Ref1" ] RANGE: (41,45) @ Test02.asmdef
     Menu item (enabled) :
@@ -43,9 +46,6 @@
 
       ------------------
 
-
-## GoToUnityUsagesProvider activity:
-  Tooltip was shown: Usages of 'Ref1' were not found.
 
 ## UnityFindUsagesProvider activity:
   FindResults window with 2 results

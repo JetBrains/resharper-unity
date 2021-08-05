@@ -17,7 +17,10 @@
       ------------------
 
 
-## GotoUsagesProvider activity:
+## GoToUnityUsagesProvider activity:
+  Tooltip was shown: Usages of 'Ref1' were not found.
+
+## ShowUsagesProvider activity:
   Async context menu shown `Usages of 'Ref1'`:
     TO: [O] "references": [ "|Ref1|" ] RANGE: (39,43) @ Ref2.asmdef
     Menu item (enabled) :
@@ -49,9 +52,6 @@
     TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test03.asmdef
     Navigation result:
       caret did not move
-
-## GoToUnityUsagesProvider activity:
-  Tooltip was shown: Usages of 'Ref1' were not found.
 
 ## UnityFindUsagesProvider activity:
   FindResults window with 2 results
