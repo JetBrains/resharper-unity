@@ -32,6 +32,7 @@ using JetBrains.Rider.Model.Notifications;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
+using JetBrains.Util.Extension;
 using JetBrains.Util.Threading;
 using Status = JetBrains.Rider.Model.Unity.BackendUnity.Status;
 using UnitTestLaunch = JetBrains.Rider.Model.Unity.BackendUnity.UnitTestLaunch;
@@ -48,7 +49,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly IUnitTestResultManager myUnitTestResultManager;
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly NUnitTestProvider myUnitTestProvider;
-        private readonly IUnitTestElementIdFactory myIDFactory;
         private readonly ISolutionSaver myRiderSolutionSaver;
         private readonly UnityRefresher myUnityRefresher;
         private readonly NotificationsModel myNotificationsModel;
@@ -67,7 +67,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                                          IUnitTestResultManager unitTestResultManager,
                                          BackendUnityHost backendUnityHost,
                                          NUnitTestProvider unitTestProvider,
-                                         IUnitTestElementIdFactory idFactory,
                                          ISolutionSaver riderSolutionSaver,
                                          UnityRefresher unityRefresher,
                                          NotificationsModel notificationsModel,
@@ -81,7 +80,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myUnitTestResultManager = unitTestResultManager;
             myBackendUnityHost = backendUnityHost;
             myUnitTestProvider = unitTestProvider;
-            myIDFactory = idFactory;
             myRiderSolutionSaver = riderSolutionSaver;
             myUnityRefresher = unityRefresher;
             myNotificationsModel = notificationsModel;
@@ -120,7 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public bool RequiresProjectBuild(IProject project) => false;
         public bool RequiresProjectExplorationAfterBuild(IProject project) => false;
-        public bool RequiresProjectPropertiesRefreshBeforeLaunch() => false;
+        public bool RequiresProjectPropertiesRefreshBeforeLaunch(IProject project) => false;
 
         public IRuntimeEnvironment GetRuntimeEnvironment(IUnitTestLaunch launch, IProject project,
                                                          TargetFrameworkId targetFrameworkId,
@@ -268,7 +266,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     StartTests(run, tcs, taskLifetime);
 
                     // set results for explicit tests
-                    foreach (var element in run.Elements.OfType<NUnitElementBase>().Where(a =>
+                    foreach (var element in run.Elements.OfType<INUnitTestElement>().Where(a =>
                         a.RunState == RunState.Explicit && !run.Launch.Criterion.Explicit.Contains(a)))
                     {
                         myUnitTestResultManager.TestFinishing(element, run.Launch.Session,
@@ -408,20 +406,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     var parent = GetElementById(run, result.ProjectName, result.ParentId);
                     if (parent is NUnitTestElement elementParent)
                     {
-                        var project = elementParent.Id.Project;
-                        var targetFrameworkId = elementParent.Id.TargetFrameworkId;
-                        var uid = myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId);
-                        unitTestElement = new NUnitRowTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid,
-                            elementParent, elementParent.TypeName.GetPersistent());
+                        unitTestElement = new NUnitRowTestElement(result.TestId, elementParent);
                         run.AddDynamicElement(unitTestElement);
                     }
                     else if (parent is NUnitTestFixtureElement fixtureParent)
                     {
-                        var project = fixtureParent.Id.Project;
-                        var targetFrameworkId = fixtureParent.Id.TargetFrameworkId;
-                        var uid = myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId);
-                        unitTestElement = new NUnitTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid,
-                            fixtureParent, fixtureParent.TypeName.GetPersistent(), result.TestId);
+                        // todo: test!
+                        unitTestElement = new NUnitTestElement(result.TestId, fixtureParent, 
+                            result.TestId.SubstringAfter(result.ParentId), null);
 
                         run.AddDynamicElement(unitTestElement);
                     }
@@ -456,7 +448,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         else if (result.Status == Status.Success)
                             taskResult = UnitTestStatus.Success;
 
-                        myUnitTestResultManager.TestOutput(unitTestElement, run.Launch.Session, result.Output, TaskOutputType.STDOUT);
+                        myUnitTestResultManager.TestOutput(unitTestElement, run.Launch.Session, result.Output, TestOutputType.STDOUT);
                         myUnitTestResultManager.TestDuration(unitTestElement, run.Launch.Session, TimeSpan.FromMilliseconds(result.Duration));
                         myUnitTestResultManager.TestFinishing(unitTestElement, run.Launch.Session, message, taskResult);
                         break;
@@ -498,9 +490,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             var categories = new List<string>();
 
             var testNames = elements
-                .OfType<NUnitElementBase>()
+                .OfType<INUnitTestElement>()
                 .Where(a => a.RunState != RunState.Explicit || run.Launch.Criterion.Explicit.Contains(a))
-                .Select(p => p.Id.Id).ToList();
+                .Select(p => p.NaturalId.TestId).ToList();
 
             filters.Add(new TestFilter(((UnityRuntimeEnvironment) run.RuntimeEnvironment).Project.Name, testNames, groups, categories));
             return filters;
@@ -523,7 +515,7 @@ else if (criterion is CategoryCriterion categoryCriterion)
         [CanBeNull]
         private IUnitTestElement GetElementById(IUnitTestRun run, string projectName, string resultTestId)
         {
-            return run.Elements.SingleOrDefault(a => a.Id.Project.Name == projectName && resultTestId == a.Id.Id);
+            return run.Elements.SingleOrDefault(a => a.Project.Name == projectName && resultTestId == a.NaturalId.TestId);
         }
 
         public void Cancel(IUnitTestRun run)

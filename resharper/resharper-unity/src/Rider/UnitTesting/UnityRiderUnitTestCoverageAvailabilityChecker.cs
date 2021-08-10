@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         // this method should be very fast as it gets called a lot
         public HostProviderAvailability GetAvailability(IUnitTestElement element)
         {
-            var solution = element.Id.Project.GetSolution();
+            var solution = element.Project.GetSolution();
             var tracker = solution.GetComponent<UnitySolutionTracker>();
             if (tracker.IsUnityProject.HasValue() && !tracker.IsUnityProject.Value)
                 return HostProviderAvailability.Available;

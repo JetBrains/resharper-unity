@@ -4,7 +4,7 @@
         <TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
         <AssemblyName>JetBrains.Rider.Unity.ListIosUsbDevices</AssemblyName>
         <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Rider.iOS.ListUsbDevices</RootNamespace>
-        <LangVersion>7.3</LangVersion>
+        <LangVersion>latest</LangVersion>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>..\..\..\sign.snk</AssemblyOriginatorKeyFile>
