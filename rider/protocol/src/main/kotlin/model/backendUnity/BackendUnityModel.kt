@@ -81,7 +81,7 @@ object BackendUnityModel: Root() {
     }
 
     private val UnitTestLaunch = classdef {
-        field("sessionId", string)
+        field("sessionId", guid)
         field("testFilters", immutableList(TestFilter))
         field("testMode", enum("TestMode") {
             +"Both"

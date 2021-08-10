@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -22,24 +21,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
             }
         }
 
-        protected override IQuickFix CreateQuickFix(IProject project, ITextControl textControl)
+        protected override IQuickFix CreateQuickFix(IProject project, ITextControl textControl,
+            out IHighlighting highlighting)
         {
-            IQuickFix result = null;
-            Lifetime.Using( lifetime =>
+            IQuickFix result;
+            var solution = project.GetSolution();
+            var swea = solution.GetComponent<SolutionAnalysisService>();
+            using (swea.RunAnalysisCookie())
             {
-                var solution = project.GetSolution();
-                var swea = solution.GetComponent<SolutionAnalysisService>();
-                using (swea.RunAnalysisCookie())
+                var files = new List<IPsiSourceFile>(swea.GetFilesToAnalyze());
+                foreach (var file in files)
                 {
-                    var files = new List<IPsiSourceFile>(swea.GetFilesToAnalyze());
-                    foreach (var file in files)
-                    {
-                        swea.AnalyzeInvisibleFile(file);
-                    }
-                    var highlighting = RunErrorFinder(project, textControl, typeof(TQuickFix), DaemonProcessKind.GLOBAL_WARNINGS);
-                    result = Shell.Instance.GetComponent<IQuickFixes>().InstantiateQuickfix(highlighting, typeof(TQuickFix), 0);
+                    swea.AnalyzeInvisibleFile(file);
                 }
-            });
+
+                highlighting = RunErrorFinder(project, textControl, typeof(TQuickFix), DaemonProcessKind.GLOBAL_WARNINGS);
+                result = Shell.Instance.GetComponent<IQuickFixes>().InstantiateQuickfix(highlighting, typeof(TQuickFix), 0);
+            }
+
             return result;
         }
 
