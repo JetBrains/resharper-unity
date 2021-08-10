@@ -3,7 +3,7 @@
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Yaml.Tests.ReSharper</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Yaml.Tests</RootNamespace>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>9</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <JetTestProject>True</JetTestProject>
   </PropertyGroup>
