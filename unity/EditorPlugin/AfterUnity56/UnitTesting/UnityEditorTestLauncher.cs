@@ -197,9 +197,8 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           return false;
         }
         fieldInfo.SetValue(filter, testNames);
-
-        // todo: fix ToString()?
-        var clientController = ClientControllerWrapper.TryCreate(myLaunch.SessionId.ToString(), myLaunch.ClientControllerInfo);
+        
+        var clientController = ClientControllerWrapper.TryCreate(myLaunch.SessionId, myLaunch.ClientControllerInfo);
         clientController?.OnSessionStarted();
 
         object launcher;
