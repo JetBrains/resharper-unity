@@ -406,8 +406,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     var parent = GetElementById(run, result.ProjectName, result.ParentId);
                     if (parent is NUnitTestElement elementParent)
                     {
-                        unitTestElement = new NUnitRowTestElement(result.TestId, elementParent);
-                        run.AddDynamicElement(unitTestElement);
+                        // todo: test!
+                        run.CreateDynamicElement<NUnitRowTestElement>(() =>
+                        {
+                            return new NUnitRowTestElement(result.TestId, elementParent);
+                        });
                     }
                     else if (parent is NUnitTestFixtureElement fixtureParent)
                     {
