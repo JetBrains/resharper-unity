@@ -13,8 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             using (ReadLockCookie.Create())
             {
-                var elementManager = run.Launch.ComponentContainer.GetComponent<IUnitTestElementManager>();
-                elementManager.AddElements(new HashSet<IUnitTestElement> { element });
+                run.CreateDynamicElement(() => element);
             }
         }
     }
