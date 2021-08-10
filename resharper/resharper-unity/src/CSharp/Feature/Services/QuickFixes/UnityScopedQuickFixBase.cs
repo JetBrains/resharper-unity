@@ -1,4 +1,5 @@
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Feature.Services.QuickFixes.Scoped;
 using JetBrains.ReSharper.Intentions.Util;
@@ -14,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             return treeNode != null ? ValidUtils.Valid(treeNode) : base.IsAvailable(cache);
         }
 
-        protected override IScopedFixingStrategy GetScopedFixingStrategy(ISolution solution)
+        protected override IScopedFixingStrategy GetScopedFixingStrategy(ISolution solution, IHighlighting highlighting)
         {
             // These strategies are used to reduce the analysers being run on the files in scope, by looking at what
             // highlightings the QF can handle, and what highlightings an analyser advertises.
