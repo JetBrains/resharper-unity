@@ -1,6 +1,4 @@
-﻿using JetBrains.Application.Settings;
-using JetBrains.Application.Settings.Extentions;
-using JetBrains.Collections.Viewable;
+﻿using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
@@ -8,7 +6,6 @@ using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.UnitTestFramework;
-using JetBrains.ReSharper.UnitTestFramework.Elements;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
@@ -26,15 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         public UnityNUnitServiceProvider(ISolution solution,
             IPsiModules psiModules,
             ISymbolCache symbolCache,
-            IUnitTestElementIdFactory idFactory,
-            IUnitTestElementManager elementManager,
             NUnitTestProvider provider,
-            IUnitTestingSettings settings,
-            ISettingsStore settingsStore,
-            ISettingsOptimization settingsOptimization,
-            ISettingsCache settingsCache,
-            UnitTestingCachingService cachingService,
-            INUnitTestParametersProvider testParametersProvider,
             FrontendBackendHost frontendBackendHost,
             BackendUnityHost backendUnityHost,
             RunViaUnityEditorStrategy runViaUnityEditorStrategy,
@@ -42,10 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             : base(solution,
                 psiModules,
                 symbolCache,
-                idFactory,
-                elementManager,
-                provider,
-                cachingService)
+                provider)
         {
             // Only in tests
             if (!frontendBackendHost.IsAvailable)
