@@ -406,19 +406,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     var parent = GetElementById(run, result.ProjectName, result.ParentId);
                     if (parent is NUnitTestElement elementParent)
                     {
-                        // todo: test!
-                        run.CreateDynamicElement<NUnitRowTestElement>(() =>
-                        {
-                            return new NUnitRowTestElement(result.TestId, elementParent);
-                        });
+                        run.CreateDynamicElement(() => new NUnitRowTestElement(result.TestId, elementParent));
                     }
                     else if (parent is NUnitTestFixtureElement fixtureParent)
                     {
                         // todo: test!
-                        unitTestElement = new NUnitTestElement(result.TestId, fixtureParent, 
-                            result.TestId.SubstringAfter(result.ParentId), null);
-
-                        run.AddDynamicElement(unitTestElement);
+                        run.CreateDynamicElement(() => new NUnitTestElement(result.TestId, fixtureParent, 
+                            result.TestId.SubstringAfter(result.ParentId), null));
                     }
                 }
 
@@ -541,7 +535,7 @@ else if (criterion is CategoryCriterion categoryCriterion)
 
         public int? TryGetRunnerProcessId() => myUnityProcessId.Value;
 
-        private class UnityRuntimeEnvironment : IRuntimeEnvironment
+        private class UnityRuntimeEnvironment : IRuntimeEnvironmentWithProject
         {
             public UnityRuntimeEnvironment(TargetPlatform targetPlatform, IProject project)
             {
@@ -579,6 +573,8 @@ else if (criterion is CategoryCriterion categoryCriterion)
             {
                 return !Equals(left, right);
             }
+
+            public bool IsUnmanaged => false;
         }
     }
 }
