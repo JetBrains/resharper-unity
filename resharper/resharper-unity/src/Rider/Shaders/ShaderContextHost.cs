@@ -36,9 +36,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
             mySolution = solution;
             myPsiFiles = psiFiles;
             myCppGlobalSymbolCache = cppGlobalSymbolCache;
-            myDocumentHost = DocumentHostBase.GetInstance(solution);
             myShaderContextCache = shaderContextCache;
             myShaderContextDataPresentationCache = shaderContextDataPresentationCache;
+
+            // This requires IResharperHostCoreFeaturesZone
+            myDocumentHost = DocumentHostBase.GetInstance(solution);
 
             if (frontendBackendHost == null || myDocumentHost == null)
                 return;

@@ -23,20 +23,20 @@
 
         half _Glossiness;
         half _Metallic;
-        |fixed4|(0) _Color;
+        |fixed4|(0) |_Color|(1);
 
         // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
         // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
         // #pragma instancing_options assumeuniformscaling
-        |UNITY_INSTANCING_BUFFER_START|(1)(Props)
+        |UNITY_INSTANCING_BUFFER_START|(2)(|Props|(3))
             // put more per-instance properties here
-        |UNITY_INSTANCING_BUFFER_END|(2)(Props)
+        |UNITY_INSTANCING_BUFFER_END|(4)(|Props|(5))
 
-        void surf (Input IN, inout |SurfaceOutputStandard|(3) o) {
+        void surf (Input IN, inout |SurfaceOutputStandard|(6) |o|(7)) {
         
             #if SHADER_TARGET > 40
                 // Albedo comes from a texture tinted by color
-                |fixed4|(4) c = tex2D |(_MainTex, IN.uv_MainTex, 2)|(5) * _Color;
+                |fixed4|(8) |c|(9) = tex2D |(_MainTex, IN.uv_MainTex, 2)|(10) * _Color;
                 o.Albedo = c.rgb;
                 // Metallic and smoothness come from slider variables
                 o.Metallic = _Metallic;
@@ -50,8 +50,13 @@
 }
 ---------------------------------------------------------
 (0): ReSharper Error Highlighting: Cannot resolve symbol 'fixed4'
-(1): ReSharper Error Highlighting: Cannot resolve symbol 'UNITY_INSTANCING_BUFFER_START'
-(2): ReSharper Error Highlighting: Cannot resolve symbol 'UNITY_INSTANCING_BUFFER_END'
-(3): ReSharper Error Highlighting: Cannot resolve symbol 'SurfaceOutputStandard'
-(4): ReSharper Error Highlighting: Cannot resolve symbol 'fixed4'
-(5): ReSharper Underlined Error Highlighting: None of the overloads accepts 3 arguments
+(1): ReSharper Underlined Error Highlighting: This declarator has unknown type
+(2): ReSharper Error Highlighting: Cannot resolve symbol 'UNITY_INSTANCING_BUFFER_START'
+(3): ReSharper Underlined Error Highlighting: This declarator has unknown type
+(4): ReSharper Error Highlighting: Cannot resolve symbol 'UNITY_INSTANCING_BUFFER_END'
+(5): ReSharper Underlined Error Highlighting: This declarator has unknown type
+(6): ReSharper Error Highlighting: Cannot resolve symbol 'SurfaceOutputStandard'
+(7): ReSharper Underlined Error Highlighting: This declarator has unknown type
+(8): ReSharper Error Highlighting: Cannot resolve symbol 'fixed4'
+(9): ReSharper Underlined Error Highlighting: This declarator has unknown type
+(10): ReSharper Underlined Error Highlighting: None of the overloads accepts 3 arguments
