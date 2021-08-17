@@ -98,11 +98,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 textControl != null && myUnityApi.IsUnityType(classLikeDeclaration.DeclaredElement))
             {
                 var fix = new GenerateUnityEventFunctionsFix(classLikeDeclaration);
-                result.Add(
-                    new BulbMenuItem(new IntentionAction.MyExecutableProxi(fix, Solution, textControl),
-                        "Generate Unity event functions", PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id,
-                        BulbMenuAnchors.FirstClassContextItems)
-                );
+                result.Add(new IntentionAction(fix, "Generate Unity event functions (matt)",
+                        PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
+                    .ToBulbMenuItem(Solution, textControl));
             }
 
             return result;

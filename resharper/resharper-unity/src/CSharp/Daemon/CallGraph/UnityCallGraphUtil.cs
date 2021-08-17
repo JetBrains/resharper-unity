@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
                     return false;
             }
         }
-        
+
         public const string PerformanceAnalysisComment = "Unity.PerformanceAnalysis";
 
         public static bool IsQualifierOpenType(IInvocationExpression invocationExpression)
@@ -95,7 +95,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
                     return true;
                 }
 
-
                 if (HasAnalysisComment(methodDeclaration, markName, restore))
                 {
                     isMarked = true;
@@ -129,12 +128,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
                                                         [NotNull] ISolution solution,
                                                         [NotNull] IconId iconId)
         {
-            var proxi = new IntentionAction.MyExecutableProxi(bulbAction, solution, textControl);
-            var menuText = bulbAction.Text;
-            var anchor = BulbMenuAnchors.FirstClassContextItems;
-            var bulbMenuItem = new BulbMenuItem(proxi, menuText, iconId, anchor);
-
-            return bulbMenuItem;
+            return new IntentionAction(bulbAction, bulbAction.Text, iconId, BulbMenuAnchors.FirstClassContextItems)
+                .ToBulbMenuItem(solution, textControl);
         }
 
         public static bool IsCallGraphReady([NotNull] SolutionAnalysisConfiguration configuration)
@@ -145,7 +140,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
         public static bool IsCallGraphReady([NotNull] ISolution solution)
         {
             var configuration = solution.GetComponent<SolutionAnalysisConfiguration>();
-            
             return IsCallGraphReady(configuration);
         }
     }
