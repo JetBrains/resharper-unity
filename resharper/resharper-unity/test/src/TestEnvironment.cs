@@ -2,6 +2,8 @@
 using System.IO;
 using System.Reflection;
 using JetBrains.Application.BuildScript.Application.Zones;
+using JetBrains.Application.Environment;
+using JetBrains.ReSharper.Plugins.Unity.HlslSupport;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;
 using JetBrains.TestFramework.Application.Zones;
@@ -9,11 +11,6 @@ using JetBrains.TestFramework.Utils;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using NUnit.Framework;
-
-#if RIDER
-using JetBrains.Rider.Backend.Env;
-
-#endif
 
 [assembly: RequiresThread(System.Threading.ApartmentState.STA)]
 
@@ -28,16 +25,29 @@ using JetBrains.Rider.Backend.Env;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests
 {
+    // Define the zone that should be active in the environment container, pre-startup. We can use this to implement
+    // components that should be available in the environment container. Any required zones will be automatically added
+    // to the environment zone (and therefore automatically activated)
     [ZoneDefinition]
-    public interface IUnityTestZone : ITestsEnvZone, IRequire<PsiFeatureTestZone>
-#if RIDER
-        , IRequire<IRiderPlatformZone>
-#endif
+    public interface IUnityTestsEnvZone : ITestsEnvZone
     {
     }
 
+    // Activate the zones we require for shell/solution containers. This is normally handled by product specific zone
+    // activators. But we don't have any product environment zones, so these activators aren't loaded, and we need to
+    // activate pretty much everything we need.
+    // We also dynamically activate ILanguageHlslSupportZone, since the managed C++ Cpp PSI doesn't run on Mono
+    [ZoneActivator]
+    public class UnityTestZonesActivator : IActivate<PsiFeatureTestZone>, IActivateDynamic<ILanguageHlslSupportZone>
+#if RIDER
+        , IActivate<JetBrains.Rider.Backend.Env.IRiderPlatformZone>
+#endif
+    {
+        bool IActivateDynamic<ILanguageHlslSupportZone>.ActivatorEnabled() => !PlatformUtil.IsRunningOnMono;
+    }
+
     [SetUpFixture]
-    public class TestEnvironment : ExtensionTestEnvironmentAssembly<IUnityTestZone>
+    public class TestEnvironment : ExtensionTestEnvironmentAssembly<IUnityTestsEnvZone>
     {
         static TestEnvironment()
         {
