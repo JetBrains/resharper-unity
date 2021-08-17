@@ -191,7 +191,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 }
                 catch (Exception e)
                 {
-                    myLogger.Error(e, "An error occured while building document: {0}", unityAssetDataElementContainer.GetType().Name);
+                    myLogger.Warn(e, $"An error occured while building document: {unityAssetDataElementContainer.GetType().Name}");
                 }
             }
 

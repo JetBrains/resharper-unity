@@ -14,9 +14,30 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
+## 2021.2.1
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net212-rtm-2021.2.0...net212)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/49?closed=1)
+
+### Changed
+
+- Methods marked with `[UnityTearDown]` are treated as in use ([#2135](https://github.com/JetBrains/resharper-unity/pull/2135))
+
+### Fixed
+
+- Rider: Builtin packages are correctly resolved against the local package cache for newer Unity versions (RIDER-65196](https://youtrack.jetbrains.com/issue/RIDER-65196), [#2122](https://github.com/JetBrains/resharper-unity/issues/2122), [#2136](https://github.com/JetBrains/resharper-unity/pull/2136))
+- Rider: Support "Show in Unity" action for files from a local package ([RIDER-65128](https://youtrack.jetbrains.com/issue/RIDER-65128), [#2124](https://github.com/JetBrains/resharper-unity/pull/2124))
+- Rider: Improve memory management when opening massive shader files ([RIDER-65080](https://youtrack.jetbrains.com/issue/RIDER-65080), [#2121](https://github.com/JetBrains/resharper-unity/pull/2121))
+- Rider: Fix UnityYAMLMerge failing to resolve conflicts in assets ([RIDER-64433](https://youtrack.jetbrains.com/issue/RIDER-64433), [#2125](https://github.com/JetBrains/resharper-unity/pull/2125))
+
+
+
 ## 2021.2.0
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net211...net212)
+* Released:
+* Build: 2021.2.0.129
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net211...net212-rtm-2021.2.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/45?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net212-rtm-2021.2.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2021.2.0.129)
 
 ### Added
 
@@ -50,9 +71,27 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix "Show in Unity" action for local packages ([RIDER-65128](https://youtrack.jetbrains.com/issue/RIDER-65128), [#2124](https://github.com/JetBrains/resharper-unity/pull/2124))
 
 
+
+## 2021.1.5
+* Released: [2021-07-22](https://blog.jetbrains.com/dotnet/2021/07/22/resharper-rider-2021-1-5/)
+* Build: 2021.1.3.165
+* [No code changes](https://github.com/JetBrains/resharper-unity/compare/net211-rtm-2021.1.4...net211-rtm-2021.1.5)
+
+
+
+## 2021.1.4
+* Released: [2021-07-14](https://blog.jetbrains.com/dotnet/2021/07/14/resharper-and-rider-2021-1-4-bugfix-has-arrived/)
+* [No code changes](https://github.com/JetBrains/resharper-unity/compare/net211-rtm-2021.1.3...net211-rtm-2021.1.4)
+
+
+
 ## 2021.1.3
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net211-rtm-2021.1.2...net211)
+* Released: [2021-05-26](https://blog.jetbrains.com/dotnet/2021/05/26/resharper-and-rider-2021-1-3-bugfix-is-available/)
+* Build: 2021.1.3.139
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net211-rtm-2021.1.2...net211-rtm-2021.1.3)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/47?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net211-rtm-2021.1.3)
+* No ReSharper release required.
 
 ### Fixed
 
