@@ -5,7 +5,8 @@ using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
 using JetBrains.RdBackend.Common.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
-using JetBrains.ReSharper.UnitTestFramework;
+using JetBrains.ReSharper.UnitTestFramework.Elements;
+using JetBrains.ReSharper.UnitTestFramework.Execution.Hosting;
 using JetBrains.Rider.Backend.Features.UnitTesting;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 
@@ -14,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
     [ShellComponent]
     public class UnityRiderUnitTestCoverageAvailabilityChecker : IRiderUnitTestCoverageAvailabilityChecker, IHideImplementation<DefaultRiderUnitTestCoverageAvailabilityChecker>
     {
-        private static readonly Version ourMinSupportedUnityVersion = new Version(2018, 3);
+        private static readonly Version ourMinSupportedUnityVersion = new(2018, 3);
 
         // this method should be very fast as it gets called a lot
         public HostProviderAvailability GetAvailability(IUnitTestElement element)

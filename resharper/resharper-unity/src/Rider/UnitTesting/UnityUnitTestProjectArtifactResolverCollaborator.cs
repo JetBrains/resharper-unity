@@ -1,6 +1,6 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
-using JetBrains.ReSharper.UnitTestFramework.Exploration;
+using JetBrains.ReSharper.UnitTestFramework.Exploration.Artifacts;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 
@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myUnitySolutionTracker = unitySolutionTracker;
             myServiceProvider = serviceProvider;
         }
-        
+
         public bool CanResolveArtifact(IProject project, TargetFrameworkId targetFrameworkId)
         {
             return myUnitySolutionTracker.IsUnityGeneratedProject.Maybe.Value && myServiceProvider.IsUnityUnitTestStrategy();

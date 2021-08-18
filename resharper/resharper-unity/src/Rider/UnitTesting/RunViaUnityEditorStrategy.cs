@@ -21,10 +21,10 @@ using JetBrains.RdBackend.Common.Features;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Resources.Shell;
-using JetBrains.ReSharper.TaskRunnerFramework;
-using JetBrains.ReSharper.UnitTestFramework;
-using JetBrains.ReSharper.UnitTestFramework.Launch;
-using JetBrains.ReSharper.UnitTestFramework.Strategy;
+using JetBrains.ReSharper.UnitTestFramework.Elements;
+using JetBrains.ReSharper.UnitTestFramework.Execution;
+using JetBrains.ReSharper.UnitTestFramework.Execution.Hosting;
+using JetBrains.ReSharper.UnitTestFramework.Execution.Launch;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30.Elements;
 using JetBrains.Rider.Backend.Features.UnitTesting;
 using JetBrains.Rider.Model.Notifications;
@@ -33,6 +33,9 @@ using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using JetBrains.Util.Extension;
 using JetBrains.Util.Threading;
+using IRuntimeEnvironment = JetBrains.ReSharper.UnitTestFramework.Execution.Launch.IRuntimeEnvironment;
+using IUnitTestLaunch = JetBrains.ReSharper.UnitTestFramework.Execution.Launch.IUnitTestLaunch;
+using IUnitTestRun = JetBrains.ReSharper.UnitTestFramework.Execution.Launch.IUnitTestRun;
 using Status = JetBrains.Rider.Model.Unity.BackendUnity.Status;
 using UnitTestLaunch = JetBrains.Rider.Model.Unity.BackendUnity.UnitTestLaunch;
 
@@ -42,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
     public class RunViaUnityEditorStrategy : IExternalRunnerUnitTestRunStrategy
     {
         private static readonly Key<CancellationTokenSource> ourCancellationTokenSourceKey =
-            new Key<CancellationTokenSource>("RunViaUnityEditorStrategy.CancellationTokenSource");
+            new("RunViaUnityEditorStrategy.CancellationTokenSource");
 
         private readonly ISolution mySolution;
         private readonly IUnitTestResultManager myUnitTestResultManager;
@@ -56,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly PackageValidator myPackageValidator;
         private readonly JetBrains.Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
 
-        private readonly object myCurrentLaunchesTaskAccess = new object();
+        private readonly object myCurrentLaunchesTaskAccess = new();
         private Task myCurrentLaunchesTask = Task.CompletedTask;
 
         private readonly IProperty<int?> myUnityProcessId;
@@ -190,7 +193,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             var cancellationToken = cancellationTs.NotNull().Token;
 
             myLogger.Trace("Before calling Refresh.");
-            Refresh(run.Lifetime, tcs, cancellationToken).ContinueWith(__ =>
+            Refresh(run.Lifetime, tcs, cancellationToken).ContinueWith(_ =>
             {
                 if (tcs.Task.IsCanceled || tcs.Task.IsFaulted) // Refresh failed or was stopped
                     return;
@@ -321,12 +324,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 .ContinueWith(_ =>
                 {
                     return RefreshTask(refreshLifetime, tcs)
-                        .ContinueWith(__ =>
+                        .ContinueWith(_ =>
                             WaitForUnityEditorConnectedAndIdle(refreshLifetime), refreshLifetime)
                         .Unwrap();
                 }, refreshLifetime)
                 .Unwrap()
-                .ContinueWith(__ =>
+                .ContinueWith(_ =>
                 {
                     if (myBackendUnityHost.BackendUnityModel.Value == null)
                     {
@@ -406,7 +409,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     }
                     else if (parent is NUnitTestFixtureElement fixtureParent)
                     {
-                        run.CreateDynamicElement(() => new NUnitTestElement(result.TestId, fixtureParent, 
+                        run.CreateDynamicElement(() => new NUnitTestElement(result.TestId, fixtureParent,
                             result.TestId.SubstringAfter(result.ParentId), null));
                     }
                 }

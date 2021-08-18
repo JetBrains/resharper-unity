@@ -9,8 +9,8 @@ using JetBrains.Application.UI.Controls;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.UnitTestFramework;
-using JetBrains.ReSharper.UnitTestFramework.Launch;
+using JetBrains.ReSharper.UnitTestFramework.Execution.Hosting;
+using JetBrains.ReSharper.UnitTestFramework.Execution.Launch;
 using JetBrains.Rider.Backend.Features.Unity;
 using JetBrains.Util;
 
@@ -19,7 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
     [SolutionComponent]
     public class UnityTaskRunnerHostControllerExtension : ITaskRunnerHostControllerExtension
     {
-        private static readonly Key<LifetimeDefinition> ourLifetimeDefinitionKey = new Key<LifetimeDefinition>("UnityTaskRunnerHostController.CancelPrepareForRun");
+        private static readonly Key<LifetimeDefinition> ourLifetimeDefinitionKey
+            = new("UnityTaskRunnerHostController.CancelPrepareForRun");
 
         private const string PluginName = "Unity plugin";
         private const string NotAvailableUnityEditorMessage = "Unable to {0} tests: Unity Editor is not running";

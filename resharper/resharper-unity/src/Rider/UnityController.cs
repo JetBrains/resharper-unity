@@ -14,7 +14,7 @@ using JetBrains.RdBackend.Common.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting;
-using JetBrains.ReSharper.UnitTestFramework.Strategy;
+using JetBrains.ReSharper.UnitTestFramework.Execution;
 using JetBrains.Rider.Backend.Features.Unity;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
@@ -61,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var protocolTask = protocolTaskSource.Task;
 
             var waitTask = Task.WhenAny(protocolTask, Task.Delay(TimeSpan.FromSeconds(0.5), lifetimeDef.Lifetime)); // continue on timeout
-            return waitTask.ContinueWith(t =>
+            return waitTask.ContinueWith(_ =>
             {
                 lifetimeDef.Terminate();
                 if (protocolTask.Status != TaskStatus.RanToCompletion && force)
@@ -103,7 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             // Check exists of process if it was killed by manual and EditorInstance.json wasn't deleted
             var pid = Convert.ToInt32(processIdString);
-            return PlatformUtil.ProcessExists(pid) ? pid : (int?) null;
+            return PlatformUtil.ProcessExists(pid) ? pid : null;
         }
 
         public Task<int> WaitConnectedUnityProcessId(Lifetime lifetime)
