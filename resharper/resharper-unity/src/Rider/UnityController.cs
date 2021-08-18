@@ -103,7 +103,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             // Check exists of process if it was killed by manual and EditorInstance.json wasn't deleted
             var pid = Convert.ToInt32(processIdString);
-            return PlatformUtil.ProcessExists(pid) ? pid : null;
+
+            // TODO: Be careful removing this redundant cast
+            // It caused a build failure on TC, presumably due to different compiler versions or SDKs? However, it
+            // builds fine locally, with .NET 5.0.301 ¯\_(ツ)_/¯
+            // ReSharper disable once RedundantCast
+            return PlatformUtil.ProcessExists(pid) ? pid : (int?) null;
         }
 
         public Task<int> WaitConnectedUnityProcessId(Lifetime lifetime)
