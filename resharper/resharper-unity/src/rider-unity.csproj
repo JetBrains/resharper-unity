@@ -170,7 +170,7 @@
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
-    <ProjectReference Include="..\..\resharper-yaml\src\rider-yaml.csproj" />
+    <ProjectReference Include="..\..\resharper-yaml\src\resharper-yaml.csproj" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Rider_Rider.Backend.Props" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" />

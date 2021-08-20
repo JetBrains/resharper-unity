@@ -7,19 +7,14 @@ namespace JetBrains.ReSharper.Plugins.Yaml.ProjectModel
   public class YamlProjectFileType : KnownProjectFileType
   {
     public new const string Name = "YAML";
-    public const string YAML_EXTENSION = ".yaml";
 
     [CanBeNull, UsedImplicitly]
     public new static YamlProjectFileType Instance { get; private set; }
 
-    public YamlProjectFileType()
-#if RIDER
-      // Rider has YAML support on the front end. We don't register by default for any file types. If another plugin
-      // (e.g. Unity) wishes to have files treated as YAML, then it can register its own file types
-      : base(Name, "YAML")
-#else
-      : base(Name, "YAML", new[] {YAML_EXTENSION})
-#endif
+    // This assembly doesn't register any file types. Rider has YAML support on the frontend, and ReSharper doesn't
+    // provide any YAML related features. There's no point creating a PSI for files and not doing anything with it.
+    // Another plugin is free to register its own file types, like Unity does
+    public YamlProjectFileType() : base(Name, "YAML")
     {
     }
   }
