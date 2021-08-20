@@ -1,40 +1,14 @@
-﻿using System.IO;
+﻿using JetBrains.ReSharper.Plugins.Tests.YamlTestComponents;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
-using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
-using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.TestFramework;
-using JetBrains.Text;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
 {
   [TestFileExtension(TestYamlProjectFileType.YAML_EXTENSION)]
-  public class LexerTests : LexerTestBase
+  public class ParserTests : ParserTestBase<YamlLanguage>
   {
-    protected override string RelativeTestDataPath => @"Psi\Lexing";
-
-    protected override ILexer CreateLexer(IBuffer buffer)
-    {
-      return new YamlLexerFactory().CreateLexer(buffer);
-    }
-
-    protected override void WriteToken(TextWriter writer, ILexer lexer)
-    {
-      var text = lexer.GetTokenText();
-
-      var token = lexer.TokenType;
-      if (token == YamlTokenType.NON_PRINTABLE)
-      {
-        text = $"{lexer.TokenStart:D4}: {lexer.TokenType} length: {lexer.TokenEnd - lexer.TokenStart}";
-      }
-      else
-      {
-        text = text.Replace("\r", "\\r").Replace("\n", "\\n").Replace("\t", "\\t");
-        text = $"{lexer.TokenStart:D4}: {lexer.TokenType} '{text}'";
-      }
-      writer.WriteLine(text);
-      // Console.WriteLine(text);
-    }
+    protected override string RelativeTestDataPath => @"Psi\Parsing";
 
     // 5 Characters
     // 5.1 Character Set
@@ -77,6 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
     [TestCase("CommentLines")]
     [TestCase("MultiLineComments")]
     [TestCase("Comments")]
+    [TestCase("NotComments")]
 
     // 6.7 Separation Lines - describes whitespace (inc. comments) between items
     //     Might be required, depending on how we parse indentation and flow elements
@@ -119,6 +94,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
     // 7.2 Empty Nodes
     [TestCase("EmptyNodes")]
     [TestCase("CompletelyEmptyFlowNodes")]
+    [TestCase("EmptyImplicitBlockValueWithTrailingWhitespace")]
 
     // 7.3 Flow Scalar Styles
     // 7.3.1 Double-quoted style
@@ -204,6 +180,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
     // 9.2 Streams
     [TestCase("Stream")]
 
-    public void TestLexer(string name) => DoOneTest(name);
+    public void TestParser(string name) => DoOneTest(name);
   }
 }

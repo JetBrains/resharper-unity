@@ -6,7 +6,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Tests.Yaml
+namespace JetBrains.ReSharper.Plugins.Tests.YamlTestComponents
 {
   public static class TestYamlProjectFileType
   {
@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Yaml
   [ShellComponent]
   public class UnityTestsSpecificYamlFileExtensionMapping : FileTypeDefinitionExtensionMapping
   {
-    private static readonly string[] ourFileExtensions =
+    private static readonly string[] OurFileExtensions =
     {
       TestYamlProjectFileType.YAML_EXTENSION,
 
@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Yaml
 
     public override IEnumerable<ProjectFileType> GetFileTypes(string extension)
     {
-      if (ourFileExtensions.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
+      if (OurFileExtensions.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
         return new[] {YamlProjectFileType.Instance};
       return base.GetFileTypes(extension);
     }
@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Yaml
     public override IEnumerable<string> GetExtensions(ProjectFileType projectFileType)
     {
       if (Equals(projectFileType, YamlProjectFileType.Instance))
-        return base.GetExtensions(projectFileType).Concat(ourFileExtensions);
+        return base.GetExtensions(projectFileType).Concat(OurFileExtensions);
       return base.GetExtensions(projectFileType);
     }
   }

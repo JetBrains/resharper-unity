@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using JetBrains.ReSharper.Plugins.Tests.YamlTestComponents;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Parsing;

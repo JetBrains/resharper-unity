@@ -1,3 +1,4 @@
+using JetBrains.ReSharper.Plugins.Tests.YamlTestComponents;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 

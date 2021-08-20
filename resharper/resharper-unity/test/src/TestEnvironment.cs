@@ -4,6 +4,7 @@ using System.Reflection;
 using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Environment;
 using JetBrains.ReSharper.Plugins.Unity.HlslSupport;
+using JetBrains.ReSharper.Plugins.Yaml;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;
 using JetBrains.TestFramework.Application.Zones;
@@ -36,12 +37,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
     // Activate the zones we require for shell/solution containers. This is normally handled by product specific zone
     // activators. But we don't have any product environment zones, so these activators aren't loaded, and we need to
     // activate pretty much everything we need.
-    // We also dynamically activate ILanguageHlslSupportZone, since the managed C++ Cpp PSI doesn't run on Mono
+    // We need to explicitly activate the language zones, since PsiFeatureTestZone activates leaf languages, rather
+    // than IPsiLanguageZone (which would activate all other languages due to inheritance). But we can't activate HLSL
+    // on Mono, as the managed C++ Cpp PSI doesn't work on Mono
     [ZoneActivator]
-    public class UnityTestZonesActivator : IActivate<PsiFeatureTestZone>, IActivateDynamic<ILanguageHlslSupportZone>
+    public class UnityTestZonesActivator : IActivate<PsiFeatureTestZone>,
 #if RIDER
-        , IActivate<JetBrains.Rider.Backend.Env.IRiderPlatformZone>
+        IActivate<JetBrains.Rider.Backend.Env.IRiderPlatformZone>,
 #endif
+        IActivateDynamic<ILanguageHlslSupportZone>,
+        IActivate<ILanguageYamlZone>
     {
         bool IActivateDynamic<ILanguageHlslSupportZone>.ActivatorEnabled() => !PlatformUtil.IsRunningOnMono;
     }
