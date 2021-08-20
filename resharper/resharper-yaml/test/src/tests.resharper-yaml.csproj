@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Yaml.Tests</AssemblyName>
-    <RootNamespace>JetBrains.ReSharper.Plugins.Yaml.Tests</RootNamespace>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Tests.Yaml</RootNamespace>
     <LangVersion>9</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <JetTestProject>True</JetTestProject>

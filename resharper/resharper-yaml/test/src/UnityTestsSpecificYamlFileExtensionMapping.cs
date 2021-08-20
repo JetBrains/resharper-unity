@@ -6,7 +6,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Yaml.Tests
+namespace JetBrains.ReSharper.Plugins.Tests.Yaml
 {
   public static class TestYamlProjectFileType
   {

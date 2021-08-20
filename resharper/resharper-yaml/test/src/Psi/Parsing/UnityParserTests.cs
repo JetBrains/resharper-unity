@@ -4,7 +4,7 @@ using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
 {
   public class UnityParserTests : ParserTestBase<YamlLanguage>
   {

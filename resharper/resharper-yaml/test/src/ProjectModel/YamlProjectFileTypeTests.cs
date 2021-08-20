@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Yaml.Tests.ProjectModel
+namespace JetBrains.ReSharper.Plugins.Tests.Yaml.ProjectModel
 {
   [TestFixture]
   public class YamlProjectFileTypeTests : BaseTest

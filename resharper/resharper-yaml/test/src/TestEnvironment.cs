@@ -24,7 +24,7 @@ using NUnit.Framework;
 [assembly: TestDataPathBase("resharper-yaml/test/data")]
 #pragma warning restore 618
 
-namespace JetBrains.ReSharper.Plugins.Yaml.Tests
+namespace JetBrains.ReSharper.Plugins.Tests.Yaml
 {
     [ZoneDefinition]
     public interface IYamlTestZone : ITestsEnvZone, IRequire<PsiFeatureTestZone>

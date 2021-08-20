@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi
+namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi
 {
   [TestFixture]
   public class YamlLanguageTests : BaseTest

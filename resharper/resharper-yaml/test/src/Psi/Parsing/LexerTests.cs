@@ -6,7 +6,7 @@ using JetBrains.ReSharper.TestFramework;
 using JetBrains.Text;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
 {
   [TestFileExtension(TestYamlProjectFileType.YAML_EXTENSION)]
   public class LexerTests : LexerTestBase
