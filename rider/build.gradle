@@ -11,7 +11,7 @@ plugins {
     id 'com.jetbrains.rdgen' version '0.211.278'
     id 'com.ullink.nuget' version '2.23'
     id 'com.ullink.nunit' version '2.4'
-    id 'me.filippov.gradle.jvm.wrapper' version '0.9.3'
+    id 'me.filippov.gradle.jvm.wrapper' version '0.10.0'
 }
 
 
