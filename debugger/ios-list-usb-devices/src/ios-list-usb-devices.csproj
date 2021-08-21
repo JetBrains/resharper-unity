@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
+        <TargetFrameworks>net5.0;net472</TargetFrameworks>
         <AssemblyName>JetBrains.Rider.Unity.ListIosUsbDevices</AssemblyName>
         <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Rider.iOS.ListUsbDevices</RootNamespace>
         <LangVersion>9</LangVersion>
