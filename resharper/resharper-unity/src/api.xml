@@ -231,19 +231,19 @@
     </message>
   </type>
   <type kind="class" name="Camera" ns="UnityEngine" path="Documentation/en/ScriptReference/Camera.html">
-    <message name="OnPostRender" static="False" description="OnPostRender is called after a camera has finished rendering the Scene." path="Documentation/en/ScriptReference/Camera.OnPostRender.html">
+    <message name="OnPostRender" static="False" description="Event function that Unity calls after a Camera renders the scene." path="Documentation/en/ScriptReference/Camera.OnPostRender.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPreCull" static="False" description="OnPreCull is called before a camera culls the Scene." path="Documentation/en/ScriptReference/Camera.OnPreCull.html">
+    <message name="OnPreCull" static="False" description="Event function that Unity calls before a Camera culls the scene." path="Documentation/en/ScriptReference/Camera.OnPreCull.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPreRender" static="False" description="OnPreRender is called before a camera starts rendering the Scene." path="Documentation/en/ScriptReference/Camera.OnPreRender.html">
+    <message name="OnPreRender" static="False" description="Event function that Unity calls before a Camera renders the scene." path="Documentation/en/ScriptReference/Camera.OnPreRender.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnRenderImage" static="False" description="OnRenderImage is called after all rendering is complete to render image." path="Documentation/en/ScriptReference/Camera.OnRenderImage.html">
+    <message name="OnRenderImage" static="False" description="Event function that Unity calls after a Camera has finished rendering, that allows you to modify the Camera's final image." path="Documentation/en/ScriptReference/Camera.OnRenderImage.html">
       <parameters>
-        <parameter type="UnityEngine.RenderTexture" array="False" name="source" />
-        <parameter type="UnityEngine.RenderTexture" array="False" name="destination" />
+        <parameter type="UnityEngine.RenderTexture" array="False" name="source" description="A RenderTexture containing the source image." />
+        <parameter type="UnityEngine.RenderTexture" array="False" name="destination" description="The RenderTexture to update with the modified image." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -669,19 +669,19 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPostRender" static="False" coroutine="True" description="OnPostRender is called after a camera finished rendering the Scene." path="Documentation/en/ScriptReference/MonoBehaviour.OnPostRender.html">
+    <message name="OnPostRender" static="False" coroutine="True" description="Event function that Unity calls after a Camera renders the scene." path="Documentation/en/ScriptReference/MonoBehaviour.OnPostRender.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPreCull" static="False" description="OnPreCull is called before a camera culls the Scene." path="Documentation/en/ScriptReference/MonoBehaviour.OnPreCull.html">
+    <message name="OnPreCull" static="False" description="Event function that Unity calls before a Camera culls the scene." path="Documentation/en/ScriptReference/MonoBehaviour.OnPreCull.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPreRender" static="False" coroutine="True" description="OnPreRender is called before a camera starts rendering the Scene." path="Documentation/en/ScriptReference/MonoBehaviour.OnPreRender.html">
+    <message name="OnPreRender" static="False" coroutine="True" description="Event function that Unity calls before a Camera renders the scene." path="Documentation/en/ScriptReference/MonoBehaviour.OnPreRender.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnRenderImage" static="False" description="OnRenderImage is called after all rendering is complete to render image." path="Documentation/en/ScriptReference/MonoBehaviour.OnRenderImage.html">
+    <message name="OnRenderImage" static="False" description="Event function that Unity calls after a Camera has finished rendering, that allows you to modify the Camera's final image." path="Documentation/en/ScriptReference/MonoBehaviour.OnRenderImage.html">
       <parameters>
-        <parameter type="UnityEngine.RenderTexture" array="False" name="src" />
-        <parameter type="UnityEngine.RenderTexture" array="False" name="dest" />
+        <parameter type="UnityEngine.RenderTexture" array="False" name="source" description="A RenderTexture containing the source image." />
+        <parameter type="UnityEngine.RenderTexture" array="False" name="destination" description="The RenderTexture to update with the modified image." />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -927,7 +927,7 @@
   <type kind="class" name="ScriptedImporter" ns="UnityEditor.AssetImporters" minimumVersion="2020.2" path="Documentation/en/ScriptReference/AssetImporters.ScriptedImporter.html">
     <message name="GatherDependenciesFromSourceFile" static="True" description="A static callback that you can implement to set up artifact dependencies to other Assets, and optimize the order your assets are imported." path="Documentation/en/ScriptReference/AssetImporters.ScriptedImporter.GatherDependenciesFromSourceFile.html">
       <parameters>
-        <parameter type="System.String" array="False" name="assetPath" />
+        <parameter type="System.String" array="False" name="path" description="The path of the asset currently being processed by this method." />
       </parameters>
       <returns type="System.String" array="True" />
     </message>
