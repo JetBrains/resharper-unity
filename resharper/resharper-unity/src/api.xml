@@ -1,5 +1,5 @@
 ﻿<!--This file is auto-generated-->
-<api minimumVersion="5.0" maximumVersion="2020.3">
+<api minimumVersion="5.0" maximumVersion="2021.1">
   <type kind="class" name="AssetModificationProcessor" ns="UnityEditor" path="Documentation/en/ScriptReference/AssetModificationProcessor.html">
     <message name="CanOpenForEdit" static="True" minimumVersion="2020.2" description="This is called by Unity when inspecting assets to determine if they can potentially be opened for editing." path="Documentation/en/ScriptReference/AssetModificationProcessor.CanOpenForEdit.html">
       <parameters>
@@ -275,7 +275,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnCollisionStay" static="False" description="OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider." path="Documentation/en/ScriptReference/Collider.OnCollisionStay.html">
+    <message name="OnCollisionStay" static="False" description="OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody." path="Documentation/en/ScriptReference/Collider.OnCollisionStay.html">
       <parameters>
         <parameter type="UnityEngine.Collision" array="False" name="collisionInfo" description="The Collision data associated with this collision event." />
       </parameters>
@@ -528,7 +528,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnCollisionStay" static="False" coroutine="True" description="OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionStay.html">
+    <message name="OnCollisionStay" static="False" coroutine="True" description="OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody." path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionStay.html">
       <parameters>
         <parameter type="UnityEngine.Collision" array="False" name="collisionInfo" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision data associated with this collision." />
       </parameters>
@@ -740,7 +740,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnValidate" static="False" description="This function is called when the script is loaded or a value is changed in the Inspector (Called in the editor only)." path="Documentation/en/ScriptReference/MonoBehaviour.OnValidate.html">
+    <message name="OnValidate" static="False" description="Editor-only function that Unity calls when the script is loaded or a value changes in the Inspector." path="Documentation/en/ScriptReference/MonoBehaviour.OnValidate.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnWillRenderObject" static="False" description="OnWillRenderObject is called for each camera if the object is visible and not a UI element." path="Documentation/en/ScriptReference/MonoBehaviour.OnWillRenderObject.html">
@@ -866,7 +866,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnCollisionStay" static="False" description="OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider." path="Documentation/en/ScriptReference/Rigidbody.OnCollisionStay.html">
+    <message name="OnCollisionStay" static="False" description="OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody." path="Documentation/en/ScriptReference/Rigidbody.OnCollisionStay.html">
       <parameters>
         <parameter type="UnityEngine.Collision" array="False" name="collisionInfo" />
       </parameters>
@@ -886,7 +886,7 @@
     <message name="OnEnable" static="False" description="This function is called when the object is loaded." path="Documentation/en/ScriptReference/ScriptableObject.OnEnable.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnValidate" static="False" minimumVersion="2020.1" description="This function is called when the script is loaded or a value is changed in the Inspector (Called in the editor only)." path="Documentation/en/ScriptReference/ScriptableObject.OnValidate.html">
+    <message name="OnValidate" static="False" minimumVersion="2020.1" description="Editor-only function that Unity calls when the script is loaded or a value changes in the Inspector." path="Documentation/en/ScriptReference/ScriptableObject.OnValidate.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="Reset" static="False" minimumVersion="2020.1" description="Reset to default values." path="Documentation/en/ScriptReference/ScriptableObject.Reset.html">
