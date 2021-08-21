@@ -9,8 +9,8 @@ plugins {
     id 'org.jetbrains.intellij' // Version comes from buildSrc
     id 'org.jetbrains.changelog' version '0.6.0'
     id 'com.jetbrains.rdgen' version '0.211.278'
-    id 'com.ullink.nuget' version '2.22'
-    id 'com.ullink.nunit' version '2.1'
+    id 'com.ullink.nuget' version '2.23'
+    id 'com.ullink.nunit' version '2.4'
     id 'me.filippov.gradle.jvm.wrapper' version '0.9.3'
 }
 
