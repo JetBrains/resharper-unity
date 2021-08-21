@@ -1,5 +1,5 @@
 ﻿<!--This file is auto-generated-->
-<api minimumVersion="5.0" maximumVersion="2021.1">
+<api minimumVersion="5.0" maximumVersion="2021.2">
   <type kind="class" name="AssetModificationProcessor" ns="UnityEditor" path="Documentation/en/ScriptReference/AssetModificationProcessor.html">
     <message name="CanOpenForEdit" static="True" minimumVersion="2020.2" description="This is called by Unity when inspecting assets to determine if they can potentially be opened for editing." path="Documentation/en/ScriptReference/AssetModificationProcessor.CanOpenForEdit.html">
       <parameters>
@@ -171,9 +171,21 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPostprocessTexture" static="False" description="Add this function to a subclass to get a notification when a texture has completed importing just before." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessTexture.html">
+    <message name="OnPostprocessTexture" static="False" description="Add this function to a subclass to get a notification when a texture2D has completed importing just before Unity compresses it." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessTexture.html">
       <parameters>
         <parameter type="UnityEngine.Texture2D" array="False" name="texture" />
+      </parameters>
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnPostprocessTexture2DArray" static="False" minimumVersion="2021.2" description="Add this function to a subclass to get a notification when a texture2DArray has completed importing just before Unity compresses it." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessTexture2DArray.html">
+      <parameters>
+        <parameter type="UnityEngine.Texture2DArray" array="False" name="texture" />
+      </parameters>
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnPostprocessTexture3D" static="False" minimumVersion="2021.2" description="Add this function to a subclass to get a notification when a texture3D has completed importing just before Unity compresses it." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessTexture3D.html">
+      <parameters>
+        <parameter type="UnityEngine.Texture3D" array="False" name="texture" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -184,6 +196,22 @@
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnPreprocessAudio" static="False" description="Add this function to a subclass to get a notification just before an audio clip is being imported." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessAudio.html">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnPreprocessCameraDescription" static="False" minimumVersion="2021.2" description="Add this function to a subclass to recieve a notification when a camera is imported from a Model Importer." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessCameraDescription.html">
+      <parameters>
+        <parameter type="UnityEditor.AssetImporters.CameraDescription" array="False" name="description" />
+        <parameter type="UnityEngine.Camera" array="False" name="camera" />
+        <parameter type="UnityEngine.AnimationClip" array="True" name="clips" />
+      </parameters>
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnPreprocessLightDescription" static="False" minimumVersion="2021.2" description="Add this function to a subclass to recieve a notification when a light is imported from a Model Importer." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessLightDescription.html">
+      <parameters>
+        <parameter type="UnityEditor.AssetImporters.LightDescription" array="False" name="description" />
+        <parameter type="UnityEngine.Light" array="False" name="light" />
+        <parameter type="UnityEngine.AnimationClip" array="True" name="clips" />
+      </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnPreprocessMaterialDescription" static="False" minimumVersion="2019.3" description="Add this function to a subclass to recieve a notification when a material is imported from a Model Importer." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessMaterialDescription.html">
