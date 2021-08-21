@@ -7,7 +7,7 @@ plugins {
     id 'idea'
     id 'org.jetbrains.kotlin.jvm' version '1.4.20'
     id 'org.jetbrains.intellij' // Version comes from buildSrc
-    id 'org.jetbrains.changelog' version '0.6.0'
+    id 'org.jetbrains.changelog' version '1.2.1'
     id 'com.jetbrains.rdgen' version '0.211.278'
     id 'com.ullink.nuget' version '2.23'
     id 'com.ullink.nunit' version '2.4'
@@ -44,7 +44,7 @@ logger.lifecycle("version=$version")
 logger.lifecycle("BuildConfiguration=$BuildConfiguration")
 
 changelog {
-    path = file("../CHANGELOG.md")
+    path = "../CHANGELOG.md"
     headerParserRegex = new Regex(~"\\d+\\.\\d+(\\.\\d+)?.*")
 }
 
