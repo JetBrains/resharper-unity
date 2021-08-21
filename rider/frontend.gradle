@@ -193,28 +193,30 @@ if (RunTests.equalsIgnoreCase("true")) {
 }
 
 task validatePluginXml {
-  def pluginXml = new File(repoRoot, "rider/src/main/resources/META-INF/plugin.xml")
-  assert pluginXml.isFile()
+    dependsOn patchPluginXml
 
-  inputs.file(pluginXml)
-  outputs.file(pluginXml)
+    def pluginXml = new File(repoRoot, "rider/src/main/resources/META-INF/plugin.xml")
+    assert pluginXml.isFile()
 
-  doLast {
-    def parsed = new XmlParser().parse(pluginXml).text()
-    assert parsed.length() > 0
+    inputs.file(pluginXml)
+    outputs.file(pluginXml)
 
-    def rawBytes = pluginXml.bytes
-    assert rawBytes.length > 0
+    doLast {
+        def parsed = new XmlParser().parse(pluginXml).text()
+        assert parsed.length() > 0
 
-    def invalid = rawBytes.findAll { it < 0 }
-    assert invalid.size() == 0
+        def rawBytes = pluginXml.bytes
+        assert rawBytes.length > 0
 
-    logger.lifecycle("$pluginXml.path is valid XML and contains only US-ASCII symbols, bytes: $rawBytes.length")
-  }
+        def invalid = rawBytes.findAll { it < 0 }
+        assert invalid.size() == 0
+
+        logger.lifecycle("$pluginXml.path is valid XML and contains only US-ASCII symbols, bytes: $rawBytes.length")
+    }
 }
-prepareSandbox.dependsOn validatePluginXml
 
 processResources {
+    dependsOn validatePluginXml
     copy {
         from "../common/dictionaries/unity.dic"
         into "src/main/gen/resources/com/jetbrains/rider/plugins/unity/spellchecker/"
