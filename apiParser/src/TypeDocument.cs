@@ -41,7 +41,7 @@ namespace ApiParser
                     }
 
                     var messages = documentNode.SelectMany(
-                        @"//div.content/div.section/div.subsection[h2='Messages']/table.list//tr");
+                        @"//div.content/div.section/div.subsection[h2='Messages' or h3='Messages']/table.list//tr");
 
                     var removedDiv =
                         documentNode.SelectOne(

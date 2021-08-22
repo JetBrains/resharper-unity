@@ -25,20 +25,20 @@ public class MyMonoBehaviour : MonoBehaviour
         if (uintValue > 20) { }
         if (longValue > 20) { }
         if (ulongValue > 20) { }
-        if (|byteValue > 20|(1)) { }
-        if (|sbyteValue > 20|(2)) { }
-        if (|shortValue > 20|(3)) { }
-        if (|ushortValue > 20|(4)) { }
+        if (byteValue > 20) { }
+        if (sbyteValue > 20) { }
+        if (shortValue > 20) { }
+        if (ushortValue > 20) { }
 
         if (nonSerialisedField > 20) { }
 
-        if (|intWithFloatRange < 1|(5)) { }
-        if (|intWithFloatRange == 0|(6)) { }
+        if (|intWithFloatRange < 1|(1)) { }
+        if (|intWithFloatRange == 0|(2)) { }
         if (intWithFloatRange == 1) { }
         if (intWithFloatRange == 2) { }
-        if (|intWithFloatRange > 10|(7)) { }
+        if (|intWithFloatRange > 10|(3)) { }
         if (intWithFloatRange == 10) { }
-        if (|intWithFloatRange == 11|(8)) { }
+        if (|intWithFloatRange == 11|(4)) { }
     }
 
     public void LateUpdate()
@@ -61,7 +61,3 @@ public class MyMonoBehaviour : MonoBehaviour
 (2): ReSharper Warning: Expression is always false
 (3): ReSharper Warning: Expression is always false
 (4): ReSharper Warning: Expression is always false
-(5): ReSharper Warning: Expression is always false
-(6): ReSharper Warning: Expression is always false
-(7): ReSharper Warning: Expression is always false
-(8): ReSharper Warning: Expression is always false
