@@ -21,7 +21,7 @@ jobs:
       - name: Setup .NET CLI
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1.x'
+          dotnet-version: '5.0.x'
       - name: Build and Tests
         shell: powershell
         run: powershell -File .\build.ps1 -RunTests -Verbose
@@ -39,7 +39,7 @@ jobs:
       - name: Setup .NET CLI
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1.x'
+          dotnet-version: '5.0.x'
       - name: Build
         shell: bash
         run: ./build.sh --info --stacktrace
@@ -52,7 +52,7 @@ jobs:
       - name: Setup .NET CLI
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1.x'
+          dotnet-version: '5.0.x'
       - name: Build
         shell: bash
         run: ./build.sh --info --stacktrace
