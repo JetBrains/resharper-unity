@@ -120,9 +120,6 @@
       <OutputFile>AsmDefNew\Daemon\Errors\AsmDefNewErrors.generated.cs</OutputFile>
       <Mode>ERRORS</Mode>
     </ErrorsGen>
-    <Compile Remove="AsmDef\**" />
-    <EmbeddedResource Remove="AsmDef\**" />
-    <None Remove="AsmDef\**" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="Resources">

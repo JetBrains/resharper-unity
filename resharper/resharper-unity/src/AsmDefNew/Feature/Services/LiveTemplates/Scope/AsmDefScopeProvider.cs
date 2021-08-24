@@ -6,7 +6,8 @@ using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.JavaScript.LanguageImpl.JSon;
 
-namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.LiveTemplates.Scope
+// TODO: Verify if this is needed for JsonNew
+namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Feature.Services.LiveTemplates.Scope
 {
     // ReSharper doesn't have a scope provider for JSON files, whether they are .json or identified as JSON some other
     // way, such as JSON schema's catalog.json, or ReSharper JSON PSI registration. Without this, JSON files don't get

@@ -7,9 +7,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Feature.Services.Occurrenc
 {
     public class AsmDefNameOccurrence : AsmDefNameOccurrenceBase<JsonNewLanguage>
     {
-
         public AsmDefNameOccurrence(string name, IPsiSourceFile sourceFile,
-            int declaredElementTreeOffset, int navigationTreeOffset, ISolution solution) 
+            int declaredElementTreeOffset, int navigationTreeOffset, ISolution solution)
             : base(name, sourceFile, declaredElementTreeOffset, navigationTreeOffset, solution)
         {
         }

@@ -1,10 +1,10 @@
 ﻿using JetBrains.ReSharper.Daemon.JavaScript.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.Impl.ControlFlow.Util;
-using JetBrains.ReSharper.Psi.JavaScript.Services.Json;
-using JetBrains.ReSharper.Psi.JavaScript.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
+// TODO: Is this applicable to the JsonNew implementation?
+#if false
+namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Feature.Services.Daemon
 {
     // ReSharper doesn't honour the "uniqueItems" schema assertion, so we'll
     // do a quick and dirty version for asmdef files. See RSRP-467118
@@ -60,3 +60,4 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
         }
     }
 }
+#endif

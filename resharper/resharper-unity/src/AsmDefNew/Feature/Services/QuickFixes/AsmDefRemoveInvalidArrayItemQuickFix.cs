@@ -17,6 +17,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Feature.Services.QuickFixe
         private readonly bool myIsValid = true;
         [CanBeNull] private readonly IJsonNewLiteralExpression myLiteral;
 
+        // TODO: Copied from R# JSON based implementation
+        // public AsmDefRemoveInvalidArrayItemQuickFix(JsonValidationFailedWarning warning)
+        // {
+            // myLiteral = warning.Brace as IJavaScriptLiteralExpression;
+            // myIsValid = warning.AssertionResult.Description ==
+                                        // AsmDefDuplicateItemsProblemAnalyzer.AsmDefDuplicateItemDescription;
+        // }
+
         public AsmDefRemoveInvalidArrayItemQuickFix(ReferencingSelfError error)
         {
             myLiteral = error.Reference.GetTreeNode() as IJsonNewLiteralExpression;

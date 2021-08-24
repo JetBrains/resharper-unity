@@ -94,22 +94,23 @@
       <DependentUpon>ShaderLabErrors.xml</DependentUpon>
     </Compile>
   </ItemGroup>
+  <ItemGroup Label="JsonNew">
+    <PsiLanguageNames Include="JsonNew">
+      <Visible>False</Visible>
+    </PsiLanguageNames>
+    <CsLex Include="JsonNew\Psi\Parsing\JsonNew.lex" References="JsonNew\Psi\Parsing\Chars.lex" />
+    <TokenGenerator Include="JsonNew\Psi\Parsing\TokenNodeTypes\JsonNewTokenNodeTypes.Tokens.xml">
+      <OutputFile>JsonNew\Psi\Parsing\TokenNodeTypes\JsonNewTokenNodeTypes.Tokens.generated.cs</OutputFile>
+    </TokenGenerator>
+    <ParserGen Include="JsonNew\Psi\Parsing\JsonNew.psi" />
+  </ItemGroup>
   <!-- ********** -->
-  <ItemGroup Label="AsmDef/JSON">
-    <ErrorsGen Include="AsmDef\Daemon\Errors\AsmDefErrors.xml">
-      <Namespace>JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors</Namespace>
-      <OutputFile>AsmDef\Daemon\Errors\AsmDefErrors.generated.cs</OutputFile>
+  <ItemGroup Label="AsmDef/JsonNew">
+    <ErrorsGen Include="AsmDefNew\Daemon\Errors\AsmDefErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Daemon.Errors</Namespace>
+      <OutputFile>AsmDefNew\Daemon\Errors\AsmDefNewErrors.generated.cs</OutputFile>
       <Mode>ERRORS</Mode>
     </ErrorsGen>
-    <Compile Update="AsmDef\Daemon\Errors\AsmDefErrors.generated.cs">
-      <DependentUpon>AsmDefErrors.xml</DependentUpon>
-    </Compile>
-    <Compile Remove="JsonNew\**" />
-    <EmbeddedResource Remove="JsonNew\**" />
-    <None Remove="JsonNew\**" />
-    <Compile Remove="AsmDefNew\**" />
-    <EmbeddedResource Remove="AsmDefNew\**" />
-    <None Remove="AsmDefNew\**" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="Resources">

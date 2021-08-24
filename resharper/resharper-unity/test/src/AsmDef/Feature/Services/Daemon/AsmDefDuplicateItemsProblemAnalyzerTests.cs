@@ -11,6 +11,9 @@ using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using NUnit.Framework;
 
+// TODO: Does this still make sense for JsonNew implementation?
+// TODO: Migrate to JsonNew
+
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Feature.Services.Daemon
 {
     [TestUnity]

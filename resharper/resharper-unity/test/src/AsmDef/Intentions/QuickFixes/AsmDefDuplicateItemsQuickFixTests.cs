@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.ProjectModel.Update;
 using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
-using JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
