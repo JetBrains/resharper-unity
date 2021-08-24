@@ -12,7 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.Ref.2017.3.0f3" Version="2020.6.10" />
-    <PackageReference Include="JetBrains.Build.ILRepack" Version="0.0.1" />
+    <PackageReference Include="JetBrains.Build.ILRepack" Version="0.0.3" />
     <PackageReference Include="JetBrains.Toolset.RefAsm.net461.NetStandard" Version="2.0.20190130.182358" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -29,7 +29,7 @@
 
     <WriteLinesToFile File="$(OutputPath)/rider-dev.app/rider-dev.bat" Overwrite="true" Lines="$(Cmd)" />
   </Target>
-  
+
   <ItemGroup>
     <!-- This one should be the first - it provides version to resulting assembly-->
     <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll"><Visible>false</Visible></ILRepackInputAssemblies>
