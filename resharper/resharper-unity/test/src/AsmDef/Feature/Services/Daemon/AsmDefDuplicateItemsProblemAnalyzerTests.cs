@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.ProjectModel.Update;
 using JetBrains.ReSharper.Daemon.JavaScript.Stages;
-using JetBrains.ReSharper.Plugins.Unity.Tests.AsmDefCommon.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.JavaScript.LanguageImpl.JSon;
 using JetBrains.ReSharper.TestFramework;
@@ -18,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Feature.Services.Daemon
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefDuplicateItemsProblemAnalyzerTests : JsonHighlightingTestBase<JsonValidationFailedWarning>
+    public class AsmDefDuplicateItemsProblemAnalyzerTests : JsonNewHighlightingTestBase<JsonValidationFailedWarning>
     {
         protected override PsiLanguageType CompilerIdsLanguage => JsonLanguage.Instance;
         protected override string RelativeTestDataPath => @"AsmDef\Daemon\Stages\Analysis\DuplicateItems";

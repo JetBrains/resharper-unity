@@ -1,41 +1,22 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.ProjectModel.Update;
-using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
-using JetBrains.ReSharper.FeaturesTestFramework.Completion;
+using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util;
-using NUnit.Framework;
+using JetBrains.Util.Dotnet.TargetFrameworkIds;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDefCommon.Feature.Services.CodeCompletion
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Psi.Resolve
 {
-    [TestUnity]
-    [TestFileExtension(".asmdef")]
-    public class AsmDefReferencesCompletionListTests : TwoProjectCodeCompletionTestBase
+    public abstract class AsmDefReferenceTestsBase<T> : ReferenceTestBase
     {
-        protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
-        protected override string RelativeTestDataPath => @"AsmDef\CodeCompletion\AsmDefReferences";
+        protected override string RelativeTestDataPath => @"AsmDef\Psi\Resolve";
+        protected override bool AcceptReference(IReference reference) => reference is T;
 
-        [Test] public void TestList01() { DoNamedTest("Ref01_SecondProject.asmdef"); }
-    }
 
-    [TestUnity]
-    [TestFileExtension(".asmdef")]
-    public class AsmDefReferencesCompletionActionTests : TwoProjectCodeCompletionTestBase
-    {
-        protected override CodeCompletionTestType TestType => CodeCompletionTestType.Action;
-        protected override string RelativeTestDataPath => @"AsmDef\CodeCompletion\AsmDefReferences";
-        protected override bool CheckAutomaticCompletionDefault() => true;
-        protected override LookupListSorting Sorting => LookupListSorting.ByRelevance;
-
-        [Test] public void TestAction01() { DoNamedTest("Ref01_SecondProject.asmdef"); }
-    }
-
-    public abstract class TwoProjectCodeCompletionTestBase : CodeCompletionTestBase
-    {
         protected override TestSolutionConfiguration CreateSolutionConfiguration(
-            ICollection<KeyValuePair<Util.Dotnet.TargetFrameworkIds.TargetFrameworkId, IEnumerable<string>>> referencedLibraries,
+            ICollection<KeyValuePair<TargetFrameworkId, IEnumerable<string>>> referencedLibraries,
             IEnumerable<string> fileSet)
         {
             if (fileSet == null)

@@ -1,5 +1,4 @@
 ﻿using JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.Resolve;
-using JetBrains.ReSharper.Plugins.Unity.Tests.AsmDefCommon.Psi.Resolve;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 

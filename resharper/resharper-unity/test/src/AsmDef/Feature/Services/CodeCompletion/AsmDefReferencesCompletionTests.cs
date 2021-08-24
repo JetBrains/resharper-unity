@@ -1,51 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.DocumentManagers;
-using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Update;
-using JetBrains.ReSharper.Plugins.Unity.Tests.Framework;
+using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
+using JetBrains.ReSharper.FeaturesTestFramework.Completion;
 using JetBrains.ReSharper.TestFramework;
-using JetBrains.TextControl;
 using JetBrains.Util;
-using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDefCommon.Feature.Services.Refactorings
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Feature.Services.CodeCompletion
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefRenameTests : RenameTestBase
+    public class AsmDefReferencesCompletionListTests : TwoProjectCodeCompletionTestBase
     {
-        protected override string RelativeTestDataPath => @"AsmDef\Refactorings\Rename";
+        protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
+        protected override string RelativeTestDataPath => @"AsmDef\CodeCompletion\AsmDefReferences";
 
-        [Test] public void TestSingleFile() { DoNamedTest2(); }
-        [Test] public void TestCrossFileRename() { DoNamedTest2("CrossFileRename_SecondProject.asmdef"); }
-        [Test] public void TestRenameFile() { DoNamedTest2(); }
+        [Test] public void TestList01() { DoNamedTest("Ref01_SecondProject.asmdef"); }
+    }
 
-        protected override void AdditionalTestChecks(ITextControl textControl, IProject project)
-        {
-            var solution = project.GetSolution();
-            foreach (var topLevelProject in solution.GetTopLevelProjects())
-            {
-                if (topLevelProject.IsProjectFromUserView() && !Equals(topLevelProject, project))
-                {
-                    foreach (var projectFile in topLevelProject.GetSubItems().OfType<IProjectFile>())
-                    {
-                        ExecuteWithGold(projectFile, writer =>
-                        {
-                            var document = projectFile.GetDocument();
-                            writer.Write(document.GetText());
-                        });
-                    }
+    [TestUnity]
+    [TestFileExtension(".asmdef")]
+    public class AsmDefReferencesCompletionActionTests : TwoProjectCodeCompletionTestBase
+    {
+        protected override CodeCompletionTestType TestType => CodeCompletionTestType.Action;
+        protected override string RelativeTestDataPath => @"AsmDef\CodeCompletion\AsmDefReferences";
+        protected override bool CheckAutomaticCompletionDefault() => true;
+        protected override LookupListSorting Sorting => LookupListSorting.ByRelevance;
 
-                    // TODO: Should really recurse into child folders, but not used by these tests
-                }
-            }
-        }
+        [Test] public void TestAction01() { DoNamedTest("Ref01_SecondProject.asmdef"); }
+    }
 
+    public abstract class TwoProjectCodeCompletionTestBase : CodeCompletionTestBase
+    {
         protected override TestSolutionConfiguration CreateSolutionConfiguration(
-            ICollection<KeyValuePair<TargetFrameworkId, IEnumerable<string>>> referencedLibraries,
+            ICollection<KeyValuePair<Util.Dotnet.TargetFrameworkIds.TargetFrameworkId, IEnumerable<string>>> referencedLibraries,
             IEnumerable<string> fileSet)
         {
             if (fileSet == null)
