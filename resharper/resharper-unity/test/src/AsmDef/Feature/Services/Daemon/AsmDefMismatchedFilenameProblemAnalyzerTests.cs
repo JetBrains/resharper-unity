@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Feature.Services.Daemon
     public class AsmDefMismatchedFilenameProblemAnalyzerTests : JsonNewHighlightingTestBase<MismatchedAsmDefFilenameWarning>
     {
         protected override PsiLanguageType CompilerIdsLanguage => JsonNewLanguage.Instance;
-        protected override string RelativeTestDataPath => $@"AsmDef\Daemon\Stages\Analysis\MismatchedFilename\{Utils.ProductGoldSuffix}";
+        protected override string RelativeTestDataPath => @"AsmDef\Daemon\Stages\Analysis\MismatchedFilename";
 
         [Test] public void Test01() { DoNamedTest(); }
     }
