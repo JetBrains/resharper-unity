@@ -1,4 +1,0 @@
-﻿{
-  "name": "Test02",
-  "references": [ "Ref1"{caret}, "Ref2" ]
-}

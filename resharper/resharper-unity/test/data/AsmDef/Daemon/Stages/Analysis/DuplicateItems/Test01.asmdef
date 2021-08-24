@@ -1,6 +1,0 @@
-{
-  "name": "MyAssembly",
-  "references": [ "Ref1", "Ref1", "Ref2" ],
-  "includePlatforms": [ "iOS", "iOS", "Android" ],
-  "excludePlatforms": [ "Switch", "N3DS", "Switch" ]
-}
