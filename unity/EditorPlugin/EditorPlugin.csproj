@@ -12,7 +12,7 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2019.1.3" />
     <PackageReference Include="JetBrains.Unity.Libs.Ref.4.7.2f1" Version="2020.6.10" />
-    <PackageReference Include="JetBrains.Build.ILRepack" Version="0.0.1" />
+    <PackageReference Include="JetBrains.Build.ILRepack" Version="0.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
     <PackageReference Include="JetBrains.NETFramework.ReferenceAssemblies.net35" Version="1.0.1" PrivateAssets="All" />
   </ItemGroup>
@@ -30,6 +30,6 @@
     <EmbeddedResource Remove="AfterUnity56\**" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props"/>
-  <Import Project="ILRepack.targets" /> 
+  <Import Project="ILRepack.targets" />
   <Import Project="Model.targets" />
 </Project>
