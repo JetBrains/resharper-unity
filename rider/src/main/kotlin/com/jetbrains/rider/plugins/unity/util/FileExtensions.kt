@@ -2,19 +2,16 @@ package com.jetbrains.rider.plugins.unity.util
 
 import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.util.text.CaseInsensitiveStringHashingStrategy
 import com.jetbrains.rider.ideaInterop.fileTypes.msbuild.CsprojFileType
 import com.jetbrains.rider.ideaInterop.fileTypes.sln.SolutionFileType
 import com.jetbrains.rider.plugins.unity.css.uss.UssFileType
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileType
-import gnu.trove.THashSet
 
 private val nonEditableExtensions = getExtensions()
 
 @Suppress("SpellCheckingInspection")
-private fun getExtensions(): THashSet<String> {
-    val extensions = THashSet<String>(CaseInsensitiveStringHashingStrategy.INSTANCE)
-    extensions.addAll(arrayOf(
+private fun getExtensions(): Set<String> {
+    return setOf(
             "asset",
             "prefab",
             "unity",
@@ -40,12 +37,11 @@ private fun getExtensions(): THashSet<String> {
             "signal",               // Timeline signal
             "spriteatlas",
             "terrainlayer"
-    ))
-    return extensions
+    )
 }
 
 fun isNonEditableUnityFile(file: VirtualFile) = isNonEditableUnityFileExtension(file.extension)
-fun isNonEditableUnityFileExtension(extension: String?) = extension != null && nonEditableExtensions.contains(extension)
+fun isNonEditableUnityFileExtension(extension: String?) = extension != null && nonEditableExtensions.contains(extension.toLowerCase())
 
 fun isGeneratedUnityFile(file: VirtualFile): Boolean {
     val fileTypeRegistry = FileTypeRegistry.getInstance()

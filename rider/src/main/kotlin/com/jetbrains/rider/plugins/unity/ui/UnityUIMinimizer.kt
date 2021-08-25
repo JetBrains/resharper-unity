@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.openapi.wm.ToolWindowManager
-import com.jetbrains.rd.platform.util.application
+import com.intellij.util.application
 import com.jetbrains.rider.build.actions.ActiveConfigurationAndPlatformAction
 
 class UnityUIMinimizer : StartupActivity {

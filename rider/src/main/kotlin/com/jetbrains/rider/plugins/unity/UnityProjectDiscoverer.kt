@@ -4,14 +4,14 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.rd.ide.model.RdExistingSolution
-import com.jetbrains.rd.platform.util.idea.LifetimedProjectService
+import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
 import com.jetbrains.rider.projectView.solutionFile
 
-class UnityProjectDiscoverer(project: Project) : LifetimedProjectService(project) {
+class UnityProjectDiscoverer(private val project: Project) : LifetimedService() {
     // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
     val isUnityProjectFolder = hasUnityFileStructure(project)
 

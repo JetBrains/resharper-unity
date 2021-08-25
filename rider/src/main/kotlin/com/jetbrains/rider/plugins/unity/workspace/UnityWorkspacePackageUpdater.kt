@@ -5,13 +5,13 @@ package com.jetbrains.rider.plugins.unity.workspace
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.util.application
 import com.intellij.workspaceModel.ide.getInstance
 import com.intellij.workspaceModel.ide.impl.toVirtualFileUrl
 import com.intellij.workspaceModel.storage.WorkspaceEntityStorageBuilder
 import com.intellij.workspaceModel.storage.bridgeEntities.addContentRootEntityWithCustomEntitySource
 import com.intellij.workspaceModel.storage.url.VirtualFileUrlManager
-import com.jetbrains.rd.platform.util.application
-import com.jetbrains.rd.platform.util.idea.LifetimedProjectService
+import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
@@ -22,7 +22,7 @@ import com.jetbrains.rider.projectView.workspace.getOrCreateRiderModuleEntity
 import com.jetbrains.rider.projectView.workspace.impl.WorkspaceModelEditingFacade
 import java.nio.file.Paths
 
-class UnityWorkspacePackageUpdater(project: Project) : LifetimedProjectService(project) {
+class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedService() {
 
     companion object {
         private val logger = Logger.getInstance(UnityWorkspacePackageUpdater::class.java)
@@ -33,7 +33,7 @@ class UnityWorkspacePackageUpdater(project: Project) : LifetimedProjectService(p
     init {
         application.invokeLater {
             val model = project.solution.frontendBackendModel
-            model.packages.adviseAddRemove(projectServiceLifetime) { action, _, unityPackage ->
+            model.packages.adviseAddRemove(serviceLifetime) { action, _, unityPackage ->
                 if (model.packagesUpdating.value != true) {
                     logger.error("Should not add/remove to packages without setting packagesUpdating first!")
                 }
@@ -42,7 +42,7 @@ class UnityWorkspacePackageUpdater(project: Project) : LifetimedProjectService(p
                     AddRemove.Remove -> updateWorkspaceModel { removePackage(unityPackage, it) }
                 }
             }
-            model.packagesUpdating.advise(projectServiceLifetime) { updating ->
+            model.packagesUpdating.advise(serviceLifetime) { updating ->
                 // This property is NULL on startup, then true during constructing packages and then false
                 //   when package list are already built
                 if (updating == false) syncPackages()

@@ -46,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         private static bool New_System_IO_Packaging_ZipPackage_LoadParts(ZipPackage __instance, ref Dictionary<Uri, ZipPackagePart> ___parts)
         {
             ___parts = new Dictionary<Uri, ZipPackagePart>();
-            var packageStream = __instance.GetFieldOrPropertyValue<Stream>("PackageStream");
+            var packageStream = __instance.GetDynamicProperty<Stream>("PackageStream");
             using (var zipArchive = new ZipArchive(packageStream, ZipArchiveMode.Read, true))
             {
                 foreach (var zipArchiveEntry in zipArchive.Entries)

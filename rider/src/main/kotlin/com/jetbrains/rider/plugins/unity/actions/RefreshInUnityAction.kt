@@ -2,7 +2,7 @@ package com.jetbrains.rider.plugins.unity.actions
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.jetbrains.rd.platform.util.application
+import com.intellij.util.application
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 

@@ -22,9 +22,9 @@ import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
+import com.intellij.util.application
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
-import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.plugins.unity.model.LogEvent
 import com.jetbrains.rider.plugins.unity.model.LogEventMode
