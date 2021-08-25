@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon
 {
+    // TODO: This is JsonNew behaviour, not AsmDef
     [Language(typeof(JsonNewLanguage))]
     public class AsmDefNewLanguageSpecificDaemonBehavior: ILanguageSpecificDaemonBehavior
     {

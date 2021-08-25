@@ -14,16 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
     [QuickFix]
     public class AsmDefRemoveInvalidArrayItemQuickFix : QuickFixBase
     {
-        private readonly bool myIsValid = true;
         [CanBeNull] private readonly IJsonNewLiteralExpression myLiteral;
-
-        // TODO: Copied from R# JSON based implementation
-        // public AsmDefRemoveInvalidArrayItemQuickFix(JsonValidationFailedWarning warning)
-        // {
-            // myLiteral = warning.Brace as IJavaScriptLiteralExpression;
-            // myIsValid = warning.AssertionResult.Description ==
-                                        // AsmDefDuplicateItemsProblemAnalyzer.AsmDefDuplicateItemDescription;
-        // }
 
         public AsmDefRemoveInvalidArrayItemQuickFix(ReferencingSelfError error)
         {
@@ -38,10 +29,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
         }
 
         public override string Text => "Remove invalid value";
-
-        public override bool IsAvailable(IUserDataHolder cache)
-        {
-            return myIsValid && ValidUtils.Valid(myLiteral);
-        }
+        public override bool IsAvailable(IUserDataHolder cache) => ValidUtils.Valid(myLiteral);
     }
 }

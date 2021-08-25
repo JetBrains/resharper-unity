@@ -1,10 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Errors language="C#" configurableSeverityImplementationLanguage="CSHARP"
-        baseClass="CSharpUnityHighlightingBase">
+<Errors language="C#" configurableSeverityImplementationLanguage="CSHARP">
 
   <Usings>
     JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
-    JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
     JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
   </Usings>
 
@@ -13,7 +11,9 @@
   </StaticSeverityGroups>
 
   <SeverityConfiguration>
-    <Group name="UnityHighlightingGroupIds.Unity">
+    <!-- This matches UnityHighlightingGroupIds.Unity in the CSharp hierarchy. Consider making the "Unity" highlighting
+         groups language agnostic -->
+    <Group name="&quot;UNITY&quot;">
       <Tag externalName="MismatchedAsmDefFilenameWarning.HIGHLIGHTING_ID"
            default="SUGGESTION">
         <Title>File name should match the name of the assembly</Title>

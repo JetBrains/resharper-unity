@@ -1,27 +1,30 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements;
+﻿using System.Collections.Generic;
+using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
+using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Refactorings.Rename;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Refactorings
 {
     // Support renaming the asmdef file to match the name of the assembly
     [FileRenameProvider]
-    public class AsmDefFileRenameProvider : AsmDefFileRenameProviderBase<AsmDefNameDeclaredElement>
+    public class AsmDefFileRenameProvider : IFileRenameProvider
     {
-        // TODO: Copied from R# JSON based implementation
-        // public IEnumerable<FileRename> GetFileRenames(IDeclaredElement declaredElement, string name)
-        // {
-            // if (declaredElement is AsmDefNameDeclaredElement)
-            // {
-                // var sourceFile = declaredElement.GetSourceFiles().FirstOrDefault();
-                // if (sourceFile != null)
-                // {
-                    // var psiServices = declaredElement.GetPsiServices();
-                    // var projectFile = sourceFile.ToProjectFile();
-                    // return new[] {new FileRename(psiServices, projectFile, name)};
-                // }
-            // }
+        public IEnumerable<FileRename> GetFileRenames(IDeclaredElement declaredElement, string name)
+        {
+            if (declaredElement is AsmDefNameDeclaredElement)
+            {
+                var sourceFile = declaredElement.GetSourceFiles().FirstOrDefault();
+                if (sourceFile != null)
+                {
+                    var psiServices = declaredElement.GetPsiServices();
+                    var projectFile = sourceFile.ToProjectFile();
+                    return new[] {new FileRename(psiServices, projectFile, name)};
+                }
+            }
 
-            // return EmptyList<FileRename>.Enumerable;
-        // }
+            return EmptyList<FileRename>.Enumerable;
+        }
     }
 }
