@@ -1,5 +1,5 @@
 ﻿using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
-using JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 

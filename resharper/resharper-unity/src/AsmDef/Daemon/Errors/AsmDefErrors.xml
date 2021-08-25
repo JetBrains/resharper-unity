@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Errors language="C#" configurableSeverityImplementationLanguage="CSHARP"
+        baseClass="CSharpUnityHighlightingBase">
+
+  <Usings>
+    JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
+    JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
+    JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
+  </Usings>
+
+  <StaticSeverityGroups>
+    <Group name="AsmDef Errors" key="AsmDefErrors" />
+  </StaticSeverityGroups>
+
+  <SeverityConfiguration>
+    <Group name="UnityHighlightingGroupIds.Unity">
+      <Tag externalName="MismatchedAsmDefFilenameWarning.HIGHLIGHTING_ID"
+           default="SUGGESTION">
+        <Title>File name should match the name of the assembly</Title>
+        <Description>To avoid confusion, the name of the assembly definition file should match the name of the assembly being defined.</Description>
+      </Tag>
+    </Group>
+  </SeverityConfiguration>
+
+  <Error name="UnresolvedProjectReference" staticGroup="AsmDefErrors">
+    <Parameter type="IReference" name="reference" />
+    <Message value="Unknown project reference '{0}'">
+      <Argument>Reference.GetName()</Argument>
+    </Message>
+    <Range>Reference.GetDocumentRange()</Range>
+    <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR" />
+  </Error>
+
+  <Error name="ReferencingSelf" staticGroup="AsmDefErrors">
+    <Parameter type="IReference" name="reference" />
+    <Message value="Cannot reference self" />
+    <Range>Reference.GetDocumentRange()</Range>
+    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
+  </Error>
+
+  <Warning name="MismatchedAsmDefFilename" configurableSeverity="MISMATCHED_ASMDEF_FILENAME">
+    <Parameter type="IJsonNewLiteralExpression" name="literalExpression" />
+    <Message value="File name should match the name of the assembly" />
+    <Range>LiteralExpression.GetHighlightingRange()</Range>
+    <Behavour attributeID="SUGGESTION" overlapResolvePolicy="WARNING" />
+  </Warning>
+</Errors>
