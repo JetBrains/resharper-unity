@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using JetBrains.Annotations;
-using JetBrains.Application.Components;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -12,10 +11,9 @@ using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Impl.Shared;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.TestFramework;
-using JetBrains.ReSharper.TestFramework.Components.Psi;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
 {
   // This is a replacement for the standard ParserTestBase<TLanguage> that will check the nodes of the parsed tree
   // against the gold file, but will also assert that all top level chameleons are closed by default and open correctly.
@@ -26,7 +24,6 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
   {
     protected override void DoTest(Lifetime lifetime, IProject testProject)
     {
-      ShellInstance.GetComponent<TestIdGenerator>().Reset();
       var textControl = OpenTextControl(lifetime);
       {
         ExecuteWithGold(textControl.Document, sw =>

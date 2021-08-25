@@ -19,7 +19,7 @@ using JetBrains.Util;
 using JetBrains.Util.Collections;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
 {
   [Category("IncrementalReparse")]
   public abstract class IncrementalReparseTestBase : BaseTestWithTextControl

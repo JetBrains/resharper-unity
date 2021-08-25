@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
+using JetBrains.ReSharper.Plugins.Tests.YamlTestComponents;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -7,9 +7,9 @@ using JetBrains.ReSharper.TestFramework;
 using JetBrains.Text;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
 {
-  [TestFileExtension(YamlProjectFileType.YAML_EXTENSION)]
+  [TestFileExtension(TestYamlProjectFileType.YAML_EXTENSION)]
   public class UnityLexerTests : LexerTestBase
   {
     protected override string RelativeTestDataPath => @"Psi\Lexing\Unity";
