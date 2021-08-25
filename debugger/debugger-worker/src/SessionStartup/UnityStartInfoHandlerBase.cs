@@ -3,18 +3,17 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using JetBrains.Annotations;
-using JetBrains.Debugger.Worker;
+using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Debugger.Worker.Mono;
 using JetBrains.Debugger.Worker.SessionStartup;
 using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.DebuggerWorker;
-using JetBrains.Rider.Model.Unity.DebuggerWorker;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Client;
 using Mono.Debugging.Client.DebuggerOptions;
 using Mono.Debugging.Soft;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.SessionStartup
+namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 {
     public abstract class UnityStartInfoHandlerBase<T> : ModelStartInfoHandlerBase<T>
         where T : UnityStartInfoBase

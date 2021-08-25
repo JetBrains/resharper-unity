@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.IosUsbDebugging.NativeInterop;
+using JetBrains.Debugger.Worker.Plugins.Unity;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.iOS.ListUsbDevices
+namespace JetBrains.Rider.Plugins.Unity.iOS.ListUsbDevices
 {
     public class ListDevices : IDisposable
     {

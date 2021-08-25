@@ -1,8 +1,8 @@
-using JetBrains.Rider.Model.Unity.DebuggerWorker;
+using JetBrains.Debugger.Model.Plugins.Unity;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Soft;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.SessionStartup
+namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 {
     [DebuggerGlobalComponent]
     public class UnityStartInfoHandler : UnityStartInfoHandlerBase<UnityStartInfo>

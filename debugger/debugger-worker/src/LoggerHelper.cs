@@ -1,13 +1,13 @@
 using System;
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation;
+using JetBrains.Debugger.Worker.Plugins.Unity.Evaluation;
 using JetBrains.Util;
 using Mono.Debugging.Backend.Values;
 using Mono.Debugging.Client.CallStacks;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Evaluation;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
+namespace JetBrains.Debugger.Worker.Plugins.Unity
 {
     public static class LoggerHelper
     {

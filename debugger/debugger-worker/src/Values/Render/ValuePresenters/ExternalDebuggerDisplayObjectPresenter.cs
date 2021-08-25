@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReferences;
+using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
 using MetadataLite.API;
 using Mono.Debugging.Autofac;
@@ -14,7 +14,7 @@ using Mono.Debugging.Evaluation;
 using Mono.Debugging.Soft;
 using Mono.Debugging.Utils;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePresenters
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
 {
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
     public class ExternalDebuggerDisplayObjectPresenter<TValue> : ValuePresenterBase<TValue, IObjectValueRole<TValue>>

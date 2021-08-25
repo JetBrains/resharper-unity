@@ -3,7 +3,7 @@ using MetadataLite.API.Selectors;
 
 // ReSharper disable InconsistentNaming
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Values
 {
     public static class MethodSelectors
     {

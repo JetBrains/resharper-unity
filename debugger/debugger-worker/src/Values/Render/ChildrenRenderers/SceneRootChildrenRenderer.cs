@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReferences;
+using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
 using MetadataLite.API;
 using MetadataLite.API.Selectors;
@@ -15,7 +15,7 @@ using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Soft;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ChildrenRenderers
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderers
 {
     // Adds an additional "Game Objects" child to the Scene type. Does not override the default children renderer.
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]

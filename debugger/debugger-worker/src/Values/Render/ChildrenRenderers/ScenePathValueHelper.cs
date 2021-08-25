@@ -1,6 +1,6 @@
 using System.Linq;
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReferences;
+using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
 using MetadataLite.API;
 using MetadataLite.API.Selectors;
@@ -10,7 +10,7 @@ using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ChildrenRenderers
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderers
 {
     public static class ScenePathValueHelper
     {

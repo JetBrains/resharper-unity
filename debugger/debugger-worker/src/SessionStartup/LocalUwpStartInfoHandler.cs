@@ -1,9 +1,8 @@
 using System;
 using System.Diagnostics;
-using JetBrains.Debugger.Worker;
+using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Debugger.Worker.SessionStartup;
 using JetBrains.Lifetimes;
-using JetBrains.Rider.Model.Unity.DebuggerWorker;
 using JetBrains.Util;
 using JetBrains.Util.Utils;
 using Mono.Debugging.Autofac;
@@ -11,7 +10,7 @@ using Mono.Debugging.Client;
 using Mono.Debugging.Client.DebuggerOptions;
 using Mono.Debugging.Soft;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.SessionStartup
+namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 {
     // UWP processes are not allowed to accept incoming socket connections from localhost by default (apparently as part
     // of a sandbox for Windows Store apps - they are isolated from each other and from communicating with each other

@@ -1,7 +1,7 @@
 using System.Linq;
 using Mono.Debugging.Backend.Values.ValueReferences;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ChildrenRenderers
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderers
 {
     // GameObject and Component have a number of deprecated properties that always throw. They are marked with
     // [Obsolete] and [EditorBrowsable(EditorBrowsableState.Never)] but not [DebuggerBrowsable(DebuggerBrowsableState.Never)],

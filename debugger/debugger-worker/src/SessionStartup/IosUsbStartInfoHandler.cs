@@ -1,17 +1,15 @@
 using System;
 using System.Threading;
-using JetBrains.Debugger.Worker;
+using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Debugger.Worker.SessionStartup;
 using JetBrains.Lifetimes;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.IosUsbDebugging.NativeInterop;
-using JetBrains.Rider.Model.Unity.DebuggerWorker;
 using JetBrains.Util;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Client;
 using Mono.Debugging.Client.DebuggerOptions;
 using Mono.Debugging.Soft;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.SessionStartup
+namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 {
     [DebuggerGlobalComponent]
     public class IosUsbStartInfoHandler : UnityStartInfoHandlerBase<UnityIosUsbStartInfo>

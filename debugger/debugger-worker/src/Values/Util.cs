@@ -6,7 +6,7 @@ using Mono.Debugging.Client.CallStacks;
 using Mono.Debugging.Client.Values.Render;
 using TypeSystem;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Values
 {
     public static class Util
     {

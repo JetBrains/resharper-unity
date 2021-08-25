@@ -1,5 +1,5 @@
 using System.Threading;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReferences;
+using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
 using MetadataLite.API;
 using Mono.Debugging.Autofac;
@@ -9,7 +9,7 @@ using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Soft;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePresenters
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
 {
     // Overrides StringValuePresenter for our "informational" values, without normal string highlighting/quote handling
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]

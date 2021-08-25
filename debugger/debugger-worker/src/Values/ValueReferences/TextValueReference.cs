@@ -1,7 +1,7 @@
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReferences
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences
 {
     // Decorator that is effectively a marker class for TextValuePresenter. Used to present a string value as plain text
     internal class TextValueReference<TValue> : ValueReferenceDecoratorBase<TValue>

@@ -6,7 +6,7 @@ using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Values
 {
     public abstract class ChunkedValueGroupBase<TRole> : ValueGroupBase
         where TRole : IValueRole

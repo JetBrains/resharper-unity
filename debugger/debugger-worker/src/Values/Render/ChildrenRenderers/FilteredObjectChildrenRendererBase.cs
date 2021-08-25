@@ -10,7 +10,7 @@ using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ChildrenRenderers
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderers
 {
     public abstract class FilteredObjectChildrenRendererBase<TValue> : ChildrenRendererBase<TValue, IObjectValueRole<TValue>>
         where TValue : class

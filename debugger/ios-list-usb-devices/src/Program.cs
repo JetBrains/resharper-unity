@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using System.Threading;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.iOS.ListUsbDevices
+namespace JetBrains.Rider.Plugins.Unity.iOS.ListUsbDevices
 {
     internal static class Program
     {
@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.iOS.ListUsbDevices
                 Console.WriteLine("  Type 'stop' to finish");
                 return -1;
             }
-            
+
             InitialiseWinSock();
 
             var thread = new Thread(ThreadFunc);
