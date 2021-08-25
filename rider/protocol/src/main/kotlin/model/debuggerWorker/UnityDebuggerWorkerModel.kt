@@ -36,7 +36,11 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
 
     init {
         setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.plugins.unity.model.debuggerWorker")
-        setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.DebuggerWorker")
+
+        // Give the debugger worker model a different namespace to JetBrains.Rider.Model as this has a zone requirement,
+        // and we want to avoid zone consistency inspections in the debugger worker plugin (which obviously doesn't have
+        // zones)
+        setting(CSharp50Generator.Namespace, "JetBrains.Debugger.Model.Plugins.Unity")
 
         property("showCustomRenderers", bool)
         property("ignoreBreakOnUnhandledExceptionsForIl2Cpp", bool)

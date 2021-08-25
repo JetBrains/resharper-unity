@@ -1,5 +1,5 @@
 using Autofac;
-using JetBrains.Rider.Model.Unity.DebuggerWorker;
+using JetBrains.Debugger.Model.Plugins.Unity;
 using Mono.Debugging.Autofac;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity

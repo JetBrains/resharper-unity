@@ -1,8 +1,8 @@
 using System;
 using System.Diagnostics;
+using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Debugger.Worker.SessionStartup;
 using JetBrains.Lifetimes;
-using JetBrains.Rider.Model.Unity.DebuggerWorker;
 using JetBrains.Util;
 using JetBrains.Util.Utils;
 using Mono.Debugging.Autofac;

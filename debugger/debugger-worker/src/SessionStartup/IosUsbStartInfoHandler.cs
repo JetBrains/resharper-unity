@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
+using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Debugger.Worker.SessionStartup;
 using JetBrains.Lifetimes;
-using JetBrains.Rider.Model.Unity.DebuggerWorker;
 using JetBrains.Util;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Client;

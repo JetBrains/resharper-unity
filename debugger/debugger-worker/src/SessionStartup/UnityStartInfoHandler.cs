@@ -1,4 +1,4 @@
-using JetBrains.Rider.Model.Unity.DebuggerWorker;
+using JetBrains.Debugger.Model.Plugins.Unity;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Soft;
 
