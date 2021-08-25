@@ -18,7 +18,7 @@
     <PsiLanguageNames Include="Yaml">
       <Visible>False</Visible>
     </PsiLanguageNames>
-    <CsLex Include="Psi\Parsing\Yaml.lex" References="Psi\Parsing\Chars.lex"/>
+    <CsLex Include="Psi\Parsing\Yaml.lex" References="Psi\Parsing\Chars.lex" />
     <TokenGenerator Include="Psi\Parsing\YamlTokenType.Tokens.xml">
       <OutputFile>Psi\Parsing\YamlTokenType.Tokens.generated.cs</OutputFile>
     </TokenGenerator>
@@ -47,5 +47,5 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props"/>
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" />
 </Project>
