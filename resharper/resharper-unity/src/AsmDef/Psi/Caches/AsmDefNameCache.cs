@@ -23,10 +23,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         private readonly IShellLocks myShellLocks;
         private readonly ISolution mySolution;
 
-        private readonly Dictionary<IPsiSourceFile, AsmDefNameDeclaredElement> myDeclaredElements =
-            new Dictionary<IPsiSourceFile, AsmDefNameDeclaredElement>();
-
-        private readonly OneToListMap<string, IPsiSourceFile> myNames = new OneToListMap<string, IPsiSourceFile>();
+        private readonly Dictionary<IPsiSourceFile, AsmDefNameDeclaredElement> myDeclaredElements = new();
+        private readonly OneToListMap<string, IPsiSourceFile> myNames = new();
 
         public AsmDefNameCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, ISolution solution)
             : base(lifetime, shellLocks, persistentIndexManager, AsmDefCacheItem.Marshaller)
@@ -34,6 +32,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
             myShellLocks = shellLocks;
             mySolution = solution;
         }
+
+        public override string Version => "2";
 
         [CanBeNull]
         public AsmDefNameDeclaredElement GetNameDeclaredElement(IPsiSourceFile sourceFile)
