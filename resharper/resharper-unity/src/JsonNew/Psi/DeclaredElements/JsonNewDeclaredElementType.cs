@@ -5,7 +5,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements
 {
     public class JsonNewDeclaredElementType : DeclaredElementType
     {
-
         private readonly IconId myIconId;
 
         protected JsonNewDeclaredElementType(string name, IconId iconId)

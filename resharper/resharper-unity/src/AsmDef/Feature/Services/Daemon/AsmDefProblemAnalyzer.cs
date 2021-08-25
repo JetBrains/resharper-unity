@@ -14,13 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
             if (processKind != DaemonProcessKind.VISIBLE_DOCUMENT && processKind != DaemonProcessKind.SOLUTION_ANALYSIS)
                 return;
 
-            if (data.SourceFile == null)
-                return;
-
-            if (!element.Language.Is<JsonNewLanguage>())
-                return;
-
-            if (!data.SourceFile.IsAsmDef())
+            if (data.SourceFile == null || !element.Language.Is<JsonNewLanguage>() || !data.SourceFile.IsAsmDef())
                 return;
 
             Analyze(element, data, consumer);

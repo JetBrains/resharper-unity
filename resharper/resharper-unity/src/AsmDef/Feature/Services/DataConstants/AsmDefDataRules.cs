@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.DataConstant
                 PsiDataConstants.DECLARED_ELEMENTS, GetDeclaredElementsFromContext);
         }
 
-        private ICollection<IDeclaredElement> GetDeclaredElementsFromContext(IDataContext dataContext)
+        private static ICollection<IDeclaredElement> GetDeclaredElementsFromContext(IDataContext dataContext)
         {
             var psiEditorView = dataContext.GetData(PsiDataConstants.PSI_EDITOR_VIEW);
             if (psiEditorView == null) return null;

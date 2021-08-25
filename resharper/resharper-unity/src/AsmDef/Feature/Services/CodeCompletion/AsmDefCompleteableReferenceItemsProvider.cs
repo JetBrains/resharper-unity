@@ -12,17 +12,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.CodeCompleti
     [Language(typeof(JsonNewLanguage))]
     public class AsmDefCompleteableReferenceItemsProvider : ItemsProviderWithSymbolTable<JsonNewCodeCompletionContext, AsmDefNameReference, IJsonNewFile>
     {
-        protected override TextLookupRanges EvaluateRanges(JsonNewCodeCompletionContext context)
-        {
-            return context.Ranges;
-        }
+        protected override TextLookupRanges EvaluateRanges(JsonNewCodeCompletionContext context) => context.Ranges;
 
-        protected override AsmDefNameReference GetReference(JsonNewCodeCompletionContext context)
-        {
-            return context.UnterminatedContext.Reference as AsmDefNameReference;
-        }
+        protected override AsmDefNameReference GetReference(JsonNewCodeCompletionContext context) =>
+            context.UnterminatedContext.Reference as AsmDefNameReference;
 
-        protected override ISymbolTable GetCompletionSymbolTable(AsmDefNameReference reference, JsonNewCodeCompletionContext context)
+        protected override ISymbolTable GetCompletionSymbolTable(AsmDefNameReference reference,
+                                                                 JsonNewCodeCompletionContext context)
         {
             return reference.GetCompletionSymbolTable();
         }

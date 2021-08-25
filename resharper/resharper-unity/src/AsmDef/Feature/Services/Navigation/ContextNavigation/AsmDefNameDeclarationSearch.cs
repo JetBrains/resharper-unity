@@ -12,9 +12,9 @@ using JetBrains.ReSharper.Psi.DataContext;
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Navigation.ContextNavigation
 {
     // Allows us to find the declaration from one of our IDeclaredElements, such as from ctrl+click/go to declaration on
-    // a reference. This is required because our IDeclaredElement isn't backed by an IDeclaration (as it's not implemented
-    // on IJavaScriptLiteralExpression). We have to return a search request that can find occurrence instances from an
-    // IDeclaredElement. We return a simple Occurrence that uses the navigation detail we store in our declared element
+    // a reference. This is required because our IDeclaredElement isn't backed by an IDeclaration. We have to return a
+    // search request that can find occurrence instances from an IDeclaredElement. We return a simple Occurrence that
+    // uses the navigation detail we store in our declared element
     [ShellFeaturePart]
     public class AsmDefNameDeclarationSearch : DefaultDeclarationSearch
     {

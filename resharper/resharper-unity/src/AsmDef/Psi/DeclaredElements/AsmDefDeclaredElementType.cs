@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements
         {
         }
 
-        public static readonly AsmDefDeclaredElementType AsmDef =
-            new AsmDefDeclaredElementType("assembly definition", ProjectModelThemedIcons.Assembly.Id);
+        public static readonly AsmDefDeclaredElementType AsmDef = new("assembly definition",
+            ProjectModelThemedIcons.Assembly.Id);
     }
 }

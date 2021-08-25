@@ -8,9 +8,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Refactorings
 {
     // Support rename of both the references to the string literal value of the "name" property, and the literal value
     // itself. The standard AtomicRename fails (with asserts), because our declared element doesn't have any declarations.
-    // If we change AsmDefNameDeclaredElement to implement IRenameableDeclaredElement, then JavaScriptAtomicRenameBase
-    // will rename the references, but will not find any declarations to rename. So implement our own AtomicRename that
-    // handles everything - renaming references and replacing the original tree node string literal
     [ShellFeaturePart]
     public class AsmDefRenamesFactory : AtomicRenamesFactory
     {

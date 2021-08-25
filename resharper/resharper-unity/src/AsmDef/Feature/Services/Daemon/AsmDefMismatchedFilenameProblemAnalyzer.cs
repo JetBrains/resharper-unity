@@ -5,7 +5,8 @@ using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
-    [ElementProblemAnalyzer(typeof(IJsonNewLiteralExpression))]
+    [ElementProblemAnalyzer(typeof(IJsonNewLiteralExpression),
+                            HighlightingTypes = new[] { typeof(MismatchedAsmDefFilenameWarning) })]
     public class AsmDefMismatchedFilenameProblemAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {
         protected override void Analyze(IJsonNewLiteralExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
