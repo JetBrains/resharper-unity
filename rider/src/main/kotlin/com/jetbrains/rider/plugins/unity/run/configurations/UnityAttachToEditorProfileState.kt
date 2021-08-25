@@ -6,8 +6,8 @@ import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.rd.util.withLongBackgroundContext
 import com.jetbrains.rd.platform.util.lifetime
-import com.jetbrains.rd.platform.util.withLongBackgroundContext
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.adviseUntil

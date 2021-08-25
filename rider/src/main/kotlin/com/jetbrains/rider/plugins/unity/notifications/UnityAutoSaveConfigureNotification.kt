@@ -13,7 +13,7 @@ import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.util.Key
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.LightColors
-import com.jetbrains.rd.platform.util.application
+import com.intellij.util.application
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.isAlive

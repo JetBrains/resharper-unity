@@ -6,6 +6,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectManagerEx
+import com.intellij.openapi.rd.util.launchNonUrgentBackground
+import com.intellij.openapi.rd.util.withUiContext
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
 import com.intellij.util.ui.EdtInvocationManager
@@ -13,8 +15,6 @@ import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.ide.model.RdVirtualSolution
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
-import com.jetbrains.rd.platform.util.launchNonUrgentBackground
-import com.jetbrains.rd.platform.util.withUiContext
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
@@ -28,7 +28,6 @@ import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionManager
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
-import com.jetbrains.rider.util.*
 import javax.swing.event.HyperlinkEvent
 
 class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {

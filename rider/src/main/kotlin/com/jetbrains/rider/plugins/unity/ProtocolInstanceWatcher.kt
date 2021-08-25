@@ -1,9 +1,9 @@
 package com.jetbrains.rider.plugins.unity
 
 import com.intellij.openapi.project.Project
+import com.intellij.util.application
 import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
-import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
