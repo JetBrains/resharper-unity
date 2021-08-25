@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReferences;
+using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
 using MetadataLite.API;
 using MetadataLite.API.Selectors;
@@ -21,7 +21,7 @@ using TypeSystem;
 
 // ReSharper disable StaticMemberInGenericType
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ChildrenRenderers
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderers
 {
     // Replaces the default children renderer for UnityEngine.GameObject. Filters out deprecated properties and adds a
     // Scene Path value, showing the path to the component's gameObject in the scene. Also adds "Components" and

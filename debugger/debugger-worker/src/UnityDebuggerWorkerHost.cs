@@ -1,9 +1,8 @@
 using Autofac;
-using JetBrains.Debugger.Worker;
 using JetBrains.Rider.Model.Unity.DebuggerWorker;
 using Mono.Debugging.Autofac;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
+namespace JetBrains.Debugger.Worker.Plugins.Unity
 {
     [DebuggerGlobalComponent]
     public class UnityDebuggerWorkerHost : IStartable

@@ -3,7 +3,7 @@ using Mono.Debugging.Autofac;
 using Mono.Debugging.Soft;
 using Mono.Debugging.Soft.Exceptions;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Exceptions
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Exceptions
 {
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
     public class UnityUnhandledExceptionHandler : ISoftDebuggerUnhandledExceptionHandler

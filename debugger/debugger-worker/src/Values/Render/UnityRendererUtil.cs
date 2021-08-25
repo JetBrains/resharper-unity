@@ -1,4 +1,4 @@
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render
 {
     public static class UnityRendererUtil
     {

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.IosUsbDebugging.NativeInterop
+namespace JetBrains.Debugger.Worker.Plugins.Unity
 {
     // Modified from https://github.com/Unity-Technologies/MonoDevelop.Debugger.Soft.Unity/blob/unity-staging/iOSOverUsbSupport.cs
     //

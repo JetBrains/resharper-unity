@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Values
 {
     // Groups are special entities that are not fields or properties. They are used for "Raw View", "Non-public members"
     // and "Results". They are not sorted with other entities but pushed to the top or bottom of the view, in the order

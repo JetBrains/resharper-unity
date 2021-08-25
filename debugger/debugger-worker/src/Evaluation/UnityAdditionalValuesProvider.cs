@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values;
+using JetBrains.Debugger.Worker.Plugins.Unity.Values;
 using JetBrains.Util;
 using Mono.Debugger.Soft;
 using Mono.Debugging.Autofac;
@@ -15,7 +15,7 @@ using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Evaluation;
 using Mono.Debugging.Soft;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 {
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
     public class UnityAdditionalValuesProvider : UnityAdditionalValuesProvider<Value>

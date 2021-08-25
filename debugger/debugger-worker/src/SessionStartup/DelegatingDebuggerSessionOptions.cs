@@ -3,7 +3,7 @@ using JetBrains.Collections.Viewable;
 using Mono.Debugging.Client.DebuggerOptions;
 using Mono.Debugging.Client.HotReload;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.SessionStartup
+namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 {
     public abstract class DelegatingDebuggerSessionOptions : IDebuggerSessionOptions
     {

@@ -11,7 +11,7 @@ using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Soft;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ChildrenRenderers
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderers
 {
     // Replaces the default children renderer for UnityEngine.Component. Filters out deprecated properties and adds a
     // Scene Path value, showing the path to the component's gameObject in the scene.

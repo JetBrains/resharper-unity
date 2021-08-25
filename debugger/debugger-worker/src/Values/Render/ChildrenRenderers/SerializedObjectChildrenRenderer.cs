@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReferences;
+using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
 using MetadataLite.API;
 using Mono.Debugging.Autofac;
@@ -12,7 +12,7 @@ using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Soft;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ChildrenRenderers
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderers
 {
     // Adds a "Children" group to UnityEditor.SerializedObject to show child serialised properties. Does not replace the
     // default children renderer

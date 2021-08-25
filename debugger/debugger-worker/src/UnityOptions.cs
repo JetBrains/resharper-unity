@@ -1,7 +1,7 @@
 using JetBrains.Collections.Viewable;
 using Mono.Debugging.Autofac;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
+namespace JetBrains.Debugger.Worker.Plugins.Unity
 {
     public interface IUnityOptions
     {

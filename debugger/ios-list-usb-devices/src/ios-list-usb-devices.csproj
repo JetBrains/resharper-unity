@@ -4,7 +4,7 @@
         <TargetFrameworks>net5.0;net472</TargetFrameworks>
         <RollForward>Major</RollForward>
         <AssemblyName>JetBrains.Rider.Unity.ListIosUsbDevices</AssemblyName>
-        <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Rider.iOS.ListUsbDevices</RootNamespace>
+        <RootNamespace>JetBrains.Rider.Plugins.Unity.iOS.ListUsbDevices</RootNamespace>
         <LangVersion>9</LangVersion>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <SignAssembly>true</SignAssembly>

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.IosUsbDebugging.NativeInterop
+namespace JetBrains.Debugger.Worker.Plugins.Unity
 {
     internal interface IDllLoader {
         IntPtr LoadLibrary(string fileName);

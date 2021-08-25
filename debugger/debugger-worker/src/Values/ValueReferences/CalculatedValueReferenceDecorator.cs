@@ -3,7 +3,7 @@ using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values.Render;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReferences
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences
 {
     internal class CalculatedValueReferenceDecorator<TValue> : ValueReferenceDecoratorBase<TValue>
         where TValue : class
