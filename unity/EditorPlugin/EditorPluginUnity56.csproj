@@ -12,7 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.Ref.5.6.7" Version="2020.6.10" />
-    <PackageReference Include="JetBrains.Build.ILRepack" Version="0.0.1" />
+    <PackageReference Include="JetBrains.Build.ILRepack" Version="0.0.3" />
     <PackageReference Include="JetBrains.NETFramework.ReferenceAssemblies.net35" Version="1.0.1" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
