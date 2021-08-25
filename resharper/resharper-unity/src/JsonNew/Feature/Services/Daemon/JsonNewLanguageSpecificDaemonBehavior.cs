@@ -2,11 +2,10 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon
+namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.Services.Daemon
 {
-    // TODO: This is JsonNew behaviour, not AsmDef
     [Language(typeof(JsonNewLanguage))]
-    public class AsmDefNewLanguageSpecificDaemonBehavior: ILanguageSpecificDaemonBehavior
+    public class JsonNewLanguageSpecificDaemonBehavior: ILanguageSpecificDaemonBehavior
     {
         public ErrorStripeRequestWithDescription InitialErrorStripe(IPsiSourceFile sourceFile)
         {
