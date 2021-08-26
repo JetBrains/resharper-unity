@@ -14,6 +14,7 @@ fun initBuildServer(gradle: Gradle): BuildServer {
         else -> NullBuildServer()
     }
     gradle.taskGraph.addTaskExecutionListener(BuildServerEventLogger(server))
+    gradle.rootProject.project.extra["buildServer"] = server
     return server
 }
 
@@ -51,7 +52,7 @@ class NullBuildServer: BuildServer {
 class BuildServerEventLogger(private val server: BuildServer): TaskExecutionListener {
 
     override fun beforeExecute(task: Task) {
-        server.openBlock("gradle-${task.name}", "${task.name}")
+        server.openBlock("gradle-${task.name}", task.name)
     }
 
     override fun afterExecute(task: Task, state: TaskState) {
