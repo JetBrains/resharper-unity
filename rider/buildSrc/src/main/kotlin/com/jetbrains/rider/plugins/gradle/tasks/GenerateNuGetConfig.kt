@@ -9,14 +9,14 @@ import java.io.File
 
 open class GenerateNuGetConfig: DefaultTask() {
     @Input
-    var dotNetSdkPath: Any? = null
+    var dotNetSdkPath: () -> File? = { null }
 
     @OutputFile
     var nuGetConfigFile = File("${project.projectDir}/../NuGet.Config")
 
     @TaskAction
     fun generate() {
-        val dotNetSdkFile = dotNetSdkPath?.let { project.file(it)} ?: error("dotNetSdkLocation not set")
+        val dotNetSdkFile = dotNetSdkPath() ?: error("dotNetSdkLocation not set")
         logger.info("dotNetSdk location: '$dotNetSdkFile'")
         assert(dotNetSdkFile.isDirectory)
 

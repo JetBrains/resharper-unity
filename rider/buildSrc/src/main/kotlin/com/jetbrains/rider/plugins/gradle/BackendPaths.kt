@@ -43,15 +43,17 @@ class BackendPaths(private val project: Project,
                 val intellij = project.extensions.findByType(IntelliJPluginExtension::class.java)!!
 
                 var root = File(repositoryRoot, "rider/build/riderRD-$productVersion-SNAPSHOT")
-                if (intellij.ideaDependencyCachePath != null) {
-                    root = File(intellij.ideaDependencyCachePath)
+                val ideaDependencyCachePath = intellij.ideaDependencyCachePath.orNull
+                if (ideaDependencyCachePath != null) {
+                    root = File(ideaDependencyCachePath)
                 }
                 if (!root.isDirectory) {
                     // If this assert fires, then you've likely called getRiderSdkPath during configuration
                     // Try to wrap this call in a closure, so that it's evaluated at execution time, once the
                     // intellij dependencies have been downloaded
-                    assert(intellij.ideaDependency != null)
-                    root = File(intellij.ideaDependency.classes.absolutePath)
+                    val ideaDependency = intellij.ideaDependency.orNull
+                    assert(ideaDependency != null)
+                    root = File(ideaDependency?.classes?.absolutePath ?: error("ideaDependency is null"))
                 }
                 riderSdkPath = root
                 logger.info("Rider SDK bundle found: ${root.canonicalPath}")
@@ -67,7 +69,7 @@ class BackendPaths(private val project: Project,
         return sdkRoot
     }
 
-    private fun getRdLibDirectory(): File {
+    fun getRdLibDirectory(): File {
         val rdLib = File(getRiderSdkRootPath(),"lib/rd")
         assert(rdLib.isDirectory)
         return rdLib

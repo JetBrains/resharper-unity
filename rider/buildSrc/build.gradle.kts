@@ -9,10 +9,9 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.intellij.plugins", "gradle-intellij-plugin", "0.7.2")
+    implementation("org.jetbrains.intellij.plugins", "gradle-intellij-plugin", "1.1.4")
 }
 
 plugins {
     `kotlin-dsl`
 }
-

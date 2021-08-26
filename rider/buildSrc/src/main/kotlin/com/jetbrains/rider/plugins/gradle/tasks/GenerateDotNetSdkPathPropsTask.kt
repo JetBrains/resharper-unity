@@ -9,14 +9,14 @@ import java.io.File
 
 open class GenerateDotNetSdkPathPropsTask: DefaultTask() {
     @Input
-    var dotNetSdkPath: Any? = null
+    var dotNetSdkPath: () -> File? = { null }
 
     @OutputFile
     var propsFile = File("${project.projectDir}/../resharper/build/generated/DotNetSdkPath.generated.props")
 
     @TaskAction
     fun generate() {
-        val dotNetSdkFile= dotNetSdkPath?.let { project.file(it)} ?: error("dotNetSdkLocation not set")
+        val dotNetSdkFile= dotNetSdkPath() ?: error("dotNetSdkLocation not set")
         assert(dotNetSdkFile.isDirectory)
         project.buildServer.progress("Generating :${propsFile.canonicalPath}...")
         project.file(propsFile).writeText("""<Project>

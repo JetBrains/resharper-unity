@@ -13,7 +13,6 @@
             <option value="$PROJECT_DIR$/protocol" />
           </set>
         </option>
-        <option name="useQualifiedModuleNames" value="true" />
       </GradleProjectSettings>
     </option>
   </component>
