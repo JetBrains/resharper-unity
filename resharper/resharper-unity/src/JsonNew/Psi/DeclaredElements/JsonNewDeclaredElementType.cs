@@ -1,4 +1,5 @@
 ﻿using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Naming.Impl;
 using JetBrains.UI.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements
@@ -18,5 +19,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements
         protected override IDeclaredElementPresenter DefaultPresenter => JsonNewDeclaredElementPresenter.Instance;
         public override IconId GetImage() => myIconId;
         public override bool IsPresentable(PsiLanguageType language) => language.Is<JsonNewLanguage>();
+        public virtual bool IsValidName(string name) => NamingUtil.IsIdentifier(name);
     }
 }

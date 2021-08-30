@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Caches2;
@@ -50,6 +51,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Language
         public override bool SupportTypeMemberCache => false;
 
         public override ITypePresenter TypePresenter => DefaultTypePresenter.Instance;
+
+        public override bool IsValidName(DeclaredElementType elementType, string name)
+        {
+            if (elementType is JsonNewDeclaredElementType jsonNewDeclaredElementType)
+                return jsonNewDeclaredElementType.IsValidName(name);
+
+            return base.IsValidName(elementType, name);
+        }
 
         private class JsonNewLexerFactory : ILexerFactory
         {
