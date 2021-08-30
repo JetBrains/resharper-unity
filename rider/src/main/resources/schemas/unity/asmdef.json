@@ -15,7 +15,7 @@
             "minLength": 1
         },
         "references": {
-            "description": "A list of assembly names or assembly asset GUIDs to reference",
+            "description": "A list of assembly names or assembly definition asset GUIDs to reference",
             "type": "array",
             "items": {
                 "type": "string",
@@ -59,10 +59,13 @@
         "defineConstraints": {
             "description": "A list of the C# compiler define symbols that must evaluate to true in order for the assembly to be compiled or referenced. Absence of a symbol can be checked with a bang symbol (!DEFINE)",
             "type": "array",
+            "items": {
+                "type": "string"
+            },
             "uniqueItems": true
         },
         "optionalUnityReferences": {
-            "description": "Additional optional Unity features to reference",
+            "description": "Additional optional Unity features to reference. Not supported since 2019.3",
             "type": "array",
             "items": {
                 "enum": [
@@ -103,16 +106,15 @@
             "items": {
                 "enum": [
                     "Android",
+                    "CloudRendering",
                     "Editor",
+                    "GameCoreXboxOne",
                     "iOS",
-                    "LinuxStandalone32",
                     "LinuxStandalone64",
-                    "LinuxStandaloneUniversal",
                     "Lumin",
                     "macOSStandalone",
-                    "Nintendo3DS",
                     "PS4",
-                    "PSVita",
+                    "PS5",
                     "Stadia",
                     "Switch",
                     "tvOS",
@@ -120,7 +122,16 @@
                     "WebGL",
                     "WindowsStandalone32",
                     "WindowsStandalone64",
-                    "XboxOne"
+                    "XboxOne",
+
+                    "GameCoreScarlett",
+                    "LinuxStandalone32",
+                    "LinuxStandaloneUniversal",
+                    "Nintendo3DS",
+                    "PSMobile",
+                    "PSVita",
+                    "Tizen",
+                    "WiiU"
                 ]
             }
         }
