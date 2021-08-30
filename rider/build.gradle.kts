@@ -9,6 +9,8 @@ import com.ullink.gradle.nunit.NUnit
 import groovy.xml.XmlParser
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.changelog.ChangelogPluginExtension
+import org.jetbrains.intellij.dependency.IdeaDependency
+import org.jetbrains.intellij.tasks.IntelliJInstrumentCodeTask
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.tasks.PrepareSandboxTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -35,7 +37,8 @@ apply {
 
 val repoRoot = projectDir.parentFile!!
 val isWindows = System.getProperty("os.name").toLowerCase().startsWith("win")
-val bundledRiderSdkRoot = File(projectDir, "dependencies")  // SDK from TC configuration/artifacts
+val bundledRiderSdkRoot = File(projectDir, "build/rider")  // SDK from TC configuration/artifacts
+val bundledMavenArtifacts = File(projectDir, "build/maven-artifacts")
 val productVersion = extra["productVersion"].toString()
 val maintenanceVersion = extra["maintenanceVersion"].toString()
 val pluginVersion = "$productVersion.$maintenanceVersion"
@@ -150,7 +153,6 @@ configure<ChangelogPluginExtension> {
 logger.lifecycle("Version=$version")
 logger.lifecycle("BuildConfiguration=$buildConfiguration")
 
-
 tasks {
     val backendGroup = "backend"
     val ciGroup = "ci"
@@ -159,6 +161,19 @@ tasks {
 
     buildSearchableOptions {
         enabled = isReleaseBuild
+    }
+
+    withType<IntelliJInstrumentCodeTask> {
+        if (bundledMavenArtifacts.exists()) {
+            logger.lifecycle("Use ant compiler artifacts from local folder: $bundledMavenArtifacts")
+            compilerClassPathFromMaven.set(
+                bundledMavenArtifacts.walkTopDown()
+                    .filter { it.extension == "jar" && !it.name.endsWith("-sources.jar") }
+                    .toList() + File("${ideaDependency.get().classes}/lib/util.jar")
+            )
+        } else {
+            logger.lifecycle("Use ant compiler artifacts from maven")
+        }
     }
 
     runIde {
