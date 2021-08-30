@@ -1,3 +1,4 @@
+using System.Linq;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
@@ -34,20 +35,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (!IsBaseCallReference(expression))
                 return false;
 
-            var info = reference.Resolve();
-
-            if (info.ResolveErrorType != ResolveErrorType.OK)
+            var (declaredElement, _, resolveErrorType) = reference.Resolve();
+            if (resolveErrorType != ResolveErrorType.OK)
                 return false;
 
-            var method = info.DeclaredElement as IMethod;
-            if (method == null)
+            if (declaredElement is not IMethod method)
                 return false;
 
-            var doesNameMatch = method.ShortName == "OnGUI";
-            if (!doesNameMatch)
-                return false;
-
-            return true;
+            return method.ShortName == "OnGUI";
         }
 
         private static bool IsBaseCallReference(IInvocationExpression expression)
@@ -78,7 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         private static bool IsInsidePropertyDrawer(IInvocationExpression expression)
         {
             var containingType = expression.GetContainingNode<IClassLikeDeclaration>()?.DeclaredElement;
-            return containingType.DerivesFrom(KnownTypes.PropertyDrawer);
+            return containingType?.GetSuperTypes().Any(t => t.GetClrName().Equals(KnownTypes.PropertyDrawer)) ?? false;
         }
     }
 }

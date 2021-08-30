@@ -16,6 +16,10 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 - Update Unity API information to 2021.2.0b8 ([#2151](https://github.com/JetBrains/resharper-unity/pull/2151))
 
+### Fixed
+
+- Fix incorrect warning about `base.OnGUI` when `base` is not `PropertyDrawer` ([RSRP-482954](https://youtrack.jetbrains.com/issue/RSRP-482954), [#2159](https://github.com/JetBrains/resharper-unity/pull/2159))
+
 
 
 ## 2021.2.1
