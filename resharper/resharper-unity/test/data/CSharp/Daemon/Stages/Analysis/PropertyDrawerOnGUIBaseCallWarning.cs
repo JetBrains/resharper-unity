@@ -7,14 +7,14 @@ public class Test : PropertyDrawer
     {
         // Make sure it only happens in calls to base
         base.OnGUI(position, property, label);
-        
+
         // So these should not trigger
         var a = new Test();
         a.OnGUI(position, property, label);
         OnGUI();
         OnGUI(position, property, label);
     }
-    
+
     public void OnGUI()
     {
         var a = new SerializedObject(new Object());
@@ -24,11 +24,19 @@ public class Test : PropertyDrawer
     }
 }
 
+public class DerivedTest : Test
+{
+    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    {
+        // This is allowed. We only warn if base is PropertyDrawer
+        base.OnGUI(position, property, label);
+    }
+}
+
 public class MyBaseClass
 {
     public virtual void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        
     }
 }
 
