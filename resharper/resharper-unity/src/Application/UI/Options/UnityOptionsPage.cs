@@ -21,7 +21,7 @@ using JetBrains.ReSharper.Psi.Naming.Settings;
 using JetBrains.Rider.Model.UIAutomation;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options
 {
     [OptionsPage(PID, Name, typeof(LogoIcons.Unity), Sequence = 0.01, ParentId = CodeEditingPage.PID)]
     public class UnityOptionsPage : BeSimpleOptionsPage
@@ -53,6 +53,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void AddGeneralSection()
         {
+            if (!OptionsPageContext.IsRider) return;
+
             AddHeader("General");
             AddBoolOption((UnitySettings s) => s.InstallUnity3DRiderPlugin,
                 "Automatically install and update Rider's Unity editor plugin");
@@ -68,12 +70,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private void AddCSharpSection()
         {
             AddHeader("C#");
-            AddComboOption((UnitySettings s) => s.GutterIconMode,
-                "Show gutter icons for implicit script usages:", string.Empty, string.Empty,
-                new RadioOptionPoint(GutterIconMode.Always, "Always"),
-                new RadioOptionPoint(GutterIconMode.CodeInsightDisabled, "When Code Vision is disabled"),
-                new RadioOptionPoint(GutterIconMode.None, "Never")
-            );
+
+            // Show simplified text box for ReSharper, while Rider has a drop down. Note that the unchecked value for
+            // ReSharper is "when Code Vision is disabled". If/when R# gets Code Vision, the settings will be good
+            if (OptionsPageContext.IsRider)
+            {
+                AddComboOption((UnitySettings s) => s.GutterIconMode,
+                    "Show gutter icons for implicit script usages:", string.Empty, string.Empty,
+                    new RadioOptionPoint(GutterIconMode.Always, "Always"),
+                    new RadioOptionPoint(GutterIconMode.CodeInsightDisabled, "When Code Vision is disabled"),
+                    new RadioOptionPoint(GutterIconMode.None, "Never")
+                );
+            }
+            else
+            {
+                AddBoolOption((UnitySettings s) => s.GutterIconMode,
+                    GutterIconMode.CodeInsightDisabled, GutterIconMode.None,
+                    "Show gutter icons for implicit script usages");
+            }
 
             using (Indent())
             {
@@ -121,7 +135,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void AddNamingSubSection()
         {
-            // Rider doesn't have a UI for editing user defined rules. See RIDER-8339
+            // ReSharper already has a UI for editing user defined rules. Rider doesn't. See RIDER-8339
+            if (!OptionsPageContext.IsRider) return;
+
             AddHeader("Serialized field naming rules");
 
             var entry = OptionsSettingsSmartContext.Schema.GetIndexedEntry(ourUserRulesAccessor);
@@ -210,23 +226,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             AddHeader("Text based assets");
             AddBoolOption((UnitySettings s) => s.IsAssetIndexingEnabled,
                 "Parse text based asset files for script and event handler usages");
-            AddBoolOption((UnitySettings s) => s.EnableInspectorPropertiesEditor,
-                "Show Inspector values in the editor");
+
+            if (OptionsPageContext.IsRider)
+            {
+                AddBoolOption((UnitySettings s) => s.EnableInspectorPropertiesEditor,
+                    "Show Inspector values in the editor");
+            }
+
             AddBoolOption((UnitySettings s) => s.IsPrefabCacheEnabled,
                 "Cache prefab data to improve find usage performance");
             AddBoolOption((UnitySettings s) => s.EnableAssetIndexingPerformanceHeuristic,
                 "Automatically disable asset indexing for large solutions");
-            AddBoolOption((UnitySettings s) => s.UseUnityYamlMerge, "Prefer UnityYamlMerge for merging YAML files");
-            using (Indent())
+
+            if (OptionsPageContext.IsRider)
             {
-                var option = AddControl((UnitySettings s) => s.MergeParameters,
-                    p => p.GetBeTextBox(Lifetime).WithDescription("Merge parameters", Lifetime));
-                BindToEnabledProperty(option, s => s.UseUnityYamlMerge);
+                AddBoolOption((UnitySettings s) => s.UseUnityYamlMerge, "Prefer UnityYamlMerge for merging YAML files");
+                using (Indent())
+                {
+                    var option = AddControl((UnitySettings s) => s.MergeParameters,
+                        p => p.GetBeTextBox(Lifetime).WithDescription("Merge parameters", Lifetime));
+                    BindToEnabledProperty(option, s => s.UseUnityYamlMerge);
+                }
             }
         }
 
         private void AddShadersSection()
         {
+            // TODO: For ReSharper, this is unavailable if the user hasn't installed ReSharper C++
             AddHeader("Shaders");
             AddBoolOption((UnitySettings s) => s.SuppressShaderErrorHighlighting,
                 "Suppress resolve errors of unqualified names");
@@ -234,6 +260,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void AddDebuggingSection()
         {
+            if (!OptionsPageContext.IsRider) return;
+
             AddHeader("Debugging");
             AddBoolOption((UnitySettings s) => s.EnableDebuggerExtensions,
                 "Extend value rendering");
