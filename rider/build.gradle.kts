@@ -544,20 +544,23 @@ tasks {
             helperExeNetFxFiles.forEach { if (!it.exists()) error("File $it does not exist") }
             unityEditorDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
         }
-        dotnetDllFiles.forEach { from(it) { into("${intellij.pluginName}/dotnet") } }
-        debuggerDllFiles.forEach { from(it) { into("${intellij.pluginName}/dotnetDebuggerWorker") } }
-        unityEditorDllFiles.forEach { from(it) { into("${intellij.pluginName}/EditorPlugin") } }
+
+        val pluginName = intellij.pluginName.get()
+
+        dotnetDllFiles.forEach { from(it) { into("${pluginName}/dotnet") } }
+        debuggerDllFiles.forEach { from(it) { into("${pluginName}/dotnetDebuggerWorker") } }
+        unityEditorDllFiles.forEach { from(it) { into("${pluginName}/EditorPlugin") } }
 
         // This folder name allows RiderEnvironment.getBundledFile(file, pluginClass = this.class) to work
         // Helper apps must be net5.0 for Mac/Linux, but we don't yet bundle netcore for Windows, so fall back to
         // netfx. Get rid of the netfx folder as soon as we can
-        helperExeFiles.forEach { from(it) { into("${intellij.pluginName}/DotFiles") } }
-        helperExeNetFxFiles.forEach { from(it) { into("${intellij.pluginName}/DotFiles/netfx") } }
+        helperExeFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
+        helperExeNetFxFiles.forEach { from(it) { into("${pluginName}/DotFiles/netfx") } }
 
         from("../resharper/resharper-unity/src/annotations") {
-            into("${intellij.pluginName}/dotnet/Extensions/com.intellij.resharper.unity/annotations")
+            into("${pluginName}/dotnet/Extensions/com.intellij.resharper.unity/annotations")
         }
-        from("projectTemplates") { into("${intellij.pluginName}/projectTemplates") }
+        from("projectTemplates") { into("${pluginName}/projectTemplates") }
     }
 
     withType<Test> {
