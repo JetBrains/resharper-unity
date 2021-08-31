@@ -2,6 +2,7 @@ using JetBrains.Application.UI.Components;
 using JetBrains.Application.UI.Options.OptionsDialog;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Intentions.Options;
+using JetBrains.ReSharper.Plugins.Unity.Application.UI.Options;
 using JetBrains.ReSharper.Plugins.Unity.Rider;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Naming;
