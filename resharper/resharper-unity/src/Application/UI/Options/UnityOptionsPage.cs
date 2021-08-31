@@ -23,7 +23,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options
 {
-    [OptionsPage(PID, Name, typeof(LogoIcons.Unity), Sequence = 0.01, ParentId = CodeEditingPage.PID)]
+    [OptionsPage(PID, Name, typeof(LogoIcons.Unity), ParentId = CodeEditingPage.PID)]
     public class UnityOptionsPage : BeSimpleOptionsPage
     {
         public const string PID = "UnityPluginSettings";
@@ -89,18 +89,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options
                     "Show gutter icons for implicit script usages");
             }
 
+            AddPerformanceAnalysisSubSection();
+            AddBurstAnalysisSubSection();
             using (Indent())
-            {
-                AddPerformanceAnalysisSubSection();
-                AddBurstAnalysisSubSection();
                 AddNamingSubSection();
-            }
         }
 
         private void AddPerformanceAnalysisSubSection()
         {
-            AddHeader("Performance analysis");
-
             AddBoolOption(ourEnablePerformanceHighlightingAccessor,
                 "Enable performance analysis in frequently called code");
 
@@ -121,8 +117,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options
 
         private void AddBurstAnalysisSubSection()
         {
-            AddHeader("Burst code analysis");
-
             AddBoolOption(ourEnableBurstHighlightingAccessor, "Enable analysis for Burst compiler issues");
 
             using (Indent())
