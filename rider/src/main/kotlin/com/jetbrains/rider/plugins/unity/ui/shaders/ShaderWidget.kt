@@ -19,7 +19,7 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.SequentialLifetimes
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
-import com.jetbrains.rdclient.document.getDocumentId
+import com.jetbrains.rdclient.document.getFirstDocumentId
 import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 import com.jetbrains.rider.cpp.fileType.CppFileType
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
@@ -105,7 +105,7 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
             return
         }
 
-        val id = editor?.document?.getDocumentId(project)
+        val id = editor?.document?.getFirstDocumentId(project)
         if (id == null) {
             statusBarComponent.isVisible = false
             return
@@ -134,9 +134,7 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
 
     fun showPopup(label: JLabel) {
         val lt: Lifetime = Lifetime.Eternal
-        val id = editor?.document?.getDocumentId(project)
-        if (id == null)
-            return
+        val id = editor?.document?.getFirstDocumentId(project) ?: return
         val host = FrontendBackendHost.getInstance(project)
         host.model.requestShaderContexts.start(lt, id).result.advise(lt) {
             val items = it.unwrap()

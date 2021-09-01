@@ -11,6 +11,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Rider.Backend.Features.Documents;
 using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
@@ -28,6 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
         private readonly ShaderContextDataPresentationCache myShaderContextDataPresentationCache;
 
         public ShaderContextHost(Lifetime lifetime, ISolution solution, IPsiFiles psiFiles,
+                                 RiderDocumentHost documentHost,
                                  CppGlobalSymbolCache cppGlobalSymbolCache,
                                  ShaderContextCache shaderContextCache,
                                  ShaderContextDataPresentationCache shaderContextDataPresentationCache, ILogger logger,
@@ -35,12 +37,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
         {
             mySolution = solution;
             myPsiFiles = psiFiles;
+            myDocumentHost = documentHost;
             myCppGlobalSymbolCache = cppGlobalSymbolCache;
             myShaderContextCache = shaderContextCache;
             myShaderContextDataPresentationCache = shaderContextDataPresentationCache;
-
-            // This requires IResharperHostCoreFeaturesZone
-            myDocumentHost = DocumentHostBase.GetInstance(solution);
 
             if (frontendBackendHost == null || myDocumentHost == null)
                 return;
