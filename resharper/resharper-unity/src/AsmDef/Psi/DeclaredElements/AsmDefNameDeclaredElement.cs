@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Plugins.Unity.AsmDefCommon.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Files;
-using JetBrains.ReSharper.Psi.JavaScript.Impl.DeclaredElements;
-using JetBrains.ReSharper.Psi.JavaScript.Services;
-using JetBrains.ReSharper.Psi.JavaScript.Tree;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
@@ -17,10 +15,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements
     // IDeclaredElement, so we have to create our own.
     // If we derive from JavaScriptDeclaredElementBase, then the JS reference searcher will consider us.
     // If we don't, then we'd need to create a references searcher just for these elements
-    public class AsmDefNameDeclaredElement : JavaScriptDeclaredElementBase, IAsmDefDeclaredElement
+    public class AsmDefNameDeclaredElement : JsonNewDeclaredElementBase, IAsmDefDeclaredElement
     {
-        public AsmDefNameDeclaredElement(JavaScriptServices jsServices, string name, IPsiSourceFile sourceFile, int declarationOffset)
-            : base(jsServices)
+        public AsmDefNameDeclaredElement(string name, IPsiSourceFile sourceFile, int declarationOffset)
+            : base(sourceFile.GetPsiServices())
         {
             SourceFile = sourceFile;
             ShortName = name;
@@ -29,6 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements
 
         public IPsiSourceFile SourceFile { get; }
         public int DeclarationOffset { get; }
+
         public int NavigationOffset => DeclarationOffset + 1; // Skip quote
 
         public override IList<IDeclaration> GetDeclarationsIn(IPsiSourceFile sourceFile)
@@ -39,13 +38,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements
         public override IList<IDeclaration> GetDeclarations() => EmptyList<IDeclaration>.Instance;
         public override DeclaredElementType GetElementType() => AsmDefDeclaredElementType.AsmDef;
         public override string ShortName { get; }
-        public override bool HasDynamicName => false;
-
-        public override ISearchDomain GetSearchDomain(SearchDomainFactory factory)
-        {
-            var solution = SourceFile.GetSolution();
-            return factory.CreateSearchDomain(solution, false);
-        }
 
         // We can't use the base class implementation, as this does it based on IDeclaration, and we don't have any.
         // We have to implement the interface explicitly because the method isn't virtual. Hacks are fun.
@@ -54,12 +46,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements
             return new HybridCollection<IPsiSourceFile>(SourceFile);
         }
 
+        public override ISearchDomain GetSearchDomain(SearchDomainFactory factory)
+        {
+            var solution = SourceFile.GetSolution();
+            return factory.CreateSearchDomain(solution, false);
+        }
+
         [CanBeNull]
-        public IJavaScriptLiteralExpression GetTreeNode()
+        public IJsonNewLiteralExpression GetTreeNode()
         {
             var range = TreeTextRange.FromLength(new TreeOffset(DeclarationOffset), ShortName.Length);
             var node = SourceFile.GetPrimaryPsiFile()?.FindNodeAt(range);
-            return JavaScriptLiteralExpressionNavigator.GetByLiteral(node as ITokenNode);
+            return node?.Parent as IJsonNewLiteralExpression;
         }
 
         private bool Equals(AsmDefNameDeclaredElement other)

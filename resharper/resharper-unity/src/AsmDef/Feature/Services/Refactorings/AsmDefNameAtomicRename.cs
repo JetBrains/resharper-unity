@@ -7,12 +7,14 @@ using JetBrains.ReSharper.Feature.Services.Refactorings;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
 using JetBrains.ReSharper.Feature.Services.Util;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.JavaScript.Services;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Refactorings.Rename;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.Special;
 
@@ -40,9 +42,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Refactorings
                 return;
 
             var originalRange = originalTreeNode.GetDocumentRange();
-            var factory = JavaScriptElementFactory.GetInstance(originalTreeNode);
-            var literalExpression = factory.CreateExpression("\"$0\"", NewName);
-            var newExpression = originalTreeNode.ReplaceBy(literalExpression);
+            var factory = JsonNewElementFactory.GetInstance(originalTreeNode.GetPsiModule());
+            var literalExpression = factory.CreateStringLiteral(NewName);
+
+            ITreeNode newExpression;
+            using (WriteLockCookie.Create(originalTreeNode.IsPhysical()))
+            {
+                newExpression = ModificationUtil.ReplaceChild(originalTreeNode, literalExpression);
+            }
 
             RemoveFromTextualOccurrences(executer, originalRange);
 
@@ -53,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Refactorings
             pi.Start(references.Count);
 
             // Create a new declared element (other implementations don't appear to cache this, either)
-            var element = new AsmDefNameDeclaredElement(declaredElement.GetJsServices(), NewName,
+            var element = new AsmDefNameDeclaredElement(NewName,
                 declaredElement.SourceFile, newExpression.GetTreeStartOffset().Offset);
 
             // Rename/bind the references

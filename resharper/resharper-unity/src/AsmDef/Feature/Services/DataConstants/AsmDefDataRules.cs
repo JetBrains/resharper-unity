@@ -2,13 +2,13 @@
 using JetBrains.Application;
 using JetBrains.Application.DataContext;
 using JetBrains.Application.UI.Actions.ActionManager;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
-using JetBrains.ReSharper.Psi.JavaScript.Impl.Util;
-using JetBrains.ReSharper.Psi.JavaScript.LanguageImpl.JSon;
-using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.DataConstants
 {
@@ -23,24 +23,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.DataConstant
                 PsiDataConstants.DECLARED_ELEMENTS, GetDeclaredElementsFromContext);
         }
 
-        private ICollection<IDeclaredElement> GetDeclaredElementsFromContext(IDataContext dataContext)
+        private static ICollection<IDeclaredElement> GetDeclaredElementsFromContext(IDataContext dataContext)
         {
             var psiEditorView = dataContext.GetData(PsiDataConstants.PSI_EDITOR_VIEW);
             if (psiEditorView == null) return null;
 
-            var psiView = psiEditorView.DefaultSourceFile.View<JsonLanguage>();
+            var psiView = psiEditorView.DefaultSourceFile.View<JsonNewLanguage>();
             foreach (var containingNode in psiView.ContainingNodes)
             {
                 var sourceFile = containingNode.GetSourceFile();
                 if (!sourceFile.IsAsmDef())
                     continue;
 
-                if (containingNode.IsNameStringLiteralValue())
+                if (containingNode.IsNameLiteral())
                 {
+                    var node = (containingNode as IJsonNewLiteralExpression).NotNull("node != null");
                     return new List<IDeclaredElement>
                     {
-                        new AsmDefNameDeclaredElement(containingNode.GetJavaScriptServices(),
-                            containingNode.GetUnquotedText(), sourceFile,
+                        new AsmDefNameDeclaredElement(node.GetStringValue(), sourceFile,
                             containingNode.GetTreeStartOffset().Offset)
                     };
                 }

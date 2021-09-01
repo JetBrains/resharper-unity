@@ -4,6 +4,7 @@ using System.Reflection;
 using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Environment;
 using JetBrains.ReSharper.Plugins.Unity.HlslSupport;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew;
 using JetBrains.ReSharper.Plugins.Yaml;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;
@@ -46,6 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         IActivate<JetBrains.Rider.Backend.Env.IRiderPlatformZone>,
 #endif
         IActivateDynamic<ILanguageHlslSupportZone>,
+        IActivate<ILanguageJsonNewZone>,
         IActivate<ILanguageYamlZone>
     {
         bool IActivateDynamic<ILanguageHlslSupportZone>.ActivatorEnabled() => !PlatformUtil.IsRunningOnMono;

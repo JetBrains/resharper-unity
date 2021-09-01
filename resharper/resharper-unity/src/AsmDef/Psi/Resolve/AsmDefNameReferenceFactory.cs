@@ -1,5 +1,5 @@
-﻿using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
-using JetBrains.ReSharper.Psi.JavaScript.Tree;
+﻿using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -12,9 +12,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
             if (ResolveUtil.CheckThatAllReferencesBelongToElement<AsmDefNameReference>(oldReferences, element))
                 return oldReferences;
 
-            if (element.IsReferencesStringLiteralValue())
+            if (element.IsReferenceLiteral())
             {
-                return new ReferenceCollection(new AsmDefNameReference((IJavaScriptLiteralExpression) element));
+                return new ReferenceCollection(new AsmDefNameReference((IJsonNewLiteralExpression) element));
             }
 
             return ReferenceCollection.Empty;
@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
 
         public bool HasReference(ITreeNode element, IReferenceNameContainer names)
         {
-            if (element is IJavaScriptLiteralExpression literal && literal.IsStringLiteral())
+            if (element is IJsonNewLiteralExpression literal && literal.ConstantValueType == ConstantValueTypes.String)
                 return names.Contains(literal.GetStringValue() ?? string.Empty);
             return false;
         }

@@ -5,15 +5,13 @@ using JetBrains.Collections;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements;
-using JetBrains.ReSharper.Plugins.Unity.AsmDefCommon.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Impl.Resolve;
-using JetBrains.ReSharper.Psi.JavaScript.LanguageImpl.JSon;
-using JetBrains.ReSharper.Psi.JavaScript.Services;
-using JetBrains.ReSharper.Psi.JavaScript.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.Util;
 
@@ -22,16 +20,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
     [PsiComponent]
     public class AsmDefNameCache : SimpleICache<AsmDefCacheItem>
     {
+        private readonly IShellLocks myShellLocks;
         private readonly ISolution mySolution;
 
-        private readonly Dictionary<IPsiSourceFile, AsmDefNameDeclaredElement> myDeclaredElements =
-            new Dictionary<IPsiSourceFile, AsmDefNameDeclaredElement>();
+        private readonly Dictionary<IPsiSourceFile, AsmDefNameDeclaredElement> myDeclaredElements = new();
+        private readonly OneToListMap<string, IPsiSourceFile> myNames = new();
 
         public AsmDefNameCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, ISolution solution)
             : base(lifetime, shellLocks, persistentIndexManager, AsmDefCacheItem.Marshaller)
         {
+            myShellLocks = shellLocks;
             mySolution = solution;
         }
+
+        public override string Version => "2";
 
         [CanBeNull]
         public AsmDefNameDeclaredElement GetNameDeclaredElement(IPsiSourceFile sourceFile)
@@ -55,17 +57,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
             if (!IsApplicable(sourceFile))
                 return null;
 
-            var file = sourceFile.GetDominantPsiFile<JsonLanguage>();
+            var file = sourceFile.GetDominantPsiFile<JsonNewLanguage>();
             if (file == null)
                 return null;
 
             var cacheBuilder = new AsmDefCacheItemBuilder();
-            var processor = new RecursiveElementProcessor<IJavaScriptLiteralExpression>(e =>
+            var processor = new RecursiveElementProcessor<IJsonNewLiteralExpression>(e =>
             {
                 // Only accept the first name. If there are multiple name definitions, it's an error, and that's just tough luck
-                if (e.IsNameStringLiteralValue() && !cacheBuilder.HasNameDefinition)
+                if (e.IsNameLiteral() && !cacheBuilder.HasNameDefinition)
                     cacheBuilder.SetNameDefinition(e.GetStringValue(), e.GetTreeStartOffset().Offset);
-                else if (e.IsReferencesStringLiteralValue())
+                else if (e.IsReferenceLiteral())
                     cacheBuilder.AddReference(e.GetStringValue());
             });
             file.ProcessDescendants(processor);
@@ -102,24 +104,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         {
             if (asmDefCacheItem == null) return;
 
+            myNames.Add(asmDefCacheItem.Name, sourceFile);
             if (!myDeclaredElements.ContainsKey(sourceFile))
                 myDeclaredElements.Add(sourceFile, CreateDeclaredElement(sourceFile, asmDefCacheItem));
         }
 
         private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
         {
+            var item = Map.GetValueSafe(sourceFile);
+            if (item != null)
+                myNames.Remove(item.Name, sourceFile);
+
+
             myDeclaredElements.Remove(sourceFile);
         }
 
         private AsmDefNameDeclaredElement CreateDeclaredElement(IPsiSourceFile sourceFile, AsmDefCacheItem cacheItem)
         {
-            return new AsmDefNameDeclaredElement(mySolution.GetComponent<JavaScriptServices>(),
-                cacheItem.Name, sourceFile, cacheItem.DeclarationOffset);
+            return new AsmDefNameDeclaredElement(cacheItem.Name, sourceFile, cacheItem.DeclarationOffset);
         }
 
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return base.IsApplicable(sf) && sf.IsAsmDef() && sf.IsLanguageSupported<JsonLanguage>();
+            return base.IsApplicable(sf) && sf.IsAsmDef() && sf.IsLanguageSupported<JsonNewLanguage>();
+        }
+
+        public VirtualFileSystemPath GetPathFor(string name)
+        {
+            myShellLocks.AssertReadAccessAllowed();
+            return myNames.GetValuesSafe(name).FirstOrDefault(null)?.GetLocation();
         }
     }
 }

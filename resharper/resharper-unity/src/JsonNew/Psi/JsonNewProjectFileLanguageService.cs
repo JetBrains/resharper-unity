@@ -1,4 +1,5 @@
 ﻿using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
@@ -6,11 +7,11 @@ using JetBrains.UI.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi
 {
-    [ProjectFileType(typeof(JsonProjectFileType))]
+    [ProjectFileType(typeof(JsonNewProjectFileType))]
     public class JsonNewProjectFileLanguageService : ProjectFileLanguageService
     {
         public JsonNewProjectFileLanguageService()
-            : base(JsonProjectFileType.Instance)
+            : base(JsonNewProjectFileType.Instance)
         {
         }
 
@@ -20,7 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi
             return languageService?.GetPrimaryLexerFactory();
         }
 
-        protected override PsiLanguageType PsiLanguageType => 
+        // ReSharper disable once AssignNullToNotNullAttribute
+        protected override PsiLanguageType PsiLanguageType =>
             (PsiLanguageType) JsonNewLanguage.Instance ?? UnknownLanguage.Instance;
 
         // TODO: icon

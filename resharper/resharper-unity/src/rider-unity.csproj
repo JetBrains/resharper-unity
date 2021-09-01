@@ -114,15 +114,15 @@
     <ParserGen Include="JsonNew\Psi\Parsing\JsonNew.psi" />
   </ItemGroup>
   <!-- ********** -->
-  <ItemGroup Label="AsmDef/JsonNew">
-    <ErrorsGen Include="AsmDefNew\Daemon\Errors\AsmDefErrors.xml">
-      <Namespace>JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Daemon.Errors</Namespace>
-      <OutputFile>AsmDefNew\Daemon\Errors\AsmDefNewErrors.generated.cs</OutputFile>
+  <ItemGroup Label="AsmDef">
+    <ErrorsGen Include="AsmDef\Daemon\Errors\AsmDefErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors</Namespace>
+      <OutputFile>AsmDef\Daemon\Errors\AsmDefErrors.generated.cs</OutputFile>
       <Mode>ERRORS</Mode>
     </ErrorsGen>
-    <Compile Remove="AsmDef\**" />
-    <EmbeddedResource Remove="AsmDef\**" />
-    <None Remove="AsmDef\**" />
+    <Compile Update="AsmDef\Daemon\Errors\AsmDefErrors.generated.cs">
+      <DependentUpon>AsmDefErrors.xml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="Resources">

@@ -1,6 +1,5 @@
 using System;
 using JetBrains.Application.Settings;
-using JetBrains.ReSharper.Daemon.JavaScript.Stages.TypeScript.Error.ProblemAnalyzers;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -19,7 +18,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Daemon.Stages.Processes
                 file, settingsStore, ElementProblemAnalyzerRunKind.FullDaemon, process.GetCheckForInterrupt());
 
             problemAnalyzerData.SetDaemonProcess(process, processKind);
-            problemAnalyzerData.SetFile(File);
 
             myElementAnalyzerDispatcher = elementProblemAnalyzerRegistrar.CreateDispatcher(problemAnalyzerData);
         }

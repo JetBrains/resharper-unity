@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Intentions.QuickFixes
     [TestFileExtension(".asmdef")]
     public class AsmDefMismatchedFilenameQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
     {
-        protected override string RelativeTestDataPath => $@"AsmDef\Intentions\QuickFixes\MismatchedFilename\Availability\{Utils.ProductGoldSuffix}";
+        protected override string RelativeTestDataPath => @"AsmDef\Intentions\QuickFixes\MismatchedFilename\Availability";
 
         [Test] public void Test01() { DoNamedTest(); }
     }

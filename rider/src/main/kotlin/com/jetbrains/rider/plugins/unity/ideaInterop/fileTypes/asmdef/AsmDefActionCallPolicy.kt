@@ -9,8 +9,10 @@ import com.jetbrains.rider.actions.RiderActions
 
 class AsmDefActionCallPolicy : RiderActionSupportPolicy() {
     override fun getCallStrategy(psiElement: PsiElement, backendActionId: String): RiderActionCallStrategy  =
+        // Note that this is backend action ID, which means it's the R# action ID, which may or may not be the same as
+        // the IdeAction.
         when (backendActionId) {
-            IdeActions.ACTION_RENAME,
+            "Rename",
             IdeActions.ACTION_FIND_USAGES,
             FrontendCtrlClickHost.backendActionId,
             RiderActions.GOTO_DECLARATION -> RiderActionCallStrategy.BACKEND_FIRST

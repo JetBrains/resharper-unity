@@ -5,8 +5,8 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.JavaScript.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.TextControl;
 using JetBrains.Util;
@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
     [QuickFix]
     public class AsmDefRenameFileToMatchAssemblyNameQuickFix : QuickFixBase
     {
-        private readonly IJavaScriptLiteralExpression myLiteral;
+        private readonly IJsonNewLiteralExpression myLiteral;
 
         public AsmDefRenameFileToMatchAssemblyNameQuickFix(MismatchedAsmDefFilenameWarning warning)
         {

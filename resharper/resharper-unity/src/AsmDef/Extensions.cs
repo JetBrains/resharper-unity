@@ -1,9 +1,8 @@
 ﻿using System;
 using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.JavaScript.Tree;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Web.WebConfig;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef
 {
@@ -11,19 +10,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef
     {
         public static bool IsAsmDef(this IPsiSourceFile sourceFile)
         {
-            return sourceFile.GetExtensionWithDot().Equals(".asmdef", StringComparison.InvariantCultureIgnoreCase);
+            return sourceFile.GetLocation().ExtensionWithDot.Equals(".asmdef", StringComparison.InvariantCultureIgnoreCase);
         }
 
         [ContractAnnotation("node:null => false")]
-        public static bool IsNameStringLiteralValue([CanBeNull] this ITreeNode node)
+        public static bool IsNameLiteral([CanBeNull] this ITreeNode node)
         {
-            if (node is IJavaScriptLiteralExpression literal && literal.IsStringLiteral())
+            if (node is IJsonNewLiteralExpression literal && literal.ConstantValueType == ConstantValueTypes.String)
             {
-                var file = node.GetContainingFile();
-                var initializer = ObjectPropertyInitializerNavigator.GetByValue(literal);
-                var expectedFile = GetByRootObjectPropertyInitializer(initializer);
+                var member = JsonNewMemberNavigator.GetByValue(literal);
+                var key = member?.Key;
 
-                if (expectedFile == file && initializer?.DeclaredName == "name")
+                var file = JsonNewFileNavigator.GetByValue(JsonNewObjectNavigator.GetByMember(member));
+                if (file == null)
+                    return false;
+
+                if (key == "name")
                     return true;
             }
 
@@ -31,28 +33,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef
         }
 
         [ContractAnnotation("node:null => false")]
-        public static bool IsReferencesStringLiteralValue([CanBeNull] this ITreeNode node)
+        public static bool IsReferenceLiteral([CanBeNull] this ITreeNode node)
         {
-            if (node is IJavaScriptLiteralExpression literal && literal.IsStringLiteral())
+            if (node is IJsonNewLiteralExpression literal && literal.ConstantValueType == ConstantValueTypes.String)
             {
-                var file = node.GetContainingFile();
-                var arrayLiteral = ArrayLiteralNavigator.GetByArrayElement(literal);
-                var initializer = ObjectPropertyInitializerNavigator.GetByValue(arrayLiteral);
-                var expectedFile = GetByRootObjectPropertyInitializer(initializer);
+                var arrayLiteral = JsonNewArrayNavigator.GetByValue(literal);
+                var member = JsonNewMemberNavigator.GetByValue(arrayLiteral);
+                var key = member?.Key;
 
-                if (expectedFile == file && initializer?.DeclaredName == "references")
+                var file = JsonNewFileNavigator.GetByValue(JsonNewObjectNavigator.GetByMember(member));
+                if (file == null)
+                    return false;
+
+                if (key == "references")
                     return true;
             }
 
             return false;
-        }
-
-        private static IJavaScriptFile GetByRootObjectPropertyInitializer(IObjectPropertyInitializer initializer)
-        {
-            var objectLiteral = ObjectLiteralNavigator.GetByPropertie(initializer);
-            var compoundExpression = CompoundExpressionNavigator.GetByExpression(objectLiteral);
-            var statement = ExpressionStatementNavigator.GetByExpression(compoundExpression);
-            return JavaScriptFileNavigator.GetByAllStatement(statement);
         }
     }
 }

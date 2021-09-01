@@ -16,6 +16,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE;RESHARPER;$(CommandLineConstants)</DefineConstants>
   </PropertyGroup>
+  <!-- ********** -->
   <ItemGroup Label="C#">
     <ErrorsGen Include="CSharp\Daemon\Errors\CSharpErrors.xml">
       <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
@@ -95,7 +96,18 @@
     </Compile>
   </ItemGroup>
   <!-- ********** -->
-  <ItemGroup Label="AsmDef/JSON">
+  <ItemGroup Label="JsonNew">
+    <PsiLanguageNames Include="JsonNew">
+      <Visible>False</Visible>
+    </PsiLanguageNames>
+    <CsLex Include="JsonNew\Psi\Parsing\JsonNew.lex" References="JsonNew\Psi\Parsing\Chars.lex" />
+    <TokenGenerator Include="JsonNew\Psi\Parsing\TokenNodeTypes\JsonNewTokenNodeTypes.Tokens.xml">
+      <OutputFile>JsonNew\Psi\Parsing\TokenNodeTypes\JsonNewTokenNodeTypes.Tokens.generated.cs</OutputFile>
+    </TokenGenerator>
+    <ParserGen Include="JsonNew\Psi\Parsing\JsonNew.psi" />
+  </ItemGroup>
+  <!-- ********** -->
+  <ItemGroup Label="AsmDef">
     <ErrorsGen Include="AsmDef\Daemon\Errors\AsmDefErrors.xml">
       <Namespace>JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors</Namespace>
       <OutputFile>AsmDef\Daemon\Errors\AsmDefErrors.generated.cs</OutputFile>
@@ -104,12 +116,6 @@
     <Compile Update="AsmDef\Daemon\Errors\AsmDefErrors.generated.cs">
       <DependentUpon>AsmDefErrors.xml</DependentUpon>
     </Compile>
-    <Compile Remove="JsonNew\**" />
-    <EmbeddedResource Remove="JsonNew\**" />
-    <None Remove="JsonNew\**" />
-    <Compile Remove="AsmDefNew\**" />
-    <EmbeddedResource Remove="AsmDefNew\**" />
-    <None Remove="AsmDefNew\**" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="Resources">

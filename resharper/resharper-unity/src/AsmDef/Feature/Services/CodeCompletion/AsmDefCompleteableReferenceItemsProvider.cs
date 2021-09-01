@@ -1,28 +1,24 @@
 ﻿using JetBrains.ReSharper.Feature.Services.CodeCompletion.Impl;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
-using JetBrains.ReSharper.Features.Intellisense.CodeCompletion.JavaScript;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.JavaScript.LanguageImpl.JSon;
-using JetBrains.ReSharper.Psi.JavaScript.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.CodeCompletion
 {
-    [Language(typeof(JsonLanguage))]
-    public class AsmDefCompleteableReferenceItemsProvider : ItemsProviderWithSymbolTable<JavaScriptCodeCompletionContext, AsmDefNameReference, IJavaScriptFile>
+    [Language(typeof(JsonNewLanguage))]
+    public class AsmDefCompleteableReferenceItemsProvider : ItemsProviderWithSymbolTable<JsonNewCodeCompletionContext, AsmDefNameReference, IJsonNewFile>
     {
-        protected override TextLookupRanges EvaluateRanges(JavaScriptCodeCompletionContext context)
-        {
-            return context.Ranges;
-        }
+        protected override TextLookupRanges EvaluateRanges(JsonNewCodeCompletionContext context) => context.Ranges;
 
-        protected override AsmDefNameReference GetReference(JavaScriptCodeCompletionContext context)
-        {
-            return context.UnterminatedContext.Reference as AsmDefNameReference;
-        }
+        protected override AsmDefNameReference GetReference(JsonNewCodeCompletionContext context) =>
+            context.UnterminatedContext.Reference as AsmDefNameReference;
 
-        protected override ISymbolTable GetCompletionSymbolTable(AsmDefNameReference reference, JavaScriptCodeCompletionContext context)
+        protected override ISymbolTable GetCompletionSymbolTable(AsmDefNameReference reference,
+                                                                 JsonNewCodeCompletionContext context)
         {
             return reference.GetCompletionSymbolTable();
         }

@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.AsmDefCommon.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.JavaScript.LanguageImpl.JSon;
 using JetBrains.ReSharper.Psi.Resolve;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Stages.Resolve
 {
-    [Language(typeof(JsonLanguage))]
+    [Language(typeof(JsonNewLanguage))]
     public class UnresolvedReferenceErrorHandler : IResolveProblemHighlighter
     {
         public IHighlighting Run(IReference reference)

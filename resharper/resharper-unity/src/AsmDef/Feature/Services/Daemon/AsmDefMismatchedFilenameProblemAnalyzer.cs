@@ -1,16 +1,17 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
-using JetBrains.ReSharper.Psi.JavaScript.Tree;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
-    [ElementProblemAnalyzer(typeof(IJavaScriptLiteralExpression))]
-    public class AsmDefMismatchedFilenameProblemAnalyzer : AsmDefProblemAnalyzer<IJavaScriptLiteralExpression>
+    [ElementProblemAnalyzer(typeof(IJsonNewLiteralExpression),
+                            HighlightingTypes = new[] { typeof(MismatchedAsmDefFilenameWarning) })]
+    public class AsmDefMismatchedFilenameProblemAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {
-        protected override void Analyze(IJavaScriptLiteralExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+        protected override void Analyze(IJsonNewLiteralExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            if (element.IsNameStringLiteralValue() && data.SourceFile != null)
+            if (element.IsNameLiteral() && data.SourceFile != null)
             {
                 var assemblyName = element.GetUnquotedText();
                 var expectedFileName = assemblyName + ".asmdef";

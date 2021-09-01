@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.JavaScript.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
 
@@ -10,19 +9,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Occurrences
     [SolutionComponent]
     public class AsmDefOccurrenceKindProvider : IOccurrenceKindProvider
     {
-        public static readonly OccurrenceKind AssemblyDefinitionReference = new OccurrenceKind("Assembly definition reference", OccurrenceKind.SemanticAxis);
+        private static readonly OccurrenceKind AssemblyDefinitionReference =
+            new("Assembly definition reference", OccurrenceKind.SemanticAxis);
 
         public ICollection<OccurrenceKind> GetOccurrenceKinds(IOccurrence occurrence)
         {
             if (occurrence is AsmDefNameOccurrence)
                 return new[] {AssemblyDefinitionReference};
 
-            if (occurrence is JavaScriptReferenceOccurrence jsOccurrence
-                && jsOccurrence.SourceFile.IsAsmDef()
-                && jsOccurrence.PrimaryReference is AsmDefNameReference)
-            {
+            var referenceOccurrence = occurrence as ReferenceOccurrence;
+            var reference = referenceOccurrence?.PrimaryReference;
+            if (reference is AsmDefNameReference)
                 return new[] {AssemblyDefinitionReference};
-            }
 
             return null;
         }

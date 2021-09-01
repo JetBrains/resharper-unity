@@ -23,16 +23,6 @@
     <None Remove="**\Rider\**" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="JsonNew\**" />
-    <EmbeddedResource Remove="JsonNew\**" />
-    <None Remove="JsonNew\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="AsmDefNew\**" />
-    <EmbeddedResource Remove="AsmDefNew\**" />
-    <None Remove="AsmDefNew\**" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>

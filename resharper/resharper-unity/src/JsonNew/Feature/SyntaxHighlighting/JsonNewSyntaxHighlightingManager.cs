@@ -1,3 +1,4 @@
+#if RIDER
 using JetBrains.Application.Settings;
 using JetBrains.RdBackend.Common.Features.SyntaxHighlighting;
 using JetBrains.ReSharper.Daemon.SyntaxHighlighting;
@@ -20,3 +21,4 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.SyntaxHighlighting
         }
     }
 }
+#endif

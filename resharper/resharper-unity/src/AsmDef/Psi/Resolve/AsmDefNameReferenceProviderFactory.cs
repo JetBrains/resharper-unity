@@ -1,9 +1,9 @@
 ﻿using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
-using JetBrains.ReSharper.Psi.JavaScript.LanguageImpl.JSon;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
             if (project == null || !project.IsUnityProject())
                 return null;
 
-            if (sourceFile.IsAsmDef() && sourceFile.PrimaryPsiLanguage.Is<JsonLanguage>())
+            if (sourceFile.IsAsmDef() && sourceFile.PrimaryPsiLanguage.Is<JsonNewLanguage>())
                 return new AsmDefNameReferenceFactory();
 
             return null;

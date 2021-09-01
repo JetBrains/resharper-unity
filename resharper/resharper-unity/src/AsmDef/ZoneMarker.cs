@@ -1,10 +1,10 @@
 using JetBrains.Application.BuildScript.Application.Zones;
-using JetBrains.ReSharper.Psi.JavaScript;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef
 {
     [ZoneMarker]
-    public class ZoneMarker : IRequire<ILanguageJavaScriptZone>
+    public class ZoneMarker : IRequire<ILanguageJsonNewZone>
     {
     }
 }
