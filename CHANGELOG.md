@@ -12,6 +12,10 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net212...net213)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/48?closed=1)
 
+### Added
+
+- Content of `[Tooltip]` attribute shown when hovering over a field ([#2032](https://github.com/JetBrains/resharper-unity/issues/2032), [RIDER-64323](https://youtrack.jetbrains.com/issue/RIDER-64323), [#2163](https://github.com/JetBrains/resharper-unity/pull/2163))
+
 ### Changed
 
 - Update Unity API information to 2021.2.0b8 ([#2151](https://github.com/JetBrains/resharper-unity/pull/2151))
