@@ -1,4 +1,5 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Descriptions;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.UI.RichText;
@@ -13,10 +14,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
     public class UnityElementDescriptionProvider : IDeclaredElementDescriptionProvider
     {
         private readonly UnityApi myUnityApi;
+        private readonly UnityReferencesTracker myUnityReferencesTracker;
 
-        public UnityElementDescriptionProvider(UnityApi unityApi)
+        public UnityElementDescriptionProvider(UnityApi unityApi, UnityReferencesTracker unityReferencesTracker)
         {
             myUnityApi = unityApi;
+            myUnityReferencesTracker = unityReferencesTracker;
         }
 
         // Higher than CLrDeclaredElementXmlDescriptionProvider, so XML doc comments take precedence.
@@ -27,28 +30,45 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
                                                    PsiLanguageType language,
                                                    IPsiModule module = null)
         {
-            UnityEventFunction eventFunction;
+            if (!myUnityReferencesTracker.HasUnityReference.Value) return null;
 
-            if (element is IMethod method && (method.GetContainingType()?.IsFromUnityProject() ?? false))
+            return element switch
             {
-                eventFunction = myUnityApi.GetUnityEventFunction(method);
-                if (eventFunction?.Description != null)
-                {
-                    var richTextBlock = new RichTextBlock(eventFunction.Description);
-                    if (eventFunction.CanBeCoroutine)
-                        richTextBlock.Add("This function can be a coroutine.");
-                    if (eventFunction.Undocumented)
-                        richTextBlock.Add("This function is undocumented.");
-                    return richTextBlock;
-                }
+                IMethod method => GetEventFunctionDescription(method),
+                IParameter parameter => GetEventFunctionParameterDescription(parameter),
+                _ => null
+            };
+        }
+
+        public bool? IsElementObsolete(IDeclaredElement element, out RichTextBlock obsoleteDescription,
+                                       DeclaredElementDescriptionStyle style)
+        {
+            obsoleteDescription = null;
+            return false;
+        }
+
+        private RichTextBlock GetEventFunctionDescription(IMethod method)
+        {
+            var eventFunction = myUnityApi.GetUnityEventFunction(method);
+            if (eventFunction?.Description != null)
+            {
+                var richTextBlock = new RichTextBlock(eventFunction.Description);
+                if (eventFunction.CanBeCoroutine)
+                    richTextBlock.Add("This function can be a coroutine.");
+                if (eventFunction.Undocumented)
+                    richTextBlock.Add("This function is undocumented.");
+                return richTextBlock;
             }
 
-            var parameter = element as IParameter;
-            var owner = parameter?.ContainingParametersOwner as IMethod;
-            if (owner == null || owner.GetContainingType()?.IsFromUnityProject() == false)
+            return null;
+        }
+
+        private RichTextBlock GetEventFunctionParameterDescription(IParameter parameter)
+        {
+            if (parameter?.ContainingParametersOwner is not IMethod owner)
                 return null;
 
-            eventFunction = myUnityApi.GetUnityEventFunction(owner, out var match);
+            var eventFunction = myUnityApi.GetUnityEventFunction(owner, out var match);
             if (eventFunction == null || (match & MethodSignatureMatch.IncorrectParameters) ==
                 MethodSignatureMatch.IncorrectParameters)
             {
@@ -74,23 +94,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
                 var richTextBlock = new RichTextBlock(eventFunctionParameter.Description);
                 if (eventFunctionParameter.IsOptional)
                 {
-                    if (string.IsNullOrEmpty(eventFunctionParameter.Justification))
-                        richTextBlock.Add("This parameter is optional and can be removed if not used.");
-                    else
-                        richTextBlock.Add($"This parameter is optional: {eventFunctionParameter.Justification}");
+                    richTextBlock.Add(string.IsNullOrEmpty(eventFunctionParameter.Justification)
+                        ? "This parameter is optional and can be removed if not used."
+                        : $"This parameter is optional: {eventFunctionParameter.Justification}");
                 }
 
                 return richTextBlock;
             }
 
             return null;
-        }
-
-        public bool? IsElementObsolete(IDeclaredElement element, out RichTextBlock obsoleteDescription,
-                                       DeclaredElementDescriptionStyle style)
-        {
-            obsoleteDescription = null;
-            return false;
         }
     }
 }
