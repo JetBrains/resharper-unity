@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.QuickDoc
 {
     [TestUnity]
-    public class UnityEventFunctionQuickDocTest : QuickDocTestBase
+    public class UnityElementQuickDocTest : QuickDocTestBase
     {
         protected override string RelativeTestDataPath => @"CSharp\QuickDoc";
 

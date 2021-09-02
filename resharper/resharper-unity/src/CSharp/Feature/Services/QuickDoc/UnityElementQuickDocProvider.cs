@@ -26,23 +26,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
     // QuickDocLocalSymbolProvider which will always try to handle a type member or variable, without fall back to other
     // quick doc providers. We register with a lower priority so we get chance to handle Unity elements first.
     [QuickDocProvider(-1)]
-    public class UnityEventFunctionQuickDocProvider : IQuickDocProvider
+    public class UnityElementQuickDocProvider : IQuickDocProvider
     {
         private readonly ISolution mySolution;
         private readonly UnityApi myUnityApi;
         private readonly DocumentManager myDocumentManager;
-        private readonly UnityEventFunctionDescriptionProvider myDescriptionProvider;
+        private readonly UnityElementDescriptionProvider myDescriptionProvider;
         private readonly QuickDocTypeMemberProvider myQuickDocTypeMemberProvider;
         private readonly HelpSystem myHelpSystem;
         private readonly XmlDocHtmlPresenter myPresenter;
 
-        public UnityEventFunctionQuickDocProvider(ISolution solution,
-                                                  UnityApi unityApi,
-                                                  DocumentManager documentManager,
-                                                  UnityEventFunctionDescriptionProvider descriptionProvider,
-                                                  QuickDocTypeMemberProvider quickDocTypeMemberProvider,
-                                                  HelpSystem helpSystem,
-                                                  XmlDocHtmlPresenter presenter)
+        public UnityElementQuickDocProvider(ISolution solution,
+                                            UnityApi unityApi,
+                                            DocumentManager documentManager,
+                                            UnityElementDescriptionProvider descriptionProvider,
+                                            QuickDocTypeMemberProvider quickDocTypeMemberProvider,
+                                            HelpSystem helpSystem,
+                                            XmlDocHtmlPresenter presenter)
         {
             mySolution = solution;
             myUnityApi = unityApi;
@@ -92,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
                     DeclaredElementDescriptionStyle.FULL_STYLE, defaultLanguage);
                 if (description != null && !RichTextBlock.IsNullOrEmpty(description))   // No annotations, sigh
                 {
-                    var presenter = new UnityEventFunctionQuickDocPresenter(element, description.Text, myUnityApi,
+                    var presenter = new UnityElementQuickDocPresenter(element, description.Text, myUnityApi,
                         myQuickDocTypeMemberProvider, myPresenter, myHelpSystem);
                     resolved(presenter, defaultLanguage);
                     return;

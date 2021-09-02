@@ -8,11 +8,10 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp;
-using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 {
-    public class UnityEventFunctionQuickDocPresenter : IQuickDocPresenter
+    public class UnityElementQuickDocPresenter : IQuickDocPresenter
     {
         private readonly string myDescription;
         private readonly UnityApi myUnityApi;
@@ -21,12 +20,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
         private readonly HelpSystem myHelpSystem;
         private readonly DeclaredElementEnvoy<IClrDeclaredElement> myEnvoy;
 
-        public UnityEventFunctionQuickDocPresenter(IClrDeclaredElement element,
-                                                   string description,
-                                                   UnityApi unityApi,
-                                                   QuickDocTypeMemberProvider quickDocTypeMemberProvider,
-                                                   XmlDocHtmlPresenter xmlDocHtmlPresenter,
-                                                   HelpSystem helpSystem)
+        public UnityElementQuickDocPresenter(IClrDeclaredElement element,
+                                             string description,
+                                             UnityApi unityApi,
+                                             QuickDocTypeMemberProvider quickDocTypeMemberProvider,
+                                             XmlDocHtmlPresenter xmlDocHtmlPresenter,
+                                             HelpSystem helpSystem)
         {
             myDescription = description;
             myUnityApi = unityApi;

@@ -10,11 +10,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
     // functions (provides the descriptions for the dialog or code completion). Also provides the descriptions in
     // QuickDoc, but only because of a custom QuickDoc provider.
     [DeclaredElementDescriptionProvider]
-    public class UnityEventFunctionDescriptionProvider : IDeclaredElementDescriptionProvider
+    public class UnityElementDescriptionProvider : IDeclaredElementDescriptionProvider
     {
         private readonly UnityApi myUnityApi;
 
-        public UnityEventFunctionDescriptionProvider(UnityApi unityApi)
+        public UnityElementDescriptionProvider(UnityApi unityApi)
         {
             myUnityApi = unityApi;
         }
