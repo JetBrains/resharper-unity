@@ -24,5 +24,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Descri
         [Test] public void EventFunctionWithGutterIcon02() { DoNamedTest(); }
         [Test] public void EventFunctionParameter01() { DoNamedTest(); }
         [Test] public void EventFunctionParameter02() { DoNamedTest(); }
+        [Test] public void SerialisedField() { DoNamedTest(); }
+        [Test] public void SerialisedFieldWithTooltip() { DoNamedTest(); }
+        [Test] public void SerialisedFieldWithTooltipIgnoresXmlDoc() { DoNamedTest(); }
     }
 }

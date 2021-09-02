@@ -36,6 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
             {
                 IMethod method => GetEventFunctionDescription(method),
                 IParameter parameter => GetEventFunctionParameterDescription(parameter),
+                IField field => GetSerialisedFieldDescription(field),
                 _ => null
             };
         }
@@ -100,6 +101,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
                 }
 
                 return richTextBlock;
+            }
+
+            return null;
+        }
+
+        private RichTextBlock GetSerialisedFieldDescription(IField field)
+        {
+            if (!myUnityApi.IsSerialisedField(field)) return null;
+
+            foreach (var attribute in field.GetAttributeInstances(KnownTypes.TooltipAttribute, AttributesSource.Self))
+            {
+                if (attribute.PositionParameterCount > 0)
+                {
+                    var tooltipText = attribute.PositionParameter(0).TryGetString();
+                    if (tooltipText != null)
+                        return new RichTextBlock(tooltipText);
+                }
             }
 
             return null;
