@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="runIde" type="DotNetProject" factoryName=".NET Project">
     <option name="EXE_PATH" value="$PROJECT_DIR$/build/gradle-launcher/bin/Debug/net472/gradle-launcher.exe" />
-    <option name="PROGRAM_PARAMETERS" value="../../rider runIde -PskipDotnet=true" />
+    <option name="PROGRAM_PARAMETERS" value="../../rider runIde -PskipDotnet=true --console=plain" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/gradle-launcher" />
     <option name="PASS_PARENT_ENVS" value="1" />
     <envs>
