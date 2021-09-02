@@ -1,0 +1,6 @@
+using UnityEngine;
+
+public class MyBehaviour : MonoBehaviour
+{
+  [Tooltip("Copy this to {caret}tooltip")] public string MySerialisedField;
+}

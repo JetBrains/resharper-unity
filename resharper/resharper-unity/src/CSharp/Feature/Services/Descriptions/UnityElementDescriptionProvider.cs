@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Feature.Services.Descriptions;
+using JetBrains.Annotations;
+using JetBrains.ReSharper.Feature.Services.Descriptions;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
@@ -48,6 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
             return false;
         }
 
+        [CanBeNull]
         private RichTextBlock GetEventFunctionDescription(IMethod method)
         {
             var eventFunction = myUnityApi.GetUnityEventFunction(method);
@@ -64,6 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
             return null;
         }
 
+        [CanBeNull]
         private RichTextBlock GetEventFunctionParameterDescription(IParameter parameter)
         {
             if (parameter?.ContainingParametersOwner is not IMethod owner)
@@ -106,6 +109,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
             return null;
         }
 
+        [CanBeNull]
         private RichTextBlock GetSerialisedFieldDescription(IField field)
         {
             if (!myUnityApi.IsSerialisedField(field)) return null;

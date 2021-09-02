@@ -1,0 +1,12 @@
+using UnityEngine;
+
+public class MyBehaviour : MonoBehaviour
+{
+    /// <summary>
+    /// Copy this to {caret}tooltip
+    /// </summary>
+    /// <remarks>
+    /// XML Docs should not be deleted
+    /// </remarks>
+    [Tooltip("Copy this to tooltip")] public string MySerialisedField;
+}
