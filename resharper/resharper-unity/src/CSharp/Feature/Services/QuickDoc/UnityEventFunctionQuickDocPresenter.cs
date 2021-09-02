@@ -8,36 +8,32 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 {
     public class UnityEventFunctionQuickDocPresenter : IQuickDocPresenter
     {
-        private readonly UnityEventFunction myEventFunction;
-        private readonly string myParameterName;
+        private readonly string myDescription;
+        private readonly UnityApi myUnityApi;
         private readonly QuickDocTypeMemberProvider myQuickDocTypeMemberProvider;
-        private readonly XmlDocHtmlPresenter myXMLDocHtmlPresenter;
+        private readonly XmlDocHtmlPresenter myXmlDocHtmlPresenter;
         private readonly HelpSystem myHelpSystem;
         private readonly DeclaredElementEnvoy<IClrDeclaredElement> myEnvoy;
 
-        public UnityEventFunctionQuickDocPresenter(UnityEventFunction eventFunction, IClrDeclaredElement element,
+        public UnityEventFunctionQuickDocPresenter(IClrDeclaredElement element,
+                                                   string description,
+                                                   UnityApi unityApi,
                                                    QuickDocTypeMemberProvider quickDocTypeMemberProvider,
-                                                   XmlDocHtmlPresenter xmlDocHtmlPresenter, HelpSystem helpSystem)
-            : this(eventFunction, null, element, quickDocTypeMemberProvider, xmlDocHtmlPresenter, helpSystem)
+                                                   XmlDocHtmlPresenter xmlDocHtmlPresenter,
+                                                   HelpSystem helpSystem)
         {
+            myDescription = description;
+            myUnityApi = unityApi;
             myQuickDocTypeMemberProvider = quickDocTypeMemberProvider;
-        }
-
-        public UnityEventFunctionQuickDocPresenter(UnityEventFunction eventFunction, string parameterName,
-                                                   IClrDeclaredElement element,
-                                                   QuickDocTypeMemberProvider quickDocTypeMemberProvider,
-                                                   XmlDocHtmlPresenter xmlDocHtmlPresenter, HelpSystem helpSystem)
-        {
-            myEventFunction = eventFunction;
-            myParameterName = parameterName;
-            myQuickDocTypeMemberProvider = quickDocTypeMemberProvider;
-            myXMLDocHtmlPresenter = xmlDocHtmlPresenter;
+            myXmlDocHtmlPresenter = xmlDocHtmlPresenter;
             myHelpSystem = helpSystem;
+
             myEnvoy = new DeclaredElementEnvoy<IClrDeclaredElement>(element);
         }
 
@@ -46,9 +42,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             var element = myEnvoy.GetValidDeclaredElement();
             if (element == null) return QuickDocTitleAndText.Empty;
 
-            // Present in the standard fashion
-            var details = GetDetails(element);
-            var text = myXMLDocHtmlPresenter.Run(details, element.Module,
+            var details = GetXmlDoc(element);
+            var text = myXmlDocHtmlPresenter.Run(details, element.Module,
                 element, presentationLanguage, XmlDocHtmlUtil.NavigationStyle.All,
                 XmlDocHtmlUtil.CrefManager);
             var title = DeclaredElementPresenter.Format(presentationLanguage,
@@ -57,24 +52,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             return new QuickDocTitleAndText(text, title);
         }
 
-        private XmlNode GetDetails(IDeclaredElement element)
+        private XmlNode GetXmlDoc(IDeclaredElement element)
         {
             var xmlDocNode = element.GetXMLDoc(true);
-            if (xmlDocNode != null)
-                return xmlDocNode;
+            if (xmlDocNode == null)
+            {
+                var memberElement = CreateMemberElement(element);
+                memberElement.CreateLeafElementWithValue("summary", myDescription);
+                xmlDocNode = memberElement;
+            }
+            else
+            {
+                // We have XML docs, add our description as an additional node
+                ((XmlElement)xmlDocNode).CreateLeafElementWithValue("description", myDescription);
+            }
 
-            var description = myEventFunction.Description;
-            if (!string.IsNullOrWhiteSpace(myParameterName))
-                description = myEventFunction.GetParameter(myParameterName)?.Description;
-
-            var details = CreateMemberElement(element);
-            if (string.IsNullOrWhiteSpace(description)) return details;
-            details.CreateLeafElementWithValue("summary", description);
-            if (!element.GetPsiServices().Solution.HasComponent<IXmlDocLinkAppender>()) return details;
+            if (!element.GetPsiServices().Solution.HasComponent<IXmlDocLinkAppender>()) return xmlDocNode;
             var uri = element.GetPsiServices().Solution.GetComponent<UnityOnlineHelpProvider>().GetUrl(element);
-            element.GetPsiServices().Solution.GetComponent<IXmlDocLinkAppender>().AppendExternalDocumentationLink(uri, element.ShortName, details);
+            var xmlDocLinkAppender = element.GetPsiServices().Solution.GetComponent<IXmlDocLinkAppender>();
+            xmlDocLinkAppender.AppendExternalDocumentationLink(uri, element.ShortName, xmlDocNode);
 
-            return details;
+            return xmlDocNode;
         }
 
         private XmlElement CreateMemberElement(IDeclaredElement element)
@@ -110,11 +108,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             // will be the XML doc ID of the target element and QuickDocTypeMemberProvider will handle it. We'll never
             // get one of our IDs, since we can't navigate to our type member (maybe via a cref)
             var validDeclaredElement = myEnvoy.GetValidDeclaredElement();
-            if (validDeclaredElement != null)
-            {
-                return myQuickDocTypeMemberProvider.Resolve(id, myEnvoy.GetValidDeclaredElement()?.Module);
-            }
-            return null;
+            return validDeclaredElement != null
+                ? myQuickDocTypeMemberProvider.Resolve(id, myEnvoy.GetValidDeclaredElement()?.Module)
+                : null;
         }
 
         public void OpenInEditor()
@@ -132,12 +128,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
                 if (element is IParameter parameter)
                     element = parameter.ContainingParametersOwner;
 
-                if (element != null)
-                {
-                    // TODO: Is there a nice helper for this?
-                    var unityName = myEventFunction.TypeName.GetFullNameFast() + "." + element.ShortName;
+                var unityName = element?.GetUnityEventFunctionName(myUnityApi);
+                if (unityName != null)
                     myHelpSystem.ShowHelp(unityName, HelpSystem.HelpKind.Msdn);
-                }
             }
         }
     }

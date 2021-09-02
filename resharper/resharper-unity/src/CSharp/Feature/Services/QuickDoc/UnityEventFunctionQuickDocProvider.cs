@@ -7,34 +7,47 @@ using JetBrains.DocumentManagers;
 using JetBrains.DocumentModel.DataContext;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
+using JetBrains.ReSharper.Feature.Services.Descriptions;
 using JetBrains.ReSharper.Feature.Services.QuickDoc;
 using JetBrains.ReSharper.Feature.Services.QuickDoc.Providers;
 using JetBrains.ReSharper.Feature.Services.QuickDoc.Render;
 using JetBrains.ReSharper.Feature.Services.Util;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
+using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 {
-    // Priority must be less than QuickDocLocalSymbolProvider and QuickDocTypeMemberProvider
+    // Uses the Unity IElementDocumentProvider to get the description for a Unity element, and formats it as QuickDoc.
+    // We cannot rely on QuickDocDescriptionProvider because it doesn't include all details, such as web link. More
+    // importantly, it's registered with a greater priority than QuickDocTypeMemberProvider and
+    // QuickDocLocalSymbolProvider which will always try to handle a type member or variable, without fall back to other
+    // quick doc providers. We register with a lower priority so we get chance to handle Unity elements first.
     [QuickDocProvider(-1)]
     public class UnityEventFunctionQuickDocProvider : IQuickDocProvider
     {
         private readonly ISolution mySolution;
         private readonly UnityApi myUnityApi;
         private readonly DocumentManager myDocumentManager;
+        private readonly UnityEventFunctionDescriptionProvider myDescriptionProvider;
         private readonly QuickDocTypeMemberProvider myQuickDocTypeMemberProvider;
         private readonly HelpSystem myHelpSystem;
         private readonly XmlDocHtmlPresenter myPresenter;
 
-        public UnityEventFunctionQuickDocProvider(ISolution solution, UnityApi unityApi,
-                                                  DocumentManager documentManager, QuickDocTypeMemberProvider quickDocTypeMemberProvider,
-                                                  HelpSystem helpSystem, XmlDocHtmlPresenter presenter)
+        public UnityEventFunctionQuickDocProvider(ISolution solution,
+                                                  UnityApi unityApi,
+                                                  DocumentManager documentManager,
+                                                  UnityEventFunctionDescriptionProvider descriptionProvider,
+                                                  QuickDocTypeMemberProvider quickDocTypeMemberProvider,
+                                                  HelpSystem helpSystem,
+                                                  XmlDocHtmlPresenter presenter)
         {
             mySolution = solution;
             myUnityApi = unityApi;
             myDocumentManager = documentManager;
+            myDescriptionProvider = descriptionProvider;
             myQuickDocTypeMemberProvider = quickDocTypeMemberProvider;
             myHelpSystem = helpSystem;
             myPresenter = presenter;
@@ -46,7 +59,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             if (!project.IsUnityProject()) return false;
 
             var declaredElements = context.GetData(PsiDataConstants.DECLARED_ELEMENTS);
-            return declaredElements != null && declaredElements.Any(e => IsEventFunction(e) || IsParameterForEventFunction(e as IParameter));
+            if (declaredElements == null)
+                return false;
+
+            foreach (var declaredElement in declaredElements)
+            {
+                if (!RichTextBlock.IsNullOrEmpty(myDescriptionProvider.GetElementDescription(declaredElement,
+                    DeclaredElementDescriptionStyle.FULL_STYLE, declaredElement.PresentationLanguage)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void Resolve(IDataContext context, Action<IQuickDocPresenter, PsiLanguageType> resolved)
@@ -63,45 +88,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 
             foreach (var element in elements.OfType<IClrDeclaredElement>())
             {
-                var eventFunction = GetEventFunction(element);
-                if (eventFunction != null)
+                var description = myDescriptionProvider.GetElementDescription(element,
+                    DeclaredElementDescriptionStyle.FULL_STYLE, defaultLanguage);
+                if (description != null && !RichTextBlock.IsNullOrEmpty(description))   // No annotations, sigh
                 {
-                    var presenter = new UnityEventFunctionQuickDocPresenter(eventFunction, element, myQuickDocTypeMemberProvider,
-                        myPresenter, myHelpSystem);
-                    resolved(presenter, defaultLanguage);
-                    return;
-                }
-
-                var eventFunctionForParameter = GetEventFunctionFromParameter(element as IParameter);
-                if (eventFunctionForParameter != null)
-                {
-                    var presenter = new UnityEventFunctionQuickDocPresenter(eventFunctionForParameter, element.ShortName, element,
+                    var presenter = new UnityEventFunctionQuickDocPresenter(element, description.Text, myUnityApi,
                         myQuickDocTypeMemberProvider, myPresenter, myHelpSystem);
                     resolved(presenter, defaultLanguage);
                     return;
                 }
             }
-        }
-
-        private bool IsEventFunction(IDeclaredElement declaredElement)
-        {
-            return GetEventFunction(declaredElement) != null;
-        }
-
-        private UnityEventFunction GetEventFunction(IDeclaredElement declaredElement)
-        {
-            var method = declaredElement as IMethod;
-            return method != null ? myUnityApi.GetUnityEventFunction(method) : null;
-        }
-
-        private bool IsParameterForEventFunction(IParameter parameter)
-        {
-            return GetEventFunctionFromParameter(parameter) != null;
-        }
-
-        private UnityEventFunction GetEventFunctionFromParameter(IParameter parameter)
-        {
-            return GetEventFunction(parameter?.ContainingParametersOwner);
         }
     }
 }

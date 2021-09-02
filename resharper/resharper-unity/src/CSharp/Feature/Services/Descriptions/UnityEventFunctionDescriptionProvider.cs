@@ -5,9 +5,10 @@ using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
 {
-    // Adds the description to the tooltip for an event function and its parameters.
-    // Requires "Colour identifiers" and "Replace Visual Studio tooltips" to
-    // be checked (or Enhanced Tooltip installed)
+    // Provides a description for various Unity related declared elements, such as event function descriptions. Used in
+    // various places, usually as a fallback if there is no XML documentation. Can be seen when e.g. generating event
+    // functions (provides the descriptions for the dialog or code completion). Also provides the descriptions in
+    // QuickDoc, but only because of a custom QuickDoc provider.
     [DeclaredElementDescriptionProvider]
     public class UnityEventFunctionDescriptionProvider : IDeclaredElementDescriptionProvider
     {
@@ -18,8 +19,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
             myUnityApi = unityApi;
         }
 
-        public RichTextBlock GetElementDescription(IDeclaredElement element, DeclaredElementDescriptionStyle style,
-            PsiLanguageType language, IPsiModule module = null)
+        // Higher than CLrDeclaredElementXmlDescriptionProvider, so XML doc comments take precedence.
+        public int Priority => 10;
+
+        public RichTextBlock GetElementDescription(IDeclaredElement element,
+                                                   DeclaredElementDescriptionStyle style,
+                                                   PsiLanguageType language,
+                                                   IPsiModule module = null)
         {
             UnityEventFunction eventFunction;
 
@@ -81,12 +87,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
         }
 
         public bool? IsElementObsolete(IDeclaredElement element, out RichTextBlock obsoleteDescription,
-            DeclaredElementDescriptionStyle style)
+                                       DeclaredElementDescriptionStyle style)
         {
             obsoleteDescription = null;
             return false;
         }
-
-        public int Priority => 10;
     }
 }
