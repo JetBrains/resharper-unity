@@ -29,11 +29,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private const ulong AssetFileCheckSizeThreshold = 20 * (1024 * 1024); // 20 MB
 
         // stats
-        public readonly List<ulong> PrefabSizes = new List<ulong>();
-        public readonly List<ulong> SceneSizes = new List<ulong>();
-        public readonly List<ulong> AssetSizes = new List<ulong>();
-        public readonly List<ulong> KnownBinaryAssetSizes = new List<ulong>();
-        public readonly List<ulong> ExcludedByNameAssetsSizes = new List<ulong>();
+        public readonly List<ulong> PrefabSizes = new();
+        public readonly List<ulong> SceneSizes = new();
+        public readonly List<ulong> AssetSizes = new();
+        public readonly List<ulong> KnownBinaryAssetSizes = new();
+        public readonly List<ulong> ExcludedByNameAssetsSizes = new();
 
         private readonly Lifetime myLifetime;
         private readonly ILogger myLogger;
@@ -215,17 +215,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private void AddExternalPsiSourceFiles(List<VirtualDirectoryEntryData> files, PsiModuleChangeBuilder builder)
         {
             foreach (var directoryEntry in files)
-                 AddExternalPsiSourceFile(builder, directoryEntry.GetAbsolutePath());
+                 AddOrUpdateExternalPsiSourceFile(builder, directoryEntry.GetAbsolutePath());
         }
 
-        private void AddExternalPsiSourceFile(PsiModuleChangeBuilder builder, VirtualFileSystemPath path)
+        private void AddOrUpdateExternalPsiSourceFile(PsiModuleChangeBuilder builder, VirtualFileSystemPath path)
         {
             Assertion.AssertNotNull(myModuleFactory.PsiModule, "myModuleFactory.PsiModule != null");
-            if (myModuleFactory.PsiModule.ContainsPath(path))
-                return;
 
-            var sourceFile = myPsiSourceFileFactory.CreateExternalPsiSourceFile(myModuleFactory.PsiModule, path);
+            var sourceFile = GetYamlPsiSourceFile(myModuleFactory.PsiModule, path);
+            if (sourceFile != null)
+            {
+                // We already know this file. Make sure it's up to date
+                UpdateExternalPsiSourceFile(sourceFile, builder, path);
+                return;
+            }
+
+            sourceFile = myPsiSourceFileFactory.CreateExternalPsiSourceFile(myModuleFactory.PsiModule, path);
             builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Added);
+        }
+
+        private static void UpdateExternalPsiSourceFile([CanBeNull] IPsiSourceFile sourceFile,
+                                                        PsiModuleChangeBuilder builder,
+                                                        VirtualFileSystemPath path)
+        {
+            if (sourceFile == null) return;
+
+            // Make sure we update the cached file system data, or all of the ICache implementations will think the
+            // file is already up to date
+            (sourceFile as PsiSourceFileFromPath)?.GetCachedFileSystemData().Refresh(path);
+            builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Modified);
         }
 
 #if RIDER
@@ -261,7 +279,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         {
             if (mySolution.FindProjectItemsByLocation(path).Count > 0)
                 return;
-            
+
             var projectImpl = mySolution.MiscFilesProject as ProjectImpl;
             Assertion.AssertNotNull(projectImpl, "mySolution.MiscFilesProject as ProjectImpl");
             var properties = myProjectFilePropertiesFactory.CreateProjectFileProperties(
@@ -286,6 +304,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
             foreach (var directoryEntry in externalFiles.ExcludedByNameAssetFiles)
                 ExcludedByNameAssetsSizes.Add(directoryEntry.Length);
+        }
+
+        private static bool IsEligibleAsset(VirtualFileSystemPath path)
+        {
+            return path.IsInterestingAsset() && !IsKnownBinaryAsset(path) && !IsAssetExcludedByName(path);
         }
 
         private static bool IsKnownBinaryAsset(VirtualDirectoryEntryData directoryEntry)
@@ -352,17 +375,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             IPsiSourceFile sourceFile;
             switch (delta.ChangeType)
             {
+                // We can get ADDED for a file we already know about if an app saves the file by saving to a temp file
+                // first. We don't get a DELETED first, surprisingly. Treat this scenario like CHANGED
                 case FileSystemChangeType.ADDED:
-                    if (delta.NewPath.IsInterestingAsset())
+                    if (IsEligibleAsset(delta.NewPath))
                     {
-                        if (!IsKnownBinaryAsset(delta.NewPath) && !IsAssetExcludedByName(delta.NewPath))
-                        {
-                            AddExternalPsiSourceFile(builder, delta.NewPath);
-                            projectFilesToAdd.Add(delta.NewPath);
-                        }
+                        AddOrUpdateExternalPsiSourceFile(builder, delta.NewPath);
+                        projectFilesToAdd.Add(delta.NewPath);
                     }
                     else if (delta.NewPath.IsMeta())
-                        AddExternalPsiSourceFile(builder, delta.NewPath);
+                        AddOrUpdateExternalPsiSourceFile(builder, delta.NewPath);
                     break;
 
                 case FileSystemChangeType.DELETED:
@@ -371,21 +393,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                         builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Removed);
                     break;
 
+                // We can get RENAMED if an app saves the file by saving to a temporary name first, then renaming
                 case FileSystemChangeType.CHANGED:
+                case FileSystemChangeType.RENAMED:
                     sourceFile = GetYamlPsiSourceFile(module, delta.NewPath);
-                    if (sourceFile != null)
-                    {
-                        // Make sure we update the cached file system data, or all of our files will have stale
-                        // timestamps and never get updated by ICache implementations!
-                        if (sourceFile is PsiSourceFileFromPath psiSourceFileFromPath)
-                            psiSourceFileFromPath.GetCachedFileSystemData().Refresh(delta.NewPath);
-
-                        builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Modified);
-                    }
+                    UpdateExternalPsiSourceFile(sourceFile, builder, delta.NewPath);
                     break;
 
                 case FileSystemChangeType.SUBTREE_CHANGED:
-                case FileSystemChangeType.RENAMED:
                 case FileSystemChangeType.UNKNOWN:
                     break;
             }
@@ -395,7 +410,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         }
 
         [CanBeNull]
-        private IPsiSourceFile GetYamlPsiSourceFile(IPsiModuleOnFileSystemPaths module, VirtualFileSystemPath path)
+        private static IPsiSourceFile GetYamlPsiSourceFile([NotNull] IPsiModuleOnFileSystemPaths module,
+                                                           VirtualFileSystemPath path)
         {
             return module.TryGetFileByPath(path, out var sourceFile) ? sourceFile : null;
         }
@@ -413,7 +429,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                     myLocks.AssertMainThread();
                     using (myLocks.UsingWriteLock())
                     {
-                        foreach (var fileChange in builder.Result.FileChanges)
+                        var psiModuleChange = builder.Result;
+                        foreach (var fileChange in psiModuleChange.FileChanges)
                         {
                             var location = fileChange.Item.GetLocation();
                             if (location.IsEmpty)
@@ -431,8 +448,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                             }
                         }
 
-                        myChangeManager.OnProviderChanged(this, builder.Result, SimpleTaskExecutor.Instance);
-                        
+                        myChangeManager.OnProviderChanged(this, psiModuleChange, SimpleTaskExecutor.Instance);
+
 #if RIDER
                         AddExternalProjectFiles(projectFilesToAdd);
 #endif
@@ -444,11 +461,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         private class ExternalFiles
         {
-            public readonly List<VirtualDirectoryEntryData> MetaFiles = new List<VirtualDirectoryEntryData>();
-            public readonly List<VirtualDirectoryEntryData> AssetFiles = new List<VirtualDirectoryEntryData>();
-            public FrugalLocalList<VirtualDirectoryEntryData> KnownBinaryAssetFiles = new FrugalLocalList<VirtualDirectoryEntryData>();
-            public FrugalLocalList<VirtualDirectoryEntryData> ExcludedByNameAssetFiles = new FrugalLocalList<VirtualDirectoryEntryData>();
-            public FrugalLocalList<VirtualFileSystemPath> Directories = new FrugalLocalList<VirtualFileSystemPath>();
+            public readonly List<VirtualDirectoryEntryData> MetaFiles = new();
+            public readonly List<VirtualDirectoryEntryData> AssetFiles = new();
+            public FrugalLocalList<VirtualDirectoryEntryData> KnownBinaryAssetFiles;
+            public FrugalLocalList<VirtualDirectoryEntryData> ExcludedByNameAssetFiles;
+            public FrugalLocalList<VirtualFileSystemPath> Directories;
 
             public void AddFile(VirtualDirectoryEntryData directoryEntry)
             {
