@@ -4,7 +4,6 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
-using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -20,15 +19,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     })]
     public class LoadSceneAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
+        private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly AssetSerializationMode myAssetSerializationMode;
-        private readonly YamlSupport myUnityYamlSupport;
+        private readonly UnityProjectSettingsCache myProjectSettingsCache;
 
-        public LoadSceneAnalyzer([NotNull] UnityApi unityApi, AssetSerializationMode assetSerializationMode,
-            YamlSupport unityYamlSupport)
+        public LoadSceneAnalyzer([NotNull] UnityApi unityApi,
+                                 AssetIndexingSupport assetIndexingSupport,
+                                 AssetSerializationMode assetSerializationMode,
+                                 UnityProjectSettingsCache projectSettingsCache)
             : base(unityApi)
         {
+            myAssetIndexingSupport = assetIndexingSupport;
             myAssetSerializationMode = assetSerializationMode;
-            myUnityYamlSupport = unityYamlSupport;
+            myProjectSettingsCache = projectSettingsCache;
         }
 
         protected override void Analyze(IInvocationExpression invocationExpression, ElementProblemAnalyzerData data,
@@ -37,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (!myAssetSerializationMode.IsForceText)
                 return;
 
-            if (!myUnityYamlSupport.IsParsingEnabled.Value)
+            if (!myAssetIndexingSupport.IsEnabled.Value)
                 return;
 
             var argument = GetSceneNameArgument(invocationExpression);
@@ -47,18 +50,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
             if (invocationExpression.InvocationExpressionReference.IsSceneManagerSceneRelatedMethod())
             {
-                var cache = invocationExpression.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
-                if (cache == null)
-                    return;
-
                 var sceneName = GetScenePathFromArgument(literal);
                 if (sceneName != null)
                 {
                     // check build settings warnings
-                    if (cache.IsScenePresentedAtEditorBuildSettings(sceneName,
+                    if (myProjectSettingsCache.IsScenePresentedAtEditorBuildSettings(sceneName,
                         out var ambiguousDefinition))
                     {
-                        if (cache.IsSceneDisabledAtEditorBuildSettings(sceneName))
+                        if (myProjectSettingsCache.IsSceneDisabledAtEditorBuildSettings(sceneName))
                         {
                             consumer.AddHighlighting(new LoadSceneDisabledSceneNameWarning(argument, sceneName));
                         }
@@ -70,7 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     }
                     else
                     {
-                        if (cache.IsSceneExists(sceneName))
+                        if (myProjectSettingsCache.IsSceneExists(sceneName))
                         {
                             consumer.AddHighlighting(new LoadSceneUnknownSceneNameWarning(argument, sceneName));
                         } else
@@ -82,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 else if (literal.ConstantValue.IsInteger())
                 {
                     var value = (int) literal.ConstantValue.Value;
-                    if (value >= cache.SceneCount)
+                    if (value >= myProjectSettingsCache.SceneCount)
                     {
                         consumer.AddHighlighting(new LoadSceneWrongIndexWarning(argument));
                     }

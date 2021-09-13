@@ -1,12 +1,9 @@
 using JetBrains.Annotations;
-using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
-using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
@@ -16,15 +13,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     })]
     public class LayerMaskAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
+        private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly AssetSerializationMode myAssetSerializationMode;
-        private readonly YamlSupport myUnityYamlSupport;
+        private readonly UnityProjectSettingsCache myProjectSettingsCache;
 
-        public LayerMaskAnalyzer([NotNull] UnityApi unityApi, AssetSerializationMode assetSerializationMode,
-            YamlSupport unityYamlSupport)
+        public LayerMaskAnalyzer([NotNull] UnityApi unityApi,
+                                 AssetIndexingSupport assetIndexingSupport,
+                                 AssetSerializationMode assetSerializationMode,
+                                 UnityProjectSettingsCache projectSettingsCache)
             : base(unityApi)
         {
+            myAssetIndexingSupport = assetIndexingSupport;
             myAssetSerializationMode = assetSerializationMode;
-            myUnityYamlSupport = unityYamlSupport;
+            myProjectSettingsCache = projectSettingsCache;
         }
 
         protected override void Analyze(IInvocationExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
@@ -32,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (!myAssetSerializationMode.IsForceText)
                 return;
 
-            if (!myUnityYamlSupport.IsParsingEnabled.Value)
+            if (!myAssetIndexingSupport.IsEnabled.Value)
                 return;
 
             if (element.IsLayerMaskGetMaskMethod() || element.IsLayerMaskNameToLayerMethod())
@@ -43,8 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     if (literal == null)
                         return;
 
-                    var cache = element.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
-                    if (cache != null && !cache.HasLayer(literal))
+                    if (myProjectSettingsCache != null && !myProjectSettingsCache.HasLayer(literal))
                         consumer.AddHighlighting(new UnknownLayerWarning(argument));
                 }
             }
