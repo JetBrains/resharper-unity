@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly IFileSystemTracker myFileSystemTracker;
         private readonly UnityYamlPsiSourceFileFactory myPsiSourceFileFactory;
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
-        private readonly UnityYamlDisableStrategy myUnityYamlDisableStrategy;
+        private readonly UnityExternalFilesIndexDisablingStrategy myIndexDisablingStrategy;
         private readonly JetHashSet<VirtualFileSystemPath> myRootPaths;
         private readonly VirtualFileSystemPath mySolutionDirectory;
 
@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                                                  IFileSystemTracker fileSystemTracker,
                                                  UnityYamlPsiSourceFileFactory psiSourceFileFactory,
                                                  UnityExternalFilesModuleFactory moduleFactory,
-                                                 UnityYamlDisableStrategy unityYamlDisableStrategy)
+                                                 UnityExternalFilesIndexDisablingStrategy indexDisablingStrategy)
         {
             myLifetime = lifetime;
             myLogger = logger;
@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myFileSystemTracker = fileSystemTracker;
             myPsiSourceFileFactory = psiSourceFileFactory;
             myModuleFactory = moduleFactory;
-            myUnityYamlDisableStrategy = unityYamlDisableStrategy;
+            myIndexDisablingStrategy = indexDisablingStrategy;
 
             changeManager.RegisterChangeProvider(lifetime, this);
 
@@ -91,9 +91,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                 return;
 
             var externalFiles = CollectExternalFilesForUnityProject();
-            if (externalFiles.AssetFiles.Count > 0) myUnityYamlDisableStrategy.Run(externalFiles.AssetFiles);
-
             CollectExternalFilesForAsmDefProject(externalFiles, project);
+
+            // Disable asset indexing for massive projects. Note that we still collect all files, and always index
+            // project settings and meta files.
+            if (externalFiles.AssetFiles.Count > 0) myIndexDisablingStrategy.Run(externalFiles.AssetFiles);
+
             AddExternalFiles(externalFiles);
             UpdateStatistics(externalFiles);
         }

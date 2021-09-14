@@ -7,14 +7,15 @@ using JetBrains.ReSharper.Psi.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 {
     [SolutionComponent]
-    public class RiderUnityYamlDisableStrategy : UnityYamlDisableStrategy
+    public class RiderUnityExternalFilesIndexDisablingStrategy : UnityExternalFilesIndexDisablingStrategy
     {
         private readonly FrontendBackendHost myFrontendBackendHost;
 
-        public RiderUnityYamlDisableStrategy(Lifetime lifetime,
-                                             SolutionCaches solutionCaches,
-                                             IApplicationWideContextBoundSettingStore settingsStore,
-                                             AssetIndexingSupport assetIndexingSupport, FrontendBackendHost frontendBackendHost)
+        public RiderUnityExternalFilesIndexDisablingStrategy(Lifetime lifetime,
+                                                             SolutionCaches solutionCaches,
+                                                             IApplicationWideContextBoundSettingStore settingsStore,
+                                                             AssetIndexingSupport assetIndexingSupport,
+                                                             FrontendBackendHost frontendBackendHost)
             : base(solutionCaches, settingsStore, assetIndexingSupport)
         {
             myFrontendBackendHost = frontendBackendHost;

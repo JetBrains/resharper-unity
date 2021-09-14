@@ -9,7 +9,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 {
     [SolutionComponent]
-    public class UnityYamlDisableStrategy
+    public class UnityExternalFilesIndexDisablingStrategy
     {
         private const string HeuristicDisabledPersistentPropertyKey = "ShouldApplyYamlHugeFileHeuristic";
 
@@ -22,9 +22,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly bool myHeuristicDisabledForSolution;
         private ulong myTotalSize;
 
-        public UnityYamlDisableStrategy(SolutionCaches solutionCaches,
-                                        IApplicationWideContextBoundSettingStore settingsStore,
-                                        AssetIndexingSupport assetIndexingSupport)
+        public UnityExternalFilesIndexDisablingStrategy(SolutionCaches solutionCaches,
+                                           IApplicationWideContextBoundSettingStore settingsStore,
+                                           AssetIndexingSupport assetIndexingSupport)
         {
             mySolutionCaches = solutionCaches;
             myAssetIndexingSupport = assetIndexingSupport;

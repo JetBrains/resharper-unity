@@ -13,8 +13,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Yaml
     [SolutionComponent]
     public class TestUnityExternalFilesModuleProcessor : UnityExternalFilesModuleProcessor
     {
-        public TestUnityExternalFilesModuleProcessor(Lifetime lifetime, ILogger logger, ISolution solution, ChangeManager changeManager, IShellLocks locks, ISolutionLoadTasksScheduler scheduler, IFileSystemTracker fileSystemTracker, ProjectFilePropertiesFactory projectFilePropertiesFactory, UnityYamlPsiSourceFileFactory psiSourceFileFactory, UnityExternalFilesModuleFactory moduleFactory, UnityYamlDisableStrategy unityYamlDisableStrategy)
-            : base(lifetime, logger, solution, changeManager, locks, scheduler, fileSystemTracker, psiSourceFileFactory, moduleFactory, unityYamlDisableStrategy)
+        public TestUnityExternalFilesModuleProcessor(Lifetime lifetime, ILogger logger, ISolution solution, ChangeManager changeManager, IShellLocks locks, ISolutionLoadTasksScheduler scheduler, IFileSystemTracker fileSystemTracker, ProjectFilePropertiesFactory projectFilePropertiesFactory, UnityYamlPsiSourceFileFactory psiSourceFileFactory, UnityExternalFilesModuleFactory moduleFactory, UnityExternalFilesIndexDisablingStrategy indexDisablingStrategy)
+            : base(lifetime, logger, solution, changeManager, locks, scheduler, fileSystemTracker, psiSourceFileFactory, moduleFactory, indexDisablingStrategy)
         {
         }
 
