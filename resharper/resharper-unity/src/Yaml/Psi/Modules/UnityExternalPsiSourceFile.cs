@@ -10,9 +10,9 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 {
-    public class UnityYamlExternalPsiSourceFile : PsiSourceFileFromPath, IExternalPsiSourceFile
+    public class UnityExternalPsiSourceFile : PsiSourceFileFromPath, IExternalPsiSourceFile
     {
-        public UnityYamlExternalPsiSourceFile([NotNull] IProjectFileExtensions projectFileExtensions,
+        public UnityExternalPsiSourceFile([NotNull] IProjectFileExtensions projectFileExtensions,
                                               [NotNull] PsiProjectFileTypeCoordinator projectFileTypeCoordinator,
                                               [NotNull] IPsiModule module, VirtualFileSystemPath path,
                                               [NotNull] Func<PsiSourceFileFromPath, IPsiSourceFileProperties> propertiesFactory,

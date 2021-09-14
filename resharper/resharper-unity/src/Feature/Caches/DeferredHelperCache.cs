@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         public void OnDocumentChange(IPsiSourceFile sourceFile, ProjectFileDocumentCopyChange change)
         {
             // TODO : temp solution
-            if (sourceFile is UnityYamlExternalPsiSourceFile unityYamlExternalPsiSourceFile)
+            if (sourceFile is UnityExternalPsiSourceFile unityYamlExternalPsiSourceFile)
             {
                 unityYamlExternalPsiSourceFile.MarkDocumentModified();
             }

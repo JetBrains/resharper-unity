@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly ChangeManager myChangeManager;
         private readonly IShellLocks myLocks;
         private readonly IFileSystemTracker myFileSystemTracker;
-        private readonly UnityYamlPsiSourceFileFactory myPsiSourceFileFactory;
+        private readonly UnityExternalPsiSourceFileFactory myPsiSourceFileFactory;
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
         private readonly UnityExternalFilesIndexDisablingStrategy myIndexDisablingStrategy;
         private readonly JetHashSet<VirtualFileSystemPath> myRootPaths;
@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                                                  IShellLocks locks,
                                                  ISolutionLoadTasksScheduler scheduler,
                                                  IFileSystemTracker fileSystemTracker,
-                                                 UnityYamlPsiSourceFileFactory psiSourceFileFactory,
+                                                 UnityExternalPsiSourceFileFactory psiSourceFileFactory,
                                                  UnityExternalFilesModuleFactory moduleFactory,
                                                  UnityExternalFilesIndexDisablingStrategy indexDisablingStrategy)
         {

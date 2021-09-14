@@ -76,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.VisualStudio.Psi.Modules
                 if (location.IsInterestingAsset() || location.IsMeta())
                 {
                     if (module.TryGetFileByPath(location, out var psiSourceFile)
-                        && psiSourceFile is UnityYamlExternalPsiSourceFile sourceFile)
+                        && psiSourceFile is UnityExternalPsiSourceFile sourceFile)
                     {
                         // Only process the changes if the document is open. If it's closed, then it will be saved to
                         // disk when the transaction commits, and the file system watcher will report the change

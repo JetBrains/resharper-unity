@@ -10,15 +10,15 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 {
     [SolutionComponent]
-    public class UnityYamlPsiSourceFileFactory
+    public class UnityExternalPsiSourceFileFactory
     {
         private readonly IProjectFileExtensions myProjectFileExtensions;
         private readonly PsiProjectFileTypeCoordinator myProjectFileTypeCoordinator;
         private readonly DocumentManager myDocumentManager;
 
-        public UnityYamlPsiSourceFileFactory(IProjectFileExtensions projectFileExtensions,
-                                             PsiProjectFileTypeCoordinator projectFileTypeCoordinator,
-                                             DocumentManager documentManager)
+        public UnityExternalPsiSourceFileFactory(IProjectFileExtensions projectFileExtensions,
+                                                 PsiProjectFileTypeCoordinator projectFileTypeCoordinator,
+                                                 DocumentManager documentManager)
         {
             myProjectFileExtensions = projectFileExtensions;
             myProjectFileTypeCoordinator = projectFileTypeCoordinator;
@@ -27,13 +27,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         public IExternalPsiSourceFile CreateExternalPsiSourceFile(IPsiModule psiModule, VirtualFileSystemPath path)
         {
-            var file = new UnityYamlExternalPsiSourceFile(myProjectFileExtensions, myProjectFileTypeCoordinator, psiModule,
+            var file = new UnityExternalPsiSourceFile(myProjectFileExtensions, myProjectFileTypeCoordinator, psiModule,
                 path, Memoize(PropertiesFactory), myDocumentManager, UniversalModuleReferenceContext.Instance);
             // Prime the file system cache
             file.GetCachedFileSystemData();
             return file;
         }
-        
+
         // The PropertiesFactory passed to PsiSourceFileFromPath is called on EVERY access to IPsiSourceFile.Properties.
         // This function allows us to create a single instance for each file. The cache variable (as well as the func
         // parameter) are captured into a closure class. When the closure's is invoked, we can populate and return the
@@ -41,10 +41,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private static Func<IPsiSourceFile, IPsiSourceFileProperties> Memoize(Func<IPsiSourceFile, IPsiSourceFileProperties> func)
         {
             IPsiSourceFileProperties cache = null;
-            return sf => cache ?? (cache = func(sf));
+            return sf => cache ??= func(sf);
         }
 
-        private IPsiSourceFileProperties PropertiesFactory(IPsiSourceFile psiSourceFile)
+        private static IPsiSourceFileProperties PropertiesFactory(IPsiSourceFile psiSourceFile)
         {
             return new UnityExternalFileProperties();
         }

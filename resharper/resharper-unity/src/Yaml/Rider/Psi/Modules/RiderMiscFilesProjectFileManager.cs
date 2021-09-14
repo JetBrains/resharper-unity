@@ -46,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                 {
                     foreach (var fileChange in psiModuleChange.FileChanges)
                     {
-                        if (fileChange.Item is not UnityYamlExternalPsiSourceFile file)
+                        if (fileChange.Item is not UnityExternalPsiSourceFile file)
                             continue;
 
                         switch (fileChange.Type)
