@@ -11,10 +11,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     {
         private readonly FrontendBackendHost myFrontendBackendHost;
 
-        public RiderUnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, SolutionCaches solutionCaches,
+        public RiderUnityYamlDisableStrategy(Lifetime lifetime,
+                                             SolutionCaches solutionCaches,
                                              IApplicationWideContextBoundSettingStore settingsStore,
                                              AssetIndexingSupport assetIndexingSupport, FrontendBackendHost frontendBackendHost)
-            : base(lifetime, solution, solutionCaches, settingsStore, assetIndexingSupport)
+            : base(solutionCaches, settingsStore, assetIndexingSupport)
         {
             myFrontendBackendHost = frontendBackendHost;
 
