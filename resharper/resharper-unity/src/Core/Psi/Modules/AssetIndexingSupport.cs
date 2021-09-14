@@ -5,7 +5,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
     [SolutionComponent]
     public class AssetIndexingSupport
