@@ -14,7 +14,7 @@ using JetBrains.Util;
 using JetBrains.Util.DataStructures;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
     public class UnityExternalFilesPsiModule : UserDataHolder, IPsiModuleOnFileSystemPaths, IResourceModule
     {

@@ -11,13 +11,15 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Impl;
 using JetBrains.ProjectModel.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Yaml;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
     [SolutionComponent]
     public class UnityExternalFilesModuleProcessor : IChangeProvider, IUnityReferenceChangeHandler

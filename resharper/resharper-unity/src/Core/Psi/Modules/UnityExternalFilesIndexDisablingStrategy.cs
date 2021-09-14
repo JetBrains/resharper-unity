@@ -3,14 +3,18 @@ using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Yaml;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
     [SolutionComponent]
     public class UnityExternalFilesIndexDisablingStrategy
     {
+        // This key now applies to any external file being indexed (e.g. YAML based assets, JSON based asmdef). Maintain
+        // name for compatibility with existing projects
         private const string HeuristicDisabledPersistentPropertyKey = "ShouldApplyYamlHugeFileHeuristic";
 
         private const ulong AssetFileSizeThreshold = 250L * (1024 * 1024); // 250 MB
@@ -23,8 +27,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private ulong myTotalSize;
 
         public UnityExternalFilesIndexDisablingStrategy(SolutionCaches solutionCaches,
-                                           IApplicationWideContextBoundSettingStore settingsStore,
-                                           AssetIndexingSupport assetIndexingSupport)
+                                                        IApplicationWideContextBoundSettingStore settingsStore,
+                                                        AssetIndexingSupport assetIndexingSupport)
         {
             mySolutionCaches = solutionCaches;
             myAssetIndexingSupport = assetIndexingSupport;

@@ -8,16 +8,16 @@ using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
     public class UnityExternalPsiSourceFile : PsiSourceFileFromPath, IExternalPsiSourceFile
     {
         public UnityExternalPsiSourceFile([NotNull] IProjectFileExtensions projectFileExtensions,
-                                              [NotNull] PsiProjectFileTypeCoordinator projectFileTypeCoordinator,
-                                              [NotNull] IPsiModule module, VirtualFileSystemPath path,
-                                              [NotNull] Func<PsiSourceFileFromPath, IPsiSourceFileProperties> propertiesFactory,
-                                              [NotNull] DocumentManager documentManager,
-                                              [NotNull] IModuleReferenceResolveContext resolveContext)
+                                          [NotNull] PsiProjectFileTypeCoordinator projectFileTypeCoordinator,
+                                          [NotNull] IPsiModule module, VirtualFileSystemPath path,
+                                          [NotNull] Func<PsiSourceFileFromPath, IPsiSourceFileProperties> propertiesFactory,
+                                          [NotNull] DocumentManager documentManager,
+                                          [NotNull] IModuleReferenceResolveContext resolveContext)
             : base(projectFileExtensions, projectFileTypeCoordinator, module, path, JetFunc<PsiSourceFileFromPath>.True,
                 propertiesFactory, documentManager, resolveContext)
         {

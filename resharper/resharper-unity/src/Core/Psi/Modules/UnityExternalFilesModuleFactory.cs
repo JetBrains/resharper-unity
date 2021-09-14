@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util.DataStructures;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
     // This module contains interesting Unity files that aren't part of an existing project. This includes .unity files
     // (so we can create references from YAML to methods) and .cs.meta files (so we can build an index of GUIDs for
