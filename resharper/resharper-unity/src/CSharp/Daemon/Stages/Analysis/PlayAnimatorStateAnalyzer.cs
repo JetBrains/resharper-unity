@@ -14,11 +14,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     public class PlayAnimatorStateAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         private readonly AssetIndexingSupport myAssetIndexingSupport;
-        [NotNull] private readonly AssetSerializationMode myAssetSerializationMode;
+        private readonly AssetSerializationMode myAssetSerializationMode;
 
-        public PlayAnimatorStateAnalyzer([NotNull] UnityApi unityApi,
+        public PlayAnimatorStateAnalyzer(UnityApi unityApi,
                                          AssetIndexingSupport assetIndexingSupport,
-                                         [NotNull] AssetSerializationMode assetSerializationMode)
+                                         AssetSerializationMode assetSerializationMode)
             : base(unityApi)
         {
             myAssetIndexingSupport = assetIndexingSupport;

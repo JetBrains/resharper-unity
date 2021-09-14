@@ -1,10 +1,7 @@
-using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
@@ -14,27 +11,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     })]
     public class CompareTagUnknownTagAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
-        private readonly AssetIndexingSupport myAssetIndexingSupport;
-        private readonly AssetSerializationMode myAssetSerializationMode;
         private readonly UnityProjectSettingsCache myProjectSettingsCache;
 
         public CompareTagUnknownTagAnalyzer(UnityApi unityApi,
-                                            AssetIndexingSupport assetIndexingSupport,
-                                            AssetSerializationMode assetSerializationMode,
                                             UnityProjectSettingsCache projectSettingsCache)
             : base(unityApi)
         {
-            myAssetIndexingSupport = assetIndexingSupport;
-            myAssetSerializationMode = assetSerializationMode;
             myProjectSettingsCache = projectSettingsCache;
         }
 
         protected override void Analyze(IInvocationExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            if (!myAssetSerializationMode.IsForceText)
-                return;
-
-            if (!myAssetIndexingSupport.IsEnabled.Value)
+            if (!myProjectSettingsCache.IsAvailable())
                 return;
 
             if (element.IsCompareTagMethod())

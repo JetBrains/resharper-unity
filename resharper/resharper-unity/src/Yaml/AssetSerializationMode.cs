@@ -13,7 +13,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
             // TODO: React to changes in serialisation mode
             // We could reload the value on any change, and then add or drop all asset files from the custom PSI module
             // Right now, it's much easier to just read it once at solution load
-            // TODO: Display a notification if the project is set to binary or mixed
 
             Mode = SerializationMode.Unknown;
 

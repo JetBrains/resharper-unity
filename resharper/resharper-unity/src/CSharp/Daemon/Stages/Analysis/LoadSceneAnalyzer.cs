@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
@@ -19,28 +18,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     })]
     public class LoadSceneAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
-        private readonly AssetIndexingSupport myAssetIndexingSupport;
-        private readonly AssetSerializationMode myAssetSerializationMode;
         private readonly UnityProjectSettingsCache myProjectSettingsCache;
 
-        public LoadSceneAnalyzer([NotNull] UnityApi unityApi,
-                                 AssetIndexingSupport assetIndexingSupport,
-                                 AssetSerializationMode assetSerializationMode,
-                                 UnityProjectSettingsCache projectSettingsCache)
+        public LoadSceneAnalyzer(UnityApi unityApi, UnityProjectSettingsCache projectSettingsCache)
             : base(unityApi)
         {
-            myAssetIndexingSupport = assetIndexingSupport;
-            myAssetSerializationMode = assetSerializationMode;
             myProjectSettingsCache = projectSettingsCache;
         }
 
         protected override void Analyze(IInvocationExpression invocationExpression, ElementProblemAnalyzerData data,
             IHighlightingConsumer consumer)
         {
-            if (!myAssetSerializationMode.IsForceText)
-                return;
-
-            if (!myAssetIndexingSupport.IsEnabled.Value)
+            if (!myProjectSettingsCache.IsAvailable())
                 return;
 
             var argument = GetSceneNameArgument(invocationExpression);

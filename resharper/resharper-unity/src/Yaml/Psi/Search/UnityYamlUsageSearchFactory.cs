@@ -91,15 +91,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             var solution = element.GetSolution();
 
             var unityApi = solution.TryGetComponent<UnityApi>();
-            var assetSerializationMode = solution.GetComponent<AssetSerializationMode>();
+            var isForceText = solution.GetComponent<AssetSerializationMode>().IsForceText;
             var assetIndexingEnabled = solution.GetComponent<AssetIndexingSupport>().IsEnabled.Value;
             var deferredCachesCompleted = solution.GetComponent<DeferredCacheController>().CompletedOnce.Value;
 
-            if (unityApi == null || !assetIndexingEnabled || !assetSerializationMode.IsForceText ||
-                !deferredCachesCompleted)
-            {
+            if (unityApi == null || !assetIndexingEnabled || !isForceText || !deferredCachesCompleted)
                 return false;
-            }
 
             switch (element)
             {
