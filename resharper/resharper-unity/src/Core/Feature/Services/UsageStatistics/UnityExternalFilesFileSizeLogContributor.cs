@@ -5,16 +5,18 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.UsageStatistics;
 using Newtonsoft.Json.Linq;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.UsageStatistics
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics
 {
     [SolutionComponent]
-    public class UnityYamlFileSizeLogContributor : IActivityLogContributorSolutionComponent
+    public class UnityExternalFilesFileSizeLogContributor : IActivityLogContributorSolutionComponent
     {
         private readonly UnitySolutionTracker myUnitySolutionTracker;
         private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly UnityExternalFilesModuleProcessor myModuleProcessor;
 
-        public UnityYamlFileSizeLogContributor(UnitySolutionTracker unitySolutionTracker, AssetIndexingSupport assetIndexingSupport, UnityExternalFilesModuleProcessor moduleProcessor)
+        public UnityExternalFilesFileSizeLogContributor(UnitySolutionTracker unitySolutionTracker,
+                                                        AssetIndexingSupport assetIndexingSupport,
+                                                        UnityExternalFilesModuleProcessor moduleProcessor)
         {
             myUnitySolutionTracker = unitySolutionTracker;
             myAssetIndexingSupport = assetIndexingSupport;
