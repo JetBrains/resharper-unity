@@ -82,10 +82,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 
                     if (!myDeferredCacheController.CompletedOnce.Value)
                         tooltip = "Usages in assets are not available during asset indexing";
-
                 }
 
-                if (!myAssetIndexingSupport.IsEnabled.Value || !myDeferredCacheController.CompletedOnce.Value|| !myAssetSerializationMode.IsForceText)
+                if (!myAssetIndexingSupport.IsEnabled.Value || !myDeferredCacheController.CompletedOnce.Value || !myAssetSerializationMode.IsForceText)
                 {
                     myCodeInsightProvider.AddHighlighting(consumer, element, element.DeclaredElement, text,
                         tooltip, text, iconModel, GetActions(element),
