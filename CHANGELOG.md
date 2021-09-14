@@ -24,6 +24,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 ### Fixed
 
 - Fix incorrect warning about `base.OnGUI` when `base` is not `PropertyDrawer` ([RSRP-482954](https://youtrack.jetbrains.com/issue/RSRP-482954), [#2159](https://github.com/JetBrains/resharper-unity/pull/2159))
+- Fix known words listed as abbreviations ([#2170](https://github.com/JetBrains/resharper-unity/pull/2170))
 
 
 
