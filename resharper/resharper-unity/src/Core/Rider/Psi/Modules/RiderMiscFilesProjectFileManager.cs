@@ -6,10 +6,11 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Transaction;
 using JetBrains.RdBackend.Common.Features.ProjectModel.MiscFiles;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
+using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Rider.Psi.Modules
 {
     // Rider requires us to have an IProjectFile for the IPsiSourceFiles in the external files module. This is primarily
     // because PSI modifications won't be saved without one. When a PSI transaction completes, Rider looks for a project

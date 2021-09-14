@@ -3,9 +3,10 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
+using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Psi.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Rider.Psi.Modules
 {
     [SolutionComponent]
     public class RiderUnityExternalFilesIndexDisablingStrategy : UnityExternalFilesIndexDisablingStrategy
