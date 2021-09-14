@@ -3,9 +3,9 @@ using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml
+namespace JetBrains.ReSharper.Plugins.Unity.Utils
 {
-    public static class UnityYamlFileExtensions
+    public static class UnityAssetFileExtensions
     {
         public const string MetaFileExtensionWithDot = ".meta";
         public const string AssetFileExtensionWithDot = ".asset";
@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
         };
         public static readonly string[] AllFileExtensionsWithDot;
 
-        static UnityYamlFileExtensions()
+        static UnityAssetFileExtensions()
         {
             AllFileExtensionsWithDot = new string[AssetFileExtensionsWithDot.Length + 1];
             AllFileExtensionsWithDot[0] = MetaFileExtensionWithDot;
@@ -62,12 +62,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
 
             return false;
         }
-        
+
         public static bool IsControllerFile([NotNull] this IPath path)
         {
             return SimplePathEndsWith(path, ControllerFileExtensionWithDot);
         }
-        
+
         public static bool IsAnimFile([NotNull] this IPath path)
         {
             return SimplePathEndsWith(path, AnimFileExtensionWithDot);
@@ -81,13 +81,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
         public static bool IsMetaOrProjectSettings(ISolution solution, VirtualFileSystemPath location)
         {
             var components = location.TryMakeRelativeTo(solution.SolutionDirectory).Components.ToArray();
-            
+
             if (location.ExtensionNoDot.Equals("meta", StringComparison.InvariantCultureIgnoreCase) || components.Length == 2 &&
                 components[0].Equals("ProjectSettings", StringComparison.InvariantCultureIgnoreCase))
                 return true;
 
             return false;
-        } 
+        }
 
         // Not to be confused with FileSystemPathEx.EndsWith, which handles path components. This is a simple text
         // comparison, which can handle extensions without allocating another string

@@ -1,6 +1,6 @@
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
+namespace JetBrains.ReSharper.Plugins.Unity.Utils
 {
     public static class UnityFileSystemPathExtension
     {

@@ -6,6 +6,7 @@ using JetBrains.Collections;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.Util;
@@ -52,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 return null;
 
             var cacheItem = new ProjectSettingsCacheItem();
-            if (sourceFile.Name.EndsWith(UnityYamlFileExtensions.SceneFileExtensionWithDot))
+            if (sourceFile.Name.EndsWith(UnityAssetFileExtensions.SceneFileExtensionWithDot))
                 cacheItem.Scenes.SceneNames.Add(GetUnityPathFor(sourceFile));
 
             foreach (var projectSettingsAssetHandler in myProjectSettingsAssetHandlers)
@@ -232,7 +233,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         public string GetShortNameForSceneName(string name)
         {
-            return name.Split('/').Last().RemoveEnd(UnityYamlFileExtensions.SceneFileExtensionWithDot);
+            return name.Split('/').Last().RemoveEnd(UnityAssetFileExtensions.SceneFileExtensionWithDot);
         }
 
         public bool IsSceneDisabledAtEditorBuildSettings(string sceneName)

@@ -1,5 +1,6 @@
 using System;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Resources.Icons;
@@ -26,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
         public override PsiLanguageType GetPsiLanguageType(IPsiSourceFile sourceFile)
         {
-            if (UnityYamlFileExtensions.IsMetaOrProjectSettings(sourceFile.GetSolution(), sourceFile.GetLocation()))
+            if (UnityAssetFileExtensions.IsMetaOrProjectSettings(sourceFile.GetSolution(), sourceFile.GetLocation()))
                 return base.GetPsiLanguageType(sourceFile);
 
             return UnityYamlLanguage.Instance ?? throw new InvalidOperationException("Unexpected state");

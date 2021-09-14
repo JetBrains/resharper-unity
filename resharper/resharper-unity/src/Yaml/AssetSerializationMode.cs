@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.Util;
 

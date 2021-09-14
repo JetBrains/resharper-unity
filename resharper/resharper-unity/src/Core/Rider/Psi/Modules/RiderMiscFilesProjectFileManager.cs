@@ -6,7 +6,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Transaction;
 using JetBrains.RdBackend.Common.Features.ProjectModel.MiscFiles;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
-using JetBrains.ReSharper.Plugins.Unity.Yaml;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 
