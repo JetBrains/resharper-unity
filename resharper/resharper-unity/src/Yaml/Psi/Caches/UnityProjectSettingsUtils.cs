@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
@@ -42,7 +43,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         public static string GetUnityScenePathRepresentation(string scenePath)
         {
-            return scenePath.RemoveStart("Assets/").RemoveEnd(UnityAssetFileExtensions.SceneFileExtensionWithDot);
+            return scenePath.RemoveStart("Assets/").RemoveEnd(UnityFileExtensions.SceneFileExtensionWithDot,
+                StringComparison.InvariantCultureIgnoreCase);
         }
 
         public static UnityExternalFilesPsiModule GetUnityModule(ISolution solution)

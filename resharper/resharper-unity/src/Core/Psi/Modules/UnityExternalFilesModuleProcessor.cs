@@ -257,9 +257,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 ExcludedByNameAssetsSizes.Add(directoryEntry.Length);
         }
 
-        private static bool IsEligibleAsset(VirtualFileSystemPath path)
+        private static bool IsIndexedExternalFile(VirtualFileSystemPath path)
         {
-            return path.IsInterestingAsset() && !IsKnownBinaryAsset(path) && !IsAssetExcludedByName(path);
+            return path.IsIndexedExternalFile() && !IsKnownBinaryAsset(path) && !IsAssetExcludedByName(path);
         }
 
         private static bool IsKnownBinaryAsset(VirtualDirectoryEntryData directoryEntry)
@@ -310,14 +310,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 () =>
                 {
                     var builder = new PsiModuleChangeBuilder();
-                    var projectFilesToAdd = new List<VirtualFileSystemPath>();
-                    ProcessFileSystemChangeDelta(delta, builder, projectFilesToAdd);
+                    ProcessFileSystemChangeDelta(delta, builder);
                     FlushChanges(builder);
                 });
         }
 
-        private void ProcessFileSystemChangeDelta(FileSystemChangeDelta delta, PsiModuleChangeBuilder builder,
-            List<VirtualFileSystemPath> projectFilesToAdd)
+        private void ProcessFileSystemChangeDelta(FileSystemChangeDelta delta, PsiModuleChangeBuilder builder)
         {
             var module = myModuleFactory.PsiModule;
             if (module == null)
@@ -329,12 +327,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 // We can get ADDED for a file we already know about if an app saves the file by saving to a temp file
                 // first. We don't get a DELETED first, surprisingly. Treat this scenario like CHANGED
                 case FileSystemChangeType.ADDED:
-                    if (IsEligibleAsset(delta.NewPath))
-                    {
-                        AddOrUpdateExternalPsiSourceFile(builder, delta.NewPath);
-                        projectFilesToAdd.Add(delta.NewPath);
-                    }
-                    else if (delta.NewPath.IsMeta())
+                    if (IsIndexedExternalFile(delta.NewPath))
                         AddOrUpdateExternalPsiSourceFile(builder, delta.NewPath);
                     break;
 
@@ -357,7 +350,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             }
 
             foreach (var child in delta.GetChildren())
-                ProcessFileSystemChangeDelta(child, builder, projectFilesToAdd);
+                ProcessFileSystemChangeDelta(child, builder);
         }
 
         [CanBeNull]
@@ -418,7 +411,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             {
                 if (directoryEntry.RelativePath.IsMeta())
                     MetaFiles.Add(directoryEntry);
-                else if (directoryEntry.RelativePath.IsInterestingAsset())
+                else if (directoryEntry.RelativePath.IsIndexedYamlExternalFile())
                 {
                     if (IsKnownBinaryAsset(directoryEntry))
                         KnownBinaryAssetFiles.Add(directoryEntry);

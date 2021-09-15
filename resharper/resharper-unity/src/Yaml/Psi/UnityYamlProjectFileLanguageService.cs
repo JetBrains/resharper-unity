@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
         public override PsiLanguageType GetPsiLanguageType(IPsiSourceFile sourceFile)
         {
-            if (UnityAssetFileExtensions.IsMetaOrProjectSettings(sourceFile.GetSolution(), sourceFile.GetLocation()))
+            if (UnityFileExtensions.IsMetaOrProjectSettings(sourceFile.GetSolution(), sourceFile.GetLocation()))
                 return base.GetPsiLanguageType(sourceFile);
 
             return UnityYamlLanguage.Instance ?? throw new InvalidOperationException("Unexpected state");

@@ -23,9 +23,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
                     return UnityFileTypeThemedIcons.FileUnityPrefab.Id;
                 if (location.IsMeta())
                     return UnityFileTypeThemedIcons.FileUnityMeta.Id;
-                if (location.IsControllerFile())
+                if (location.IsController())
                     return UnityFileTypeThemedIcons.FileAnimatorController.Id;
-                if (location.IsAnimFile())
+                if (location.IsAnim())
                     return UnityFileTypeThemedIcons.FileAnimationClip.Id;
             }
 

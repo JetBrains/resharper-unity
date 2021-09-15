@@ -118,7 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return null;
 
             var path = sourceFile.GetLocation();
-            if (path.IsControllerFile() &&
+            if (path.IsController() &&
                 animatorContainer.GetElementsNames(location, declaredElement, out var names, out var isStateMachine) &&
                 names != null)
             {
@@ -126,12 +126,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     isStateMachine ? AnimatorUsageType.StateMachine : AnimatorUsageType.State, needExpand,
                     pathFromAsset, fileName, extension);
             }
-            if (path.ExtensionWithDot.EndsWith(UnityAssetFileExtensions.AssetFileExtensionWithDot))
+
+            if (path.IsAsset())
             {
                 return new AssetFindUsagesResult(needExpand, pathFromAsset, fileName, extension);
             }
 
-            if (path.IsAnimFile())
+            if (path.IsAnim())
             {
                 return new AnimationFindUsagesResult(needExpand, pathFromAsset, fileName, extension);
             }

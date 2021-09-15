@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
         public new static UnityYamlProjectFileType Instance { get; private set; }
 
         public UnityYamlProjectFileType()
-            : base(Name, "Unity Yaml", UnityAssetFileExtensions.AllFileExtensionsWithDot)
+            : base(Name, "Unity Yaml", UnityFileExtensions.YamlFileExtensionsWithDot)
         {
         }
     }

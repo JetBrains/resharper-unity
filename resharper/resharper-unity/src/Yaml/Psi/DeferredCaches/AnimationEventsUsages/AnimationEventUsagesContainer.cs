@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
     public class AnimationEventUsagesContainer : IUnityAssetDataElementContainer
     {
         [NotNull] private readonly MetaFileGuidCache myMetaFileGuidCache;
-        
+
         [NotNull] private readonly ISolution mySolution;
 
         [NotNull] private readonly Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myPointers =
@@ -55,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
 
         public bool IsApplicable(IPsiSourceFile currentAssetSourceFile)
         {
-            return currentAssetSourceFile.GetLocation().IsAnimFile();
+            return currentAssetSourceFile.IsAnim();
         }
 
         public object Build(SeldomInterruptChecker checker,
@@ -114,7 +114,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
                                                              [NotNull] IDeclaredElement declaredElement)
         {
             AssertShellLocks();
-            if (!(declaredElement is IClrDeclaredElement clrDeclaredElement)) 
+            if (!(declaredElement is IClrDeclaredElement clrDeclaredElement))
                 return EmptyList<AnimationUsage>.Enumerable;
             var boxedGuid = FindGuidOf(clrDeclaredElement);
             if (!boxedGuid.HasValue) return Enumerable.Empty<AnimationUsage>();
@@ -176,7 +176,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
                 case IProperty property:
                     return GetEventPropertyUsagesCountFor(property, type, ref estimated);
             }
-            
+
             return 0;
         }
 

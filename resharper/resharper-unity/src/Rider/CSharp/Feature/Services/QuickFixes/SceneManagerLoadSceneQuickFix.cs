@@ -13,7 +13,6 @@ using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
-using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
@@ -25,7 +24,6 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Web.WebConfig;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Text;
 using JetBrains.TextControl;
@@ -79,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
                 var sceneName = scene.Split('/').Last();
                 bool IsCorrespondingSourceFile(IPsiSourceFile psiSourceFile)
                 {
-                    if (!psiSourceFile.GetExtensionWithDot().Equals(UnityAssetFileExtensions.SceneFileExtensionWithDot))
+                    if (!psiSourceFile.IsScene())
                         return false;
                     var psiPath = psiSourceFile.GetLocation();
                     if (!psiPath.NameWithoutExtension.Equals(sceneName))
@@ -95,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
 
             }
 
-            return files.Where(t => t.Name.Equals(scene + UnityAssetFileExtensions.SceneFileExtensionWithDot))
+            return files.Where(f => f.Name.Equals(scene + UnityFileExtensions.SceneFileExtensionWithDot))
                 .Select(f => (f, GetUnityPathFor(f)));
         }
 
