@@ -4,7 +4,6 @@ package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.command.CommandProcessor
-import com.intellij.openapi.command.impl.UndoManagerImpl
 import com.intellij.openapi.command.undo.UndoManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -115,7 +114,7 @@ class MetaTracker(private val project: Project) : BulkFileListener, VfsBackendRe
         }
 
         application.invokeLater {
-            (UndoManagerImpl.getInstance(project) as UndoManagerImpl).allowMergeGlobalCommands {
+            commandProcessor.allowMergeGlobalCommands {
                 commandProcessor.executeCommand(project, {
                     actions.executeUnderWriteLock()
                 }, actions.getCommandName(), groupId)
