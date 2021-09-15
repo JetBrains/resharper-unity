@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             if (!myAllowRunHeuristic || myHeuristicDisabledForSolution || !myAssetIndexingSupport.IsEnabled.Value)
                 return;
 
-            if (IsAnyFilePreventYamlParsing(directoryEntries) || myTotalSize > TotalFileSizeThreshold)
+            if (DoesAnyFilePreventIndexing(directoryEntries) || myTotalSize > TotalFileSizeThreshold)
             {
                 // If the project is too big, disable asset indexing. This unchecks the "index text assets" checkbox
                 // in settings, saved at the solution level (more accurately .sln.DotSettings.user). It can be
@@ -55,11 +55,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 // (If the user resets caches, then the heuristic kicks in again)
                 DisableHeuristicForSolution();
 
-                NotifyYamlParsingDisabled();
+                NotifyAssetIndexingDisabled();
             }
         }
 
-        protected virtual void NotifyYamlParsingDisabled()
+        protected virtual void NotifyAssetIndexingDisabled()
         {
         }
 
@@ -77,18 +77,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             mySolutionCaches.PersistentProperties[HeuristicDisabledPersistentPropertyKey] = false.ToString();
         }
 
-        private bool IsAnyFilePreventYamlParsing(List<VirtualDirectoryEntryData> directoryEntries)
+        private bool DoesAnyFilePreventIndexing(List<VirtualDirectoryEntryData> directoryEntries)
         {
             foreach (var directoryEntry in directoryEntries)
             {
-                if (IsYamlFilePreventParsing(directoryEntry))
+                if (DoesAnyFilePreventIndexing(directoryEntry))
                     return true;
             }
 
             return false;
         }
 
-        private bool IsYamlFilePreventParsing(VirtualDirectoryEntryData path)
+        private bool DoesAnyFilePreventIndexing(VirtualDirectoryEntryData path)
         {
             var length = path.Length;
             if (length > AssetFileSizeThreshold)

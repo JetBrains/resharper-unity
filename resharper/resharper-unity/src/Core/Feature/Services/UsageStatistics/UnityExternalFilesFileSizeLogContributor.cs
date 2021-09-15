@@ -31,14 +31,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
             if (myModuleProcessor.SceneSizes.Count == 0 && myModuleProcessor.PrefabSizes.Count == 0 && myModuleProcessor.AssetSizes.Count == 0)
                 return;
 
-            var unityYamlStats = new JObject();
-            log["uys"] = unityYamlStats;
-            unityYamlStats["s"] = JArray.FromObject(myModuleProcessor.SceneSizes);
-            unityYamlStats["p"] = JArray.FromObject(myModuleProcessor.PrefabSizes);
-            unityYamlStats["a"] = JArray.FromObject(myModuleProcessor.AssetSizes);
-            unityYamlStats["kba"] = JArray.FromObject(myModuleProcessor.KnownBinaryAssetSizes);
-            unityYamlStats["ebna"] = JArray.FromObject(myModuleProcessor.ExcludedByNameAssetsSizes);
-            unityYamlStats["e"] = myAssetIndexingSupport.IsEnabled.Value;
+            var stats = new JObject();
+            log["uys"] = stats;
+            stats["s"] = JArray.FromObject(myModuleProcessor.SceneSizes);
+            stats["p"] = JArray.FromObject(myModuleProcessor.PrefabSizes);
+            stats["a"] = JArray.FromObject(myModuleProcessor.AssetSizes);
+            stats["kba"] = JArray.FromObject(myModuleProcessor.KnownBinaryAssetSizes);
+            stats["ebna"] = JArray.FromObject(myModuleProcessor.ExcludedByNameAssetsSizes);
+            stats["e"] = myAssetIndexingSupport.IsEnabled.Value;
         }
     }
 }

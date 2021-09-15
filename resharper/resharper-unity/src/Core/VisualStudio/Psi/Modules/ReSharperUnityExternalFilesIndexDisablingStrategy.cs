@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.VisualStudio.Psi.Modules
             myNotifications = notifications;
         }
 
-        protected override void NotifyYamlParsingDisabled()
+        protected override void NotifyAssetIndexingDisabled()
         {
             myNotifications.CreateNotification(myLifetime, NotificationSeverity.WARNING,
                 "Disabled indexing of Unity assets",

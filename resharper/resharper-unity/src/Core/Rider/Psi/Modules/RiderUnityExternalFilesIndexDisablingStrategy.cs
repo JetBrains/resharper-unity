@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Rider.Psi.Modules
                 t.EnableYamlParsing.Advise(lifetime, _ => assetIndexingSupport.IsEnabled.Value = true));
         }
 
-        protected override void NotifyYamlParsingDisabled()
+        protected override void NotifyAssetIndexingDisabled()
         {
             myFrontendBackendHost.Do(t => t.NotifyYamlHugeFiles());
         }
