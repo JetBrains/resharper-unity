@@ -9,7 +9,6 @@ using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Impl;
-using JetBrains.ProjectModel.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
@@ -45,8 +44,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
         public UnityExternalFilesModuleProcessor(Lifetime lifetime, ILogger logger, ISolution solution,
                                                  ChangeManager changeManager,
+                                                 IPsiModules psiModules,
                                                  IShellLocks locks,
-                                                 ISolutionLoadTasksScheduler scheduler,
                                                  IFileSystemTracker fileSystemTracker,
                                                  UnityExternalPsiSourceFileFactory psiSourceFileFactory,
                                                  UnityExternalFilesModuleFactory moduleFactory,
@@ -70,9 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             if (!mySolutionDirectory.IsAbsolute)
                 mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory().ToVirtualFileSystemPath());
 
-            scheduler.EnqueueTask(new SolutionLoadTask(GetType().Name + ".Activate",
-                SolutionLoadTaskKinds.PreparePsiModules,
-                () => myChangeManager.AddDependency(myLifetime, solution.PsiModules(), this)));
+            changeManager.AddDependency(lifetime, psiModules, this);
         }
 
         public void OnHasUnityReference()
@@ -217,7 +214,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         {
             Assertion.AssertNotNull(myModuleFactory.PsiModule, "myModuleFactory.PsiModule != null");
 
-            var sourceFile = GetYamlPsiSourceFile(myModuleFactory.PsiModule, path);
+            var sourceFile = GetExternalPsiSourceFile(myModuleFactory.PsiModule, path);
             if (sourceFile != null)
             {
                 // We already know this file. Make sure it's up to date
@@ -342,7 +339,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     break;
 
                 case FileSystemChangeType.DELETED:
-                    sourceFile = GetYamlPsiSourceFile(module, delta.OldPath);
+                    sourceFile = GetExternalPsiSourceFile(module, delta.OldPath);
                     if (sourceFile != null)
                         builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Removed);
                     break;
@@ -350,7 +347,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 // We can get RENAMED if an app saves the file by saving to a temporary name first, then renaming
                 case FileSystemChangeType.CHANGED:
                 case FileSystemChangeType.RENAMED:
-                    sourceFile = GetYamlPsiSourceFile(module, delta.NewPath);
+                    sourceFile = GetExternalPsiSourceFile(module, delta.NewPath);
                     UpdateExternalPsiSourceFile(sourceFile, builder, delta.NewPath);
                     break;
 
@@ -364,7 +361,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         }
 
         [CanBeNull]
-        private static IPsiSourceFile GetYamlPsiSourceFile([NotNull] IPsiModuleOnFileSystemPaths module,
+        private static IPsiSourceFile GetExternalPsiSourceFile([NotNull] IPsiModuleOnFileSystemPaths module,
                                                            VirtualFileSystemPath path)
         {
             return module.TryGetFileByPath(path, out var sourceFile) ? sourceFile : null;
