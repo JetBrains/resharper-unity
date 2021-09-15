@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.changes;
 using JetBrains.Diagnostics;
-using JetBrains.Lifetimes;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -20,18 +18,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
     {
         [NotNull] private readonly ISolution mySolution;
         private readonly string myPersistentId;
-        private readonly Lifetime myLifetime;
-        private readonly CompactMap<VirtualFileSystemPath, Pair<IPsiSourceFile, LifetimeDefinition>> mySourceFiles;
+        private readonly CompactMap<VirtualFileSystemPath, IPsiSourceFile> mySourceFiles;
 
         public UnityExternalFilesPsiModule([NotNull] ISolution solution, string moduleName, string persistentId,
-                                           TargetFrameworkId targetFrameworkId, Lifetime lifetime)
+                                           TargetFrameworkId targetFrameworkId)
         {
             mySolution = solution;
             myPersistentId = persistentId;
-            myLifetime = lifetime;
             Name = moduleName;
             TargetFrameworkId = targetFrameworkId;
-            mySourceFiles = new CompactMap<VirtualFileSystemPath, Pair<IPsiSourceFile, LifetimeDefinition>>();
+            mySourceFiles = new CompactMap<VirtualFileSystemPath, IPsiSourceFile>();
         }
 
         public IPsiServices GetPsiServices() => mySolution.GetPsiServices();
@@ -52,20 +48,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         public PsiLanguageType PsiLanguage => UnknownLanguage.Instance;
         public ProjectFileType ProjectFileType => UnknownProjectFileType.Instance;
         public IModule ContainingProjectModule => mySolution.MiscFilesProject;
-        public IEnumerable<IPsiSourceFile> SourceFiles => mySourceFiles.Values.Select(pair => pair.First);
+        public IEnumerable<IPsiSourceFile> SourceFiles => mySourceFiles.Values;
 
         public bool ContainsPath(VirtualFileSystemPath path) => mySourceFiles.ContainsKey(path);
 
         public bool TryGetFileByPath(VirtualFileSystemPath path, out IPsiSourceFile file)
         {
             file = null;
-            if (mySourceFiles.TryGetValue(path, out var pair))
-            {
-                file = pair.First;
-                return true;
-            }
-
-            return false;
+            return mySourceFiles.TryGetValue(path, out file);
         }
 
         public void Add(VirtualFileSystemPath path, IPsiSourceFile file, Action<FileSystemChangeDelta> processFileChange)
@@ -73,8 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             if (ContainsPath(path))
                 return;
 
-            var fileLifetime = Lifetime.Define(myLifetime, path.FullPath);
-            mySourceFiles.Add(path, Pair.Of(file, fileLifetime));
+            mySourceFiles.Add(path, file);
 
             // Explicitly assert if we're given a file change handler. We're expecting a lot of files in this module, it
             // will be much better to add a couple of directory change handlers than to add several thousand file change
@@ -87,9 +76,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
         public void Remove(VirtualFileSystemPath path)
         {
-            if (!mySourceFiles.TryGetValue(path, out var pair))
-                return;
-            pair.Second.Terminate();
             mySourceFiles.Remove(path);
         }
     }
