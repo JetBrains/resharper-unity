@@ -5,6 +5,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Psi.Modules;
+using JetBrains.ReSharper.Plugins.Unity.Packages;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Yaml
@@ -15,17 +16,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Yaml
         public TestUnityExternalFilesModuleProcessor(Lifetime lifetime, ILogger logger, ISolution solution,
                                                      ChangeManager changeManager,
                                                      IPsiModules psiModules,
+                                                     PackageManager packageManager,
                                                      IShellLocks locks,
                                                      IFileSystemTracker fileSystemTracker,
                                                      UnityExternalPsiSourceFileFactory psiSourceFileFactory,
                                                      UnityExternalFilesModuleFactory moduleFactory,
                                                      UnityExternalFilesIndexDisablingStrategy indexDisablingStrategy)
-            : base(lifetime, logger, solution, changeManager, psiModules, locks, fileSystemTracker,
+            : base(lifetime, logger, solution, changeManager, psiModules, packageManager, locks, fileSystemTracker,
                 psiSourceFileFactory, moduleFactory, indexDisablingStrategy)
         {
         }
 
-        public override void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
+        public override void OnHasUnityReference()
         {
         }
     }

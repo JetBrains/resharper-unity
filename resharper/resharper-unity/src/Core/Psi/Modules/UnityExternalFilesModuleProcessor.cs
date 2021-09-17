@@ -5,10 +5,14 @@ using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
+using JetBrains.Collections;
+using JetBrains.Collections.Viewable;
+using JetBrains.DataFlow;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Impl;
+using JetBrains.ReSharper.Plugins.Unity.Packages;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
@@ -34,17 +38,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         private readonly Lifetime myLifetime;
         private readonly ILogger myLogger;
         private readonly ChangeManager myChangeManager;
+        private readonly PackageManager myPackageManager;
         private readonly IShellLocks myLocks;
         private readonly IFileSystemTracker myFileSystemTracker;
         private readonly UnityExternalPsiSourceFileFactory myPsiSourceFileFactory;
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
         private readonly UnityExternalFilesIndexDisablingStrategy myIndexDisablingStrategy;
-        private readonly JetHashSet<VirtualFileSystemPath> myRootPaths;
+        private readonly Dictionary<VirtualFileSystemPath, LifetimeDefinition> myRootPathLifetimes;
         private readonly VirtualFileSystemPath mySolutionDirectory;
 
         public UnityExternalFilesModuleProcessor(Lifetime lifetime, ILogger logger, ISolution solution,
                                                  ChangeManager changeManager,
                                                  IPsiModules psiModules,
+                                                 PackageManager packageManager,
                                                  IShellLocks locks,
                                                  IFileSystemTracker fileSystemTracker,
                                                  UnityExternalPsiSourceFileFactory psiSourceFileFactory,
@@ -54,64 +60,54 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             myLifetime = lifetime;
             myLogger = logger;
             myChangeManager = changeManager;
+            myPackageManager = packageManager;
             myLocks = locks;
             myFileSystemTracker = fileSystemTracker;
             myPsiSourceFileFactory = psiSourceFileFactory;
             myModuleFactory = moduleFactory;
             myIndexDisablingStrategy = indexDisablingStrategy;
 
-            changeManager.RegisterChangeProvider(lifetime, this);
-
-            myRootPaths = new JetHashSet<VirtualFileSystemPath>();
+            myRootPathLifetimes = new Dictionary<VirtualFileSystemPath, LifetimeDefinition>();
 
             // SolutionDirectory isn't absolute in tests, and will throw an exception if we use it when we call Exists
             mySolutionDirectory = solution.SolutionDirectory;
             if (!mySolutionDirectory.IsAbsolute)
                 mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory().ToVirtualFileSystemPath());
 
+            changeManager.RegisterChangeProvider(lifetime, this);
             changeManager.AddDependency(lifetime, psiModules, this);
         }
 
-        public void OnHasUnityReference()
-        {
-            // Do nothing
-        }
-
-        public virtual void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
+        // Called once when we know it's a Unity solution. I.e. a solution that has a Unity reference (so can be true
+        // for non-generated solutions)
+        public virtual void OnHasUnityReference()
         {
             // For project model access
             myLocks.AssertReadAccessAllowed();
 
-            // Note that this means we process meta and asset files for class library projects, which likely won't have
-            // asset files. We can't use IsUnityGeneratedProject because any project based in the Packages folder or
-            // using 'file:' won't be processed.
-            if (!project.IsUnityProject())
-                return;
-
-            var externalFiles = CollectExternalFilesForUnityProject();
-            CollectExternalFilesForAsmDefProject(externalFiles, project);
+            var externalFiles = new ExternalFiles();
+            CollectExternalFilesForSolutionDirectory(externalFiles, "Assets");
+            CollectExternalFilesForSolutionDirectory(externalFiles, "ProjectSettings");
+            CollectExternalFilesForPackages(externalFiles);
 
             // Disable asset indexing for massive projects. Note that we still collect all files, and always index
             // project settings and meta files.
-            if (externalFiles.AssetFiles.Count > 0) myIndexDisablingStrategy.Run(externalFiles.AssetFiles);
+            myIndexDisablingStrategy.Run(externalFiles.AssetFiles);
 
             AddExternalFiles(externalFiles);
+
+            // TODO: Capture read-only package stats separately
             UpdateStatistics(externalFiles);
+
+            SubscribeToPackageUpdates();
         }
 
-        private ExternalFiles CollectExternalFilesForUnityProject()
+        public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
         {
-            // These are idempotent and can be called multiple times. We expect most files to come from here - either in
-            // Assets or Packages. We can have assets in externally stored packages, but they are not treated as user
-            // editable source, so we can mostly ignore them (the exception is file: based packages, but these are
-            // expected to be a small number, and will complicate gathering stats for thresholds)
-            var externalFiles = new ExternalFiles();
-            CollectExternalFilesForSolutionDirectory(externalFiles, "Assets");
-            CollectExternalFilesForSolutionDirectory(externalFiles, "Packages");
-            CollectExternalFilesForSolutionDirectory(externalFiles, "ProjectSettings");
-            return externalFiles;
+            // Do nothing. A project will either be in Assets or in a package, so either way, we've got it covered.
         }
 
+        // This method is safe to call multiple times with the same folder (or sub folder)
         private void CollectExternalFilesForSolutionDirectory(ExternalFiles externalFiles, string relativePath)
         {
             var path = mySolutionDirectory.Combine(relativePath);
@@ -119,51 +115,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 CollectExternalFilesForDirectory(externalFiles, path);
         }
 
-        // See if the project is based on a .asmdef file, and process the files at the .asmdef file location. We'll
-        // already have processed any of these files in the Assets and Packages folder, so this will catch any
-        // packages that are external to the solution folder and registered with `file:`
-        private void CollectExternalFilesForAsmDefProject(ExternalFiles externalFiles, IProject project)
-        {
-            if (!project.IsProjectFromUserView())
-                return;
-
-            // We know that the default projects are not .asmdef based, and will obviously live in Assets, which we've
-            // already processed. This is just an optimisation - if a plugin renames the projects, we'll still work ok
-            if (project.IsOneOfPredefinedUnityProjects())
-            {
-                return;
-            }
-
-            foreach (var projectItem in project.GetSubItemsRecursively())
-            {
-                if (projectItem is IProjectFile projectFile)
-                {
-                    var location = projectFile.Location;
-                    if (location.FullPath.EndsWith(".asmdef", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        CollectExternalFilesForDirectory(externalFiles, location.Parent);
-                        return;
-                    }
-                }
-            }
-        }
-
         private void CollectExternalFilesForDirectory(ExternalFiles externalFiles, VirtualFileSystemPath directory)
         {
             // Don't process the entire solution directory - this would process Assets and Packages for a second time,
-            // and also process Temp and Library, which are likely to be huge
+            // and also process Temp and Library, which are likely to be huge. This is unlikely, but be safe.
             if (directory == mySolutionDirectory)
             {
                 myLogger.Error("Unexpected request to process entire solution directory. Skipping");
                 return;
             }
 
-            if (myRootPaths.Contains(directory))
+            if (myRootPathLifetimes.ContainsKey(directory))
                 return;
 
-            // Make sure the directory hasn't already been processed as part of a previous directory. This can happen if
-            // the project is a .asmdef based project living under Assets or Packages, or inside a file:// based package
-            foreach (var rootPath in myRootPaths)
+            // Make sure the directory hasn't already been processed as part of a previous directory. This shouldn't
+            // happen, as we index based on folder or package, not project, so there is no way for us to see nested
+            // folders
+            foreach (var rootPath in myRootPathLifetimes.Keys)
             {
                 if (rootPath.IsPrefixOf(directory))
                     return;
@@ -176,23 +144,63 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             // Mac, on the same project!
             var entries = directory.GetDirectoryEntries("*", PathSearchFlags.RecurseIntoSubdirectories
                                                              | PathSearchFlags.ExcludeDirectories);
-            foreach (var entry in entries)
-                externalFiles.AddFile(entry);
-            externalFiles.AddDirectory(directory);
 
-            myRootPaths.Add(directory);
+            // TODO: Exclude all folders underneath a folder ending with ~
+
+            foreach (var entry in entries)
+                externalFiles.ProcessExternalFile(entry);
+
+            externalFiles.AddDirectory(directory);
+            myRootPathLifetimes.Add(directory, myLifetime.CreateNested());
         }
 
-        // We add scenes, assets and prefabs to the Misc Files project in Rider. This is so that:
-        // * The Find Usages results list expects project files and throws if any occurrence is a project file
-        // * Only project files are included in SWEA, and we want that for the usage count Code Vision metric
-        // Unfortunately, ReSharper keeps the Misc Files project in sync with Visual Studio's idea of the Misc Files
-        // project (i.e. files open in the editor that aren't part of a project). This means ReSharper will remove our
-        // files from Misc Files and we end up with invalid PSI source files and loads of exceptions.
-        // Fortunately, ReSharper doesn't require project files for find usages or rename, and doesn't have Code Vision,
-        // so we don't need to worry about a usage count (usage suppression is already handled in the suppressor). So
-        // for ReSharper, we just treat all of our files as PSI source files
-        private void AddExternalFiles(ExternalFiles externalFiles)
+        private void CollectExternalFilesForPackages(ExternalFiles externalFiles)
+        {
+            foreach (var (_ , packageData) in myPackageManager.Packages)
+            {
+                if (packageData.PackageFolder == null || packageData.PackageFolder.IsEmpty)
+                    continue;
+
+                CollectExternalFilesForDirectory(externalFiles, packageData.PackageFolder);
+            }
+        }
+
+        private void SubscribeToPackageUpdates()
+        {
+            // We've already processed all packages that were available when the project was first loaded, so this will
+            // just be updating a single package at a time - Unity doesn't offer "update all".
+            myPackageManager.Packages.AddRemove.Advise_NoAcknowledgement(myLifetime, args =>
+            {
+                var packageData = args.Value.Value;
+                if (packageData.PackageFolder == null || packageData.PackageFolder.IsEmpty ||
+                    myModuleFactory.PsiModule == null)
+                {
+                    return;
+                }
+
+                if (args.Action == AddRemove.Add)
+                {
+                    var externalFiles = new ExternalFiles();
+                    CollectExternalFilesForDirectory(externalFiles, packageData.PackageFolder);
+                    AddExternalFiles(externalFiles);
+                }
+                else
+                {
+                    var psiModuleChanges = new PsiModuleChangeBuilder();
+                    foreach (var sourceFile in myModuleFactory.PsiModule.GetSourceFilesByRootFolder(packageData.PackageFolder))
+                        psiModuleChanges.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Removed);
+                    FlushChanges(psiModuleChanges);
+
+                    if (!myRootPathLifetimes.TryGetValue(packageData.PackageFolder, out var lifetimeDefinition))
+                        myLogger.Warn("Cannot find lifetime for watched folder: {0}", packageData.PackageFolder);
+
+                    lifetimeDefinition?.Terminate();
+                    myRootPathLifetimes.Remove(packageData.PackageFolder);
+                }
+            });
+        }
+
+        private void AddExternalFiles([NotNull] ExternalFiles externalFiles)
         {
             var builder = new PsiModuleChangeBuilder();
             AddExternalPsiSourceFiles(externalFiles.MetaFiles, builder);
@@ -201,7 +209,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
             // We should only start watching for file system changes after adding the files we know about
             foreach (var directory in externalFiles.Directories)
-                myFileSystemTracker.AdviseDirectoryChanges(myLifetime, directory, true, OnProjectDirectoryChange);
+            {
+                var lifetime = myRootPathLifetimes[directory].Lifetime;
+                myFileSystemTracker.AdviseDirectoryChanges(lifetime, directory, true, OnWatchedDirectoryChange);
+            }
         }
 
         private void AddExternalPsiSourceFiles(List<VirtualDirectoryEntryData> files, PsiModuleChangeBuilder builder)
@@ -267,9 +278,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             if (IsKnownBinaryAssetByName(directoryEntry.RelativePath))
                 return true;
 
-            if (directoryEntry.Length > AssetFileCheckSizeThreshold && directoryEntry.RelativePath.IsAsset())
-                return !directoryEntry.GetAbsolutePath().SniffYamlHeader();
-            return false;
+            return directoryEntry.Length > AssetFileCheckSizeThreshold && directoryEntry.RelativePath.IsAsset() &&
+                   !directoryEntry.GetAbsolutePath().SniffYamlHeader();
         }
 
         private static bool IsKnownBinaryAsset(VirtualFileSystemPath path)
@@ -277,20 +287,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             if (IsKnownBinaryAssetByName(path))
                 return true;
 
+            if (!path.ExistsFile)
+                return false;
+
             var fileLength = (ulong) path.GetFileLength();
-            if (fileLength > AssetFileCheckSizeThreshold && path.IsAsset())
-                return !path.SniffYamlHeader();
-            return false;
+            return fileLength > AssetFileCheckSizeThreshold && path.IsAsset() && !path.SniffYamlHeader();
         }
 
         private static bool IsKnownBinaryAssetByName(IPath path)
         {
             // Even if the project is set to ForceText, some files will always be binary, notably LightingData.asset.
             // Users can also force assets to serialise as binary with the [PreferBinarySerialization] attribute
-            var filename = path.Name;
-            if (filename.Equals("LightingData.asset", StringComparison.InvariantCultureIgnoreCase))
-                return true;
-            return false;
+            return path.Name.Equals("LightingData.asset", StringComparison.InvariantCultureIgnoreCase);
         }
 
         private static bool IsAssetExcludedByName(IPath path)
@@ -304,9 +312,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 || filename.Equals("OcclusionCullingData.asset", StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private void OnProjectDirectoryChange(FileSystemChangeDelta delta)
+        private void OnWatchedDirectoryChange(FileSystemChangeDelta delta)
         {
-            myLocks.ExecuteOrQueue(Lifetime.Eternal, "UnityExternalFilesModuleProcessor::OnProjectDirectoryChange",
+            myLocks.ExecuteOrQueue(Lifetime.Eternal, "UnityExternalFilesModuleProcessor::OnWatchedDirectoryChange",
                 () =>
                 {
                     var builder = new PsiModuleChangeBuilder();
@@ -355,7 +363,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
         [CanBeNull]
         private static IPsiSourceFile GetExternalPsiSourceFile([NotNull] IPsiModuleOnFileSystemPaths module,
-                                                           VirtualFileSystemPath path)
+                                                               VirtualFileSystemPath path)
         {
             return module.TryGetFileByPath(path, out var sourceFile) ? sourceFile : null;
         }
@@ -407,7 +415,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             public FrugalLocalList<VirtualDirectoryEntryData> ExcludedByNameAssetFiles;
             public FrugalLocalList<VirtualFileSystemPath> Directories;
 
-            public void AddFile(VirtualDirectoryEntryData directoryEntry)
+            public void ProcessExternalFile(VirtualDirectoryEntryData directoryEntry)
             {
                 if (directoryEntry.RelativePath.IsMeta())
                     MetaFiles.Add(directoryEntry);
