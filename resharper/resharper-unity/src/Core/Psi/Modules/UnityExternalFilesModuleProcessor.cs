@@ -145,10 +145,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             var entries = directory.GetDirectoryEntries("*", PathSearchFlags.RecurseIntoSubdirectories
                                                              | PathSearchFlags.ExcludeDirectories);
 
-            // TODO: Exclude all folders underneath a folder ending with ~
-
             foreach (var entry in entries)
-                externalFiles.ProcessExternalFile(entry);
+            {
+                // Ignore anything under a folder that ends with a tilde - Unity does not import these folders into the
+                // asset database, so they're not part of this project
+                if (entry.IsFile && !entry.RelativePath.FullPath.Contains("~/") &&
+                    !entry.RelativePath.FullPath.Contains("~\\"))
+                {
+                    externalFiles.ProcessExternalFile(entry);
+                }
+            }
 
             externalFiles.AddDirectory(directory);
             myRootPathLifetimes.Add(directory, myLifetime.CreateNested());
@@ -161,6 +167,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 if (packageData.PackageFolder == null || packageData.PackageFolder.IsEmpty)
                     continue;
 
+                // Index the whole of the package folder. All assets under a package are included into the Unity project
+                // although only folders with a `.asmdef` will be treated as source and compiled into an assembly
                 CollectExternalFilesForDirectory(externalFiles, packageData.PackageFolder);
             }
         }
