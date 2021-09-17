@@ -1,9 +1,8 @@
 ﻿using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Daemon.Stages.Processes;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Daemon.Stages
+namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.Services.Daemon
 {
     [DaemonStage]
     public class JsonInspectionsStage : JsonNewDaemonStageBase

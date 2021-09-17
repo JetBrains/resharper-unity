@@ -5,14 +5,16 @@ using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Daemon.Stages.Processes
+namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.Services.Daemon
 {
     public class JsonNewInspectionsProcess : JsonNewDaemonStageProcessBase
     {
         private readonly IElementAnalyzerDispatcher myElementAnalyzerDispatcher;
 
-        public JsonNewInspectionsProcess(IDaemonProcess process, IContextBoundSettingsStore settingsStore, IJsonNewFile file, DaemonProcessKind processKind, ElementProblemAnalyzerRegistrar elementProblemAnalyzerRegistrar)
-            : base(process, settingsStore, file)
+        public JsonNewInspectionsProcess(IDaemonProcess process, IContextBoundSettingsStore settingsStore,
+                                         IJsonNewFile file, DaemonProcessKind processKind,
+                                         ElementProblemAnalyzerRegistrar elementProblemAnalyzerRegistrar)
+            : base(process, file)
         {
             var problemAnalyzerData = new ElementProblemAnalyzerData(
                 file, settingsStore, ElementProblemAnalyzerRunKind.FullDaemon, process.GetCheckForInterrupt());

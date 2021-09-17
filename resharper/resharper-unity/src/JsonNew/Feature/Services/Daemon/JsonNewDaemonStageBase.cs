@@ -8,11 +8,13 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Daemon.Stages
+namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.Services.Daemon
 {
     public abstract class JsonNewDaemonStageBase : IDaemonStage
     {
-        public IEnumerable<IDaemonStageProcess> CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings, DaemonProcessKind processKind)
+        public IEnumerable<IDaemonStageProcess> CreateProcess(IDaemonProcess process,
+                                                              IContextBoundSettingsStore settings,
+                                                              DaemonProcessKind processKind)
         {
             if (!IsSupported(process.SourceFile))
                 return EmptyList<IDaemonStageProcess>.Instance;
@@ -23,12 +25,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Daemon.Stages
             process.SourceFile.GetPsiServices().Files.AssertAllDocumentAreCommitted();
 
             var files = process.SourceFile.GetPsiFiles<JsonNewLanguage>();
-            return files.SelectNotNull(file => CreateProcess(process, settings, processKind, (IJsonNewFile) file));
+            return files.SelectNotNull(file => CreateProcess(process, settings, processKind, (IJsonNewFile)file));
         }
 
-        protected virtual bool ShouldRunOnGenerated { get { return false; } }
+        protected virtual bool ShouldRunOnGenerated => false;
 
-        protected abstract IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings, DaemonProcessKind processKind, IJsonNewFile file);
+        protected abstract IDaemonStageProcess CreateProcess(IDaemonProcess process,
+                                                             IContextBoundSettingsStore settings,
+                                                             DaemonProcessKind processKind, IJsonNewFile file);
 
         protected virtual bool IsSupported(IPsiSourceFile sourceFile)
         {
