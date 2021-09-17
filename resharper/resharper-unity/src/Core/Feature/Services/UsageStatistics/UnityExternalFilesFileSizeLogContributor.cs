@@ -28,16 +28,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
             if (!myUnitySolutionTracker.IsUnityProject.HasTrueValue())
                 return;
 
-            if (myModuleProcessor.SceneSizes.Count == 0 && myModuleProcessor.PrefabSizes.Count == 0 && myModuleProcessor.AssetSizes.Count == 0)
+            if (myModuleProcessor.SceneSizes.Count == 0 && myModuleProcessor.PrefabSizes.Count == 0 &&
+                myModuleProcessor.AssetSizes.Count == 0 && myModuleProcessor.AsmDefSizes.Count == 0)
+            {
                 return;
+            }
 
             var stats = new JObject();
             log["uys"] = stats;
             stats["s"] = JArray.FromObject(myModuleProcessor.SceneSizes);
             stats["p"] = JArray.FromObject(myModuleProcessor.PrefabSizes);
             stats["a"] = JArray.FromObject(myModuleProcessor.AssetSizes);
+            stats["ad"] = JArray.FromObject(myModuleProcessor.AsmDefSizes);
             stats["kba"] = JArray.FromObject(myModuleProcessor.KnownBinaryAssetSizes);
             stats["ebna"] = JArray.FromObject(myModuleProcessor.ExcludedByNameAssetsSizes);
+            stats["mf"] = myModuleProcessor.MetaFileCount;
             stats["e"] = myAssetIndexingSupport.IsEnabled.Value;
         }
     }

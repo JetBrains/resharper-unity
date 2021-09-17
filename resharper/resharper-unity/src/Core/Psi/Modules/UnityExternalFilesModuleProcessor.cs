@@ -32,11 +32,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         public readonly List<ulong> PrefabSizes = new();
         public readonly List<ulong> SceneSizes = new();
         public readonly List<ulong> AssetSizes = new();
+        public readonly List<ulong> AsmDefSizes = new();
         public readonly List<ulong> KnownBinaryAssetSizes = new();
         public readonly List<ulong> ExcludedByNameAssetsSizes = new();
+        public int MetaFileCount;
 
         private readonly Lifetime myLifetime;
         private readonly ILogger myLogger;
+        private readonly ISolution mySolution;
         private readonly ChangeManager myChangeManager;
         private readonly PackageManager myPackageManager;
         private readonly IShellLocks myLocks;
@@ -59,6 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         {
             myLifetime = lifetime;
             myLogger = logger;
+            mySolution = solution;
             myChangeManager = changeManager;
             myPackageManager = packageManager;
             myLocks = locks;
@@ -152,7 +156,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 if (entry.IsFile && !entry.RelativePath.FullPath.Contains("~/") &&
                     !entry.RelativePath.FullPath.Contains("~\\"))
                 {
-                    externalFiles.ProcessExternalFile(entry);
+                    externalFiles.ProcessExternalFile(entry, mySolution);
                 }
             }
 
@@ -213,6 +217,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             var builder = new PsiModuleChangeBuilder();
             AddExternalPsiSourceFiles(externalFiles.MetaFiles, builder);
             AddExternalPsiSourceFiles(externalFiles.AssetFiles, builder);
+            AddExternalPsiSourceFiles(externalFiles.AsmDefFiles, builder);
             FlushChanges(builder);
 
             // We should only start watching for file system changes after adding the files we know about
@@ -267,7 +272,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     PrefabSizes.Add(directoryEntry.Length);
                 else if (directoryEntry.RelativePath.IsScene())
                     SceneSizes.Add(directoryEntry.Length);
+                else if (directoryEntry.RelativePath.IsAsmDef())
+                    AsmDefSizes.Add(directoryEntry.Length);
             }
+
+            MetaFileCount += externalFiles.MetaFiles.Count;
 
             foreach (var directoryEntry in externalFiles.KnownBinaryAssetFiles)
                 KnownBinaryAssetSizes.Add(directoryEntry.Length);
@@ -278,10 +287,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
         private static bool IsIndexedExternalFile(VirtualFileSystemPath path)
         {
-            return path.IsIndexedExternalFile() && !IsKnownBinaryAsset(path) && !IsAssetExcludedByName(path);
+            return path.IsIndexedExternalFile() && !IsBinaryAsset(path) && !IsAssetExcludedByName(path);
         }
 
-        private static bool IsKnownBinaryAsset(VirtualDirectoryEntryData directoryEntry)
+        private static bool IsBinaryAsset(VirtualDirectoryEntryData directoryEntry)
         {
             if (IsKnownBinaryAssetByName(directoryEntry.RelativePath))
                 return true;
@@ -290,7 +299,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                    !directoryEntry.GetAbsolutePath().SniffYamlHeader();
         }
 
-        private static bool IsKnownBinaryAsset(VirtualFileSystemPath path)
+        private static bool IsBinaryAsset(VirtualFileSystemPath path)
         {
             if (IsKnownBinaryAssetByName(path))
                 return true;
@@ -419,22 +428,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         {
             public readonly List<VirtualDirectoryEntryData> MetaFiles = new();
             public readonly List<VirtualDirectoryEntryData> AssetFiles = new();
+            public readonly List<VirtualDirectoryEntryData> AsmDefFiles = new();
             public FrugalLocalList<VirtualDirectoryEntryData> KnownBinaryAssetFiles;
             public FrugalLocalList<VirtualDirectoryEntryData> ExcludedByNameAssetFiles;
             public FrugalLocalList<VirtualFileSystemPath> Directories;
 
-            public void ProcessExternalFile(VirtualDirectoryEntryData directoryEntry)
+            public void ProcessExternalFile(VirtualDirectoryEntryData directoryEntry, ISolution solution)
             {
+                solution.Locks.AssertReadAccessAllowed();
+
                 if (directoryEntry.RelativePath.IsMeta())
                     MetaFiles.Add(directoryEntry);
                 else if (directoryEntry.RelativePath.IsIndexedYamlExternalFile())
                 {
-                    if (IsKnownBinaryAsset(directoryEntry))
+                    if (IsBinaryAsset(directoryEntry))
                         KnownBinaryAssetFiles.Add(directoryEntry);
                     else if (IsAssetExcludedByName(directoryEntry.RelativePath))
                         ExcludedByNameAssetFiles.Add(directoryEntry);
                     else
                         AssetFiles.Add(directoryEntry);
+                }
+                else if (directoryEntry.RelativePath.IsAsmDef())
+                {
+                    // We're collecting external files, so skip it if it's part of a project. This might be because it's
+                    // an editable package, or because the user has package project generation enabled.
+                    // This requires read lock!
+                    if (!solution.FindProjectItemsByLocation(directoryEntry.GetAbsolutePath()).Any())
+                        AsmDefFiles.Add(directoryEntry);
                 }
             }
 
