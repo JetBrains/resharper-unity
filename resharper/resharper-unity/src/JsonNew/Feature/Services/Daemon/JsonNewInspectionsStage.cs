@@ -1,6 +1,9 @@
-﻿using JetBrains.Application.Settings;
+﻿using System;
+using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.Services.Daemon
 {
@@ -15,9 +18,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.Services.Daemon
         }
 
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process,
-            IContextBoundSettingsStore settings, DaemonProcessKind processKind, IJsonNewFile file)
+                                                             IContextBoundSettingsStore settings,
+                                                             DaemonProcessKind processKind, IJsonNewFile file)
         {
-            return new JsonNewInspectionsProcess(process, settings, file, processKind, myElementProblemAnalyzerRegistrar);
+            return new JsonNewInspectionsProcess(process, settings, file, processKind,
+                myElementProblemAnalyzerRegistrar);
+        }
+
+        private class JsonNewInspectionsProcess : JsonNewDaemonStageProcessBase
+        {
+            private readonly IElementAnalyzerDispatcher myElementAnalyzerDispatcher;
+
+            public JsonNewInspectionsProcess(IDaemonProcess process, IContextBoundSettingsStore settingsStore,
+                                             IJsonNewFile file, DaemonProcessKind processKind,
+                                             ElementProblemAnalyzerRegistrar elementProblemAnalyzerRegistrar)
+                : base(process, file)
+            {
+                var problemAnalyzerData = new ElementProblemAnalyzerData(
+                    file, settingsStore, ElementProblemAnalyzerRunKind.FullDaemon, process.GetCheckForInterrupt());
+
+                problemAnalyzerData.SetDaemonProcess(process, processKind);
+
+                myElementAnalyzerDispatcher = elementProblemAnalyzerRegistrar.CreateDispatcher(problemAnalyzerData);
+            }
+
+            public override void VisitNode(ITreeNode node, IHighlightingConsumer context)
+            {
+                myElementAnalyzerDispatcher.Run(node, context);
+                base.VisitNode(node, context);
+            }
+
+            public override void Execute(Action<DaemonStageResult> committer)
+            {
+                HighlightInFile((file, consumer) => file.ProcessDescendants(this, consumer), committer);
+            }
         }
     }
 }
