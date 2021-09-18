@@ -5,7 +5,6 @@ using JetBrains.ProjectModel.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
@@ -38,12 +37,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             myHeuristicDisabledForSolution = IsHeuristicDisabledForSolution();
         }
 
-        public void Run(List<VirtualDirectoryEntryData> directoryEntries)
+        public void Run(List<UnityExternalFilesModuleProcessor.ExternalFile> externalFiles)
         {
             if (!myAllowRunHeuristic || myHeuristicDisabledForSolution || !myAssetIndexingSupport.IsEnabled.Value)
                 return;
 
-            if (DoesAnyFilePreventIndexing(directoryEntries) || myTotalSize > TotalFileSizeThreshold)
+            if (DoesAnyFilePreventIndexing(externalFiles) || myTotalSize > TotalFileSizeThreshold)
             {
                 // If the project is too big, disable asset indexing. This unchecks the "index text assets" checkbox
                 // in settings, saved at the solution level (more accurately .sln.DotSettings.user). It can be
@@ -77,32 +76,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             mySolutionCaches.PersistentProperties[HeuristicDisabledPersistentPropertyKey] = false.ToString();
         }
 
-        private bool DoesAnyFilePreventIndexing(List<VirtualDirectoryEntryData> directoryEntries)
+        private bool DoesAnyFilePreventIndexing(List<UnityExternalFilesModuleProcessor.ExternalFile> externalFiles)
         {
-            foreach (var directoryEntry in directoryEntries)
+            foreach (var externalFile in externalFiles)
             {
-                if (DoesAnyFilePreventIndexing(directoryEntry))
+                if (DoesFilePreventIndexing(externalFile))
                     return true;
             }
 
             return false;
         }
 
-        private bool DoesAnyFilePreventIndexing(VirtualDirectoryEntryData path)
+        private bool DoesFilePreventIndexing(UnityExternalFilesModuleProcessor.ExternalFile externalFile)
         {
-            var length = path.Length;
-            if (length > AssetFileSizeThreshold)
+            if (externalFile.Length > AssetFileSizeThreshold)
             {
-                if (path.RelativePath.IsAsset() && !path.GetAbsolutePath().SniffYamlHeader())
-                {
+                if (externalFile.Path.IsAsset() && !externalFile.Path.SniffYamlHeader())
                     return false;
-                }
 
-                myTotalSize += length;
+                myTotalSize += externalFile.Length;
                 return true;
             }
 
-            myTotalSize += length;
+            myTotalSize += externalFile.Length;
             return false;
         }
     }
