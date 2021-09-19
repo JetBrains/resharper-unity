@@ -1,0 +1,7 @@
+﻿{
+  "name": "thisAsm",
+  "references": [ "|unresolvedAsm|(0)" ]
+}
+
+---------------------------------------------------------
+(0): ReSharper Error Highlighting: Unknown project reference 'unresolvedAsm'

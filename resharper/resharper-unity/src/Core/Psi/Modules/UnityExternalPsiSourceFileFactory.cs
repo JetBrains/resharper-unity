@@ -1,4 +1,3 @@
-using System;
 using JetBrains.DocumentManagers;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
@@ -25,28 +24,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             myDocumentManager = documentManager;
         }
 
-        public IExternalPsiSourceFile CreateExternalPsiSourceFile(IPsiModule psiModule, VirtualFileSystemPath path)
+        public IExternalPsiSourceFile CreateExternalPsiSourceFile(IPsiModule psiModule, VirtualFileSystemPath path,
+                                                                  IPsiSourceFileProperties properties)
         {
             var file = new UnityExternalPsiSourceFile(myProjectFileExtensions, myProjectFileTypeCoordinator, psiModule,
-                path, Memoize(PropertiesFactory), myDocumentManager, UniversalModuleReferenceContext.Instance);
+                path, _ => properties, myDocumentManager, UniversalModuleReferenceContext.Instance);
             // Prime the file system cache
             file.GetCachedFileSystemData();
             return file;
-        }
-
-        // The PropertiesFactory passed to PsiSourceFileFromPath is called on EVERY access to IPsiSourceFile.Properties.
-        // This function allows us to create a single instance for each file. The cache variable (as well as the func
-        // parameter) are captured into a closure class. When the closure's is invoked, we can populate and return the
-        // cached value
-        private static Func<IPsiSourceFile, IPsiSourceFileProperties> Memoize(Func<IPsiSourceFile, IPsiSourceFileProperties> func)
-        {
-            IPsiSourceFileProperties cache = null;
-            return sf => cache ??= func(sf);
-        }
-
-        private static IPsiSourceFileProperties PropertiesFactory(IPsiSourceFile psiSourceFile)
-        {
-            return new UnityExternalFileProperties();
         }
     }
 }

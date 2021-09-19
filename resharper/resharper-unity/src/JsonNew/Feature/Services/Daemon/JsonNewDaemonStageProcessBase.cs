@@ -22,17 +22,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.Services.Daemon
         public IFile File => myFile;
         public IDaemonProcess DaemonProcess => myDaemonProcess;
 
-        protected void HighlightInFile(Action<IJsonNewFile, IHighlightingConsumer> fileHighlighter,
-            Action<DaemonStageResult> commiter)
-        {
-            var consumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, myFile,
-                DaemonProcess.ContextBoundSettingsStore);
-            fileHighlighter(myFile, consumer);
-            commiter(new DaemonStageResult(consumer.Highlightings));
-        }
-
-        public abstract void Execute(Action<DaemonStageResult> committer);
-
         public virtual bool InteriorShouldBeProcessed(ITreeNode element, IHighlightingConsumer context) => true;
 
         public bool IsProcessingFinished(IHighlightingConsumer context)
@@ -58,6 +47,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.Services.Daemon
             {
                 VisitNode(element, consumer);
             }
+        }
+
+        public void Execute(Action<DaemonStageResult> committer)
+        {
+            HighlightInFile((file, consumer) => file.ProcessDescendants(this, consumer), committer);
+        }
+
+        private void HighlightInFile(Action<IJsonNewFile, IHighlightingConsumer> fileHighlighter,
+                                     Action<DaemonStageResult> commiter)
+        {
+            var consumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, myFile,
+                DaemonProcess.ContextBoundSettingsStore);
+            fileHighlighter(myFile, consumer);
+            commiter(new DaemonStageResult(consumer.Highlightings));
         }
     }
 }

@@ -1,8 +1,6 @@
-﻿using System;
-using JetBrains.Application.Settings;
+﻿using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.Services.Daemon
@@ -46,11 +44,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.Services.Daemon
             {
                 myElementAnalyzerDispatcher.Run(node, context);
                 base.VisitNode(node, context);
-            }
-
-            public override void Execute(Action<DaemonStageResult> committer)
-            {
-                HighlightInFile((file, consumer) => file.ProcessDescendants(this, consumer), committer);
             }
         }
     }
