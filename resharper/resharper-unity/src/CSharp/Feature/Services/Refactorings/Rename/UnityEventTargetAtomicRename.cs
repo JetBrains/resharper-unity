@@ -30,8 +30,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         private readonly IDeclaredElementPointer<IDeclaredElement> myPointer;
         private List<UnityEventHandlerOccurrence> myElementsToRename;
         private bool myIsProperty;
-        public UnityEventTargetAtomicRename(ISolution solution, IDeclaredElement declaredElement, string newName,
-            bool isRenameShouldBeSilent)
+
+        public UnityEventTargetAtomicRename(ISolution solution,
+                                            IDeclaredElement declaredElement,
+                                            string newName,
+                                            bool isRenameShouldBeSilent)
         {
             mySolution = solution;
             myIsRenameShouldBeSilent = isRenameShouldBeSilent;
@@ -40,30 +43,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             NewName = newName;
         }
 
-        public override IRefactoringPage CreateRenamesConfirmationPage(IRenameWorkflow renameWorkflow, IProgressIndicator pi)
+        public override void PrepareToRename(IRenameRefactoring executer,
+                                             IProgressIndicator pi,
+                                             bool hasConflictsWithDeclarations,
+                                             IRefactoringDriver driver)
         {
             // do not run find usages too, silent == true for player projects and misc project(misc could happen due to RIDER-53753)
             // If we run find usages for player/misc declared element, find usages will return empty result, because
             // guid is resolved to psiSourceFile from real projects only (GetTypeElementFromScriptAssetGuid in AssetUtils)
-            
+
             // NOTE: find usages under the hood uses cache which stores TextRanges, cache will not be updated between several atomic renames.
             // That means that only one atomic rename should exist or only one atomic rename should return non-empty result from find usages below
-            if (myIsRenameShouldBeSilent)
-                return null;
-            
+            if (myIsRenameShouldBeSilent) return;
+
             var de = myPointer.FindDeclaredElement();
-            if (de == null)
-                return null;
+            if (de == null) return;
+
             myIsProperty = de is IProperty;
-            
+
             pi.Start(1);
+
             using (var subProgress = pi.CreateSubProgress())
             {
                 myElementsToRename = GetAssetOccurrence(de, subProgress)
-                    .Select(t => 
-                        new UnityEventHandlerOccurrence(t.SourceFile, de.CreateElementPointer(), t.OwningElemetLocation, t.AssetMethodUsages, t.IsPrefabModification)).ToList();
+                    .Select(t =>
+                        new UnityEventHandlerOccurrence(t.SourceFile, de.CreateElementPointer(), t.OwningElemetLocation,
+                            t.AssetMethodUsages, t.IsPrefabModification)).ToList();
             }
-            
+        }
+
+        public override IRefactoringPage CreateRenamesConfirmationPage(IRenameWorkflow renameWorkflow, IProgressIndicator pi)
+        {
+            if (myIsRenameShouldBeSilent)
+                return null;
+
             return new UnityEventTargetRefactoringPage(
                 ((RefactoringWorkflowBase) renameWorkflow).WorkflowExecuterLifetime, mySolution.GetComponent<DeferredCacheController>());
         }
@@ -76,7 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             var results = new List<UnityEventHandlerFindResult>();
 
             var elements = de is IProperty property ? new[] {de, property.Getter, property.Setter} : new[] {de};
-            
+
             finder.Find(elements.Where(t => t != null).ToArray(), searchDomain, new FindResultConsumer(result =>
             {
                 if (result is UnityEventHandlerFindResult fr)
@@ -94,7 +107,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         {
             if (myElementsToRename == null)
                 return;
-                    
+
             var workflow = (executer.Workflow as RenameWorkflowBase).NotNull("workflow != null");
 
             var persistentIndexManager = mySolution.GetComponent<IPersistentIndexManager>();
@@ -112,7 +125,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         public override string OldName { get; }
         public override IDeclaredElement PrimaryDeclaredElement => myPointer.FindDeclaredElement();
         public override IList<IDeclaredElement> SecondaryDeclaredElements => null;
-        
+
         private class AssetTextOccurrence : ITextOccurrenceRenameMarker
         {
             private readonly UnityEventHandlerOccurrence myAssetOccurrence;
@@ -122,14 +135,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
                 string oldName, string newName, bool isProperty)
             {
                 var curRange = assetOccurrence.MethodUsages.TextRangeOwnerPsiPersistentIndex;
-                
+
                 var pointer = sourceFile.Document.ToPointer();
                 myRangeMarker =  new RangeMarker(pointer, isProperty ? new TextRange(curRange.StartOffset + 4, curRange.EndOffset) : curRange);
                 myAssetOccurrence = assetOccurrence;
                 NewName = newName;
                 OldName = isProperty ? oldName.RemoveStart("get_").RemoveStart("set_") : oldName;
             }
-            
+
             public bool Navigate(ISolution solution, PopupWindowContextSource windowContext, bool transferFocus,
                 TabOptions tabOptions = TabOptions.Default)
             {
@@ -142,7 +155,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
             public OccurrenceType OccurrenceType => myAssetOccurrence.OccurrenceType;
             public bool IsValid => myAssetOccurrence.IsValid;
-            
+
             public OccurrencePresentationOptions PresentationOptions { get; set; }
             public IDocument GetDocument() => myAssetOccurrence.SourceFile.Document;
 
@@ -158,5 +171,4 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             public TextRange OldNameRange => myRangeMarker.Range;
         }
     }
-    
 }
