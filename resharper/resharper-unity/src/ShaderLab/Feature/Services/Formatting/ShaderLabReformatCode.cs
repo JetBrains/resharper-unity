@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
@@ -18,12 +17,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Formattin
   [CodeCleanupModule]
   public class ShaderLabReformatCode : ICodeCleanupModule
   {
-    private static readonly Descriptor ourDescriptor = new Descriptor();
+    // Arbitrary order number...
+    private static readonly CodeCleanupLanguage ourShaderLabCleanupLanguage = new("ShaderLab", 12);
 
-    public ICollection<CodeCleanupOptionDescriptor> Descriptors
-    {
-      get { return new CodeCleanupOptionDescriptor[] { ourDescriptor }; }
-    }
+    private static readonly CodeCleanupSingleOptionDescriptor ourDescriptor =
+        new CodeCleanupOptionDescriptor<bool>("ShaderLabReformatCode", ourShaderLabCleanupLanguage,
+            CodeCleanupOptionDescriptor.ReformatGroup, displayName: "Reformat code");
+
+    public IReadOnlyCollection<CodeCleanupOptionDescriptor> Descriptors => new[] { ourDescriptor };
 
     public PsiLanguageType LanguageType => ShaderLabLanguage.Instance;
 
@@ -50,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Formattin
 
     public bool IsAvailable(CodeCleanupProfile profile)
     {
-        return profile.GetSetting(ourDescriptor);
+        return profile.GetSetting(ourDescriptor) is true;
     }
 
     public void Process(IPsiSourceFile sourceFile, IRangeMarker rangeMarker, CodeCleanupProfile profile,
@@ -58,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Formattin
     {
       var solution = sourceFile.GetSolution();
 
-      if (!profile.GetSetting(ourDescriptor)) return;
+      if (!IsAvailable(profile)) return;
 
       var psiServices = sourceFile.GetPsiServices();
       IShaderLabFile[] files;
@@ -97,14 +98,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Formattin
     }
 
     public string Name => "Reformat ShaderLab";
-
-    [DefaultValue(false)]
-    [DisplayName("Reformat code")]
-    [Category("ShaderLab")]
-    private class Descriptor : CodeCleanupBoolOptionDescriptor
-    {
-      public Descriptor() : base("ShaderLabReformatCode") { }
-    }
-
   }
 }

@@ -22,18 +22,18 @@ public class MyMonoBehaviour : MonoBehaviour
         // Only the types that are implicitly converted into int will have
         // integer value analysis warnings
         if (|intValue < 100|(0)) { }
-        if (uintValue < 100) { }
-        if (longValue < 100) { }
-        if (ulongValue < 100) { }
-        if (byteValue < 100) { }
-        if (sbyteValue < 100) { }
-        if (shortValue < 100) { }
-        if (ushortValue < 100) { }
+        if (|uintValue < 100|(1)) { }
+        if (|longValue < 100|(2)) { }
+        if (|ulongValue < 100|(3)) { }
+        if (|byteValue < 100|(4)) { }
+        if (|sbyteValue < 100|(5)) { }
+        if (|shortValue < 100|(6)) { }
+        if (|ushortValue < 100|(7)) { }
 
         if (nonSerialisedField < 100) { }
 
-        if (|intWithFloatRange < 1|(1)) { }
-        if (|intWithFloatRange == 0|(2)) { }
+        if (|intWithFloatRange < 1|(8)) { }
+        if (|intWithFloatRange == 0|(9)) { }
         if (intWithFloatRange == 1) { }
         if (intWithFloatRange == 2) { }
     }
@@ -44,8 +44,8 @@ public class MyMonoBehaviour : MonoBehaviour
         if (uintValue > 500) { }
         if (longValue > 500) { }
         if (ulongValue > 500) { }
-        if (byteValue > 500) { }
-        if (sbyteValue > 500) { }
+        if (|byteValue > 500|(10)) { }
+        if (|sbyteValue > 500|(11)) { }
         if (shortValue > 500) { }
         if (ushortValue > 500) { }
     }
@@ -56,3 +56,12 @@ public class MyMonoBehaviour : MonoBehaviour
 (0): ReSharper Warning: Expression is always false
 (1): ReSharper Warning: Expression is always false
 (2): ReSharper Warning: Expression is always false
+(3): ReSharper Warning: Expression is always false
+(4): ReSharper Warning: Expression is always false
+(5): ReSharper Warning: Expression is always false
+(6): ReSharper Warning: Expression is always false
+(7): ReSharper Warning: Expression is always false
+(8): ReSharper Warning: Expression is always false
+(9): ReSharper Warning: Expression is always false
+(10):<overlapped> ReSharper Warning: Expression is always false
+(11):<overlapped> ReSharper Warning: Expression is always false

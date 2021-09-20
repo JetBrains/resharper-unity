@@ -112,13 +112,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
                 : null;
         }
 
-        public void OpenInEditor()
+        public void OpenInEditor(string navigationId = "")
         {
             var element = myEnvoy.GetValidDeclaredElement();
             element?.Navigate(true);
         }
 
-        public void ReadMore()
+        public void ReadMore(string navigationId = "")
         {
             // Read more should always navigate to the method, even for parameters
             var element = myEnvoy.GetValidDeclaredElement();

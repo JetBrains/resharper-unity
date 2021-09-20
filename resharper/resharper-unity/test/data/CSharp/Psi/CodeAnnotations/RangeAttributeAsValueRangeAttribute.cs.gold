@@ -22,23 +22,23 @@ public class MyMonoBehaviour : MonoBehaviour
         // Only the types that are implicitly converted into int will have
         // integer value analysis warnings
         if (|intValue > 20|(0)) { }
-        if (uintValue > 20) { }
-        if (longValue > 20) { }
-        if (ulongValue > 20) { }
-        if (byteValue > 20) { }
-        if (sbyteValue > 20) { }
-        if (shortValue > 20) { }
-        if (ushortValue > 20) { }
+        if (|uintValue > 20|(1)) { }
+        if (|longValue > 20|(2)) { }
+        if (|ulongValue > 20|(3)) { }
+        if (|byteValue > 20|(4)) { }
+        if (|sbyteValue > 20|(5)) { }
+        if (|shortValue > 20|(6)) { }
+        if (|ushortValue > 20|(7)) { }
 
         if (nonSerialisedField > 20) { }
 
-        if (|intWithFloatRange < 1|(1)) { }
-        if (|intWithFloatRange == 0|(2)) { }
+        if (|intWithFloatRange < 1|(8)) { }
+        if (|intWithFloatRange == 0|(9)) { }
         if (intWithFloatRange == 1) { }
         if (intWithFloatRange == 2) { }
-        if (|intWithFloatRange > 10|(3)) { }
+        if (|intWithFloatRange > 10|(10)) { }
         if (intWithFloatRange == 10) { }
-        if (|intWithFloatRange == 11|(4)) { }
+        if (|intWithFloatRange == 11|(11)) { }
     }
 
     public void LateUpdate()
@@ -61,3 +61,10 @@ public class MyMonoBehaviour : MonoBehaviour
 (2): ReSharper Warning: Expression is always false
 (3): ReSharper Warning: Expression is always false
 (4): ReSharper Warning: Expression is always false
+(5): ReSharper Warning: Expression is always false
+(6): ReSharper Warning: Expression is always false
+(7): ReSharper Warning: Expression is always false
+(8): ReSharper Warning: Expression is always false
+(9): ReSharper Warning: Expression is always false
+(10): ReSharper Warning: Expression is always false
+(11): ReSharper Warning: Expression is always false

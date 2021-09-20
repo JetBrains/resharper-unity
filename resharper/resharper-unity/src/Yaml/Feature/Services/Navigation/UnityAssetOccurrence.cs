@@ -52,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             return sb.ToString();
         }
 
-        public OccurrenceType OccurrenceType => OccurrenceType.TextualOccurrence;
+        public OccurrenceType OccurrenceType => OccurrenceType.Occurrence;
         public bool IsValid => SourceFile.IsValid();
         public OccurrencePresentationOptions PresentationOptions { get; set; }
 

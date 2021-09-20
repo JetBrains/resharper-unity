@@ -1,3 +1,4 @@
+using JetBrains.DocumentManagers;
 using JetBrains.IDE;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
@@ -38,9 +39,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 
         public ProjectModelElementEnvoy GetProjectModelElementEnvoy(IOccurrence occurrence)
         {
+            // ReSharper's grouping is based on project files, so provide it if we've got it.
+            // See RSCPP-21079
+            var sourceFile = (occurrence as UnityAssetOccurrence)?.SourceFile;
+            if (sourceFile != null)
+            {
+                var map = sourceFile.GetSolution().GetComponent<DocumentToProjectFileMappingStorage>();
+                var miscFilesProjectFile = map.TryGetProjectFile(sourceFile.Document);
+                return miscFilesProjectFile != null ? ProjectModelElementEnvoy.Create(miscFilesProjectFile) : null;
+            }
+
             return null;
         }
-        
+
         public SourceFilePtr GetSourceFilePtr(IOccurrence occurrence) =>
             (occurrence as UnityAssetOccurrence)?.SourceFile.Ptr() ?? SourceFilePtr.Fake;
 
