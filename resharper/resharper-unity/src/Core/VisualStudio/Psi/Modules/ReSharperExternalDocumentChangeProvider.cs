@@ -6,12 +6,13 @@ using JetBrains.DocumentModel;
 using JetBrains.DocumentModel.Impl;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
+using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.TextControl;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.VisualStudio.Psi.Modules
+namespace JetBrains.ReSharper.Plugins.Unity.Core.VisualStudio.Psi.Modules
 {
     // When an external file is opened in VS through e.g. drag/drop, it's added to the Misc Files project and we get a
     // project file. Our IMiscFilesProjectPsiModuleProvider can provide the associated IPsiSourceFile and document
@@ -76,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.VisualStudio.Psi.Modules
                 if (location.IsInterestingAsset() || location.IsMeta())
                 {
                     if (module.TryGetFileByPath(location, out var psiSourceFile)
-                        && psiSourceFile is UnityYamlExternalPsiSourceFile sourceFile)
+                        && psiSourceFile is UnityExternalPsiSourceFile sourceFile)
                     {
                         // Only process the changes if the document is open. If it's closed, then it will be saved to
                         // disk when the transaction commits, and the file system watcher will report the change

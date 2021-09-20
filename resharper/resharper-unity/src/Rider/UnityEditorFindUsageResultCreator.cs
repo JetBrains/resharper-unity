@@ -10,13 +10,14 @@ using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.RdBackend.Common.Features.BackgroundTasks;
+using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
@@ -125,7 +126,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     isStateMachine ? AnimatorUsageType.StateMachine : AnimatorUsageType.State, needExpand,
                     pathFromAsset, fileName, extension);
             }
-            if (path.ExtensionWithDot.EndsWith(UnityYamlFileExtensions.AssetFileExtensionWithDot))
+            if (path.ExtensionWithDot.EndsWith(UnityAssetFileExtensions.AssetFileExtensionWithDot))
             {
                 return new AssetFindUsagesResult(needExpand, pathFromAsset, fileName, extension);
             }

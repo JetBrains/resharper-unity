@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.FileTypes;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
 {
@@ -13,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
         public new static UnityYamlProjectFileType Instance { get; private set; }
 
         public UnityYamlProjectFileType()
-            : base(Name, "Unity Yaml", UnityYamlFileExtensions.AllFileExtensionsWithDot)
+            : base(Name, "Unity Yaml", UnityAssetFileExtensions.AllFileExtensionsWithDot)
         {
         }
     }

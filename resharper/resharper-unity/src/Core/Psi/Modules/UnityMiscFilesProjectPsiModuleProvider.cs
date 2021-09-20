@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
     [MiscFilesProjectPsiModuleProvider]
     public class UnityMiscFilesProjectPsiModuleProvider : IMiscFilesProjectPsiModuleProvider
@@ -44,11 +44,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         {
             if (projectFile == null)
                 return;
-            
+
             var module = myModuleFactory.PsiModule;
             if (module == null)
                 return;
-            
+
             switch (changeType)
             {
                 case PsiModuleChange.ChangeType.Added:
@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                     // Do nothing. We only add/remove source files if the underlying file itself has been removed, which is
                     // handled by UnityExternalFilesModuleProcessor and a file system watcher
                     break;
-            
+
                 case PsiModuleChange.ChangeType.Modified:
                     if (module.TryGetFileByPath(projectFile.Location, out var sourceFile))
                         changeBuilder.AddFileChange(sourceFile, changeType);

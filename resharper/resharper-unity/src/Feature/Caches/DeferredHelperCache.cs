@@ -8,7 +8,7 @@ using JetBrains.Collections.Viewable;
 using JetBrains.DocumentManagers.impl;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
+using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Tree;
@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         public void OnDocumentChange(IPsiSourceFile sourceFile, ProjectFileDocumentCopyChange change)
         {
             // TODO : temp solution
-            if (sourceFile is UnityYamlExternalPsiSourceFile unityYamlExternalPsiSourceFile)
+            if (sourceFile is UnityExternalPsiSourceFile unityYamlExternalPsiSourceFile)
             {
                 unityYamlExternalPsiSourceFile.MarkDocumentModified();
             }

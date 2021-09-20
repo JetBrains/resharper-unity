@@ -5,6 +5,7 @@ using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
+using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
@@ -16,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
     [ShellComponent]
     public class UsageInspectionsSuppressor : IUsageInspectionsSuppressor
     {
-        private readonly JetHashSet<IClrTypeName> myImplicitlyUsedInterfaces = new JetHashSet<IClrTypeName>
+        private readonly JetHashSet<IClrTypeName> myImplicitlyUsedInterfaces = new()
         {
             new ClrTypeName("UnityEditor.Build.IPreprocessBuild"),
             new ClrTypeName("UnityEditor.Build.IPostprocessBuild"),
@@ -31,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             new ClrTypeName("UnityEditor.Build.IOrderedCallback"),
         };
 
-        private readonly JetHashSet<IClrTypeName> myUxmlFactoryBaseClasses = new JetHashSet<IClrTypeName>()
+        private readonly JetHashSet<IClrTypeName> myUxmlFactoryBaseClasses = new()
         {
             new ClrTypeName("UnityEngine.UIElements.UxmlFactory`1"),
             new ClrTypeName("UnityEngine.UIElements.UxmlFactory`2"),
@@ -48,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
             switch (element)
             {
-                case IClass cls when unityApi.IsUnityType(cls) || 
+                case IClass cls when unityApi.IsUnityType(cls) ||
                                      unityApi.IsComponentSystemType(cls) ||
                                      IsUxmlFactory(cls):
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
@@ -173,11 +174,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                 return false;
 
             var solution = method.GetSolution();
-            var assetSerializationMode = solution.GetComponent<AssetSerializationMode>();
-            var yamlParsingEnabled = solution.GetComponent<AssetIndexingSupport>().IsEnabled;
+            var isForceText = solution.GetComponent<AssetSerializationMode>().IsForceText;
+            var assetIndexingEnabled = solution.GetComponent<AssetIndexingSupport>().IsEnabled.Value;
+            var deferredCacheCompletedOnce = solution.GetComponent<DeferredCacheController>().CompletedOnce.Value;
 
-            // TODO: These two are usually used together. Consider combining in some way
-            if (!yamlParsingEnabled.Value || !assetSerializationMode.IsForceText || !solution.GetComponent<DeferredCacheController>().CompletedOnce.Value)
+            if (!assetIndexingEnabled || !isForceText || !deferredCacheCompletedOnce)
                 return unityApi.IsPotentialEventHandler(method, false); // if yaml parsing is disabled, we will consider private methods as unused
 
             var eventsCount = solution

@@ -5,7 +5,8 @@ using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
+using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.Util;
@@ -18,25 +19,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
     [SolutionComponent]
     public class UnityProjectSettingsCache : SimpleICache<ProjectSettingsCacheItem>
     {
+        private readonly AssetSerializationMode myAssetSerializationMode;
         private readonly IEnumerable<IProjectSettingsAssetHandler> myProjectSettingsAssetHandlers;
-        private readonly ProjectSettingsCacheItem myLocalCache = new ProjectSettingsCacheItem();
+        private readonly ProjectSettingsCacheItem myLocalCache = new();
 
-        private readonly CountingSet<string> myShortNameAtBuildSettings = new CountingSet<string>();
-        private readonly CountingSet<string> myDisabledShortNameAtBuildSettings = new CountingSet<string>();
-        private readonly CountingSet<string> myShortNameAll = new CountingSet<string>();
+        private readonly CountingSet<string> myShortNameAtBuildSettings = new();
+        private readonly CountingSet<string> myDisabledShortNameAtBuildSettings = new();
+        private readonly CountingSet<string> myShortNameAll = new();
 
-        public UnityProjectSettingsCache(Lifetime lifetime, IShellLocks shellLocks,  IPersistentIndexManager persistentIndexManager,
-            IEnumerable<IProjectSettingsAssetHandler> projectSettingsAssetHandlers)
+        public UnityProjectSettingsCache(Lifetime lifetime,
+                                         IShellLocks shellLocks,
+                                         IPersistentIndexManager persistentIndexManager,
+                                         AssetSerializationMode assetSerializationMode,
+                                         IEnumerable<IProjectSettingsAssetHandler> projectSettingsAssetHandlers)
             : base(lifetime, shellLocks, persistentIndexManager, ProjectSettingsCacheItem.Marshaller)
         {
+            myAssetSerializationMode = assetSerializationMode;
             myProjectSettingsAssetHandlers = projectSettingsAssetHandlers;
-            
+
             myLocalCache.Tags.AddItems("Untagged", "Respawn", "Finish", "EditorOnly", "MainCamera", "Player", "GameController");
         }
 
+        public bool IsAvailable() => myAssetSerializationMode.IsForceText;
+
         protected override bool IsApplicable(IPsiSourceFile sourceFile)
         {
-            return sourceFile.PsiModule is UnityExternalFilesPsiModule;
+            return IsAvailable() && sourceFile.PsiModule is UnityExternalFilesPsiModule;
         }
 
         public override object Build(IPsiSourceFile sourceFile, bool isStartup)
@@ -45,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 return null;
 
             var cacheItem = new ProjectSettingsCacheItem();
-            if (sourceFile.Name.EndsWith(UnityYamlFileExtensions.SceneFileExtensionWithDot))
+            if (sourceFile.Name.EndsWith(UnityAssetFileExtensions.SceneFileExtensionWithDot))
                 cacheItem.Scenes.SceneNames.Add(GetUnityPathFor(sourceFile));
 
             foreach (var projectSettingsAssetHandler in myProjectSettingsAssetHandlers)
@@ -63,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public override void Merge(IPsiSourceFile sourceFile, object builtPart)
         {
             RemoveFromLocalCache(sourceFile);
-            AddToLocalCache(sourceFile, builtPart as ProjectSettingsCacheItem);
+            AddToLocalCache(builtPart as ProjectSettingsCacheItem);
             base.Merge(sourceFile, builtPart);
         }
 
@@ -82,10 +90,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         private void PopulateLocalCache()
         {
-            foreach (var (file, cacheItem) in Map)
-            {
-                AddToLocalCache(file, cacheItem);
-            }
+            foreach (var (_, cacheItem) in Map)
+                AddToLocalCache(cacheItem);
         }
 
         private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
@@ -133,7 +139,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         }
 
 
-        private void AddToLocalCache(IPsiSourceFile sourceFile, [CanBeNull] ProjectSettingsCacheItem cacheItem)
+        private void AddToLocalCache([CanBeNull] ProjectSettingsCacheItem cacheItem)
         {
             if (cacheItem == null)
                 return;
@@ -201,7 +207,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 yield return value;
             }
         }
-        
+
         public int SceneCount => myLocalCache.Scenes.SceneNamesFromBuildSettings.Count;
 
         public bool IsScenePresentedAtEditorBuildSettings(string sceneName, out bool ambiguousDefinition)
@@ -227,7 +233,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         public string GetShortNameForSceneName(string name)
         {
-            return name.Split('/').Last().RemoveEnd(UnityYamlFileExtensions.SceneFileExtensionWithDot);
+            return name.Split('/').Last().RemoveEnd(UnityAssetFileExtensions.SceneFileExtensionWithDot);
         }
 
         public bool IsSceneDisabledAtEditorBuildSettings(string sceneName)
@@ -272,12 +278,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         {
             return myLocalCache.Inputs.Contains(literal);
         }
-        
+
         public bool HasTag(string literal)
         {
             return myLocalCache.Tags.Contains(literal);
         }
-        
+
         public bool HasLayer(string literal)
         {
             return myLocalCache.Layers.Contains(literal);
