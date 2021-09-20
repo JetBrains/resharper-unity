@@ -1,8 +1,10 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
@@ -11,6 +13,7 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
+using JetBrains.Util.dataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
 {
@@ -27,6 +30,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
             var resolveResultWithInfo = CheckedReferenceImplUtil.Resolve(this, GetReferenceSymbolTable(true));
             if (!resolveResultWithInfo.Result.IsEmpty)
                 return resolveResultWithInfo;
+
+            var name = GetName();
+            if (name.StartsWith("guid:", StringComparison.InvariantCultureIgnoreCase) &&
+                Guid.TryParse(name[5..], out var guid))
+            {
+                var metaFileCache = myOwner.GetSolution().GetComponent<MetaFileGuidCache>();
+                var asmDefNameCache = myOwner.GetSolution().GetComponent<AsmDefNameCache>();
+
+                // We should only get a single asset, but beware of copy/paste files
+                var elements = new FrugalLocalList<IDeclaredElement>();
+                foreach (var path in metaFileCache.GetAssetFilePathsFromGuid(guid))
+                    elements.Add(asmDefNameCache.GetNameDeclaredElement(path));
+
+                if (elements.Count > 1)
+                {
+                    return new ResolveResultWithInfo(new CandidatesResolveResult(elements.ResultingList()),
+                        ResolveErrorType.MULTIPLE_CANDIDATES);
+                }
+
+                if (elements.Count == 1)
+                    return new ResolveResultWithInfo(new SimpleResolveResult(elements[0]), ResolveErrorType.OK);
+            }
 
             return new ResolveResultWithInfo(EmptyResolveResult.Instance,
                 AsmDefResolveErrorType.ASMDEF_UNRESOLVED_REFERENCED_PROJECT_ERROR);
