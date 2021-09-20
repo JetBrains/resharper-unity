@@ -60,7 +60,7 @@ class MetaTracker(private val project: Project) : BulkFileListener, VfsBackendRe
         // ... and then construct meta actions
         val actions = MetaActionList(metaFiles)
         for (event in events) {
-            if (!translateEvent(event) || isMetaFile(event)) continue
+            if (!translateEvent(event) || !isApplicable(event) || isMetaFile(event)) continue
 
             try {
                 when (event) {
