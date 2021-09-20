@@ -580,6 +580,7 @@ tasks {
 
     withType<Test> {
         useTestNG()
+        jvmArgs = listOf("-Didea.force.use.core.classloader=true")
         if (project.hasProperty("integrationTests")) {
             val testsType = project.property("integrationTests").toString()
             if (testsType == "include") {
