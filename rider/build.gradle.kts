@@ -443,9 +443,16 @@ tasks {
         }
         val releaseNotes = """New in $pluginVersion
                             
-                            $changelogNotes
+$changelogNotes
                             
-                            See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.""".trimIndent().replace("&quot;", "\"")
+See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.""".let {
+            if (isWindows) {
+                it.replace("&quot;", "\\\"")
+            }
+            else {
+                it.replace("&quot;", "\"")
+            }
+        }
 
         // The command line to call nuget pack passes properties as a semi-colon delimited string
         // We can't have HTML encoded entities (e.g. &quot;)
