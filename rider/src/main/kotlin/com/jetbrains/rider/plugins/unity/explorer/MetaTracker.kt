@@ -15,7 +15,11 @@ import com.intellij.openapi.vfs.newvfs.events.*
 import com.intellij.util.PathUtil
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.platform.util.getLogger
+import com.jetbrains.rdclient.util.idea.toIOFile
+import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
+import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.VfsBackendRequester
+import com.jetbrains.rider.projectView.workspace.impl.WorkspaceUserModelUpdater
 import com.microsoft.alm.helpers.Environment
 import org.jetbrains.annotations.Nls
 import java.nio.file.Path
@@ -40,11 +44,14 @@ class MetaTracker(private val project: Project) : BulkFileListener, VfsBackendRe
     }
 
     override fun after(events: MutableList<out VFileEvent>) {
+        if (!project.isUnityProjectFolder())
+            return
 
         // Collect modified meta files at first (usually there is no such files, but still)
         val metaFiles = hashSetOf<Path>()
         for (event in events) {
             if (!translateEvent(event)) continue
+            if (!isApplicable(event)) continue
             if (isMetaFile(event)) {
                 metaFiles.add(Paths.get(event.path))
             }
@@ -58,6 +65,7 @@ class MetaTracker(private val project: Project) : BulkFileListener, VfsBackendRe
             try {
                 when (event) {
                     is VFileCreateEvent -> {
+                        if (!isApplicableForCreatingMeta(event)) continue
                         val metaFileName = getMetaFileName(event.childName)
                         val metaFile = event.parent.toNioPath().resolve(metaFileName)
                         actions.add(metaFile) {
@@ -71,6 +79,7 @@ class MetaTracker(private val project: Project) : BulkFileListener, VfsBackendRe
                         }
                     }
                     is VFileCopyEvent -> {
+                        if (!isApplicableForCreatingMeta(event)) continue
                         val metaFile = getMetaFile(event.file.path) ?: continue
                         actions.add(metaFile) {
                             createMetaFile(event.newParent, getMetaFileName(event.newChildName))
@@ -132,6 +141,26 @@ class MetaTracker(private val project: Project) : BulkFileListener, VfsBackendRe
     private fun isMetaFile(event: VFileEvent): Boolean {
         val extension = event.file?.extension ?: PathUtil.getFileExtension(event.path)
         return "meta".equals(extension, true)
+    }
+
+    private fun isApplicable(event: VFileEvent): Boolean {
+        val file = event.file ?: return false
+        val parentFolder = file.parent?.toIOFile() ?: return false
+        val parentPath = parentFolder.toPath()
+        // exclude direct children of Packages folder
+        if (parentPath == project.projectDir.toIOFile().toPath().resolve("Packages"))
+            return false
+
+        return true
+    }
+
+    private fun isApplicableForCreatingMeta(event: VFileEvent):Boolean {
+        // exclude files added manually with `Attach existing folder` action
+        val file = event.file?.toIOFile() ?: return false
+        for (attachedFolder in WorkspaceUserModelUpdater.getInstance(project).getAttachedFolders()) {
+            if (VfsUtil.isAncestor(attachedFolder, file, false)) return false
+        }
+        return true
     }
 
     private fun getMetaFile(path: String?): Path? {
