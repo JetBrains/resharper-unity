@@ -203,18 +203,18 @@ tasks {
         group = ciGroup
         dependsOn(patchPluginXml)
         val pluginXml = File(repoRoot, "rider/src/main/resources/META-INF/plugin.xml")
-        assert(pluginXml.isFile)
+        if (!pluginXml.isFile) throw GradleException("plugin.xml must be a valid file")
 
         inputs.file(pluginXml)
         outputs.file(pluginXml)
 
         doLast {
             val parsed = XmlParser().parse(pluginXml).text()
-            assert(parsed.isNotEmpty())
+            if (parsed.isEmpty()) throw GradleException("plugin.xml cannot be empty")
 
             val rawBytes = pluginXml.readBytes()
-            assert(rawBytes.isNotEmpty())
-            assert(rawBytes.any { it < 0 })
+            if (rawBytes.isEmpty()) throw GradleException("plugin.xml cannot be empty")
+            if (rawBytes.any { it < 0 }) throw GradleException("plugin.xml cannot contain invalid bytes")
 
             logger.lifecycle("$pluginXml.path is valid XML and contains only US-ASCII symbols, bytes: $rawBytes.length")
         }
@@ -445,10 +445,12 @@ tasks {
                             
                             $changelogNotes
                             
-                            See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.""".trimIndent()
+                            See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.""".trimIndent().replace("&quot;", "\"")
+
         // The command line to call nuget pack passes properties as a semi-colon delimited string
         // We can't have HTML encoded entities (e.g. &quot;)
-        assert(!releaseNotes.contains(";"))
+        if (releaseNotes.contains(";")) throw GradleException("Release notes cannot semi-colon")
+
         setNuspecFile(File(backend.backendRoot, "resharper-unity/src/resharper-unity.resharper.nuspec").canonicalPath)
         setDestinationDir(File(backend.backendRoot, "build/distributions/$buildConfiguration").canonicalPath)
         packageAnalysis = false
@@ -458,7 +460,7 @@ tasks {
             "ReleaseNotes" to releaseNotes
         )
         doFirst {
-            buildServer.progress("Packing: $nuspecFile.name")
+            buildServer.progress("Packing: ${nuspecFile.name}")
         }
     }
 
