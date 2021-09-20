@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Occurrences
     [SolutionComponent]
     public class AsmDefOccurrenceKindProvider : IOccurrenceKindProvider
     {
-        private static readonly OccurrenceKind AssemblyDefinitionReference =
+        public static readonly OccurrenceKind AssemblyDefinitionReference =
             new("Assembly definition reference", OccurrenceKind.SemanticAxis);
 
         public ICollection<OccurrenceKind> GetOccurrenceKinds(IOccurrence occurrence)
