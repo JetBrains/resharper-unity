@@ -164,6 +164,7 @@ tasks {
     }
 
     withType<IntelliJInstrumentCodeTask> {
+        // val bundledMavenArtifacts = file("build/maven-artifacts") // you may manually download it from SDK build on TC
         if (bundledMavenArtifacts.exists()) {
             logger.lifecycle("Use ant compiler artifacts from local folder: $bundledMavenArtifacts")
             compilerClassPathFromMaven.set(
