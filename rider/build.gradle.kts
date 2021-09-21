@@ -129,8 +129,8 @@ intellij {
     // Note that there's no guarantee that these are kept up-to-date
     // version = 'LATEST-TRUNK-SNAPSHOT'
     // If the build isn't available in intellij-repository, use an installed version via `localPath`
-    // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
-    // localPath = "F:\\RiderSDK"
+    // localPath.set('/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents')
+    // localPath.set("D:\\RiderSDK")
 
     if (bundledRiderSdkRoot.exists()) {
         localPath.set(bundledRiderSdkRoot.canonicalPath)
@@ -538,7 +538,7 @@ tasks {
         }
     }
 
-    named<PrepareSandboxTask>("prepareSandbox") {
+    withType<PrepareSandboxTask> {
         // Default dependsOn includes the standard Java build/jar task
         dependsOn(buildReSharperHostPlugin, buildUnityEditorPlugin)
 
