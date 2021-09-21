@@ -129,8 +129,8 @@ intellij {
     // Note that there's no guarantee that these are kept up-to-date
     // version = 'LATEST-TRUNK-SNAPSHOT'
     // If the build isn't available in intellij-repository, use an installed version via `localPath`
-    // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
-    // localPath = "F:\\RiderSDK"
+    // localPath.set('/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents')
+    // localPath.set("D:\\RiderSDK")
 
     if (bundledRiderSdkRoot.exists()) {
         localPath.set(bundledRiderSdkRoot.canonicalPath)
@@ -169,7 +169,8 @@ tasks {
             compilerClassPathFromMaven.set(
                 bundledMavenArtifacts.walkTopDown()
                     .filter { it.extension == "jar" && !it.name.endsWith("-sources.jar") }
-                    .toList() + File("${ideaDependency.get().classes}/lib/util.jar")
+                    .toList()
+                    + File("${ideaDependency.get().classes}/lib/3rd-party-rt.jar")
             )
         } else {
             logger.lifecycle("Use ant compiler artifacts from maven")
@@ -546,7 +547,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         }
     }
 
-    named<PrepareSandboxTask>("prepareSandbox") {
+    withType<PrepareSandboxTask> {
         // Default dependsOn includes the standard Java build/jar task
         dependsOn(buildReSharperHostPlugin, buildUnityEditorPlugin)
 
@@ -589,6 +590,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
 
     withType<Test> {
         useTestNG()
+        jvmArgs = listOf("-Didea.force.use.core.classloader=true")
         if (project.hasProperty("integrationTests")) {
             val testsType = project.property("integrationTests").toString()
             if (testsType == "include") {
