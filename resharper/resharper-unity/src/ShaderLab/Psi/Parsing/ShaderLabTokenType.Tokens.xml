@@ -112,6 +112,7 @@
     <Command name="ZCLIP_KEYWORD" representation="ZClip" />
     <Command name="ZTEST_KEYWORD" representation="ZTest" />
     <Command name="ZWRITE_KEYWORD" representation="ZWrite" />
+    <Command name="CONSERVATIVE_KEYWORD" representation="Conservative" />
     <Command name="OFFSET_KEYWORD" representation="Offset" />
     <Command name="BLEND_KEYWORD" representation="Blend" />
     <Command name="BLEND_OP_KEYWORD" representation="BlendOp" />

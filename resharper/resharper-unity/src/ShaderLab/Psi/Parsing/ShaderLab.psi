@@ -280,6 +280,7 @@ options {
   | ZCLIP_KEYWORD
   | ZTEST_KEYWORD
   | ZWRITE_KEYWORD
+  | CONSERVATIVE_KEYWORD
   | OFFSET_KEYWORD
   | BLEND_KEYWORD
   | BLEND_OP_KEYWORD
@@ -443,6 +444,7 @@ options {
   | ZCLIP_KEYWORD
   | ZTEST_KEYWORD
   | ZWRITE_KEYWORD
+  | CONSERVATIVE_KEYWORD
   | OFFSET_KEYWORD
   | BLEND_KEYWORD
   | BLEND_OP_KEYWORD
@@ -602,6 +604,7 @@ options {
   | ZCLIP_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
   | ZTEST_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
   | ZWRITE_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | CONSERVATIVE_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
   | OFFSET_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
   | BLEND_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
   | BLEND_OP_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
@@ -1313,6 +1316,7 @@ interface renderStateCommand
 :
   cullCommand
   | zwriteCommand
+  | conservativeCommand
   | ztestCommand
   | zclipCommand
   | offsetCommand
@@ -1395,6 +1399,12 @@ cullOrientation
 zwriteCommand
 :
   ZWRITE_KEYWORD<SHADER_LAB_KEYWORD, ZWriteKeyword>
+  boolValue<SHADER_LAB_VALUE, Value>
+;
+
+conservativeCommand
+:
+  CONSERVATIVE_KEYWORD<SHADER_LAB_KEYWORD, ConservativeKeyword>
   boolValue<SHADER_LAB_VALUE, Value>
 ;
 
