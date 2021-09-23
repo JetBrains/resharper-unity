@@ -21,15 +21,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
     public class FormerlySerializedAsAtomicRename : AtomicRenameBase
     {
         private readonly KnownTypesCache myKnownTypesCache;
-        private readonly bool myIsRenameShouldBeSilent;
         private readonly SerializedFieldRenameModel myModel;
         private readonly IDeclaredElementPointer<IDeclaredElement> myPointer;
 
         public FormerlySerializedAsAtomicRename(IDeclaredElement declaredElement, string newName,
-            ISettingsStore settingsStore, KnownTypesCache knownTypesCache, bool isRenameShouldBeSilent)
+            ISettingsStore settingsStore, KnownTypesCache knownTypesCache)
         {
             myKnownTypesCache = knownTypesCache;
-            myIsRenameShouldBeSilent = isRenameShouldBeSilent;
             myModel = new SerializedFieldRenameModel(settingsStore);
 
             myPointer = declaredElement.CreateElementPointer();
@@ -42,8 +40,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         {
             // hide confirmation page only, refactoring should update shared document too otherwise
             // we will get inconsistent change modification message box
-            if (myIsRenameShouldBeSilent)
-                return null;
             
             return new FormerlySerializedAsRefactoringPage(
                 ((RefactoringWorkflowBase) renameWorkflow).WorkflowExecuterLifetime, myModel);
