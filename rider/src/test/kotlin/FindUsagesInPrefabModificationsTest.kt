@@ -181,4 +181,14 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
         doTest(9, 26, "Script5.cs")
     }
+
+// TODO uncomment after fixing tests
+
+//    @Test(dataProvider = "findUsagesGrouping")
+//    fun testSingleQuotedName(caseName: String, groups: List<String>?) {
+//        disableAllGroups()
+//        groups?.forEach { group -> setGroupingEnabled(group, true) }
+//
+//        doTest(5, 23, "SingleQuotedScript.cs")
+//    }
 }
