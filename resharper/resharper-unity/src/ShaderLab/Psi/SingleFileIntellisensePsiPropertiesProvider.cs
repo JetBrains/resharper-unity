@@ -1,4 +1,5 @@
-﻿using JetBrains.ProjectModel;
+﻿using JetBrains.Annotations;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
@@ -21,16 +22,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi
     public class SingleFileIntellisensePsiPropertiesProvider : IPsiSourceFilePropertiesProvider
     {
         public IPsiSourceFileProperties GetPsiProperties(IPsiSourceFileProperties prevProperties, IProject project,
-            IProjectFile projectFile, IPsiSourceFile sourceFile)
+            [CanBeNull] IProjectFile projectFile, IPsiSourceFile sourceFile)
         {
             using (ReadLockCookie.Create())
             {
                 // R# already has a helper method to recognise the SFI project - IsVCXMiscProjectInVs2015
-                if (prevProperties != null && prevProperties.ShouldBuildPsi
-                                           && prevProperties.ProvidesCodeModel
-                                           && !(sourceFile is IExternalPsiSourceFile)
-                                           && project.IsVCXMiscProjectInVs2015()
-                                           && projectFile.LanguageType.Is<ShaderLabProjectFileType>())
+                if (projectFile != null && prevProperties != null 
+                                        && prevProperties.ShouldBuildPsi
+                                        && prevProperties.ProvidesCodeModel
+                                        && !(sourceFile is IExternalPsiSourceFile)
+                                        && project.IsVCXMiscProjectInVs2015()
+                                        && projectFile.LanguageType.Is<ShaderLabProjectFileType>())
                 {
                     return ExcludedProjectPsiSourceFilePropertiesProvider.ExcludedProjectPsiSourceFileProperties
                         .Instance;
