@@ -1,10 +1,10 @@
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages;
-using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -14,29 +14,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         HighlightingTypes = new[] {typeof(UnknownAnimatorStateNameWarning)})]
     public class PlayAnimatorStateAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
-        [NotNull] private readonly AssetSerializationMode myAssetSerializationMode;
-        [NotNull] private readonly YamlSupport myUnityYamlSupport;
+        private readonly AssetIndexingSupport myAssetIndexingSupport;
+        private readonly AssetSerializationMode myAssetSerializationMode;
 
-        public PlayAnimatorStateAnalyzer([NotNull] UnityApi unityApi,
-                                         [NotNull] AssetSerializationMode assetSerializationMode,
-                                         [NotNull] YamlSupport unityYamlSupport)
+        public PlayAnimatorStateAnalyzer(UnityApi unityApi,
+                                         AssetIndexingSupport assetIndexingSupport,
+                                         AssetSerializationMode assetSerializationMode)
             : base(unityApi)
         {
+            myAssetIndexingSupport = assetIndexingSupport;
             myAssetSerializationMode = assetSerializationMode;
-            myUnityYamlSupport = unityYamlSupport;
         }
 
         protected override void Analyze([NotNull] IInvocationExpression invocation,
                                         ElementProblemAnalyzerData data,
                                         [NotNull] IHighlightingConsumer consumer)
         {
-            if (!myAssetSerializationMode.IsForceText || !myUnityYamlSupport.IsParsingEnabled.Value) return;
+            if (!myAssetSerializationMode.IsForceText || !myAssetIndexingSupport.IsEnabled.Value) return;
+
             var argument = GetStateNameArgumentFrom(invocation);
             if (!(argument?.Value is ICSharpLiteralExpression literal) ||
                 !invocation.InvocationExpressionReference.IsAnimatorPlayMethod()) return;
             var container = invocation.GetSolution().TryGetComponent<AnimatorScriptUsagesElementContainer>();
             if (container == null ||
-                !(literal.ConstantValue.Value is string stateName) || 
+                !(literal.ConstantValue.Value is string stateName) ||
                 container.ContainsStateName(stateName)) return;
             consumer.AddHighlighting(new UnknownAnimatorStateNameWarning(argument));
         }

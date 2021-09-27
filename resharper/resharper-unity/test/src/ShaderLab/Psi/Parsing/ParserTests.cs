@@ -50,6 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Parsing
         [TestCase("PassDefUsePass")]
 
         [TestCase("CullDepth01")]
+        [TestCase("Conservative01")]
         [TestCase("PassTags")]
         [TestCase("Stencil01")]
         [TestCase("Stencil02")]

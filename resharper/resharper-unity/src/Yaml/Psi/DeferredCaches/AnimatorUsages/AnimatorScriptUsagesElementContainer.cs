@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;

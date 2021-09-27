@@ -9,9 +9,9 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
+using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
@@ -26,18 +26,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
     public class UnityEventTargetAtomicRename : AtomicRenameBase
     {
         private readonly ISolution mySolution;
-        private readonly bool myIsRenameShouldBeSilent;
         private readonly IDeclaredElementPointer<IDeclaredElement> myPointer;
         private List<UnityEventHandlerOccurrence> myElementsToRename;
         private bool myIsProperty;
 
         public UnityEventTargetAtomicRename(ISolution solution,
                                             IDeclaredElement declaredElement,
-                                            string newName,
-                                            bool isRenameShouldBeSilent)
+                                            string newName)
         {
             mySolution = solution;
-            myIsRenameShouldBeSilent = isRenameShouldBeSilent;
             myPointer = declaredElement.CreateElementPointer();
             OldName = declaredElement.ShortName;
             NewName = newName;
@@ -54,7 +51,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
             // NOTE: find usages under the hood uses cache which stores TextRanges, cache will not be updated between several atomic renames.
             // That means that only one atomic rename should exist or only one atomic rename should return non-empty result from find usages below
-            if (myIsRenameShouldBeSilent) return;
 
             var de = myPointer.FindDeclaredElement();
             if (de == null) return;
@@ -74,9 +70,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
         public override IRefactoringPage CreateRenamesConfirmationPage(IRenameWorkflow renameWorkflow, IProgressIndicator pi)
         {
-            if (myIsRenameShouldBeSilent)
-                return null;
-
             return new UnityEventTargetRefactoringPage(
                 ((RefactoringWorkflowBase) renameWorkflow).WorkflowExecuterLifetime, mySolution.GetComponent<DeferredCacheController>());
         }

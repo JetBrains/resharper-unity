@@ -23,13 +23,13 @@ class YamlHugeFileNotification(project: Project): ProtocolSubscribedProjectCompo
 
     private fun showNotificationIfNeeded(){
 
-        val message = """Due to the size of the project, parsing of Unity scenes, assets and prefabs has been disabled. Usages of C# code in these files will not be detected. Re-enabling can impact initial file processing.
+        val message = """Due to the size of the project, indexing of Unity scenes, assets and prefabs has been disabled. Usages of C# code in these files will not be detected. Re-enabling can impact initial file processing.
             <ul style="margin-left:10px">
               <li><a href="turnOnYamlParsing">Turn on anyway</a></li>
             </ul>
             """
 
-        val yamlNotification = Notification(notificationGroupId.displayId, "Disabled parsing of Unity assets", message, NotificationType.WARNING)
+        val yamlNotification = Notification(notificationGroupId.displayId, "Disabled indexing of Unity assets", message, NotificationType.WARNING)
         yamlNotification.setListener { notification, hyperlinkEvent ->
             if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED)
                 return@setListener

@@ -1,6 +1,7 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Rider.Backend.Features.Usages;

@@ -129,8 +129,8 @@ intellij {
     // Note that there's no guarantee that these are kept up-to-date
     // version = 'LATEST-TRUNK-SNAPSHOT'
     // If the build isn't available in intellij-repository, use an installed version via `localPath`
-    // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
-    // localPath = "F:\\RiderSDK"
+    // localPath.set('/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents')
+    // localPath.set("D:\\RiderSDK")
 
     if (bundledRiderSdkRoot.exists()) {
         localPath.set(bundledRiderSdkRoot.canonicalPath)
@@ -164,12 +164,14 @@ tasks {
     }
 
     withType<IntelliJInstrumentCodeTask> {
+        // val bundledMavenArtifacts = file("build/maven-artifacts") // you may manually download it from SDK build on TC
         if (bundledMavenArtifacts.exists()) {
             logger.lifecycle("Use ant compiler artifacts from local folder: $bundledMavenArtifacts")
             compilerClassPathFromMaven.set(
                 bundledMavenArtifacts.walkTopDown()
                     .filter { it.extension == "jar" && !it.name.endsWith("-sources.jar") }
-                    .toList() + File("${ideaDependency.get().classes}/lib/util.jar")
+                    .toList()
+                    + File("${ideaDependency.get().classes}/lib/3rd-party-rt.jar")
             )
         } else {
             logger.lifecycle("Use ant compiler artifacts from maven")
@@ -203,18 +205,18 @@ tasks {
         group = ciGroup
         dependsOn(patchPluginXml)
         val pluginXml = File(repoRoot, "rider/src/main/resources/META-INF/plugin.xml")
-        assert(pluginXml.isFile)
+        if (!pluginXml.isFile) throw GradleException("plugin.xml must be a valid file")
 
         inputs.file(pluginXml)
         outputs.file(pluginXml)
 
         doLast {
             val parsed = XmlParser().parse(pluginXml).text()
-            assert(parsed.isNotEmpty())
+            if (parsed.isEmpty()) throw GradleException("plugin.xml cannot be empty")
 
             val rawBytes = pluginXml.readBytes()
-            assert(rawBytes.isNotEmpty())
-            assert(rawBytes.any { it < 0 })
+            if (rawBytes.isEmpty()) throw GradleException("plugin.xml cannot be empty")
+            if (rawBytes.any { it < 0 }) throw GradleException("plugin.xml cannot contain invalid bytes")
 
             logger.lifecycle("$pluginXml.path is valid XML and contains only US-ASCII symbols, bytes: $rawBytes.length")
         }
@@ -443,12 +445,21 @@ tasks {
         }
         val releaseNotes = """New in $pluginVersion
                             
-                            $changelogNotes
+$changelogNotes
                             
-                            See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.""".trimIndent()
+See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.""".let {
+            if (isWindows) {
+                it.replace("&quot;", "\\\"")
+            }
+            else {
+                it.replace("&quot;", "\"")
+            }
+        }
+
         // The command line to call nuget pack passes properties as a semi-colon delimited string
         // We can't have HTML encoded entities (e.g. &quot;)
-        assert(!releaseNotes.contains(";"))
+        if (releaseNotes.contains(";")) throw GradleException("Release notes cannot semi-colon")
+
         setNuspecFile(File(backend.backendRoot, "resharper-unity/src/resharper-unity.resharper.nuspec").canonicalPath)
         setDestinationDir(File(backend.backendRoot, "build/distributions/$buildConfiguration").canonicalPath)
         packageAnalysis = false
@@ -458,7 +469,7 @@ tasks {
             "ReleaseNotes" to releaseNotes
         )
         doFirst {
-            buildServer.progress("Packing: $nuspecFile.name")
+            buildServer.progress("Packing: ${nuspecFile.name}")
         }
     }
 
@@ -537,7 +548,7 @@ tasks {
         }
     }
 
-    named<PrepareSandboxTask>("prepareSandbox") {
+    withType<PrepareSandboxTask> {
         // Default dependsOn includes the standard Java build/jar task
         dependsOn(buildReSharperHostPlugin, buildUnityEditorPlugin)
 
@@ -580,6 +591,7 @@ tasks {
 
     withType<Test> {
         useTestNG()
+        jvmArgs = listOf("-Didea.force.use.core.classloader=true")
         if (project.hasProperty("integrationTests")) {
             val testsType = project.property("integrationTests").toString()
             if (testsType == "include") {

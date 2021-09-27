@@ -1,12 +1,7 @@
-using JetBrains.Annotations;
-using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
-using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
@@ -16,23 +11,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     })]
     public class InputManagerAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
-        private readonly AssetSerializationMode myAssetSerializationMode;
-        private readonly YamlSupport myUnityYamlSupport;
+        private readonly UnityProjectSettingsCache myProjectSettingsCache;
 
-        public InputManagerAnalyzer([NotNull] UnityApi unityApi, AssetSerializationMode assetSerializationMode,
-                                    YamlSupport unityYamlSupport)
+        public InputManagerAnalyzer(UnityApi unityApi, UnityProjectSettingsCache unityProjectSettingsCache)
             : base(unityApi)
         {
-            myAssetSerializationMode = assetSerializationMode;
-            myUnityYamlSupport = unityYamlSupport;
+            myProjectSettingsCache = unityProjectSettingsCache;
         }
 
         protected override void Analyze(IInvocationExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            if (!myAssetSerializationMode.IsForceText)
-                return;
-
-            if (!myUnityYamlSupport.IsParsingEnabled.Value)
+            if (!myProjectSettingsCache.IsAvailable())
                 return;
 
             if (element.IsInputAxisMethod() || element.IsInputButtonMethod())
@@ -42,8 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 if (literal == null)
                     return;
 
-                var cache = element.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
-                if (cache != null && !cache.HasInput(literal))
+                if (myProjectSettingsCache != null && !myProjectSettingsCache.HasInput(literal))
                     consumer.AddHighlighting(new UnknownInputAxesWarning(argument));
             }
         }

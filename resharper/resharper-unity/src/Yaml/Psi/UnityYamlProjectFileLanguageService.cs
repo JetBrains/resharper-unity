@@ -1,9 +1,9 @@
 using System;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Resources.Icons;
-using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
@@ -14,11 +14,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
     [ProjectFileType(typeof(UnityYamlProjectFileType))]
     public class UnityYamlProjectFileLanguageService : ProjectFileLanguageService
     {
-        private readonly YamlSupport myYamlSupport;
-
-        public UnityYamlProjectFileLanguageService(YamlSupport yamlSupport) : base(UnityYamlProjectFileType.Instance)
+        public UnityYamlProjectFileLanguageService()
+            : base(UnityYamlProjectFileType.Instance)
         {
-            myYamlSupport = yamlSupport;
         }
 
         public override ILexerFactory GetMixedLexerFactory(ISolution solution, IBuffer buffer, IPsiSourceFile sourceFile = null)
@@ -29,20 +27,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
         public override PsiLanguageType GetPsiLanguageType(IPsiSourceFile sourceFile)
         {
-            if (UnityYamlFileExtensions.IsMetaOrProjectSettings(sourceFile.GetSolution(), sourceFile.GetLocation()))
+            if (UnityAssetFileExtensions.IsMetaOrProjectSettings(sourceFile.GetSolution(), sourceFile.GetLocation()))
                 return base.GetPsiLanguageType(sourceFile);
-            
+
             return UnityYamlLanguage.Instance ?? throw new InvalidOperationException("Unexpected state");
         }
 
-        protected override PsiLanguageType PsiLanguageType
-        {
-            get
-            {
-                var yamlLanguage = (PsiLanguageType) YamlLanguage.Instance ?? UnknownLanguage.Instance;
-                return myYamlSupport.IsParsingEnabled.Value ? yamlLanguage : UnknownLanguage.Instance;
-            }
-        }
+        // ReSharper disable once AssignNullToNotNullAttribute
+        protected override PsiLanguageType PsiLanguageType =>
+            (PsiLanguageType) YamlLanguage.Instance ?? UnknownLanguage.Instance;
 
         public override IconId Icon => YamlFileTypeThemedIcons.FileYaml.Id;
     }

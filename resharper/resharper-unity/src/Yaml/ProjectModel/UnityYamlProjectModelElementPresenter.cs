@@ -1,5 +1,6 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.UI.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel

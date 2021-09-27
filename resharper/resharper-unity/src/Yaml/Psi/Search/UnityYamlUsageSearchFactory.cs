@@ -1,17 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Application.Settings;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
-using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Impl.Search.SearchDomain;
@@ -55,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             var animationEventUsagesContainer = solution.GetComponent<AnimationEventUsagesContainer>();
             var assetValuesContainer = solution.GetComponent<AssetInspectorValuesContainer>();
             var controller = solution.GetComponent<DeferredCacheController>();
-            
+
             return new UnityAssetReferenceSearcher(controller, hierarchyContainer, scriptsUsagesContainers,
                 methodsContainer, animationEventUsagesContainer, assetValuesContainer, metaFileGuidCache, elements,
                 findCandidates);
@@ -91,26 +89,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         public static bool IsInterestingElement(IDeclaredElement element)
         {
             var solution = element.GetSolution();
-            var settings = solution.GetSettingsStore();
-            if (!settings.GetValue((UnitySettings key) => key.IsAssetIndexingEnabled))
-                return false;
-            
-            var unityApi = element.GetSolution().TryGetComponent<UnityApi>();
-            if (unityApi == null)
-                return false;
 
-            var assetSerializationMode = solution.GetComponent<AssetSerializationMode>();
-            var yamlParsingEnabled = solution.GetComponent<AssetIndexingSupport>().IsEnabled;
-            var deferredController = solution.GetComponent<DeferredCacheController>();
+            var unityApi = solution.TryGetComponent<UnityApi>();
+            var isForceText = solution.GetComponent<AssetSerializationMode>().IsForceText;
+            var assetIndexingEnabled = solution.GetComponent<AssetIndexingSupport>().IsEnabled.Value;
+            var deferredCachesCompleted = solution.GetComponent<DeferredCacheController>().CompletedOnce.Value;
 
-            
-            if (!yamlParsingEnabled.Value || !assetSerializationMode.IsForceText || !deferredController.CompletedOnce.Value)
+            if (unityApi == null || !assetIndexingEnabled || !isForceText || !deferredCachesCompleted)
                 return false;
 
             switch (element)
             {
                 case IClass c:
                     return unityApi.IsUnityType(c);
+
                 case IProperty _:
                 case IMethod _:
                     var eventsCount = solution

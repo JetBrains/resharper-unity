@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         {
             var settingsStore = declaredElement.GetSolution().GetComponent<ISettingsStore>();
             var knownTypesCache = declaredElement.GetSolution().GetComponent<KnownTypesCache>();
-            return new[] {new FormerlySerializedAsAtomicRename(declaredElement, newName, settingsStore, knownTypesCache, UnityRenameUtil.IsRenameShouldBeSilent(declaredElement))};
+            return new[] {new FormerlySerializedAsAtomicRename(declaredElement, newName, settingsStore, knownTypesCache)};
         }
     }
 }

@@ -6,7 +6,7 @@ using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
+using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;

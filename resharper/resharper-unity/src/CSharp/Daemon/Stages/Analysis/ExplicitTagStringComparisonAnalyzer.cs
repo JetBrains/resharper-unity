@@ -1,7 +1,5 @@
-﻿using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.Daemon;
+﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -13,17 +11,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         HighlightingTypes = new[] { typeof(ExplicitTagStringComparisonWarning), typeof(UnknownTagWarning) })]
     public class ExplicitTagStringComparisonAnalyzer : UnityElementProblemAnalyzer<IEqualityExpression>
     {
-        private readonly AssetSerializationMode myAssetSerializationMode;
+        private readonly UnityProjectSettingsCache myProjectSettingsCache;
 
-        public ExplicitTagStringComparisonAnalyzer(UnityApi unityApi, AssetSerializationMode assetSerializationMode)
+        public ExplicitTagStringComparisonAnalyzer(UnityApi unityApi, UnityProjectSettingsCache projectSettingsCache)
             : base(unityApi)
         {
-            myAssetSerializationMode = assetSerializationMode;
+            myProjectSettingsCache = projectSettingsCache;
         }
 
         protected override void Analyze(IEqualityExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            if (element.LeftOperand == null || element.RightOperand == null)
+            if (!myProjectSettingsCache.IsAvailable() || element.LeftOperand == null || element.RightOperand == null)
                 return;
 
             var predefinedType = element.GetPredefinedType();
@@ -56,19 +54,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             }
         }
 
-        private void CheckTag(string value, ICSharpExpression expression, IHighlightingConsumer consumer)
+        private void CheckTag(string value, ITreeNode expression, IHighlightingConsumer consumer)
         {
-            if (!myAssetSerializationMode.IsForceText)
-                return;
-
-            var cache = expression.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
-            if (cache == null)
-                return;
-
-            if (!cache.HasTag(value))
-            {
+            if (!myProjectSettingsCache.HasTag(value))
                 consumer.AddHighlighting(new UnknownTagWarning(expression));
-            }
         }
     }
 }
