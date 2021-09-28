@@ -71,7 +71,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
             return false;
           }
 
-          args = new object[] {myLaunch.SessionId, mode, assemblyNames, testNames, categoryNames, groupNames, null,
+          args = new object[] {myLaunch.SessionId.ToString(), mode, assemblyNames, testNames, categoryNames, groupNames, null,
             myLaunch.ClientControllerInfo.CodeBase, myLaunch.ClientControllerInfo.TypeName,
             myLaunch.ClientControllerInfo.CodeBaseDependencies?.ToArray() };
         }
