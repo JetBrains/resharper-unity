@@ -50,9 +50,9 @@ Remove redundant code in class 'Foo'
 3: Field 'myField' is never used
 QUICKFIXES:
 Initialize field from constructor
-Encapsulate field
 Remove unused field
 --Comment unused field
+Encapsulate field
 4: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
 QUICKFIXES:
 Remove redundant attribute
