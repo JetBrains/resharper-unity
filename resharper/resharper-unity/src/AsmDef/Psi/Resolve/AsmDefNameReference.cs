@@ -41,7 +41,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
                 // We should only get a single asset, but beware of copy/paste files
                 var elements = new FrugalLocalList<IDeclaredElement>();
                 foreach (var path in metaFileCache.GetAssetFilePathsFromGuid(guid))
-                    elements.Add(asmDefNameCache.GetNameDeclaredElement(path));
+                {
+                    var nameElement = asmDefNameCache.GetNameDeclaredElement(path);
+                    if (nameElement != null)
+                        elements.Add(nameElement);
+                }
 
                 if (elements.Count > 1)
                 {
