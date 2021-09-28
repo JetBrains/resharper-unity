@@ -13,6 +13,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
+using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
 {
@@ -31,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
                 return;
 
             var wordsPerAssembly = new OneToSetMap<string, string>(valueComparer: StringComparer.InvariantCultureIgnoreCase);
-            var abbreviations = new JetHashSet<string>();
+            var abbreviationsWithOriginalWord = new OneToSetMap<string, string>(valueComparer: StringComparer.InvariantCultureIgnoreCase);
 
             // TODO: This should be in a background task
             var psiModules = solution.GetComponent<IPsiModules>();
@@ -48,10 +49,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
                     if (!typeElement.CanBeVisibleToSolution())
                         continue;
 
-                    AddWords(wordsPerAssembly, abbreviations, assemblyPsiModule, typeElement.ShortName);
+                    AddWords(wordsPerAssembly, abbreviationsWithOriginalWord, assemblyPsiModule,
+                        typeElement is IInterface ? typeElement.ShortName.RemoveStart("I") : typeElement.ShortName);
 
                     foreach (var namespaceName in typeElement.GetClrName().NamespaceNames)
-                        AddWords(wordsPerAssembly, abbreviations, assemblyPsiModule, namespaceName);
+                        AddWords(wordsPerAssembly, abbreviationsWithOriginalWord, assemblyPsiModule, namespaceName);
 
                     // TODO: Should we skip enum values?
                     // It's unlikely that a user would name a method or variable after a value such as AdvertisingNetwork.Aarki,
@@ -62,16 +64,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
                         if (!ShouldProcessTypeMember(typeMember))
                             continue;
 
-                        if (typeElement is IEnum)
-                        {
-                            // Don't use any enum values as abbreviations. Avoids false positives with ALL_UPPER_CASE style
-                            AddWords(wordsPerAssembly, new JetHashSet<string>(), assemblyPsiModule,
-                                typeMember.ShortName);
-                        }
-                        else
-                        {
-                            AddWords(wordsPerAssembly, abbreviations, assemblyPsiModule, typeMember.ShortName);
-                        }
+                        // Don't use any enum values as abbreviations. Avoids false positives with ALL_UPPER_CASE style
+                        AddWords(wordsPerAssembly,
+                            typeElement is IEnum ? new OneToSetMap<string, string>() : abbreviationsWithOriginalWord,
+                            assemblyPsiModule, typeMember.ShortName);
 
                         // TODO: Include parameter names?
                         // Respeller will not check parameter names of overriding or implementing functions, so this is
@@ -94,16 +90,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
             // Add abbreviations separately. If added to the dictionary, we don't get typo warnings, but we can get
             // naming standard inspection warnings. E.g. BlahBlahAABB is converted to BlahBlahAabb. Don't add anything
             // that's already known, but the spell checker will only check for words of 4 characters or more.
-            // TODO: Ideally, we should disable AbbreviationsSettingsProvider. But just merge results in for now
-            var unknownAbbreviations = (from word in abbreviations
+            // TODO: Ideally, we should disable AbbreviationsSettingsProvider, or we'll ignore our own abbreviations
+            // Merge files by hand
+            var unknownAbbreviations = (from word in abbreviationsWithOriginalWord.Keys
                 where (word.Length > 1 && word.Length < 4) || !spellService.CheckWordSpelling(word)
                 select word).ToJetHashSet();
 
-            // Remove the non-abbreviations
-            unknownAbbreviations.Remove("TEXTMESHPRO");
-            unknownAbbreviations.Remove("GRAIDENT");
+            Dumper.DumpToNotepad(w =>
+            {
+                w.WriteLine("Abbreviations:");
+                w.WriteLine();
 
-            // Remove known typos or exclusions. Yes, this is all done by hand
+                foreach (var (abbr, originalWords) in abbreviationsWithOriginalWord.OrderBy(kv => kv.Key))
+                {
+                    w.Write(abbr);
+                    w.Write(": ");
+                    foreach (var word in originalWords)
+                    {
+                        w.Write(word);
+                        w.Write(", ");
+                    }
+                    w.WriteLine();
+                }
+            });
+
+            // Remove non-abbreviations, known typos or exclusions. Yes, this is all done by hand
+            RemoveNonAbbreviations(unknownAbbreviations);
             RemoveTyposAndExclusions(unknownWords);
 
             // Dump all words for diagnostics
@@ -138,7 +150,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
             Dumper.DumpToNotepad(w =>
             {
                 var dictionary = new JetHashSet<string>(unknownWords, StringComparer.InvariantCultureIgnoreCase);
-                dictionary.ExceptWith(abbreviations);
+                dictionary.ExceptWith(abbreviationsWithOriginalWord.Keys);
 
                 w.WriteLine("Dictionary (unknown words minus abbreviations)");
                 w.WriteLine();
@@ -153,8 +165,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
         {
             var name = assemblyPsiModule.Assembly.AssemblyName.Name;
             return !name.StartsWith("System") && !name.StartsWith("Microsoft") && name != "netstandard" &&
-                   name != "mscorlib" && !name.StartsWith("nunit") && name != "JetBrains.Annotations" &&
-                   name != "Unity.Rider.Editor";
+                   name != "mscorlib" && !name.StartsWith("nunit") && !name.StartsWith("Boo") &&
+                   name != "unityplastic" && !name.StartsWith("UnityScript", StringComparison.InvariantCultureIgnoreCase) &&
+                   name != "JetBrains.Annotations" && name != "Unity.Rider.Editor";
         }
 
         private static bool ShouldProcessTypeMember(ITypeMember typeMember)
@@ -202,17 +215,42 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
             return typeMember.ShortName.All(letter => letter == 'x' || letter == 'y' || letter == 'z' || letter == 'w');
         }
 
-        private static void AddWords(OneToSetMap<string, string> wordsPerAssembly, JetHashSet<string> abbreviations,
-            IAssemblyPsiModule assemblyPsiModule, string name)
+        private static void AddWords(OneToSetMap<string, string> wordsPerAssembly,
+                                     OneToSetMap<string, string> abbreviationsWithOriginalWord,
+                                     IAssemblyPsiModule assemblyPsiModule, string name)
         {
             var textParts = TextSplitter.Split(name);
             foreach (var textPart in textParts.Where(tp => tp.Type == TextPartType.Word))
             {
                 if (textPart.Text == textPart.Text.ToUpperInvariant())
-                    abbreviations.Add(textPart.Text);
+                {
+                    if (textPart.Text.Length > 1)
+                        abbreviationsWithOriginalWord.Add(textPart.Text, name);
+                }
                 else
                     wordsPerAssembly.Add(assemblyPsiModule.Assembly.AssemblyName.Name, textPart.Text);
             }
+        }
+
+        private static void RemoveNonAbbreviations(ICollection<string> unknownAbbreviations)
+        {
+            // Remove known words (which would be done by the spell checker, but that only works for a min of 4 letters)
+            // ReSharper disable StringLiteralTypo
+            unknownAbbreviations.Remove("ADD");
+            unknownAbbreviations.Remove("AND");
+            unknownAbbreviations.Remove("GET");
+            unknownAbbreviations.Remove("GO");
+            unknownAbbreviations.Remove("GRAIDENT");    // Typo fixed in later versions
+            unknownAbbreviations.Remove("KEY");
+            unknownAbbreviations.Remove("LO");  // GetLODs
+            unknownAbbreviations.Remove("MAX");
+            unknownAbbreviations.Remove("MIN");
+            unknownAbbreviations.Remove("OFF");
+            unknownAbbreviations.Remove("ON");
+            unknownAbbreviations.Remove("PUT");
+            unknownAbbreviations.Remove("TEXTMESHPRO");
+            unknownAbbreviations.Remove("UP");
+            // ReSharper restore StringLiteralTypo
         }
 
         private static void RemoveTyposAndExclusions(ICollection<string> unknownWords)

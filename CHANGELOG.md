@@ -27,6 +27,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Fix incorrect warning about `base.OnGUI` when `base` is not `PropertyDrawer` ([RSRP-482954](https://youtrack.jetbrains.com/issue/RSRP-482954), [#2159](https://github.com/JetBrains/resharper-unity/pull/2159))
 - Fix renaming asset usages after editing a method name and using "Apply rename refactoring" ([#2167](https://github.com/JetBrains/resharper-unity/issues/2167), [#2169](https://github.com/JetBrains/resharper-unity/pull/2169))
 - Fix asset indexing when asset modified by some external apps ([#2169](https://github.com/JetBrains/resharper-unity/pull/2169))
+- Fix known words listed as abbreviations ([#2170](https://github.com/JetBrains/resharper-unity/pull/2170))
 - ReSharper: Fix asset usage updating when asset is open in VS editor ([#2169](https://github.com/JetBrains/resharper-unity/pull/2169))
 
 

@@ -40,6 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
                 ZCLIP_KEYWORD,
                 ZTEST_KEYWORD,
                 ZWRITE_KEYWORD,
+                CONSERVATIVE_KEYWORD,
                 OFFSET_KEYWORD,
                 BLEND_KEYWORD,
                 BLEND_OP_KEYWORD,
