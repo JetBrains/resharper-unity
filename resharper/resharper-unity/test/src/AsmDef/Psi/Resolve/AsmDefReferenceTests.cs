@@ -1,4 +1,5 @@
 ﻿using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
+using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
@@ -6,14 +7,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Psi.Resolve
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefReferenceTests : AsmDefReferenceTestsBase<AsmDefNameReference>
+    public class AsmDefReferenceTests : ReferenceTestBase
     {
-        [Test] public void TestUnresolvedReference01() { DoNamedTest2(); }
-        [Test] public void TestUnresolvedReference02() { DoNamedTest2("UnresolvedReference02_SecondProject.asmdef"); }
-        [Test] public void TestCrossProjectReference() { DoNamedTest2("CrossProjectReference_SecondProject.asmdef");}
+        protected override string RelativeTestDataPath => @"AsmDef\Psi\Resolve";
+        protected override bool AcceptReference(IReference reference) => reference is AsmDefNameReference;
+
         [Test] public void TestCorrectJsonReferences() { DoNamedTest2(); }
-        // This isn't exactly like production, because it adds the .meta file to the project, while the external files
-        // module is disabled for tests
-        [Test] public void TestGuidReference() { DoNamedTest2("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
+        [Test] public void TestUnresolvedReference01() { DoNamedTest2(); }
+
+        [Test]
+        public void TestUnresolvedReference02()
+        {
+            DoTestSolution(new[] { "UnresolvedReference02.asmdef" },
+                new[] { "UnresolvedReference02_SecondProject.asmdef" });
+        }
+
+        [Test]
+        public void TestCrossProjectReference()
+        {
+            DoTestSolution(new[] { "CrossProjectReference.asmdef" },
+                new[] { "CrossProjectReference_SecondProject.asmdef" });
+        }
+
+        [Test]
+        public void TestGuidReference()
+        {
+            // This isn't exactly like a production Unity project, because we're adding the .meta file directly, but the
+            // external files module isn't available in tests
+            DoTestSolution(new[] { "GuidReference.asmdef" },
+                new[] { "GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta" });
+        }
     }
 }
