@@ -41,9 +41,9 @@ Remove redundant code in class 'Test'
 2: Field 'Value2' is never used
 QUICKFIXES:
 Initialize field from constructor
-Encapsulate field
 Remove unused field
 --Comment unused field
+Encapsulate field
 3: Name 'Value2' does not match rule 'Instance fields (private)'. Suggested name is 'myValue2'.
 QUICKFIXES:
 Rename to 'myValue2'
