@@ -285,6 +285,6 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         }
 
         logModel.onCleared.advise(lifetime) { console.clear() }
-        logModel.fire()
+        logModel.queueUpdate()
     }
 }
