@@ -749,6 +749,7 @@ namespace JetBrains.Rider.Unity.Editor
         : new FileInfo(UnityUtils.UnityEditorLogPath).Directory.FullName;
 
     internal static readonly string LogPath = Path.Combine(Path.Combine(ourBaseLogPath, "Unity3dRider"), $"EditorPlugin.{Process.GetCurrentProcess().Id}.log");
+    [UsedImplicitly]
     internal static OnOpenAssetHandler OpenAssetHandler;
 
     // Creates and deletes Library/EditorInstance.json containing info about unity instance. Unity 2017.1+ writes this
