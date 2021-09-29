@@ -2,9 +2,11 @@
 
 package com.jetbrains.rider.plugins.unity.explorer
 
+import com.intellij.application.options.CodeStyle
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.command.undo.UndoManager
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
@@ -12,9 +14,11 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.vfs.newvfs.events.*
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.util.PathUtil
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.platform.util.getLogger
+import com.jetbrains.rdclient.util.idea.getPsiFile
 import com.jetbrains.rdclient.util.idea.toIOFile
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
 import com.jetbrains.rider.projectDir
@@ -68,8 +72,9 @@ class MetaTracker(private val project: Project) : BulkFileListener, VfsBackendRe
                         if (!isApplicableForCreatingMeta(event)) continue
                         val metaFileName = getMetaFileName(event.childName)
                         val metaFile = event.parent.toNioPath().resolve(metaFileName)
+                        val ls = event.file?.detectedLineSeparator ?: "\n" // from what I see, Unity 2020.3 always uses "\n", but lets use same as the main file.
                         actions.add(metaFile) {
-                            createMetaFile(event.parent, metaFileName)
+                            createMetaFile(event.parent, metaFileName, ls)
                         }
                     }
                     is VFileDeleteEvent -> {
@@ -81,8 +86,9 @@ class MetaTracker(private val project: Project) : BulkFileListener, VfsBackendRe
                     is VFileCopyEvent -> {
                         if (!isApplicableForCreatingMeta(event)) continue
                         val metaFile = getMetaFile(event.file.path) ?: continue
+                        val ls = event.file.detectedLineSeparator ?: "\n"
                         actions.add(metaFile) {
-                            createMetaFile(event.newParent, getMetaFileName(event.newChildName))
+                            createMetaFile(event.newParent, getMetaFileName(event.newChildName), ls)
                         }
                     }
                     is VFileMoveEvent -> {
@@ -172,11 +178,11 @@ class MetaTracker(private val project: Project) : BulkFileListener, VfsBackendRe
 
     private fun getMetaFileName(fileName: String) = "$fileName.meta"
 
-    private fun createMetaFile(parent: VirtualFile, metaFileName: String) {
+    private fun createMetaFile(parent: VirtualFile, metaFileName: String, ls:String) {
         val file = parent.createChildData(this, metaFileName)
         val guid = UUID.randomUUID().toString().replace("-", "").substring(0, 32)
         val timestamp = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC).toEpochSecond() // LocalDateTime to epoch seconds
-        val content = "fileFormatVersion: 2${Environment.NewLine}guid: ${guid}${Environment.NewLine}timeCreated: $timestamp"
+        val content = "fileFormatVersion: 2${ls}guid: ${guid}${ls}timeCreated: $timestamp"
         VfsUtil.saveText(file, content)
     }
 
