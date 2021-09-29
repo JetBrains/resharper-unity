@@ -2,11 +2,9 @@
 
 package com.jetbrains.rider.plugins.unity.explorer
 
-import com.intellij.application.options.CodeStyle
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.command.undo.UndoManager
-import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
@@ -14,17 +12,14 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.vfs.newvfs.events.*
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.util.PathUtil
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.platform.util.getLogger
-import com.jetbrains.rdclient.util.idea.getPsiFile
 import com.jetbrains.rdclient.util.idea.toIOFile
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.VfsBackendRequester
 import com.jetbrains.rider.projectView.workspace.impl.WorkspaceUserModelUpdater
-import com.microsoft.alm.helpers.Environment
 import org.jetbrains.annotations.Nls
 import java.nio.file.Path
 import java.nio.file.Paths
