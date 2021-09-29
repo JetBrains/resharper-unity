@@ -198,7 +198,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         }
         fieldInfo.SetValue(filter, testNames);
         
-        var clientController = ClientControllerWrapper.TryCreate(myLaunch.SessionId, myLaunch.ClientControllerInfo);
+        var clientController = ClientControllerWrapper.TryCreate(myLaunch.SessionId.ToString(), myLaunch.ClientControllerInfo);
         clientController?.OnSessionStarted();
 
         object launcher;
