@@ -33,6 +33,9 @@
     <projectConfigurable parentId="FileTemplatesSettingsId" instance="com.jetbrains.rider.plugins.unity.settings.templates.UnityFileTemplatesOptionPage" groupWeight="-120" />
     <projectConfigurable parentId="LiveTemplatesSettingsId" instance="com.jetbrains.rider.plugins.unity.settings.templates.UnityLiveTemplatesOptionPage" groupWeight="-120" />
 
+    <!-- Group weight to push Unity to the end, passed other languages -->
+    <projectConfigurable parentId="inlay.hints" instance="com.jetbrains.rider.plugins.unity.settings.UnityInlayHintsOptionsPage" groupWeight="-120" />
+
     <spellchecker.bundledDictionaryProvider implementation="com.jetbrains.rider.plugins.unity.spellchecker.UnityBundledDictionaryProvider"/>
 
     <!--suppress PluginXmlValidity -->
