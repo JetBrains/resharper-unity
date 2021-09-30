@@ -1,0 +1,9 @@
+{
+  "name": "Test01",
+  "references": [
+    "guid:7d9f6c8edad14e1593fd{caret}e9cc75764047",
+    "guid:7d9f6c8edad14e1593fde9cc75764047",
+    "SecondProject",
+    "guid:7d9f6c8edad14e1593fde9cc75764047"
+  ]
+}

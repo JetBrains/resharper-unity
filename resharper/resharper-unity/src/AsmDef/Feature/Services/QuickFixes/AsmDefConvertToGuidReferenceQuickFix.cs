@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
         }
 
         protected override ITreeNode TryGetContextTreeNode() => myLiteralExpression;
-        public override string Text => "Convert to GUID reference";
+        public override string Text => "To GUID reference";
 
         protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
