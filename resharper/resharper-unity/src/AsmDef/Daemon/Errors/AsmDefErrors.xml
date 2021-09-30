@@ -49,7 +49,7 @@
   <Warning name="MismatchedAsmDefFilename" configurableSeverity="MISMATCHED_ASMDEF_FILENAME">
     <Parameter type="IJsonNewLiteralExpression" name="literalExpression" />
     <Message value="File name should match the name of the assembly" />
-    <Range>LiteralExpression.GetHighlightingRange()</Range>
+    <Range>LiteralExpression.GetUnquotedDocumentRange()</Range>
     <Behavour attributeID="SUGGESTION" overlapResolvePolicy="WARNING" />
   </Warning>
 
