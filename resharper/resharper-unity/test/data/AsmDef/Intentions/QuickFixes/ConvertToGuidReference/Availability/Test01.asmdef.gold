@@ -1,0 +1,12 @@
+﻿{
+  "name": "Test01",
+  "references": [ "|SecondProject|(0)" ]
+}
+
+------------------------------------------------
+0: Prefer GUID reference
+QUICKFIXES:
+Convert to GUID reference
+--Convert to GUID reference in file
+--Convert to GUID reference in project
+--Convert to GUID reference in solution

@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Feature.Services.QuickFixes.Scoped;
 using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.QuickFixes
 {
     public abstract class UnityScopedQuickFixBase : ScopedQuickFixBase
     {

@@ -1,0 +1,4 @@
+{
+  "name": "Test01",
+  "references": [ "SecondProject", "Second{caret}Project", "SecondProject", "SecondProject", "SecondProject" ]
+}
