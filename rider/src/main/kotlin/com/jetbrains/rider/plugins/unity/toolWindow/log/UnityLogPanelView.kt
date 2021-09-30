@@ -23,15 +23,12 @@ import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.intellij.util.application
-import com.intellij.util.ui.update.MergingUpdateQueue
-import com.intellij.util.ui.update.Update
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rider.plugins.unity.model.LogEvent
-import com.jetbrains.rider.plugins.unity.model.LogEventMode
-import com.jetbrains.rider.plugins.unity.model.LogEventType
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction
 import com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction
+import com.jetbrains.rider.plugins.unity.model.LogEventMode
+import com.jetbrains.rider.plugins.unity.model.LogEventType
 import com.jetbrains.rider.plugins.unity.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
@@ -54,10 +51,6 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         .console as ConsoleViewImpl
 
     private val tokenizer: UnityLogTokenizer = UnityLogTokenizer()
-    private val mergingUpdateQueue = MergingUpdateQueue("UnityLogPanelView->ensureIndexIsVisible", 100, true, toolWindow.component).setRestartTimerOnAdd(false)
-    private val mergingUpdateQueueAction: Update = object : Update("UnityLogPanelView->ensureIndexIsVisible") {
-        override fun run() = eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
-    }
 
     private val eventList = UnityLogPanelEventList(lifetime).apply {
         addListSelectionListener {
@@ -202,32 +195,6 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
     private fun removeFirstFromList() {
         if (eventList.riderModel.size() > logModel.maxItemsCount)
             eventList.riderModel.remove(0)
-    }
-
-    private fun addToList(newEvent: LogEvent) {
-        if (logModel.mergeSimilarItems.value) {
-            val existing = eventList.riderModel.elements().toList().singleOrNull {
-                it.message == newEvent.message && it.stackTrace == newEvent.stackTrace
-                    it.mode == newEvent.mode && it.type == newEvent.type
-            }
-            if (existing == null) {
-                eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode, newEvent.message, newEvent.stackTrace, 1))
-            }
-            else {
-                val index = eventList.riderModel.indexOf(existing)
-                eventList.riderModel.setElementAt(LogPanelItem(existing.time, existing.type, existing.mode, existing.message, existing.stackTrace, existing.count + 1), index)
-            }
-        } else {
-            eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode, newEvent.message, newEvent.stackTrace, 1))
-        }
-
-        // since we do not follow new items which appear, it makes sense to auto-select first one. RIDER-19937
-        if (eventList.itemsCount == 1)
-            eventList.selectedIndex = 0
-
-        if (logModel.autoscroll.value){
-            mergingUpdateQueue.queue(mergingUpdateQueueAction)
-        }
     }
 
     private fun refreshList(newEvents: List<LogPanelItem>) {
