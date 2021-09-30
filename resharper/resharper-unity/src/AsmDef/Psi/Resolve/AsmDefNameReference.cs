@@ -11,6 +11,7 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
@@ -85,6 +86,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
 
         public override IReference BindTo(IDeclaredElement element)
         {
+            // Don't rename a guid: reference
+            if (myOwner.GetUnquotedText().StartsWith("guid:", StringComparison.InvariantCultureIgnoreCase))
+                return this;
+
             var factory = JsonNewElementFactory.GetInstance(myOwner.GetPsiModule());
             var literalExpression = factory.CreateStringLiteral(element.ShortName);
 

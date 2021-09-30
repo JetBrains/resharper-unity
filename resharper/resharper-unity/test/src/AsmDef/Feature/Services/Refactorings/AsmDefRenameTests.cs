@@ -3,6 +3,7 @@ using System.Linq;
 using JetBrains.DocumentManagers;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Tests.Framework;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TextControl;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
@@ -19,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Feature.Services.Refact
         [Test] public void TestSingleFile() { DoNamedTest2(); }
         [Test] public void TestCrossFileRename() { DoNamedTest2("CrossFileRename_SecondProject.asmdef"); }
         [Test] public void TestRenameFile() { DoNamedTest2(); }
+        [Test] public void TestGuidReference() { DoNamedTest2("GuidReference.asmdef.meta", "GuidReference_SecondProject.asmdef"); }
 
         protected override void AdditionalTestChecks(ITextControl textControl, IProject project)
         {
