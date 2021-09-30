@@ -38,21 +38,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         // This will usually return a single value, but there's always a chance for copy/paste
         // Also note that this returns the file path of the asset associated with the GUID, not the asset's .meta file!
-        public IList<VirtualFileSystemPath> GetAssetFilePathsFromGuid(Guid guid)
-        {
-            return myAssetGuidToAssetFilePaths[guid];
-        }
+        public IList<VirtualFileSystemPath> GetAssetFilePathsFromGuid(Guid guid) => myAssetGuidToAssetFilePaths[guid];
 
-        public IList<string> GetAssetNames(Guid guid)
-        {
-            return myAssetGuidToAssetFilePaths[guid].Select(p => p.NameWithoutExtension).ToList();
-        }
+        public IList<string> GetAssetNames(Guid guid) =>
+            myAssetGuidToAssetFilePaths[guid].Select(p => p.NameWithoutExtension).ToList();
 
         [CanBeNull]
-        public Guid? GetAssetGuid(IPsiSourceFile sourceFile)
-        {
-            return myAssetFilePathToGuid.TryGetValue(sourceFile.GetLocation(), out var guid) ? guid : null;
-        }
+        public Guid? GetAssetGuid([NotNull] IPsiSourceFile sourceFile) => GetAssetGuid(sourceFile.GetLocation());
+
+        public Guid? GetAssetGuid([NotNull] VirtualFileSystemPath assetLocation) =>
+            myAssetFilePathToGuid.TryGetValue(assetLocation, out var guid) ? guid : null;
 
         protected override bool IsApplicable(IPsiSourceFile sf)
         {

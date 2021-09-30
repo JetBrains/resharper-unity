@@ -139,6 +139,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
             return base.IsApplicable(sf) && sf.IsAsmDef() && sf.IsLanguageSupported<JsonNewLanguage>();
         }
 
+        [CanBeNull]
         public VirtualFileSystemPath GetPathFor(string name)
         {
             myShellLocks.AssertReadAccessAllowed();
