@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Intentions.QuickFixes
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefReferencingSelfQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
+    public class ReferencingSelfQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
     {
         protected override string RelativeTestDataPath => @"AsmDef\Intentions\QuickFixes\ReferencingSelf\Availability";
 
@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Intentions.QuickFixes
 
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefReferencingSelfQuickFixTests : QuickFixTestBase<AsmDefRemoveInvalidArrayItemQuickFix>
+    public class ReferencingSelfQuickFixTests : QuickFixTestBase<RemoveInvalidArrayItemQuickFix>
     {
         protected override string RelativeTestDataPath => @"AsmDef\Intentions\QuickFixes\ReferencingSelf";
 

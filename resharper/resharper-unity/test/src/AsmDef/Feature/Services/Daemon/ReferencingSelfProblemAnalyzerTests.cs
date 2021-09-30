@@ -8,16 +8,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Feature.Services.Daemon
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefGuidReferenceInfoAnalyzerTests : JsonNewHighlightingTestBase<AsmDefGuidReferenceInfo>
+    public class ReferencingSelfProblemAnalyzerTests : JsonNewHighlightingTestBase<ReferencingSelfError>
     {
         protected override PsiLanguageType CompilerIdsLanguage => JsonNewLanguage.Instance;
-        protected override string RelativeTestDataPath => @"AsmDef\Daemon\Stages\Analysis\GuidReference";
+        protected override string RelativeTestDataPath => @"AsmDef\Daemon\Stages\Analysis\ReferencingSelf";
 
-        [Test]
-        public void Test01()
-        {
-            DoTestSolution(new[] { "GuidReference.asmdef" },
-                new[] { "GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta" });
-        }
+        [Test] public void Test01() { DoNamedTest(); }
     }
 }

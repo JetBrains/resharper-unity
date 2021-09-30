@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
     [ElementProblemAnalyzer(typeof(IJsonNewLiteralExpression),
                             HighlightingTypes = new[] { typeof(MismatchedAsmDefFilenameWarning) })]
-    public class AsmDefMismatchedFilenameProblemAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
+    public class MismatchedFilenameProblemAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {
         protected override void Analyze(IJsonNewLiteralExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {

@@ -16,11 +16,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
         HighlightingTypes =
             new[]
             {
-                typeof(AsmDefGuidReferenceInfo),
+                typeof(GuidReferenceInfo),
                 typeof(AsmDefGuidReferenceInlayHintHighlighting),
                 typeof(AsmDefGuidReferenceHintContextActionHighlighting)
             })]
-    public class AsmDefGuidReferenceInfoAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
+    public class GuidReferenceInfoAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {
         protected override void Analyze(IJsonNewLiteralExpression element, ElementProblemAnalyzerData data,
                                         IHighlightingConsumer consumer)
@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
                 var declaredElement = reference?.Resolve().DeclaredElement;
                 if (declaredElement != null)
                 {
-                    consumer.AddHighlighting(new AsmDefGuidReferenceInfo(element, declaredElement.ShortName));
+                    consumer.AddHighlighting(new GuidReferenceInfo(element, declaredElement.ShortName));
 
                     var mode = GetMode(data);
                     if (mode != InlayHintsMode.Never)

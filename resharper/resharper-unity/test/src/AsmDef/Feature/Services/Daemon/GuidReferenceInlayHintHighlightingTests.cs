@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Feature.Services.Daemon
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefGuidReferenceInlayHintHighlightingTests : HighlightingTestBase
+    public class GuidReferenceInlayHintHighlightingTests : HighlightingTestBase
     {
         protected override PsiLanguageType CompilerIdsLanguage => JsonNewLanguage.Instance;
         protected override string RelativeTestDataPath => @"AsmDef\Daemon\Stages\InlayHints";

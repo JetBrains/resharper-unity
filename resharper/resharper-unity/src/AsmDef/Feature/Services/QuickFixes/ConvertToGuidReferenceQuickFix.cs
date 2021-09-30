@@ -17,11 +17,11 @@ using JetBrains.TextControl;
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
 {
     [QuickFix]
-    public class AsmDefConvertToGuidReferenceQuickFix : UnityScopedQuickFixBase
+    public class ConvertToGuidReferenceQuickFix : UnityScopedQuickFixBase
     {
         private readonly IJsonNewLiteralExpression myLiteralExpression;
 
-        public AsmDefConvertToGuidReferenceQuickFix(PreferGuidReferenceWarning warning)
+        public ConvertToGuidReferenceQuickFix(PreferGuidReferenceWarning warning)
         {
             myLiteralExpression = warning.LiteralExpression;
         }

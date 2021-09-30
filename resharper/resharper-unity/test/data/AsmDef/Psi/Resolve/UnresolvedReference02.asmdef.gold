@@ -4,4 +4,4 @@
 }
 
 ------------------------------------------------
-0: result=ASMDEF_UNRESOLVED_REFERENCED_PROJECT_ERROR declaredElem=null
+0: result=UNRESOLVED_REFERENCED_ASMDEF_ERROR declaredElem=null

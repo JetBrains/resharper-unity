@@ -14,11 +14,11 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
 {
     [QuickFix]
-    public class AsmDefRenameFileToMatchAssemblyNameQuickFix : QuickFixBase
+    public class RenameFileToMatchAssemblyNameQuickFix : QuickFixBase
     {
         private readonly IJsonNewLiteralExpression myLiteral;
 
-        public AsmDefRenameFileToMatchAssemblyNameQuickFix(MismatchedAsmDefFilenameWarning warning)
+        public RenameFileToMatchAssemblyNameQuickFix(MismatchedAsmDefFilenameWarning warning)
         {
             myLiteral = warning.LiteralExpression;
         }

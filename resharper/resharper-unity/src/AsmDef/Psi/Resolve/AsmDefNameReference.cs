@@ -59,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
             }
 
             return new ResolveResultWithInfo(EmptyResolveResult.Instance,
-                AsmDefResolveErrorType.ASMDEF_UNRESOLVED_REFERENCED_PROJECT_ERROR);
+                AsmDefResolveErrorType.UNRESOLVED_REFERENCED_ASMDEF_ERROR);
         }
 
         public override string GetName()

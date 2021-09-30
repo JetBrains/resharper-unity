@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Intentions.QuickFixes
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefConvertToGuidReferenceQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
+    public class ConvertToGuidReferenceQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
     {
         protected override string RelativeTestDataPath => @"AsmDef\Intentions\QuickFixes\ConvertToGuidReference\Availability";
 
@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Intentions.QuickFixes
 
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefConvertToGuidReferenceQuickFixTests : QuickFixTestBase<AsmDefConvertToGuidReferenceQuickFix>
+    public class ConvertToGuidReferenceQuickFixTests : QuickFixTestBase<ConvertToGuidReferenceQuickFix>
     {
         protected override string RelativeTestDataPath => @"AsmDef\Intentions\QuickFixes\ConvertToGuidReference";
 

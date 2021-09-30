@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Feature.Services.Daemon
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefMismatchedFilenameProblemAnalyzerTests : JsonNewHighlightingTestBase<MismatchedAsmDefFilenameWarning>
+    public class MismatchedFilenameProblemAnalyzerTests : JsonNewHighlightingTestBase<MismatchedAsmDefFilenameWarning>
     {
         protected override PsiLanguageType CompilerIdsLanguage => JsonNewLanguage.Instance;
         protected override string RelativeTestDataPath => @"AsmDef\Daemon\Stages\Analysis\MismatchedFilename";

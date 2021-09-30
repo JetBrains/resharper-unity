@@ -21,7 +21,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
 {
     [PsiSharedComponent]
-    public class AsmDefGuidUsageSearchFactory : DomainSpecificSearcherFactoryBase
+    public class GuidReferenceUsageSearchFactory : DomainSpecificSearcherFactoryBase
     {
         public override bool IsCompatibleWithLanguage(PsiLanguageType languageType) =>
             languageType.Is<JsonNewLanguage>();

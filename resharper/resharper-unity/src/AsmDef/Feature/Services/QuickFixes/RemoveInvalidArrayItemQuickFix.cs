@@ -12,11 +12,11 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
 {
     [QuickFix]
-    public class AsmDefRemoveInvalidArrayItemQuickFix : QuickFixBase
+    public class RemoveInvalidArrayItemQuickFix : QuickFixBase
     {
         [CanBeNull] private readonly IJsonNewLiteralExpression myLiteral;
 
-        public AsmDefRemoveInvalidArrayItemQuickFix(ReferencingSelfError error)
+        public RemoveInvalidArrayItemQuickFix(ReferencingSelfError error)
         {
             myLiteral = error.Reference.GetTreeNode() as IJsonNewLiteralExpression;
         }

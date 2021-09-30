@@ -10,11 +10,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors
         Languages = "CSHARP",
         AttributeId = AsmDefHighlightingAttributeIds.GUID_REFERENCE_TOOLTIP,
         OverlapResolve = OverlapResolveKind.NONE)]
-    public class AsmDefGuidReferenceInfo : IHighlighting
+    public class GuidReferenceInfo : IHighlighting
     {
         private readonly IJsonNewLiteralExpression myLiteralExpression;
 
-        public AsmDefGuidReferenceInfo(IJsonNewLiteralExpression literalExpression, string referenceName)
+        public GuidReferenceInfo(IJsonNewLiteralExpression literalExpression, string referenceName)
         {
             myLiteralExpression = literalExpression;
             ToolTip = referenceName;

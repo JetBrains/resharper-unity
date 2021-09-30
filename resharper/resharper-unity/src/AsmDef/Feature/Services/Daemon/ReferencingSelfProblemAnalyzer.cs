@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
     [ElementProblemAnalyzer(typeof(IJsonNewLiteralExpression),
                             HighlightingTypes = new[] { typeof(ReferencingSelfError) })]
-    public class AsmDefReferencingSelfProblemAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
+    public class ReferencingSelfProblemAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {
         protected override void Analyze(IJsonNewLiteralExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {

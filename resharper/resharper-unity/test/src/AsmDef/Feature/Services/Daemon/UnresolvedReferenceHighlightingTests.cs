@@ -8,12 +8,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Feature.Services.Daemon
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefPreferGuidReferenceProblemAnalyzerTests : JsonNewHighlightingTestBase<PreferGuidReferenceWarning>
+    public class UnresolvedReferenceHighlightingTests : JsonNewHighlightingTestBase<UnresolvedProjectReferenceError>
     {
         protected override PsiLanguageType CompilerIdsLanguage => JsonNewLanguage.Instance;
-        protected override string RelativeTestDataPath => @"AsmDef\Daemon\Stages\Analysis\PreferGuidReference";
+        protected override string RelativeTestDataPath => @"AsmDef\Daemon\Stages\Resolve\UnresolvedProject";
 
-        [Test] public void TestShowHint() { DoNamedTest2("Ref1.asmdef"); }
-        [Test] public void TestNoHintOnUnresolvedReference() { DoNamedTest2(); }
+        [Test] public void Test01() { DoNamedTest(); }
     }
 }

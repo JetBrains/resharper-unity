@@ -14,6 +14,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
         public IHighlighting Run(IReference reference) => new UnresolvedProjectReferenceError(reference);
 
         public IEnumerable<ResolveErrorType> ErrorTypes =>
-            new[] { AsmDefResolveErrorType.ASMDEF_UNRESOLVED_REFERENCED_PROJECT_ERROR };
+            new[] { AsmDefResolveErrorType.UNRESOLVED_REFERENCED_ASMDEF_ERROR };
     }
 }
