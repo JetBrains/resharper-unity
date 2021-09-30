@@ -137,13 +137,13 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
                 {
                     allEvents.removeFirst()
                     if (isVisibleEvent(event))
-                        onFirstRemoved.fire()
+                        queueUpdate()
                 }
                 allEvents.add(event)
             }
 
             if (isVisibleEvent(event))
-                onAdded.fire(event)
+                queueUpdate()
         }
 
         val onChanged = Signal.Void()
@@ -174,7 +174,6 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
     val autoscroll = Property(false)
     var timeFilters = TimeFilters()
 
-    val onAdded = Signal<LogEvent>()
     val onFirstRemoved = Signal.Void()
     val onChanged = Signal<List<LogEvent>>()
     val onCleared = Signal.Void()

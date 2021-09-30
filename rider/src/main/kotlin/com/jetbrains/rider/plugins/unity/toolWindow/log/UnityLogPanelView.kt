@@ -54,7 +54,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         .console as ConsoleViewImpl
 
     private val tokenizer: UnityLogTokenizer = UnityLogTokenizer()
-    private val mergingUpdateQueue = MergingUpdateQueue("UnityLogPanelView->ensureIndexIsVisible", 250, true, toolWindow.component).setRestartTimerOnAdd(false)
+    private val mergingUpdateQueue = MergingUpdateQueue("UnityLogPanelView->ensureIndexIsVisible", 100, true, toolWindow.component).setRestartTimerOnAdd(false)
     private val mergingUpdateQueueAction: Update = object : Update("UnityLogPanelView->ensureIndexIsVisible") {
         override fun run() = eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
     }
@@ -247,7 +247,6 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
             mainSplitter.updateUI()
         }
 
-        logModel.onAdded.advise(lifetime) { addToList(it) }
         logModel.onChanged.advise(lifetime) { item ->
             data class LogItem(
                 val type: LogEventType,
