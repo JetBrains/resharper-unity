@@ -10,7 +10,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
   {
     private static readonly ILog ourLogger = Log.GetLog(typeof(ClientControllerWrapper));
 
-    public static ClientControllerWrapper TryCreate(Guid sessionId, UnitTestLaunchClientControllerInfo clientControllerInfo)
+    public static ClientControllerWrapper TryCreate(string sessionId, UnitTestLaunchClientControllerInfo clientControllerInfo)
     {
       if (clientControllerInfo == null)
       {

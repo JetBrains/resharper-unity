@@ -31,6 +31,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
             {
                 switch (kind)
                 {
+                    case ProjectItemKind.PROJECT:
+                        return new RdUsageGroupTextAndIcon("", null);
                     case ProjectItemKind.PHYSICAL_FILE:
                         var filePath = GetPresentablePath(unityAssetOccurrence.SourceFile.GetLocation());
                         if (filePath != null)
