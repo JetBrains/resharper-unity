@@ -592,7 +592,6 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
 
     withType<Test> {
         useTestNG()
-        jvmArgs = listOf("-Didea.force.use.core.classloader=true")
         if (project.hasProperty("integrationTests")) {
             val testsType = project.property("integrationTests").toString()
             if (testsType == "include") {
