@@ -21,5 +21,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Intentions.QuickFixes
         protected override string RelativeTestDataPath => @"AsmDef\Intentions\QuickFixes\ReferencingSelf";
 
         [Test] public void Test01() { DoNamedTest(); }
+        [Test] public void Test02() { DoNamedTest(); }
     }
 }
