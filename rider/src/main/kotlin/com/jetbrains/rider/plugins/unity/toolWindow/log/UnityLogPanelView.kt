@@ -214,7 +214,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
             mainSplitter.updateUI()
         }
 
-        logModel.onChanged.advise(lifetime) { item ->
+        logModel.onChanged.advise(lifetime) { items ->
             data class LogItem(
                 val type: LogEventType,
                 val mode: LogEventMode,
@@ -222,7 +222,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
                 val stackTrace: String)
 
             if (logModel.mergeSimilarItems.value) {
-                val list = item
+                val list = items
                     .groupBy {
                         LogItem(it.type, it.mode, it.message, it.stackTrace)
                     }
@@ -230,7 +230,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
                     .values.toList()
                 refreshList(list)
             } else {
-                val list = item.map {
+                val list = items.map {
                     LogPanelItem(it.time, it.type, it.mode, it.message, it.stackTrace, 1)
                 }
                 refreshList(list)
