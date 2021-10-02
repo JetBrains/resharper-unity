@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
@@ -118,6 +117,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         private void CollectExternalFilesForDirectory(ExternalFiles externalFiles, VirtualFileSystemPath directory,
                                                       bool isUserEditable)
         {
+            Assertion.Assert(directory.IsAbsolute, "directory.IsAbsolute");
+
             // Don't process the entire solution directory - this would process Assets and Packages for a second time,
             // and also process Temp and Library, which are likely to be huge. This is unlikely, but be safe.
             if (directory == mySolutionDirectory)
