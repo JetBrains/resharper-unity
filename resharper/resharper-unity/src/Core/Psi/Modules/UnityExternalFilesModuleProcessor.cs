@@ -144,20 +144,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             // Based on super simple tests, GetDirectoryEntries is faster than GetChildFiles with subsequent calls to
             // GetFileLength. But what is more surprising is that Windows in a VM is an order of magnitude FASTER than
             // Mac, on the same project!
-            var entries = directory.GetDirectoryEntries("*", PathSearchFlags.RecurseIntoSubdirectories
-                                                             | PathSearchFlags.ExcludeDirectories);
-
-            foreach (var entry in entries)
+            void CollectFiles(VirtualFileSystemPath path)
             {
-                // Ignore anything under a folder that ends with a tilde - Unity does not import these folders into the
-                // asset database, so they're not part of this project
-                if (entry.IsFile && !entry.RelativePath.FullPath.Contains("~/") &&
-                    !entry.RelativePath.FullPath.Contains("~\\"))
+                var entries = path.GetDirectoryEntries();
+                foreach (var entry in entries)
                 {
-                    externalFiles.ProcessExternalFile(entry, isUserEditable, mySolution);
+                    if (entry.IsDirectory)
+                    {
+                        // Do not add any directory tree that ends with `~`. Unity does not import these directories
+                        // into the asset database
+                        if (entry.RelativePath.Name.EndsWith("~"))
+                            continue;
+                        CollectFiles(entry.GetAbsolutePath());
+                    }
+                    else
+                        externalFiles.ProcessExternalFile(entry, isUserEditable, mySolution);
                 }
             }
 
+            CollectFiles(directory);
             externalFiles.AddDirectory(directory);
             myRootPathLifetimes.Add(directory, myLifetime.CreateNested());
         }
