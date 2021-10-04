@@ -1,7 +1,7 @@
 import com.jetbrains.rd.generator.gradle.RdGenExtension
 import com.jetbrains.rd.generator.gradle.RdGenTask
 import com.jetbrains.rider.plugins.gradle.BackendPaths
-import com.jetbrains.rider.plugins.gradle.buildServer.*
+import com.jetbrains.rider.plugins.gradle.buildServer.initBuildServer
 import com.jetbrains.rider.plugins.gradle.tasks.DotNetBuildTask
 import com.jetbrains.rider.plugins.gradle.tasks.GenerateDotNetSdkPathPropsTask
 import com.jetbrains.rider.plugins.gradle.tasks.GenerateNuGetConfig
@@ -9,7 +9,6 @@ import com.ullink.gradle.nunit.NUnit
 import groovy.xml.XmlParser
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.changelog.ChangelogPluginExtension
-import org.jetbrains.intellij.dependency.IdeaDependency
 import org.jetbrains.intellij.tasks.IntelliJInstrumentCodeTask
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.tasks.PrepareSandboxTask
@@ -17,7 +16,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("idea")
-    id("com.jetbrains.rdgen") version "0.212.307"
+    id("com.jetbrains.rdgen") version "2021.3.4"
     id("com.ullink.nuget") version "2.23"
     id("com.ullink.nunit") version "2.4"
     id("me.filippov.gradle.jvm.wrapper") version "0.10.0"
@@ -164,7 +163,8 @@ tasks {
     }
 
     withType<IntelliJInstrumentCodeTask> {
-        // val bundledMavenArtifacts = file("build/maven-artifacts") // you may manually download it from SDK build on TC
+        // For SDK from local folder you also need to manually download maven-artefacts folder
+        // from SDK build artefacts on TC and put it into build folder.
         if (bundledMavenArtifacts.exists()) {
             logger.lifecycle("Use ant compiler artifacts from local folder: $bundledMavenArtifacts")
             compilerClassPathFromMaven.set(
