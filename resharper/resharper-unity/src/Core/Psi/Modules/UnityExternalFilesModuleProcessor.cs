@@ -196,10 +196,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
                 if (args.Action == AddRemove.Add)
                 {
-                    var externalFiles = new ExternalFiles(mySolution, myLogger);
-                    CollectExternalFilesForDirectory(externalFiles, packageData.PackageFolder,
-                        packageData.IsUserEditable);
-                    AddExternalFiles(externalFiles);
+                    using (myLocks.UsingReadLock())
+                    {
+                        var externalFiles = new ExternalFiles(mySolution, myLogger);
+                        CollectExternalFilesForDirectory(externalFiles, packageData.PackageFolder,
+                            packageData.IsUserEditable);
+                        AddExternalFiles(externalFiles);
+                    }
                 }
                 else
                 {
