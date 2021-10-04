@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
@@ -84,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             // For project model access
             myLocks.AssertReadAccessAllowed();
 
-            var externalFiles = new ExternalFiles();
+            var externalFiles = new ExternalFiles(mySolution, myLogger);
             CollectExternalFilesForSolutionDirectory(externalFiles, "Assets");
             CollectExternalFilesForSolutionDirectory(externalFiles, "ProjectSettings");
             CollectExternalFilesForPackages(externalFiles);
@@ -158,7 +159,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                         CollectFiles(entry.GetAbsolutePath());
                     }
                     else
-                        externalFiles.ProcessExternalFile(entry, isUserEditable, mySolution);
+                        externalFiles.ProcessExternalFile(entry, isUserEditable);
                 }
             }
 
@@ -195,7 +196,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
                 if (args.Action == AddRemove.Add)
                 {
-                    var externalFiles = new ExternalFiles();
+                    var externalFiles = new ExternalFiles(mySolution, myLogger);
                     CollectExternalFilesForDirectory(externalFiles, packageData.PackageFolder,
                         packageData.IsUserEditable);
                     AddExternalFiles(externalFiles);
@@ -462,6 +463,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
         private class ExternalFiles
         {
+            private readonly ISolution mySolution;
+            private readonly ILogger myLogger;
             public readonly List<ExternalFile> MetaFiles = new();
             public readonly List<ExternalFile> AssetFiles = new();
             public readonly List<ExternalFile> AsmDefFiles = new();
@@ -469,10 +472,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             public FrugalLocalList<ExternalFile> ExcludedByNameAssetFiles;
             public FrugalLocalList<VirtualFileSystemPath> Directories;
 
-            public void ProcessExternalFile(VirtualDirectoryEntryData directoryEntry, bool isUserEditable,
-                                            ISolution solution)
+            public ExternalFiles(ISolution solution, ILogger logger)
             {
-                solution.Locks.AssertReadAccessAllowed();
+                mySolution = solution;
+                myLogger = logger;
+            }
+
+            public void ProcessExternalFile(VirtualDirectoryEntryData directoryEntry, bool isUserEditable)
+            {
+                mySolution.Locks.AssertReadAccessAllowed();
 
                 if (directoryEntry.RelativePath.IsMeta())
                     MetaFiles.Add(new ExternalFile(directoryEntry, isUserEditable));
@@ -487,11 +495,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 }
                 else if (directoryEntry.RelativePath.IsAsmDef())
                 {
-                    // We're collecting external files, so skip it if it's part of a project. This might be because it's
-                    // an editable package, or because the user has package project generation enabled.
-                    // This requires read lock!
-                    if (!solution.FindProjectItemsByLocation(directoryEntry.GetAbsolutePath()).Any())
+                    // Do not add if this file is already part of a project. This might be because it's from an editable
+                    // package, or because the user has package project generation enabled.
+                    // It might be part of the Misc Files project (not sure why - perhaps cached, perhaps because the
+                    // file was already open at startup), in which case, add a PsiSourceFile if it doesn't already exist
+                    // These checks require a read lock!
+                    var existingProjectFile = mySolution.FindProjectItemsByLocation(directoryEntry.GetAbsolutePath())
+                        .FirstOrDefault() as IProjectFile;
+                    var existingPsiSourceFile = existingProjectFile?.ToSourceFile();
+                    if (existingPsiSourceFile != null)
+                    {
+                        myLogger.Warn("Found existing project file for {0} with existing PSI source file (IsMiscProjectItem: {1})",
+                            directoryEntry.GetAbsolutePath(), existingProjectFile.IsMiscProjectItem());
+                    }
+                    else
+                    {
                         AsmDefFiles.Add(new ExternalFile(directoryEntry, isUserEditable));
+                    }
                 }
             }
 
