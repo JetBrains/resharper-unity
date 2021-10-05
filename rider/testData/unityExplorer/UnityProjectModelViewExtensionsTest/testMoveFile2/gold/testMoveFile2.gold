@@ -6,11 +6,9 @@ Move file
   References
   -AsmdefResponse
    -NewDirectory1
-    Class1.cs
     zero
    -SS
     AsmdefResponse2.asmdef
-    rrr.cs
    AsmdefResponse.asmdef
    NewBehaviourScript.cs
   -Dir1
@@ -24,6 +22,8 @@ Move file
     XMLUtilities.cs
    -NewDirectory1
     zero
+  Class1.cs
+  rrr.cs
 
 
 
