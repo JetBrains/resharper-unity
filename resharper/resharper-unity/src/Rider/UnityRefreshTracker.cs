@@ -146,7 +146,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     var list = new List<string> {solFolder.FullPath};
                     myLogger.Verbose("RefreshPaths.StartAsTask Finished.");
                     await solution.GetFileSystemModel().RefreshPaths
-                            .Start(lifetimeDef.Lifetime, new RdRefreshRequest(list, true)).AsTask();
+                            .Start(lifetimeDef.Lifetime, new RdFsRefreshRequest(list, true)).AsTask();
                     await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
                 }
             }
