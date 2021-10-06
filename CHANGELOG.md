@@ -19,8 +19,11 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Changed
 
+- Process external packages for assets, `.meta` and `.asmdef` files ([RIDER-66223](https://youtrack.jetbrains.com/issue/RIDER-66223), [#2174](https://github.com/JetBrains/resharper-unity/pull/2174))
 - Update Unity API information to 2021.2.0b8 ([#2151](https://github.com/JetBrains/resharper-unity/pull/2151))
+- Rider: Several fixes and improvements to meta file tracking ([RIDER-48085](https://youtrack.jetbrains.com/issue/RIDER-48085), [RIDER-53643](https://youtrack.jetbrains.com/issue/RIDER-53643), [#2145](https://github.com/JetBrains/resharper-unity/pull/2145))
 - ReSharper: Improve asset usage grouping ([#2169](https://github.com/JetBrains/resharper-unity/pull/2169))
+- ReSharper: Remove meta file tracking in favour of VSTU's implementation ([RIDER-48085](https://youtrack.jetbrains.com/issue/RIDER-48085), [#2145](https://github.com/JetBrains/resharper-unity/pull/2145))
 
 ### Fixed
 
@@ -28,6 +31,9 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Fix renaming asset usages after editing a method name and using "Apply rename refactoring" ([#2167](https://github.com/JetBrains/resharper-unity/issues/2167), [#2169](https://github.com/JetBrains/resharper-unity/pull/2169))
 - Fix asset indexing when asset modified by some external apps ([#2169](https://github.com/JetBrains/resharper-unity/pull/2169))
 - Fix known words listed as abbreviations ([#2170](https://github.com/JetBrains/resharper-unity/pull/2170))
+- Fix unrecognised `Conservative` tag in shader files ([RIDER-66363](https://youtrack.jetbrains.com/issue/RIDER-66363))
+- Rider: Fix missing asset in Find Usages when name is serialised with single quotes ([RIDER-66837](https://youtrack.jetbrains.com/issue/RIDER-66837))
+- Rider: Fix performance issues with Unity Log tool window ([RIDER-68184](https://youtrack.jetbrains.com/issue/RIDER-68184), [#2176](https://github.com/JetBrains/resharper-unity/pull/2176))
 - ReSharper: Fix asset usage updating when asset is open in VS editor ([#2169](https://github.com/JetBrains/resharper-unity/pull/2169))
 
 
