@@ -95,11 +95,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             myIndexDisablingStrategy.Run(externalFiles.AssetFiles);
 
             AddExternalFiles(externalFiles);
-
-            // TODO: Capture read-only package stats separately
             UpdateStatistics(externalFiles);
-
             SubscribeToPackageUpdates();
+            SubscribeToProjectModelUpdates();
         }
 
         public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
@@ -220,6 +218,47 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             });
         }
 
+        private void SubscribeToProjectModelUpdates()
+        {
+            // If any of our external files are added to a proper project, remove them from our external files module.
+            // Add them back if they're removed from the project model. This can happen if the user generates projects
+            // for registry packages, or changes the settings to add .unity or .prefab to projects, or manually edits
+            // the project to add the files (although this will get overwritten)
+            myChangeManager.Changed2.Advise(myLifetime, args =>
+            {
+                var builder = new PsiModuleChangeBuilder();
+                var visitor = new RecursiveProjectModelChangeDeltaVisitor(null, itemChange =>
+                {
+                    // GetOldProject returns the right thing for both add and remove
+                    if (itemChange.ProjectItem is IProjectFile projectFile
+                        && !itemChange.GetOldProject().IsMiscFilesProject()
+                        && IsIndexedExternalFile(projectFile.Location))
+                    {
+                        if (itemChange.IsAdded || itemChange.IsMovedIn)
+                        {
+                            myLogger.Trace(
+                                "External Unity file added to project {0}. Removing from external files module: {1}",
+                                projectFile.GetProject()?.Name ?? "<null>", projectFile.Location);
+                            RemoveExternalPsiSourceFile(builder, projectFile.Location);
+                        }
+                        else if ((itemChange.IsRemoved || itemChange.IsMovedOut) && itemChange.OldLocation.ExistsFile)
+                        {
+                            myLogger.Trace(
+                                "External Unity file removed from project {0}. Adding to external files module: {1}",
+                                itemChange.GetOldProject()?.Name ?? "<null>", itemChange.OldLocation);
+                            AddOrUpdateExternalPsiSourceFile(builder, itemChange.OldLocation);
+                        }
+                    }
+                });
+
+                foreach (var solutionChange in args.ChangeMap.GetChanges<SolutionChange>())
+                    solutionChange.Accept(visitor);
+
+                if (!builder.IsEmpty)
+                    myChangeManager.ExecuteAfterChange(() => FlushChanges(builder));
+            });
+        }
+
         private void AddExternalFiles([NotNull] ExternalFiles externalFiles)
         {
             var builder = new PsiModuleChangeBuilder();
@@ -246,28 +285,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         {
             Assertion.AssertNotNull(myModuleFactory.PsiModule, "myModuleFactory.PsiModule != null");
 
+            if (!UpdateExternalPsiSourceFile(builder, path))
+            {
+                var sourceFile = myPsiSourceFileFactory.CreateExternalPsiSourceFile(myModuleFactory.PsiModule, path);
+                builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Added);
+            }
+        }
+
+        private bool UpdateExternalPsiSourceFile(PsiModuleChangeBuilder builder, VirtualFileSystemPath path)
+        {
+            Assertion.AssertNotNull(myModuleFactory.PsiModule, "myModuleFactory.PsiModule != null");
+
             var sourceFile = GetExternalPsiSourceFile(myModuleFactory.PsiModule, path);
             if (sourceFile != null)
             {
-                // We already know this file. Make sure it's up to date
-                UpdateExternalPsiSourceFile(sourceFile, builder, path);
-                return;
+                // Make sure we update the cached file system data, or all of the ICache implementations will think the
+                // file is already up to date
+                (sourceFile as PsiSourceFileFromPath)?.GetCachedFileSystemData().Refresh(path);
+                builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Modified);
+                return true;
             }
 
-            sourceFile = myPsiSourceFileFactory.CreateExternalPsiSourceFile(myModuleFactory.PsiModule, path);
-            builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Added);
+            return false;
         }
 
-        private static void UpdateExternalPsiSourceFile([CanBeNull] IPsiSourceFile sourceFile,
-                                                        PsiModuleChangeBuilder builder,
-                                                        VirtualFileSystemPath path)
+        private void RemoveExternalPsiSourceFile(PsiModuleChangeBuilder builder, VirtualFileSystemPath path)
         {
-            if (sourceFile == null) return;
+            Assertion.AssertNotNull(myModuleFactory.PsiModule, "myModuleFactory.PsiModule != null");
 
-            // Make sure we update the cached file system data, or all of the ICache implementations will think the
-            // file is already up to date
-            (sourceFile as PsiSourceFileFromPath)?.GetCachedFileSystemData().Refresh(path);
-            builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Modified);
+            var sourceFile = GetExternalPsiSourceFile(myModuleFactory.PsiModule, path);
+            if (sourceFile != null)
+                builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Removed);
         }
 
         private void UpdateStatistics(ExternalFiles externalFiles)
@@ -372,7 +420,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             if (module == null)
                 return;
 
-            IPsiSourceFile sourceFile;
             switch (delta.ChangeType)
             {
                 // We can get ADDED for a file we already know about if an app saves the file by saving to a temp file
@@ -383,16 +430,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     break;
 
                 case FileSystemChangeType.DELETED:
-                    sourceFile = GetExternalPsiSourceFile(module, delta.OldPath);
-                    if (sourceFile != null)
-                        builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Removed);
+                    RemoveExternalPsiSourceFile(builder, delta.OldPath);
                     break;
 
                 // We can get RENAMED if an app saves the file by saving to a temporary name first, then renaming
                 case FileSystemChangeType.CHANGED:
                 case FileSystemChangeType.RENAMED:
-                    sourceFile = GetExternalPsiSourceFile(module, delta.NewPath);
-                    UpdateExternalPsiSourceFile(sourceFile, builder, delta.NewPath);
+                    UpdateExternalPsiSourceFile(builder, delta.NewPath);
                     break;
 
                 case FileSystemChangeType.SUBTREE_CHANGED:
@@ -487,7 +531,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
                 if (directoryEntry.RelativePath.IsMeta())
                     MetaFiles.Add(new ExternalFile(directoryEntry, isUserEditable));
-                else if (directoryEntry.RelativePath.IsIndexedYamlExternalFile())
+                else if (directoryEntry.RelativePath.IsYamlDataFile())
                 {
                     if (IsBinaryAsset(directoryEntry))
                         KnownBinaryAssetFiles.Add(new ExternalFile(directoryEntry, isUserEditable));

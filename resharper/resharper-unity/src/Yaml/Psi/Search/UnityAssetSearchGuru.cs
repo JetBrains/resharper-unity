@@ -95,7 +95,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             if (sourceFile.IsMeta())
                 return false;
 
-            if (sourceFile.IsIndexedYamlExternalFile())
+            if (sourceFile.IsYamlDataFile())
             {
                 // We know the file matches ANY of the search terms, see if it also matches ALL of the search terms
                 return ((UnityYamlSearchGuruId) elementId).Files.Contains(sourceFile);
