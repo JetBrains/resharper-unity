@@ -135,14 +135,15 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
             synchronized(lock) {
                 if (allEvents.count() > maxItemsCount)
                 {
-                    onFirstRemoved.fire()
                     allEvents.removeFirst()
+                    if (isVisibleEvent(event))
+                        queueUpdate()
                 }
                 allEvents.add(event)
             }
 
             if (isVisibleEvent(event))
-                onAdded.fire(event)
+                queueUpdate()
         }
 
         val onChanged = Signal.Void()
@@ -173,23 +174,22 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
     val autoscroll = Property(false)
     var timeFilters = TimeFilters()
 
-    val onAdded = Signal<LogEvent>()
     val onFirstRemoved = Signal.Void()
     val onChanged = Signal<List<LogEvent>>()
     val onCleared = Signal.Void()
 
-    fun fire() = mergingUpdateQueue.queue(mergingUpdateQueueAction)
+    fun queueUpdate() = mergingUpdateQueue.queue(mergingUpdateQueueAction)
 
     var selectedItem : LogPanelItem? = null
 
     init {
-        typeFilters.onChanged.advise(lifetime) { fire() }
-        modeFilters.onChanged.advise(lifetime) { fire() }
-        textFilter.onChanged.advise(lifetime) { fire() }
-        timeFilters.onChanged.advise(lifetime) { fire() }
-        events.onChanged.advise(lifetime) { fire() }
-        mergeSimilarItems.advise(lifetime) { fire() }
-        project.solution.frontendBackendModel.consoleLogging.lastInitTime.advise(lifetime){ fire() }
-        project.solution.frontendBackendModel.consoleLogging.lastPlayTime.advise(lifetime){ fire() }
+        typeFilters.onChanged.advise(lifetime) { queueUpdate() }
+        modeFilters.onChanged.advise(lifetime) { queueUpdate() }
+        textFilter.onChanged.advise(lifetime) { queueUpdate() }
+        timeFilters.onChanged.advise(lifetime) { queueUpdate() }
+        events.onChanged.advise(lifetime) { queueUpdate() }
+        mergeSimilarItems.advise(lifetime) { queueUpdate() }
+        project.solution.frontendBackendModel.consoleLogging.lastInitTime.advise(lifetime){ queueUpdate() }
+        project.solution.frontendBackendModel.consoleLogging.lastPlayTime.advise(lifetime){ queueUpdate() }
     }
 }
