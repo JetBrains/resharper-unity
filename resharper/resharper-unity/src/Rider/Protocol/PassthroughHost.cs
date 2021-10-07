@@ -214,32 +214,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                             return result;
                         }
                         
-                        // TODO 213 reuse for all files
-                        if (path.GetFileLength() > 50 * 1024 * 1024)
-                        {
-                            return frontendBackendModel.OpenFileLineCol.Start(lf, new FrontendOpenArgs(args.Path, args.Line, args.Col)).ToRdTask(lf);
-                        }
-                        
-                        myEditorManager.OpenFile(path, OpenFileOptions.DefaultActivate, myThreading,
-                            textControl =>
-                            {
-                                var line = args.Line;
-                                var column = args.Col;
-
-                                if (line > 0 || column > 0) // avoid changing placement when it is not requested
-                                {
-                                    if (line > 0) line--;
-                                    if (line < 0) line = 0;
-                                    if (column > 0) column--;
-                                    if (column < 0) column = 0;
-                                    textControl.Caret.MoveTo((Int32<DocLine>) line, (Int32<DocColumn>) column,
-                                        CaretVisualPlacement.Generic);
-                                }
-
-                                frontendBackendModel.ActivateRider();
-                                result.Set(true);
-                            },
-                            () => result.Set(false));
+                        return frontendBackendModel.OpenFileLineCol.Start(lf, new FrontendOpenArgs(args.Path, args.Line, args.Col)).ToRdTask(lf);
                     }
                     catch (Exception e)
                     {
