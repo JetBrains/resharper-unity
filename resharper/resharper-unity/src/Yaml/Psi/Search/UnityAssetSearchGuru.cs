@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
@@ -94,7 +95,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             if (sourceFile.IsMeta())
                 return false;
 
-            if (sourceFile.IsAsset())
+            if (sourceFile.IsYamlDataFile())
             {
                 // We know the file matches ANY of the search terms, see if it also matches ALL of the search terms
                 return ((UnityYamlSearchGuruId) elementId).Files.Contains(sourceFile);

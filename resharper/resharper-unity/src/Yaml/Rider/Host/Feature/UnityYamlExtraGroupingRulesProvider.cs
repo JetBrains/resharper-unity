@@ -144,9 +144,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
                 if (occurrence is UnityAssetOccurrence assetOccurrence &&
-                      !assetOccurrence.SourceFile.GetLocation().IsAsset() &&
-                      !assetOccurrence.SourceFile.GetLocation().IsAnimFile() &&
-                      !assetOccurrence.SourceFile.GetLocation().IsControllerFile())
+                      !assetOccurrence.SourceFile.IsAsset() &&
+                      !assetOccurrence.SourceFile.IsAnim() &&
+                      !assetOccurrence.SourceFile.IsController())
                 {
                     using (ReadLockCookie.Create())
                     {

@@ -52,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
 
         public bool IsApplicable(IPsiSourceFile currentAssetSourceFile)
         {
-            return currentAssetSourceFile.GetLocation().IsControllerFile();
+            return currentAssetSourceFile.IsController();
         }
 
         public object Build(SeldomInterruptChecker checker, IPsiSourceFile file, AssetDocument document)

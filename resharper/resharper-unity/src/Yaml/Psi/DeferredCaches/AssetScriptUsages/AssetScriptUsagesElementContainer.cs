@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptU
 
         public bool IsApplicable(IPsiSourceFile currentAssetSourceFile)
         {
-            return !currentAssetSourceFile.GetLocation().IsControllerFile();
+            return !currentAssetSourceFile.IsController();
         }
 
         public object Build(SeldomInterruptChecker checker, IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)

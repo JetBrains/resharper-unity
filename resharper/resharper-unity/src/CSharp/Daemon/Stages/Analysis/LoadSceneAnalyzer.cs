@@ -1,8 +1,8 @@
+using System;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
-using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -113,8 +113,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 return null;
 
             var sceneName = constantValue;
-            if (sceneName.StartsWith("Assets/") && sceneName.EndsWith(UnityAssetFileExtensions.SceneFileExtensionWithDot))
+            if (sceneName.StartsWith("Assets/") && sceneName.EndsWith(UnityFileExtensions.SceneFileExtensionWithDot,
+                StringComparison.InvariantCultureIgnoreCase))
+            {
                 sceneName = UnityProjectSettingsUtils.GetUnityScenePathRepresentation(sceneName);
+            }
 
             return sceneName;
         }

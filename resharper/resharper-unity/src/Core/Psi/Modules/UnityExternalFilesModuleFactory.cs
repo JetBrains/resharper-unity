@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             // TODO: Conditionally create this module
             // See changeBuilder.AddAssembly(module, ADDED)
             PsiModule = new UnityExternalFilesPsiModule(solution, "Unity external files", "UnityExternalFilesPsiModule",
-                TargetFrameworkId.Default, lifetime);
+                TargetFrameworkId.Default);
 
             Modules = new HybridCollection<IPsiModule>(PsiModule);
         }

@@ -70,11 +70,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.VisualStudio.Psi.Modules
                 var projectFile = documentToProjectFileMapping.TryGetProjectFile(document);
                 if (projectFile != null) return;
 
-                // No project file. Is it one of our interesting assets?
+                // No project file. Is it one of our external files?
                 var location = document.TryGetFilePath();
                 if (location.IsEmpty) return;
 
-                if (location.IsInterestingAsset() || location.IsMeta())
+                if (location.IsIndexedExternalFile())
                 {
                     if (module.TryGetFileByPath(location, out var psiSourceFile)
                         && psiSourceFile is UnityExternalPsiSourceFile sourceFile)
