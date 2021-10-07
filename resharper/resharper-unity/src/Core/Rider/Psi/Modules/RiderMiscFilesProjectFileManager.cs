@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
+using JetBrains.Util.dataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Rider.Psi.Modules
 {
@@ -84,11 +85,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Rider.Psi.Modules
 
         private void RemoveExternalProjectFiles(VirtualFileSystemPath path)
         {
+            var toRemove = new FrugalLocalList<ProjectItemBase>();
             foreach (var projectItem in mySolution.FindProjectItemsByLocation(path))
             {
-                if (projectItem is ProjectItemBase projectFile)
-                    projectFile.DoRemove();
+                if (projectItem is ProjectItemBase projectFile && projectFile.IsMiscProjectItem())
+                    toRemove.Add(projectFile);
             }
+
+            foreach (var projectItemBase in toRemove)
+                projectItemBase.DoRemove();
         }
     }
 }

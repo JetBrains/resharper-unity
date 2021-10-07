@@ -8,19 +8,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
 {
     public static class UnityFileExtensions
     {
-        // Metadata
+        // Metadata (.meta is YAML, .asmdef/.asmref is JSON)
         public const string MetaFileExtensionWithDot = ".meta";
         public const string AsmDefFileExtensionWithDot = ".asmdef";
         public const string AsmRefFileExtensionWithDot = ".asmref";
 
-        // Game assets
+        // Game assets - all YAML
         public const string AssetFileExtensionWithDot = ".asset";
         public const string PrefabFileExtensionWithDot = ".prefab";
         public const string SceneFileExtensionWithDot = ".unity";
         public const string ControllerFileExtensionWithDot = ".controller";
         public const string AnimFileExtensionWithDot = ".anim";
 
-        private static readonly string[] ourYamlFileExtensionsWithDot =
+        // Data files - does not include .meta
+        private static readonly string[] ourYamlDataFileExtensionsWithDot =
         {
             SceneFileExtensionWithDot,
             AssetFileExtensionWithDot,
@@ -29,13 +30,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
             AnimFileExtensionWithDot
         };
 
-        public static readonly string[] YamlFileExtensionsWithDot;
+        // All YAML files, including .meta
+        public static readonly string[] AllYamlFileExtensionsWithDot;
 
         static UnityFileExtensions()
         {
-            YamlFileExtensionsWithDot = new string[ourYamlFileExtensionsWithDot.Length + 1];
-            YamlFileExtensionsWithDot[0] = MetaFileExtensionWithDot;
-            Array.Copy(ourYamlFileExtensionsWithDot, 0, YamlFileExtensionsWithDot, 1, ourYamlFileExtensionsWithDot.Length);
+            AllYamlFileExtensionsWithDot = new string[ourYamlDataFileExtensionsWithDot.Length + 1];
+            AllYamlFileExtensionsWithDot[0] = MetaFileExtensionWithDot;
+            Array.Copy(ourYamlDataFileExtensionsWithDot, 0, AllYamlFileExtensionsWithDot, 1, ourYamlDataFileExtensionsWithDot.Length);
         }
 
         public static bool IsMeta([NotNull] this IPath path) =>
@@ -88,12 +90,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
         public static bool IsIndexedExternalFile([NotNull] this IPath path)
         {
             // TODO: Add .asmref (coming soon)
-            return path.IsIndexedYamlExternalFile() || path.IsAsmDef();
+            return path.IsYamlDataFile() || path.IsMeta() || path.IsAsmDef();
         }
 
-        public static bool IsIndexedYamlExternalFile([NotNull] this IPath path)
+        public static bool IsYamlDataFile([NotNull] this IPath path)
         {
-            foreach (var extension in ourYamlFileExtensionsWithDot)
+            foreach (var extension in ourYamlDataFileExtensionsWithDot)
             {
                 if (SimplePathEndsWith(path, extension))
                     return true;
@@ -102,9 +104,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
             return false;
         }
 
-        public static bool IsIndexedYamlExternalFile([NotNull] this IPsiSourceFile sourceFile)
+        public static bool IsYamlDataFile([NotNull] this IPsiSourceFile sourceFile)
         {
-            foreach (var extension in ourYamlFileExtensionsWithDot)
+            foreach (var extension in ourYamlDataFileExtensionsWithDot)
             {
                 if (SourceFileNameEndsWith(sourceFile, extension))
                     return true;
