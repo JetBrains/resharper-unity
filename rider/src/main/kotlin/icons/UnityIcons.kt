@@ -118,7 +118,7 @@ class UnityIcons {
 
             val BuiltInPackage = IconLoader.getIcon("/Icons/Explorer/UnityModule.svg", UnityIcons::class.java)
             val ReferencedPackage = IconLoader.getIcon("/resharper/UnityFileType/FolderPackageReferenced.svg", UnityIcons::class.java)
-            val EmbeddedPackage = IconLoader.getIcon("/resharper/UnityFileType/FolderPackageEmbedded.svg", UnityIcons::class.java)
+            val EmbeddedPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageEmbedded.svg", UnityIcons::class.java)
             val LocalPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageLocal.svg", UnityIcons::class.java)
             val LocalTarballPackage = LocalPackage
             val GitPackage = IconLoader.getIcon("/Icons/Explorer/FolderGit.svg", UnityIcons::class.java)
