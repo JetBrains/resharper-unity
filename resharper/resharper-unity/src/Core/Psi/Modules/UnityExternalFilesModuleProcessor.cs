@@ -226,6 +226,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             // the project to add the files (although this will get overwritten)
             myChangeManager.Changed2.Advise(myLifetime, args =>
             {
+                var solutionChanges = args.ChangeMap.GetChanges<SolutionChange>().ToList();
+                if (solutionChanges.IsEmpty())
+                    return;
+
                 var packageCacheFolder = mySolutionDirectory.Combine("Library/PackageCache");
                 var builder = new PsiModuleChangeBuilder();
                 var visitor = new RecursiveProjectModelChangeDeltaVisitor(null, itemChange =>
@@ -256,7 +260,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     }
                 });
 
-                foreach (var solutionChange in args.ChangeMap.GetChanges<SolutionChange>())
+                foreach (var solutionChange in solutionChanges)
                     solutionChange.Accept(visitor);
 
                 if (!builder.IsEmpty)
