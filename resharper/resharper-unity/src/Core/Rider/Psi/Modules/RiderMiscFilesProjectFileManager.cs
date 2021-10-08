@@ -4,7 +4,7 @@ using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Transaction;
-using JetBrains.RdBackend.Common.Features.ProjectModel.MiscFiles;
+using JetBrains.RdBackend.Common.Features.Documents;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.Modules;
@@ -80,7 +80,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Rider.Psi.Modules
             if (mySolution.FindProjectItemsByLocation(path).Count > 0)
                 return;
 
-            mySolution.SolutionMiscFiles().CreateMiscFile(path);
+            // Avoid SolutionMiscFiles.CreateMiscFile as this will involve transactions, and loading/saving the document
+            // for each file
+            DocumentHostBase.CreateMiscFile(mySolution, path);
         }
 
         private void RemoveExternalProjectFiles(VirtualFileSystemPath path)
