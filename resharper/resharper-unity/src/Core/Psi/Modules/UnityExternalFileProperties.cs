@@ -20,5 +20,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         public bool IsICacheParticipant => true;
         public bool ProvidesCodeModel => true;
         public bool IsNonUserFile { get; }
+
+        public override string ToString()
+        {
+            return $"{nameof(ShouldBuildPsi)}={ShouldBuildPsi}, " +
+                   $"{nameof(ProvidesCodeModel)}={ProvidesCodeModel}, " +
+                   $"{nameof(IsICacheParticipant)}={IsICacheParticipant}, " +
+                   $"{nameof(IsNonUserFile)}={IsNonUserFile}, " +
+                   $"{nameof(IsGeneratedFile)}={IsGeneratedFile}, " +
+                   $"type={GetType()}";
+        }
     }
 }
