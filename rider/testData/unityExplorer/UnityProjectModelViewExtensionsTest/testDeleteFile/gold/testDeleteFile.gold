@@ -38,7 +38,6 @@ Project [Name:AsmdefResponse, GUID:GUID]
         Folder [Name:AsmdefResponse]
           Child items:
             ProjectFileImpl(Path : AsmdefResponse.asmdef)[NONE ]
-            ProjectFileImpl(Path : NewBehaviourScript.cs)[COMPILE ]
 
 Project [Name:AsmdefResponse.Player, GUID:GUID]
   Child items:
@@ -48,7 +47,6 @@ Project [Name:AsmdefResponse.Player, GUID:GUID]
         Folder [Name:AsmdefResponse]
           Child items:
             ProjectFileImpl(Path : AsmdefResponse.asmdef)[NONE ]
-            ProjectFileImpl(Path : NewBehaviourScript.cs)[COMPILE ]
 
 Project [Name:AsmdefResponse2, GUID:GUID]
   Child items:
