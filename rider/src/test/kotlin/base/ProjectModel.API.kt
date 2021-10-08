@@ -148,13 +148,15 @@ fun cutItem2(project: Project, path: Array<String>) {
 
 fun cutItem2(project: Project, paths: Array<Array<String>>) {
     val dataContext = createDataContextFor2(project, paths)
-    assert(RiderCutProvider.isCutEnabled(dataContext)) { "Can't cut elements" }
+    assert(RiderCutProvider.isCutEnabled(dataContext)) { "Can't cut elements. isCutEnabled" }
+    assert(RiderCutProvider.isCutVisible(dataContext)) { "Can't cut elements. isCutVisible" }
     RiderCutProvider.performCut(dataContext)
 }
 
 fun pasteItem2(project: Project, path: Array<String>, customName: String? = null, orderType : ActionOrderType? = null) {
     val dataContext = createDataContextFor2(project, arrayOf(path))
-    assert(RiderPasteProvider.isPasteEnabled(dataContext)) { "Can't past elements" }
+    assert(RiderPasteProvider.isPasteEnabled(dataContext)) { "Can't paste elements. isPasteEnabled" }
+    assert(RiderPasteProvider.isPastePossible(dataContext)) { "Can't paste elements. isPastePossible" }
     Lifetime.using {
         DuplicateNameDialog.withCustomName(it, customName)
         if (orderType != null) {
