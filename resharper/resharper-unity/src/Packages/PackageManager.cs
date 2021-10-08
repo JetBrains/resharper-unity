@@ -128,6 +128,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
             return myPackagesById.TryGetValue(id, out var packageData) ? packageData : null;
         }
 
+        [CanBeNull]
+        public PackageData GetOwningPackage(VirtualFileSystemPath path)
+        {
+            foreach (var packageData in myPackagesById.Values)
+            {
+                if (packageData.PackageFolder != null && packageData.PackageFolder.IsPrefixOf(path))
+                    return packageData;
+            }
+
+            return null;
+        }
+
         public void RefreshPackages() => ScheduleRefresh();
 
         private void ScheduleRefresh()
