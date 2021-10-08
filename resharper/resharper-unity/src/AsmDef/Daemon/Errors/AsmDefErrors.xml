@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Configurable severity items are added as CSHARP so that they appear in the Unity group inside the CSHARP options page -->
 <Errors language="C#" configurableSeverityImplementationLanguage="CSHARP">
 
   <Usings>
+    JetBrains.ReSharper.Psi.Util;
     JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
     JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
   </Usings>
@@ -18,6 +20,12 @@
            default="SUGGESTION">
         <Title>File name should match the name of the assembly</Title>
         <Description>To avoid confusion, the name of the assembly definition file should match the name of the assembly being defined.</Description>
+      </Tag>
+
+      <Tag externalName="PreferGuidReferenceWarning.HIGHLIGHTING_ID"
+           default="HINT">
+        <Title>Prefer GUID-based assembly references</Title>
+        <Description>References in a .asmdef file can be by name or by asset GUID. Using an asset GUID protects against renaming the assembly definition.</Description>
       </Tag>
     </Group>
   </SeverityConfiguration>
@@ -41,7 +49,14 @@
   <Warning name="MismatchedAsmDefFilename" configurableSeverity="MISMATCHED_ASMDEF_FILENAME">
     <Parameter type="IJsonNewLiteralExpression" name="literalExpression" />
     <Message value="File name should match the name of the assembly" />
-    <Range>LiteralExpression.GetHighlightingRange()</Range>
+    <Range>LiteralExpression.GetUnquotedDocumentRange()</Range>
     <Behavour attributeID="SUGGESTION" overlapResolvePolicy="WARNING" />
+  </Warning>
+
+  <Warning name="PreferGuidReference" configurableSeverity="PREFER_GUID_REFERENCES">
+    <Parameter type="IJsonNewLiteralExpression" name="literalExpression" />
+    <Message value="Prefer GUID reference" />
+    <Range>LiteralExpression.GetUnquotedDocumentRange()</Range>
+    <Behavour attributeID="HINT" />
   </Warning>
 </Errors>

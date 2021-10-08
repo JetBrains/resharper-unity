@@ -23,9 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
         {
             // This will take the candidates from the reference symbol table and apply the filters from GetSymbolFilters
             var resolveResultWithInfo = CheckedReferenceImplUtil.Resolve(this, GetReferenceSymbolTable(true));
-            if (!resolveResultWithInfo.Result.IsEmpty)
-                return resolveResultWithInfo;
-            return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.NOT_RESOLVED);
+            return !resolveResultWithInfo.Result.IsEmpty ? resolveResultWithInfo : ResolveResultWithInfo.Unresolved;
         }
 
         public override string GetName()

@@ -52,8 +52,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             switch (changeType)
             {
                 case PsiModuleChange.ChangeType.Added:
+                    // We don't normally do anything when a Misc File is added. All files are added by
+                    // UnityExternalFilesModuleProcessor. The only time we want to do this is at initial solution load,
+                    // where cached project file instances are pushed through the change manager before the module is
+                    // populated. If we don't create these files on demand, the platform will create a default PSI
+                    // source file that we don't have any control of.
+                    // Note also that we can't inject UnityExternalFilesModuleProcessor, or it creates a circular ref.
+                    // Note also that there is a bug in MiscFilesProjectProjectPsiModuleHandler.OnProjectFileChanged.
+                    // It won't process all cached project files. It handles the first one, adds a change into the
+                    // change builder (with a new PSI source file) and for subsequent files, it checks if there ar *any*
+                    // file changes in the builder, not a file change for the specific current file. This doesn't affect
+                    // what we're doing here, but it produces confusing results when trying to debug
+                    var moduleProcessor = projectFile.GetSolution().GetComponent<UnityExternalFilesModuleProcessor>();
+                    moduleProcessor.TryAddExternalPsiSourceFileForMiscFilesProjectFile(changeBuilder, projectFile);
+                    break;
+
                 case PsiModuleChange.ChangeType.Removed:
-                    // Do nothing. We only add/remove source files if the underlying file itself has been removed, which is
+                    // Do nothing. We only remove source files if the underlying file itself has been removed, which is
                     // handled by UnityExternalFilesModuleProcessor and a file system watcher
                     break;
 

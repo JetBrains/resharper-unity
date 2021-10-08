@@ -11,6 +11,85 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
 {
     public sealed class UnityObjectTypeThemedIcons
     {
+        #region UnityPackages
+        /// <summary>
+        ///	<para>
+        ///		<para>UnityPackages Themed Icon generated identifiers:</para>
+        ///		<para>— <see cref="UnityPackages"></see> identifier class, for use in attributes, XAML, and generic parameters;</para>
+        ///		<para>— <see cref="Id"></see> identifier object, as a field in the identifier class, for use where an <see cref="JetBrains.UI.Icons.IconId"></see> value is expected.</para>
+        ///		<para>
+        ///			<code>
+        ///              `_rCuL^`
+        ///          `:*}o|~-.~co[+,`
+        ///       -!JVz=:      `"?|zkz=:
+        ///   -;Ta2r"`      :!zkkk2r__+fVv;-
+        ///   UU;-      -;7EXXEv;-      -~UU
+        ///   66``  `~)awwwu+,`      -;)2`66
+        ///   ww````,ddd|~.``````.~L2kkkk`ww
+        ///   bb````_###`````.^ruUUUUUUUU`bb
+        ///   dd````"DDD`````wwwwwwwwwwww`dd
+        ///   OO````-=Fm`````bbbbbbbbbbbb`OO
+        ///   RR.............AAAAAAAAAAAA.RR
+        ///   DD;-....'''''''#########pF+~DD
+        ///   ^|UDac~--------DDDDDDec\Lj#97~
+        ///      `;zA#2r_----88bJ+r3#R[!.
+        ///          -\2DA]*:rr}dDe+:
+        ///              ,LZWM6)"
+        ///</code>
+        ///		</para>
+        ///	</para>
+        ///</summary>
+        ///<remarks>
+        ///	<para>For details on Themed Icons and their use, see Remarks on the outer class.</para>
+        ///</remarks>
+        ///<example>
+        ///	<code>&lt;Image Source="{icons:ThemedIcon myres:HihotomThemedIconsThemedIcons+UnityPackages}" /&gt;        &lt;!-- XAML --&gt;</code>
+        ///</example>
+        ///<example>
+        ///	<code>[Item(Name="Sample", Icon=typeof(HihotomThemedIconsThemedIcons.UnityPackages))]        // C# Type attribute</code>
+        ///</example>
+        ///<example>
+        ///	<code>IconId iconid = HihotomThemedIconsThemedIcons.UnityPackages.Id;        // IconId identifier object</code>
+        ///</example>
+        ///<example>
+        ///	<code>themediconmanager.GetIcon&lt;HihotomThemedIconsThemedIcons.UnityPackages&gt;()        // Icon image for rendering</code>
+        ///</example>
+        [global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsAttribute()]
+        public sealed class UnityPackages : global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
+        {
+
+            /// <inheritdoc cref="UnityPackages">identifier class</inheritdoc>
+            public static global::JetBrains.UI.Icons.IconId Id = new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(UnityPackages));
+
+            /// <summary>Loads the image for Themed Icon UnityPackages theme aspect Color.</summary>
+            public global::JetBrains.Util.Icons.TiImage Load_Color()
+            {
+                return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M0,0L16,0L16,16L0,16Z' fill='#FFFFFF' opacity='0'/><linearGradient id='F1' x1='0.5' y1='0' x2='0.5' y2='1'><stop offset='0' stop-color='#226E6E'/><stop offset='1' stop-color='#12344D'/></linearGradient><path d='M8.248,0L1,3.903L1,12.098L8.248,16L8.752,16L16,12.098L16,3.903L8.752,0L8.248,0Z' fill='url(#F1)'/><linearGradient id='F2' x1='0.5' y1='0' x2='0.5' y2='1'><stop offset='0' stop-color='#DDFFFE'/><stop offset='1' stop-color='#B4D1E3'/></linearGradient><path d='M8.5,1L2,4.501L2,11.5L8.5,15L15,11.5L15,4.501L8.5,1Z' fill='url(#F2)'/><linearGradient id='F3' x1='0.5' y1='0' x2='0.5' y2='0.99999999999999989'><stop offset='0' stop-color='#DDFFFE'/><stop offset='1' stop-color='#B4D1E3'/></linearGradient><path d='M3,10.902L3,5.099L8.5,2.136L14,5.099L14,10.902L8.5,13.864L3,10.902Z' fill='url(#F3)'/><linearGradient id='F4' x1='0.5' y1='0' x2='0.5' y2='0.99999999999999978'><stop offset='0' stop-color='#226E6E'/><stop offset='1' stop-color='#12344D'/></linearGradient><path d='M10.821,2.264L4.367,5.739L4.367,9.134L6,10L6,6.664L12.509,3.159L10.821,2.264Z' fill='url(#F4)'/><linearGradient id='F5' x1='0.5' y1='0' x2='0.5' y2='0.99999999999999978'><stop offset='0' stop-color='#226E6E'/><stop offset='1' stop-color='#12344D'/></linearGradient><path d='M8.5,14.432L14.5,11.201L14.5,4.8L14.473,4.785L8.5,8L8.5,14.432Z' fill='url(#F5)'/></g></svg>");
+            }
+
+            /// <summary>Loads the image for Themed Icon UnityPackages theme aspect Gray.</summary>
+            public global::JetBrains.Util.Icons.TiImage Load_Gray()
+            {
+                return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M0,0L16,0L16,16L0,16Z' fill='#FFFFFF' opacity='0'/><path d='M8.248,0L1,3.903L1,12.098L8.248,16L8.752,16L16,12.098L16,3.903L8.752,0L8.248,0Z' fill='#F4F4F4'/><path d='M8.5,1L2,4.501L2,11.5L8.5,15L15,11.5L15,4.501L8.5,1Z' fill='#323232'/><path d='M3,10.902L3,5.099L8.5,2.136L14,5.099L14,10.902L8.5,13.864L3,10.902Z' fill='#EBEBEB'/><path d='M11.454,2.591L5,6.066L5,8.961L6,9.5L6,6.664L12.509,3.159L11.454,2.591Z' fill='#323232'/><path d='M13.5,10.604L13.5,5.396L13.419,5.353L8.5,8L8.5,13.296L13.5,10.604Z' fill='#323232'/></g></svg>");
+            }
+
+            /// <summary>Loads the image for Themed Icon UnityPackages theme aspect GrayDark.</summary>
+            public global::JetBrains.Util.Icons.TiImage Load_GrayDark()
+            {
+                return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M0,0L16,0L16,16L0,16Z' fill='#FFFFFF' opacity='0'/><path d='M8.248,0L1,3.903L1,12.098L8.248,16L8.752,16L16,12.098L16,3.903L8.752,0L8.248,0Z' fill='#252525'/><path d='M8.5,1L2,4.501L2,11.5L8.5,15L15,11.5L15,4.501L8.5,1Z' fill='#C4C4C4'/><path d='M3,10.902L3,5.099L8.5,2.136L14,5.099L14,10.902L8.5,13.864L3,10.902Z' fill='#292929'/><path d='M11.454,2.591L5,6.066L5,8.961L6,9.5L6,6.664L12.509,3.159L11.454,2.591Z' fill='#C4C4C4'/><path d='M13.5,10.604L13.5,5.396L13.419,5.353L8.5,8L8.5,13.296L13.5,10.604Z' fill='#C4C4C4'/></g></svg>");
+            }
+
+            /// <summary>Returns the set of theme images for Themed Icon UnityPackages.</summary>
+            public override global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] GetThemeImages()
+            {
+                return new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] {
+                        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("Color", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_Color)),
+                        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("Gray", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_Gray)),
+                        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("GrayDark", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_GrayDark))};
+            }
+        }
+        #endregion
+
         #region UnityComponent
         /// <summary>
         ///	<para>
@@ -207,7 +286,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
             }
         }
         #endregion
-        
+
         #region UsageAnimatorState
         /// <summary>
         ///	<para>
@@ -216,22 +295,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
         ///		<para>— <see cref="Id"></see> identifier object, as a field in the identifier class, for use where an <see cref="JetBrains.UI.Icons.IconId"></see> value is expected.</para>
         ///		<para>
         ///			<code>
-        ///        :=rT}oooooooooooooooooo  
-        ///     .+us;:-`                jj  
-        ///    "o}- ``.'--------------  aa  
-        ///   ^kv` .------------------  kk  
-        ///   [E: `-----zzzzzzzzzzzzzz  EE  
-        ///   UU  '''_+FCC          [[  UU  
-        ///   66  -!sfL~uu``````````uu  66  
-        ///   ww  55c---------------jj  ww  
-        ///   bb  ,rof=:aa,,,,,,,,,,kk  bb  
-        ///   dd  ``.~vEEE~~~~~~~~~~UU  dd  
-        ///   AA````````wwuuuu::uuuuww``AA  
-        ///   RR``````````?5?----r5T````RR  
-        ///   ##```````````"uf",Co;`````##  
-        ///   DD````````````.)EEv-``````DD  
-        ///   88````````````````````````88  
-        ///   8888888888888888888888888888  
+        ///        :=rT}oooooooooooooooooo
+        ///     .+us;:-`                jj
+        ///    "o}- ``.'--------------  aa
+        ///   ^kv` .------------------  kk
+        ///   [E: `-----zzzzzzzzzzzzzz  EE
+        ///   UU  '''_+FCC          [[  UU
+        ///   66  -!sfL~uu``````````uu  66
+        ///   ww  55c---------------jj  ww
+        ///   bb  ,rof=:aa,,,,,,,,,,kk  bb
+        ///   dd  ``.~vEEE~~~~~~~~~~UU  dd
+        ///   AA````````wwuuuu::uuuuww``AA
+        ///   RR``````````?5?----r5T````RR
+        ///   ##```````````"uf",Co;`````##
+        ///   DD````````````.)EEv-``````DD
+        ///   88````````````````````````88
+        ///   8888888888888888888888888888
         ///</code>
         ///		</para>
         ///	</para>
@@ -254,10 +333,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
         [global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsAttribute()]
         public sealed class UsageAnimatorState : global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
         {
-	        
+
 	        /// <inheritdoc cref="UsageAnimatorState">identifier class</inheritdoc>
 	        public static global::JetBrains.UI.Icons.IconId Id = new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(UsageAnimatorState));
-	        
+
 	        /// <summary>Loads the image for Themed Icon UsageAnimatorState theme aspect Color.</summary>
 	        public global::JetBrains.Util.Icons.TiImage Load_Color()
 	        {
@@ -300,19 +379,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
 				        "t=\'1\' stop-color=\'#E7A200\'/></linearGradient><path d=\'M7,5L12,5L12,10L7,10ZM7,5\'" +
 				        " fill=\'url(#F8)\'/></g></svg>");
 	        }
-	        
+
 	        /// <summary>Loads the image for Themed Icon UsageAnimatorState theme aspect Gray.</summary>
 	        public global::JetBrains.Util.Icons.TiImage Load_Gray()
 	        {
 		        return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M1,16L1,5C1.0015872523922405,3.6749102199380204,1.5292392206293948,2.4032005033643733,2.4662198619968843,1.4662198619968838C3.4032005033643737,0.52923922062939455,4.6749102199380212,0.0015872523922401238,6.0000000000000009,8.8817841970012523E-16L15,8.8817841970012523E-16L15,16ZM1,16' fill='#F4F4F4'/><path d='M6,1C4.93954090603479,0.99999999999999989,3.9214306917675525,1.4217150587400678,3.17157287525381,2.1715728752538097C2.4217150587400678,2.9214306917675517,2,3.9395409060347895,2,4.9999999999999991L2,15L14,15L14,1ZM6,1' fill='#323232'/><path d='M3,14L3,5C3,4.2046556795260921,3.3162862940550504,3.441073018825664,3.8786796564403576,2.8786796564403572C4.441073018825664,2.3162862940550508,5.2046556795260921,2,5.9999999999999991,2L13,2L13,14ZM3,14' fill='#EBEBEB'/><path d='M6,4L13,4L13,11L6,11ZM6,4' fill='#F4F4F4'/><path d='M7,5L5.667,5L3,7L3,8L5.667,10L7,10L7,9L8,9L8,6L7,6L7,5ZM7,5' fill='#F4F4F4'/><path d='M7,7L6,7L6,6L4,7.5L6,9L6,8L7,8L7,7ZM7,7' fill='#00539C'/><path d='M7,10L7,11.333L9,14L10,14L12,11.333L12,10L11,10L11,9L8,9L8,10L7,10ZM7,10' fill='#F4F4F4'/><path d='M10,11L10,10L9,10L9,11L8,11L9.5,13L11,11L10,11ZM10,11' fill='#00539C'/><path d='M7,5L12,5L12,10L7,10ZM7,5' fill='#323232'/></g></svg>");
 	        }
-	        
+
 	        /// <summary>Loads the image for Themed Icon UsageAnimatorState theme aspect GrayDark.</summary>
 	        public global::JetBrains.Util.Icons.TiImage Load_GrayDark()
 	        {
 		        return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M1,16L1,5C1.0015872523922405,3.6749102199380204,1.5292392206293948,2.4032005033643733,2.4662198619968843,1.4662198619968838C3.4032005033643737,0.52923922062939455,4.6749102199380212,0.0015872523922401238,6.0000000000000009,8.8817841970012523E-16L15,8.8817841970012523E-16L15,16ZM1,16' fill='#252525'/><path d='M6,1C4.93954090603479,0.99999999999999989,3.9214306917675525,1.4217150587400678,3.17157287525381,2.1715728752538097C2.4217150587400678,2.9214306917675517,2,3.9395409060347895,2,4.9999999999999991L2,15L14,15L14,1ZM6,1' fill='#C4C4C4'/><path d='M3,14L3,5C3,4.2046556795260921,3.3162862940550504,3.441073018825664,3.8786796564403576,2.8786796564403572C4.441073018825664,2.3162862940550508,5.2046556795260921,2,5.9999999999999991,2L13,2L13,14ZM3,14' fill='#292929'/><path d='M6,4L13,4L13,11L6,11ZM6,4' fill='#252525'/><path d='M7,5L5.667,5L3,7L3,8L5.667,10L7,10L7,9L8,9L8,6L7,6L7,5ZM7,5' fill='#252525'/><path d='M7,7L6,7L6,6L4,7.5L6,9L6,8L7,8L7,7ZM7,7' fill='#7CBEFF'/><path d='M7,10L7,11.333L9,14L10,14L12,11.333L12,10L11,10L11,9L8,9L8,10L7,10ZM7,10' fill='#252525'/><path d='M10,11L10,10L9,10L9,11L8,11L9.5,13L11,11L10,11ZM10,11' fill='#7CBEFF'/><path d='M7,5L12,5L12,10L7,10ZM7,5' fill='#C4C4C4'/></g></svg>");
 	        }
-	        
+
 	        /// <summary>Returns the set of theme images for Themed Icon UsageAnimatorState.</summary>
 	        public override global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] GetThemeImages()
 	        {
@@ -332,22 +411,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
         ///		<para>— <see cref="Id"></see> identifier object, as a field in the identifier class, for use where an <see cref="JetBrains.UI.Icons.IconId"></see> value is expected.</para>
         ///		<para>
         ///			<code>
-        ///        :=rT}oooooooooooooooooo  
-        ///     .+2i;:-`                ee  
-        ///    "5{- ``.---------------  aa  
-        ///   ~kv` .------------------  kk  
-        ///   [K:                       KK  
-        ///   XX    CCCCCC    CCCCCC    XX  
-        ///   66    3333333333333333    66  
-        ///   ww    uuuuuu   ,uuuuuu    ww  
-        ///   bb      oo   _su!`        bb  
-        ///   dd``    ee _z2!`        ``dd  
-        ///   AA``  aaaaaa!`  aaaaaa  ``AA  
-        ///   ##``  kkkkkkkkkkkkkkkk  ``##  
-        ///   ##``  KKKKKK    KKKKKK  ``##  
-        ///   DD``                    ``DD  
-        ///   88````````````````````````88  
-        ///   8888888888888888888888888888  
+        ///        :=rT}oooooooooooooooooo
+        ///     .+2i;:-`                ee
+        ///    "5{- ``.---------------  aa
+        ///   ~kv` .------------------  kk
+        ///   [K:                       KK
+        ///   XX    CCCCCC    CCCCCC    XX
+        ///   66    3333333333333333    66
+        ///   ww    uuuuuu   ,uuuuuu    ww
+        ///   bb      oo   _su!`        bb
+        ///   dd``    ee _z2!`        ``dd
+        ///   AA``  aaaaaa!`  aaaaaa  ``AA
+        ///   ##``  kkkkkkkkkkkkkkkk  ``##
+        ///   ##``  KKKKKK    KKKKKK  ``##
+        ///   DD``                    ``DD
+        ///   88````````````````````````88
+        ///   8888888888888888888888888888
         ///</code>
         ///		</para>
         ///	</para>
@@ -370,10 +449,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
         [global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsAttribute()]
         public sealed class UsageAnimatorStateMachine : global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
         {
-	        
+
 	        /// <inheritdoc cref="UsageAnimatorStateMachine">identifier class</inheritdoc>
 	        public static global::JetBrains.UI.Icons.IconId Id = new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(UsageAnimatorStateMachine));
-	        
+
 	        /// <summary>Loads the image for Themed Icon UsageAnimatorStateMachine theme aspect Color.</summary>
 	        public global::JetBrains.Util.Icons.TiImage Load_Color()
 	        {
@@ -404,19 +483,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
 				        "0L9,10L9,11L7,11L7,10.707ZM9.707,8M6,8L7,8L7,7L9,7L9,7.293L6.293,10L6,10ZM6,8\' f" +
 				        "ill=\'url(#F4)\'/></g></svg>");
 	        }
-	        
+
 	        /// <summary>Loads the image for Themed Icon UsageAnimatorStateMachine theme aspect Gray.</summary>
 	        public global::JetBrains.Util.Icons.TiImage Load_Gray()
 	        {
 		        return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M1,16L1,5C1.0015872523922405,3.6749102199380204,1.5292392206293948,2.4032005033643733,2.4662198619968843,1.4662198619968838C3.4032005033643737,0.52923922062939455,4.6749102199380212,0.0015872523922401238,6.0000000000000009,8.8817841970012523E-16L15,8.8817841970012523E-16L15,16ZM1,16' fill='#F4F4F4'/><path d='M6,1C4.93954090603479,0.99999999999999989,3.9214306917675525,1.4217150587400678,3.17157287525381,2.1715728752538097C2.4217150587400678,2.9214306917675517,2,3.9395409060347895,2,4.9999999999999991L2,15L14,15L14,1ZM6,1' fill='#323232'/><path d='M3,14L3,5C3,4.2046556795260921,3.3162862940550504,3.441073018825664,3.8786796564403576,2.8786796564403572C4.441073018825664,2.3162862940550508,5.2046556795260921,2,5.9999999999999991,2L13,2L13,14ZM3,14' fill='#EBEBEB'/><path d='M3,4L13,4L13,14L3,14ZM3,4' fill='#F4F4F4'/><path d='M9.707,8L12,8L12,5L9,5L9,6L7,6L7,5L4,5L4,8L5,8L5,10L4,10L4,13L7,13L7,12L9,12L9,13L12,13L12,10L9,10L9,11L7,11L7,10.707ZM9.707,8M6,8L7,8L7,7L9,7L9,7.293L6.293,10L6,10ZM6,8' fill='#323232'/></g></svg>");
 	        }
-	        
+
 	        /// <summary>Loads the image for Themed Icon UsageAnimatorStateMachine theme aspect GrayDark.</summary>
 	        public global::JetBrains.Util.Icons.TiImage Load_GrayDark()
 	        {
 		        return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M1,16L1,5C1.0015872523922405,3.6749102199380204,1.5292392206293948,2.4032005033643733,2.4662198619968843,1.4662198619968838C3.4032005033643737,0.52923922062939455,4.6749102199380212,0.0015872523922401238,6.0000000000000009,8.8817841970012523E-16L15,8.8817841970012523E-16L15,16ZM1,16' fill='#252525'/><path d='M6,1C4.93954090603479,0.99999999999999989,3.9214306917675525,1.4217150587400678,3.17157287525381,2.1715728752538097C2.4217150587400678,2.9214306917675517,2,3.9395409060347895,2,4.9999999999999991L2,15L14,15L14,1ZM6,1' fill='#C4C4C4'/><path d='M3,14L3,5C3,4.2046556795260921,3.3162862940550504,3.441073018825664,3.8786796564403576,2.8786796564403572C4.441073018825664,2.3162862940550508,5.2046556795260921,2,5.9999999999999991,2L13,2L13,14ZM3,14' fill='#292929'/><path d='M3,4L13,4L13,14L3,14ZM3,4' fill='#252525'/><path d='M9.707,8L12,8L12,5L9,5L9,6L7,6L7,5L4,5L4,8L5,8L5,10L4,10L4,13L7,13L7,12L9,12L9,13L12,13L12,10L9,10L9,11L7,11L7,10.707ZM9.707,8M6,8L7,8L7,7L9,7L9,7.293L6.293,10L6,10ZM6,8' fill='#C4C4C4'/></g></svg>");
 	        }
-	        
+
 	        /// <summary>Returns the set of theme images for Themed Icon UsageAnimatorStateMachine.</summary>
 	        public override global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] GetThemeImages()
 	        {
@@ -427,7 +506,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
 	        }
         }
         #endregion
-        
+
         #region UsageAnimationClip
         /// <summary>
         ///	<para>
@@ -436,22 +515,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
         ///		<para>— <see cref="Id"></see> identifier object, as a field in the identifier class, for use where an <see cref="JetBrains.UI.Icons.IconId"></see> value is expected.</para>
         ///		<para>
         ///			<code>
-        ///        :=rT}oooooooooooooooooo  
-        ///     .+us;:-`                jj  
-        ///    "o}- ``.'--------------  aa  
-        ///   ^kv` .------------------  kk  
-        ///   [E: `------------\11r---  EE  
-        ///   UU  zzzzzzzzzzz}L3+=I|-'  UU  
-        ///   66  [[        1uu;::~Cs:  66  
-        ///   ww  uuuuuuuuu2ou^----_1I- ww  
-        ///   bb  jj------ee[:'''''':l5"bb  
-        ///   dd  kkkkkkkEaJ-........'TSXd  
-        ///   AA``UU~~~~hk).```````````rkX  
-        ///   RR``wwwwwwEEEEEEEEEEEEEEEEEE  
-        ///   ##````````````````````````##  
-        ///   DD````````````````````````DD  
-        ///   88````````````````````````88  
-        ///   8888888888888888888888888888  
+        ///        :=rT}oooooooooooooooooo
+        ///     .+us;:-`                jj
+        ///    "o}- ``.'--------------  aa
+        ///   ^kv` .------------------  kk
+        ///   [E: `------------\11r---  EE
+        ///   UU  zzzzzzzzzzz}L3+=I|-'  UU
+        ///   66  [[        1uu;::~Cs:  66
+        ///   ww  uuuuuuuuu2ou^----_1I- ww
+        ///   bb  jj------ee[:'''''':l5"bb
+        ///   dd  kkkkkkkEaJ-........'TSXd
+        ///   AA``UU~~~~hk).```````````rkX
+        ///   RR``wwwwwwEEEEEEEEEEEEEEEEEE
+        ///   ##````````````````````````##
+        ///   DD````````````````````````DD
+        ///   88````````````````````````88
+        ///   8888888888888888888888888888
         ///</code>
         ///		</para>
         ///	</para>

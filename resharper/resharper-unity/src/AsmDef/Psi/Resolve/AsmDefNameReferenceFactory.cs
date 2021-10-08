@@ -12,12 +12,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
             if (ResolveUtil.CheckThatAllReferencesBelongToElement<AsmDefNameReference>(oldReferences, element))
                 return oldReferences;
 
-            if (element.IsReferenceLiteral())
-            {
-                return new ReferenceCollection(new AsmDefNameReference((IJsonNewLiteralExpression) element));
-            }
-
-            return ReferenceCollection.Empty;
+            return element.IsReferenceLiteral()
+                ? new ReferenceCollection(new AsmDefNameReference((IJsonNewLiteralExpression)element))
+                : ReferenceCollection.Empty;
         }
 
         public bool HasReference(ITreeNode element, IReferenceNameContainer names)

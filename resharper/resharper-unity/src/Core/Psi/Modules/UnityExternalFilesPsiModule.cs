@@ -71,8 +71,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             // handlers.
             // We also need to call the equivalent of PsiSourceFileWithLocationEx.TrackChanges, without registering
             // thousands of file change handlers.
-            if (processFileChange != null)
-                Assertion.Fail("Individual file change handler not supported. Use a directory change handler");
+            Assertion.Assert(processFileChange == null,
+                "Individual file change handler not supported. Use a directory change handler");
         }
 
         public void Remove(VirtualFileSystemPath path)

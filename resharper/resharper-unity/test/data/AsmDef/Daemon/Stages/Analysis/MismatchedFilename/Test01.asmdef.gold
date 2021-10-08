@@ -1,5 +1,5 @@
 ﻿{
-  "name": |"MyAssembly"|(0),
+  "name": "|MyAssembly|(0)",
   "references": [ "Ref1" ],
   "includePlatforms": [ "iOS", "Android" ],
   "excludePlatforms": [ "Switch", "N3DS", "Switch" ]

@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
         {
         }
 
-        [NotNull] public static readonly ResolveErrorType ASMDEF_UNRESOLVED_REFERENCED_PROJECT_ERROR =
-            new AsmDefResolveErrorType("ASMDEF_UNRESOLVED_REFERENCED_PROJECT_ERROR");
+        [NotNull] public static readonly ResolveErrorType UNRESOLVED_REFERENCED_ASMDEF_ERROR =
+            new AsmDefResolveErrorType("UNRESOLVED_REFERENCED_ASMDEF_ERROR");
     }
 }

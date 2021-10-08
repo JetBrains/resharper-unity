@@ -1,0 +1,13 @@
+﻿{
+  "name": "FirstProject",
+  "references": [ 
+      "|guid:7d9f6c8edad14e1593fde9cc75764047|(0:caret)",
+      "|guid:7d9f6c8edad14e1593fde9cc75764047|(1:caret)",
+      "|guid:7d9f6c8edad14e1593fde9cc75764047|(2:caret)"
+  ]
+}
+
+---------------------------------------------------------
+(0:caret): ReSharper Usage of element under cursor
+(1:caret): ReSharper Usage of element under cursor
+(2:caret): ReSharper Usage of element under cursor

@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using JetBrains.ProjectModel.Update;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
 using JetBrains.ReSharper.FeaturesTestFramework.Completion;
 using JetBrains.ReSharper.TestFramework;
-using JetBrains.Util;
+using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Feature.Services.CodeCompletion
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefReferencesCompletionListTests : TwoProjectCodeCompletionTestBase
+    public class AsmDefReferencesCompletionListTests : CodeCompletionTestBase
     {
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
         protected override string RelativeTestDataPath => @"AsmDef\CodeCompletion\AsmDefReferences";
@@ -22,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Feature.Services.CodeCo
 
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefReferencesCompletionActionTests : TwoProjectCodeCompletionTestBase
+    public class AsmDefReferencesCompletionActionTests : CodeCompletionTestBase
     {
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.Action;
         protected override string RelativeTestDataPath => @"AsmDef\CodeCompletion\AsmDefReferences";
@@ -34,35 +32,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Feature.Services.CodeCo
 
     public abstract class TwoProjectCodeCompletionTestBase : CodeCompletionTestBase
     {
+        // Sadly, we can't just use DoTestSolution(fileSet, fileSet) here, CodeCompletionTestBase.DoTestSolution(files)
+        // sets up a CaretPositionsProcessor and processes files. Split the file sets here instead
         protected override TestSolutionConfiguration CreateSolutionConfiguration(
-            ICollection<KeyValuePair<Util.Dotnet.TargetFrameworkIds.TargetFrameworkId, IEnumerable<string>>> referencedLibraries,
+            ICollection<KeyValuePair<TargetFrameworkId, IEnumerable<string>>> referencedLibraries,
             IEnumerable<string> fileSet)
         {
-            if (fileSet == null)
-                throw new ArgumentNullException(nameof(fileSet));
-
-            var mainProjectFileSet = fileSet.Where(filename => !filename.Contains("_SecondProject"));
-            var mainAbsoluteFileSet = mainProjectFileSet.Select(path => TestDataPath.Combine(path)).ToList();
-
-            var descriptors =
-                new Dictionary<IProjectDescriptor, IList<Pair<IProjectReferenceDescriptor, IProjectReferenceProperties>>>();
-
-            var mainDescriptorPair = CreateProjectDescriptor(ProjectName, ProjectName, mainAbsoluteFileSet,
-                referencedLibraries, ProjectGuid);
-            descriptors.Add(mainDescriptorPair.First, mainDescriptorPair.Second);
-
-            var referencedProjectFileSet = fileSet.Where(filename => filename.Contains("_SecondProject")).ToList();
-            if (Enumerable.Any(referencedProjectFileSet))
-            {
-                var secondAbsoluteFileSet =
-                    referencedProjectFileSet.Select(path => TestDataPath.Combine(path)).ToList();
-                var secondProjectName = "Second_" + ProjectName;
-                var secondDescriptorPair = CreateProjectDescriptor(secondProjectName, secondProjectName,
-                    secondAbsoluteFileSet, referencedLibraries, SecondProjectGuid);
-                descriptors.Add(secondDescriptorPair.First, secondDescriptorPair.Second);
-            }
-
-            return new TestSolutionConfiguration(FileSystemPath.Empty, descriptors);
+            var files = fileSet.ToList();
+            var mainFileSet = files.Where(f => !f.Contains("_SecondProject"));
+            var secondaryFileSet = files.Where(f => f.Contains("_SecondProject"));
+            return base.CreateSolutionConfiguration(referencedLibraries,
+                CreateProjectFileSets(mainFileSet, secondaryFileSet));
         }
     }
 }

@@ -14,12 +14,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
     {
         public UnityExternalPsiSourceFile([NotNull] IProjectFileExtensions projectFileExtensions,
                                           [NotNull] PsiProjectFileTypeCoordinator projectFileTypeCoordinator,
-                                          [NotNull] IPsiModule module, VirtualFileSystemPath path,
+                                          [NotNull] IPsiModule module,
+                                          [NotNull] VirtualFileSystemPath path,
+                                          [NotNull] Func<PsiSourceFileFromPath, bool> validityCheck,
                                           [NotNull] Func<PsiSourceFileFromPath, IPsiSourceFileProperties> propertiesFactory,
                                           [NotNull] DocumentManager documentManager,
                                           [NotNull] IModuleReferenceResolveContext resolveContext)
-            : base(projectFileExtensions, projectFileTypeCoordinator, module, path, JetFunc<PsiSourceFileFromPath>.True,
-                propertiesFactory, documentManager, resolveContext)
+            : base(projectFileExtensions, projectFileTypeCoordinator, module, path, validityCheck, propertiesFactory,
+                documentManager, resolveContext)
         {
         }
     }

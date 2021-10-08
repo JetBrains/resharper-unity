@@ -110,14 +110,14 @@ class UnityIcons {
         companion object {
 
             val AssetsRoot = IconLoader.getIcon("/Icons/Explorer/UnityAssets.svg", UnityIcons::class.java)
-            val PackagesRoot = IconLoader.getIcon("/Icons/Explorer/UnityPackages.svg", UnityIcons::class.java)
+            val PackagesRoot = IconLoader.getIcon("/resharper/UnityObjectType/UnityPackages.svg", UnityIcons::class.java)
             val ReferencesRoot: Icon = ReSharperIcons.Common.CompositeElement
             val ReadOnlyPackagesRoot = IconLoader.getIcon("/Icons/Explorer/FolderReadOnly.svg", UnityIcons::class.java)
             val DependenciesRoot = IconLoader.getIcon("/Icons/Explorer/FolderDependencies.svg", UnityIcons::class.java)
             val BuiltInPackagesRoot = IconLoader.getIcon("/Icons/Explorer/FolderModules.svg", UnityIcons::class.java)
 
             val BuiltInPackage = IconLoader.getIcon("/Icons/Explorer/UnityModule.svg", UnityIcons::class.java)
-            val ReferencedPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageReferenced.svg", UnityIcons::class.java)
+            val ReferencedPackage = IconLoader.getIcon("/resharper/UnityFileType/FolderPackageReferenced.svg", UnityIcons::class.java)
             val EmbeddedPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageEmbedded.svg", UnityIcons::class.java)
             val LocalPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageLocal.svg", UnityIcons::class.java)
             val LocalTarballPackage = LocalPackage

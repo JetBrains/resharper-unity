@@ -6,7 +6,6 @@ using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
-using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -24,15 +23,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         // We expect to only get one asset with a given guid, but copy/pasting .meta files could break that.
         // CompactOneToListMap is optimised for the typical use case of only one item per key
-        private readonly CompactOneToListMap<Guid, VirtualFileSystemPath> myAssetGuidToAssetFilePaths =
-            new CompactOneToListMap<Guid, VirtualFileSystemPath>();
+        private readonly CompactOneToListMap<Guid, VirtualFileSystemPath> myAssetGuidToAssetFilePaths = new();
 
-        // Note that Map is a map of *meta file* to asset guid, NOT asset file!
-        private readonly Dictionary<VirtualFileSystemPath, Guid> myAssetFilePathToGuid =
-            new Dictionary<VirtualFileSystemPath, Guid>();
+        // This is a map of *asset* file path to GUID. `this.Map` is a map of *meta* file to asset GUID
+        private readonly Dictionary<VirtualFileSystemPath, Guid> myAssetFilePathToGuid = new();
 
-        public Signal<(IPsiSourceFile sourceFile, Guid? oldGuid, Guid? newGuid)> GuidChanged =
-            new Signal<(IPsiSourceFile sourceFile, Guid? oldGuid, Guid? newGuid)>("GuidChanged");
+        public readonly Signal<(IPsiSourceFile sourceFile, Guid? oldGuid, Guid? newGuid)> GuidChanged = new("GuidChanged");
 
         public MetaFileGuidCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, ILogger logger)
             : base(lifetime, shellLocks, persistentIndexManager, MetaFileCacheItem.Marshaller)
@@ -42,25 +38,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         // This will usually return a single value, but there's always a chance for copy/paste
         // Also note that this returns the file path of the asset associated with the GUID, not the asset's .meta file!
-        public IList<VirtualFileSystemPath> GetAssetFilePathsFromGuid(Guid guid)
-        {
-            return myAssetGuidToAssetFilePaths[guid];
-        }
+        public IList<VirtualFileSystemPath> GetAssetFilePathsFromGuid(Guid guid) => myAssetGuidToAssetFilePaths[guid];
 
-        public IList<string> GetAssetNames(Guid guid)
-        {
-            return myAssetGuidToAssetFilePaths[guid].Select(p => p.NameWithoutExtension).ToList();
-        }
+        public IList<string> GetAssetNames(Guid guid) =>
+            myAssetGuidToAssetFilePaths[guid].Select(p => p.NameWithoutExtension).ToList();
 
         [CanBeNull]
-        public Guid? GetAssetGuid(IPsiSourceFile sourceFile)
-        {
-            return myAssetFilePathToGuid.TryGetValue(sourceFile.GetLocation(), out var guid) ? guid : (Guid?) null;
-        }
+        public Guid? GetAssetGuid([NotNull] IPsiSourceFile sourceFile) => GetAssetGuid(sourceFile.GetLocation());
+
+        public Guid? GetAssetGuid([NotNull] VirtualFileSystemPath assetLocation) =>
+            myAssetFilePathToGuid.TryGetValue(assetLocation, out var guid) ? guid : null;
 
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return sf.Name.EndsWith(".meta", StringComparison.InvariantCultureIgnoreCase) && sf.PsiModule is UnityExternalFilesPsiModule;
+            return sf.Name.EndsWith(".meta", StringComparison.InvariantCultureIgnoreCase) &&
+                   sf.IsLanguageSupported<YamlLanguage>();
         }
 
         public override object Build(IPsiSourceFile sourceFile, bool isStartup)

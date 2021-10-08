@@ -1,5 +1,6 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -10,11 +11,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
     {
         protected override void Run(T element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            var processKind = data.GetDaemonProcessKind();
-            if (processKind != DaemonProcessKind.VISIBLE_DOCUMENT && processKind != DaemonProcessKind.SOLUTION_ANALYSIS)
+            // Run for visible documents and SWEA. Also run for "other", which is used by scoped quick fixes
+            if (data.GetDaemonProcessKind() == DaemonProcessKind.GLOBAL_WARNINGS)
                 return;
 
             if (data.SourceFile == null || !element.Language.Is<JsonNewLanguage>() || !data.SourceFile.IsAsmDef())
+                return;
+
+            if (!element.GetSolution().HasUnityReference())
                 return;
 
             Analyze(element, data, consumer);

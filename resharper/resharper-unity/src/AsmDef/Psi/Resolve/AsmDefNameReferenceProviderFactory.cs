@@ -1,4 +1,4 @@
-﻿using JetBrains.DataFlow;
+﻿using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
@@ -13,16 +13,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
     [ReferenceProviderFactory]
     public class AsmDefNameReferenceProviderFactory : IReferenceProviderFactory
     {
-        public AsmDefNameReferenceProviderFactory(Lifetime lifetime)
+        private readonly UnitySolutionTracker myUnitySolutionTracker;
+
+        public AsmDefNameReferenceProviderFactory(Lifetime lifetime, UnitySolutionTracker unitySolutionTracker)
         {
+            myUnitySolutionTracker = unitySolutionTracker;
+
             // ReSharper disable once AssignNullToNotNullAttribute
-            Changed = new Signal<IReferenceProviderFactory>(lifetime, GetType().FullName);
+            Changed = new DataFlow.Signal<IReferenceProviderFactory>(lifetime, GetType().FullName);
         }
 
         public IReferenceFactory CreateFactory(IPsiSourceFile sourceFile, IFile file, IWordIndex wordIndexForChecks)
         {
-            var project = sourceFile.GetProject();
-            if (project == null || !project.IsUnityProject())
+            // The source file might be in the external files module, so we can't look at what project it belongs to
+            if (!sourceFile.GetSolution().HasUnityReference() && !myUnitySolutionTracker.IsUnityProject.HasTrueValue())
                 return null;
 
             if (sourceFile.IsAsmDef() && sourceFile.PrimaryPsiLanguage.Is<JsonNewLanguage>())
@@ -31,6 +35,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
             return null;
         }
 
-        public ISignal<IReferenceProviderFactory> Changed { get; }
+        public DataFlow.ISignal<IReferenceProviderFactory> Changed { get; }
     }
 }

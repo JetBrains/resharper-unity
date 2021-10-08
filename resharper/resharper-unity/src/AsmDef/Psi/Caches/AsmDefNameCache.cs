@@ -38,8 +38,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         [CanBeNull]
         public AsmDefNameDeclaredElement GetNameDeclaredElement(IPsiSourceFile sourceFile)
         {
-            if (myDeclaredElements.TryGetValue(sourceFile, out var declaredElement))
-                return declaredElement;
+            return myDeclaredElements.TryGetValue(sourceFile, out var declaredElement) ? declaredElement : null;
+        }
+
+        [CanBeNull]
+        public AsmDefNameDeclaredElement GetNameDeclaredElement(VirtualFileSystemPath path)
+        {
+            foreach (var (file, element) in myDeclaredElements)
+            {
+                if (file.GetLocation() == path)
+                    return element;
+            }
+
             return null;
         }
 
@@ -129,6 +139,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
             return base.IsApplicable(sf) && sf.IsAsmDef() && sf.IsLanguageSupported<JsonNewLanguage>();
         }
 
+        [CanBeNull]
         public VirtualFileSystemPath GetPathFor(string name)
         {
             myShellLocks.AssertReadAccessAllowed();

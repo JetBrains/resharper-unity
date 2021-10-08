@@ -19,10 +19,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree.Impl
                     var prevStartNode = startNode.PrevSibling;
                     if (prevStartNode == null)
                         break;
-                    if (prevStartNode.GetTokenType() != JsonNewTokenNodeTypes.WHITE_SPACE &&
+
+                    if (prevStartNode.GetTokenType()?.IsWhitespace == false &&
                         prevStartNode.GetTokenType() != JsonNewTokenNodeTypes.COMMA)
+                    {
                         break;
-                    
+                    }
+
                     startNode = prevStartNode;
                     if (startNode.GetTokenType() == JsonNewTokenNodeTypes.COMMA)
                         break;
@@ -34,11 +37,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree.Impl
                     var nextEndNode = endNode.NextSibling;
                     if (nextEndNode == null)
                         break;
-                    if (nextEndNode.GetTokenType() != JsonNewTokenNodeTypes.WHITE_SPACE)
+
+                    if (nextEndNode.GetTokenType()?.IsWhitespace == false)
                         break;
 
                     endNode = nextEndNode;
                 }
+
+                // Don't eat the whitespace at the end of the array
+                if (endNode.GetTokenType() != JsonNewTokenNodeTypes.COMMA)
+                    endNode = argument;
 
                 ModificationUtil.DeleteChildRange(startNode, endNode);
             }

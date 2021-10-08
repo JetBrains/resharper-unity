@@ -1,0 +1,9 @@
+﻿{
+  "name": "MyAssembly",
+  "references": [ "|Ref1|(0)" ],
+  "includePlatforms": [ "iOS", "Android" ],
+  "excludePlatforms": [ "Switch", "N3DS", "Switch" ]
+}
+
+---------------------------------------------------------
+(0): ReSharper Hint: Prefer GUID reference

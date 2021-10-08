@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
             TarballLocation = tarballLocation;
         }
 
-        // Even if project generation is enabled, not all pacakges are intended to be user editable
+        // Even if project generation is enabled, not all packages are intended to be user editable
         public bool IsUserEditable => Source is PackageSource.Embedded or PackageSource.Local;
 
         public static PackageData CreateUnknown(string id, string version,

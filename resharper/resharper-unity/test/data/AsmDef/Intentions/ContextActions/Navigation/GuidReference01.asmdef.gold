@@ -1,0 +1,43 @@
+﻿## FindReferencedCodeProvider activity:
+  Tooltip was shown: Referenced code in 'assembly definition SecondProject' were not found.
+
+## FindUsagesAdvancedProvider activity:
+  Immediate result:
+    TO: [O] "|guid:7d9f6c8edad14e1593fde9cc75764047|" RANGE: (54,91) @ GuidReference01.asmdef
+    Navigation result:
+      caret did not move
+
+## GotoDeclarationProvider activity:
+  Immediate result:
+    TO: [O] "name": |"SecondProject|" RANGE: (12,28) @ <TestClassLibrary>\GuidReference_SecondProject.asmdef
+    Navigation result:
+      opened file: GuidReference_SecondProject.asmdef
+      ------------------
+      {
+        "name": "|CARET|SecondProject"
+      }
+
+      ------------------
+
+
+## GoToUnityUsagesProvider activity:
+  Tooltip was shown: Usages of 'SecondProject' were not found.
+
+## ShowUsagesProvider activity:
+  Immediate result:
+    TO: [O] "|guid:7d9f6c8edad14e1593fde9cc75764047|" RANGE: (54,91) @ GuidReference01.asmdef
+    Navigation result:
+      caret did not move
+
+## TestHighlightUsagesProvider activity:
+  Immediate result:
+    TO: [O] "|guid:7d9f6c8edad14e1593fde9cc75764047|" RANGE: (54,91) @ GuidReference01.asmdef
+    Navigation result:
+      caret did not move
+
+## UnityFindUsagesProvider activity:
+  Immediate result:
+    TO: [O] "|guid:7d9f6c8edad14e1593fde9cc75764047|" RANGE: (54,91) @ GuidReference01.asmdef
+    Navigation result:
+      caret did not move
+

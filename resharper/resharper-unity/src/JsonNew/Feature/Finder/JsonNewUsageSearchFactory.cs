@@ -11,8 +11,6 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.Finder
 {
-    // Note that there isn't a default searcher factory for YAML because it has no declared elements to search for. This
-    // searcher factory is looking for C# declared elements - class or method, etc.
     [PsiSharedComponent]
     public class JsonNewUsageSearchFactory : DomainSpecificSearcherFactoryBase
     {

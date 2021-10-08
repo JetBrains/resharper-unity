@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.Finder
                     myElementNames.Add(name);
             }
         }
-        
+
         public bool ProcessProjectItem<TResult>(IPsiSourceFile sourceFile, IFindResultConsumer<TResult> consumer)
         {
             if (sourceFile.GetPrimaryPsiFile() is IJsonNewFile yamlFile)
@@ -43,8 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.Finder
             var wordsInText = myElementNames;
             var referenceNames = myElementNames;
             var result = new ReferenceSearchSourceFileProcessor<TResult>(element, myFindCandidates, consumer,
-                myElements,
-                wordsInText, referenceNames).Run();
+                myElements, wordsInText, referenceNames).Run();
             return result == FindExecution.Stop;
         }
     }

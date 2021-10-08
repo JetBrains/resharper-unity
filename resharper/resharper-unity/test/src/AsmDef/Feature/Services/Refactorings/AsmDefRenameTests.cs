@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.DocumentManagers;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.Update;
 using JetBrains.ReSharper.Plugins.Unity.Tests.Framework;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TextControl;
-using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using NUnit.Framework;
 
@@ -22,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Feature.Services.Refact
         [Test] public void TestSingleFile() { DoNamedTest2(); }
         [Test] public void TestCrossFileRename() { DoNamedTest2("CrossFileRename_SecondProject.asmdef"); }
         [Test] public void TestRenameFile() { DoNamedTest2(); }
+        [Test] public void TestGuidReference() { DoNamedTest2("GuidReference.asmdef.meta", "GuidReference_SecondProject.asmdef"); }
 
         protected override void AdditionalTestChecks(ITextControl textControl, IProject project)
         {
@@ -44,35 +43,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Feature.Services.Refact
             }
         }
 
+        // Sadly, we can't just use DoTestSolution(fileSet, fileSet) here, CodeCompletionTestBase.DoTestSolution(files)
+        // sets up a CaretPositionsProcessor and processes files. Split the file sets here instead
         protected override TestSolutionConfiguration CreateSolutionConfiguration(
             ICollection<KeyValuePair<TargetFrameworkId, IEnumerable<string>>> referencedLibraries,
             IEnumerable<string> fileSet)
         {
-            if (fileSet == null)
-                throw new ArgumentNullException(nameof(fileSet));
-
-            var mainProjectFileSet = fileSet.Where(filename => !filename.Contains("_SecondProject"));
-            var mainAbsoluteFileSet = mainProjectFileSet.Select(path => TestDataPath.Combine(path)).ToList();
-
-            var descriptors =
-                new Dictionary<IProjectDescriptor, IList<Pair<IProjectReferenceDescriptor, IProjectReferenceProperties>>>();
-
-            var mainDescriptorPair = CreateProjectDescriptor(ProjectName, ProjectName, mainAbsoluteFileSet,
-                referencedLibraries, ProjectGuid);
-            descriptors.Add(mainDescriptorPair.First, mainDescriptorPair.Second);
-
-            var referencedProjectFileSet = fileSet.Where(filename => filename.Contains("_SecondProject")).ToList();
-            if (Enumerable.Any(referencedProjectFileSet))
-            {
-                var secondAbsoluteFileSet =
-                    referencedProjectFileSet.Select(path => TestDataPath.Combine(path)).ToList();
-                var secondProjectName = "Second_" + ProjectName;
-                var secondDescriptorPair = CreateProjectDescriptor(secondProjectName, secondProjectName,
-                    secondAbsoluteFileSet, referencedLibraries, SecondProjectGuid);
-                descriptors.Add(secondDescriptorPair.First, secondDescriptorPair.Second);
-            }
-
-            return new TestSolutionConfiguration(FileSystemPath.Empty, descriptors);
+            var files = fileSet.ToList();
+            var mainFileSet = files.Where(f => !f.Contains("_SecondProject"));
+            var secondaryFileSet = files.Where(f => f.Contains("_SecondProject"));
+            return base.CreateSolutionConfiguration(referencedLibraries,
+                CreateProjectFileSets(mainFileSet, secondaryFileSet));
         }
     }
 }
