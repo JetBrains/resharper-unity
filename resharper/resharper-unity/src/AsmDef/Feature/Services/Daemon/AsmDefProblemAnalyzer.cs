@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
             if (data.SourceFile == null || !element.Language.Is<JsonNewLanguage>() || !data.SourceFile.IsAsmDef())
                 return;
 
-            if (!element.GetProject().IsUnityProject())
+            if (!element.GetSolution().HasUnityReference())
                 return;
 
             Analyze(element, data, consumer);
