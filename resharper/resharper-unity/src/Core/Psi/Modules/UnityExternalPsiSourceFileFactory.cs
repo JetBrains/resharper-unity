@@ -2,7 +2,6 @@ using JetBrains.DocumentManagers;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
 using JetBrains.Util;
 
@@ -24,11 +23,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             myDocumentManager = documentManager;
         }
 
-        public IExternalPsiSourceFile CreateExternalPsiSourceFile(IPsiModule psiModule, VirtualFileSystemPath path,
+        public IExternalPsiSourceFile CreateExternalPsiSourceFile(UnityExternalFilesPsiModule psiModule,
+                                                                  VirtualFileSystemPath path,
                                                                   IPsiSourceFileProperties properties)
         {
             var file = new UnityExternalPsiSourceFile(myProjectFileExtensions, myProjectFileTypeCoordinator, psiModule,
-                path, _ => properties, myDocumentManager, UniversalModuleReferenceContext.Instance);
+                path, sf => psiModule.ContainsPath(sf.Location), _ => properties, myDocumentManager,
+                UniversalModuleReferenceContext.Instance);
             // Prime the file system cache
             file.GetCachedFileSystemData();
             return file;
