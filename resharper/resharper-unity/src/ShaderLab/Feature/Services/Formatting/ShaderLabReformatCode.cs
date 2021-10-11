@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Formattin
         new CodeCleanupOptionDescriptor<bool>("ShaderLabReformatCode", ourShaderLabCleanupLanguage,
             CodeCleanupOptionDescriptor.ReformatGroup, displayName: "Reformat code");
 
-    public IReadOnlyCollection<CodeCleanupOptionDescriptor> Descriptors => new[] { ourDescriptor };
+    public ICollection<CodeCleanupOptionDescriptor> Descriptors => new[] { ourDescriptor };
 
     public PsiLanguageType LanguageType => ShaderLabLanguage.Instance;
 
