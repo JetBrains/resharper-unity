@@ -118,6 +118,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
 
         public Property<bool?> Updating { get; }
 
+        public ViewableProperty<bool> IsInitialUpdateFinished { get; } = new ViewableProperty<bool>(false);
+
         // DictionaryEvents uses locks internally, so this is thread safe. It gets updated from the guarded reentrancy
         // context, so all callbacks also happen within the guarded reentrancy context
         public IReadonlyCollectionEvents<KeyValuePair<string, PackageData>> Packages => myPackagesById;
@@ -245,10 +247,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Packages
                 // Remove any left overs
                 foreach (var id in existingPackages)
                     RemovePackage(id);
+
             }
             finally
             {
                 Updating.Value = false;
+                IsInitialUpdateFinished.Value = true;
             }
         }
 
