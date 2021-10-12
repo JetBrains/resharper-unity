@@ -6,6 +6,7 @@ import com.intellij.diff.contents.DiffContent
 import com.intellij.diff.contents.FileContent
 import com.intellij.diff.merge.MergeCallback
 import com.intellij.diff.merge.MergeRequest
+import com.intellij.diff.merge.MergeResult
 import com.intellij.diff.merge.ThreesideMergeRequest
 import com.intellij.diff.merge.external.AutomaticExternalMergeTool
 import com.intellij.diff.tools.external.ExternalDiffSettings
@@ -20,8 +21,8 @@ import com.intellij.util.io.readBytes
 import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rd.util.reactive.valueOrThrow
 import com.jetbrains.rdclient.util.idea.toIOFile
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlFileType
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Paths
@@ -56,30 +57,41 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
                 settings.mergeParameters = mergeParameters
 
             myLogger.info("PreMerge with ${settings.mergeExePath} ${settings.mergeParameters}")
-            if (!ExternalDiffToolUtil.tryExecuteMerge(project, settings, request as ThreesideMergeRequest, null)){
+            val threesideMergeRequest = request as ThreesideMergeRequest
+            if (tryExecuteMerge(project, settings, threesideMergeRequest)) {
+                myLogger.info("Merge with external tool was fully successful. Apply result.")
+                threesideMergeRequest.applyResult(MergeResult.RESOLVED)
+            } else {
                 if (premergedBase.exists() && premergedRight.exists()){
-                    myLogger.info("PreMerge partially successful.")
-                    val output: VirtualFile = (request.outputContent as FileContent).file
+                    myLogger.info("PreMerge partially successful. Call ShowMergeBuiltin on pre-merged.")
+                    val output: VirtualFile = (threesideMergeRequest.outputContent as FileContent).file
                     val byteContents = listOf(output.toIOFile().readBytes(), premergedBase.readBytes(), premergedRight.readBytes())
-                    val preMerged = DiffRequestFactory.getInstance().createMergeRequest(project, output, byteContents, request.title, request.contentTitles)
-                    MergeCallback.retarget(request, preMerged)
+                    val preMerged = DiffRequestFactory.getInstance().createMergeRequest(project, output, byteContents, threesideMergeRequest.title, request.contentTitles)
+                    MergeCallback.retarget(threesideMergeRequest, preMerged)
 
                     DiffManagerEx.getInstance().showMergeBuiltin(project, preMerged)
-                }
-                else
-                {
-                    myLogger.info("PreMerge unsuccessful.")
-                    DiffManagerEx.getInstance().showMergeBuiltin(project, request)
+                } else {
+                    myLogger.info("PreMerge unsuccessful. Call ShowMergeBuiltin.")
+                    DiffManagerEx.getInstance().showMergeBuiltin(project, threesideMergeRequest)
                 }
             }
-            else
-                myLogger.info("Merge fully successful.")
         }
         finally {
             if (premergedBase.exists()) premergedBase.delete()
             if (premergedRight.exists()) premergedRight.delete()
         }
     }
+
+    private fun tryExecuteMerge(project: Project?, settings: ExternalDiffSettings, request: ThreesideMergeRequest):Boolean {
+        return try {
+            ExternalDiffToolUtil.tryExecuteMerge(project, settings, request, null)
+        }
+        catch (e:Exception) {
+            myLogger.error(e)
+            false
+        }
+    }
+
 
     override fun canShow(project: Project?, request: MergeRequest): Boolean {
         project?: return false
