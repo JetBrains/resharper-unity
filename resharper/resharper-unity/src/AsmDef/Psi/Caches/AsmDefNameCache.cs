@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using JetBrains.Annotations;
+using System.Linq;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Lifetimes;
@@ -15,6 +15,8 @@ using JetBrains.ReSharper.Psi.Impl.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.Util;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 {
     [PsiComponent]
@@ -26,7 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         private readonly Dictionary<IPsiSourceFile, AsmDefNameDeclaredElement> myDeclaredElements = new();
         private readonly OneToListMap<string, IPsiSourceFile> myNames = new();
 
-        public AsmDefNameCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, ISolution solution)
+        public AsmDefNameCache(Lifetime lifetime, IShellLocks shellLocks,
+                               IPersistentIndexManager persistentIndexManager, ISolution solution)
             : base(lifetime, shellLocks, persistentIndexManager, AsmDefCacheItem.Marshaller)
         {
             myShellLocks = shellLocks;
@@ -35,14 +38,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 
         public override string Version => "2";
 
-        [CanBeNull]
-        public AsmDefNameDeclaredElement GetNameDeclaredElement(IPsiSourceFile sourceFile)
+        public AsmDefNameDeclaredElement? GetNameDeclaredElement(IPsiSourceFile sourceFile)
         {
             return myDeclaredElements.TryGetValue(sourceFile, out var declaredElement) ? declaredElement : null;
         }
 
-        [CanBeNull]
-        public AsmDefNameDeclaredElement GetNameDeclaredElement(VirtualFileSystemPath path)
+        public AsmDefNameDeclaredElement? GetNameDeclaredElement(VirtualFileSystemPath path)
         {
             foreach (var (file, element) in myDeclaredElements)
             {
@@ -54,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         }
 
         // Returns a symbol table for all items. Used to resolve references and provide completion
-        public ISymbolTable GetSymbolTable()
+        public ISymbolTable GetAssemblyNamesSymbolTable()
         {
             if (myDeclaredElements.IsEmpty())
                 return EmptySymbolTable.INSTANCE;
@@ -62,25 +63,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
             return new DeclaredElementsSymbolTable<IDeclaredElement>(psiServices, myDeclaredElements.Values);
         }
 
-        public override object Build(IPsiSourceFile sourceFile, bool isStartup)
+        // Note that this is getting the location of a .asmdef file for a given assembly definition name. The name of
+        // the file might not match the name of the assembly definition!
+        public VirtualFileSystemPath? GetAsmDefLocationByAssemblyName(string assemblyName)
+        {
+            myShellLocks.AssertReadAccessAllowed();
+            return myNames.GetValuesSafe(assemblyName).FirstOrDefault()?.GetLocation();
+        }
+
+        public override object? Build(IPsiSourceFile sourceFile, bool isStartup)
         {
             if (!IsApplicable(sourceFile))
                 return null;
 
-            var file = sourceFile.GetDominantPsiFile<JsonNewLanguage>();
-            if (file == null)
+            var file = sourceFile.GetDominantPsiFile<JsonNewLanguage>() as IJsonNewFile;
+            var rootObject = file?.GetRootObject();
+
+            var nameProperty = rootObject?.GetFirstPropertyValue<IJsonNewLiteralExpression>("name");
+            var name = nameProperty?.GetStringValue();
+            if (name == null || nameProperty == null)
                 return null;
 
-            var cacheBuilder = new AsmDefCacheItemBuilder();
-            var processor = new RecursiveElementProcessor<IJsonNewLiteralExpression>(e =>
-            {
-                // Only accept the first name. If there are multiple name definitions, it's an error, and that's just tough luck
-                if (e.IsNameLiteral() && !cacheBuilder.HasNameDefinition)
-                    cacheBuilder.SetNameDefinition(e.GetStringValue(), e.GetTreeStartOffset().Offset);
-                else if (e.IsReferenceLiteral())
-                    cacheBuilder.AddReference(e.GetStringValue());
-            });
-            file.ProcessDescendants(processor);
+            var cacheBuilder = new AsmDefCacheItemBuilder(name, nameProperty.GetTreeStartOffset().Offset);
+
+            var referencesProperty = rootObject.GetFirstPropertyValue<IJsonNewArray>("references");
+            foreach (var entry in (referencesProperty?.ValuesEnumerable).SafeOfType<IJsonNewLiteralExpression>())
+                cacheBuilder.AddReference(entry.GetStringValue());
 
             return cacheBuilder.Build();
         }
@@ -110,7 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
                 AddToLocalCache(sourceFile, cacheItem);
         }
 
-        private void AddToLocalCache(IPsiSourceFile sourceFile, [CanBeNull] AsmDefCacheItem asmDefCacheItem)
+        private void AddToLocalCache(IPsiSourceFile sourceFile, AsmDefCacheItem? asmDefCacheItem)
         {
             if (asmDefCacheItem == null) return;
 
@@ -121,10 +129,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 
         private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
         {
-            var item = Map.GetValueSafe(sourceFile);
+            var item = Map!.GetValueSafe(sourceFile);
             if (item != null)
                 myNames.Remove(item.Name, sourceFile);
-
 
             myDeclaredElements.Remove(sourceFile);
         }
@@ -137,13 +144,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
             return base.IsApplicable(sf) && sf.IsAsmDef() && sf.IsLanguageSupported<JsonNewLanguage>();
-        }
-
-        [CanBeNull]
-        public VirtualFileSystemPath GetPathFor(string name)
-        {
-            myShellLocks.AssertReadAccessAllowed();
-            return myNames.GetValuesSafe(name).FirstOrDefault(null)?.GetLocation();
         }
     }
 }

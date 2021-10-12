@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Occurrences
             if (options.IconDisplayStyle != IconDisplayStyle.NoIcon)
                 descriptor.Icon = GetIcon(solution, asmDefNameOccurrence, options);
 
-            var fileName = cache.GetPathFor(asmDefNameOccurrence.Name);
+            var fileName = cache.GetAsmDefLocationByAssemblyName(asmDefNameOccurrence.Name);
             if (fileName != null && !fileName.IsEmpty)
             {
                 var style = TextStyle.FromForeColor(SystemColors.GrayText);

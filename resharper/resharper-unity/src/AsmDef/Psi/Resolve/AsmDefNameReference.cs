@@ -70,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
         {
             var asmDefNameCache = myOwner.GetSolution().GetComponent<AsmDefNameCache>();
-            var symbolTable = asmDefNameCache.GetSymbolTable();
+            var symbolTable = asmDefNameCache.GetAssemblyNamesSymbolTable();
             if (useReferenceName)
             {
                 var name = GetName();

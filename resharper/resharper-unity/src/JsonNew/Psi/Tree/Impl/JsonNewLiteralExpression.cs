@@ -3,6 +3,8 @@ using JetBrains.ReSharper.Plugins.Unity.JsonNew.Util;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree.Impl
 {
     internal partial class JsonNewLiteralExpression
@@ -19,9 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree.Impl
                 if (tokenType == JsonNewTokenNodeTypes.TRUE_KEYWORD) return ConstantValueTypes.True;
                 if (tokenType == JsonNewTokenNodeTypes.FALSE_KEYWORD) return ConstantValueTypes.False;
                 if (tokenType == JsonNewTokenNodeTypes.NUMERIC_LITERAL) return ConstantValueTypes.Numeric;
-                if (tokenType == JsonNewTokenNodeTypes.DOUBLE_QUOTED_STRING) return ConstantValueTypes.String;
-
-                return ConstantValueTypes.Unknown;
+                return tokenType == JsonNewTokenNodeTypes.DOUBLE_QUOTED_STRING ? ConstantValueTypes.String : ConstantValueTypes.Unknown;
             }
         }
 
@@ -40,13 +40,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree.Impl
                 var text = token.GetText();
                 if (text.Length <= 1) return TreeTextRange.InvalidRange;
 
-                char firstChar = text[0],
-                    lastChar = text[text.Length - 1];
-
+                var firstChar = text[0];
+                var lastChar = text[^1];
                 var treeTextRange = this.GetTreeTextRange();
 
-                bool hasStartQuote = firstChar == '\"' || firstChar == '\'';
-                bool hasEndQuote = hasStartQuote ? firstChar == lastChar : lastChar == '\"' || lastChar == '\'';
+                var hasStartQuote = firstChar == '\"' || firstChar == '\'';
+                var hasEndQuote = hasStartQuote ? firstChar == lastChar : lastChar == '\"' || lastChar == '\'';
 
                 if (!treeTextRange.IsValid() || !hasStartQuote && !hasEndQuote) return treeTextRange;
 
@@ -61,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree.Impl
             return TreeTextRange.InvalidRange;
         }
 
-        public string GetStringValue()
+        public string? GetStringValue()
         {
             var token = Literal;
             if (token == null) return null;
@@ -71,13 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree.Impl
             if (tokenType == JsonNewTokenNodeTypes.TRUE_KEYWORD) return "true";
             if (tokenType == JsonNewTokenNodeTypes.FALSE_KEYWORD) return "false";
             if (tokenType == JsonNewTokenNodeTypes.NUMERIC_LITERAL) return token.GetText();
-            if (tokenType == JsonNewTokenNodeTypes.DOUBLE_QUOTED_STRING)
-            {
-                return StringLiteralUtil.GetDoubleQuotedStringValue(token);
-            }
-
-
-            return null;
+            return tokenType == JsonNewTokenNodeTypes.DOUBLE_QUOTED_STRING ? StringLiteralUtil.GetDoubleQuotedStringValue(token) : null;
         }
     }
 }

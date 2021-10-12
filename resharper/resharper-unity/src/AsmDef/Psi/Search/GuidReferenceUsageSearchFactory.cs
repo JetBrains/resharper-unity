@@ -64,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
         private static string GetGuid(IDeclaredElement element, AsmDefNameCache asmDefNameCache,
                                       MetaFileGuidCache metaFileGuidCache)
         {
-            var asmDefLocation = asmDefNameCache.GetPathFor(element.ShortName);
+            var asmDefLocation = asmDefNameCache.GetAsmDefLocationByAssemblyName(element.ShortName);
             if (asmDefLocation != null)
             {
                 var assetGuid = metaFileGuidCache.GetAssetGuid(asmDefLocation);

@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
                         IPath path;
                         using (ReadLockCookie.Create())
                         {
-                            path = asmDefNameCache.GetPathFor(name)?.TryMakeRelativeTo(solution.SolutionFilePath);
+                            path = asmDefNameCache.GetAsmDefLocationByAssemblyName(name)?.TryMakeRelativeTo(solution.SolutionFilePath);
                         }
 
                         var elements = new LocalList<INotificationPanelHyperlink>();
