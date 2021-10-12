@@ -10,6 +10,7 @@ import com.intellij.diff.merge.ThreesideMergeRequest
 import com.intellij.diff.merge.external.AutomaticExternalMergeTool
 import com.intellij.diff.tools.external.ExternalDiffSettings
 import com.intellij.diff.tools.external.ExternalDiffToolUtil
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
@@ -26,6 +27,10 @@ import com.jetbrains.rider.projectView.solution
 import java.nio.file.Paths
 
 class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
+    companion object {
+        private val myLogger = Logger.getInstance(UnityYamlAutomaticExternalMergeTool::class.java)
+    }
+
     override fun show(project: Project?, request: MergeRequest) {
         project ?: return
 
@@ -50,8 +55,10 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
             else
                 settings.mergeParameters = mergeParameters
 
+            myLogger.info("PreMerge with ${settings.mergeExePath} ${settings.mergeParameters}")
             if (!ExternalDiffToolUtil.tryExecuteMerge(project, settings, request as ThreesideMergeRequest, null)){
                 if (premergedBase.exists() && premergedRight.exists()){
+                    myLogger.info("PreMerge partially successful.")
                     val output: VirtualFile = (request.outputContent as FileContent).file
                     val byteContents = listOf(output.toIOFile().readBytes(), premergedBase.readBytes(), premergedRight.readBytes())
                     val preMerged = DiffRequestFactory.getInstance().createMergeRequest(project, output, byteContents, request.title, request.contentTitles)
@@ -60,8 +67,13 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
                     DiffManagerEx.getInstance().showMergeBuiltin(project, preMerged)
                 }
                 else
+                {
+                    myLogger.info("PreMerge unsuccessful.")
                     DiffManagerEx.getInstance().showMergeBuiltin(project, request)
+                }
             }
+            else
+                myLogger.info("Merge fully successful.")
         }
         finally {
             if (premergedBase.exists()) premergedBase.delete()
