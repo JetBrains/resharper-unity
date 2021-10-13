@@ -9,6 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         private readonly string myName;
         private readonly int myNameOffset;
         private readonly List<string> myReferences = new();
+        private readonly List<AsmDefVersionDefine> myVersionDefines = new();
 
         public AsmDefCacheItemBuilder(string name, int nameOffset)
         {
@@ -22,6 +23,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
                 myReferences.Add(reference);
         }
 
-        public AsmDefCacheItem Build() => new(myName, myNameOffset, myReferences.ToArray());
+        public AsmDefCacheItem Build() => new(myName, myNameOffset, myReferences.ToArray(), myVersionDefines.ToArray());
+
+        public void AddVersionDefine(string packageName, string expression, string define)
+        {
+            myVersionDefines.Add(new AsmDefVersionDefine(define, packageName, expression));
+        }
     }
 }

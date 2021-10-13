@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
             mySolution = solution;
         }
 
-        public override string Version => "2";
+        public override string Version => "3";
 
         public AsmDefNameDeclaredElement? GetNameDeclaredElement(IPsiSourceFile sourceFile)
         {
@@ -87,8 +87,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
             var cacheBuilder = new AsmDefCacheItemBuilder(name, nameProperty.GetTreeStartOffset().Offset);
 
             var referencesProperty = rootObject.GetFirstPropertyValue<IJsonNewArray>("references");
-            foreach (var entry in (referencesProperty?.ValuesEnumerable).SafeOfType<IJsonNewLiteralExpression>())
+            foreach (var entry in referencesProperty.ValuesAsLiteral())
                 cacheBuilder.AddReference(entry.GetStringValue());
+
+            var versionDefinesProperty = rootObject.GetFirstPropertyValue<IJsonNewArray>("versionDefines");
+            foreach (var versionDefine in versionDefinesProperty.ValuesAsObject())
+            {
+                var packageName = versionDefine.GetFirstPropertyValueText("name");
+                var expression = versionDefine.GetFirstPropertyValueText("expression");
+                var define = versionDefine.GetFirstPropertyValueText("define");
+
+                // string.IsNullOrWhitespace isn't annotated...
+                if (packageName == null || expression == null || define == null
+                    || string.IsNullOrWhiteSpace(packageName)
+                    || string.IsNullOrWhiteSpace(expression)
+                    || string.IsNullOrWhiteSpace(define))
+                {
+                    continue;
+                }
+
+                cacheBuilder.AddVersionDefine(packageName, expression, define);
+            }
 
             return cacheBuilder.Build();
         }
