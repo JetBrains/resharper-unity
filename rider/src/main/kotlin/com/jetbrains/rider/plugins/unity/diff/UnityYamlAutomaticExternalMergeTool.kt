@@ -27,6 +27,7 @@ import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Paths
 
+
 class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
     companion object {
         private val myLogger = Logger.getInstance(UnityYamlAutomaticExternalMergeTool::class.java)
@@ -57,6 +58,7 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
                 settings.mergeParameters = mergeParameters
 
             myLogger.info("PreMerge with ${settings.mergeExePath} ${settings.mergeParameters}")
+
             if (!tryExecuteMerge(project, settings, request as ThreesideMergeRequest)) {
                 if (premergedBase.exists() && premergedRight.exists()){
                     myLogger.info("PreMerge partially successful. Call ShowMergeBuiltin on pre-merged.")
@@ -70,9 +72,6 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
                     myLogger.info("PreMerge unsuccessful. Call ShowMergeBuiltin.")
                     DiffManagerEx.getInstance().showMergeBuiltin(project, request)
                 }
-            } else {
-                myLogger.info("Merge with external tool was fully successful. Apply result.")
-                request.applyResult(MergeResult.RESOLVED)
             }
         }
         finally {
@@ -82,12 +81,20 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
     }
 
     private fun tryExecuteMerge(project: Project?, settings: ExternalDiffSettings, request: ThreesideMergeRequest):Boolean {
-        return try {
-            ExternalDiffToolUtil.tryExecuteMerge(project, settings, request, null)
-        }
-        catch (e:Exception) {
+        // see reference impl "com.intellij.diff.tools.external.ExternalDiffToolUtil#executeMerge"
+        request.onAssigned(true)
+        try {
+            if (ExternalDiffToolUtil.tryExecuteMerge(project, settings, request, null)) {
+                myLogger.info("Merge with external tool was fully successful. Apply result.")
+                request.applyResult(MergeResult.RESOLVED)
+                return true
+            }
+            return false
+        } catch (e: Exception) {
             myLogger.error(e)
-            false
+            return false
+        } finally {
+            request.onAssigned(false)
         }
     }
 
