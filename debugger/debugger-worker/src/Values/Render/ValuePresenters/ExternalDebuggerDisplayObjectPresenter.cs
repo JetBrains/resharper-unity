@@ -114,6 +114,23 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
                 // handle the current context, which is unlikely
                 var display = ExpressionEvaluators.EvaluateDebuggerDisplay(valueReference.OriginatingFrame, thisObj,
                         debuggerDisplayString, evaluationOptions, token);
+                
+                /* // todo: For: @CitizenMatt. This code was commented to fix compilation, but it has to be restored
+                 var displayString =
+                    ExpressionEvaluators.EvaluateDisplayString(valueReference.OriginatingFrame, thisObj, 
+                    debuggerDisplayString, evaluationOptions, token);
+
+                 var flags = valueReference.DefaultFlags;
+                if (valueReference is CalculatedValueReferenceDecorator<TValue> reference &&
+                    !reference.AllowDefaultTypePresentation)
+                {
+                    flags |= ValueFlags.IsDefaultTypePresentation;
+                }
+
+                return SimplePresentation.CreateSuccess(
+                    ValuePresentationPart.Default(DisplayStringUtil.EscapeString(displayString)),
+                    flags, instanceType, displayString);
+                 */
 
                 return new AggregatedPresentation(display, options, instanceType);
             }
