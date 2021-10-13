@@ -57,22 +57,21 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
                 settings.mergeParameters = mergeParameters
 
             myLogger.info("PreMerge with ${settings.mergeExePath} ${settings.mergeParameters}")
-            val threesideMergeRequest = request as ThreesideMergeRequest
-            if (tryExecuteMerge(project, settings, threesideMergeRequest)) {
+            if (tryExecuteMerge(project, settings, request as ThreesideMergeRequest)) {
                 myLogger.info("Merge with external tool was fully successful. Apply result.")
-                threesideMergeRequest.applyResult(MergeResult.RESOLVED)
+                request.applyResult(MergeResult.RESOLVED)
             } else {
                 if (premergedBase.exists() && premergedRight.exists()){
                     myLogger.info("PreMerge partially successful. Call ShowMergeBuiltin on pre-merged.")
-                    val output: VirtualFile = (threesideMergeRequest.outputContent as FileContent).file
+                    val output: VirtualFile = (request.outputContent as FileContent).file
                     val byteContents = listOf(output.toIOFile().readBytes(), premergedBase.readBytes(), premergedRight.readBytes())
-                    val preMerged = DiffRequestFactory.getInstance().createMergeRequest(project, output, byteContents, threesideMergeRequest.title, request.contentTitles)
-                    MergeCallback.retarget(threesideMergeRequest, preMerged)
+                    val preMerged = DiffRequestFactory.getInstance().createMergeRequest(project, output, byteContents, request.title, request.contentTitles)
+                    MergeCallback.retarget(request, preMerged)
 
                     DiffManagerEx.getInstance().showMergeBuiltin(project, preMerged)
                 } else {
                     myLogger.info("PreMerge unsuccessful. Call ShowMergeBuiltin.")
-                    DiffManagerEx.getInstance().showMergeBuiltin(project, threesideMergeRequest)
+                    DiffManagerEx.getInstance().showMergeBuiltin(project, request)
                 }
             }
         }
