@@ -27,7 +27,6 @@ import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Paths
 
-
 class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
     companion object {
         private val myLogger = Logger.getInstance(UnityYamlAutomaticExternalMergeTool::class.java)
@@ -45,8 +44,8 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
         }
 
         val tempDir = System.getProperty("java.io.tmpdir")
-        val premergedBase = Paths.get(tempDir).resolve("premergedBase_"+request.hashCode())
-        val premergedRight = Paths.get(tempDir).resolve("premergedRight_"+request.hashCode())
+        val premergedBase = Paths.get(tempDir).resolve("premergedBase_" + request.hashCode())
+        val premergedRight = Paths.get(tempDir).resolve("premergedRight_" + request.hashCode())
 
         try {
             settings.isMergeTrustExitCode = true
@@ -60,7 +59,7 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
             myLogger.info("PreMerge with ${settings.mergeExePath} ${settings.mergeParameters}")
 
             if (!tryExecuteMerge(project, settings, request as ThreesideMergeRequest)) {
-                if (premergedBase.exists() && premergedRight.exists()){
+                if (premergedBase.exists() && premergedRight.exists()) {
                     myLogger.info("PreMerge partially successful. Call ShowMergeBuiltin on pre-merged.")
                     val output: VirtualFile = (request.outputContent as FileContent).file
                     val byteContents = listOf(output.toIOFile().readBytes(), premergedBase.readBytes(), premergedRight.readBytes())
@@ -73,14 +72,13 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
                     DiffManagerEx.getInstance().showMergeBuiltin(project, request)
                 }
             }
-        }
-        finally {
+        } finally {
             if (premergedBase.exists()) premergedBase.delete()
             if (premergedRight.exists()) premergedRight.delete()
         }
     }
 
-    private fun tryExecuteMerge(project: Project?, settings: ExternalDiffSettings, request: ThreesideMergeRequest):Boolean {
+    private fun tryExecuteMerge(project: Project?, settings: ExternalDiffSettings, request: ThreesideMergeRequest): Boolean {
         // see reference impl "com.intellij.diff.tools.external.ExternalDiffToolUtil#executeMerge"
         request.onAssigned(true)
         try {
@@ -98,9 +96,8 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
         }
     }
 
-
     override fun canShow(project: Project?, request: MergeRequest): Boolean {
-        project?: return false
+        project ?: return false
 
         if (!project.solution.frontendBackendModel.backendSettings.useUnityYamlMerge.hasTrueValue)
             return false
