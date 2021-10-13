@@ -7,6 +7,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 
@@ -32,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.DataConstant
             foreach (var containingNode in psiView.ContainingNodes)
             {
                 var sourceFile = containingNode.GetSourceFile();
-                if (!sourceFile.IsAsmDef())
+                if (sourceFile == null || !sourceFile.IsAsmDef())
                     continue;
 
                 if (containingNode.IsNameLiteral())

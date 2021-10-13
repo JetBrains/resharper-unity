@@ -1,18 +1,11 @@
-﻿using System;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef
 {
     public static class Extensions
     {
-        public static bool IsAsmDef(this IPsiSourceFile sourceFile)
-        {
-            return sourceFile.GetLocation().ExtensionWithDot.Equals(".asmdef", StringComparison.InvariantCultureIgnoreCase);
-        }
-
         [ContractAnnotation("node:null => false")]
         public static bool IsNameLiteral([CanBeNull] this ITreeNode node)
         {

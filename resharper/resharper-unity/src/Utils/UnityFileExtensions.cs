@@ -49,6 +49,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
         public static bool IsAsmDef([NotNull] this IPath path) =>
             SimplePathEndsWith(path, AsmDefFileExtensionWithDot);
 
+        public static bool IsAsmDef([NotNull] this IPsiSourceFile psiSourceFile) =>
+            SourceFileNameEndsWith(psiSourceFile, AsmDefFileExtensionWithDot);
+
         public static bool IsAsset([NotNull] this IPath path) =>
             SimplePathEndsWith(path, AssetFileExtensionWithDot);
 
