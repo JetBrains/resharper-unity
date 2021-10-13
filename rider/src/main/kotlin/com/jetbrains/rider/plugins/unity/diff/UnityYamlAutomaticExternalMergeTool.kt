@@ -91,7 +91,7 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
             }
             return false
         } catch (e: Exception) {
-            myLogger.error(e)
+            myLogger.error("UnityYamlMerge failed.", e)
             return false
         } finally {
             request.onAssigned(false)
