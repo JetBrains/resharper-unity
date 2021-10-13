@@ -112,20 +112,10 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
                 // due to stripping. It will throw EvaluatorException. Anything else is logged and thrown as a new
                 // EvaluatorException. We can also get InvalidOperationException, but only if no other evaluators can
                 // handle the current context, which is unlikely
-                var displayString =
-                    ExpressionEvaluators.EvaluateDisplayString(valueReference.OriginatingFrame, thisObj,
+                var display = ExpressionEvaluators.EvaluateDebuggerDisplay(valueReference.OriginatingFrame, thisObj,
                         debuggerDisplayString, evaluationOptions, token);
 
-                var flags = valueReference.DefaultFlags;
-                if (valueReference is CalculatedValueReferenceDecorator<TValue> reference &&
-                    !reference.AllowDefaultTypePresentation)
-                {
-                    flags |= ValueFlags.IsDefaultTypePresentation;
-                }
-
-                return SimplePresentation.CreateSuccess(
-                    ValuePresentationPart.Default(DisplayStringUtil.EscapeString(displayString)),
-                    flags, instanceType, displayString);
+                return new AggregatedPresentation(display, options, instanceType);
             }
             catch (Exception ex)
             {
