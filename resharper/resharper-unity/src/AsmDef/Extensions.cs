@@ -2,47 +2,22 @@
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef
 {
     public static class Extensions
     {
         [ContractAnnotation("node:null => false")]
-        public static bool IsNameLiteral([CanBeNull] this ITreeNode node)
-        {
-            if (node is IJsonNewLiteralExpression literal && literal.ConstantValueType == ConstantValueTypes.String)
-            {
-                var member = JsonNewMemberNavigator.GetByValue(literal);
-                var key = member?.Key;
-
-                var file = JsonNewFileNavigator.GetByValue(JsonNewObjectNavigator.GetByMember(member));
-                if (file == null)
-                    return false;
-
-                if (key == "name")
-                    return true;
-            }
-
-            return false;
-        }
+        public static bool IsNamePropertyValue(this ITreeNode? node) =>
+            node.AsStringLiteralValue().IsRootPropertyValue("name");
 
         [ContractAnnotation("node:null => false")]
-        public static bool IsReferenceLiteral([CanBeNull] this ITreeNode node)
+        public static bool IsReferencesArrayEntry(this ITreeNode? node)
         {
-            if (node is IJsonNewLiteralExpression literal && literal.ConstantValueType == ConstantValueTypes.String)
-            {
-                var arrayLiteral = JsonNewArrayNavigator.GetByValue(literal);
-                var member = JsonNewMemberNavigator.GetByValue(arrayLiteral);
-                var key = member?.Key;
-
-                var file = JsonNewFileNavigator.GetByValue(JsonNewObjectNavigator.GetByMember(member));
-                if (file == null)
-                    return false;
-
-                if (key == "references")
-                    return true;
-            }
-
-            return false;
+            var value = node.AsStringLiteralValue();
+            var array = JsonNewArrayNavigator.GetByValue(value);
+            return array.IsRootPropertyValue("references");
         }
     }
 }

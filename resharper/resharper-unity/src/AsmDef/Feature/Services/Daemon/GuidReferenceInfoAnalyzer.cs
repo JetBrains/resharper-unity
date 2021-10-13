@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
         protected override void Analyze(IJsonNewLiteralExpression element, ElementProblemAnalyzerData data,
                                         IHighlightingConsumer consumer)
         {
-            if (element.IsReferenceLiteral() && element.GetUnquotedText().StartsWith("guid:",
+            if (element.IsReferencesArrayEntry() && element.GetUnquotedText().StartsWith("guid:",
                 StringComparison.InvariantCultureIgnoreCase))
             {
                 var reference = element.FindReference<AsmDefNameReference>();

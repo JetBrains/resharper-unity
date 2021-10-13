@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
     {
         protected override void Analyze(IJsonNewLiteralExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            if (element.IsNameLiteral() && data.SourceFile != null)
+            if (element.IsNamePropertyValue() && data.SourceFile != null)
             {
                 var assemblyName = element.GetUnquotedText();
                 var expectedFileName = assemblyName + ".asmdef";

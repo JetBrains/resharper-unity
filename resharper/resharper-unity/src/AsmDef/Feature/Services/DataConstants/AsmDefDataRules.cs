@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.DataConstant
                 if (sourceFile == null || !sourceFile.IsAsmDef())
                     continue;
 
-                if (containingNode.IsNameLiteral())
+                if (containingNode.IsNamePropertyValue())
                 {
                     var node = (containingNode as IJsonNewLiteralExpression).NotNull("node != null");
                     return new List<IDeclaredElement>

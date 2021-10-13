@@ -64,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.ContextHighlighters
             literalExpressionUnderCaret = null;
 
             var expression = psiView.GetSelectedTreeNode<IJsonNewLiteralExpression>();
-            if (expression.IsNameLiteral())
+            if (expression.IsNamePropertyValue())
             {
                 literalExpressionUnderCaret = expression;
 
@@ -72,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.ContextHighlighters
                 return new AsmDefNameDeclaredElement(expression.GetUnquotedText(), expression.GetSourceFile(), expression.GetTreeStartOffset().Offset);
             }
 
-            if (expression.IsReferenceLiteral())
+            if (expression.IsReferencesArrayEntry())
             {
                 var reference = expression.FindReference<AsmDefNameReference>();
                 if (reference != null)
