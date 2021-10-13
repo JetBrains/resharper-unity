@@ -57,10 +57,7 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
                 settings.mergeParameters = mergeParameters
 
             myLogger.info("PreMerge with ${settings.mergeExePath} ${settings.mergeParameters}")
-            if (tryExecuteMerge(project, settings, request as ThreesideMergeRequest)) {
-                myLogger.info("Merge with external tool was fully successful. Apply result.")
-                request.applyResult(MergeResult.RESOLVED)
-            } else {
+            if (!tryExecuteMerge(project, settings, request as ThreesideMergeRequest)) {
                 if (premergedBase.exists() && premergedRight.exists()){
                     myLogger.info("PreMerge partially successful. Call ShowMergeBuiltin on pre-merged.")
                     val output: VirtualFile = (request.outputContent as FileContent).file
@@ -73,6 +70,9 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
                     myLogger.info("PreMerge unsuccessful. Call ShowMergeBuiltin.")
                     DiffManagerEx.getInstance().showMergeBuiltin(project, request)
                 }
+            } else {
+                myLogger.info("Merge with external tool was fully successful. Apply result.")
+                request.applyResult(MergeResult.RESOLVED)
             }
         }
         finally {
