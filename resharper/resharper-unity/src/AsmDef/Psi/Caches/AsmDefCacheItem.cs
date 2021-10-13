@@ -69,9 +69,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 
         public static AsmDefVersionDefine? Create(string symbol, string packageId, string expression)
         {
-            if (!JetSemanticVersionRange.TryParse(expression, out var versionRange))
-                return null;
-            return new AsmDefVersionDefine(symbol, packageId, expression, versionRange);
+            return JetSemanticVersionRange.TryParse(expression, out var versionRange)
+                ? new AsmDefVersionDefine(symbol, packageId, expression, versionRange)
+                : null;
         }
 
         public string Symbol { get; }

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
+using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements;
@@ -13,6 +15,7 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Impl.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
+using JetBrains.Threading;
 using JetBrains.Util;
 
 #nullable enable
@@ -22,32 +25,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
     [PsiComponent]
     public class AsmDefNameCache : SimpleICache<AsmDefCacheItem>
     {
-        private readonly IShellLocks myShellLocks;
+        private readonly ILogger myLogger;
         private readonly ISolution mySolution;
 
         private readonly Dictionary<IPsiSourceFile, AsmDefNameDeclaredElement> myDeclaredElements = new();
         private readonly OneToListMap<string, IPsiSourceFile> myNames = new();
+        private readonly GroupingEvent myCacheUpdatedGroupingEvent;
 
-        public AsmDefNameCache(Lifetime lifetime, IShellLocks shellLocks,
-                               IPersistentIndexManager persistentIndexManager, ISolution solution)
+        public AsmDefNameCache(Lifetime lifetime,
+                               ISolution solution,
+                               IShellLocks shellLocks,
+                               IPersistentIndexManager persistentIndexManager,
+                               ILogger logger)
             : base(lifetime, shellLocks, persistentIndexManager, AsmDefCacheItem.Marshaller)
         {
-            myShellLocks = shellLocks;
+            myLogger = logger;
             mySolution = solution;
+
+            myCacheUpdatedGroupingEvent = Locks.CreateGroupingEvent(lifetime, "Unity::AsmDefCacheUpdated",
+                TimeSpan.FromMilliseconds(500));
         }
 
         public override string Version => "3";
+
+        public ISimpleSignal CacheUpdated => myCacheUpdatedGroupingEvent.Outgoing;
 
         public AsmDefNameDeclaredElement? GetNameDeclaredElement(IPsiSourceFile sourceFile)
         {
             return myDeclaredElements.TryGetValue(sourceFile, out var declaredElement) ? declaredElement : null;
         }
 
-        public AsmDefNameDeclaredElement? GetNameDeclaredElement(VirtualFileSystemPath path)
+        public AsmDefNameDeclaredElement? GetNameDeclaredElement(VirtualFileSystemPath sourceFilePath)
         {
             foreach (var (file, element) in myDeclaredElements)
             {
-                if (file.GetLocation() == path)
+                if (file.GetLocation() == sourceFilePath)
                     return element;
             }
 
@@ -67,8 +79,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         // the file might not match the name of the assembly definition!
         public VirtualFileSystemPath? GetAsmDefLocationByAssemblyName(string assemblyName)
         {
-            myShellLocks.AssertReadAccessAllowed();
-            return myNames.GetValuesSafe(assemblyName).FirstOrDefault()?.GetLocation();
+            Locks.AssertReadAccessAllowed();
+            return GetSourceFileForAssembly(assemblyName)?.GetLocation();
+        }
+
+        public IEnumerable<AsmDefVersionDefine> GetVersionDefines(string assemblyName)
+        {
+            var sourceFile = GetSourceFileForAssembly(assemblyName);
+            if (sourceFile == null)
+                return EmptyList<AsmDefVersionDefine>.Enumerable;
+
+            return Map!.GetValueSafe(sourceFile)?.VersionDefines ?? EmptyList<AsmDefVersionDefine>.Enumerable;
         }
 
         public override object? Build(IPsiSourceFile sourceFile, bool isStartup)
@@ -117,18 +138,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
             RemoveFromLocalCache(sourceFile);
             AddToLocalCache(sourceFile, builtPart as AsmDefCacheItem);
             base.Merge(sourceFile, builtPart);
+            myCacheUpdatedGroupingEvent.FireIncoming();
         }
 
         public override void MergeLoaded(object data)
         {
             PopulateLocalCache();
             base.MergeLoaded(data);
+            myCacheUpdatedGroupingEvent.FireIncoming();
         }
 
         public override void Drop(IPsiSourceFile sourceFile)
         {
             RemoveFromLocalCache(sourceFile);
             base.Drop(sourceFile);
+            myCacheUpdatedGroupingEvent.FireIncoming();
         }
 
         private void PopulateLocalCache()
@@ -163,6 +187,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
             return base.IsApplicable(sf) && sf.IsAsmDef() && sf.IsLanguageSupported<JsonNewLanguage>();
+        }
+
+        private IPsiSourceFile? GetSourceFileForAssembly(string assemblyName)
+        {
+            var sourceFiles = myNames.GetValuesSafe(assemblyName);
+            if (sourceFiles.Count > 1 && myLogger.IsWarnEnabled())
+            {
+                var files = string.Join(", ", sourceFiles);
+                myLogger.Warn($"Multiple asmdef files found for assembly {assemblyName}: {files}");
+            }
+
+            return sourceFiles.FirstOrDefault();
         }
     }
 }
