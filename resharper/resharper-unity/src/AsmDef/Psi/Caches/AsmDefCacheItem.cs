@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.Serialization;
 using JetBrains.Util.PersistentMap;
 
@@ -51,16 +52,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 
     public class AsmDefVersionDefine
     {
-        public AsmDefVersionDefine(string symbol, string packageId, string expression)
+        // We know that expression is valid here, because this constructor is only used when deserialising
+        private AsmDefVersionDefine(string symbol, string packageId, string expression)
+            : this(symbol, packageId, expression, JetSemanticVersionRange.Parse(expression))
+        {
+        }
+
+        private AsmDefVersionDefine(string symbol, string packageId, string expression,
+                                    JetSemanticVersionRange versionRange)
         {
             Symbol = symbol;
             PackageId = packageId;
             Expression = expression;
+            VersionRange = versionRange;
+        }
+
+        public static AsmDefVersionDefine? Create(string symbol, string packageId, string expression)
+        {
+            if (!JetSemanticVersionRange.TryParse(expression, out var versionRange))
+                return null;
+            return new AsmDefVersionDefine(symbol, packageId, expression, versionRange);
         }
 
         public string Symbol { get; }
         public string PackageId { get; }
         public string Expression { get; }
+        public JetSemanticVersionRange VersionRange { get; }
 
         public static AsmDefVersionDefine Read(UnsafeReader reader)
         {
