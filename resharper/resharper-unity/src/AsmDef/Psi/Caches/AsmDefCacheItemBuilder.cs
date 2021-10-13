@@ -25,9 +25,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 
         public AsmDefCacheItem Build() => new(myName, myNameOffset, myReferences.ToArray(), myVersionDefines.ToArray());
 
-        public void AddVersionDefine(string packageName, string expression, string define)
+        public void AddVersionDefine(string resourceName, string symbol, string expression)
         {
-            var versionDefine = AsmDefVersionDefine.Create(define, packageName, expression);
+            var versionDefine = AsmDefVersionDefine.Create(resourceName, symbol, expression);
             if (versionDefine != null)
                 myVersionDefines.Add(versionDefine);
         }

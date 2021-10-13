@@ -46,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
                 TimeSpan.FromMilliseconds(500));
         }
 
-        public override string Version => "3";
+        public override string Version => "4";
 
         public ISimpleSignal CacheUpdated => myCacheUpdatedGroupingEvent.Outgoing;
 
@@ -114,20 +114,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
             var versionDefinesProperty = rootObject.GetFirstPropertyValue<IJsonNewArray>("versionDefines");
             foreach (var versionDefine in versionDefinesProperty.ValuesAsObject())
             {
-                var packageName = versionDefine.GetFirstPropertyValueText("name");
+                var resourceName = versionDefine.GetFirstPropertyValueText("name");
                 var expression = versionDefine.GetFirstPropertyValueText("expression");
-                var define = versionDefine.GetFirstPropertyValueText("define");
+                var symbol = versionDefine.GetFirstPropertyValueText("define");
 
                 // string.IsNullOrWhitespace isn't annotated...
-                if (packageName == null || expression == null || define == null
-                    || string.IsNullOrWhiteSpace(packageName)
+                if (resourceName == null || expression == null || symbol == null
+                    || string.IsNullOrWhiteSpace(resourceName)
                     || string.IsNullOrWhiteSpace(expression)
-                    || string.IsNullOrWhiteSpace(define))
+                    || string.IsNullOrWhiteSpace(symbol))
                 {
                     continue;
                 }
 
-                cacheBuilder.AddVersionDefine(packageName, expression, define);
+                cacheBuilder.AddVersionDefine(resourceName, symbol, expression);
             }
 
             return cacheBuilder.Build();

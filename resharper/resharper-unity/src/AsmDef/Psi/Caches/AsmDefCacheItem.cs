@@ -53,44 +53,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
     public class AsmDefVersionDefine
     {
         // We know that expression is valid here, because this constructor is only used when deserialising
-        private AsmDefVersionDefine(string symbol, string packageId, string expression)
-            : this(symbol, packageId, expression, JetSemanticVersionRange.Parse(expression))
+        private AsmDefVersionDefine(string resourceName, string symbol, string expression)
+            : this(resourceName, symbol, expression, JetSemanticVersionRange.Parse(expression))
         {
         }
 
-        private AsmDefVersionDefine(string symbol, string packageId, string expression,
+        private AsmDefVersionDefine(string resourceName, string symbol, string expression,
                                     JetSemanticVersionRange versionRange)
         {
+            ResourceName = resourceName;
             Symbol = symbol;
-            PackageId = packageId;
             Expression = expression;
             VersionRange = versionRange;
         }
 
-        public static AsmDefVersionDefine? Create(string symbol, string packageId, string expression)
+        public static AsmDefVersionDefine? Create(string resourceName, string symbol, string expression)
         {
             return JetSemanticVersionRange.TryParse(expression, out var versionRange)
-                ? new AsmDefVersionDefine(symbol, packageId, expression, versionRange)
+                ? new AsmDefVersionDefine(resourceName, symbol, expression, versionRange)
                 : null;
         }
 
+        public string ResourceName { get; }
         public string Symbol { get; }
-        public string PackageId { get; }
         public string Expression { get; }
         public JetSemanticVersionRange VersionRange { get; }
 
         public static AsmDefVersionDefine Read(UnsafeReader reader)
         {
+            var resourceName = reader.ReadString()!;
             var symbol = reader.ReadString()!;
-            var packageId = reader.ReadString()!;
             var expression = reader.ReadString()!;
-            return new AsmDefVersionDefine(symbol, packageId, expression);
+            return new AsmDefVersionDefine(resourceName, symbol, expression);
         }
 
         public static void Write(UnsafeWriter writer, AsmDefVersionDefine versionDefine)
         {
+            writer.Write(versionDefine.ResourceName);
             writer.Write(versionDefine.Symbol);
-            writer.Write(versionDefine.PackageId);
             writer.Write(versionDefine.Expression);
         }
     }

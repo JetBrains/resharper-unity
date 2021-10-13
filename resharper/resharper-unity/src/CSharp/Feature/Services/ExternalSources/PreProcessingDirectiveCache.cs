@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.changes;
@@ -22,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ExternalSour
         private readonly ISolution mySolution;
         private readonly AsmDefNameCache myAsmDefNameCache;
         private readonly UnitySolutionTracker myUnitySolutionTracker;
+        private readonly UnityVersion myUnityVersion;
         private readonly PackageManager myPackageManager;
         private readonly IPsiServices myPsiServices;
         private readonly ILogger myLogger;
@@ -32,6 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ExternalSour
                                            ISolution solution,
                                            AsmDefNameCache asmDefNameCache,
                                            UnitySolutionTracker unitySolutionTracker,
+                                           UnityVersion unityVersion,
                                            ChangeManager changeManager,
                                            PackageManager packageManager,
                                            IPsiServices psiServices,
@@ -40,6 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ExternalSour
             mySolution = solution;
             myAsmDefNameCache = asmDefNameCache;
             myUnitySolutionTracker = unitySolutionTracker;
+            myUnityVersion = unityVersion;
             myPackageManager = packageManager;
             myPsiServices = psiServices;
             myLogger = logger;
@@ -49,6 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ExternalSour
             changeManager.Changed2.Advise(lifetime, OnChange);
             packageManager.Updating.Change.Advise_NoAcknowledgement(lifetime, OnPackagesUpdated);
             asmDefNameCache.CacheUpdated.Advise(lifetime, OnAsmDefCacheUpdated);
+            myUnityVersion.ActualVersionForSolution.Advise(lifetime, OnApplicationVersionChanged);
         }
 
         public PreProcessingDirective[] GetPreProcessingDirectives(IPsiAssembly assembly)
@@ -110,18 +115,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ExternalSour
         {
             foreach (var versionDefine in myAsmDefNameCache.GetVersionDefines(assemblyName))
             {
-                var packageData = myPackageManager.GetPackageById(versionDefine.PackageId);
-
-                // We don't have the package, so the symbol isn't defined
-                if (packageData == null)
-                    continue;
-
-                if (JetSemanticVersion.TryParse(packageData.PackageDetails.Version, out var packageVersion) &&
-                    versionDefine.VersionRange.IsValid(packageVersion))
-                {
+                var resourceVersion = GetVersionOfResource(versionDefine.ResourceName);
+                if (resourceVersion != null && versionDefine.VersionRange.IsValid(resourceVersion))
                     directives.Add(new PreProcessingDirective(versionDefine.Symbol, string.Empty));
-                }
             }
+        }
+
+        private JetSemanticVersion? GetVersionOfResource(string resourceName)
+        {
+            var packageData = myPackageManager.GetPackageById(resourceName);
+            if (packageData != null)
+            {
+                return JetSemanticVersion.TryParse(packageData.PackageDetails.Version, out var version)
+                    ? version
+                    : null;
+            }
+
+            // Undocumented resource that represents the application version
+            if (resourceName == "Unity")
+            {
+                return JetSemanticVersion.TryParse(myUnityVersion.ActualVersionForSolution.Value.ToString(3),
+                    out var version)
+                    ? version
+                    : null;
+            }
+
+            return null;
         }
 
         private void OnChange(ChangeEventArgs args)
@@ -152,6 +171,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ExternalSour
         private void OnAsmDefCacheUpdated(bool _)
         {
             Invalidate("AsmDefCache updated");
+        }
+
+        private void OnApplicationVersionChanged(Version _)
+        {
+            Invalidate("Application version changed");
         }
 
         private void Invalidate(string reason)
