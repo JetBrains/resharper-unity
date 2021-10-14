@@ -24,7 +24,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 {
     [PsiComponent]
-    public class AsmDefNameCache : SimpleICache<AsmDefCacheItem>
+    public class AsmDefCache : SimpleICache<AsmDefCacheItem>
     {
         private readonly ILogger myLogger;
         private readonly ISolution mySolution;
@@ -33,11 +33,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         private readonly OneToListMap<string, IPsiSourceFile> myNames = new();
         private readonly GroupingEvent myCacheUpdatedGroupingEvent;
 
-        public AsmDefNameCache(Lifetime lifetime,
-                               ISolution solution,
-                               IShellLocks shellLocks,
-                               IPersistentIndexManager persistentIndexManager,
-                               ILogger logger)
+        public AsmDefCache(Lifetime lifetime,
+                           ISolution solution,
+                           IShellLocks shellLocks,
+                           IPersistentIndexManager persistentIndexManager,
+                           ILogger logger)
             : base(lifetime, shellLocks, persistentIndexManager, AsmDefCacheItem.Marshaller)
         {
             myLogger = logger;

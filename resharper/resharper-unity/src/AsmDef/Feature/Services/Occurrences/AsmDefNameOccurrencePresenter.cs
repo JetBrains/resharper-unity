@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Occurrences
                 return false;
 
             var solution = occurrence.GetSolution().NotNull("occurrence.GetSolution() != null");
-            var cache = solution.GetComponent<AsmDefNameCache>();
+            var cache = solution.GetComponent<AsmDefCache>();
 
             descriptor.Text = asmDefNameOccurrence.Name;
             if (options.IconDisplayStyle != IconDisplayStyle.NoIcon)

@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
                                          BackendUnityHost backendUnityHost,
                                          UnitySolutionTracker solutionTracker,
                                          ISolution solution,
-                                         AsmDefNameCache asmDefNameCache,
+                                         AsmDefCache asmDefCache,
                                          [CanBeNull] RiderTextControlHost textControlHost = null,
                                          [CanBeNull] SolutionLifecycleHost solutionLifecycleHost = null,
                                          [CanBeNull] NotificationPanelHost notificationPanelHost = null)
@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
                         IPath path;
                         using (ReadLockCookie.Create())
                         {
-                            path = asmDefNameCache.GetAsmDefLocationByAssemblyName(name)?.TryMakeRelativeTo(solution.SolutionFilePath);
+                            path = asmDefCache.GetAsmDefLocationByAssemblyName(name)?.TryMakeRelativeTo(solution.SolutionFilePath);
                         }
 
                         var elements = new LocalList<INotificationPanelHyperlink>();

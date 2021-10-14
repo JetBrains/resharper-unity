@@ -37,13 +37,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
                 Guid.TryParse(name[5..], out var guid))
             {
                 var metaFileCache = myOwner.GetSolution().GetComponent<MetaFileGuidCache>();
-                var asmDefNameCache = myOwner.GetSolution().GetComponent<AsmDefNameCache>();
+                var asmDefCache = myOwner.GetSolution().GetComponent<AsmDefCache>();
 
                 // We should only get a single asset, but beware of copy/paste files
                 var elements = new FrugalLocalList<IDeclaredElement>();
                 foreach (var path in metaFileCache.GetAssetFilePathsFromGuid(guid))
                 {
-                    var nameElement = asmDefNameCache.GetNameDeclaredElement(path);
+                    var nameElement = asmDefCache.GetNameDeclaredElement(path);
                     if (nameElement != null)
                         elements.Add(nameElement);
                 }
@@ -69,8 +69,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
 
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
         {
-            var asmDefNameCache = myOwner.GetSolution().GetComponent<AsmDefNameCache>();
-            var symbolTable = asmDefNameCache.GetAssemblyNamesSymbolTable();
+            var asmDefCache = myOwner.GetSolution().GetComponent<AsmDefCache>();
+            var symbolTable = asmDefCache.GetAssemblyNamesSymbolTable();
             if (useReferenceName)
             {
                 var name = GetName();
