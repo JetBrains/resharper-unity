@@ -1,0 +1,28 @@
+﻿{
+  "name": "FirstProject",
+  "defineConstraints": [
+      "RESHARPER_UNITY_TEST_DEFINED_SYMBOL",
+      "|!RESHARPER_UNITY_TEST_DEFINED_SYMBOL|(0)",
+      "|RESHARPER_UNITY_TEST_UNDEFINED_SYMBOL|(1)",
+      "!RESHARPER_UNITY_TEST_UNDEFINED_SYMBOL",
+      "RESHARPER_UNITY_TEST_DEFINED_SYMBOL || |RESHARPER_UNITY_TEST_UNDEFINED_SYMBOL|(2)",
+      "|!RESHARPER_UNITY_TEST_DEFINED_SYMBOL || RESHARPER_UNITY_TEST_UNDEFINED_SYMBOL|(3)",
+      "RESHARPER_UNITY_TEST_DEFINED_SYMBOL || !RESHARPER_UNITY_TEST_UNDEFINED_SYMBOL",
+      "|!RESHARPER_UNITY_TEST_DEFINED_SYMBOL|(4) || !RESHARPER_UNITY_TEST_UNDEFINED_SYMBOL",
+      "SYMBOL_FROM_VERSION_DEFINES"
+  ],
+  "versionDefines": [
+      {
+          "name": "Unity",
+          "expression": "5.0",
+          "define": "SYMBOL_FROM_VERSION_DEFINES"
+      }
+  ]
+}
+
+---------------------------------------------------------
+(0): ReSharper Dead Code: Unmet define constraint. Assembly definition will not be compiled
+(1): ReSharper Dead Code: Unmet define constraint. Assembly definition will not be compiled
+(2): ReSharper Dead Code: Unmet define constraint
+(3): ReSharper Dead Code: Unmet define constraint. Assembly definition will not be compiled
+(4): ReSharper Dead Code: Unmet define constraint

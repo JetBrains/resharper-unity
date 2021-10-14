@@ -51,6 +51,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 
         public ISimpleSignal CacheUpdated => myCacheUpdatedGroupingEvent.Outgoing;
 
+        public bool IsKnownAssemblyDefinition(string assemblyName) => GetSourceFileForAssembly(assemblyName) != null;
+
         public AsmDefNameDeclaredElement? GetNameDeclaredElement(IPsiSourceFile sourceFile)
         {
             return myDeclaredElements.TryGetValue(sourceFile, out var declaredElement) ? declaredElement : null;

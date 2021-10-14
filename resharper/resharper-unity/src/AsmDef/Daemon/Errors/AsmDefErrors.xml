@@ -53,7 +53,7 @@
     <Behavour attributeID="SUGGESTION" overlapResolvePolicy="WARNING" />
   </Warning>
 
-  <Warning name="PreferGuidReference" configurableSeverity="PREFER_GUID_REFERENCES">
+  <Warning name="PreferGuidReference" configurableSeverity="Unity.PreferGuidReference">
     <Parameter type="IJsonNewLiteralExpression" name="literalExpression" />
     <Message value="Prefer GUID reference" />
     <Range>LiteralExpression.GetUnquotedDocumentRange()</Range>

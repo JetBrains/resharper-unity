@@ -22,18 +22,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ExternalSour
     {
         private readonly ISolution mySolution;
         private readonly AsmDefNameCache myAsmDefNameCache;
-        private readonly UnitySolutionTracker myUnitySolutionTracker;
         private readonly UnityVersion myUnityVersion;
         private readonly PackageManager myPackageManager;
         private readonly IPsiServices myPsiServices;
         private readonly ILogger myLogger;
-        private readonly Dictionary<VirtualFileSystemPath, PreProcessingDirective[]> myAssemblyNameToDirectiveCache = new();
+        private readonly Dictionary<string, PreProcessingDirective[]> myAssemblyNameToDirectiveCache = new();
         private readonly VirtualFileSystemPath myScriptAssembliesPath;
 
         public PreProcessingDirectiveCache(Lifetime lifetime,
                                            ISolution solution,
                                            AsmDefNameCache asmDefNameCache,
-                                           UnitySolutionTracker unitySolutionTracker,
                                            UnityVersion unityVersion,
                                            ChangeManager changeManager,
                                            PackageManager packageManager,
@@ -42,7 +40,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ExternalSour
         {
             mySolution = solution;
             myAsmDefNameCache = asmDefNameCache;
-            myUnitySolutionTracker = unitySolutionTracker;
             myUnityVersion = unityVersion;
             myPackageManager = packageManager;
             myPsiServices = psiServices;
@@ -58,32 +55,38 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ExternalSour
 
         public PreProcessingDirective[] GetPreProcessingDirectives(IPsiAssembly assembly)
         {
+            // Packages and modules will be compiled to Library/ScriptAssemblies. Framework code won't, and core Unity
+            // reference assemblies (e.g. UnityEngine.CoreModule.dll) aren't copied there
             var location = assembly.Location?.AssemblyPhysicalPath;
-            if (myUnitySolutionTracker.IsUnityProject.Value && location != null)
+            if (mySolution.HasUnityReference() && location != null && myScriptAssembliesPath.IsPrefixOf(location))
             {
-                return myAssemblyNameToDirectiveCache.GetOrCreateValue(location, () =>
-                {
-                    // Packages and modules will be compiled to Library/ScriptAssemblies. Framework code won't, and
-                    // core Unity reference assemblies (e.g. UnityEngine.CoreModule.dll) aren't copied there
-                    if (myScriptAssembliesPath.IsPrefixOf(location))
-                    {
-                        myLogger.Verbose("Request define symbols for {0}", location);
+                myLogger.Verbose("Request define symbols for {0}", location);
 
-                        // Fortunately, Unity seems to use the same base set of defines for all assemblies, from
-                        // packages to user code - this includes UNITY_EDITOR and the current platform defines. We can
-                        // just take the defines for Assembly-CSharp and use that for all packages.
-                        // We need to add any extra conditional defines set up in .asmdef per external assembly
-                        // We can verify all this with CompilationPipeline.GetDefinesFromAssemblyName
-                        var directives = GetBaseDefines();
-                        AddConditionalAsmdefDefines(assembly.AssemblyName.Name, directives);
-                        return directives.ToArray();
-                    }
-
-                    return EmptyArray<PreProcessingDirective>.Instance;
-                });
+                var assemblyName = assembly.AssemblyName.Name;
+                return GetPreProcessingDirectives(assemblyName);
             }
 
             return EmptyArray<PreProcessingDirective>.Instance;
+        }
+
+        public PreProcessingDirective[] GetPreProcessingDirectives(string assemblyName)
+        {
+            if (!mySolution.HasUnityReference() || !myAsmDefNameCache.IsKnownAssemblyDefinition(assemblyName))
+                return EmptyArray<PreProcessingDirective>.Instance;
+
+            myLogger.Verbose("Request define symbols for {0}", assemblyName);
+
+            return myAssemblyNameToDirectiveCache.GetOrCreateValue(assemblyName, () =>
+            {
+                // Fortunately, Unity seems to use the same base set of defines for all assemblies, from
+                // packages to user code - this includes UNITY_EDITOR and the current platform defines. We can
+                // just take the defines for Assembly-CSharp and use that for all packages.
+                // We need to add any extra conditional defines set up in .asmdef per external assembly
+                // We can verify all this with CompilationPipeline.GetDefinesFromAssemblyName
+                var directives = GetBaseDefines();
+                AddConditionalAsmdefDefines(assemblyName, directives);
+                return directives.ToArray();
+            });
         }
 
         private List<PreProcessingDirective> GetBaseDefines()
@@ -131,21 +134,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ExternalSour
                     : null;
             }
 
-            // Undocumented resource that represents the application version
-            if (resourceName == "Unity")
-            {
-                return JetSemanticVersion.TryParse(myUnityVersion.ActualVersionForSolution.Value.ToString(3),
-                    out var version)
-                    ? version
-                    : null;
-            }
-
-            return null;
+            // Undocumented resource that represents the application version (undocumented, but it's in the Editor UI)
+            return resourceName == "Unity"
+                ? new JetSemanticVersion(myUnityVersion.ActualVersionForSolution.Value)
+                : null;
         }
 
         private void OnChange(ChangeEventArgs args)
         {
-            if (!myUnitySolutionTracker.IsUnityProject.Value)
+            if (!mySolution.HasUnityReference())
                 return;
 
             var projectModelChange = args.ChangeMap.GetChange<ProjectModelChange>(mySolution);

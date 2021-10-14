@@ -10,6 +10,8 @@ using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
     public class UnityExternalFilesPsiModule : UserDataHolder, IPsiModuleOnFileSystemPaths, IResourceModule
@@ -45,11 +47,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         public string Name { get; }
         public string DisplayName => Name;
         public TargetFrameworkId TargetFrameworkId { get; }
-        public PsiLanguageType PsiLanguage => UnknownLanguage.Instance;
-        public ProjectFileType ProjectFileType => UnknownProjectFileType.Instance;
+        public PsiLanguageType PsiLanguage => UnknownLanguage.Instance!;
+        public ProjectFileType ProjectFileType => UnknownProjectFileType.Instance!;
         public IModule ContainingProjectModule => mySolution.MiscFilesProject;
         public IEnumerable<IPsiSourceFile> SourceFiles =>
             mySourceFileTrie.GetSubTreeData(VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext));
+
+        public bool ContainsFile(IPsiSourceFile sourceFile) =>
+            sourceFile is UnityExternalPsiSourceFile && sourceFile.IsValid();
 
         public bool ContainsPath(VirtualFileSystemPath path) => mySourceFileTrie.Contains(path);
 
