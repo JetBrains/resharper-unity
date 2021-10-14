@@ -338,6 +338,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 }
             }
 
+            public override void VisitConditionalTernaryExpression(IConditionalTernaryExpression conditionalTernaryExpressionParam)
+            {
+                conditionalTernaryExpressionParam.ConditionOperand?.ProcessThisAndDescendants(this);
+                InvalidateAll();
+                
+            
+                var thenBody = conditionalTernaryExpressionParam.ThenResult;
+                if (thenBody != null)
+                {
+                    thenBody.ProcessThisAndDescendants(this);
+                    InvalidateAll();
+                }
+                
+                var elseBody = conditionalTernaryExpressionParam.ElseResult;
+                if (elseBody != null)
+                {
+                    elseBody.ProcessThisAndDescendants(this);
+                    InvalidateAll();
+                }
+            }
+
             public bool InteriorShouldBeProcessed(ITreeNode element)
             {
                 switch (element)
@@ -346,6 +367,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     case IInvocationExpression _:
                     case IAssignmentExpression _:
                     case IIfStatement _:
+                    case IConditionalTernaryExpression _:
                     case ILoopStatement _:
                     case ISwitchSection _:
                         return false;
