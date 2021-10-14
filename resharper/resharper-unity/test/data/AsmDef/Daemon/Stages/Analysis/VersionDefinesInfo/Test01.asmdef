@@ -1,0 +1,20 @@
+{
+  "name": "FirstProject",
+  "versionDefines": [
+      {
+          "name": "Unity",
+          "expression": "2019.3",
+          "define": "SYMBOL_IS_FINE"
+      },
+      {
+          "name": "Unity",
+          "expression": "2035.0",
+          "define": "SYMBOL_NOT_DEFINED_WITH_MISSING_PACKAGE"
+      },
+      {
+          "name": "com.unknown.package",
+          "expression": "2035.0",
+          "define": "SYMBOL_NOT_DEFINED_WITH_VERSION_CONSTRAINT"
+      }
+  ]
+}

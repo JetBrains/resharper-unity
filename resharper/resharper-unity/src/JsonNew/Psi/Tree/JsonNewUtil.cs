@@ -44,6 +44,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree
             return jsonObject.GetFirstPropertyValue<IJsonNewLiteralExpression>(key)?.GetStringValue();
         }
 
+        public static IJsonNewMember? GetNamedMemberByValue(this IJsonNewValue? jsonValue, string key)
+        {
+            var property = JsonNewMemberNavigator.GetByValue(jsonValue);
+            return property?.Key == key ? property : null;
+        }
+
         public static IEnumerable<IJsonNewLiteralExpression> ValuesAsLiteral(this IJsonNewArray? array) =>
             (array?.ValuesEnumerable).SafeOfType<IJsonNewLiteralExpression>();
 

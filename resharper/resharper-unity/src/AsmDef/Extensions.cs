@@ -26,5 +26,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef
             var array = JsonNewArrayNavigator.GetByValue(value);
             return array.IsRootPropertyValue("defineConstraints");
         }
+
+        public static bool IsVersionDefinesObjectDefineValue(this ITreeNode? node)
+        {
+            var value = node.AsStringLiteralValue();
+            var defineProperty = value.GetNamedMemberByValue("define");
+            var versionDefineObject = JsonNewObjectNavigator.GetByMember(defineProperty);
+            var versionDefinesArray = JsonNewArrayNavigator.GetByValue(versionDefineObject);
+            return versionDefinesArray.IsRootPropertyValue("versionDefines");
+        }
     }
 }
