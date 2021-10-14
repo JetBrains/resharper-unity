@@ -150,6 +150,8 @@
 
     <checkinHandlerFactory implementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnsavedSceneCheckinHandlerFactory"/>
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnityCheckinState"/>
+
+    <rider.runWidgetSuspenderExtension implementation="com.jetbrains.rider.plugins.unity.ui.UnityRunWidgetSuspenderExtension"/>
   </extensions>
 
   <project-components>
