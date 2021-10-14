@@ -106,6 +106,9 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
         property("packagesUpdating", bool.nullable)
         map("packages", string, UnityPackage)
+        map("discoveredTechnologies", string, bool)
+        property("isTechnologyDiscoveringFinished", bool)
+
 
         // Unit testing
         property("unitTestPreference", UnitTestLaunchPreference.nullable).documentation = "Selected unit testing mode. Everything is handled by the backend, but this setting is from a frontend combobox"

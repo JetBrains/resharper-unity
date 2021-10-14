@@ -308,6 +308,7 @@
     <notificationGroup id="Unity project open" displayType="STICKY_BALLOON"/>
     <notificationGroup id="Unity connection is out of sync" displayType="BALLOON"/>
     <notificationGroup id="Unity Enable Yaml" displayType="BALLOON"/>
+    <statistics.projectUsagesCollector implementation="com.jetbrains.rider.plugins.unity.fus.UnityProjectUsageCollector" />
   </extensions>
 
   <extensions defaultExtensionNs="JavaScript">
