@@ -5,7 +5,6 @@ using JetBrains.Application.changes;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Packages;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
@@ -16,7 +15,7 @@ using JetBrains.Util;
 
 #nullable enable
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ExternalSources
+namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 {
     [SolutionComponent]
     public class PreProcessingDirectiveCache

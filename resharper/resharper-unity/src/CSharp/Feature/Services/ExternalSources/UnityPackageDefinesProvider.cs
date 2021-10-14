@@ -1,5 +1,6 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.ExternalSources.Core;
+using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
