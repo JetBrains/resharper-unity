@@ -6,6 +6,8 @@ using JetBrains.ReSharper.Feature.Services.InlayHints;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.ProjectModel;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 {
     [InlayHintContextActionProvider(typeof(AsmDefProjectFileType))]

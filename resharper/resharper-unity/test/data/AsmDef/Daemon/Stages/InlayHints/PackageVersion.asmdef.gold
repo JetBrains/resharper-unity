@@ -1,0 +1,19 @@
+﻿{
+  "name": "FirstProject",
+  "versionDefines": [
+      {
+          "name": "com.whatever",
+          "expression": "1.0.0",
+          "symbol": "WHATEVER"
+      },
+      {
+          "name": |"Unity"|(0)||(1),
+          "expression": "2019.4",
+          "symbol": "UNITY_IS_INSTALLED"
+      }
+  ]
+}
+
+---------------------------------------------------------
+(0): ReSharper Parameter Name Hint Action: AsmDefPackageVersionInlayHintContextActionHighlighting
+(1): ReSharper Parameter Name Hint: (2019.4)

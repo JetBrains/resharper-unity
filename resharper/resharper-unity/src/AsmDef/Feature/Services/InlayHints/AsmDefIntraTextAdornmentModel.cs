@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using JetBrains.Application.InlayHints;
 using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
@@ -17,20 +19,25 @@ using JetBrains.UI.RichText;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 {
-    public class AsmDefGuidReferenceIntraTextAdornmentModel : IIntraTextAdornmentDataModel
+    public class AsmDefIntraTextAdornmentModel : IIntraTextAdornmentDataModel
     {
         private readonly IAsmDefInlayHintHighlighting myHighlighting;
+        private readonly Expression<Func<UnityInlayHintSettings, InlayHintsMode>> myOption;
         private readonly ISolution mySolution;
         private readonly ISettingsStore mySettingsStore;
-        private IList<BulbMenuItem> myContextMenuItems;
+        private IList<BulbMenuItem>? myContextMenuItems;
 
-        public AsmDefGuidReferenceIntraTextAdornmentModel(IAsmDefInlayHintHighlighting highlighting,
-                                                          ISolution solution,
-                                                          ISettingsStore settingsStore)
+        public AsmDefIntraTextAdornmentModel(IAsmDefInlayHintHighlighting highlighting,
+                                             Expression<Func<UnityInlayHintSettings, InlayHintsMode>> option,
+                                             ISolution solution,
+                                             ISettingsStore settingsStore)
         {
             myHighlighting = highlighting;
+            myOption = option;
             mySolution = solution;
             mySettingsStore = settingsStore;
 
@@ -54,12 +61,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 
         public bool IsNavigable => false;
         public TextRange? SelectionRange => null;
-        public IconId IconId => null;
+        public IconId? IconId => null;
 
         private IList<BulbMenuItem> BuildContextMenuItems()
         {
             var visibilityItems = IntraTextAdornmentDataModelHelper.CreateChangeVisibilityBulbMenuItems(mySettingsStore,
-                (UnityInlayHintSettings s) => s.ShowAsmDefGuidReferenceNames, BulbMenuAnchors.SecondClassContextItems);
+                myOption, BulbMenuAnchors.SecondClassContextItems);
             return new List<BulbMenuItem>(visibilityItems)
             {
                 IntraTextAdornmentDataModelHelper.CreateTurnOffAllInlayHintsBulbMenuItem(mySettingsStore),

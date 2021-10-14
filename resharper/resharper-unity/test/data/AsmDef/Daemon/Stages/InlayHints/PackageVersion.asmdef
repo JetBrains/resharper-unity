@@ -1,0 +1,15 @@
+{
+  "name": "FirstProject",
+  "versionDefines": [
+      {
+          "name": "com.whatever",
+          "expression": "1.0.0",
+          "symbol": "WHATEVER"
+      },
+      {
+          "name": "Unity",
+          "expression": "2019.4",
+          "symbol": "UNITY_IS_INSTALLED"
+      }
+  ]
+}

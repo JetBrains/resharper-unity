@@ -11,18 +11,18 @@ using JetBrains.UI.RichText;
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 {
     // It seems that nearly all inlay hint highlightings use PARAMETER_NAME_HINT
-    [DaemonIntraTextAdornmentProvider(typeof(AsmDefGuidReferenceIntraTextAdornmentProvider))]
+    [DaemonIntraTextAdornmentProvider(typeof(AsmDefPackageVersionIntraTextAdornmentProvider))]
     [DaemonTooltipProvider(typeof(InlayHintTooltipProvider))]
     [StaticSeverityHighlighting(Severity.INFO,
         typeof(HighlightingGroupIds.IntraTextAdornments),
         AttributeId = AnalysisHighlightingAttributeIds.PARAMETER_NAME_HINT,
         OverlapResolve = OverlapResolveKind.NONE,
         ShowToolTipInStatusBar = false)]
-    public class AsmDefGuidReferenceInlayHintHighlighting : IAsmDefInlayHintHighlighting
+    public class AsmDefPackageVersionInlayHintHighlighting : IAsmDefInlayHintHighlighting
     {
         private readonly DocumentRange myDocumentRange;
 
-        public AsmDefGuidReferenceInlayHintHighlighting(DocumentOffset documentOffset, string text, InlayHintsMode mode)
+        public AsmDefPackageVersionInlayHintHighlighting(DocumentOffset documentOffset, string text, InlayHintsMode mode)
         {
             Text = text;
             Mode = mode;
@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 
         public string Text { get; }
         public InlayHintsMode Mode { get; }
-        public string ContextMenuTitle => "GUID Reference Hints";
+        public string ContextMenuTitle => "Package Version Hints";
         public bool IsValid() => myDocumentRange.IsValid();
         public DocumentRange CalculateRange() => myDocumentRange;
         public string ToolTip => string.Empty;

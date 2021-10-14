@@ -1,14 +1,14 @@
 using System;
 using JetBrains.Application.InlayHints;
-using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
-using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
             {
                 typeof(GuidReferenceInfo),
                 typeof(AsmDefGuidReferenceInlayHintHighlighting),
-                typeof(AsmDefGuidReferenceHintContextActionHighlighting)
+                typeof(AsmDefGuidReferenceInlayHintContextActionHighlighting)
             })]
     public class GuidReferenceInfoAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {
@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
                 {
                     consumer.AddHighlighting(new GuidReferenceInfo(element, declaredElement.ShortName));
 
-                    var mode = GetMode(data);
+                    var mode = GetMode(data, settings => settings.ShowAsmDefGuidReferenceNames);
                     if (mode != InlayHintsMode.Never)
                     {
                         var documentOffset = element.GetDocumentEndOffset();
@@ -48,28 +48,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
                         if (mode == InlayHintsMode.Always)
                         {
                             consumer.AddHighlighting(
-                                new AsmDefGuidReferenceHintContextActionHighlighting(element.GetHighlightingRange()));
+                                new AsmDefGuidReferenceInlayHintContextActionHighlighting(element.GetHighlightingRange()));
                         }
                     }
                 }
             }
-        }
-
-        private static InlayHintsMode GetMode(ElementProblemAnalyzerData data)
-        {
-            if (data.RunKind != ElementProblemAnalyzerRunKind.FullDaemon)
-                return InlayHintsMode.Never;
-
-            if (data.GetDaemonProcessKind() != DaemonProcessKind.VISIBLE_DOCUMENT)
-                return InlayHintsMode.Never;
-
-            // This checks the "Enable Inlay Hints in .NET languages" option. It's a stretch to call .asmdef a .net
-            // language, but it's the best overall switch we've got
-            if (!data.SettingsStore.GetValue((GeneralInlayHintsOptions s) => s.EnableInlayHints))
-                return InlayHintsMode.Never;
-
-            return data.SettingsStore.GetValue((UnityInlayHintSettings s) => s.ShowAsmDefGuidReferenceNames)
-                .EnsureDefault(data.SettingsStore);
         }
     }
 }

@@ -1,11 +1,14 @@
+using JetBrains.Application.InlayHints;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
@@ -15,7 +18,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
     // Note that problem analysers for NonUserCode will still show Severity.INFO
     [ElementProblemAnalyzer(typeof(IJsonNewLiteralExpression),
-        HighlightingTypes = new[] { typeof(UnmetVersionConstraintInfo), typeof(PackageNotInstalledInfo) })]
+        HighlightingTypes = new[]
+        {
+            typeof(UnmetVersionConstraintInfo),
+            typeof(PackageNotInstalledInfo),
+            typeof(AsmDefPackageVersionInlayHintHighlighting),
+            typeof(AsmDefPackageVersionInlayHintContextActionHighlighting)
+        })]
     public class VersionDefineInfoAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {
         private readonly PackageManager myPackageManager;
@@ -43,9 +52,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
                 return;
             }
 
-            if (!element.IsVersionDefinesObjectDefineValue())
-                return;
+            if (element.IsVersionDefinesObjectDefineValue())
+                AnalyzeDefineSymbol(element, consumer);
+            else if (element.IsVersionDefinesObjectNameValue())
+                AddNameInlayHints(element, data, consumer);
+        }
 
+        private void AnalyzeDefineSymbol(IJsonNewLiteralExpression element, IHighlightingConsumer consumer)
+        {
             var value = element.GetUnquotedText();
             if (string.IsNullOrWhiteSpace(value)) return;
 
@@ -89,6 +103,46 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 
             if (!range.IsValid(resourceVersion))
                 consumer.AddHighlighting(new UnmetVersionConstraintInfo(element, range.ToString()));
+        }
+
+        private void AddNameInlayHints(IJsonNewLiteralExpression element,
+                                       ElementProblemAnalyzerData data,
+                                       IHighlightingConsumer consumer)
+        {
+            var value = element.GetUnquotedText();
+            if (string.IsNullOrWhiteSpace(value)) return;
+
+            var packageVersionText = "";
+            var packageData = myPackageManager.GetPackageById(value);
+            if (packageData != null)
+            {
+                packageVersionText =
+                    $"({packageData.PackageDetails.DisplayName}: {packageData.PackageDetails.Version})";
+            }
+
+            if (string.IsNullOrWhiteSpace(packageVersionText) && value == "Unity")
+                packageVersionText = $"({myUnityVersion.ActualVersionForSolution.Value})";
+
+            if (string.IsNullOrWhiteSpace(packageVersionText))
+                return;
+
+            var mode = GetMode(data, settings => settings.ShowAsmDefVersionDefinePackageVersions);
+            if (mode != InlayHintsMode.Never)
+            {
+                var documentOffset = element.GetDocumentEndOffset();
+
+                // This highlight adds the inlay. It's always added but not always visible for push-to-hint
+                consumer.AddHighlighting(
+                    new AsmDefPackageVersionInlayHintHighlighting(documentOffset, packageVersionText, mode));
+
+                // This highlight adds alt+enter context actions to configure the inlay. It's separate so that
+                // we don't get alt+enter actions for an invisible push-to-hint inlay
+                if (mode == InlayHintsMode.Always)
+                {
+                    consumer.AddHighlighting(
+                        new AsmDefPackageVersionInlayHintContextActionHighlighting(element.GetHighlightingRange()));
+                }
+            }
         }
 
         private static IJsonNewObject GetVersionDefinesObject(IJsonNewValue definePropertyValue)
