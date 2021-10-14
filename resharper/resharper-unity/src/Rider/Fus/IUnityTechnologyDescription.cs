@@ -11,7 +11,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
         public IEnumerable<string> GetPossibleProjectName();
     }
 
-    [SolutionComponent]
     public class HDRPUnityTechnologyDescription : IUnityTechnologyDescription
     {
         public string Id => "HDRP";
@@ -32,7 +31,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
         }
     }
     
-    [SolutionComponent]
     public class CoreRPUnityTechnologyDescription : IUnityTechnologyDescription
     {
         public string Id => "CoreRP";
@@ -53,7 +51,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
         }
     }
 
-    [SolutionComponent]
     public class URPUnityTechnologyDescription : IUnityTechnologyDescription
     {
         public string Id => "URP";
@@ -75,7 +72,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
         
     }
 
-    [SolutionComponent]
     public class EntitiesUnityTechnologyDescription : IUnityTechnologyDescription
     {
         public string Id => "ECS";
@@ -96,7 +92,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
         }
     }
 
-    [SolutionComponent]
     public class InputSystemUnityTechnologyDescription : IUnityTechnologyDescription
     {
         public string Id => "InputSystem";
@@ -117,7 +112,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
         }
     }
     
-    [SolutionComponent]
     public class BurstUnityTechnologyDescription : IUnityTechnologyDescription
     {
         public string Id => "Burst";
@@ -138,7 +132,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
         }
     }
 
-    [SolutionComponent]
     public class OdinUnityTechnologyDescription : IUnityTechnologyDescription
     {
         public string Id => "Odin";
@@ -161,7 +154,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
         }
     }
 
-    [SolutionComponent]
     public class PeekUnityTechnologyDescription : IUnityTechnologyDescription
     {
         public string Id => "Peek";
@@ -183,7 +175,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
         }
     }
     
-    [SolutionComponent]
     public class UniRxUnityTechnologyDescription : IUnityTechnologyDescription
     {
         public string Id => "UniRx";
@@ -204,7 +195,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
         }
     }
     
-    [SolutionComponent]
     public class UniTaskUnityTechnologyDescription : IUnityTechnologyDescription
     {
         public string Id => "UniTask";

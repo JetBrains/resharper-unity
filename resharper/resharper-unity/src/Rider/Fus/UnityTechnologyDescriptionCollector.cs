@@ -26,13 +26,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
         private ViewableProperty<bool> myPackagesProcessed = new ViewableProperty<bool>(false);
 
         public UnityTechnologyDescriptionCollector(Lifetime lifetime, ISolution solution, ISolutionLoadTasksScheduler tasksScheduler, 
-            UnityReferencesTracker referencesTracker, PackageManager packageManager, IEnumerable<IUnityTechnologyDescription> descriptions,
-            FrontendBackendHost frontendBackendHost)
+            UnityReferencesTracker referencesTracker, PackageManager packageManager, FrontendBackendHost frontendBackendHost)
         {
             myLifetime = lifetime;
             myTasksScheduler = tasksScheduler;
             myPackageManager = packageManager;
-            myDescriptions = descriptions.ToList();
+            myDescriptions = new List<IUnityTechnologyDescription>()
+            {
+                new HDRPUnityTechnologyDescription(),
+                new CoreRPUnityTechnologyDescription(),
+                new URPUnityTechnologyDescription(),
+                new EntitiesUnityTechnologyDescription(),
+                new InputSystemUnityTechnologyDescription(),
+                new BurstUnityTechnologyDescription(),
+                new OdinUnityTechnologyDescription(),
+                new PeekUnityTechnologyDescription(),
+                new UniRxUnityTechnologyDescription(),
+                new UniTaskUnityTechnologyDescription(),
+            };
             
             myProjectsProcessed.Compose(lifetime, myPackagesProcessed, (a, b) => a && b).AdviseUntil(lifetime, v =>
             {
