@@ -7,7 +7,7 @@ categories: unity
 customProperties: Extension=asmdef, FileName=Assembly, ValidateFileName=True
 scopes: UnityFileTemplateSectionMarker;InUnityCSharpProject;MustBeInProjectWithUnityVersion(version=2017.3)
 parameterOrder: (NAME)
-NAME-expression: getAlphaNumericFileNameWithoutExtension()
+NAME-expression: asmDefNameMacro()
 ---
 
 # Assembly Definition File
