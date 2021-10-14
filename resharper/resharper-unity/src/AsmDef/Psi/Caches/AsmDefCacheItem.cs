@@ -53,13 +53,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
     public class AsmDefVersionDefine
     {
         // We know that expression is valid here, because this constructor is only used when deserialising
+        // We might also get a Unity product version range (if the resource name is "Unity", then we compare against
+        // the product version). We convert to a semver compatible version range.
         private AsmDefVersionDefine(string resourceName, string symbol, string expression)
-            : this(resourceName, symbol, expression, JetSemanticVersionRange.Parse(expression))
+            : this(resourceName, symbol, expression, UnitySemanticVersionRange.Parse(expression))
         {
         }
 
         private AsmDefVersionDefine(string resourceName, string symbol, string expression,
-                                    JetSemanticVersionRange versionRange)
+                                    UnitySemanticVersionRange versionRange)
         {
             ResourceName = resourceName;
             Symbol = symbol;
@@ -69,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 
         public static AsmDefVersionDefine? Create(string resourceName, string symbol, string expression)
         {
-            return JetSemanticVersionRange.TryParse(expression, out var versionRange)
+            return UnitySemanticVersionRange.TryParse(expression, out var versionRange)
                 ? new AsmDefVersionDefine(resourceName, symbol, expression, versionRange)
                 : null;
         }
@@ -77,13 +79,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         public string ResourceName { get; }
         public string Symbol { get; }
         public string Expression { get; }
-        public JetSemanticVersionRange VersionRange { get; }
+        public UnitySemanticVersionRange VersionRange { get; }
 
         public static AsmDefVersionDefine Read(UnsafeReader reader)
         {
             var resourceName = reader.ReadString()!;
             var symbol = reader.ReadString()!;
-            var expression = reader.ReadString()!;
+            var expression = reader.ReadString()!;  // Possible non-semver compatible Unity product version range
             return new AsmDefVersionDefine(resourceName, symbol, expression);
         }
 
@@ -91,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         {
             writer.Write(versionDefine.ResourceName);
             writer.Write(versionDefine.Symbol);
-            writer.Write(versionDefine.Expression);
+            writer.Write(versionDefine.Expression);// Possible non-semver compatible Unity product version range
         }
     }
 }

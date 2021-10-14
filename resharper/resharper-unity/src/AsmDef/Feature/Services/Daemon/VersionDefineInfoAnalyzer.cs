@@ -10,7 +10,6 @@ using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Util;
 
 #nullable enable
 
@@ -70,35 +69,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
             if (resourceName == null || expression == null || string.IsNullOrWhiteSpace(resourceName) || string.IsNullOrWhiteSpace(expression))
                 return;
 
-            if (!JetSemanticVersionRange.TryParse(expression, out var range))
+            if (!UnitySemanticVersionRange.TryParse(expression, out var range))
             {
                 // TODO: Add highlight for invalid expression. Only useful for user code
                 return;
             }
 
-            JetSemanticVersion resourceVersion;
+            UnitySemanticVersion resourceVersion;
 
             var packageData = myPackageManager.GetPackageById(resourceName);
             if (packageData != null)
             {
-                if (!JetSemanticVersion.TryParse(packageData.PackageDetails.Version, out resourceVersion))
+                if (!UnitySemanticVersion.TryParse(packageData.PackageDetails.Version, out resourceVersion))
                     return;
             }
             else
             {
                 if (resourceName == "Unity")
-                    resourceVersion = new JetSemanticVersion(myUnityVersion.ActualVersionForSolution.Value);
+                {
+                    var productVersion = UnityVersion.VersionToString(myUnityVersion.ActualVersionForSolution.Value);
+                    if (!UnitySemanticVersion.TryParseProductVersion(productVersion, out resourceVersion))
+                        return;
+                }
                 else
                 {
                     consumer.AddHighlighting(new PackageNotInstalledInfo(element, resourceName));
                     return;
                 }
-            }
-
-            if (packageData != null &&
-                !JetSemanticVersion.TryParse(packageData.PackageDetails.Version, out resourceVersion))
-            {
-                return;
             }
 
             if (!range.IsValid(resourceVersion))
@@ -121,7 +118,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
             }
 
             if (string.IsNullOrWhiteSpace(packageVersionText) && value == "Unity")
-                packageVersionText = $"({myUnityVersion.ActualVersionForSolution.Value})";
+            {
+                var productVersion = UnityVersion.VersionToString(myUnityVersion.ActualVersionForSolution.Value);
+                packageVersionText = $"({productVersion})";
+            }
 
             if (string.IsNullOrWhiteSpace(packageVersionText))
                 return;

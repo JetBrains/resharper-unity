@@ -8,6 +8,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Packages;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Resources.Shell;
@@ -124,20 +125,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ExternalSour
             }
         }
 
-        private JetSemanticVersion? GetVersionOfResource(string resourceName)
+        private UnitySemanticVersion? GetVersionOfResource(string resourceName)
         {
             var packageData = myPackageManager.GetPackageById(resourceName);
             if (packageData != null)
             {
-                return JetSemanticVersion.TryParse(packageData.PackageDetails.Version, out var version)
+                return UnitySemanticVersion.TryParse(packageData.PackageDetails.Version, out var version)
                     ? version
                     : null;
             }
 
             // Undocumented resource that represents the application version (undocumented, but it's in the Editor UI)
-            return resourceName == "Unity"
-                ? new JetSemanticVersion(myUnityVersion.ActualVersionForSolution.Value)
-                : null;
+            // Note that we use UnitySemanticVersion to convert the actual version string into a semver string that is
+            // compatible for comparisons, etc.
+            if (resourceName == "Unity")
+            {
+                var productVersion = UnityVersion.VersionToString(myUnityVersion.ActualVersionForSolution.Value);
+                if (UnitySemanticVersion.TryParseProductVersion(productVersion, out var version))
+                    return version;
+            }
+
+            return null;
         }
 
         private void OnChange(ChangeEventArgs args)
