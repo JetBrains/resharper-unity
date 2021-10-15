@@ -30,6 +30,14 @@
     </Group>
   </SeverityConfiguration>
 
+  <Error name="InvalidDefineConstraintExpression" staticGroup="AsmDefErrors">
+    <Parameter type="IJsonNewLiteralExpression" name="expression" />
+    <Parameter type="DocumentRange" name="range" />
+    <Message value="Invalid define constraint expression" />
+    <Range>Range</Range>
+    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
+  </Error>
+
   <Warning name="MismatchedAsmDefFilename" configurableSeverity="MISMATCHED_ASMDEF_FILENAME">
     <Parameter type="IJsonNewLiteralExpression" name="literalExpression" />
     <Message value="File name should match the name of the assembly" />

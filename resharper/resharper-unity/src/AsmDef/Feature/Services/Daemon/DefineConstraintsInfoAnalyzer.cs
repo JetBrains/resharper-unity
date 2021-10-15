@@ -7,7 +7,6 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ExternalSources;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
@@ -26,9 +25,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
         private readonly PreProcessingDirectiveCache myPreProcessingDirectiveCache;
         private readonly UnityExternalFilesPsiModule myExternalFilesPsiModule;
 
-        private static readonly Regex ourRegex = new Regex(@"(?<symbol>!?\w+)(\s*\|\|\s*(?<symbol>!?\w+))*", RegexOptions.Compiled);
-
-        // TODO: Move PPDC to asmdef folder structure. We shouldn't depend on CSharp content
         public DefineConstraintsInfoAnalyzer(PreProcessingDirectiveCache preProcessingDirectiveCache,
                                              UnityExternalFilesModuleFactory externalFilesPsiModuleFactory)
         {
@@ -59,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 
             var preProcessingDirectives = GetPreProcessingDirectives(file);
 
-            var match = ourRegex.Match(value);
+            var match = DefineSymbolUtilities.MatchDefineConstraintExpression(value);
             if (match.Success)
             {
                 var results = new List<(int index, int length)>();
@@ -81,18 +77,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
                 // The defineConstraints entries are treated as AND - all must be met or the assembly definition is not
                 // compiled. Constraints in a single entry separated by `||` are OR constraints. If some of them are
                 // unmet, highlight them as deadcode. If all are unmet, highlight the entire entry.
-                var fullDocumentRange = element.GetUnquotedDocumentRange();
+                var range = element.GetUnquotedDocumentRange();
                 if (results.Count == matchGroup.Captures.Count)
-                    consumer.AddHighlighting(new UnmetDefineConstraintInfo(element, fullDocumentRange, true));
+                    consumer.AddHighlighting(new UnmetDefineConstraintInfo(element, range, true));
                 else
                 {
                     foreach (var (index, length) in results)
                     {
-                        var startOffset = fullDocumentRange.TextRange.StartOffset + index;
+                        var startOffset = range.TextRange.StartOffset + index;
                         var endOffset = startOffset + length;
                         var textRange = new TextRange(startOffset, endOffset);
-                        var documentRange = new DocumentRange(fullDocumentRange.Document, textRange);
-                        consumer.AddHighlighting(new UnmetDefineConstraintInfo(element, documentRange, false));
+                        var expressionRange = new DocumentRange(range.Document, textRange);
+                        consumer.AddHighlighting(new UnmetDefineConstraintInfo(element, expressionRange, false));
                     }
                 }
             }
