@@ -2,25 +2,28 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Impl;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion.Settings;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion
 {
     [IntellisensePart]
-    public class ShaderLabCodeCompletionContextProvider : CodeCompletionContextProviderBase
+    public class JsonNewCodeCompletionContextProvider : CodeCompletionContextProviderBase
     {
         private readonly JsonNewIntellisenseManager myIntellisenseManager;
 
-        public ShaderLabCodeCompletionContextProvider(JsonNewIntellisenseManager manager)
+        public JsonNewCodeCompletionContextProvider(JsonNewIntellisenseManager manager)
         {
             myIntellisenseManager = manager;
         }
 
         public override bool IsApplicable(CodeCompletionContext context) => context.File is IJsonNewFile;
 
-        public override ISpecificCodeCompletionContext GetCompletionContext(CodeCompletionContext context)
+        public override ISpecificCodeCompletionContext? GetCompletionContext(CodeCompletionContext context)
         {
             if (!(context.File is IJsonNewFile file)) return null;
 
@@ -39,18 +42,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion
             if (elementToComplete == null)
                 return null;
 
-            var referenceRange = referenceToComplete?.GetTreeTextRange() ?? GetElementRange(elementToComplete);
-            var referenceDocumentRange = unterminatedContext.ToDocumentRange(referenceRange);
+            var range = referenceToComplete?.GetTreeTextRange() ?? GetElementRange(elementToComplete);
+            var documentRange = unterminatedContext.ToDocumentRange(range);
 
-            if (!referenceDocumentRange.IsValid())
+            if (!documentRange.IsValid())
                 return null;
 
-            if (!referenceDocumentRange.Contains(context.EffectiveCaretDocumentOffset))
+            if (!documentRange.Contains(context.EffectiveCaretDocumentOffset))
                 return null;
 
-            var ranges = GetTextLookupRanges(context, referenceDocumentRange);
+            var ranges = GetTextLookupRanges(context, documentRange);
             return new JsonNewCodeCompletionContext(context, ranges, unterminatedContext);
-            
         }
 
         private bool IsIntellisenseEnabled(CodeCompletionContext context)
@@ -64,6 +66,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion
             {
                 var tokenNodeType = tokenNode.GetTokenType();
                 if (tokenNodeType.IsIdentifier || tokenNodeType.IsKeyword)
+                    return tokenNode.GetTreeTextRange();
+
+                if (tokenNode.GetTokenType() == JsonNewTokenNodeTypes.DOUBLE_QUOTED_STRING)
                     return tokenNode.GetTreeTextRange();
             }
             return new TreeTextRange(element.GetTreeTextRange().EndOffset);

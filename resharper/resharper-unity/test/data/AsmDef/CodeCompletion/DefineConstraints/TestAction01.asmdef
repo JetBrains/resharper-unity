@@ -1,0 +1,7 @@
+// ${COMPLETE_ITEM:RESHARPER_UNITY_TEST_DEFINED_SYMBOL}
+{
+  "name": "TestProject",
+  "defineConstraints": [
+    "{caret}"
+  ]
+}
