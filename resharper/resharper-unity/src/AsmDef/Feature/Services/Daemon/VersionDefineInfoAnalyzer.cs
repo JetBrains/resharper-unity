@@ -75,7 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
                 return;
             }
 
-            UnitySemanticVersion resourceVersion;
+            UnitySemanticVersion? resourceVersion;
 
             var packageData = myPackageManager.GetPackageById(resourceName);
             if (packageData != null)

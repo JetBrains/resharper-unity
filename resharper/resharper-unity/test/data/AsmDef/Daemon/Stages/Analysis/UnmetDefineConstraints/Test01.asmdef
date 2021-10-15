@@ -9,13 +9,19 @@
       "!RESHARPER_UNITY_TEST_DEFINED_SYMBOL || RESHARPER_UNITY_TEST_UNDEFINED_SYMBOL",
       "RESHARPER_UNITY_TEST_DEFINED_SYMBOL || !RESHARPER_UNITY_TEST_UNDEFINED_SYMBOL",
       "!RESHARPER_UNITY_TEST_DEFINED_SYMBOL || !RESHARPER_UNITY_TEST_UNDEFINED_SYMBOL",
-      "SYMBOL_FROM_VERSION_DEFINES"
+      "SYMBOL_FROM_VERSION_DEFINES",
+      "ANY_UNITY_INSTALLED"
   ],
   "versionDefines": [
       {
           "name": "Unity",
           "expression": "5.0",
           "define": "SYMBOL_FROM_VERSION_DEFINES"
+      },
+      {
+          "name": "Unity",
+          "expression": "",
+          "define": "ANY_UNITY_INSTALLED"
       }
   ]
 }

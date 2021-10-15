@@ -1,6 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.RegularExpressions;
 using JetBrains.Util;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Utils
 {
@@ -20,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
 
         public override string ToString() => myOriginalExpression;
 
-        public static bool TryParse(string originalVersion, out UnitySemanticVersion result)
+        public static bool TryParse(string originalVersion, [MaybeNullWhen(false)] out UnitySemanticVersion result)
         {
             result = null;
 
@@ -33,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
             return false;
         }
 
-        public static bool TryParseProductVersion(string originalVersion, out UnitySemanticVersion result)
+        public static bool TryParseProductVersion(string originalVersion, [MaybeNullWhen(false)] out UnitySemanticVersion result)
         {
             result = null;
 
@@ -59,14 +62,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
             myCompatibleExpression = Regex.Replace(range.ToString(), @"(\d+\.\d+\.\d+)-([abf]\d+)", "$1$2");
         }
 
-        public bool IsValid(UnitySemanticVersion version)
-        {
-            return myRange.IsValid(version.SemanticVersion);
-        }
+        public bool IsValid(UnitySemanticVersion version) => myRange.IsValid(version.SemanticVersion);
 
         public override string ToString() => myCompatibleExpression;
 
-        public static bool TryParse(string expression, out UnitySemanticVersionRange result)
+        public static bool TryParse(string expression, [MaybeNullWhen(false)] out UnitySemanticVersionRange result)
         {
             result = null;
 
@@ -80,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
                 return true;
             }
 
-            return true;
+            return false;
         }
 
         public static UnitySemanticVersionRange Parse(string expression)

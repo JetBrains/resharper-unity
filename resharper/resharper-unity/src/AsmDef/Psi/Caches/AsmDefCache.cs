@@ -121,14 +121,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
                 var expression = versionDefine.GetFirstPropertyValueText("expression");
                 var symbol = versionDefine.GetFirstPropertyValueText("define");
 
-                // string.IsNullOrWhitespace isn't annotated...
-                if (resourceName == null || expression == null || symbol == null
-                    || string.IsNullOrWhiteSpace(resourceName)
-                    || string.IsNullOrWhiteSpace(expression)
-                    || string.IsNullOrWhiteSpace(symbol))
-                {
+                // Note that expression can be empty! This means we only care if the pacakge/resource is available
+                if (expression == null || string.IsNullOrWhiteSpace(resourceName) || string.IsNullOrWhiteSpace(symbol))
                     continue;
-                }
+
+                // string.IsNullOrWhitespace isn't annotated...
+                if (resourceName == null || symbol == null)
+                    continue;
 
                 cacheBuilder.AddVersionDefine(resourceName, symbol, expression);
             }

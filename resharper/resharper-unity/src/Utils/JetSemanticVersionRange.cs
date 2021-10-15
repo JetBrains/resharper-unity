@@ -70,9 +70,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
             return range;
         }
 
-        public static bool TryParse(string expression, [NotNullWhen(true)] out JetSemanticVersionRange? range)
+        public static bool TryParse(string expression, [MaybeNullWhen(false)] out JetSemanticVersionRange range)
         {
             range = null;
+
+            // An empty expression means match everything
+            if (string.IsNullOrEmpty(expression))
+            {
+                range = new JetSemanticVersionRange(JetSemanticVersion.Empty, null, true, true);
+                return true;
+            }
 
             if (expression.Contains(" ")) return false;
 
