@@ -30,22 +30,6 @@
     </Group>
   </SeverityConfiguration>
 
-  <Error name="UnresolvedProjectReference" staticGroup="AsmDefErrors">
-    <Parameter type="IReference" name="reference" />
-    <Message value="Unknown project reference '{0}'">
-      <Argument>Reference.GetName()</Argument>
-    </Message>
-    <Range>Reference.GetDocumentRange()</Range>
-    <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR" />
-  </Error>
-
-  <Error name="ReferencingSelf" staticGroup="AsmDefErrors">
-    <Parameter type="IReference" name="reference" />
-    <Message value="Cannot reference self" />
-    <Range>Reference.GetDocumentRange()</Range>
-    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
-  </Error>
-
   <Warning name="MismatchedAsmDefFilename" configurableSeverity="MISMATCHED_ASMDEF_FILENAME">
     <Parameter type="IJsonNewLiteralExpression" name="literalExpression" />
     <Message value="File name should match the name of the assembly" />
@@ -59,4 +43,20 @@
     <Range>LiteralExpression.GetUnquotedDocumentRange()</Range>
     <Behavour attributeID="HINT" />
   </Warning>
+
+  <Error name="ReferencingSelf" staticGroup="AsmDefErrors">
+    <Parameter type="IReference" name="reference" />
+    <Message value="Cannot reference self" />
+    <Range>Reference.GetDocumentRange()</Range>
+    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
+  </Error>
+
+  <Error name="UnresolvedProjectReference" staticGroup="AsmDefErrors">
+    <Parameter type="IReference" name="reference" />
+    <Message value="Unknown project reference '{0}'">
+      <Argument>Reference.GetName()</Argument>
+    </Message>
+    <Range>Reference.GetDocumentRange()</Range>
+    <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR" />
+  </Error>
 </Errors>
