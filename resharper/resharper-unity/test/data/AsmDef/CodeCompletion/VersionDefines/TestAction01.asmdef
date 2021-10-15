@@ -1,0 +1,9 @@
+// ${COMPLETE_ITEM:Unity}
+{
+  "name": "TestProject",
+  "versionDefines": [
+    {
+      "name": "{caret}"
+    }
+  ]
+}

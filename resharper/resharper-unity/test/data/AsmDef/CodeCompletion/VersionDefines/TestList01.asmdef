@@ -1,0 +1,8 @@
+{
+  "name": "TestProject",
+  "versionDefines": [
+    {
+      "name": "{caret}"
+    }
+  ]
+}
