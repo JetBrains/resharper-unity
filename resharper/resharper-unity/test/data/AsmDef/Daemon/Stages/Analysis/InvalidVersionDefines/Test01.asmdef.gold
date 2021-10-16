@@ -1,0 +1,38 @@
+﻿{
+  "name": "FirstProject",
+  "versionDefines": [
+      {
+          "name": "Unity",
+          "expression": "",
+          "define": "| INVALID_SYMBOL |(0)"
+      },
+      {
+          "name": "Unity",
+          "expression": "|[1.0.0|(1)",
+          "define": "|12INVALID|(2)"
+      },
+      {
+          "name": "com.unknown.package",
+          "expression": "1.0.0.0",
+          "define": "|INVALID SYMBOL|(3)"
+      },
+      {
+          "name": "com.unknown.package",
+          "expression": "[1.0.0]",
+          "define": "|INVALID || SYMBOL|(4)"
+      },
+      {
+          "name": "com.unknown.package",
+          "expression": "|[1.0.0, 1.0.3)|(5)",
+          "define": "VALID_SYMBOL"
+      }
+  ]
+}
+
+---------------------------------------------------------
+(0): ReSharper Underlined Error Highlighting: Invalid version define symbol
+(1): ReSharper Underlined Error Highlighting: Invalid version define expression
+(2): ReSharper Underlined Error Highlighting: Invalid version define symbol
+(3): ReSharper Underlined Error Highlighting: Invalid version define symbol
+(4): ReSharper Underlined Error Highlighting: Invalid version define symbol
+(5): ReSharper Underlined Error Highlighting: Invalid version define expression

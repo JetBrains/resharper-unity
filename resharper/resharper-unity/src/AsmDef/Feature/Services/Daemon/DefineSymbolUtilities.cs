@@ -9,9 +9,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
         private const string PreProcessorSymbolPattern = @"\p{L}[\p{L}\p{Mn}\p{Mc}\p{Nd}\p{Pc}\p{Cf}]*";
         private const string PreProcessorSymbolExpressionPattern = @"!?" + PreProcessorSymbolPattern;
 
+        private static readonly Regex ourVersionDefineSymbolRegex =
+            new("^" + PreProcessorSymbolPattern + "$", RegexOptions.Compiled);
         private static readonly Regex ourDefineConstraintExpressionRegex =
             new(@"^(?<symbol>" + PreProcessorSymbolExpressionPattern + @")((\s+\|\|\s+)(?<symbol>" + PreProcessorSymbolExpressionPattern + @"))*$",
                 RegexOptions.Compiled);
+
+        public static bool IsValidVersionDefineSymbol(string symbol) =>
+            ourVersionDefineSymbolRegex.IsMatch(symbol);
 
         public static bool IsValidDefineConstraintExpression(string expression) =>
             ourDefineConstraintExpressionRegex.IsMatch(expression);

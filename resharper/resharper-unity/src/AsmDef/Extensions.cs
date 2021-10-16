@@ -27,19 +27,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef
             return array.IsRootPropertyValue("defineConstraints");
         }
 
-        public static bool IsVersionDefinesObjectDefineValue(this ITreeNode? node)
-        {
-            var value = node.AsStringLiteralValue();
-            var defineProperty = value.GetNamedMemberByValue("define");
-            var versionDefineObject = JsonNewObjectNavigator.GetByMember(defineProperty);
-            var versionDefinesArray = JsonNewArrayNavigator.GetByValue(versionDefineObject);
-            return versionDefinesArray.IsRootPropertyValue("versionDefines");
-        }
+        public static bool IsVersionDefinesObjectNameValue(this ITreeNode? node) =>
+            IsVersionDefinesObjectPropertyValue(node, "name");
 
-        public static bool IsVersionDefinesObjectNameValue(this ITreeNode? node)
+        public static bool IsVersionDefinesObjectExpressionValue(this ITreeNode? node) =>
+            IsVersionDefinesObjectPropertyValue(node, "expression");
+
+        public static bool IsVersionDefinesObjectDefineValue(this ITreeNode? node) =>
+            IsVersionDefinesObjectPropertyValue(node, "define");
+
+        private static bool IsVersionDefinesObjectPropertyValue(this ITreeNode? node, string expectedPropertyKey)
         {
             var value = node.AsStringLiteralValue();
-            var defineProperty = value.GetNamedMemberByValue("name");
+            var defineProperty = value.GetNamedMemberByValue(expectedPropertyKey);
             var versionDefineObject = JsonNewObjectNavigator.GetByMember(defineProperty);
             var versionDefinesArray = JsonNewArrayNavigator.GetByValue(versionDefineObject);
             return versionDefinesArray.IsRootPropertyValue("versionDefines");

@@ -38,6 +38,21 @@
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
 
+  <Error name="InvalidVersionDefineSymbol" staticGroup="AsmDefErrors">
+    <Parameter type="IJsonNewLiteralExpression" name="expression" />
+    <Parameter type="DocumentRange" name="range" />
+    <Message value="Invalid version define symbol" />
+    <Range>Range</Range>
+    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
+  </Error>
+
+  <Error name="InvalidVersionDefineExpression" staticGroup="AsmDefErrors">
+    <Parameter type="IJsonNewLiteralExpression" name="expression" />
+    <Message value="Invalid version define expression" />
+    <Range>Expression.GetUnquotedDocumentRange()</Range>
+    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
+  </Error>
+
   <Warning name="MismatchedAsmDefFilename" configurableSeverity="MISMATCHED_ASMDEF_FILENAME">
     <Parameter type="IJsonNewLiteralExpression" name="literalExpression" />
     <Message value="File name should match the name of the assembly" />
