@@ -9,7 +9,10 @@ using JetBrains.ReSharper.Psi.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
     [ElementProblemAnalyzer(typeof(IJsonNewLiteralExpression),
-        HighlightingTypes = new[] { typeof(InvalidDefineConstraintExpressionError) })]
+        HighlightingTypes = new[]
+        {
+            typeof(InvalidVersionDefineSymbolError), typeof(InvalidVersionDefineExpressionError)
+        })]
     public class VersionDefineProblemAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {
         protected override void Analyze(IJsonNewLiteralExpression element,
