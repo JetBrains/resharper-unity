@@ -83,7 +83,8 @@
                 "properties": {
                     "name": {
                         "description": "The package or module that will provide the version to be checked in the expression",
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 1
                     },
                     "expression": {
                         "description": "The semantic version range of the chosen package or module",
