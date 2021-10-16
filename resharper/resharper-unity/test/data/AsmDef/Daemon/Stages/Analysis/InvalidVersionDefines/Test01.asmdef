@@ -1,0 +1,30 @@
+{
+  "name": "FirstProject",
+  "versionDefines": [
+      {
+          "name": "Unity",
+          "expression": "",
+          "define": " INVALID_SYMBOL "
+      },
+      {
+          "name": "Unity",
+          "expression": "[1.0.0",
+          "define": "12INVALID"
+      },
+      {
+          "name": "com.unknown.package",
+          "expression": "1.0.0.0",
+          "define": "INVALID SYMBOL"
+      },
+      {
+          "name": "com.unknown.package",
+          "expression": "[1.0.0]",
+          "define": "INVALID || SYMBOL"
+      },
+      {
+          "name": "com.unknown.package",
+          "expression": "[1.0.0, 1.0.3)",
+          "define": "VALID_SYMBOL"
+      }
+  ]
+}

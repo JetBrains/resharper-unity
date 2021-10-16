@@ -25,6 +25,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
 
             AddHeader("Assembly Definition file GUID references");
             AddVisibilityOption((UnityInlayHintSettings s) => s.ShowAsmDefGuidReferenceNames);
+
+            AddHeader("Assembly Definition file package versions");
+            AddVisibilityOption((UnityInlayHintSettings s) => s.ShowAsmDefVersionDefinePackageVersions);
         }
     }
 }

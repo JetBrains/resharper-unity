@@ -267,7 +267,7 @@
           The same shortcut is defined for another menu item
         </Description>
       </Tag>
-      
+
       <Tag externalName="UnknownAnimatorStateNameWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title>There is no animator state with the same name in the project.</Title>
         <Description>
@@ -302,7 +302,7 @@
     <Range>Argument.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
-  
+
   <Warning name="UnknownInputAxes" configurableSeverity="Unity.UnknownInputAxes">
     <Parameter type="ITreeNode" name="node" />
     <Message value="The name is not defined in the Input manager. The call is likely to fail at runtime." />
@@ -559,9 +559,6 @@
     <Parameter type="System.AttributeTargets" name="validTargets" isValid="skip" />
     <Message value="Attribute '{0}' is redundant on this declaration type. It is only used when applied to '{1}' declarations">
       <Argument>DeclaredElementPresenter.Format(CSharpLanguage.Instance, DeclaredElementPresenter.QUALIFIED_NAME_PRESENTER, AttributeType)</Argument>
-      <Argument>ValidTargets</Argument>
-    </Message>
-    <Message value="Redundant attribute when applied here. Valid targets: {0}">
       <Argument>ValidTargets</Argument>
     </Message>
     <Range>Attribute.GetHighlightingRange()</Range>

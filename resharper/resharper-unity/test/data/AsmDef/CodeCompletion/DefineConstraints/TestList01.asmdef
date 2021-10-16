@@ -1,0 +1,6 @@
+{
+  "name": "TestProject",
+  "defineConstraints": [
+    "{caret}"
+  ]
+}

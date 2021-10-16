@@ -1,55 +1,48 @@
-﻿using System;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef
 {
     public static class Extensions
     {
-        public static bool IsAsmDef(this IPsiSourceFile sourceFile)
-        {
-            return sourceFile.GetLocation().ExtensionWithDot.Equals(".asmdef", StringComparison.InvariantCultureIgnoreCase);
-        }
+        [ContractAnnotation("node:null => false")]
+        public static bool IsNamePropertyValue(this ITreeNode? node) =>
+            node.AsStringLiteralValue().IsRootPropertyValue("name");
 
         [ContractAnnotation("node:null => false")]
-        public static bool IsNameLiteral([CanBeNull] this ITreeNode node)
+        public static bool IsReferencesArrayEntry(this ITreeNode? node)
         {
-            if (node is IJsonNewLiteralExpression literal && literal.ConstantValueType == ConstantValueTypes.String)
-            {
-                var member = JsonNewMemberNavigator.GetByValue(literal);
-                var key = member?.Key;
-
-                var file = JsonNewFileNavigator.GetByValue(JsonNewObjectNavigator.GetByMember(member));
-                if (file == null)
-                    return false;
-
-                if (key == "name")
-                    return true;
-            }
-
-            return false;
+            var value = node.AsStringLiteralValue();
+            var array = JsonNewArrayNavigator.GetByValue(value);
+            return array.IsRootPropertyValue("references");
         }
 
-        [ContractAnnotation("node:null => false")]
-        public static bool IsReferenceLiteral([CanBeNull] this ITreeNode node)
+        public static bool IsDefineConstraintsArrayEntry(this ITreeNode? node)
         {
-            if (node is IJsonNewLiteralExpression literal && literal.ConstantValueType == ConstantValueTypes.String)
-            {
-                var arrayLiteral = JsonNewArrayNavigator.GetByValue(literal);
-                var member = JsonNewMemberNavigator.GetByValue(arrayLiteral);
-                var key = member?.Key;
+            var value = node.AsStringLiteralValue();
+            var array = JsonNewArrayNavigator.GetByValue(value);
+            return array.IsRootPropertyValue("defineConstraints");
+        }
 
-                var file = JsonNewFileNavigator.GetByValue(JsonNewObjectNavigator.GetByMember(member));
-                if (file == null)
-                    return false;
+        public static bool IsVersionDefinesObjectNameValue(this ITreeNode? node) =>
+            IsVersionDefinesObjectPropertyValue(node, "name");
 
-                if (key == "references")
-                    return true;
-            }
+        public static bool IsVersionDefinesObjectExpressionValue(this ITreeNode? node) =>
+            IsVersionDefinesObjectPropertyValue(node, "expression");
 
-            return false;
+        public static bool IsVersionDefinesObjectDefineValue(this ITreeNode? node) =>
+            IsVersionDefinesObjectPropertyValue(node, "define");
+
+        private static bool IsVersionDefinesObjectPropertyValue(this ITreeNode? node, string expectedPropertyKey)
+        {
+            var value = node.AsStringLiteralValue();
+            var defineProperty = value.GetNamedMemberByValue(expectedPropertyKey);
+            var versionDefineObject = JsonNewObjectNavigator.GetByMember(defineProperty);
+            var versionDefinesArray = JsonNewArrayNavigator.GetByValue(versionDefineObject);
+            return versionDefinesArray.IsRootPropertyValue("versionDefines");
         }
     }
 }

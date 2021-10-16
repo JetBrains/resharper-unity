@@ -11,6 +11,7 @@ using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.ReSharper.Psi.Files;
@@ -63,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.ContextHighlighters
             literalExpressionUnderCaret = null;
 
             var expression = psiView.GetSelectedTreeNode<IJsonNewLiteralExpression>();
-            if (expression.IsNameLiteral())
+            if (expression.IsNamePropertyValue())
             {
                 literalExpressionUnderCaret = expression;
 
@@ -71,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.ContextHighlighters
                 return new AsmDefNameDeclaredElement(expression.GetUnquotedText(), expression.GetSourceFile(), expression.GetTreeStartOffset().Offset);
             }
 
-            if (expression.IsReferenceLiteral())
+            if (expression.IsReferencesArrayEntry())
             {
                 var reference = expression.FindReference<AsmDefNameReference>();
                 if (reference != null)

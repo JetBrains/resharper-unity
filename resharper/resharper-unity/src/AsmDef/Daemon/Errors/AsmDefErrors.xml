@@ -30,19 +30,26 @@
     </Group>
   </SeverityConfiguration>
 
-  <Error name="UnresolvedProjectReference" staticGroup="AsmDefErrors">
-    <Parameter type="IReference" name="reference" />
-    <Message value="Unknown project reference '{0}'">
-      <Argument>Reference.GetName()</Argument>
-    </Message>
-    <Range>Reference.GetDocumentRange()</Range>
-    <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR" />
+  <Error name="InvalidDefineConstraintExpression" staticGroup="AsmDefErrors">
+    <Parameter type="IJsonNewLiteralExpression" name="expression" />
+    <Parameter type="DocumentRange" name="range" />
+    <Message value="Invalid define constraint expression" />
+    <Range>Range</Range>
+    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
 
-  <Error name="ReferencingSelf" staticGroup="AsmDefErrors">
-    <Parameter type="IReference" name="reference" />
-    <Message value="Cannot reference self" />
-    <Range>Reference.GetDocumentRange()</Range>
+  <Error name="InvalidVersionDefineSymbol" staticGroup="AsmDefErrors">
+    <Parameter type="IJsonNewLiteralExpression" name="expression" />
+    <Parameter type="DocumentRange" name="range" />
+    <Message value="Invalid version define symbol" />
+    <Range>Range</Range>
+    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
+  </Error>
+
+  <Error name="InvalidVersionDefineExpression" staticGroup="AsmDefErrors">
+    <Parameter type="IJsonNewLiteralExpression" name="expression" />
+    <Message value="Invalid version define expression" />
+    <Range>Expression.GetUnquotedDocumentRange()</Range>
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
 
@@ -53,10 +60,26 @@
     <Behavour attributeID="SUGGESTION" overlapResolvePolicy="WARNING" />
   </Warning>
 
-  <Warning name="PreferGuidReference" configurableSeverity="PREFER_GUID_REFERENCES">
+  <Warning name="PreferGuidReference" configurableSeverity="Unity.PreferGuidReference">
     <Parameter type="IJsonNewLiteralExpression" name="literalExpression" />
     <Message value="Prefer GUID reference" />
     <Range>LiteralExpression.GetUnquotedDocumentRange()</Range>
     <Behavour attributeID="HINT" />
   </Warning>
+
+  <Error name="ReferencingSelf" staticGroup="AsmDefErrors">
+    <Parameter type="IReference" name="reference" />
+    <Message value="Cannot reference self" />
+    <Range>Reference.GetDocumentRange()</Range>
+    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
+  </Error>
+
+  <Error name="UnresolvedProjectReference" staticGroup="AsmDefErrors">
+    <Parameter type="IReference" name="reference" />
+    <Message value="Unknown project reference '{0}'">
+      <Argument>Reference.GetName()</Argument>
+    </Message>
+    <Range>Reference.GetDocumentRange()</Range>
+    <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR" />
+  </Error>
 </Errors>

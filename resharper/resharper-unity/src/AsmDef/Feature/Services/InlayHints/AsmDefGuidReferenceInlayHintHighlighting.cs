@@ -6,6 +6,8 @@ using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
 using JetBrains.ReSharper.Feature.Services.InlayHints;
 using JetBrains.UI.RichText;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 {
     // It seems that nearly all inlay hint highlightings use PARAMETER_NAME_HINT

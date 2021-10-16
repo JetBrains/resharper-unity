@@ -35,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.ContextActio
         protected override IJsonNewLiteralExpression? TryCreateInfoFromDataProvider(IUserDataHolder cache)
         {
             var literalExpression = myDataProvider.GetSelectedTreeNode<IJsonNewLiteralExpression>();
-            if (literalExpression == null || !literalExpression.IsReferenceLiteral())
+            if (literalExpression == null || !literalExpression.IsReferencesArrayEntry())
                 return null;
 
             return literalExpression;

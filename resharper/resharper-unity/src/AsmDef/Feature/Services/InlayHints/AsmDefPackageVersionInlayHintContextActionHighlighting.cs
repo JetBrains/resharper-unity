@@ -3,6 +3,8 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
 using JetBrains.ReSharper.Feature.Services.InlayHints;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 {
     // This highlight is for the alt+enter context actions that configure the main inlay highlighting
@@ -11,14 +13,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
         AttributeId = AnalysisHighlightingAttributeIds.PARAMETER_NAME_HINT_ACTION,
         OverlapResolve = OverlapResolveKind.NONE,
         ShowToolTipInStatusBar = false)]
-    public class AsmDefGuidReferenceHintContextActionHighlighting : IAsmDefInlayHintContextActionHighlighting
+    public class AsmDefPackageVersionInlayHintContextActionHighlighting : IAsmDefInlayHintContextActionHighlighting
     {
         private readonly DocumentRange myDocumentRange;
 
-        public AsmDefGuidReferenceHintContextActionHighlighting(DocumentRange documentRange)
+        public AsmDefPackageVersionInlayHintContextActionHighlighting(DocumentRange documentRange)
         {
             myDocumentRange = documentRange;
-            BulbActionsProvider = new AsmDefGuidReferenceInlayHintBulbActionsProvider();
+            BulbActionsProvider = new AsmDefPackageVersionInlayHintBulbActionsProvider();
         }
 
         public bool IsValid() => myDocumentRange.IsValid();

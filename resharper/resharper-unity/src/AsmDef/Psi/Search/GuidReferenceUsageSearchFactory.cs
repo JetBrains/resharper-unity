@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree.Impl;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
@@ -32,10 +33,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
                 yield break;
 
             var solution = element.GetSolution();
-            var asmDefNameCache = solution.GetComponent<AsmDefNameCache>();
+            var asmDefCache = solution.GetComponent<AsmDefCache>();
             var metaFileGuidCache = solution.GetComponent<MetaFileGuidCache>();
 
-            var guid = GetGuid(element, asmDefNameCache, metaFileGuidCache);
+            var guid = GetGuid(element, asmDefCache, metaFileGuidCache);
             if (guid != null)
                 yield return guid;
         }
@@ -46,13 +47,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
                 return null;
 
             var solution = elements.First().GetSolution();
-            var asmDefNameCache = solution.GetComponent<AsmDefNameCache>();
+            var asmDefCache = solution.GetComponent<AsmDefCache>();
             var metaFileGuidCache = solution.GetComponent<MetaFileGuidCache>();
 
             var guids = new List<string>();
             foreach (var element in elements)
             {
-                var guid = GetGuid(element, asmDefNameCache, metaFileGuidCache);
+                var guid = GetGuid(element, asmDefCache, metaFileGuidCache);
                 if (guid != null)
                     guids.Add(guid);
             }
@@ -61,10 +62,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
         }
 
         [CanBeNull]
-        private static string GetGuid(IDeclaredElement element, AsmDefNameCache asmDefNameCache,
+        private static string GetGuid(IDeclaredElement element, AsmDefCache asmDefCache,
                                       MetaFileGuidCache metaFileGuidCache)
         {
-            var asmDefLocation = asmDefNameCache.GetPathFor(element.ShortName);
+            var asmDefLocation = asmDefCache.GetAsmDefLocationByAssemblyName(element.ShortName);
             if (asmDefLocation != null)
             {
                 var assetGuid = metaFileGuidCache.GetAssetGuid(asmDefLocation);

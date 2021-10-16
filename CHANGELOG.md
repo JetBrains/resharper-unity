@@ -16,6 +16,17 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 - Content of `[Tooltip]` attribute shown when hovering over a field ([#2032](https://github.com/JetBrains/resharper-unity/issues/2032), [RIDER-64323](https://youtrack.jetbrains.com/issue/RIDER-64323), [#2163](https://github.com/JetBrains/resharper-unity/pull/2163))
 - Add context action to convert XML doc to `[Tooltip]` attribute for a serialised field ([RIDER-64613](https://youtrack.jetbrains.com/issue/RIDER-64613), [#2163](https://github.com/JetBrains/resharper-unity/pull/2163))
+- Add inspections for unknown packages in `.asmdef` references ([#702](https://github.com/JetBrains/resharper-unity/issues/702), [#2179](https://github.com/JetBrains/resharper-unity/pull/2179))
+- Add ctrl+click navigation and find usages support for GUID references in `.asmdef` files ([#2179](https://github.com/JetBrains/resharper-unity/pull/2179))
+- Add inlay hint and tooltip to show assembly name for GUID references in `.asmdef` files ([#2179](https://github.com/JetBrains/resharper-unity/pull/2179))
+- Add hint to prefer GUID references in `.asmdef` files ([#2179](https://github.com/JetBrains/resharper-unity/pull/2179))
+- Add scoped quick fix and context action to convert to and from GUID references, across all files ([#2179](https://github.com/JetBrains/resharper-unity/pull/2179))
+- Add proper parsing and highlighting of preprocessor branches in package source files ([RIDER-50221](https://youtrack.jetbrains.com/issue/RIDER-50221), [#710](https://github.com/JetBrains/resharper-unity/issues/710), [#2191](https://github.com/JetBrains/resharper-unity/pull/2191))
+- Add inspection to grey out unmet define constraints in `.asmdef` files ([#2191](https://github.com/JetBrains/resharper-unity/pull/2191))
+- Add inspection to grey out undefined version define symbols in `.asmdef` files ([#2191](https://github.com/JetBrains/resharper-unity/pull/2191))
+- Add inlay hint to show version of package in conditional version defines ([#2191](https://github.com/JetBrains/resharper-unity/pull/2191))
+- Add inspection to validate define symbols and expressions and version range in `.asmdef` files ([#2191](https://github.com/JetBrains/resharper-unity/pull/2191))
+- Add code completion for define symbols and package IDs in `.asmdef` files ([#2191](https://github.com/JetBrains/resharper-unity/pull/2191))
 
 ### Changed
 
@@ -32,8 +43,12 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Fix asset indexing when asset modified by some external apps ([#2169](https://github.com/JetBrains/resharper-unity/pull/2169))
 - Fix known words listed as abbreviations ([#2170](https://github.com/JetBrains/resharper-unity/pull/2170))
 - Fix unrecognised `Conservative` tag in shader files ([RIDER-66363](https://youtrack.jetbrains.com/issue/RIDER-66363))
+- Fix false positive "repeated access of native property" message in ternary statement ([RIDER-68426](https://youtrack.jetbrains.com/issue/RIDER-68426))
+- Fix assembly name not matching filename when creating a `.asmdef` file from templates ([RIDER-68633](https://youtrack.jetbrains.com/issue/RIDER-68633))
 - Rider: Fix missing asset in Find Usages when name is serialised with single quotes ([RIDER-66837](https://youtrack.jetbrains.com/issue/RIDER-66837))
 - Rider: Fix performance issues with Unity Log tool window ([RIDER-68184](https://youtrack.jetbrains.com/issue/RIDER-68184), [#2176](https://github.com/JetBrains/resharper-unity/pull/2176))
+- Rider: Fix UnityYamlMarge integration when all conflicts are automatically resolved ([RIDER-69030](https://youtrack.jetbrains.com/issue/RIDER-69030), [#2188](https://github.com/JetBrains/resharper-unity/pull/2188))
+- Rider: Fix opening non-text files from Unity ([#2182](https://github.com/JetBrains/resharper-unity/pull/2182))
 - ReSharper: Fix asset usage updating when asset is open in VS editor ([#2169](https://github.com/JetBrains/resharper-unity/pull/2169))
 
 

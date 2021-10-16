@@ -14,10 +14,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
     {
         protected override void Analyze(IJsonNewLiteralExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            if (element.IsReferenceLiteral())
+            var sourceFile = data.SourceFile;
+            if (sourceFile != null && element.IsReferencesArrayEntry())
             {
-                var nameCache = data.Solution.GetComponent<AsmDefNameCache>();
-                var nameDeclaredElement = nameCache.GetNameDeclaredElement(data.SourceFile);
+                var cache = data.Solution.GetComponent<AsmDefCache>();
+                var nameDeclaredElement = cache.GetNameDeclaredElement(sourceFile);
                 var reference = element.FindReference<AsmDefNameReference>();
                 if (reference != null && nameDeclaredElement != null &&
                     Equals(reference.Resolve().DeclaredElement, nameDeclaredElement))

@@ -238,7 +238,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 ourLogger.Error($"Unable do VersionToString. Input version={version}", e);
             }
 
-            return $"{version.Major}.{version.Minor}.{version.Build}{type}{rev}";
+            var build = version.Build >= 0 ? $".{version.Build}" : string.Empty;
+            return $"{version.Major}.{version.Minor}{build}{type}{rev}";
         }
 
         internal static bool RequiresRiderPackage(Version version)

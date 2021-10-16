@@ -2,6 +2,8 @@ using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
 using JetBrains.TextControl.DocumentMarkup;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 {
     [SolutionComponent]
@@ -22,10 +24,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
                    highlighting.IsValid();
         }
 
-        public IIntraTextAdornmentDataModel CreateDataModel(IHighlighter highlighter)
+        public IIntraTextAdornmentDataModel? CreateDataModel(IHighlighter highlighter)
         {
             if (highlighter.UserData is AsmDefGuidReferenceInlayHintHighlighting highlighting && highlighting.IsValid())
-                return new AsmDefGuidReferenceIntraTextAdornmentModel(highlighting, mySolution, mySettingsStore);
+            {
+                return new AsmDefIntraTextAdornmentModel(highlighting, s => s.ShowAsmDefGuidReferenceNames, mySolution,
+                    mySettingsStore);
+            }
 
             return null;
         }

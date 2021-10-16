@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
             if (ResolveUtil.CheckThatAllReferencesBelongToElement<AsmDefNameReference>(oldReferences, element))
                 return oldReferences;
 
-            return element.IsReferenceLiteral()
+            return element.IsReferencesArrayEntry()
                 ? new ReferenceCollection(new AsmDefNameReference((IJsonNewLiteralExpression)element))
                 : ReferenceCollection.Empty;
         }

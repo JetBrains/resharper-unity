@@ -9,5 +9,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
     {
         [SettingsEntry(InlayHintsMode.Default, "Visibility mode of hints for GUID references in .asmdef files")]
         public InlayHintsMode ShowAsmDefGuidReferenceNames;
+
+        [SettingsEntry(InlayHintsMode.Default, "Visibility mode of hints for package versions in .asmdef files")]
+        public InlayHintsMode ShowAsmDefVersionDefinePackageVersions;
     }
 }
