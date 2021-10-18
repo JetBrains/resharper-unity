@@ -117,15 +117,20 @@ namespace JetBrains.Rider.Unity.Editor
       }
 
       var proc = new Process();
-      proc.StartInfo.FileName = myPluginSettings.OperatingSystemFamilyRider == OperatingSystemFamilyRider.MacOSX
-        ? Path.Combine(defaultApp, "Contents/MacOS/rider")
-        : defaultApp;
-      
-      proc.StartInfo.Arguments = args;
-      myLogger.Verbose("{2}{0}{2}" + " {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments, "\"");
-      proc.StartInfo.UseShellExecute = true; // avoid HandleInheritance
-      proc.Start();
+      if (myPluginSettings.OperatingSystemFamilyRider == OperatingSystemFamilyRider.MacOSX)
+      {
+        proc.StartInfo.FileName = "open";
+        proc.StartInfo.Arguments = $"-n \"{defaultApp}\" --args {args}";
+      }
+      else
+      {
+        proc.StartInfo.FileName = defaultApp;
+        proc.StartInfo.Arguments = args;
+      }
 
+      proc.StartInfo.UseShellExecute = true; // avoid HandleInheritance
+      myLogger.Verbose($"\"{proc.StartInfo.FileName}\" {proc.StartInfo.Arguments}");
+      if (!proc.Start()) return false;
       AllowSetForegroundWindow(proc.Id);
       return true;
     }
