@@ -129,8 +129,13 @@ namespace JetBrains.Rider.Unity.Editor
       }
 
       proc.StartInfo.UseShellExecute = true; // avoid HandleInheritance
-      myLogger.Verbose($"\"{proc.StartInfo.FileName}\" {proc.StartInfo.Arguments}");
-      if (!proc.Start()) return false;
+      var message = $"\"{proc.StartInfo.FileName}\" {proc.StartInfo.Arguments}";
+      myLogger.Verbose(message);
+      if (!proc.Start())
+      {
+        myLogger.Error($"Process failed to start. {message}");
+        return false;
+      }
       AllowSetForegroundWindow(proc.Id);
       return true;
     }
