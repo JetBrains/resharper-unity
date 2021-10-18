@@ -103,7 +103,7 @@ namespace JetBrains.Rider.Unity.Editor
       }
 
       var argsString = assetFilePath == "" ? "" : $" --line {line} --column {column} \"{assetFilePath}\""; // on mac empty string in quotes is causing additional solution to be opened https://github.cds.internal.unity3d.com/unity/com.unity.ide.rider/issues/21
-      var args = string.Format("{0}{1}{0}{2}", "\"", mySlnFile, argsString);
+      var args = $"\"{mySlnFile}\"{argsString}";
       return CallRider(args);
     }
 
@@ -117,15 +117,25 @@ namespace JetBrains.Rider.Unity.Editor
       }
 
       var proc = new Process();
-      proc.StartInfo.FileName = myPluginSettings.OperatingSystemFamilyRider == OperatingSystemFamilyRider.MacOSX
-        ? Path.Combine(defaultApp, "Contents/MacOS/rider")
-        : defaultApp;
-      
-      proc.StartInfo.Arguments = args;
-      myLogger.Verbose("{2}{0}{2}" + " {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments, "\"");
-      proc.StartInfo.UseShellExecute = true; // avoid HandleInheritance
-      proc.Start();
+      if (myPluginSettings.OperatingSystemFamilyRider == OperatingSystemFamilyRider.MacOSX)
+      {
+        proc.StartInfo.FileName = "open";
+        proc.StartInfo.Arguments = $"-n \"{defaultApp}\" --args {args}";
+      }
+      else
+      {
+        proc.StartInfo.FileName = defaultApp;
+        proc.StartInfo.Arguments = args;
+      }
 
+      proc.StartInfo.UseShellExecute = true; // avoid HandleInheritance
+      var message = $"\"{proc.StartInfo.FileName}\" {proc.StartInfo.Arguments}";
+      myLogger.Verbose(message);
+      if (!proc.Start())
+      {
+        myLogger.Error($"Process failed to start. {message}");
+        return false;
+      }
       AllowSetForegroundWindow(proc.Id);
       return true;
     }
