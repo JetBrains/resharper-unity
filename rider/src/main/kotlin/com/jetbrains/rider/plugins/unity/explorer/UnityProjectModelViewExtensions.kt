@@ -78,6 +78,8 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
         if (candidates.count() == 1)
             return candidates.single()
 
+        // todo: i.shakhov handle case, when folder belongs to multiple projects like in RIDER-69053
+
         return recursiveSearch(targetLocation.parent)
     }
 
