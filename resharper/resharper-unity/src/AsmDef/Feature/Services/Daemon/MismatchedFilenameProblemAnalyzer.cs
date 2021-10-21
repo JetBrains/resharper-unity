@@ -4,18 +4,21 @@ using JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.LiveTemplates;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
+#nullable  enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
     [ElementProblemAnalyzer(typeof(IJsonNewLiteralExpression),
                             HighlightingTypes = new[] { typeof(MismatchedAsmDefFilenameWarning) })]
     public class MismatchedFilenameProblemAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {
-        protected override void Analyze(IJsonNewLiteralExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+        protected override void Run(IJsonNewLiteralExpression element,
+                                    ElementProblemAnalyzerData data,
+                                    IHighlightingConsumer consumer)
         {
-            if (element.IsNamePropertyValue() && data.SourceFile != null)
+            if (element.IsNamePropertyValue())
             {
-                var assemblyName = element.GetUnquotedText();
-                var expectedFileName = assemblyName;
+                var expectedFileName = element.GetUnquotedText();
                 if (expectedFileName != AsmDefNameMacroDef.Evaluate(data.SourceFile))
                     consumer.AddHighlighting(new MismatchedAsmDefFilenameWarning(element));
             }

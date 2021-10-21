@@ -32,18 +32,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
             myExternalFilesPsiModule = externalFilesPsiModuleFactory.PsiModule.NotNull("externalFilesPsiModuleFactory.PsiModule != null")!;
         }
 
-        protected override void Analyze(IJsonNewLiteralExpression element, ElementProblemAnalyzerData data,
-                                        IHighlightingConsumer consumer)
-        {
-            // The source file must be either a project file, or a known external Unity file. Don't display anything
-            // if the user opens an arbitrary .asmdef file
-            var sourceFile = data.SourceFile;
-            if (sourceFile == null ||
-                (sourceFile.ToProjectFile() == null && !myExternalFilesPsiModule.ContainsFile(sourceFile)))
-            {
-                return;
-            }
+        public override bool ShouldRun(IFile file, ElementProblemAnalyzerData data) =>
+            base.ShouldRun(file, data) && IsProjectFileOrKnownExternalFile(data.SourceFile, myExternalFilesPsiModule);
 
+        protected override void Run(IJsonNewLiteralExpression element,
+                                    ElementProblemAnalyzerData data,
+                                    IHighlightingConsumer consumer)
+        {
             if (!element.IsDefineConstraintsArrayEntry())
                 return;
 

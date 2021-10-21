@@ -6,13 +6,17 @@ using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
     [ElementProblemAnalyzer(typeof(IJsonNewLiteralExpression),
                             HighlightingTypes = new[] { typeof(ReferencingSelfError) })]
     public class ReferencingSelfProblemAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {
-        protected override void Analyze(IJsonNewLiteralExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+        protected override void Run(IJsonNewLiteralExpression element,
+                                    ElementProblemAnalyzerData data,
+                                    IHighlightingConsumer consumer)
         {
             var sourceFile = data.SourceFile;
             if (sourceFile != null && element.IsReferencesArrayEntry())

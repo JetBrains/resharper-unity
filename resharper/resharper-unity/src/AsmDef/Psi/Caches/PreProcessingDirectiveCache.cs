@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.changes;
+using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -75,6 +76,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
                 return EmptyArray<PreProcessingDirective>.Instance;
 
             myLogger.Verbose("Request define symbols for {0}", assemblyName);
+
+            mySolution.Locks.AssertMainThread();
 
             return myAssemblyNameToDirectiveCache.GetOrCreateValue(assemblyName, () =>
             {

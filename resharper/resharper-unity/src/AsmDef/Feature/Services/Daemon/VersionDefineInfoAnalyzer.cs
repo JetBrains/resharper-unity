@@ -3,11 +3,11 @@ using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints;
+using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
@@ -39,18 +39,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
             myExternalFilesPsiModule = externalFilesPsiModuleFactory.PsiModule.NotNull("externalFilesPsiModuleFactory.PsiModule != null")!;
         }
 
-        protected override void Analyze(IJsonNewLiteralExpression element, ElementProblemAnalyzerData data,
-                                        IHighlightingConsumer consumer)
+        public override bool ShouldRun(IFile file, ElementProblemAnalyzerData data)
         {
-            // The source file must be either a project file, or a known external Unity file. Don't display anything
-            // if the user opens an arbitrary .asmdef file
-            var sourceFile = data.SourceFile;
-            if (sourceFile == null ||
-                (sourceFile.ToProjectFile() == null && !myExternalFilesPsiModule.ContainsFile(sourceFile)))
-            {
-                return;
-            }
+            return base.ShouldRun(file, data) && IsProjectFileOrKnownExternalFile(data.SourceFile, myExternalFilesPsiModule);
+        }
 
+        protected override void Run(IJsonNewLiteralExpression element,
+                                    ElementProblemAnalyzerData data,
+                                    IHighlightingConsumer consumer)
+        {
             if (element.IsVersionDefinesObjectDefineValue())
                 AnalyzeDefineSymbol(element, consumer);
             else if (element.IsVersionDefinesObjectNameValue())
@@ -126,7 +123,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
             if (string.IsNullOrWhiteSpace(packageVersionText))
                 return;
 
-            var mode = GetMode(data, settings => settings.ShowAsmDefVersionDefinePackageVersions);
+            var mode = ElementProblemAnalyzerUtils.GetInlayHintsMode(data,
+                settings => settings.ShowAsmDefVersionDefinePackageVersions);
             if (mode != InlayHintsMode.Never)
             {
                 var documentOffset = element.GetDocumentEndOffset();
