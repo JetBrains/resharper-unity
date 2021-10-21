@@ -24,6 +24,8 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
         if (items.count() == 1)
             return ProjectEntityView(project, items.single())
 
+        // todo: i.shakhov handle rename case, when folder belongs to multiple projects like in RIDER-69053
+
         return null
     }
 
@@ -77,8 +79,6 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
         val candidates = items.filter { node -> node.childrenEntities.any { it.isProjectFile() } }
         if (candidates.count() == 1)
             return candidates.single()
-
-        // todo: i.shakhov handle case, when folder belongs to multiple projects like in RIDER-69053
 
         return recursiveSearch(targetLocation.parent)
     }
