@@ -7,6 +7,8 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes = new []
@@ -17,22 +19,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         typeof(LoadSceneAmbiguousSceneNameWarning),
         typeof(LoadSceneWrongIndexWarning)
     })]
-    public class LoadSceneAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
+    public class LoadSceneAnalyzer : ProjectSettingsRelatedProblemAnalyzerBase<IInvocationExpression>
     {
-        private readonly UnityProjectSettingsCache myProjectSettingsCache;
-
         public LoadSceneAnalyzer(UnityApi unityApi, UnityProjectSettingsCache projectSettingsCache)
-            : base(unityApi)
+            : base(unityApi, projectSettingsCache)
         {
-            myProjectSettingsCache = projectSettingsCache;
         }
 
         protected override void Analyze(IInvocationExpression invocationExpression, ElementProblemAnalyzerData data,
             IHighlightingConsumer consumer)
         {
-            if (!myProjectSettingsCache.IsAvailable())
-                return;
-
             var argument = GetSceneNameArgument(invocationExpression);
             var literal = argument?.Value as ICSharpLiteralExpression;
             if (literal == null)
@@ -44,10 +40,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 if (sceneName != null)
                 {
                     // check build settings warnings
-                    if (myProjectSettingsCache.IsScenePresentedAtEditorBuildSettings(sceneName,
+                    if (ProjectSettingsCache.IsScenePresentedAtEditorBuildSettings(sceneName,
                         out var ambiguousDefinition))
                     {
-                        if (myProjectSettingsCache.IsSceneDisabledAtEditorBuildSettings(sceneName))
+                        if (ProjectSettingsCache.IsSceneDisabledAtEditorBuildSettings(sceneName))
                         {
                             consumer.AddHighlighting(new LoadSceneDisabledSceneNameWarning(argument, sceneName));
                         }
@@ -59,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     }
                     else
                     {
-                        if (myProjectSettingsCache.IsSceneExists(sceneName))
+                        if (ProjectSettingsCache.IsSceneExists(sceneName))
                         {
                             consumer.AddHighlighting(new LoadSceneUnknownSceneNameWarning(argument, sceneName));
                         } else
@@ -71,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 else if (literal.ConstantValue.IsInteger())
                 {
                     var value = (int) literal.ConstantValue.Value;
-                    if (value >= myProjectSettingsCache.SceneCount)
+                    if (value >= ProjectSettingsCache.SceneCount)
                     {
                         consumer.AddHighlighting(new LoadSceneWrongIndexWarning(argument));
                     }
@@ -95,13 +91,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             }
         }
 
-        private static ICSharpArgument GetSceneNameArgument(IInvocationExpression invocationExpression)
+        private static ICSharpArgument? GetSceneNameArgument(IInvocationExpression invocationExpression)
         {
             return invocationExpression.ArgumentList.Arguments.FirstOrDefault
                 (t => t.IsNamedArgument && t.ArgumentName?.Equals("sceneName") == true || !t.IsNamedArgument);
         }
 
-        private static string GetScenePathFromArgument(ICSharpLiteralExpression literalExpression)
+        private static string? GetScenePathFromArgument(ICSharpLiteralExpression literalExpression)
         {
             // There are 3 ways to present scene name in unity
             // Consider scene : Assets/Scenes/myScene.unity

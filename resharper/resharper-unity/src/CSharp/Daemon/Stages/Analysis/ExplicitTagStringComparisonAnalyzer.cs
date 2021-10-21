@@ -9,19 +9,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(typeof(IEqualityExpression),
         HighlightingTypes = new[] { typeof(ExplicitTagStringComparisonWarning), typeof(UnknownTagWarning) })]
-    public class ExplicitTagStringComparisonAnalyzer : UnityElementProblemAnalyzer<IEqualityExpression>
+    public class ExplicitTagStringComparisonAnalyzer : ProjectSettingsRelatedProblemAnalyzerBase<IEqualityExpression>
     {
-        private readonly UnityProjectSettingsCache myProjectSettingsCache;
-
         public ExplicitTagStringComparisonAnalyzer(UnityApi unityApi, UnityProjectSettingsCache projectSettingsCache)
-            : base(unityApi)
+            : base(unityApi, projectSettingsCache)
         {
-            myProjectSettingsCache = projectSettingsCache;
         }
 
         protected override void Analyze(IEqualityExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            if (!myProjectSettingsCache.IsAvailable() || element.LeftOperand == null || element.RightOperand == null)
+            if (element.LeftOperand == null || element.RightOperand == null)
                 return;
 
             var predefinedType = element.GetPredefinedType();
@@ -56,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         private void CheckTag(string value, ITreeNode expression, IHighlightingConsumer consumer)
         {
-            if (!myProjectSettingsCache.HasTag(value))
+            if (!ProjectSettingsCache.HasTag(value))
                 consumer.AddHighlighting(new UnknownTagWarning(expression));
         }
     }

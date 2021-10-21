@@ -18,15 +18,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Daemon
             if (data.GetDaemonProcessKind() == DaemonProcessKind.GLOBAL_WARNINGS)
                 return false;
 
+            // Note that this checks if the file is opened in a solution that has a Unity reference. It does not check
+            // that the file belongs to a valid project! This might include Misc Files!
             if (!file.GetSolution().HasUnityReference())
                 return false;
 
             if (data.SourceFile == null || !file.Language.Is<TLanguage>())
                 return false;
 
-            return IsAcceptableFile(data.SourceFile, data.File);
+            return IsAcceptableFile(data.SourceFile);
         }
 
-        protected abstract bool IsAcceptableFile(IPsiSourceFile sourceFile, IFile file);
+        protected virtual bool IsAcceptableFile(IPsiSourceFile sourceFile) => true;
     }
 }
