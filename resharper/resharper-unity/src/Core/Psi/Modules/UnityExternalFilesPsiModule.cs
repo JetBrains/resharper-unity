@@ -64,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             return file != null;
         }
 
-        public void Add(VirtualFileSystemPath path, IPsiSourceFile file, Action<FileSystemChangeDelta> processFileChange)
+        public void Add(VirtualFileSystemPath path, IPsiSourceFile file, Action<FileSystemChangeDelta>? processFileChange)
         {
             if (ContainsPath(path))
                 return;

@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
                 TimeSpan.FromMilliseconds(500));
         }
 
-        public override string Version => "4";
+        public override string Version => "5";
 
         public ISimpleSignal CacheUpdated => myCacheUpdatedGroupingEvent.Outgoing;
 
@@ -167,6 +167,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         private void AddToLocalCache(IPsiSourceFile sourceFile, AsmDefCacheItem? asmDefCacheItem)
         {
             if (asmDefCacheItem == null) return;
+
+            if (myLogger.IsWarnEnabled() && myNames.ContainsKey(asmDefCacheItem.Name))
+            {
+                myLogger.Warn("Adding duplicate assembly name '{0}' to AsmDefCache from: {1}", asmDefCacheItem.Name,
+                    sourceFile.GetPersistentID());
+                foreach (var existingSourceFile in myNames[asmDefCacheItem.Name])
+                    myLogger.Warn("  Previously defined in: {0}", existingSourceFile.GetPersistentID());
+            }
 
             myNames.Add(asmDefCacheItem.Name, sourceFile);
             if (!myDeclaredElements.ContainsKey(sourceFile))
