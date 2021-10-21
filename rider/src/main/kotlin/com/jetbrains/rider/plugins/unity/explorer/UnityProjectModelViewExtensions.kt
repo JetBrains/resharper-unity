@@ -51,8 +51,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
         val items = filterOutItemsFromNonPrimaryProjects(WorkspaceModel.getInstance(project).getProjectModelEntities(targetLocation, project))
 
         // when to stop going up
-        if (items.filter { it.isSolutionFolder() }.any()
-            || items.filter { it.isSolution() }.any()) // don't forget to check File System Explorer
+        if (items.any { it.isSolutionFolder() || it.isSolution() }) // don't forget to check File System Explorer
             return null
 
         assert(items.all { it.isProjectFolder() }) { "Only ProjectFolders are expected." }
