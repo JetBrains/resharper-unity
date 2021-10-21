@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
+import com.intellij.util.application
 import com.intellij.util.ui.UIUtil
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
@@ -19,7 +20,6 @@ import com.intellij.xdebugger.impl.DebuggerSupport
 import com.intellij.xdebugger.impl.breakpoints.XBreakpointManagerImpl
 import com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory
 import com.intellij.xdebugger.impl.ui.DebuggerUIUtil
-import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointType
 import java.awt.Point
