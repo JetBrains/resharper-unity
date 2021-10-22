@@ -11,85 +11,83 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
 {
     public sealed class LogoIcons
     {
-        #region Unity
-
-        /// <summary>
-        ///	<para>
-        ///		<para>Unity Themed Icon generated identifiers:</para>
-        ///		<para>— <see cref="Unity"></see> identifier class, for use in attributes, XAML, and generic parameters;</para>
-        ///		<para>— <see cref="Id"></see> identifier object, as a field in the identifier class, for use where an <see cref="JetBrains.UI.Icons.IconId"></see> value is expected.</para>
-        ///		<para>
-        ///			<code>
-        ///                    .:^=c}e3`
-        ///              :^+|fyzc!~:`;V!
-        ///             ;kT"-`       `2y`
-        ///        -Jhhhhc  .:^+;     ;h/
-        ///      -|X|-  :75XXXXl` `J` `eK`
-        ///    `c6z:  :z444444|` .34*  ;4c
-        ///  `L4I:``-Jwwwwwwwr``-Vww6.`'w6
-        /// rw3~````,,,,,,,,:``:6HHHHL-S4_
-        /// iAs:```-________:``^pAAAA|,4U-
-        ///  -1m}:``^emmmmmmm=``"Hmmd:`:mp
-        ///    :umJ:`.;h######(``,9#J``;#}
-        ///      "kD7:..+6DDDDD}..:U:.-4D-
-        ///        ^688887-,;*737-'-''*8J
-        ///             J8};,---------O8.
-        ///              !72bWHezc!":?Wz
-        ///                   -~+72bWNW.
-        ///</code>
-        ///		</para>
-        ///	</para>
-        ///</summary>
-        ///<remarks>
-        ///	<para>For details on Themed Icons and their use, see Remarks on the outer class.</para>
-        ///</remarks>
-        ///<example>
-        ///	<code>&lt;Image Source="{icons:ThemedIcon myres:CidivalThemedIconsThemedIcons+Unity}" /&gt;        &lt;!-- XAML --&gt;</code>
-        ///</example>
-        ///<example>
-        ///	<code>[Item(Name="Sample", Icon=typeof(CidivalThemedIconsThemedIcons.Unity))]        // C# Type attribute</code>
-        ///</example>
-        ///<example>
-        ///	<code>IconId iconid = CidivalThemedIconsThemedIcons.Unity.Id;        // IconId identifier object</code>
-        ///</example>
-        ///<example>
-        ///	<code>themediconmanager.GetIcon&lt;CidivalThemedIconsThemedIcons.Unity&gt;()        // Icon image for rendering</code>
-        ///</example>
-        [global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsAttribute()]
-        public sealed class Unity : global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
-        {
-
-            /// <inheritdoc cref="Unity">identifier class</inheritdoc>
-            public static global::JetBrains.UI.Icons.IconId Id = new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(Unity));
-
-            /// <summary>Loads the image for Themed Icon Unity theme aspect Color.</summary>
-            public global::JetBrains.Util.Icons.TiImage Load_Color()
-            {
-                return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M0,0L16,0L16,16L0,16Z' fill='#FFFFFF' opacity='0'/><linearGradient id='F1' x1='0.5' y1='0' x2='0.5' y2='1'><stop offset='0' stop-color='#226E6E'/><stop offset='1' stop-color='#12344D'/></linearGradient><path d='M15,6.338L13.372,0L12.46,0L6.686,1.613L5.919,3L4.408,3L0,7.598L0,8.402L4.408,13L5.919,13L6.686,14.387L12.46,16L13.372,16L15,9.662L15,9.278L14.293,8L15,6.722L15,6.338Z' fill='url(#F1)'/><linearGradient id='F2' x1='0.5' y1='0' x2='0.5' y2='1'><stop offset='0' stop-color='#DDFFFE'/><stop offset='1' stop-color='#B4D1E3'/></linearGradient><path d='M14,6.464L12.6,1L7.358,2.464L6.508,4L4.835,4L1,8L4.835,12L6.508,12L7.358,13.536L12.6,15L14,9.536L13.15,8ZM14,6.464M6.667,4.21L10.597999999999999,3.11L8.307,7.25L3.752,7.25ZM6.667,4.21M6.667,11.79L3.752,8.75L8.307,8.75L10.6,12.889ZM6.667,11.79M11.843,12.139L9.552,8L11.843,3.8609999999999998L12.906,8ZM11.843,12.139' fill='url(#F2)'/></g></svg>");
-            }
-
-            /// <summary>Loads the image for Themed Icon Unity theme aspect Gray.</summary>
-            public global::JetBrains.Util.Icons.TiImage Load_Gray()
-            {
-                return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M0,0L16,0L16,16L0,16Z' fill='#FFFFFF' opacity='0'/><path d='M15,6.338L13.372,0L12.46,0L6.686,1.613L5.919,3L4.408,3L0,7.598L0,8.402L4.408,13L5.919,13L6.686,14.387L12.46,16L13.372,16L15,9.662L15,9.278L14.293,8L15,6.722L15,6.338Z' fill='#F4F4F4'/><path d='M14,6.464L12.6,1L7.358,2.464L6.508,4L4.835,4L1,8L4.835,12L6.508,12L7.358,13.536L12.6,15L14,9.536L13.15,8ZM14,6.464M6.667,4.21L10.597999999999999,3.11L8.307,7.25L3.752,7.25ZM6.667,4.21M6.667,11.79L3.752,8.75L8.307,8.75L10.6,12.889ZM6.667,11.79M11.843,12.139L9.552,8L11.843,3.8609999999999998L12.906,8ZM11.843,12.139' fill='#323232'/></g></svg>");
-            }
-
-            /// <summary>Loads the image for Themed Icon Unity theme aspect GrayDark.</summary>
-            public global::JetBrains.Util.Icons.TiImage Load_GrayDark()
-            {
-                return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M0,0L16,0L16,16L0,16Z' fill='#FFFFFF' opacity='0'/><path d='M15,6.338L13.372,0L12.46,0L6.686,1.613L5.919,3L4.408,3L0,7.598L0,8.402L4.408,13L5.919,13L6.686,14.387L12.46,16L13.372,16L15,9.662L15,9.278L14.293,8L15,6.722L15,6.338Z' fill='#252525'/><path d='M14,6.464L12.6,1L7.358,2.464L6.508,4L4.835,4L1,8L4.835,12L6.508,12L7.358,13.536L12.6,15L14,9.536L13.15,8ZM14,6.464M6.667,4.21L10.597999999999999,3.11L8.307,7.25L3.752,7.25ZM6.667,4.21M6.667,11.79L3.752,8.75L8.307,8.75L10.6,12.889ZM6.667,11.79M11.843,12.139L9.552,8L11.843,3.8609999999999998L12.906,8ZM11.843,12.139' fill='#C4C4C4'/></g></svg>");
-            }
-
-            /// <summary>Returns the set of theme images for Themed Icon Unity.</summary>
-            public override global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] GetThemeImages()
-            {
-                return new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] {
-                        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("Color", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_Color)),
-                        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("Gray", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_Gray)),
-                        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("GrayDark", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_GrayDark))};
-            }
-        }
-
-        #endregion
+		#region Unity
+		/// <summary>
+		///	<para>
+		///		<para>Unity Themed Icon generated identifiers:</para>
+		///		<para>— <see cref="Unity"></see> identifier class, for use in attributes, XAML, and generic parameters;</para>
+		///		<para>— <see cref="Id"></see> identifier object, as a field in the identifier class, for use where an <see cref="JetBrains.UI.Icons.IconId"></see> value is expected.</para>
+		///		<para>
+		///			<code>
+		///             `_+Cur"`            
+		///          -;7yTyyyy)ei!-         
+		///      `_ruu+,` kkkk  :+C2?"`     
+		///   -;JEi!-     EEEE     -;vkl!-  
+		///   hh^`    `,ruhhhhj?"`    `_hh  
+		///   66      :*36666662r:      66  
+		///   99`````````-;Jz!-`````````99  
+		///   bb````9J;-````````.;7X````bb  
+		///   HH````HHHH5r````+uHHHH````HH  
+		///   AA`.^|AAAAAA````AAAAAA7~.`AA  
+		///   RR[pRRRRRRRR....RRRRRRRRdfRR  
+		///   DDDD#2+::+um....#5r,:/nmDDDD  
+		///   ~7wD2*:---------:----:=IDds~  
+		///      -+5DXT~--------~)k8ar:     
+		///         `~iODu+,:*C##F;`        
+		///             :rkWMUc:            
+		///</code>
+		///		</para>
+		///	</para>
+		///</summary>
+		///<remarks>
+		///	<para>For details on Themed Icons and their use, see Remarks on the outer class.</para>
+		///</remarks>
+		///<example>
+		///	<code>&lt;Image Source="{icons:ThemedIcon myres:BoxeranThemedIconsThemedIcons+Unity}" /&gt;        &lt;!-- XAML --&gt;</code>
+		///</example>
+		///<example>
+		///	<code>[Item(Name="Sample", Icon=typeof(BoxeranThemedIconsThemedIcons.Unity))]        // C# Type attribute</code>
+		///</example>
+		///<example>
+		///	<code>IconId iconid = BoxeranThemedIconsThemedIcons.Unity.Id;        // IconId identifier object</code>
+		///</example>
+		///<example>
+		///	<code>themediconmanager.GetIcon&lt;BoxeranThemedIconsThemedIcons.Unity&gt;()        // Icon image for rendering</code>
+		///</example>
+		[global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsAttribute()]
+		public sealed class Unity : global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
+		{
+			
+			/// <inheritdoc cref="Unity">identifier class</inheritdoc>
+			public static global::JetBrains.UI.Icons.IconId Id = new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(Unity));
+			
+			/// <summary>Loads the image for Themed Icon Unity theme aspect Color.</summary>
+			public global::JetBrains.Util.Icons.TiImage Load_Color()
+			{
+				return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><linearGradient id='F0' x1='0.5' y1='0.0101875' x2='0.5' y2='1.0046875'><stop offset='0' stop-color='#226E6E'/><stop offset='1' stop-color='#12344D'/></linearGradient><path d='M7.732,16L8.268,16L14.989,12.119L15,12.125L15,3.887L8.268,0L7.732,0L1,3.887L1,12.125L1.011,12.119L7.732,16ZM7.732,16' fill='url(#F0)'/><linearGradient id='F1' x1='0.5' y1='0' x2='0.5' y2='1'><stop offset='0' stop-color='#DDFFFE'/><stop offset='1' stop-color='#B4D1E3'/></linearGradient><path d='M14,10.376L14,4.464L9,1.577L9,3.887L11.025,5.056L8,6.839L4.975,5.056L7,3.887L7,1.577L2,4.464L2,10.376L4,9.197L4,6.803L7,8.571L7,12.113L4.975,10.944L2.995,12.11L8,15L13.005,12.11L11.025,10.944L9,12.113L9,8.571L12,6.803L12,9.197L14,10.376ZM14,10.376' fill='url(#F1)'/></g></svg>");
+			}
+			
+			/// <summary>Loads the image for Themed Icon Unity theme aspect Gray.</summary>
+			public global::JetBrains.Util.Icons.TiImage Load_Gray()
+			{
+				return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M7.732,16L8.268,16L14.989,12.119L15,12.125L15,3.887L8.268,0L7.732,0L1,3.887L1,12.125L1.011,12.119L7.732,16ZM7.732,16' fill='#F4F4F4'/><path d='M14,10.376L14,4.464L9,1.577L9,3.887L11.025,5.056L8,6.839L4.975,5.056L7,3.887L7,1.577L2,4.464L2,10.376L4,9.197L4,6.803L7,8.571L7,12.113L4.975,10.944L2.995,12.11L8,15L13.005,12.11L11.025,10.944L9,12.113L9,8.571L12,6.803L12,9.197L14,10.376ZM14,10.376' fill='#323232'/></g></svg>");
+			}
+			
+			/// <summary>Loads the image for Themed Icon Unity theme aspect GrayDark.</summary>
+			public global::JetBrains.Util.Icons.TiImage Load_GrayDark()
+			{
+				return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M7.732,16L8.268,16L14.989,12.119L15,12.125L15,3.887L8.268,0L7.732,0L1,3.887L1,12.125L1.011,12.119L7.732,16ZM7.732,16' fill='#252525'/><path d='M14,10.376L14,4.464L9,1.577L9,3.887L11.025,5.056L8,6.839L4.975,5.056L7,3.887L7,1.577L2,4.464L2,10.376L4,9.197L4,6.803L7,8.571L7,12.113L4.975,10.944L2.995,12.11L8,15L13.005,12.11L11.025,10.944L9,12.113L9,8.571L12,6.803L12,9.197L14,10.376ZM14,10.376' fill='#C4C4C4'/></g></svg>");
+			}
+			
+			/// <summary>Returns the set of theme images for Themed Icon Unity.</summary>
+			public override global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] GetThemeImages()
+			{
+				return new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] {
+						new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("Color", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_Color)),
+						new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("Gray", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_Gray)),
+						new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("GrayDark", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_GrayDark))};
+			}
+		}
+		#endregion
     }
 }
