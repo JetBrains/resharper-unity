@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
@@ -12,7 +13,6 @@ using Mono.Debugging.Client.DebuggerOptions;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Evaluation;
 using Mono.Debugging.Soft;
-using Mono.Debugging.Utils;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
 {
@@ -35,34 +35,34 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
             // Where possible, the underlying field is used, so we can still show something if property evaluation is
             // unavailable.
             // Color uses F3. Matrix4x4 uses F5. Arguably, this is enough
-            {"UnityEngine.Bounds", "Center: {m_Center}, Extents: {m_Extents}"},
-            {"UnityEngine.Plane", "(normal:{m_Normal}, distance:{m_Distance})"},
-            {"UnityEngine.Ray", "Origin: {m_Origin}, Dir: {m_Direction}"},
-            {"UnityEngine.Ray2D", "Origin: {m_Origin}, Dir: {m_Direction}"},
-            {"UnityEngine.Rect", "(x:{m_XMin}, y:{m_YMin}, width:{m_Width}, height:{m_Height})"},
-            {"UnityEngine.RectOffset", "RectOffset (l:{left} r:{right} t:{top} b:{bottom})"},
-            {"UnityEngine.Vector2", "({x}, {y})"},
-            {"UnityEngine.Vector3", "({x}, {y}, {z})"},
-            {"UnityEngine.Vector4", "({x}, {y}, {z}, {w})"},
+            { "UnityEngine.Bounds", "Center: {m_Center}, Extents: {m_Extents}" },
+            { "UnityEngine.Plane", "(normal:{m_Normal}, distance:{m_Distance})" },
+            { "UnityEngine.Ray", "Origin: {m_Origin}, Dir: {m_Direction}" },
+            { "UnityEngine.Ray2D", "Origin: {m_Origin}, Dir: {m_Direction}" },
+            { "UnityEngine.Rect", "(x:{m_XMin}, y:{m_YMin}, width:{m_Width}, height:{m_Height})" },
+            { "UnityEngine.RectOffset", "RectOffset (l:{left} r:{right} t:{top} b:{bottom})" },
+            { "UnityEngine.Vector2", "({x}, {y})" },
+            { "UnityEngine.Vector3", "({x}, {y}, {z})" },
+            { "UnityEngine.Vector4", "({x}, {y}, {z}, {w})" },
 
             // Default is ({x}, {y}, {z}, {w}) to F1 precision. Euler angles is more useful
-            {"UnityEngine.Quaternion", "eulerAngles: {eulerAngles}"},
-            {"UnityEngine.Mesh", "vertex count: {vertexCount}"},
-            {"UnityEngine.MeshFilter", "shared mesh: ({sharedMesh})"},
-            {"UnityEngine.SceneManagement.Scene", "{name} ({path})"},
+            { "UnityEngine.Quaternion", "eulerAngles: {eulerAngles}" },
+            { "UnityEngine.Mesh", "vertex count: {vertexCount}" },
+            { "UnityEngine.MeshFilter", "shared mesh: ({sharedMesh})" },
+            { "UnityEngine.SceneManagement.Scene", "{name} ({path})" },
 
             // Local values, as shown in the Inspector
             // We don't show name, as the component name is the same as GameObject name, and isn't as useful in a
             // debugger context
-            {"UnityEngine.Transform", "pos: {localPosition} rot: {localRotation} scale: {localScale}"},
+            { "UnityEngine.Transform", "pos: {localPosition} rot: {localRotation} scale: {localScale}" },
 
             // Default implementation is implemented in native code, so not 100% sure what it does, but it seems to only
             // show "Name (UnityEngine.GameObject)". Note that we override this setting in the synthetic list of game
             // objects. See GameObjectChildrenRenderer
-            {"UnityEngine.GameObject", "{name} (active: {activeInHierarchy}, layer: {layer})"},
+            { "UnityEngine.GameObject", "{name} (active: {activeInHierarchy}, layer: {layer})" },
 
             // Used by Behaviour and derived classes.
-            {"UnityEngine.Behaviour", "enabled: {enabled}, gameObject: {name}"}
+            { "UnityEngine.Behaviour", "enabled: {enabled}, gameObject: {name}" }
         };
 
         // Alternative debugger display strings for when the key is the same as the value's name, in which case, we
@@ -113,26 +113,17 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
                 // EvaluatorException. We can also get InvalidOperationException, but only if no other evaluators can
                 // handle the current context, which is unlikely
                 var display = ExpressionEvaluators.EvaluateDebuggerDisplay(valueReference.OriginatingFrame, thisObj,
-                        debuggerDisplayString, evaluationOptions, token);
-                
-                /* // todo: For: @CitizenMatt. This code was commented to fix compilation, but it has to be restored
-                 var displayString =
-                    ExpressionEvaluators.EvaluateDisplayString(valueReference.OriginatingFrame, thisObj, 
                     debuggerDisplayString, evaluationOptions, token);
 
-                 var flags = valueReference.DefaultFlags;
-                if (valueReference is CalculatedValueReferenceDecorator<TValue> reference &&
-                    !reference.AllowDefaultTypePresentation)
-                {
+                var flags = valueReference.DefaultFlags;
+                if (valueReference is CalculatedValueReferenceDecorator<TValue> { AllowDefaultTypePresentation: false })
                     flags |= ValueFlags.IsDefaultTypePresentation;
-                }
 
-                return SimplePresentation.CreateSuccess(
-                    ValuePresentationPart.Default(DisplayStringUtil.EscapeString(displayString)),
-                    flags, instanceType, displayString);
-                 */
-
-                return new AggregatedPresentation(display, options, instanceType);
+                // AggregatedPresentation will handle creating presentation parts from the list of value presentations,
+                // but doesn't allow us to set Flags to hide the type name. Create the instance of the aggregated
+                // presentation, then wrap the interface so we can override the Flags value
+                var presentation = new AggregatedPresentation(display, options, instanceType);
+                return new OverriddenFlagsValuePresentation(presentation, flags);
             }
             catch (Exception ex)
             {
@@ -150,8 +141,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
         {
             // If the (key) name of the reference is the same as its actual name, don't display the name in the value.
             // Replace with a second dictionary or whatever if we need to handle more types
-            if (valueRole.ValueReference is CalculatedValueReferenceDecorator<TValue> reference
-                && !reference.AllowNameInValue && instanceType.FullName == "UnityEngine.GameObject")
+            if (valueRole.ValueReference is CalculatedValueReferenceDecorator<TValue> { AllowNameInValue: false }
+                && instanceType.FullName == "UnityEngine.GameObject")
             {
                 userDataHolder.PutData(ourDebuggerDisplayStringKey, GameObjectDebuggerDisplayStringWithoutName);
                 return true;
@@ -163,7 +154,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
             while (current != null)
             {
                 if (myDebuggerDisplayValues.TryGetValue(current.GetGenericTypeDefinition().FullName,
-                    out var displayString))
+                        out var displayString))
                 {
                     userDataHolder.PutData(ourDebuggerDisplayStringKey, displayString);
                     return true;
@@ -173,6 +164,26 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
             }
 
             return false;
+        }
+
+        private class OverriddenFlagsValuePresentation : IValuePresentation
+        {
+            private readonly IValuePresentation myValuePresentationImplementation;
+
+            public OverriddenFlagsValuePresentation(IValuePresentation valuePresentationImplementation,
+                                                    ValueFlags flags)
+            {
+                myValuePresentationImplementation = valuePresentationImplementation;
+                Flags = flags;
+            }
+
+            public ValueFlags Flags { get; }
+
+            public ImmutableArray<ValuePresentationPart> Value => myValuePresentationImplementation.Value;
+            public string DisplayValue => myValuePresentationImplementation.DisplayValue;
+            public IMetadataTypeLite Type => myValuePresentationImplementation.Type;
+            public ValueResultKind ResultKind => myValuePresentationImplementation.ResultKind;
+            public object PrimitiveValue => myValuePresentationImplementation.PrimitiveValue;
         }
     }
 }
