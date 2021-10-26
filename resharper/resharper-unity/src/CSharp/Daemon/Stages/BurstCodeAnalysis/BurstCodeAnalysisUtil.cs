@@ -16,12 +16,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             new ClrTypeName("Unity.Collections.FixedString64"),
             new ClrTypeName("Unity.Collections.FixedString128"),
             new ClrTypeName("Unity.Collections.FixedString512"),
-            new ClrTypeName("Unity.Collections.FixedString4096")
+            new ClrTypeName("Unity.Collections.FixedString4096"),
+            new ClrTypeName("Unity.Collections.FixedString32Bytes"),
+            new ClrTypeName("Unity.Collections.FixedString64Bytes"),
+            new ClrTypeName("Unity.Collections.FixedString128Bytes"),
+            new ClrTypeName("Unity.Collections.FixedString512Bytes"),
+            new ClrTypeName("Unity.Collections.FixedString4096Bytes")
         };
         
         public const string BURST_DISPLAY_NAME = BURST_TOOLTIP;
         public const string BURST_TOOLTIP = "Burst compiled code";
 
+        /// <summary>
+        /// Type can be freely used anywhere in Burst context without satisfying any constraints
+        /// like `static readonly`, using only in Debug.log etc.
+        /// </summary>
         [ContractAnnotation("null => false")]
         public static bool IsBurstPermittedType([CanBeNull] IType type)
         {
@@ -31,16 +40,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             // this construction only to simplify debugging, just place breakpoint to appropriate switch
             switch (type)
             {
-                case IType _ when type.IsValueType():
-                case IType _ when type.IsStructType():
-                case IType _ when type.IsPredefinedNumeric():
-                case IType _ when type.IsEnumType():
-                case IType _ when type.IsVoid():
-                case IType _ when type.IsIntPtr():
-                case IType _ when type.IsUIntPtr():
-                case IType _ when type.IsPointerType():
-                case IType _ when type.IsOpenType:
-                case IType _ when IsFixedString(type):
+                case not null when type.IsValueType():
+                case not null when type.IsStructType():
+                case not null when type.IsPredefinedNumeric():
+                case not null when type.IsEnumType():
+                case not null when type.IsVoid():
+                case not null when type.IsIntPtr():
+                case not null when type.IsUIntPtr():
+                case not null when type.IsPointerType():
+                case not null when type.IsOpenType:
+                case not null when IsFixedString(type):
                     return true;
                 default:
                     return false;

@@ -3,6 +3,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.Util;
 using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.BurstCodeAnalysisUtil;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.InvocationExpression
@@ -21,10 +22,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             var argumentList = invocationExpression.ArgumentList;
 
             if (HasBurstProhibitedReturnValue(invokedMethod) ||
-                argumentList != null && HasBurstProhibitedArguments(invocationExpression.ArgumentList))
+                argumentList != null && HasBurstProhibitedArguments(argumentList))
             {
-                consumer?.AddHighlighting(
-                    new BurstFunctionSignatureContainsManagedTypesWarning(invocationExpression, invokedMethod.ShortName));
+                var name = invokedMethod.ShortName;
+
+                if (!name.IsNullOrEmpty())
+                    consumer?.AddHighlighting(
+                        new BurstFunctionSignatureContainsManagedTypesWarning(invocationExpression, name));
 
                 return BurstProblemSubAnalyzerStatus.WARNING_PLACED_STOP;
             }
