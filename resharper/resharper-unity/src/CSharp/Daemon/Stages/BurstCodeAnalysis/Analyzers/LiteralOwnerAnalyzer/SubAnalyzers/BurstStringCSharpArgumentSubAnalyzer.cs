@@ -17,19 +17,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         {
             var invocationExpression = InvocationExpressionNavigator.GetByArgument(navigated);
 
-            if (invocationExpression != null)
-            {
-                var callee = invocationExpression.Reference.Resolve().DeclaredElement as IMethod;
+            if (invocationExpression == null) return true;
+            
+            var callee = invocationExpression.Reference.Resolve().DeclaredElement as IMethod;
+            var parameterType = navigated.MatchingParameter?.Type;
 
-                if (BurstCodeAnalysisUtil.IsBurstPossibleArgumentString(navigated)
-                    && callee != null
-                    && (BurstCodeAnalysisUtil.IsDebugLog(callee) ||
-                        BurstCodeAnalysisUtil.IsStringFormat(callee)))
-                    return false;
-            }
-
-
-            return true;
+            return !BurstCodeAnalysisUtil.IsBurstPossibleArgumentString(navigated) || 
+                   callee == null || 
+                   !BurstCodeAnalysisUtil.IsDebugLog(callee) && !BurstCodeAnalysisUtil.IsStringFormat(callee) && !BurstCodeAnalysisUtil.IsFixedString(parameterType);
         }
     }
 }

@@ -11,16 +11,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent]
     public class BurstObjectMethodInvocationAnalyzer : IBurstProblemSubAnalyzer<IInvocationExpression>
     {
-        public BurstProblemSubAnalyzerStatus CheckAndAnalyze(IInvocationExpression invocationExpression, IHighlightingConsumer consumer)
+        public BurstProblemSubAnalyzerStatus CheckAndAnalyze(
+            IInvocationExpression invocationExpression, IHighlightingConsumer consumer)
         {
             var invokedMethod = invocationExpression.Reference.Resolve().DeclaredElement as IMethod;
-            
-            if (invokedMethod == null || UnityCallGraphUtil.IsQualifierOpenType(invocationExpression) )
+
+            if (invokedMethod == null || UnityCallGraphUtil.IsQualifierOpenType(invocationExpression))
                 return BurstProblemSubAnalyzerStatus.NO_WARNING_STOP;
 
             if (!IsBurstProhibitedObjectMethod(invokedMethod))
                 return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
-            
+
             consumer?.AddHighlighting(new BurstAccessingManagedMethodWarning(invocationExpression,
                 invokedMethod.ShortName, invokedMethod.GetContainingType()?.ShortName));
 
