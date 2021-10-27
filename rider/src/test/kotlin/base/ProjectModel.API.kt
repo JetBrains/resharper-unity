@@ -12,12 +12,16 @@ import com.jetbrains.rider.model.RdProjectModelDumpParams
 import com.jetbrains.rider.model.projectModelTasks
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorerFileSystemNode
+import com.jetbrains.rider.projectView.ProjectVirtualFileView
 import com.jetbrains.rider.projectView.actions.renameAction.RiderRenameItemHandler
+import com.jetbrains.rider.projectView.getOrCreateActualElement
+import com.jetbrains.rider.projectView.getProjectElementView
 import com.jetbrains.rider.projectView.moveProviders.RiderCutProvider
 import com.jetbrains.rider.projectView.moveProviders.RiderDeleteProvider
 import com.jetbrains.rider.projectView.moveProviders.RiderPasteProvider
 import com.jetbrains.rider.projectView.moveProviders.impl.ActionOrderType
 import com.jetbrains.rider.projectView.moveProviders.impl.DuplicateNameDialog
+import com.jetbrains.rider.projectView.nodes.getVirtualFile
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.test.framework.TestProjectModelContext
@@ -160,7 +164,10 @@ fun pasteItem2(project: Project, path: Array<String>, customName: String? = null
     Lifetime.using {
         DuplicateNameDialog.withCustomName(it, customName)
         if (orderType != null) {
-            RiderPasteProvider.performPaste(dataContext, orderType)
+            val element = dataContext.getProjectElementView()
+                ?: dataContext.getVirtualFile()?.let { ProjectVirtualFileView(project, it).getOrCreateActualElement() }
+                ?: return
+            RiderPasteProvider.performPaste(element, dataContext, orderType)
         }
         else {
             RiderPasteProvider.performPaste(dataContext)
