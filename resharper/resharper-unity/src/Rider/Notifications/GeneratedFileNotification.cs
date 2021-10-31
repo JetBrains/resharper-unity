@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
                 return;
 
             var fullStartupFinishedLifetimeDefinition = new LifetimeDefinition(lifetime);
-            solutionLifecycleHost.FullStartupFinished.Advise(fullStartupFinishedLifetimeDefinition.Lifetime, _ =>
+            solutionLifecycleHost.BeforeFullStartupFinished.Advise(fullStartupFinishedLifetimeDefinition.Lifetime, _ =>
             {
                 textControlHost.ViewHostTextControls(lifetime, (lt, id, host) =>
                 {
