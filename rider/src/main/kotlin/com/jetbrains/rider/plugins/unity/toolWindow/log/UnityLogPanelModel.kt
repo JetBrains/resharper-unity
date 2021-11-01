@@ -192,16 +192,15 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
         mergeSimilarItems.advise(lifetime) { queueUpdate() }
         project.solution.frontendBackendModel.consoleLogging.lastInitTime.advise(lifetime){ queueUpdate() }
         project.solution.frontendBackendModel.consoleLogging.lastPlayTime.advise(lifetime){ queueUpdate() }
-        project.messageBus.connect(toolWindow.contentManager).subscribe(
-            ToolWindowManagerListener.TOPIC,
-            createToolwindowManagerListener())
+        project.messageBus.connect(toolWindow.contentManager).subscribe(ToolWindowManagerListener.TOPIC, createToolWindowManagerListener(toolWindow.id))
     }
 
-    private fun createToolwindowManagerListener(): ToolWindowManagerListener {
+    private fun createToolWindowManagerListener(toolWindowId: String): ToolWindowManagerListener {
         return object : ToolWindowManagerListener {
-            override fun toolWindowShown(toolWindow: ToolWindow) {
-                mergingUpdateQueueAction.run()
-                super.toolWindowShown(toolWindow)
+            override fun toolWindowShown(tw: ToolWindow) {
+                if (tw.id == toolWindowId) {
+                    mergingUpdateQueueAction.run()
+                }
             }
         }
     }
