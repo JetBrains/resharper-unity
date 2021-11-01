@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity.toolWindow.log
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
+import com.intellij.openapi.wm.ex.ToolWindowManagerListener
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -191,5 +192,17 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project, toolWindow: T
         mergeSimilarItems.advise(lifetime) { queueUpdate() }
         project.solution.frontendBackendModel.consoleLogging.lastInitTime.advise(lifetime){ queueUpdate() }
         project.solution.frontendBackendModel.consoleLogging.lastPlayTime.advise(lifetime){ queueUpdate() }
+        project.messageBus.connect(toolWindow.contentManager).subscribe(
+            ToolWindowManagerListener.TOPIC,
+            createToolwindowManagerListener())
+    }
+
+    private fun createToolwindowManagerListener(): ToolWindowManagerListener {
+        return object : ToolWindowManagerListener {
+            override fun toolWindowShown(toolWindow: ToolWindow) {
+                mergingUpdateQueueAction.run()
+                super.toolWindowShown(toolWindow)
+            }
+        }
     }
 }
