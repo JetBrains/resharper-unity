@@ -7,9 +7,12 @@ using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Util;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Resources;
 using JetBrains.ReSharper.TestRunner.Abstractions.Extensions;
+using JetBrains.Text;
+using JetBrains.Util;
 
 #nullable enable
 
@@ -48,9 +51,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.CodeCompleti
             var directives = preProcessingDirectiveCache.GetPreProcessingDirectives(assemblyName);
 
             var textRange = literal.GetInnerTreeTextRange();
+            var buffer = literal.GetTextAsBuffer();
+            var caretBufferOffset = context.BasicContext.CaretTreeOffset - literal.GetTreeStartOffset();
+
+            // Update range to only modify the current define symbol - delimited by trailing space or end of string, and
+            // by leading space, start of string or the ! symbol
+            var endOfWord = buffer.IndexOf(" ", caretBufferOffset);
+            var startOfWord = buffer.LastIndexOfAny(new[] { ' ', '!' }, caretBufferOffset);
+            if (endOfWord != -1)
+                textRange = textRange.SetEndTo(textRange.StartOffset + endOfWord - 1);
+            if (startOfWord != -1)
+                textRange = textRange.SetStartTo(textRange.StartOffset + startOfWord);
+
             var replaceRange = context.UnterminatedContext.ToDocumentRange(textRange);
-            var caretOffset = context.BasicContext.CaretDocumentOffset;
-            var insertRange = replaceRange.Contains(caretOffset) ? replaceRange.SetEndTo(caretOffset) : replaceRange;
+            var caretDocumentOffset = context.BasicContext.CaretDocumentOffset;
+            var insertRange = replaceRange.Contains(caretDocumentOffset) ? replaceRange.SetEndTo(caretDocumentOffset) : replaceRange;
             var textLookupRanges = new TextLookupRanges(insertRange, replaceRange);
             var visualReplaceRangeMarker = textLookupRanges.CreateVisualReplaceRangeMarker();
 
