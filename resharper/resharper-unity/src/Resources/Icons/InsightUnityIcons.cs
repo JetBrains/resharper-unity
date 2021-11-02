@@ -78,69 +78,69 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
         #endregion
 
 
-        #region InsightUnity
-        /// <summary>
-        ///	<para>
-        ///		<para>InsightUnity Themed Icon generated identifiers:</para>
-        ///		<para>— <see cref="InsightUnity"></see> identifier class, for use in attributes, XAML, and generic parameters;</para>
-        ///		<para>— <see cref="Id"></see> identifier object, as a field in the identifier class, for use where an <see cref="JetBrains.UI.Icons.IconId"></see> value is expected.</para>
-        ///		<para>
-        ///			<code>
-        ///
-        ///
-        ///
-        ///
-        ///
-        ///
-        ///
-        ///
-        ///
-        ///
-        ///
-        ///
-        ///
-        ///
-        ///
-        ///
-        ///</code>
-        ///		</para>
-        ///	</para>
-        ///</summary>
-        ///<remarks>
-        ///	<para>For details on Themed Icons and their use, see Remarks on the outer class.</para>
-        ///</remarks>
-        ///<example>
-        ///	<code>&lt;Image Source="{icons:ThemedIcon myres:BumigydThemedIconsThemedIcons+InsightUnity}" /&gt;        &lt;!-- XAML --&gt;</code>
-        ///</example>
-        ///<example>
-        ///	<code>[Item(Name="Sample", Icon=typeof(BumigydThemedIconsThemedIcons.InsightUnity))]        // C# Type attribute</code>
-        ///</example>
-        ///<example>
-        ///	<code>IconId iconid = BumigydThemedIconsThemedIcons.InsightUnity.Id;        // IconId identifier object</code>
-        ///</example>
-        ///<example>
-        ///	<code>themediconmanager.GetIcon&lt;BumigydThemedIconsThemedIcons.InsightUnity&gt;()        // Icon image for rendering</code>
-        ///</example>
-        [global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsAttribute()]
-        public sealed class InsightUnity : global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
-        {
-
-            /// <inheritdoc cref="InsightUnity">identifier class</inheritdoc>
-            public static global::JetBrains.UI.Icons.IconId Id = new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(InsightUnity));
-
-            /// <summary>Loads the image for Themed Icon InsightUnity theme aspect Default.</summary>
-            public global::JetBrains.Util.Icons.TiImage Load_Default()
-            {
-                return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path fill-rule='evenodd' d='M11.1748,11.5469L9.2368,7.9999L11.1748,4.4529L12.0738,7.9999L11.1748,11.5469ZM11.1748,11.5469M6.7948,11.2479L4.3288,8.6429L8.1828,8.6429L10.1208,12.1909L6.7948,11.2479ZM6.7948,11.2479M6.7948,4.7519L10.1208,3.8099L8.1828,7.3579L4.3288,7.3579L6.7948,4.7519ZM6.7948,4.7519M12.9998,6.6839L11.8128,1.9999L7.3798,3.2549L6.6608,4.5709L5.2448,4.5709L1.9998,7.9999L5.2448,11.4289L6.6608,11.4289L7.3798,12.7449L11.8128,13.9999L12.9998,9.3169L12.2808,7.9999L12.9998,6.6839ZM12.9998,6.6839' fill='#9AA7B0'/></g></svg>");
-            }
-
-            /// <summary>Returns the set of theme images for Themed Icon InsightUnity.</summary>
-            public override global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] GetThemeImages()
-            {
-                return new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] {
-                        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("Default", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_Default))};
-            }
-        }
-        #endregion
+		#region InsightUnity
+		/// <summary>
+		///	<para>
+		///		<para>InsightUnity Themed Icon generated identifiers:</para>
+		///		<para>— <see cref="InsightUnity"></see> identifier class, for use in attributes, XAML, and generic parameters;</para>
+		///		<para>— <see cref="Id"></see> identifier object, as a field in the identifier class, for use where an <see cref="JetBrains.UI.Icons.IconId"></see> value is expected.</para>
+		///		<para>
+		///			<code>
+		///                                 
+		///                                 
+		///                                 
+		///                                 
+		///                                 
+		///                                 
+		///                                 
+		///                                 
+		///                                 
+		///                                 
+		///                                 
+		///                                 
+		///                                 
+		///                                 
+		///                                 
+		///                                 
+		///</code>
+		///		</para>
+		///	</para>
+		///</summary>
+		///<remarks>
+		///	<para>For details on Themed Icons and their use, see Remarks on the outer class.</para>
+		///</remarks>
+		///<example>
+		///	<code>&lt;Image Source="{icons:ThemedIcon myres:FefaxulThemedIconsThemedIcons+InsightUnity}" /&gt;        &lt;!-- XAML --&gt;</code>
+		///</example>
+		///<example>
+		///	<code>[Item(Name="Sample", Icon=typeof(FefaxulThemedIconsThemedIcons.InsightUnity))]        // C# Type attribute</code>
+		///</example>
+		///<example>
+		///	<code>IconId iconid = FefaxulThemedIconsThemedIcons.InsightUnity.Id;        // IconId identifier object</code>
+		///</example>
+		///<example>
+		///	<code>themediconmanager.GetIcon&lt;FefaxulThemedIconsThemedIcons.InsightUnity&gt;()        // Icon image for rendering</code>
+		///</example>
+		[global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsAttribute()]
+		public sealed class InsightUnity : global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
+		{
+			
+			/// <inheritdoc cref="InsightUnity">identifier class</inheritdoc>
+			public static global::JetBrains.UI.Icons.IconId Id = new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(InsightUnity));
+			
+			/// <summary>Loads the image for Themed Icon InsightUnity theme aspect Default.</summary>
+			public global::JetBrains.Util.Icons.TiImage Load_Default()
+			{
+				return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M13,9.452L13,4.732L9,2.423L9,4.732L10.214,5.433L8,6.738L5.786,5.433L7,4.732L7,2.423L3,4.732L3,9.453L5,8.274L5,6.828L7.2,8.124L7.2,10.717L5.984,10.015L4.005,11.182L8,13.488L11.995,11.181L10.016,10.015L8.8,10.717L8.8,8.124L11,6.828L11,8.274L13,9.452ZM13,9.452' fill='#9AA7B0'/></g></svg>");
+			}
+			
+			/// <summary>Returns the set of theme images for Themed Icon InsightUnity.</summary>
+			public override global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] GetThemeImages()
+			{
+				return new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] {
+						new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("Default", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_Default))};
+			}
+		}
+		#endregion
     }
 }

@@ -194,7 +194,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
             PsiModuleChange.ChangeType changeType,
             PsiModuleChangeBuilder changeBuilder)
         {
-            var extension = projectFile.Location.ExtensionWithDot;
+            var extension = VirtualFileSystemPath.TryParse(projectFile.Name, InteractionContext.SolutionContext).ExtensionWithDot;
             if (!CppProjectFileType.ALL_HLSL_EXTENSIONS.Contains(extension) &&
                 !ShaderLabProjectFileType.SHADERLAB_EXTENSION.Equals(extension))
             {

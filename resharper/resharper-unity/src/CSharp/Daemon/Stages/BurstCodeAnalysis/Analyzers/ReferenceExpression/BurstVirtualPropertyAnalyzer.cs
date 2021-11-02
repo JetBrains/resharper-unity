@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
@@ -9,42 +10,44 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.ReferenceExpression
 {
     [SolutionComponent]
-    public class BurstVariableTypeAnalyzer : IBurstProblemSubAnalyzer<IReferenceExpression>
+    public class BurstVirtualPropertyAnalyzer : IBurstProblemSubAnalyzer<IReferenceExpression>
     {
-        private static bool HasAllowingBurstAttribute(ITypeOwner typeOwner)
+        private static bool IsVirtual([NotNull] IProperty property)
         {
-            var allowingAttribute = KnownTypes.NativeSetClassTypeToNullOnScheduleAttribute;
-
-            return typeOwner is IAttributesOwner attributesOwner &&
-                   attributesOwner.HasAttributeInstance(allowingAttribute, AttributesSource.Self);
+            return property.IsVirtual || property.IsOverride || property.IsAbstract;
         }
 
-        public BurstProblemSubAnalyzerStatus CheckAndAnalyze(IReferenceExpression referenceExpression,
+        public BurstProblemSubAnalyzerStatus CheckAndAnalyze(
+            IReferenceExpression referenceExpression,
             IHighlightingConsumer consumer)
         {
             var element = referenceExpression.Reference.Resolve().DeclaredElement;
 
-            if (element is not ITypeOwner typeOwner)
+            if (element is not IProperty property)
                 return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
 
-            if (HasAllowingBurstAttribute(typeOwner))
+            if (!IsVirtual(property))
                 return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
 
-            var type = typeOwner.Type();
-            var innerType = (type as IArrayType)?.ElementType ?? type;
+            var typeElement = property.ContainingType;
 
-            if (BurstCodeAnalysisUtil.IsBurstPermittedType(innerType))
+            if (typeElement is IInterface && referenceExpression.GetExtensionQualifier()?.Type().IsValueType() == true)
                 return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
 
-            var typeElement = innerType?.GetTypeElement();
-            var name = typeElement?.ShortName;
+            var typeElementShortName = typeElement?.ShortName;
+            var name = property.ShortName;
 
             if (!name.IsNullOrEmpty())
+            {
+                if (!typeElementShortName.IsNullOrEmpty())
+                    name = typeElementShortName + "." + name;
+
                 consumer?.AddHighlighting(new BurstLoadingManagedTypeWarning(referenceExpression, name));
+            }
 
             return BurstProblemSubAnalyzerStatus.WARNING_PLACED_STOP;
         }
 
-        public int Priority => 2000;
+        public int Priority => 1000;
     }
 }

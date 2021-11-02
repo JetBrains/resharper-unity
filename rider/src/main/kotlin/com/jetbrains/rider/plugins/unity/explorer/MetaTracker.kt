@@ -13,7 +13,7 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.vfs.newvfs.events.*
 import com.intellij.util.PathUtil
-import com.jetbrains.rd.platform.util.application
+import com.intellij.util.application
 import com.jetbrains.rd.platform.util.getLogger
 import com.jetbrains.rdclient.util.idea.toIOFile
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
@@ -67,7 +67,8 @@ class MetaTracker(private val project: Project) : BulkFileListener, VfsBackendRe
                         if (!isApplicableForCreatingMeta(event)) continue
                         val metaFileName = getMetaFileName(event.childName)
                         val metaFile = event.parent.toNioPath().resolve(metaFileName)
-                        val ls = event.file?.detectedLineSeparator ?: "\n" // from what I see, Unity 2020.3 always uses "\n", but lets use same as the main file.
+                        val ls = event.file?.detectedLineSeparator
+                            ?: "\n" // from what I see, Unity 2020.3 always uses "\n", but lets use same as the main file.
                         actions.add(metaFile) {
                             createMetaFile(event.parent, metaFileName, ls)
                         }
@@ -107,8 +108,7 @@ class MetaTracker(private val project: Project) : BulkFileListener, VfsBackendRe
                         }
                     }
                 }
-            }
-            catch (t: Throwable) {
+            } catch (t: Throwable) {
                 logger.error(t)
                 continue
             }

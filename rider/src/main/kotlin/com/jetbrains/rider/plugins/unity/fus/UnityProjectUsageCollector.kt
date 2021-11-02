@@ -11,6 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.platform.util.createNestedAsyncPromise
 import com.jetbrains.rd.platform.util.lifetime
+import com.jetbrains.rd.util.lifetime.isNotAlive
 import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
@@ -36,16 +37,18 @@ class UnityProjectUsageCollector  : ProjectUsagesCollector() {
 
         UIUtil.invokeLaterIfNeeded {
             val result = mutableSetOf<MetricEvent>()
-            project.lifetime.createNested { def ->
-                val model = project.solution.frontendBackendModel
-                model.isTechnologyDiscoveringFinished.advise(def.lifetime) {
-                    if (it) {
-                        for ((id, state) in model.discoveredTechnologies) {
-                            result.add(UnityTechnology.metric(id, state))
-                        }
-                        promise.setResult(result)
-                        def.terminate()
+            if (project.lifetime.isNotAlive) {
+                return@invokeLaterIfNeeded
+            }
+            val lifetimeDef = project.lifetime.createNested()
+            val model = project.solution.frontendBackendModel
+            model.isTechnologyDiscoveringFinished.advise(lifetimeDef.lifetime) {
+                if (it) {
+                    for ((id, state) in model.discoveredTechnologies) {
+                        result.add(UnityTechnology.metric(id, state))
                     }
+                    promise.setResult(result)
+                    lifetimeDef.terminate()
                 }
             }
         }

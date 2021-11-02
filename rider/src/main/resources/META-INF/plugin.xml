@@ -110,6 +110,9 @@
     <projectModelViewExtensions implementation="com.jetbrains.rider.plugins.unity.explorer.UnityProjectModelViewExtensions"/>
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.explorer.MetaTracker" preload="true" />
 
+    <!-- Project Model -->
+    <solutionExplorerCustomization implementation="com.jetbrains.rider.plugins.unity.explorer.UnitySolutionExplorerCustomization" />
+
     <!-- Run configurations -->
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType" />
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType" />

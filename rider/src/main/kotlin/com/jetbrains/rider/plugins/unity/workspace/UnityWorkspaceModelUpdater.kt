@@ -19,6 +19,9 @@ import com.jetbrains.rider.projectView.workspace.impl.WorkspaceModelEditingFacad
 class UnityWorkspaceModelUpdater(private val project: Project) {
     init {
         application.invokeLater {
+            if (project.isDisposed)
+                return@invokeLater
+
             if (project.isUnityProject()) {
                 rebuildWorkspaceModel()
             }
