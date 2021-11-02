@@ -1,8 +1,8 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.changes;
-using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         private readonly PackageManager myPackageManager;
         private readonly IPsiServices myPsiServices;
         private readonly ILogger myLogger;
-        private readonly Dictionary<string, PreProcessingDirective[]> myAssemblyNameToDirectiveCache = new();
+        private readonly ConcurrentDictionary<string, PreProcessingDirective[]> myAssemblyNameToDirectiveCache = new();
         private readonly VirtualFileSystemPath myScriptAssembliesPath;
 
         public PreProcessingDirectiveCache(Lifetime lifetime,
@@ -77,9 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 
             myLogger.Verbose("Request define symbols for {0}", assemblyName);
 
-            mySolution.Locks.AssertMainThread();
-
-            return myAssemblyNameToDirectiveCache.GetOrCreateValue(assemblyName, () =>
+            return myAssemblyNameToDirectiveCache.GetOrAdd(assemblyName, key =>
             {
                 // Fortunately, Unity seems to use the same base set of defines for all assemblies, from
                 // packages to user code - this includes UNITY_EDITOR and the current platform defines. We can
@@ -87,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
                 // We need to add any extra conditional defines set up in .asmdef per external assembly
                 // We can verify all this with CompilationPipeline.GetDefinesFromAssemblyName
                 var directives = GetBaseDefines();
-                AddConditionalAsmdefDefines(assemblyName, directives);
+                AddConditionalAsmdefDefines(key, directives);
                 return directives.ToArray();
             });
         }
