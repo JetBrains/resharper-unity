@@ -1,3 +1,4 @@
+using System.Linq;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
@@ -7,7 +8,6 @@ using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Util;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Resources;
 using JetBrains.ReSharper.TestRunner.Abstractions.Extensions;
@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.CodeCompleti
                 return false;
 
             var preProcessingDirectiveCache = context.BasicContext.Solution.GetComponent<PreProcessingDirectiveCache>();
-            var directives = preProcessingDirectiveCache.GetPreProcessingDirectives(assemblyName);
+            var directives = preProcessingDirectiveCache.GetAllPreProcessingDirectives(assemblyName);
 
             var textRange = literal.GetInnerTreeTextRange();
             var buffer = literal.GetTextAsBuffer();
@@ -69,9 +69,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.CodeCompleti
             var textLookupRanges = new TextLookupRanges(insertRange, replaceRange);
             var visualReplaceRangeMarker = textLookupRanges.CreateVisualReplaceRangeMarker();
 
-            foreach (var directive in directives)
+            var names = directives.Directives.Select(d => d.Name)
+                .Concat(directives.InvalidDirectives.Select(d => d.Name))
+                .Distinct(IdentityFunc<string>.Instance)
+                .OrderBy(IdentityFunc<string>.Instance);
+
+            foreach (var directive in names)
             {
-                var item = new TextLookupItem(directive.Name, PsiSymbolsThemedIcons.Const.Id);
+                var item = new TextLookupItem(directive, PsiSymbolsThemedIcons.Const.Id);
                 item.InitializeRanges(textLookupRanges, context.BasicContext);
                 item.VisualReplaceRangeMarker = visualReplaceRangeMarker;
 

@@ -2,5 +2,12 @@
   "name": "TestProject",
   "defineConstraints": [
     "{caret}"
+  ],
+  "versionDefines": [
+      {
+          "name": "unused-package",
+          "expression": "1.0.0",
+          "define": "UNDEFINED_SYMBOL_FROM_VERSION_DEFINES"
+      }
   ]
 }
