@@ -23,13 +23,13 @@
 ## GoToUnityUsagesProvider activity:
   Tooltip was shown: Usages of 'Ref1' were not found.
 
-## ShowUsagesProvider activity:
+## HighlightUsagesProvider activity:
   Immediate result:
     TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test01.asmdef
     Navigation result:
       caret did not move
 
-## TestHighlightUsagesProvider activity:
+## ShowUsagesProvider activity:
   Immediate result:
     TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test01.asmdef
     Navigation result:

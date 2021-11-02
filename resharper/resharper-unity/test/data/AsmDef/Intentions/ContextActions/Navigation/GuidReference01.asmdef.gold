@@ -23,13 +23,13 @@
 ## GoToUnityUsagesProvider activity:
   Tooltip was shown: Usages of 'SecondProject' were not found.
 
-## ShowUsagesProvider activity:
+## HighlightUsagesProvider activity:
   Immediate result:
     TO: [O] "|guid:7d9f6c8edad14e1593fde9cc75764047|" RANGE: (54,91) @ GuidReference01.asmdef
     Navigation result:
       caret did not move
 
-## TestHighlightUsagesProvider activity:
+## ShowUsagesProvider activity:
   Immediate result:
     TO: [O] "|guid:7d9f6c8edad14e1593fde9cc75764047|" RANGE: (54,91) @ GuidReference01.asmdef
     Navigation result:

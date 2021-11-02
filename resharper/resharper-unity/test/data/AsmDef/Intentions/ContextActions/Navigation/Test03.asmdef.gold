@@ -20,6 +20,12 @@
 ## GoToUnityUsagesProvider activity:
   Tooltip was shown: Usages of 'Ref1' were not found.
 
+## HighlightUsagesProvider activity:
+  Immediate result:
+    TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test03.asmdef
+    Navigation result:
+      caret did not move
+
 ## ShowUsagesProvider activity:
   Async context menu shown `Usages of 'Ref1'`:
     TO: [O] "references": [ "|Ref1|" ] RANGE: (39,43) @ Ref2.asmdef
@@ -44,12 +50,6 @@
       text: Test03.asmdef      <font color="DarkRed">"references": [ "**Ref1**" ]</font><font color="HotTrack"> (3)</font>
       tail: <font color="GrayText">in <TestProject></font>
       tooltip: "references": [ "**Ref1**" ]
-    Navigation result:
-      caret did not move
-
-## TestHighlightUsagesProvider activity:
-  Immediate result:
-    TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test03.asmdef
     Navigation result:
       caret did not move
 
