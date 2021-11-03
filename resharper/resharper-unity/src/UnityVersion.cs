@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -247,11 +248,18 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return version >= new Version(2019,2);
         }
 
+        private static ConcurrentDictionary<VirtualFileSystemPath, Version> myUnityPathToVersion = new ConcurrentDictionary<VirtualFileSystemPath, Version>();
+
         public static Version GetVersionByAppPath(VirtualFileSystemPath appPath)
         {
             if (appPath == null || appPath.Exists == FileSystemPath.Existence.Missing)
                 return null;
 
+            return myUnityPathToVersion.GetOrAdd(appPath, p => GetVersionByAppPathInternal(p));
+        }
+
+        private static Version GetVersionByAppPathInternal(VirtualFileSystemPath appPath) 
+        {
             Version version = null;
             ourLogger.CatchWarn(() => // RIDER-23674
             {
