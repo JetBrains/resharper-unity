@@ -261,9 +261,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
                         ourLogger.CatchWarn(() =>
                         {
-                            version = new Version(
-                                new Version(FileVersionInfo.GetVersionInfo(appPath.FullPath).FileVersion)
-                                    .ToString(3));
+                            var fileVersion = FileVersionInfo.GetVersionInfo(appPath.FullPath).FileVersion;
+                            if (!string.IsNullOrEmpty(fileVersion)) 
+                                version = Version.Parse(Version.Parse(fileVersion).ToString(3));
                         });
 
                         var resource = new VersionResource();
