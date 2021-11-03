@@ -9,21 +9,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     {
         typeof(UnknownLayerWarning)
     })]
-    public class LayerMaskAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
+    public class LayerMaskAnalyzer : ProjectSettingsRelatedProblemAnalyzerBase<IInvocationExpression>
     {
-        private readonly UnityProjectSettingsCache myProjectSettingsCache;
-
         public LayerMaskAnalyzer(UnityApi unityApi, UnityProjectSettingsCache projectSettingsCache)
-            : base(unityApi)
+            : base(unityApi, projectSettingsCache)
         {
-            myProjectSettingsCache = projectSettingsCache;
         }
 
         protected override void Analyze(IInvocationExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            if (!myProjectSettingsCache.IsAvailable())
-                return;
-
             if (element.IsLayerMaskGetMaskMethod() || element.IsLayerMaskNameToLayerMethod())
             {
                 foreach (var argument in element.ArgumentList.Arguments)
@@ -32,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     if (literal == null)
                         return;
 
-                    if (myProjectSettingsCache != null && !myProjectSettingsCache.HasLayer(literal))
+                    if (!ProjectSettingsCache.HasLayer(literal))
                         consumer.AddHighlighting(new UnknownLayerWarning(argument));
                 }
             }

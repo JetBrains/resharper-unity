@@ -19,6 +19,7 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
 
@@ -474,26 +475,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             myLocks.ExecuteOrQueue(Lifetime.Eternal, "UnityExternalFilesModuleProcessor::OnWatchedDirectoryChange",
                 () =>
                 {
-                    var builder = new PsiModuleChangeBuilder();
-                    ProcessFileSystemChangeDelta(delta, builder, isDirectoryUserEditable);
-                    FlushChanges(builder);
+                    using (ReadLockCookie.Create())
+                    {
+                        var builder = new PsiModuleChangeBuilder();
+                        ProcessFileSystemChangeDelta(delta, builder, isDirectoryUserEditable);
+                        FlushChanges(builder);
+                    }
                 });
         }
 
         private void ProcessFileSystemChangeDelta(FileSystemChangeDelta delta, PsiModuleChangeBuilder builder,
                                                   bool isDirectoryUserEditable)
         {
+            // For project model access
+            myLocks.AssertReadAccessAllowed();
+
             var module = myModuleFactory.PsiModule;
             if (module == null)
                 return;
 
+            // Note that we watch for changes in all folders in a Unity solution - Assets and packages, wherever they
+            // are - Packages, Library/PackageCache, file:, etc. Any package folder might contain projects, even read
+            // only packages, if project generation is enabled. Therefore any file might be in a project. Check when
+            // adding, but we don't need to for update and remove as they will only work on known files.
             switch (delta.ChangeType)
             {
                 // We can get ADDED for a file we already know about if an app saves the file by saving to a temp file
                 // first. We don't get a DELETED first, surprisingly. Treat this scenario like CHANGED
                 case FileSystemChangeType.ADDED:
-                    if (IsIndexedExternalFile(delta.NewPath))
+                    if (IsIndexedExternalFile(delta.NewPath) &&
+                        !mySolution.FindProjectItemsByLocation(delta.NewPath).Any())
+                    {
                         AddOrUpdateExternalPsiSourceFile(builder, delta.NewPath, isDirectoryUserEditable);
+                    }
                     break;
 
                 case FileSystemChangeType.DELETED:

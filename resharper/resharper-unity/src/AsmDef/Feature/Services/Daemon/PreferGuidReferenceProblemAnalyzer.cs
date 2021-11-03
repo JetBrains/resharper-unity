@@ -7,14 +7,17 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
     [ElementProblemAnalyzer(typeof(IJsonNewLiteralExpression),
         HighlightingTypes = new[] { typeof(PreferGuidReferenceWarning) })]
     public class PreferGuidReferenceProblemAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {
-        protected override void Analyze(IJsonNewLiteralExpression element, ElementProblemAnalyzerData data,
-                                        IHighlightingConsumer consumer)
+        protected override void Run(IJsonNewLiteralExpression element,
+                                    ElementProblemAnalyzerData data,
+                                    IHighlightingConsumer consumer)
         {
             // Unity prefers GUID references when creating a new file, to guard against accidentally changing the name
             if (element.IsReferencesArrayEntry() && !element.GetUnquotedText().StartsWith("guid:",

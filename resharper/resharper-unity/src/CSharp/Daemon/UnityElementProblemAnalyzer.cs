@@ -1,32 +1,38 @@
-using JetBrains.Annotations;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Daemon;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon
 {
-    public abstract class UnityElementProblemAnalyzer<T> : ElementProblemAnalyzer<T>
+    // TODO: Rename to something like CSharpUnityElementProblemAnalyzer, and replace Analyze with Run
+    public abstract class UnityElementProblemAnalyzer<T> : UnityElementProblemAnalyzerBase<T, CSharpLanguage>
         where T : ITreeNode
     {
-        protected UnityElementProblemAnalyzer([NotNull] UnityApi unityApi)
+        protected UnityElementProblemAnalyzer(UnityApi unityApi)
         {
             Api = unityApi;
         }
 
         protected UnityApi Api { get; }
 
+        public override bool ShouldRun(IFile file, ElementProblemAnalyzerData data)
+        {
+            if (base.ShouldRun(file, data))
+            {
+                // All C# files should be part of a user project
+                return data.SourceFile?.ToProjectFile()?.GetProject()?.IsProjectFromUserView() == true;
+            }
+
+            return false;
+        }
+
         protected sealed override void Run(T element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            // Run for all daemon kinds except global analysis. Visible document and solution wide analysis are obvious
-            // and required. "Other" is used by scoped quick fixes, and incremental solution analysis is only for stages
-            // that respond to settings changes. We don't strictly need this, but it won't cause problems.
-            var processKind = data.GetDaemonProcessKind();
-            if (processKind == DaemonProcessKind.GLOBAL_WARNINGS)
-                return;
-
-            if (!element.GetProject().IsUnityProject())
-                return;
-
             Analyze(element, data, consumer);
         }
 

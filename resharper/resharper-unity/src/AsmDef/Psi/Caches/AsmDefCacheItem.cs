@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.Serialization;
 using JetBrains.Util.PersistentMap;
@@ -31,6 +32,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         public int DeclarationOffset { get; }
         public IEnumerable<string> References => myReferences;
         public IEnumerable<AsmDefVersionDefine> VersionDefines => myVersionDefines;
+
+        public override string ToString()
+        {
+            var references = string.Join(", ", myReferences);
+            var versionDefines = string.Join(", ", myVersionDefines.Select(d => d.ToString()));
+            return $"{Name}:{DeclarationOffset} references:[{references}] versionDefines:[{versionDefines}]";
+        }
 
         private static AsmDefCacheItem Read(UnsafeReader reader)
         {
@@ -80,6 +88,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         public string Symbol { get; }
         public string Expression { get; }
         public UnitySemanticVersionRange VersionRange { get; }
+
+        public override string ToString()
+        {
+            return $"{ResourceName}:{Expression}:{Symbol}";
+        }
 
         public static AsmDefVersionDefine Read(UnsafeReader reader)
         {

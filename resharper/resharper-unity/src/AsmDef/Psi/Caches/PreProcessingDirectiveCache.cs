@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.changes;
@@ -26,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         private readonly PackageManager myPackageManager;
         private readonly IPsiServices myPsiServices;
         private readonly ILogger myLogger;
-        private readonly Dictionary<string, PreProcessingDirective[]> myAssemblyNameToDirectiveCache = new();
+        private readonly ConcurrentDictionary<string, PreProcessingDirectives> myAssemblyNameToDirectiveCache = new();
         private readonly VirtualFileSystemPath myScriptAssembliesPath;
 
         public PreProcessingDirectiveCache(Lifetime lifetime,
@@ -69,23 +70,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
             return EmptyArray<PreProcessingDirective>.Instance;
         }
 
-        public PreProcessingDirective[] GetPreProcessingDirectives(string assemblyName)
+        public PreProcessingDirective[] GetPreProcessingDirectives(string assemblyName) =>
+            GetAllPreProcessingDirectives(assemblyName).Directives;
+
+        public PreProcessingDirectives GetAllPreProcessingDirectives(string assemblyName)
         {
             if (!mySolution.HasUnityReference() || !myAsmDefCache.IsKnownAssemblyDefinition(assemblyName))
-                return EmptyArray<PreProcessingDirective>.Instance;
+                return PreProcessingDirectives.Empty;
 
             myLogger.Verbose("Request define symbols for {0}", assemblyName);
 
-            return myAssemblyNameToDirectiveCache.GetOrCreateValue(assemblyName, () =>
+            return myAssemblyNameToDirectiveCache.GetOrAdd(assemblyName, key =>
             {
                 // Fortunately, Unity seems to use the same base set of defines for all assemblies, from
                 // packages to user code - this includes UNITY_EDITOR and the current platform defines. We can
                 // just take the defines for Assembly-CSharp and use that for all packages.
                 // We need to add any extra conditional defines set up in .asmdef per external assembly
                 // We can verify all this with CompilationPipeline.GetDefinesFromAssemblyName
-                var directives = GetBaseDefines();
-                AddConditionalAsmdefDefines(assemblyName, directives);
-                return directives.ToArray();
+                var validDirectives = GetBaseDefines();
+                var invalidDirectives = new List<PreProcessingDirective>();
+                AddConditionalAsmdefDefines(key, validDirectives, invalidDirectives);
+                return new PreProcessingDirectives(validDirectives.ToArray(), invalidDirectives.ToArray());
             });
         }
 
@@ -114,13 +119,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
             return directives;
         }
 
-        private void AddConditionalAsmdefDefines(string assemblyName, List<PreProcessingDirective> directives)
+        private void AddConditionalAsmdefDefines(string assemblyName,
+                                                 List<PreProcessingDirective> validDirectives,
+                                                 List<PreProcessingDirective> invalidDirectives)
         {
+            // Note that this can add duplicate symbols, and duplicate base define symbols, too
             foreach (var versionDefine in myAsmDefCache.GetVersionDefines(assemblyName))
             {
                 var resourceVersion = GetVersionOfResource(versionDefine.ResourceName);
                 if (resourceVersion != null && versionDefine.VersionRange.IsValid(resourceVersion))
-                    directives.Add(new PreProcessingDirective(versionDefine.Symbol, string.Empty));
+                    validDirectives.Add(new PreProcessingDirective(versionDefine.Symbol, string.Empty));
+                else
+                    invalidDirectives.Add(new PreProcessingDirective(versionDefine.Symbol, string.Empty));
             }
         }
 
@@ -200,6 +210,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
                         myPsiServices.MarkAsDirty(projectFile);
                 }
             }
+        }
+    }
+
+    public class PreProcessingDirectives
+    {
+        public static readonly PreProcessingDirectives Empty = new(EmptyArray<PreProcessingDirective>.Instance,
+            EmptyArray<PreProcessingDirective>.Instance);
+
+        public readonly PreProcessingDirective[] Directives;
+        public readonly PreProcessingDirective[] InvalidDirectives;
+
+        public PreProcessingDirectives(PreProcessingDirective[] directives, PreProcessingDirective[] invalidDirectives)
+        {
+            Directives = directives;
+            InvalidDirectives = invalidDirectives;
         }
     }
 }

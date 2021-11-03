@@ -31,5 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Feature.Services.CodeCo
         protected override string ProjectName => "Assembly-CSharp";
 
         [Test] public void TestAction01() { DoNamedTest(); }
+        [Test] public void TestAction02() { DoNamedTest(); }
+        [Test] public void TestAction03() { DoNamedTest(); }
     }
 }

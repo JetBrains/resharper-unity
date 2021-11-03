@@ -15,9 +15,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
         })]
     public class VersionDefineProblemAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {
-        protected override void Analyze(IJsonNewLiteralExpression element,
-                                        ElementProblemAnalyzerData data,
-                                        IHighlightingConsumer consumer)
+        protected override void Run(IJsonNewLiteralExpression element,
+                                    ElementProblemAnalyzerData data,
+                                    IHighlightingConsumer consumer)
         {
             if (element.IsVersionDefinesObjectDefineValue())
             {

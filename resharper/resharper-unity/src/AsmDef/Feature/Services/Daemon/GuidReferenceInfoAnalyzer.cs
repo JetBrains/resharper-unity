@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
@@ -22,8 +23,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
             })]
     public class GuidReferenceInfoAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {
-        protected override void Analyze(IJsonNewLiteralExpression element, ElementProblemAnalyzerData data,
-                                        IHighlightingConsumer consumer)
+        protected override void Run(IJsonNewLiteralExpression element,
+                                    ElementProblemAnalyzerData data,
+                                    IHighlightingConsumer consumer)
         {
             if (element.IsReferencesArrayEntry() && element.GetUnquotedText().StartsWith("guid:",
                 StringComparison.InvariantCultureIgnoreCase))
@@ -34,7 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
                 {
                     consumer.AddHighlighting(new GuidReferenceInfo(element, declaredElement.ShortName));
 
-                    var mode = GetMode(data, settings => settings.ShowAsmDefGuidReferenceNames);
+                    var mode = ElementProblemAnalyzerUtils.GetInlayHintsMode(data,
+                        settings => settings.ShowAsmDefGuidReferenceNames);
                     if (mode != InlayHintsMode.Never)
                     {
                         var documentOffset = element.GetDocumentEndOffset();
