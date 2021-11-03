@@ -43,15 +43,19 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
         }
         // ReSharper restore InconsistentNaming
 
-        // On my Windows 2019.3.5f1 install, this file is x86_64\\UnityEditor.iOS.Native.dll
+        // On my Windows 2019.3.5f1 install, this file is x86_64\UnityEditor.iOS.Native.dll
         // 5.6.7f1 (Mac), the file is UnityEditor.iOS.Native.dylib. Will need to check on Windows
         // 5.6.7f1 (Windows) => UnityEditor.iOS.Native.dll
-        private const string NativeDllOsx = "UnityEditor.iOS.Native.dylib";
-        private const string NativeDllWin32 = "x86\\UnityEditor.iOS.Native.dll";
-        private const string NativeDllWin64 = "x86_64\\UnityEditor.iOS.Native.dll";
+        // Unity 2021.2 introduced M1 support on Mac and moved the default (x64) native lib from iOSSupport to
+        // iOSSupport/x64. Make sure we support the fallback location
+        private const string NativeDylibOsxX64 = @"x64/UnityEditor.iOS.Native.dylib";
+        private const string NativeDylibOsxArm64 = @"arm64/UnityEditor.iOS.Native.dylib";
+        private const string NativeDylibOsxFallback = "UnityEditor.iOS.Native.dylib";
+        private const string NativeDllWin32 = @"x86\UnityEditor.iOS.Native.dll";
+        private const string NativeDllWin64 = @"x86_64\UnityEditor.iOS.Native.dll";
 
         private static readonly IDllLoader ourLoader;
-        private static IntPtr ourDllHandle;
+        private static IntPtr ourNativeLibraryHandle;
 
         public delegate bool StartIosProxyDelegate(ushort localPort, ushort devicePort, [MarshalAs(UnmanagedType.LPStr)] string deviceId);
         public delegate void StopIosProxyDelegate(ushort localPort);
@@ -68,27 +72,99 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
         public static UsbmuxdGetDeviceDelegate UsbmuxdGetDevice;
 
         public static bool Supported => ourLoader != null;
-        public static bool IsDllLoaded => ourDllHandle != IntPtr.Zero;
+        public static bool IsDllLoaded => ourNativeLibraryHandle != IntPtr.Zero;
 
-        private static void LoadDll(string nativeDll)
+        private static void LoadNativeLibrary(string libraryPath)
         {
-            if (ourDllHandle == IntPtr.Zero)
+            if (ourNativeLibraryHandle == IntPtr.Zero)
             {
-                ourDllHandle = ourLoader.LoadLibrary(nativeDll);
-                if (ourDllHandle != IntPtr.Zero)
-                    Console.WriteLine("Loaded: " + nativeDll);
+                ourNativeLibraryHandle = ourLoader.LoadLibrary(libraryPath);
+                if (ourNativeLibraryHandle != IntPtr.Zero)
+                    Console.WriteLine("Loaded: " + libraryPath);
                 else
-                    Console.WriteLine("Couldn't load: " + nativeDll);
+                    throw new InvalidOperationException("Couldn't load library: " + libraryPath);
             }
         }
 
         private static TType LoadFunction<TType>(string name) where TType: class
         {
-            if (ourDllHandle == IntPtr.Zero)
-                throw new Exception("iOS native extension dll was not loaded");
+            if (ourNativeLibraryHandle == IntPtr.Zero)
+                throw new Exception("iOS native extension library was not loaded");
 
-            IntPtr addr = ourLoader.GetProcAddress(ourDllHandle, name);
+            IntPtr addr = ourLoader.GetProcAddress(ourNativeLibraryHandle, name);
             return Marshal.GetDelegateForFunctionPointer(addr, typeof(TType)) as TType;
+        }
+
+        // Setup correctly, or throw trying
+        public static void Setup(string iosSupportPath)
+        {
+            // TODO: Does Unity ship a native library for Linux?
+            string libraryPath;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                libraryPath = GetWindowsNativeLibraryPath(iosSupportPath);
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                libraryPath = GetMacOsNativeLibraryPath(iosSupportPath);
+            else
+                throw new PlatformNotSupportedException("iOS device enumeration not supported on this platform");
+
+            LoadNativeLibrary(libraryPath);
+            InitFunctions();
+        }
+
+        public static void Shutdown()
+        {
+            if (ourNativeLibraryHandle == IntPtr.Zero)
+                ourLoader.FreeLibrary(ourNativeLibraryHandle);
+        }
+
+        private static string GetWindowsNativeLibraryPath(string iosSupportPath)
+        {
+            return Path.Combine(iosSupportPath,
+                Environment.Is64BitOperatingSystem ? NativeDllWin64 : NativeDllWin32);
+        }
+
+        private static string GetMacOsNativeLibraryPath(string iosSupportPath)
+        {
+            string dylibPath;
+
+            // We know we're either Intel X64, Rosetta X64 or M1 Arm64. Rosetta reports itself as X64 and needs the X64
+            // native lib, so we're all good!
+            var isAppleSilicon = RuntimeInformation.ProcessArchitecture == Architecture.Arm64;
+            if (isAppleSilicon)
+            {
+                dylibPath = Path.Combine(iosSupportPath, NativeDylibOsxArm64);
+                if (!File.Exists(dylibPath) && Directory.Exists(iosSupportPath))
+                {
+                    Console.WriteLine("No Apple Silicon native library available at '{0}'", dylibPath);
+                    throw new PlatformNotSupportedException(
+                        "Apple Silicon support requires a native install of Unity 2021.2 or above");
+                }
+            }
+            else
+            {
+                // Unity 2021.2 moved the native library into the x64 (and arm64) directory. Use the fallback on older
+                // Unity versions
+                dylibPath = Path.Combine(iosSupportPath, NativeDylibOsxX64);
+                if (!File.Exists(dylibPath))
+                {
+                    var fallbackDylibPath = Path.Combine(iosSupportPath, NativeDylibOsxFallback);
+                    if (!File.Exists(fallbackDylibPath))
+                    {
+                        // Show where we've looked
+                        Console.WriteLine("Cannot find native library: {0}", dylibPath);
+                        Console.WriteLine("Cannot find native library: {0}", fallbackDylibPath);
+
+                        // Fall through to default error handling (i.e. we'll throw FileNotFoundException when trying to
+                        // load the library)
+                    }
+                    else
+                    {
+                        dylibPath = fallbackDylibPath;
+                    }
+                }
+            }
+
+            return dylibPath;
         }
 
         private static void InitFunctions()
@@ -99,33 +175,6 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
             UsbmuxdGetDevice = LoadFunction<UsbmuxdGetDeviceDelegate>("UsbmuxdGetDevice");
             StartIosProxy = LoadFunction<StartIosProxyDelegate>("StartIosProxy");
             StopIosProxy = LoadFunction<StopIosProxyDelegate>("StopIosProxy");
-        }
-
-        public static void Setup(string dllPath)
-        {
-            switch (Environment.OSVersion.Platform)
-            {
-                case PlatformID.MacOSX:
-                case PlatformID.Unix:
-                    dllPath = Path.Combine(dllPath, NativeDllOsx);
-                    break;
-
-                case PlatformID.Win32NT:
-                    dllPath = Path.Combine(dllPath,
-                        Environment.Is64BitOperatingSystem ? NativeDllWin64 : NativeDllWin32);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            LoadDll(dllPath);
-            InitFunctions();
-        }
-
-        public static void Shutdown()
-        {
-            if (ourDllHandle == IntPtr.Zero)
-                ourLoader.FreeLibrary(ourDllHandle);
         }
 
         static Usbmuxd()
@@ -140,7 +189,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
                     ourLoader = new WindowsDllLoader();
                     break;
                 default:
-                    throw new NotSupportedException("Platform not supported");
+                    throw new PlatformNotSupportedException("Platform not supported");
             }
         }
     }

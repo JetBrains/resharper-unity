@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="ios-list-usb-devices" type="DotNetProject" factoryName=".NET Project">
+  <configuration default="false" name="ios-list-usb-devices (net472)" type="DotNetProject" factoryName=".NET Project">
     <option name="EXE_PATH" value="$PROJECT_DIR$/build/ios-list-usb-devices/bin/Debug/net472/JetBrains.Rider.Unity.ListIosUsbDevices.exe" />
-    <option name="PROGRAM_PARAMETERS" value="/Applications/Unity/Hub/Editor/2020.3.16f1/PlaybackEngines/iOSSupport 1000" />
+    <option name="PROGRAM_PARAMETERS" value="/Applications/Unity/Hub/Editor/2021.2.0f1/PlaybackEngines/iOSSupport 1000" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/build/ios-list-usb-devices/bin/Debug/net472" />
     <option name="PASS_PARENT_ENVS" value="1" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />
