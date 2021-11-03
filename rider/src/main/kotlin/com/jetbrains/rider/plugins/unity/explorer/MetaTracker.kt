@@ -5,18 +5,21 @@ package com.jetbrains.rider.plugins.unity.explorer
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.command.undo.UndoManager
+import com.intellij.openapi.components.serviceIfCreated
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.vfs.newvfs.events.*
 import com.intellij.util.PathUtil
 import com.intellij.util.application
+import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.jetbrains.rd.platform.util.getLogger
 import com.jetbrains.rdclient.util.idea.toIOFile
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
+import com.jetbrains.rider.plugins.unity.workspace.getPackages
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.VfsBackendRequester
 import com.jetbrains.rider.projectView.workspace.impl.WorkspaceUserModelUpdater
@@ -30,109 +33,106 @@ import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.name
 
 @ExperimentalPathApi
-class MetaTracker(private val project: Project) : BulkFileListener, VfsBackendRequester, Disposable {
-
+class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
     companion object {
         private val logger = getLogger<MetaTracker>()
     }
 
     private var nextGroupIdIndex = 0
 
-    init {
-        project.messageBus.connect(this).subscribe(VirtualFileManager.VFS_CHANGES, this)
-    }
-
     override fun after(events: MutableList<out VFileEvent>) {
-        if (!project.isUnityProjectFolder())
-            return
+        val projectManager = serviceIfCreated<ProjectManager>() ?: return
+        projectManager.openProjects.forEach { project->
+            if (!project.isUnityProjectFolder()) return@forEach
 
-        // Collect modified meta files at first (usually there is no such files, but still)
-        val metaFiles = hashSetOf<Path>()
-        for (event in events) {
-            if (!translateEvent(event)) continue
-            if (!isApplicable(event)) continue
-            if (isMetaFile(event)) {
-                metaFiles.add(Paths.get(event.path))
-            }
-        }
-
-        // ... and then construct meta actions
-        val actions = MetaActionList(metaFiles)
-        for (event in events) {
-            if (!translateEvent(event) || !isApplicable(event) || isMetaFile(event)) continue
-
-            try {
-                when (event) {
-                    is VFileCreateEvent -> {
-                        if (!isApplicableForCreatingMeta(event)) continue
-                        val metaFileName = getMetaFileName(event.childName)
-                        val metaFile = event.parent.toNioPath().resolve(metaFileName)
-                        val ls = event.file?.detectedLineSeparator
-                            ?: "\n" // from what I see, Unity 2020.3 always uses "\n", but lets use same as the main file.
-                        actions.add(metaFile) {
-                            createMetaFile(event.parent, metaFileName, ls)
-                        }
-                    }
-                    is VFileDeleteEvent -> {
-                        val metaFile = getMetaFile(event.path) ?: continue
-                        actions.add(metaFile) {
-                            VfsUtil.findFile(metaFile, true)?.delete(this)
-                        }
-                    }
-                    is VFileCopyEvent -> {
-                        if (!isApplicableForCreatingMeta(event)) continue
-                        val metaFile = getMetaFile(event.file.path) ?: continue
-                        val ls = event.file.detectedLineSeparator ?: "\n"
-                        actions.add(metaFile) {
-                            createMetaFile(event.newParent, getMetaFileName(event.newChildName), ls)
-                        }
-                    }
-                    is VFileMoveEvent -> {
-                        val metaFile = getMetaFile(event.oldPath) ?: continue
-                        actions.add(metaFile) {
-                            VfsUtil.findFile(metaFile, true)?.move(this, event.newParent)
-                        }
-                    }
-                    is VFilePropertyChangeEvent -> {
-                        if (!event.isRename) continue
-                        val metaFile = getMetaFile(event.oldPath) ?: continue
-                        actions.add(metaFile) {
-                            val target = getMetaFileName(event.newValue as String)
-                            val origin = VfsUtil.findFile(metaFile, true)
-                            val conflictingMeta = origin?.parent?.findChild(target)
-                            if (conflictingMeta != null) {
-                                logger.warn("Removing conflicting meta $conflictingMeta")
-                                conflictingMeta.delete(this)
-                            }
-                            origin?.rename(this, target)
-                        }
-                    }
+            // Collect modified meta files at first (usually there is no such files, but still)
+            val metaFiles = hashSetOf<Path>()
+            for (event in events) {
+                if (!translateEvent(event, project)) continue
+                if (!isApplicable(event, project)) continue
+                if (isMetaFile(event)) {
+                    metaFiles.add(Paths.get(event.path))
                 }
-            } catch (t: Throwable) {
-                logger.error(t)
-                continue
             }
-        }
 
-        if (actions.isEmpty()) return
+            // ... and then construct meta actions
+            val actions = MetaActionList(metaFiles)
+            for (event in events) {
+                if (!translateEvent(event, project) || !isApplicable(event, project) || isMetaFile(event)) continue
 
-        val commandProcessor = CommandProcessor.getInstance()
-        var groupId = commandProcessor.currentCommandGroupId
-        if (groupId == null) {
-            groupId = MetaGroupId(nextGroupIdIndex++)
-            commandProcessor.currentCommandGroupId = groupId
-        }
+                try {
+                    when (event) {
+                        is VFileCreateEvent -> {
+                            if (!isApplicableForCreatingMeta(event, project)) continue
+                            val metaFileName = getMetaFileName(event.childName)
+                            val metaFile = event.parent.toNioPath().resolve(metaFileName)
+                            val ls = event.file?.detectedLineSeparator
+                                ?: "\n" // from what I see, Unity 2020.3 always uses "\n", but lets use same as the main file.
+                            actions.add(metaFile) {
+                                createMetaFile(event.parent, metaFileName, ls)
+                            }
+                        }
+                        is VFileDeleteEvent -> {
+                            val metaFile = getMetaFile(event.path) ?: continue
+                            actions.add(metaFile) {
+                                VfsUtil.findFile(metaFile, true)?.delete(this)
+                            }
+                        }
+                        is VFileCopyEvent -> {
+                            if (!isApplicableForCreatingMeta(event, project)) continue
+                            val metaFile = getMetaFile(event.file.path) ?: continue
+                            val ls = event.file.detectedLineSeparator ?: "\n"
+                            actions.add(metaFile) {
+                                createMetaFile(event.newParent, getMetaFileName(event.newChildName), ls)
+                            }
+                        }
+                        is VFileMoveEvent -> {
+                            val metaFile = getMetaFile(event.oldPath) ?: continue
+                            actions.add(metaFile) {
+                                VfsUtil.findFile(metaFile, true)?.move(this, event.newParent)
+                            }
+                        }
+                        is VFilePropertyChangeEvent -> {
+                            if (!event.isRename) continue
+                            val metaFile = getMetaFile(event.oldPath) ?: continue
+                            actions.add(metaFile) {
+                                val target = getMetaFileName(event.newValue as String)
+                                val origin = VfsUtil.findFile(metaFile, true)
+                                val conflictingMeta = origin?.parent?.findChild(target)
+                                if (conflictingMeta != null) {
+                                    logger.warn("Removing conflicting meta $conflictingMeta")
+                                    conflictingMeta.delete(this)
+                                }
+                                origin?.rename(this, target)
+                            }
+                        }
+                    }
+                } catch (t: Throwable) {
+                    logger.error(t)
+                    continue
+                }
+            }
 
-        application.invokeLater {
-            commandProcessor.allowMergeGlobalCommands {
-                commandProcessor.executeCommand(project, {
-                    actions.executeUnderWriteLock()
-                }, actions.getCommandName(), groupId)
+            if (actions.isEmpty()) return
+
+            val commandProcessor = CommandProcessor.getInstance()
+            var groupId = commandProcessor.currentCommandGroupId
+            if (groupId == null) {
+                groupId = MetaGroupId(nextGroupIdIndex++)
+                commandProcessor.currentCommandGroupId = groupId
+            }
+
+            application.invokeLater {
+                commandProcessor.allowMergeGlobalCommands {
+                    commandProcessor.executeCommand(project, {
+                        actions.executeUnderWriteLock()
+                    }, actions.getCommandName(), groupId)
+                }
             }
         }
     }
 
-    private fun translateEvent(event: VFileEvent): Boolean {
+    private fun translateEvent(event: VFileEvent, project: Project): Boolean {
         if (event.isFromRefresh) return false
         if (UndoManager.getInstance(project).isUndoOrRedoInProgress) return false
         if (event.fileSystem !is LocalFileSystem) return false
@@ -144,18 +144,31 @@ class MetaTracker(private val project: Project) : BulkFileListener, VfsBackendRe
         return "meta".equals(extension, true)
     }
 
-    private fun isApplicable(event: VFileEvent): Boolean {
+    private fun isApplicable(event: VFileEvent, project:Project): Boolean {
         val file = event.file ?: return false
         val parentFolder = file.parent?.toIOFile() ?: return false
         val parentPath = parentFolder.toPath()
+
         // exclude direct children of Packages folder
         if (parentPath == project.projectDir.toIOFile().toPath().resolve("Packages"))
             return false
 
+        if (VfsUtil.isAncestor(project.projectDir.toNioPath().resolve("Packages").toFile(), file.toIOFile(), false))
+            return true
+
+        if (VfsUtil.isAncestor(project.projectDir.toNioPath().resolve("Assets").toFile(), file.toIOFile(), false))
+            return true
+
+        val allPackages = WorkspaceModel.getInstance(project).getPackages()
+        allPackages.forEach {
+            val packageFolder = it.packageFolder ?: return false
+            return VfsUtil.isAncestor(packageFolder, file, false)
+        }
+
         return true
     }
 
-    private fun isApplicableForCreatingMeta(event: VFileEvent):Boolean {
+    private fun isApplicableForCreatingMeta(event: VFileEvent, project: Project):Boolean {
         // exclude files added manually with `Attach existing folder` action
         val file = event.file?.toIOFile() ?: return false
         for (attachedFolder in WorkspaceUserModelUpdater.getInstance(project).getAttachedFolders()) {
