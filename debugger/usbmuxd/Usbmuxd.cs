@@ -33,6 +33,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
     {
         // Note: This struct is used in .Net for interop. so do not change it, or know what you are doing!
         // ReSharper disable InconsistentNaming
+        // ReSharper disable FieldCanBeMadeReadOnly.Global
         [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
         public struct iOSDevice
         {
@@ -41,19 +42,27 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst=41)]
             public string udid;
         }
+        // ReSharper restore FieldCanBeMadeReadOnly.Global
         // ReSharper restore InconsistentNaming
 
-        // Pre-2021.2 only supported Intel Macs, and located the file in iOSSupport/UnityEditor.iOS.Native.dylib
-        // 2021.2 moved this to x64 and arm64
+        // Folder structure:
+        // iOSSupport/ - Intel Mac .dylib
+        //   x86/      - 32 bit Windows DLL. Obsolete (from iOSOverUsbSupport.cs)
+        //   x86_64/   - 64 bit Windows DLL + Linux .so
+        //
+        // Cleaned up in 2021.2+
+        // iOSSupport/
+        //   arm64/    - 64 bit ARM. Only M1 Mac .dylib
+        //   x64/      - 64 bit Intel. Windows .dll, Intel Mac .dylib, Linux .so
+
         private const string NativeDylibOsxX64 = @"x64/UnityEditor.iOS.Native.dylib";
         private const string NativeDylibOsxArm64 = @"arm64/UnityEditor.iOS.Native.dylib";
         private const string NativeDylibOsxFallback = "UnityEditor.iOS.Native.dylib";
 
-        private const string NativeDllWin32 = @"x86\UnityEditor.iOS.Native.dll";
-        private const string NativeDllWin64 = @"x86_64\UnityEditor.iOS.Native.dll";
-        
-        // 2018.4 (experimental build) Linux has the file in x86_64
-        // 2021.2 moved the file to x86 (presumably to match macOS. There is nothing in arm64)
+        private const string NativeDllWinX64 = @"x64\UnityEditor.iOS.Native.dll";
+        private const string NativeDllWinX64Fallback = @"x86_64\UnityEditor.iOS.Native.dll";
+        private const string NativeDllWinX86Obsolete = @"x86\UnityEditor.iOS.Native.dll";
+
         private const string NativeSoLinuxX64 = "x64/UnityEditor.iOS.Native.so";
         private const string NativeSoLinuxX64Fallback = "x86_64/UnityEditor.iOS.Native.so";
 
@@ -76,27 +85,6 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
 
         public static bool Supported => ourLoader != null;
         public static bool IsDllLoaded => ourNativeLibraryHandle != IntPtr.Zero;
-
-        private static void LoadNativeLibrary(string libraryPath)
-        {
-            if (ourNativeLibraryHandle == IntPtr.Zero)
-            {
-                ourNativeLibraryHandle = ourLoader.LoadLibrary(libraryPath);
-                if (ourNativeLibraryHandle != IntPtr.Zero)
-                    Console.WriteLine("Loaded: " + libraryPath);
-                else
-                    throw new InvalidOperationException("Couldn't load library: " + libraryPath);
-            }
-        }
-
-        private static TType LoadFunction<TType>(string name) where TType: class
-        {
-            if (ourNativeLibraryHandle == IntPtr.Zero)
-                throw new Exception("iOS native extension library was not loaded");
-
-            IntPtr addr = ourLoader.GetProcAddress(ourNativeLibraryHandle, name);
-            return Marshal.GetDelegateForFunctionPointer(addr, typeof(TType)) as TType;
-        }
 
         // Setup correctly, or throw trying
         public static void Setup(string iosSupportPath)
@@ -123,52 +111,61 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
 
         private static string GetWindowsNativeLibraryPath(string iosSupportPath)
         {
-            return Path.Combine(iosSupportPath,
-                Environment.Is64BitOperatingSystem ? NativeDllWin64 : NativeDllWin32);
+            if (RuntimeInformation.ProcessArchitecture == Architecture.X86)
+                return Path.Combine(iosSupportPath, NativeDllWinX86Obsolete);
+
+            if (RuntimeInformation.ProcessArchitecture != Architecture.X64)
+            {
+                throw new PlatformNotSupportedException("No native library for process architecture " +
+                                                        RuntimeInformation.ProcessArchitecture);
+            }
+
+            var defaultDllPath = Path.Combine(iosSupportPath, NativeDllWinX64);
+            if (File.Exists(defaultDllPath))
+                return defaultDllPath;
+
+            var fallbackDllPath = Path.Combine(iosSupportPath, NativeDllWinX64Fallback);
+            if (File.Exists(fallbackDllPath))
+                return fallbackDllPath;
+
+            // Show where we've looked
+            Console.WriteLine("Cannot find native library: {0}", defaultDllPath);
+            Console.WriteLine("Cannot find native library: {0}", fallbackDllPath);
+
+            // Fall through to default error handling (i.e. throw FileNotFoundException when trying to load the library)
+            return defaultDllPath;
         }
 
         private static string GetMacOsNativeLibraryPath(string iosSupportPath)
         {
-            string dylibPath;
-
-            // We know we're either Intel X64, Rosetta X64 or M1 Arm64. Rosetta reports itself as X64 and needs the X64
-            // native lib, so we're all good!
-            var isAppleSilicon = RuntimeInformation.ProcessArchitecture == Architecture.Arm64;
-            if (isAppleSilicon)
+            // Native M1 reports as Arm64. Rosetta reports as X64, same as actual Intel X64
+            if (RuntimeInformation.ProcessArchitecture == Architecture.Arm64)
             {
-                dylibPath = Path.Combine(iosSupportPath, NativeDylibOsxArm64);
+                var dylibPath = Path.Combine(iosSupportPath, NativeDylibOsxArm64);
                 if (!File.Exists(dylibPath) && Directory.Exists(iosSupportPath))
                 {
                     Console.WriteLine("No Apple Silicon native library available at '{0}'", dylibPath);
                     throw new PlatformNotSupportedException(
                         "Apple Silicon support requires a native install of Unity 2021.2 or above");
                 }
-            }
-            else
-            {
-                // Unity 2021.2 moved the native library into the x64 (and arm64) directory. Use the fallback on older
-                // Unity versions
-                dylibPath = Path.Combine(iosSupportPath, NativeDylibOsxX64);
-                if (!File.Exists(dylibPath))
-                {
-                    var fallbackDylibPath = Path.Combine(iosSupportPath, NativeDylibOsxFallback);
-                    if (!File.Exists(fallbackDylibPath))
-                    {
-                        // Show where we've looked
-                        Console.WriteLine("Cannot find native library: {0}", dylibPath);
-                        Console.WriteLine("Cannot find native library: {0}", fallbackDylibPath);
 
-                        // Fall through to default error handling (i.e. we'll throw FileNotFoundException when trying to
-                        // load the library)
-                    }
-                    else
-                    {
-                        dylibPath = fallbackDylibPath;
-                    }
-                }
+                return dylibPath;
             }
 
-            return dylibPath;
+            var defaultDylibPath = Path.Combine(iosSupportPath, NativeDylibOsxX64);
+            if (File.Exists(defaultDylibPath))
+                return defaultDylibPath;
+
+            var fallbackDylibPath = Path.Combine(iosSupportPath, NativeDylibOsxFallback);
+            if (File.Exists(fallbackDylibPath))
+                return fallbackDylibPath;
+
+            // Show where we've looked
+            Console.WriteLine("Cannot find native library: {0}", defaultDylibPath);
+            Console.WriteLine("Cannot find native library: {0}", fallbackDylibPath);
+
+            // Fall through to default error handling (i.e. throw FileNotFoundException when trying to load the library)
+            return defaultDylibPath;
         }
 
         private static string GetLinuxNativeLibraryPath(string iosSupportPath)
@@ -179,24 +176,32 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
                                                         RuntimeInformation.ProcessArchitecture);
             }
 
-            var soPath = Path.Combine(iosSupportPath, NativeSoLinuxX64);
-            if (!File.Exists(soPath))
+            var defaultSoPath = Path.Combine(iosSupportPath, NativeSoLinuxX64);
+            if (File.Exists(defaultSoPath))
+                return defaultSoPath;
+
+            var fallbackSoPath = Path.Combine(iosSupportPath, NativeSoLinuxX64Fallback);
+            if (File.Exists(fallbackSoPath))
+                return fallbackSoPath;
+
+            // Show where we've looked
+            Console.WriteLine("Cannot find native library: {0}", defaultSoPath);
+            Console.WriteLine("Cannot find native library: {0}", fallbackSoPath);
+
+            // Fall through to default error handling (i.e. throw FileNotFoundException when trying to load the library)
+            return defaultSoPath;
+        }
+
+        private static void LoadNativeLibrary(string libraryPath)
+        {
+            if (ourNativeLibraryHandle == IntPtr.Zero)
             {
-                var fallbackSoPath = Path.Combine(iosSupportPath, NativeSoLinuxX64Fallback);
-                if (!File.Exists(fallbackSoPath))
-                {
-                    // Show where we've looked
-                    Console.WriteLine("Cannot find native library: {0}", soPath);
-                    Console.WriteLine("Cannot find native library: {0}", fallbackSoPath);
-
-                    // Fall through to default error handling (i.e. we'll throw FileNotFoundException when trying to
-                    // load the library)
-                }
-
-                soPath = fallbackSoPath;
+                ourNativeLibraryHandle = ourLoader.LoadLibrary(libraryPath);
+                if (ourNativeLibraryHandle != IntPtr.Zero)
+                    Console.WriteLine("Loaded: " + libraryPath);
+                else
+                    throw new InvalidOperationException("Couldn't load library: " + libraryPath);
             }
-            
-            return soPath;
         }
 
         private static void InitFunctions()
@@ -207,6 +212,15 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
             UsbmuxdGetDevice = LoadFunction<UsbmuxdGetDeviceDelegate>("UsbmuxdGetDevice");
             StartIosProxy = LoadFunction<StartIosProxyDelegate>("StartIosProxy");
             StopIosProxy = LoadFunction<StopIosProxyDelegate>("StopIosProxy");
+        }
+
+        private static TType LoadFunction<TType>(string name) where TType: class
+        {
+            if (ourNativeLibraryHandle == IntPtr.Zero)
+                throw new Exception("iOS native extension library was not loaded");
+
+            IntPtr addr = ourLoader.GetProcAddress(ourNativeLibraryHandle, name);
+            return Marshal.GetDelegateForFunctionPointer(addr, typeof(TType)) as TType;
         }
 
         static Usbmuxd()
