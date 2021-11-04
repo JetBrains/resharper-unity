@@ -43,16 +43,19 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
         }
         // ReSharper restore InconsistentNaming
 
-        // On my Windows 2019.3.5f1 install, this file is x86_64\UnityEditor.iOS.Native.dll
-        // 5.6.7f1 (Mac), the file is UnityEditor.iOS.Native.dylib. Will need to check on Windows
-        // 5.6.7f1 (Windows) => UnityEditor.iOS.Native.dll
-        // Unity 2021.2 introduced M1 support on Mac and moved the default (x64) native lib from iOSSupport to
-        // iOSSupport/x64. Make sure we support the fallback location
+        // Pre-2021.2 only supported Intel Macs, and located the file in iOSSupport/UnityEditor.iOS.Native.dylib
+        // 2021.2 moved this to x64 and arm64
         private const string NativeDylibOsxX64 = @"x64/UnityEditor.iOS.Native.dylib";
         private const string NativeDylibOsxArm64 = @"arm64/UnityEditor.iOS.Native.dylib";
         private const string NativeDylibOsxFallback = "UnityEditor.iOS.Native.dylib";
+
         private const string NativeDllWin32 = @"x86\UnityEditor.iOS.Native.dll";
         private const string NativeDllWin64 = @"x86_64\UnityEditor.iOS.Native.dll";
+        
+        // 2018.4 (experimental build) Linux has the file in x86_64
+        // 2021.2 moved the file to x86 (presumably to match macOS. There is nothing in arm64)
+        private const string NativeSoLinuxX64 = "x64/UnityEditor.iOS.Native.so";
+        private const string NativeSoLinuxX64Fallback = "x86_64/UnityEditor.iOS.Native.so";
 
         private static readonly IDllLoader ourLoader;
         private static IntPtr ourNativeLibraryHandle;
@@ -98,12 +101,13 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
         // Setup correctly, or throw trying
         public static void Setup(string iosSupportPath)
         {
-            // TODO: Does Unity ship a native library for Linux?
             string libraryPath;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 libraryPath = GetWindowsNativeLibraryPath(iosSupportPath);
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 libraryPath = GetMacOsNativeLibraryPath(iosSupportPath);
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                libraryPath = GetLinuxNativeLibraryPath(iosSupportPath);
             else
                 throw new PlatformNotSupportedException("iOS device enumeration not supported on this platform");
 
@@ -165,6 +169,34 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
             }
 
             return dylibPath;
+        }
+
+        private static string GetLinuxNativeLibraryPath(string iosSupportPath)
+        {
+            if (RuntimeInformation.ProcessArchitecture != Architecture.X64)
+            {
+                throw new PlatformNotSupportedException("No native library for process architecture " +
+                                                        RuntimeInformation.ProcessArchitecture);
+            }
+
+            var soPath = Path.Combine(iosSupportPath, NativeSoLinuxX64);
+            if (!File.Exists(soPath))
+            {
+                var fallbackSoPath = Path.Combine(iosSupportPath, NativeSoLinuxX64Fallback);
+                if (!File.Exists(fallbackSoPath))
+                {
+                    // Show where we've looked
+                    Console.WriteLine("Cannot find native library: {0}", soPath);
+                    Console.WriteLine("Cannot find native library: {0}", fallbackSoPath);
+
+                    // Fall through to default error handling (i.e. we'll throw FileNotFoundException when trying to
+                    // load the library)
+                }
+
+                soPath = fallbackSoPath;
+            }
+            
+            return soPath;
         }
 
         private static void InitFunctions()
