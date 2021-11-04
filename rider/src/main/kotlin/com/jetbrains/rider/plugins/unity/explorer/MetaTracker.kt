@@ -22,7 +22,6 @@ import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
 import com.jetbrains.rider.plugins.unity.workspace.getPackages
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.VfsBackendRequester
-import com.jetbrains.rider.projectView.workspace.impl.WorkspaceUserModelUpdater
 import org.jetbrains.annotations.Nls
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -42,8 +41,8 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
 
     override fun after(events: MutableList<out VFileEvent>) {
         val projectManager = serviceIfCreated<ProjectManager>() ?: return
-        projectManager.openProjects.forEach { project->
-            if (!project.isUnityProjectFolder()) return@forEach
+        for (project in projectManager.openProjects) {
+            if (!project.isUnityProjectFolder()) continue
 
             // Collect modified meta files at first (usually there is no such files, but still)
             val metaFiles = hashSetOf<Path>()
@@ -63,7 +62,6 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
                 try {
                     when (event) {
                         is VFileCreateEvent -> {
-                            if (!isApplicableForCreatingMeta(event, project)) continue
                             val metaFileName = getMetaFileName(event.childName)
                             val metaFile = event.parent.toNioPath().resolve(metaFileName)
                             val ls = event.file?.detectedLineSeparator
@@ -79,7 +77,6 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
                             }
                         }
                         is VFileCopyEvent -> {
-                            if (!isApplicableForCreatingMeta(event, project)) continue
                             val metaFile = getMetaFile(event.file.path) ?: continue
                             val ls = event.file.detectedLineSeparator ?: "\n"
                             actions.add(metaFile) {
@@ -146,34 +143,16 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
 
     private fun isApplicable(event: VFileEvent, project:Project): Boolean {
         val file = event.file ?: return false
-        val parentFolder = file.parent?.toIOFile() ?: return false
-        val parentPath = parentFolder.toPath()
-
-        // exclude direct children of Packages folder
-        if (parentPath == project.projectDir.toIOFile().toPath().resolve("Packages"))
-            return false
-
-        if (VfsUtil.isAncestor(project.projectDir.toNioPath().resolve("Packages").toFile(), file.toIOFile(), false))
-            return true
 
         if (VfsUtil.isAncestor(project.projectDir.toNioPath().resolve("Assets").toFile(), file.toIOFile(), false))
             return true
 
-        val allPackages = WorkspaceModel.getInstance(project).getPackages()
-        allPackages.forEach {
+        val editablePackages = WorkspaceModel.getInstance(project).getPackages().filter { it.isEditable() }
+        editablePackages.forEach {
             val packageFolder = it.packageFolder ?: return false
             return VfsUtil.isAncestor(packageFolder, file, false)
         }
 
-        return true
-    }
-
-    private fun isApplicableForCreatingMeta(event: VFileEvent, project: Project):Boolean {
-        // exclude files added manually with `Attach existing folder` action
-        val file = event.file?.toIOFile() ?: return false
-        for (attachedFolder in WorkspaceUserModelUpdater.getInstance(project).getAttachedFolders()) {
-            if (VfsUtil.isAncestor(attachedFolder, file, false)) return false
-        }
         return true
     }
 
