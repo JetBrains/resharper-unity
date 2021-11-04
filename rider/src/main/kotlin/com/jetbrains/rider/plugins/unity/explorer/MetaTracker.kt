@@ -110,7 +110,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
                 }
             }
 
-            if (actions.isEmpty()) return
+            if (actions.isEmpty()) continue
 
             val commandProcessor = CommandProcessor.getInstance()
             var groupId = commandProcessor.currentCommandGroupId
@@ -126,6 +126,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
                     }, actions.getCommandName(), groupId)
                 }
             }
+            return // action was handled, so we should not try to process it again with other projects
         }
     }
 
