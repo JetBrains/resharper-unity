@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace JetBrains.Rider.Plugins.Unity.iOS.ListUsbDevices
 {
     internal static class Program
     {
-        private static bool ourFinished;
-
-        private static int Main(string[] args)
+        private static async Task<int> Main(string[] args)
         {
             if (args.Length != 2)
             {
@@ -19,21 +18,34 @@ namespace JetBrains.Rider.Plugins.Unity.iOS.ListUsbDevices
 
             InitialiseWinSock();
 
-            var thread = new Thread(ThreadFunc);
-            thread.Start(args);
+            var iosSupportPath = args[0];
+            var pollingInterval = TimeSpan.FromMilliseconds(int.Parse(args[1]));
 
-            while (true)
+            var pollingCancellationSource = new CancellationTokenSource();
+            var readLineTask = CreateAwaitStopCommandTask();
+            var innerPollingTask = CreatePollForDevicesTask(iosSupportPath, pollingInterval,
+                pollingCancellationSource.Token);
+
+            // ReSharper disable once MethodSupportsCancellation
+            // Don't pass cancellation token, or this continuation will be cancelled before it gets a chance to run
+            var pollingTask = innerPollingTask.ContinueWith(t =>
             {
-                if (Console.ReadLine()?.Equals("stop", StringComparison.OrdinalIgnoreCase) == true)
+                // If the polling task faults, log it, and continue with a successfully completed task
+                if (t.IsFaulted && t.Exception != null)
                 {
-                    ourFinished = true;
-                    break;
+                    foreach (var e in t.Exception.InnerExceptions)
+                        Console.WriteLine(e);
                 }
+            });
+
+            await Task.WhenAny(readLineTask, pollingTask);
+            if (readLineTask.Status != TaskStatus.Running)
+            {
+                pollingCancellationSource.Cancel();
+                await pollingTask;
             }
 
-            thread.Join();
-
-            return 0;
+            return innerPollingTask.IsFaulted ? 1 : 0;
         }
 
         private static void InitialiseWinSock()
@@ -52,13 +64,26 @@ namespace JetBrains.Rider.Plugins.Unity.iOS.ListUsbDevices
             }
         }
 
-        private static void ThreadFunc(object state)
+        private static Task CreateAwaitStopCommandTask()
         {
-            var args = (string[]) state;
-            var sleepTimeMs = int.Parse(args[1]);
-            using (var api = new ListDevices(args[0]))
+            return Task.Run(() =>
             {
-                while (!ourFinished)
+                while (true)
+                {
+                    var line = Console.ReadLine();
+                    if (line?.Equals("stop", StringComparison.OrdinalIgnoreCase) == true)
+                        return;
+                }
+            });
+        }
+
+        private static Task CreatePollForDevicesTask(string iosSupportPath, TimeSpan pollingInterval, CancellationToken token)
+        {
+            // ReSharper disable once FunctionNeverReturns
+            return Task.Run(() =>
+            {
+                using var api = new ListDevices(iosSupportPath);
+                while (true)
                 {
                     var devices = api.GetDevices();
 
@@ -66,9 +91,10 @@ namespace JetBrains.Rider.Plugins.Unity.iOS.ListUsbDevices
                     foreach (var device in devices)
                         Console.WriteLine($"{device.productId:X} {device.udid}");
 
-                    Thread.Sleep(sleepTimeMs);
+                    Thread.Sleep(pollingInterval);
+                    token.ThrowIfCancellationRequested();
                 }
-            }
+            }, token);
         }
     }
 }
