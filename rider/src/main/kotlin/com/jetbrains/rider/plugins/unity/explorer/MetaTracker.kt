@@ -42,6 +42,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
     override fun after(events: MutableList<out VFileEvent>) {
         val projectManager = serviceIfCreated<ProjectManager>() ?: return
         for (project in projectManager.openProjects) {
+            if (project.isDisposed) continue
             if (!project.isUnityProjectFolder()) continue
 
             // Collect modified meta files at first (usually there is no such files, but still)
@@ -120,6 +121,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
             }
 
             application.invokeLater {
+                if (project.isDisposed) return@invokeLater
                 commandProcessor.allowMergeGlobalCommands {
                     commandProcessor.executeCommand(project, {
                         actions.executeUnderWriteLock()
