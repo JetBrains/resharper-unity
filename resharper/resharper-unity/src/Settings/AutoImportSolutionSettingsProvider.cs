@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.ImportType.BlockList;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.ImportType;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
