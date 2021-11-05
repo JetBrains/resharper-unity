@@ -26,6 +26,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
             if (keyword == null) return null;
             return myShowUnityHelp.GetUri(keyword);
         }
+        
+        public string GetPresentableName(IDeclaredElement element)
+        {
+            return element.ShortName;
+        }
 
         public bool IsAvailable(IDeclaredElement element)
         {
