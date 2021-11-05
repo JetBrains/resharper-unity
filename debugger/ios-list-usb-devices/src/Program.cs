@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace JetBrains.Rider.Plugins.Unity.iOS.ListUsbDevices
 {
     internal static class Program
     {
-        private static bool ourFinished;
-
-        private static int Main(string[] args)
+        private static async Task<int> Main(string[] args)
         {
             if (args.Length != 2)
             {
@@ -19,19 +18,32 @@ namespace JetBrains.Rider.Plugins.Unity.iOS.ListUsbDevices
 
             InitialiseWinSock();
 
-            var thread = new Thread(ThreadFunc);
-            thread.Start(args);
+            var iosSupportPath = args[0];
+            var pollingInterval = TimeSpan.FromMilliseconds(int.Parse(args[1]));
 
-            while (true)
+            var cancellationToken = StartAwaitStopCommandBackgroundTask();
+            try
             {
-                if (Console.ReadLine()?.Equals("stop", StringComparison.OrdinalIgnoreCase) == true)
+                using var api = new ListDevices(iosSupportPath);
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    ourFinished = true;
-                    break;
+                    var devices = api.GetDevices();
+
+                    Console.WriteLine($"{devices.Count}");
+                    foreach (var device in devices)
+                        Console.WriteLine($"{device.productId:X} {device.udid}");
+
+                    await Task.Delay(pollingInterval, cancellationToken);
                 }
             }
+            catch (Exception e)
+            {
+                if (e is TaskCanceledException)
+                    return 0;
 
-            thread.Join();
+                Console.WriteLine(e);
+                return 1;
+            }
 
             return 0;
         }
@@ -52,23 +64,25 @@ namespace JetBrains.Rider.Plugins.Unity.iOS.ListUsbDevices
             }
         }
 
-        private static void ThreadFunc(object state)
+        private static CancellationToken StartAwaitStopCommandBackgroundTask()
         {
-            var args = (string[]) state;
-            var sleepTimeMs = int.Parse(args[1]);
-            using (var api = new ListDevices(args[0]))
+            var cancellationTokenSource = new CancellationTokenSource();
+
+            // ReSharper disable once MethodSupportsCancellation
+            Task.Run(() =>
             {
-                while (!ourFinished)
+                while (true)
                 {
-                    var devices = api.GetDevices();
-
-                    Console.WriteLine($"{devices.Count}");
-                    foreach (var device in devices)
-                        Console.WriteLine($"{device.productId:X} {device.udid}");
-
-                    Thread.Sleep(sleepTimeMs);
+                    var line = Console.ReadLine();
+                    if (line?.Equals("stop", StringComparison.OrdinalIgnoreCase) == true)
+                    {
+                        cancellationTokenSource.Cancel();
+                        return;
+                    }
                 }
-            }
+            });
+
+            return cancellationTokenSource.Token;
         }
     }
 }
