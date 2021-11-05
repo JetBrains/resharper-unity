@@ -28,6 +28,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Add inspection to validate define symbols and expressions and version range in `.asmdef` files ([#2191](https://github.com/JetBrains/resharper-unity/pull/2191))
 - Add code completion for define symbols and package IDs in `.asmdef` files ([#2191](https://github.com/JetBrains/resharper-unity/pull/2191))
 - Rider: Remove "add reference" actions for Unity projects ([#2194](https://github.com/JetBrains/resharper-unity/pull/2194))
+- Rider: Add support for debugging iOS devices over USB on Linux ([#2207](https://github.com/JetBrains/resharper-unity/pull/2207))
 
 ### Changed
 
@@ -55,6 +56,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix UnityYamlMarge integration when all conflicts are automatically resolved ([RIDER-69030](https://youtrack.jetbrains.com/issue/RIDER-69030), [#2188](https://github.com/JetBrains/resharper-unity/pull/2188))
 - Rider: Fix opening non-text files from Unity ([#2182](https://github.com/JetBrains/resharper-unity/pull/2182))
 - Rider: Fix opening files from Unity on Apple Silicon ([RIDER-68877](https://youtrack.jetbrains.com/issue/RIDER-68877), [#2192](https://github.com/JetBrains/resharper-unity/pull/2192))
+- Rider: Fix exception when opening "Attach to Unity Process" dialog with Unity 2021.2, or an older Unity and an M1 Mac ([RIDER-69809](https://youtrack.jetbrains.com/issue/RIDER-69809), [#2207](https://github.com/JetBrains/resharper-unity/pull/2207))
 - ReSharper: Fix asset usage updating when asset is open in VS editor ([#2169](https://github.com/JetBrains/resharper-unity/pull/2169))
 
 
