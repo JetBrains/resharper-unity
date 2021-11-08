@@ -38,8 +38,6 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
         private val logger = getLogger<MetaTracker>()
     }
 
-    private var nextGroupIdIndex = 0
-
     override fun after(events: MutableList<out VFileEvent>) {
         val projectManager = serviceIfCreated<ProjectManager>() ?: return
         val openedUnityProjects = projectManager.openProjects.filter { !it.isDisposed && it.isUnityProjectFolder() && !isUndoRedoInProgress(it)}.toList()
@@ -50,7 +48,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
             for (project in openedUnityProjects) {
                 if (isApplicableForProject(event, project)) {
                     if (isMetaFile(event)) // Collect modified meta files at first (usually there is no such files, but still)
-                        actions.add(Paths.get(event.path), project, {})
+                        actions.addInitialSetOfChangedMetaFiles(Paths.get(event.path))
                     else {
                         try {
                             when (event) {
@@ -107,15 +105,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
         }
 
         if (actions.isEmpty()) return
-
-        val commandProcessor = CommandProcessor.getInstance()
-        var groupId = commandProcessor.currentCommandGroupId
-        if (groupId == null) {
-            groupId = MetaGroupId(nextGroupIdIndex++)
-            commandProcessor.currentCommandGroupId = groupId
-        }
-
-        actions.execute(commandProcessor, groupId)
+        actions.execute()
     }
 
     private fun isValidEvent(event: VFileEvent):Boolean{
@@ -172,6 +162,12 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
         private val changedMetaFiles = HashSet<Path>()
         private val actions = mutableListOf<MetaAction>()
 
+        private var nextGroupIdIndex = 0
+
+        fun addInitialSetOfChangedMetaFiles(path: Path) {
+            changedMetaFiles.add(path)
+        }
+
         fun add(metaFile: Path, project:Project, action: () -> Unit) {
             if (changedMetaFiles.contains(metaFile)) return
             actions.add(MetaAction(metaFile, project, action))
@@ -179,7 +175,13 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
 
         fun isEmpty() = actions.isEmpty()
 
-        fun execute(commandProcessor: CommandProcessor, groupId: Any) {
+        fun execute() {
+            val commandProcessor = CommandProcessor.getInstance()
+            var groupId = commandProcessor.currentCommandGroupId
+            if (groupId == null) {
+                groupId = MetaGroupId(nextGroupIdIndex++)
+                commandProcessor.currentCommandGroupId = groupId
+            }
             application.invokeLater {
                 commandProcessor.allowMergeGlobalCommands {
                     actions.forEach {
