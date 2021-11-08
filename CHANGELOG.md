@@ -57,6 +57,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix opening non-text files from Unity ([#2182](https://github.com/JetBrains/resharper-unity/pull/2182))
 - Rider: Fix opening files from Unity on Apple Silicon ([RIDER-68877](https://youtrack.jetbrains.com/issue/RIDER-68877), [#2192](https://github.com/JetBrains/resharper-unity/pull/2192))
 - Rider: Fix exception when opening "Attach to Unity Process" dialog with Unity 2021.2, or an older Unity and an M1 Mac ([RIDER-69809](https://youtrack.jetbrains.com/issue/RIDER-69809), [#2207](https://github.com/JetBrains/resharper-unity/pull/2207))
+- Rider: Fix performance issue finding installed Unity versions during startup ([RIDER-64599](https://youtrack.jetbrains.com/issue/RIDER-64599), [#2204](https://github.com/JetBrains/resharper-unity/pull/2204))
 - ReSharper: Fix asset usage updating when asset is open in VS editor ([#2169](https://github.com/JetBrains/resharper-unity/pull/2169))
 
 
