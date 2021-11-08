@@ -130,12 +130,12 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
             return true
 
         val editablePackages = WorkspaceModel.getInstance(project).getPackages().filter { it.isEditable() }
-        editablePackages.forEach {
-            val packageFolder = it.packageFolder ?: return false
-            return VfsUtil.isAncestor(packageFolder, file, false)
+        for (pack in editablePackages) {
+            val packageFolder = pack.packageFolder ?: continue
+            if (VfsUtil.isAncestor(packageFolder, file, false)) return true
         }
 
-        return true
+        return false
     }
 
     private fun getMetaFile(path: String?): Path? {
