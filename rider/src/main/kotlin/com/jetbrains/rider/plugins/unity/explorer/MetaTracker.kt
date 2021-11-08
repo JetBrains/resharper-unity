@@ -115,8 +115,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
     }
 
     private fun isUndoRedoInProgress(project: Project): Boolean {
-        if (UndoManager.getInstance(project).isUndoOrRedoInProgress) return false
-        return true
+        return UndoManager.getInstance(project).isUndoOrRedoInProgress
     }
 
     private fun isMetaFile(event: VFileEvent): Boolean {
