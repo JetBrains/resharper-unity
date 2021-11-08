@@ -28,6 +28,7 @@ import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
+import kotlin.collections.HashSet
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.name
 
@@ -37,106 +38,84 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
         private val logger = getLogger<MetaTracker>()
     }
 
-    private var nextGroupIdIndex = 0
-
     override fun after(events: MutableList<out VFileEvent>) {
         val projectManager = serviceIfCreated<ProjectManager>() ?: return
-        for (project in projectManager.openProjects) {
-            if (project.isDisposed) continue
-            if (!project.isUnityProjectFolder()) continue
+        val openedUnityProjects = projectManager.openProjects.filter { !it.isDisposed && it.isUnityProjectFolder() && !isUndoRedoInProgress(it)}.toList()
+        val actions = MetaActionList()
 
-            // Collect modified meta files at first (usually there is no such files, but still)
-            val metaFiles = hashSetOf<Path>()
-            for (event in events) {
-                if (!translateEvent(event, project)) continue
-                if (!isApplicable(event, project)) continue
-                if (isMetaFile(event)) {
-                    metaFiles.add(Paths.get(event.path))
-                }
-            }
-
-            // ... and then construct meta actions
-            val actions = MetaActionList(metaFiles)
-            for (event in events) {
-                if (!translateEvent(event, project) || !isApplicable(event, project) || isMetaFile(event)) continue
-
-                try {
-                    when (event) {
-                        is VFileCreateEvent -> {
-                            val metaFileName = getMetaFileName(event.childName)
-                            val metaFile = event.parent.toNioPath().resolve(metaFileName)
-                            val ls = event.file?.detectedLineSeparator
-                                ?: "\n" // from what I see, Unity 2020.3 always uses "\n", but lets use same as the main file.
-                            actions.add(metaFile) {
-                                createMetaFile(event.parent, metaFileName, ls)
-                            }
-                        }
-                        is VFileDeleteEvent -> {
-                            val metaFile = getMetaFile(event.path) ?: continue
-                            actions.add(metaFile) {
-                                VfsUtil.findFile(metaFile, true)?.delete(this)
-                            }
-                        }
-                        is VFileCopyEvent -> {
-                            val metaFile = getMetaFile(event.file.path) ?: continue
-                            val ls = event.file.detectedLineSeparator ?: "\n"
-                            actions.add(metaFile) {
-                                createMetaFile(event.newParent, getMetaFileName(event.newChildName), ls)
-                            }
-                        }
-                        is VFileMoveEvent -> {
-                            val metaFile = getMetaFile(event.oldPath) ?: continue
-                            actions.add(metaFile) {
-                                VfsUtil.findFile(metaFile, true)?.move(this, event.newParent)
-                            }
-                        }
-                        is VFilePropertyChangeEvent -> {
-                            if (!event.isRename) continue
-                            val metaFile = getMetaFile(event.oldPath) ?: continue
-                            actions.add(metaFile) {
-                                val target = getMetaFileName(event.newValue as String)
-                                val origin = VfsUtil.findFile(metaFile, true)
-                                val conflictingMeta = origin?.parent?.findChild(target)
-                                if (conflictingMeta != null) {
-                                    logger.warn("Removing conflicting meta $conflictingMeta")
-                                    conflictingMeta.delete(this)
+        for (event in events) {
+            if (!isValidEvent(event)) continue
+            for (project in openedUnityProjects) {
+                if (isApplicableForProject(event, project)) {
+                    if (isMetaFile(event)) // Collect modified meta files at first (usually there is no such files, but still)
+                        actions.addInitialSetOfChangedMetaFiles(Paths.get(event.path))
+                    else {
+                        try {
+                            when (event) {
+                                is VFileCreateEvent -> {
+                                    val metaFileName = getMetaFileName(event.childName)
+                                    val metaFile = event.parent.toNioPath().resolve(metaFileName)
+                                    val ls = event.file?.detectedLineSeparator
+                                        ?: "\n" // from what I see, Unity 2020.3 always uses "\n", but lets use same as the main file.
+                                    actions.add(metaFile, project) {
+                                        createMetaFile(event.parent, metaFileName, ls)
+                                    }
                                 }
-                                origin?.rename(this, target)
+                                is VFileDeleteEvent -> {
+                                    val metaFile = getMetaFile(event.path) ?: continue
+                                    actions.add(metaFile, project) {
+                                        VfsUtil.findFile(metaFile, true)?.delete(this)
+                                    }
+                                }
+                                is VFileCopyEvent -> {
+                                    val metaFile = getMetaFile(event.file.path) ?: continue
+                                    val ls = event.file.detectedLineSeparator ?: "\n"
+                                    actions.add(metaFile, project) {
+                                        createMetaFile(event.newParent, getMetaFileName(event.newChildName), ls)
+                                    }
+                                }
+                                is VFileMoveEvent -> {
+                                    val metaFile = getMetaFile(event.oldPath) ?: continue
+                                    actions.add(metaFile, project) {
+                                        VfsUtil.findFile(metaFile, true)?.move(this, event.newParent)
+                                    }
+                                }
+                                is VFilePropertyChangeEvent -> {
+                                    if (!event.isRename) continue
+                                    val metaFile = getMetaFile(event.oldPath) ?: continue
+                                    actions.add(metaFile, project) {
+                                        val target = getMetaFileName(event.newValue as String)
+                                        val origin = VfsUtil.findFile(metaFile, true)
+                                        val conflictingMeta = origin?.parent?.findChild(target)
+                                        if (conflictingMeta != null) {
+                                            logger.warn("Removing conflicting meta $conflictingMeta")
+                                            conflictingMeta.delete(this)
+                                        }
+                                        origin?.rename(this, target)
+                                    }
+                                }
                             }
+                        } catch (t: Throwable) {
+                            logger.error(t)
+                            continue
                         }
                     }
-                } catch (t: Throwable) {
-                    logger.error(t)
-                    continue
                 }
             }
-
-            if (actions.isEmpty()) continue
-
-            val commandProcessor = CommandProcessor.getInstance()
-            var groupId = commandProcessor.currentCommandGroupId
-            if (groupId == null) {
-                groupId = MetaGroupId(nextGroupIdIndex++)
-                commandProcessor.currentCommandGroupId = groupId
-            }
-
-            application.invokeLater {
-                if (project.isDisposed) return@invokeLater
-                commandProcessor.allowMergeGlobalCommands {
-                    commandProcessor.executeCommand(project, {
-                        actions.executeUnderWriteLock()
-                    }, actions.getCommandName(), groupId)
-                }
-            }
-            return // action was handled, so we should not try to process it again with other projects
         }
+
+        if (actions.isEmpty()) return
+        actions.execute()
     }
 
-    private fun translateEvent(event: VFileEvent, project: Project): Boolean {
+    private fun isValidEvent(event: VFileEvent):Boolean{
         if (event.isFromRefresh) return false
-        if (UndoManager.getInstance(project).isUndoOrRedoInProgress) return false
         if (event.fileSystem !is LocalFileSystem) return false
         return CommandProcessor.getInstance().currentCommand != null
+    }
+
+    private fun isUndoRedoInProgress(project: Project): Boolean {
+        return UndoManager.getInstance(project).isUndoOrRedoInProgress
     }
 
     private fun isMetaFile(event: VFileEvent): Boolean {
@@ -144,19 +123,19 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
         return "meta".equals(extension, true)
     }
 
-    private fun isApplicable(event: VFileEvent, project:Project): Boolean {
+    private fun isApplicableForProject(event: VFileEvent, project:Project): Boolean {
         val file = event.file ?: return false
 
         if (VfsUtil.isAncestor(project.projectDir.toNioPath().resolve("Assets").toFile(), file.toIOFile(), false))
             return true
 
         val editablePackages = WorkspaceModel.getInstance(project).getPackages().filter { it.isEditable() }
-        editablePackages.forEach {
-            val packageFolder = it.packageFolder ?: return false
-            return VfsUtil.isAncestor(packageFolder, file, false)
+        for (pack in editablePackages) {
+            val packageFolder = pack.packageFolder ?: continue
+            if (VfsUtil.isAncestor(packageFolder, file, false)) return true
         }
 
-        return true
+        return false
     }
 
     private fun getMetaFile(path: String?): Path? {
@@ -178,20 +157,40 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
 
     override fun dispose() = Unit
 
-    private class MetaActionList(private val changedMetaFiles: HashSet<Path>) {
-
+    private class MetaActionList {
+        private val changedMetaFiles = HashSet<Path>()
         private val actions = mutableListOf<MetaAction>()
 
-        fun add(metaFile: Path, action: () -> Unit) {
+        private var nextGroupIdIndex = 0
+
+        fun addInitialSetOfChangedMetaFiles(path: Path) {
+            changedMetaFiles.add(path)
+        }
+
+        fun add(metaFile: Path, project:Project, action: () -> Unit) {
             if (changedMetaFiles.contains(metaFile)) return
-            actions.add(MetaAction(metaFile, action))
+            actions.add(MetaAction(metaFile, project, action))
         }
 
         fun isEmpty() = actions.isEmpty()
 
-        fun executeUnderWriteLock() {
-            application.runWriteAction {
-                actions.forEach { it.execute() }
+        fun execute() {
+            val commandProcessor = CommandProcessor.getInstance()
+            var groupId = commandProcessor.currentCommandGroupId
+            if (groupId == null) {
+                groupId = MetaGroupId(nextGroupIdIndex++)
+                commandProcessor.currentCommandGroupId = groupId
+            }
+            application.invokeLater {
+                commandProcessor.allowMergeGlobalCommands {
+                    actions.forEach {
+                        commandProcessor.executeCommand(it.project, {
+                            application.runWriteAction {
+                                it.execute()
+                            }
+                        }, getCommandName(), groupId)
+                    }
+                }
             }
         }
 
@@ -204,7 +203,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
         }
     }
 
-    private class MetaAction(val metaFile: Path, private val action: () -> Unit) {
+    private class MetaAction(val metaFile: Path, val project:Project, private val action: () -> Unit) {
         fun execute() {
             try {
                 action()
