@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.TestRunner.Abstractions.Extensions;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
 {
@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
             {
                 var collectUsageProcess = daemonProcess.GetStageProcess<CollectUsagesStageProcess>().NotNull();
                 if (collectUsageProcess.SwaExtensionsUsageDataInfo.TryGetValue(CallGraphSwaExtensionProvider.Id, out var dataElement))
-                    myGraphDataElement = dataElement.As<CallGraphDataElement>();
+                    myGraphDataElement = dataElement as CallGraphDataElement;
             }
 
             myStack.Push(new BoundContextTag(CallGraphContextTag.NONE, null));
