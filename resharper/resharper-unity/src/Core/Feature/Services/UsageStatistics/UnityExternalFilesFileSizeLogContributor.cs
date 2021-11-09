@@ -84,6 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
             Prefab,
             Scene,
             AsmDef,
+            AsmRef,
             Meta,
 
             KnownBinary,

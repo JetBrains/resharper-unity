@@ -314,6 +314,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             AddExternalPsiSourceFiles(externalFiles.MetaFiles, builder);
             AddExternalPsiSourceFiles(externalFiles.AssetFiles, builder);
             AddExternalPsiSourceFiles(externalFiles.AsmDefFiles, builder);
+            AddExternalPsiSourceFiles(externalFiles.AsmRefFiles, builder);
             FlushChanges(builder);
 
             foreach (var (path, isUserEditable) in externalFiles.Directories)
@@ -352,7 +353,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             // parse all YAML files, which is Bad News for massive files.
             // TODO: Mark assets as non-user files, as they should not be edited manually
             // I'm not sure what this will affect
-            var properties = path.IsAsmDef()
+            var properties = (path.IsAsmDef() || path.IsAsmRef())
                 ? new UnityExternalFileProperties(false, !isUserEditable)
                 : new UnityExternalFileProperties(true, false);
 
@@ -410,6 +411,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             foreach (var externalFile in externalFiles.AsmDefFiles)
             {
                 myUsageStatistics.AddStatistic(UnityExternalFilesFileSizeLogContributor.FileType.AsmDef,
+                    externalFile.Length, externalFile.IsUserEditable);
+            }
+
+            foreach (var externalFile in externalFiles.AsmRefFiles)
+            {
+                myUsageStatistics.AddStatistic(UnityExternalFilesFileSizeLogContributor.FileType.AsmRef,
                     externalFile.Length, externalFile.IsUserEditable);
             }
 
@@ -596,6 +603,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             public readonly List<ExternalFile> MetaFiles = new();
             public readonly List<ExternalFile> AssetFiles = new();
             public readonly List<ExternalFile> AsmDefFiles = new();
+            public readonly List<ExternalFile> AsmRefFiles = new();
             public FrugalLocalList<ExternalFile> KnownBinaryAssetFiles;
             public FrugalLocalList<ExternalFile> ExcludedByNameAssetFiles;
             public FrugalLocalList<(VirtualFileSystemPath directory, bool isUserEditable)> Directories;
@@ -621,7 +629,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     else
                         AssetFiles.Add(new ExternalFile(directoryEntry, isUserEditable));
                 }
-                else if (directoryEntry.RelativePath.IsAsmDef())
+                else if (directoryEntry.RelativePath.IsAsmDef() || directoryEntry.RelativePath.IsAsmRef())
                 {
                     // Do not add if this file is already part of a project. This might be because it's from an editable
                     // package, or because the user has package project generation enabled.
@@ -638,7 +646,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     }
                     else
                     {
-                        AsmDefFiles.Add(new ExternalFile(directoryEntry, isUserEditable));
+                        var files = directoryEntry.RelativePath.IsAsmDef() ? AsmDefFiles : AsmRefFiles;
+                        files.Add(new ExternalFile(directoryEntry, isUserEditable));
                     }
                 }
             }

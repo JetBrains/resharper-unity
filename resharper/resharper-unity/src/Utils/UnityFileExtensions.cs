@@ -97,11 +97,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
             return false;
         }
 
-        public static bool IsIndexedExternalFile(this IPath path)
-        {
-            // TODO: Add .asmref (coming soon)
-            return path.IsYamlDataFile() || path.IsMeta() || path.IsAsmDef();
-        }
+        public static bool IsIndexedExternalFile(this IPath path) =>
+            path.IsYamlDataFile() || path.IsMeta() || path.IsAsmDef() || path.IsAsmRef();
 
         public static bool IsYamlDataFile(this IPath path)
         {
