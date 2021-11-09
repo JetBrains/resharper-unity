@@ -46,31 +46,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.ContextHighlighters
             [ContextKey(typeof(ContextHighlighterPsiFileView.ContextKey))] IPsiDocumentRangeView psiDocumentRangeView
         )
         {
+            var isAsmDef = false;
+            var isAsmRef = false;
+
             var psiView = psiDocumentRangeView.View<JsonNewLanguage>();
             foreach (var file in psiView.SortedSourceFiles)
             {
-                if (!file.IsAsmDef()) return null;
+                isAsmDef |= file.IsAsmDef();
+                isAsmRef |= file.IsAsmRef();
             }
 
-            var declaredElement = FindDeclaredElement(psiView, out var literalExpressionUnderCaret);
+            if (!isAsmDef && !isAsmRef) return null;
+
+            IJsonNewLiteralExpression? literalExpressionUnderCaret = null;
+            var declaredElement = isAsmDef
+                ? FindDeclaredElementForAsmDef(psiView, out literalExpressionUnderCaret)
+                : FindDeclaredElementForAsmRef(psiView);
             if (declaredElement == null) return null;
 
             var highlighter = new AsmDefUsagesContextHighlighter(declaredElement, literalExpressionUnderCaret);
             return highlighter.GetDataProcessAction(prolongedLifetime, psiDocumentRangeView);
         }
 
-        private static IDeclaredElement? FindDeclaredElement(IPsiView psiView,
-                                                             out IJsonNewLiteralExpression? literalExpressionUnderCaret)
+        private static IDeclaredElement? FindDeclaredElementForAsmDef(IPsiView psiView,
+                                                                      out IJsonNewLiteralExpression? literalExpressionUnderCaret)
         {
             literalExpressionUnderCaret = null;
 
             var expression = psiView.GetSelectedTreeNode<IJsonNewLiteralExpression>();
+            if (expression == null)
+                return null;
+
             if (expression.IsNamePropertyValue())
             {
                 literalExpressionUnderCaret = expression;
 
                 // TODO: Not sure I like creating a new DeclaredElement here
-                return new AsmDefNameDeclaredElement(expression.GetUnquotedText(), expression.GetSourceFile(), expression.GetTreeStartOffset().Offset);
+                return new AsmDefNameDeclaredElement(expression.GetUnquotedText(), expression.GetSourceFile(),
+                    expression.GetTreeStartOffset().Offset);
             }
 
             if (expression.IsReferencesArrayEntry())
@@ -81,6 +94,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.ContextHighlighters
             }
 
             return null;
+        }
+
+        private static IDeclaredElement? FindDeclaredElementForAsmRef(IPsiView psiView)
+        {
+            var expression = psiView.GetSelectedTreeNode<IJsonNewLiteralExpression>();
+            if (expression == null)
+                return null;
+
+            if (expression.IsReferencePropertyValue())
+            {
+                var reference = expression.FindReference<AsmDefNameReference>();
+                if (reference != null)
+                    return reference.Resolve().DeclaredElement;
+            }
+
+            return null;
+
         }
 
         protected override void CollectHighlightings(IPsiDocumentRangeView psiDocumentRangeView,
