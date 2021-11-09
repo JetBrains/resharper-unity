@@ -11,6 +11,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef
         public static bool IsNamePropertyValue([NotNullWhen(true)] this ITreeNode? node) =>
             node.AsStringLiteralValue().IsRootPropertyValue("name");
 
+        public static bool IsReferencePropertyValue([NotNullWhen(true)] this ITreeNode? node) =>
+            node.AsStringLiteralValue().IsRootPropertyValue("reference");
+
         public static bool IsReferencesArrayEntry([NotNullWhen(true)] this ITreeNode? node)
         {
             var value = node.AsStringLiteralValue();
