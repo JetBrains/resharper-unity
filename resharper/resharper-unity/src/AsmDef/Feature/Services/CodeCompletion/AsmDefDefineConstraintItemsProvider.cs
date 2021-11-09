@@ -1,4 +1,5 @@
 using System.Linq;
+using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
@@ -10,7 +11,6 @@ using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Resources;
-using JetBrains.ReSharper.TestRunner.Abstractions.Extensions;
 using JetBrains.Text;
 using JetBrains.Util;
 
