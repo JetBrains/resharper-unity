@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Progress;
@@ -23,6 +22,8 @@ using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
@@ -118,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     return;
                 }
 
-                Assertion.AssertNotNull(myModuleFactory.PsiModule, "myModuleFactory.PsiModule != null");
+                Assertion.AssertNotNull(myModuleFactory.PsiModule);
 
                 // Create the source file and add it to the change builder. Normal files are explicitly added to the
                 // module by FlushChanges, which doesn't get called in this scenario. Do it here.
@@ -154,7 +155,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         private void CollectExternalFilesForDirectory(ExternalFiles externalFiles, VirtualFileSystemPath directory,
                                                       bool isUserEditable)
         {
-            Assertion.Assert(directory.IsAbsolute, "directory.IsAbsolute");
+            Assertion.Assert(directory.IsAbsolute);
 
             // Don't process the entire solution directory - this would process Assets and Packages for a second time,
             // and also process Temp and Library, which are likely to be huge. This is unlikely, but be safe.
@@ -309,12 +310,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             });
         }
 
-        private void AddExternalFiles([NotNull] ExternalFiles externalFiles)
+        private void AddExternalFiles(ExternalFiles externalFiles)
         {
             var builder = new PsiModuleChangeBuilder();
             AddExternalPsiSourceFiles(externalFiles.MetaFiles, builder);
             AddExternalPsiSourceFiles(externalFiles.AssetFiles, builder);
             AddExternalPsiSourceFiles(externalFiles.AsmDefFiles, builder);
+            AddExternalPsiSourceFiles(externalFiles.AsmRefFiles, builder);
             FlushChanges(builder);
 
             foreach (var (path, isUserEditable) in externalFiles.Directories)
@@ -353,7 +355,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             // parse all YAML files, which is Bad News for massive files.
             // TODO: Mark assets as non-user files, as they should not be edited manually
             // I'm not sure what this will affect
-            var properties = path.IsAsmDef()
+            var properties = (path.IsAsmDef() || path.IsAsmRef())
                 ? new UnityExternalFileProperties(false, !isUserEditable)
                 : new UnityExternalFileProperties(true, false);
 
@@ -411,6 +413,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             foreach (var externalFile in externalFiles.AsmDefFiles)
             {
                 myUsageStatistics.AddStatistic(UnityExternalFilesFileSizeLogContributor.FileType.AsmDef,
+                    externalFile.Length, externalFile.IsUserEditable);
+            }
+
+            foreach (var externalFile in externalFiles.AsmRefFiles)
+            {
+                myUsageStatistics.AddStatistic(UnityExternalFilesFileSizeLogContributor.FileType.AsmRef,
                     externalFile.Length, externalFile.IsUserEditable);
             }
 
@@ -530,10 +538,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 ProcessFileSystemChangeDelta(child, builder, isDirectoryUserEditable);
         }
 
-        [CanBeNull]
-        private IPsiSourceFile GetExternalPsiSourceFile(VirtualFileSystemPath path)
+        private IPsiSourceFile? GetExternalPsiSourceFile(VirtualFileSystemPath path)
         {
-            Assertion.AssertNotNull(myModuleFactory.PsiModule, "myModuleFactory.PsiModule != null");
+            Assertion.AssertNotNull(myModuleFactory.PsiModule);
             return myModuleFactory.PsiModule.TryGetFileByPath(path, out var sourceFile) ? sourceFile : null;
         }
 
@@ -546,7 +553,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 () =>
                 {
                     var module = myModuleFactory.PsiModule;
-                    Assertion.AssertNotNull(module, "module != null");
+                    Assertion.AssertNotNull(module);
                     myLocks.AssertMainThread();
                     using (myLocks.UsingWriteLock())
                     {
@@ -574,7 +581,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 });
         }
 
-        public object Execute(IChangeMap changeMap) => null;
+        public object? Execute(IChangeMap changeMap) => null;
 
         public struct ExternalFile
         {
@@ -597,6 +604,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             public readonly List<ExternalFile> MetaFiles = new();
             public readonly List<ExternalFile> AssetFiles = new();
             public readonly List<ExternalFile> AsmDefFiles = new();
+            public readonly List<ExternalFile> AsmRefFiles = new();
             public FrugalLocalList<ExternalFile> KnownBinaryAssetFiles;
             public FrugalLocalList<ExternalFile> ExcludedByNameAssetFiles;
             public FrugalLocalList<(VirtualFileSystemPath directory, bool isUserEditable)> Directories;
@@ -622,7 +630,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     else
                         AssetFiles.Add(new ExternalFile(directoryEntry, isUserEditable));
                 }
-                else if (directoryEntry.RelativePath.IsAsmDef())
+                else if (directoryEntry.RelativePath.IsAsmDef() || directoryEntry.RelativePath.IsAsmRef())
                 {
                     // Do not add if this file is already part of a project. This might be because it's from an editable
                     // package, or because the user has package project generation enabled.
@@ -639,7 +647,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     }
                     else
                     {
-                        AsmDefFiles.Add(new ExternalFile(directoryEntry, isUserEditable));
+                        var files = directoryEntry.RelativePath.IsAsmDef() ? AsmDefFiles : AsmRefFiles;
+                        files.Add(new ExternalFile(directoryEntry, isUserEditable));
                     }
                 }
             }
