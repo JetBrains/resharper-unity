@@ -30,6 +30,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Daemon.ContextHighlight
                 "GuidReference_SecondProject.asmdef.meta");
         }
 
+        [Test]
+        public void TestAsmRef()
+        {
+            DoTestSolution("AsmRefReference01.asmref", "AsmRefDefinition01.asmdef");
+        }
+
+        [Test]
+        public void TestAsmRefGuid()
+        {
+            DoTestSolution("AsmRefGuidReference01.asmref", "AsmRefDefinition01.asmdef", "AsmRefDefinition01.asmdef.meta");
+        }
+
         protected override TestSolutionConfiguration CreateSolutionConfiguration(
             ICollection<KeyValuePair<TargetFrameworkId, IEnumerable<string>>> referencedLibraries,
             IEnumerable<string> fileSet)

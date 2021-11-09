@@ -97,7 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
 
         public bool ProcessProjectItem<TResult>(IPsiSourceFile sourceFile, IFindResultConsumer<TResult> consumer)
         {
-            if (!sourceFile.IsAsmDef() || sourceFile.GetPrimaryPsiFile() is not JsonNewFile jsonNewFile)
+            if ((!sourceFile.IsAsmDef() && !sourceFile.IsAsmRef()) || sourceFile.GetPrimaryPsiFile() is not JsonNewFile jsonNewFile)
                 return false;
             return ProcessElement(jsonNewFile, consumer);
         }
