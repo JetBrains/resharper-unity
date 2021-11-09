@@ -13,6 +13,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef
             node.AsStringLiteralValue().IsRootPropertyValue("name");
 
         [ContractAnnotation("node:null => false")]
+        public static bool IsReferencePropertyValue(this ITreeNode? node) =>
+            node.AsStringLiteralValue().IsRootPropertyValue("reference");
+
+        [ContractAnnotation("node:null => false")]
         public static bool IsReferencesArrayEntry(this ITreeNode? node)
         {
             var value = node.AsStringLiteralValue();

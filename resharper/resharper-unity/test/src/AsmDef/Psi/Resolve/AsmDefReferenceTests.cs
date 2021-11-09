@@ -37,5 +37,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Psi.Resolve
             DoTestSolution(new[] { "GuidReference.asmdef" },
                 new[] { "GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta" });
         }
+
+        [Test]
+        public void TestAsmRefReference()
+        {
+            DoTestSolution("AsmRefReference.asmref", "CrossProjectReference.asmdef");
+        }
+
+        [Test]
+        public void TestAsmRefGuidReference()
+        {
+            // We're reusing the GuidReference test files, but as part of the first project
+            DoTestSolution("AsmRefGuidReference.asmref", "GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta");
+        }
     }
 }
