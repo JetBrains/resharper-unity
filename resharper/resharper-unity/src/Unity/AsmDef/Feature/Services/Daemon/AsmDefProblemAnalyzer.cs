@@ -13,7 +13,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
     public abstract class AsmDefProblemAnalyzer<T> : UnityElementProblemAnalyzerBase<T, JsonNewLanguage>
         where T : ITreeNode
     {
-        protected override bool IsAcceptableFile(IPsiSourceFile sourceFile) => sourceFile.IsAsmDef();
+        protected override bool IsAcceptableFile(IPsiSourceFile sourceFile) =>
+            sourceFile.IsAsmDef() || (AcceptsAsmRef && sourceFile.IsAsmRef());
+
+        protected virtual bool AcceptsAsmRef => false;
 
         // INFO severity highlights are supported for non-user code, primarily for identifier highlighting. We're using
         // it to show extended info such as tooltips, inlay hints and greyed out elements. We want this to work with
