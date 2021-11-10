@@ -15,5 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Daemon
 
         [Test] public void TestShowHint() { DoNamedTest2("Ref1.asmdef"); }
         [Test] public void TestNoHintOnUnresolvedReference() { DoNamedTest2(); }
+
+        [Test, TestFileExtension(".asmref")] public void TestAsmRef() { DoNamedTest2("Ref1.asmdef"); }
     }
 }
