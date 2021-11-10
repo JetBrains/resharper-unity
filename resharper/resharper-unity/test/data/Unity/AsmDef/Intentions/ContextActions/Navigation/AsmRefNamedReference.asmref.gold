@@ -1,0 +1,43 @@
+﻿## FindReferencedCodeProvider activity:
+  Tooltip was shown: Referenced code in 'assembly definition FirstProject' were not found.
+
+## FindUsagesAdvancedProvider activity:
+  Immediate result:
+    TO: [O] "reference": "|FirstProject|" RANGE: (18,30) @ AsmRefNamedReference.asmref
+    Navigation result:
+      caret did not move
+
+## GotoDeclarationProvider activity:
+  Immediate result:
+    TO: [O] "name": |"FirstProject|" RANGE: (12,27) @ <TestProject>\AsmRef_FirstProject.asmdef
+    Navigation result:
+      opened file: AsmRef_FirstProject.asmdef
+      ------------------
+      {
+        "name": "|CARET|FirstProject"
+      }
+
+      ------------------
+
+
+## GoToUnityUsagesProvider activity:
+  Tooltip was shown: Usages of 'FirstProject' were not found.
+
+## HighlightUsagesProvider activity:
+  Immediate result:
+    TO: [O] "reference": "|FirstProject|" RANGE: (18,30) @ AsmRefNamedReference.asmref
+    Navigation result:
+      caret did not move
+
+## ShowUsagesProvider activity:
+  Immediate result:
+    TO: [O] "reference": "|FirstProject|" RANGE: (18,30) @ AsmRefNamedReference.asmref
+    Navigation result:
+      caret did not move
+
+## UnityFindUsagesProvider activity:
+  Immediate result:
+    TO: [O] "reference": "|FirstProject|" RANGE: (18,30) @ AsmRefNamedReference.asmref
+    Navigation result:
+      caret did not move
+
