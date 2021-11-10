@@ -23,12 +23,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
             })]
     public class GuidReferenceInfoAnalyzer : AsmDefProblemAnalyzer<IJsonNewLiteralExpression>
     {
+        protected override bool AcceptsAsmRef => true;
+
         protected override void Run(IJsonNewLiteralExpression element,
                                     ElementProblemAnalyzerData data,
                                     IHighlightingConsumer consumer)
         {
-            if (element.IsReferencesArrayEntry() && element.GetUnquotedText().StartsWith("guid:",
-                StringComparison.InvariantCultureIgnoreCase))
+            if ((element.IsReferencesArrayEntry() || element.IsReferencePropertyValue())
+                && element.GetUnquotedText().StartsWith("guid:", StringComparison.InvariantCultureIgnoreCase))
             {
                 var reference = element.FindReference<AsmDefNameReference>();
                 var declaredElement = reference?.Resolve().DeclaredElement;
