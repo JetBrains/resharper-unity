@@ -13,7 +13,6 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
-// ScopedContextActionBase<> is NRT ready!
 #nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.ContextActions
@@ -35,8 +34,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.ContextActio
         protected override IJsonNewLiteralExpression? TryCreateInfoFromDataProvider(IUserDataHolder cache)
         {
             var literalExpression = myDataProvider.GetSelectedTreeNode<IJsonNewLiteralExpression>();
-            if (literalExpression == null || !literalExpression.IsReferencesArrayEntry())
+            if (literalExpression == null || (!literalExpression.IsReferencesArrayEntry() &&
+                                              !literalExpression.IsReferencePropertyValue()))
+            {
                 return null;
+            }
 
             return literalExpression;
         }

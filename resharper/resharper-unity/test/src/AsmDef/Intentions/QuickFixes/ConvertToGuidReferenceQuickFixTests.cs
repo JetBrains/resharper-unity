@@ -6,12 +6,12 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Intentions.QuickFixes
 {
     [TestUnity]
-    [TestFileExtension(".asmdef")]
     public class ConvertToGuidReferenceQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
     {
         protected override string RelativeTestDataPath => @"AsmDef\Intentions\QuickFixes\ConvertToGuidReference\Availability";
 
-        [Test] public void Test01() { DoNamedTest("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
+        [Test, TestFileExtension(".asmdef")] public void Test01() { DoNamedTest("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
+        [Test, TestFileExtension(".asmref")] public void TestAsmRef01() { DoNamedTest("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
     }
 
     [TestUnity]
@@ -22,5 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Intentions.QuickFixes
 
         [Test] public void Test01() { DoNamedTest("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
         [Test, ExecuteScopedQuickFixInFile] public void TestExecuteInScope() { DoNamedTest("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
+
+        [Test, TestFileExtension(".asmref")] public void TestAsmRef01() { DoNamedTest("GuidReference_SecondProject.asmdef", "GuidReference_SecondProject.asmdef.meta"); }
     }
 }
