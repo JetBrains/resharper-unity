@@ -36,6 +36,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Update Unity API information to 2021.2.0b8 ([#2151](https://github.com/JetBrains/resharper-unity/pull/2151))
 - Update icons to match Unity branding changes
 - Rider: Several fixes and improvements to meta file tracking ([RIDER-48085](https://youtrack.jetbrains.com/issue/RIDER-48085), [RIDER-53643](https://youtrack.jetbrains.com/issue/RIDER-53643), [RIDER-67666](https://youtrack.jetbrains.com/issue/RIDER-67666), [#2145](https://github.com/JetBrains/resharper-unity/pull/2145))
+- Rider: About dialog includes project's Rider package version ([#2211](https://github.com/JetBrains/resharper-unity/pull/2211))
 - ReSharper: Improve asset usage grouping ([#2169](https://github.com/JetBrains/resharper-unity/pull/2169))
 - ReSharper: Remove meta file tracking in favour of VSTU's implementation ([RIDER-48085](https://youtrack.jetbrains.com/issue/RIDER-48085), [#2145](https://github.com/JetBrains/resharper-unity/pull/2145))
 
