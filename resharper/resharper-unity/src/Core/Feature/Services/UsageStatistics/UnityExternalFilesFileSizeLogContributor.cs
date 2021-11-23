@@ -59,7 +59,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
             stats["rmfc"] = myStatistics.Count(d => d.FileType == FileType.Meta && !d.IsUserEditable);
 
             // "All meta file average"
-            stats["amfa"] = myStatistics.Where(d => d.FileType == FileType.Meta).Average(d => (float) d.Length);
+            var metaFilesStats = myStatistics.Where(d => d.FileType == FileType.Meta).ToArray();
+            if (metaFilesStats.Any())
+                stats["amfa"] = metaFilesStats.Average(d => (float) d.Length);
 
             stats["e"] = myAssetIndexingSupport.IsEnabled.Value;
 
