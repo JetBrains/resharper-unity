@@ -11,24 +11,21 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotifications
 import com.intellij.ui.HyperlinkLabel
-import com.intellij.util.io.exists
-import com.intellij.util.io.isDirectory
 import com.intellij.util.text.VersionComparatorUtil
 import com.jetbrains.rd.framework.RdTaskResult
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rd.util.reactive.whenTrue
-import com.jetbrains.rider.plugins.unity.isUnityProject
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
+import com.jetbrains.rider.plugins.unity.isUnityProject
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.isUxmlFile
-import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
 import com.jetbrains.rider.projectView.solution
-import java.nio.file.Paths
+import com.jetbrains.rider.projectView.solutionDirectory
 
 class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNotificationPanel>() {
 
@@ -76,8 +73,8 @@ class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNo
                 return panel
             }
 
-            val schemasFolder = Paths.get(project.projectDir.canonicalPath!!, "UIElementsSchema")
-            if (!schemasFolder.exists() || !schemasFolder.isDirectory()) {
+            val schemasFolder = project.solutionDirectory.resolve("UIElementsSchema")
+            if (!schemasFolder.isDirectory()) {
                 val panel = EditorNotificationPanel()
                 panel.text("Generate UIElements schema to get validation and code completion.")
 
@@ -123,7 +120,7 @@ class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNo
                 // about the newly created UIElementsSchema directory. We have to use the VFS instead of nio File
                 // because we need a VirtualFile to create an XmlFile to represent the schema and also to act as a
                 // trackable dependency for the cached schema value.
-                VfsUtil.markDirtyAndRefresh(false, true, true, project.projectDir)
+                VfsUtil.markDirtyAndRefresh(false, true, true, project.solutionDirectory)
                 DaemonCodeAnalyzer.getInstance(project).restart()
             } else {
                 // This is either an exception in UxmlSchemaGenerator, an exception in the protocol, or we're unable to

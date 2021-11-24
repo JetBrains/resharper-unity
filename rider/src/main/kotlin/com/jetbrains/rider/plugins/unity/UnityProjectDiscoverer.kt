@@ -2,14 +2,15 @@ package com.jetbrains.rider.plugins.unity
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
+import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.solutionFile
+import java.io.File
+import java.io.FileFilter
 
 class UnityProjectDiscoverer(private val project: Project) : LifetimedService() {
     // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
@@ -34,10 +35,10 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
         fun getInstance(project: Project): UnityProjectDiscoverer = project.service()
 
         fun hasUnityFileStructure(project: Project): Boolean {
-            return hasUnityFileStructure(project.projectDir)
+            return hasUnityFileStructure(project.solutionDirectory)
         }
 
-        fun hasUnityFileStructure(projectDir: VirtualFile): Boolean {
+        fun hasUnityFileStructure(projectDir: File): Boolean {
             // Make sure we have an Assets folder and a ProjectSettings folder. We can't rely on Library, as that won't
             // be available for a freshly checked out project. That's quite a weak check, so to reduce the chance of
             // false positives, we'll also check for `ProjectSettings/ProjectVersion.txt` OR `ProjectSettings/*.asset`.
@@ -46,14 +47,14 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
             // (Technically, Library will be there for a generated project, as we won't have project files without the
             // project being loaded into Unity, which will create the Library folder. But it won't be there for sidecar
             // projects or if the project is accidentally opened as a folder)
-            if (projectDir.findChild("Assets")?.isDirectory == false)
+            if (!projectDir.resolve("Assets").isDirectory)
                 return false
-            val projectSettings = projectDir.findChild("ProjectSettings")
-            if (projectSettings == null || !projectSettings.isDirectory)
+            val projectSettings = projectDir.resolve("ProjectSettings")
+            if (!projectSettings.isDirectory)
                 return false
-            return projectSettings.children.any {
-                it.name == "ProjectVersion.txt" || it.extension == "asset"
-            }
+
+            return projectSettings.resolve("ProjectVersion.txt").exists()
+                || projectSettings.listFiles(FileFilter { it.extension == "asset" && it.isFile })!!.any()
         }
     }
 
@@ -64,7 +65,7 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
 
     private fun solutionNameMatchesUnityProjectName(project: Project): Boolean {
         val solutionFile = project.solutionFile
-        return solutionFile.nameWithoutExtension == project.projectDir.name
+        return solutionFile.nameWithoutExtension == project.solutionDirectory.name
     }
 }
 

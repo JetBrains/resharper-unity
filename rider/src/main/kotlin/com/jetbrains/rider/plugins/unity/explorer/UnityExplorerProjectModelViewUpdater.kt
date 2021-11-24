@@ -9,9 +9,9 @@ import com.intellij.ui.tree.TreeVisitor
 import com.intellij.workspaceModel.ide.WorkspaceModelChangeListener
 import com.intellij.workspaceModel.ide.WorkspaceModelTopics
 import com.intellij.workspaceModel.storage.VersionedStorageChange
-import com.jetbrains.rider.plugins.unity.util.findFile
 import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 import com.jetbrains.rider.projectView.ProjectModelViewUpdater
+import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.views.SolutionViewVisitor
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 
@@ -31,7 +31,7 @@ class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewU
 
                     // Only update the Packages subtree, unless it's been added/removed, then update everything
                     val hasPackagesRoot = pane?.hasPackagesRoot()
-                    val hasPackagesFolder = project.findFile("Packages")?.isDirectory
+                    val hasPackagesFolder = project.solutionDirectory.resolve("Packages").isDirectory
                     if (hasPackagesRoot != hasPackagesFolder) {
                         updateAll()
                     }

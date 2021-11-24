@@ -2,8 +2,9 @@ package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.projectDir
+import com.jetbrains.rdclient.util.idea.toVirtualFile
 import com.jetbrains.rider.projectView.ideaInterop.RiderScratchProjectViewPane
+import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
 import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
 
@@ -13,13 +14,13 @@ class UnityExplorerRootNode(project: Project)
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val nodes = mutableListOf<AbstractTreeNode<*>>()
 
-        val assetsFolder = myProject.projectDir.findChild("Assets")!!
-        nodes.add(AssetsRootNode(myProject, assetsFolder))
+        val assetsFolder = myProject.solutionDirectory.resolve("Assets")
+        nodes.add(AssetsRootNode(myProject, assetsFolder.toVirtualFile()!!))
 
         // Older Unity versions won't have a packages folder
-        val packagesFolder = myProject.projectDir.findChild("Packages")
-        if (packagesFolder?.exists() == true) {
-            nodes.add(PackagesRootNode(myProject, packagesFolder))
+        val packagesFolder = myProject.solutionDirectory.resolve("Packages")
+        if (packagesFolder.isDirectory()) {
+            nodes.add(PackagesRootNode(myProject, packagesFolder.toVirtualFile()!!))
         }
 
         if (ConfigureScratchesAction.showScratchesInExplorer(myProject)) {

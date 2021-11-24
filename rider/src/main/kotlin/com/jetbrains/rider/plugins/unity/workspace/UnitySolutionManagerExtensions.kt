@@ -23,7 +23,7 @@ class UnitySolutionManagerExtensions : SolutionManagerExtensions {
         if (handledPath == dotIdeaDir.toString()) return emptyArray()
 
         // <projectDir>/.idea/.idea.SolutionName/.idea
-        val projectDir = dotIdeaDir.parent?.parent?.parent?.toFile()?.toVirtualFile(true) ?: return emptyArray()
+        val projectDir = dotIdeaDir.parent?.parent?.parent?.toFile() ?: return emptyArray()
         if (!UnityProjectDiscoverer.hasUnityFileStructure(projectDir)) return emptyArray()
 
         PropertiesComponent.getInstance().setValue(key, dotIdeaDir.toString())

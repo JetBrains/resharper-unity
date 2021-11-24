@@ -20,15 +20,14 @@ import com.jetbrains.rd.platform.util.getLogger
 import com.jetbrains.rdclient.util.idea.toIOFile
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
 import com.jetbrains.rider.plugins.unity.workspace.getPackages
-import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.VfsBackendRequester
+import com.jetbrains.rider.projectView.solutionDirectory
 import org.jetbrains.annotations.Nls
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
-import kotlin.collections.HashSet
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.name
 
@@ -126,7 +125,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
     private fun isApplicableForProject(event: VFileEvent, project:Project): Boolean {
         val file = event.file ?: return false
 
-        if (VfsUtil.isAncestor(project.projectDir.toNioPath().resolve("Assets").toFile(), file.toIOFile(), false))
+        if (VfsUtil.isAncestor(project.solutionDirectory.resolve("Assets"), file.toIOFile(), false))
             return true
 
         val editablePackages = WorkspaceModel.getInstance(project).getPackages().filter { it.isEditable() }

@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.openapi.rd.util.launchNonUrgentBackground
 import com.intellij.openapi.rd.util.withUiContext
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
 import com.intellij.util.ui.EdtInvocationManager
 import com.intellij.workspaceModel.ide.WorkspaceModel
@@ -17,17 +16,18 @@ import com.jetbrains.rd.ide.model.RdVirtualSolution
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rd.util.reactive.whenTrue
+import com.jetbrains.rdclient.util.idea.toVirtualFile
 import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.workspace.hasPackage
-import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionManager
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
+import com.jetbrains.rider.projectView.solutionDirectory
 import javax.swing.event.HyperlinkEvent
 
 class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
@@ -88,16 +88,16 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                     }
                 }
 
-                val baseDir: VirtualFile = project.projectDir
-                val solutionFile = baseDir.findChild(baseDir.name + ".sln")
-                if (solutionFile != null && solutionFile.exists()) {
+                val solutionFile = project.solutionDirectory.resolve(project.solutionDirectory.name + ".sln")
+                if (solutionFile.exists()) {
                     notification.addAction(object : NotificationAction("Reopen as Unity project") {
                         override fun actionPerformed(e: AnActionEvent, n: Notification) {
                             // SolutionManager doesn't close the current project if focusOpenInNewFrame is set to true,
                             // and if it's set to false, we get prompted if we want to open in new or same frame. We
                             // don't care - we want to close this project, so new frame or reusing means nothing
                             e.project?.let { ProjectManagerEx.getInstanceEx().closeAndDispose(it) }
-                            val newProject = SolutionManager.openExistingSolution(null, true, solutionFile, true, true) ?: return
+                            val solutionVirtualFile = solutionFile.toVirtualFile()!!
+                            val newProject = SolutionManager.openExistingSolution(null, true, solutionVirtualFile, true, true) ?: return
 
                             // Opening as folder saves settings to `.idea/.idea.{folder}`. This includes the last selected
                             // solution view pane, which will be file system. A Unity generated solution will use the

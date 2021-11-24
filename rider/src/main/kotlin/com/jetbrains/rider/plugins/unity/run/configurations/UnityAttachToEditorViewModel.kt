@@ -12,7 +12,7 @@ import com.jetbrains.rd.util.reactive.ViewableList
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
-import com.jetbrains.rider.projectDir
+import com.jetbrains.rider.projectView.solutionDirectory
 
 class UnityAttachToEditorViewModel(val lifetime: Lifetime, private val project: Project) {
 
@@ -43,7 +43,7 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, private val project: 
                     editorInstanceJson.contents?.process_id
                 } else {
                     // If we're a class library project in the same folder as a Unity project, we can still guess the name
-                    editors.firstOrNull { project.projectDir.name.equals(it.projectName, true) }?.pid
+                    editors.firstOrNull { project.solutionDirectory.name.equals(it.projectName, true) }?.pid
                 }
             }, ModalityState.any())
         }

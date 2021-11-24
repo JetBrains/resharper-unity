@@ -13,9 +13,9 @@ import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.xml.XmlFile
 import com.intellij.xml.XmlSchemaProvider
 import com.jetbrains.rd.platform.util.idea.getOrCreateUserData
+import com.jetbrains.rdclient.util.idea.toVirtualFile
 import com.jetbrains.rider.plugins.unity.isUnityProject
-import com.jetbrains.rider.projectDir
-import java.nio.file.Paths
+import com.jetbrains.rider.projectView.solutionDirectory
 
 class UxmlSchemaProvider: XmlSchemaProvider(), DumbAware {
     private val SCHEMAS_FILE_MAP_KEY: Key<MutableMap<String, CachedValue<XmlFile>>> = Key.create("UXML_SCHEMAS_FILE_MAP_KEY")
@@ -36,13 +36,13 @@ class UxmlSchemaProvider: XmlSchemaProvider(), DumbAware {
         if (cachedValue != null) return cachedValue.value
 
         val schema = CachedValuesManager.getManager(project).createCachedValue(object : CachedValueProvider<XmlFile> {
-            override fun compute(): CachedValueProvider.Result<XmlFile>? {
-                val file = project.projectDir.findFileByRelativePath("/UIElementsSchema/$url.xsd")
-                if (file == null || !file.exists()) {
+            override fun compute(): CachedValueProvider.Result<XmlFile> {
+                val file = project.solutionDirectory.resolve("UIElementsSchema/$url.xsd")
+                if (!file.isFile()) {
                     return CachedValueProvider.Result(null, ModificationTracker.EVER_CHANGED)
                 }
 
-                val psiFile = PsiManager.getInstance(project).findFile(file)
+                val psiFile = PsiManager.getInstance(project).findFile(file.toVirtualFile()!!)
 
                 return CachedValueProvider.Result.create(psiFile as XmlFile, psiFile, file)
             }
@@ -61,7 +61,7 @@ class UxmlSchemaProvider: XmlSchemaProvider(), DumbAware {
     override fun getLocations(namespace: String, context: XmlFile): Set<String>? {
         val schemas = getSchemas(context.project)
         if (schemas.containsKey(namespace)) {
-            return mutableSetOf(Paths.get(context.project.projectDir.canonicalPath, "UIElementsSchema", "$namespace.xsd").toUri().toString())
+            return mutableSetOf(context.project.solutionDirectory.resolve( "UIElementsSchema").resolve("$namespace.xsd").toURI().toString())
         }
 
         return null

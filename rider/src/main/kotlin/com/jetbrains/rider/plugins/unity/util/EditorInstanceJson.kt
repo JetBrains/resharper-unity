@@ -5,14 +5,14 @@ import com.intellij.execution.process.ProcessInfo
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.vfs.*
-import com.intellij.openapi.vfs.AsyncFileListener.*
+import com.intellij.openapi.vfs.AsyncFileListener
+import com.intellij.openapi.vfs.AsyncFileListener.ChangeApplier
+import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
-import com.jetbrains.rider.projectDir
+import com.jetbrains.rider.projectView.solutionDirectory
 import java.io.FileReader
 import java.io.IOException
-import java.nio.file.Paths
 
 enum class EditorInstanceJsonStatus {
     Missing,
@@ -46,7 +46,7 @@ data class EditorInstanceJson(val status: EditorInstanceJsonStatus, val contents
                 return empty(EditorInstanceJsonStatus.Missing)
 
             // Canonical path will always be true for a Rider project
-            val file = Paths.get(project.projectDir.canonicalPath!!, "Library/EditorInstance.json").toFile()
+            val file = project.solutionDirectory.resolve("Library/EditorInstance.json")
             if (!file.exists()) {
                 return empty(EditorInstanceJsonStatus.Missing)
             }
