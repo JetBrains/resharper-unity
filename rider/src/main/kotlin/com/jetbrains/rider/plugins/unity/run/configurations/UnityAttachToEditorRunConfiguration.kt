@@ -80,7 +80,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
             val params = ExeConfigurationParameters(
                 exePath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath().toString(),
                 programParameters = mutableListOf<String>().withProjectPath(project).withDebugCodeOptimization().withRiderPath().toProgramParameters(),
-                workingDirectory = project.basePath!!,
+                workingDirectory = project.solutionDirectory.canonicalPath,
                 envs = hashMapOf(),
                 isPassParentEnvs = true,
                 useExternalConsole = false

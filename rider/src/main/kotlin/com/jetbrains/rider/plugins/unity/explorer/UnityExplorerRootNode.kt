@@ -19,9 +19,8 @@ class UnityExplorerRootNode(project: Project)
 
         // Older Unity versions won't have a packages folder
         val packagesFolder = myProject.solutionDirectory.resolve("Packages")
-        if (packagesFolder.isDirectory()) {
+        if (packagesFolder.isDirectory)
             nodes.add(PackagesRootNode(myProject, packagesFolder.toVirtualFile()!!))
-        }
 
         if (ConfigureScratchesAction.showScratchesInExplorer(myProject)) {
             nodes.add(RiderScratchProjectViewPane.createNode(myProject))

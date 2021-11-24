@@ -74,7 +74,7 @@ class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNo
             }
 
             val schemasFolder = project.solutionDirectory.resolve("UIElementsSchema")
-            if (!schemasFolder.isDirectory()) {
+            if (!schemasFolder.isDirectory) {
                 val panel = EditorNotificationPanel()
                 panel.text("Generate UIElements schema to get validation and code completion.")
 
