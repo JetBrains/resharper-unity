@@ -12,26 +12,31 @@ import icons.UnityIcons
 
 class UnityImportantActions : DefaultActionGroup(), DumbAware {
     override fun update(e: AnActionEvent) {
-        if (!e.isUnityProjectFolder()) {
+        if (isVisible(e)) {
+            e.presentation.isVisible = true
+            e.presentation.icon = UnityIcons.Actions.UnityActionsGroup
+        } else{
             e.presentation.isVisible = false
-            return
         }
+    }
 
-        e.presentation.isVisible = true
-        e.presentation.icon = UnityIcons.Actions.UnityActionsGroup
+    companion object{
+        fun isVisible(e: AnActionEvent): Boolean {
+            return e.isUnityProjectFolder()
+        }
     }
 }
 
 class UnityDllImportantActions : DefaultActionGroup(), DumbAware {
     override fun update(e: AnActionEvent) {
-        val project = e.project
-        if (project == null || e.isUnityProject() ||
-            !project.solution.frontendBackendModel.hasUnityReference.valueOrDefault(false)) {
+        val project = e.project ?: return
+        if (project.solution.frontendBackendModel.hasUnityReference.valueOrDefault(false)
+            && !UnityImportantActions.isVisible(e)) {
+            e.presentation.isVisible = true
+            e.presentation.icon = UnityIcons.Actions.UnityActionsGroup
+        } else{
             e.presentation.isVisible = false
-            return
-        }
 
-        e.presentation.isVisible = true
-        e.presentation.icon = UnityIcons.Actions.UnityActionsGroup
+        }
     }
 }
