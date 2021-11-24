@@ -47,8 +47,8 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
             // (Technically, Library will be there for a generated project, as we won't have project files without the
             // project being loaded into Unity, which will create the Library folder. But it won't be there for sidecar
             // projects or if the project is accidentally opened as a folder)
-            if (!projectDir.resolve("Assets").isDirectory)
-                return false
+            if (!projectDir.isDirectory) return false
+            if (!projectDir.resolve("Assets").isDirectory) return false
             val projectSettings = projectDir.resolve("ProjectSettings")
             if (!projectSettings.isDirectory)
                 return false
