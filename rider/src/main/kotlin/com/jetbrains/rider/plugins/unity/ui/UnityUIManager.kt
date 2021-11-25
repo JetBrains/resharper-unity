@@ -18,7 +18,8 @@ class UnityUIManager : PersistentStateComponent<Element> {
     override fun getState(): Element {
         val element = Element("state")
         val hasMinimizedUi = hasMinimizedUi.value
-        element.setAttribute(hasMinimizedUiAttribute, hasMinimizedUi.toString())
+        if (hasMinimizedUi != null)
+            element.setAttribute(hasMinimizedUiAttribute, hasMinimizedUi.toString())
         return element
     }
 
