@@ -3,6 +3,7 @@ package integrationTests
 import base.integrationTests.*
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rdclient.util.idea.waitAndPump
+import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.executeWithGold
@@ -47,7 +48,7 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
             waitFirstScriptCompilation(project)
             waitConnectionToUnityEditor(project)
 
-            val externalEditorPath = File(project.basePath, "Assets/ExternalEditor.txt")
+            val externalEditorPath = project.solutionDirectory.resolve( "Assets/ExternalEditor.txt")
 
             execute()
             waitAndPump(project.lifetime, { externalEditorPath.exists() }, unityDefaultTimeout)

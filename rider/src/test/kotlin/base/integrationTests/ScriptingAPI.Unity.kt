@@ -20,21 +20,21 @@ import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
-import com.jetbrains.rider.plugins.unity.model.*
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnitTestLaunchPreference
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToPausepoint
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
+import com.jetbrains.rider.plugins.unity.model.*
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnitTestLaunchPreference
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.getUnityArgs
 import com.jetbrains.rider.plugins.unity.util.withDebugCodeOptimization
 import com.jetbrains.rider.plugins.unity.util.withProjectPath
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.services.popups.nova.headless.NullPrintStream
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
 import com.jetbrains.rider.test.base.BaseTestWithSolution
@@ -89,7 +89,7 @@ fun createLibraryFolderIfNotExist(solutionDirectory: File) {
 }
 
 fun replaceUnityVersionOnCurrent(project: Project) {
-    val projectVersionFile = File(project.basePath, "ProjectSettings").resolve("ProjectVersion.txt")
+    val projectVersionFile = project.solutionDirectory.resolve( "ProjectSettings/ProjectVersion.txt")
     val oldVersion = projectVersionFile.readText().split(Regex("\\s+"))[1]
 
     val newVersion = UnityInstallationFinder.getInstance(project).getApplicationVersion()
@@ -232,7 +232,7 @@ fun installPlugin(project: Project) {
     frameworkLogger.info("Trying to install editor plugin")
     project.solution.frontendBackendModel.installEditorPlugin.fire(Unit)
 
-    val editorPluginPath = Paths.get(project.basePath!!)
+    val editorPluginPath = project.solutionDirectory
         .resolve("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")
     waitAndPump(project.lifetime, { editorPluginPath.exists() }, unityActionsTimeout) { "EditorPlugin was not installed." }
     frameworkLogger.info("Editor plugin was installed")
@@ -265,7 +265,7 @@ private fun IntegrationTestWithFrontendBackendModel.executeMethod(runMethodData:
 
 fun waitFirstScriptCompilation(project: Project) {
     frameworkLogger.info("Waiting for .start file exist")
-    val unityStartFile = Paths.get(project.basePath!!).resolve(".start")
+    val unityStartFile = project.solutionDirectory.resolve(".start")
     waitAndPump(project.lifetime, { unityStartFile.exists() }, unityDefaultTimeout) { "Unity was not started." }
     frameworkLogger.info("Unity started (.start file exist)")
 }
@@ -282,7 +282,7 @@ fun waitConnectionToUnityEditor(project: Project) {
 }
 
 fun BaseTestWithSolutionBase.checkSweaInSolution(project: Project) {
-    changeFileSystem2(project) { arrayOf(File(project.basePath, "Assembly-CSharp.csproj")) }
+    changeFileSystem2(project) { arrayOf(project.solutionDirectory.resolve( "Assembly-CSharp.csproj")) }
     checkSwea(project)
 }
 

@@ -12,6 +12,7 @@ import com.jetbrains.rider.model.RdDeltaBatch
 import com.jetbrains.rider.model.RdDeltaType
 import com.jetbrains.rider.model.fileSystemModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.projectView.solutionDirectory
 import java.nio.file.*
 import java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY
 import kotlin.concurrent.thread
@@ -23,9 +24,9 @@ class ProtocolInstanceWatcher(project: Project) : LifetimedProjectComponent(proj
             project.solution.isLoaded.whenTrue(componentLifetime) {
                 thread(name = "ProtocolInstanceWatcher") {
                     val watchService: WatchService = FileSystems.getDefault().newWatchService()
-                    val libraryPath: Path = Paths.get(project.basePath!!, "Library")
+                    val libraryPath = project.solutionDirectory.resolve("Library").toPath()
 
-                    if (!(libraryPath.exists() && libraryPath.isDirectory())) // todo: rethink, see com.jetbrains.rider.UnityProjectDiscoverer.Companion.hasUnityFileStructure
+                    if (!(libraryPath.isDirectory())) // todo: rethink, see com.jetbrains.rider.UnityProjectDiscoverer.Companion.hasUnityFileStructure
                         return@thread
 
                     libraryPath.register(watchService, ENTRY_MODIFY)

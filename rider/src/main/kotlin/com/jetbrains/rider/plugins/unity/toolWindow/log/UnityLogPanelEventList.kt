@@ -19,9 +19,9 @@ import com.intellij.ui.components.JBList
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rdclient.util.idea.toVirtualFile
+import com.jetbrains.rider.projectView.solutionDirectory
 import java.awt.Font
 import java.awt.datatransfer.StringSelection
-import java.io.File
 import javax.swing.DefaultListModel
 import javax.swing.ListSelectionModel
 
@@ -72,7 +72,7 @@ class UnityLogPanelEventList(lifetime: Lifetime) : JBList<LogPanelItem>(emptyLis
         val path = match.groups["path"]?.value ?: return null
         val line = (match.groups["line"]?.value?.toInt() ?: return null) - 1
 
-        val file = File(project.basePath, path)
+        val file = project.solutionDirectory.resolve(path)
         if (!file.exists())
             return null
         val virtualFile = file.toVirtualFile()
