@@ -55,8 +55,6 @@ class UnityUIMinimizer : StartupActivity {
             if (UnityProjectDiscoverer.getInstance(project).isUnityGeneratedProject) {
                 if (unityUIManager.hasMinimizedUi.value == null || unityUIManager.hasMinimizedUi.hasTrueValue())
                     ensureMinimizedUI(project)
-                else
-                    recoverFullUI(project)
             }
         }
     }
