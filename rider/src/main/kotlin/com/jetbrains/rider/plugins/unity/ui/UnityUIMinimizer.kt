@@ -6,6 +6,7 @@ import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.util.application
 import com.jetbrains.rider.build.actions.ActiveConfigurationAndPlatformAction
+import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 
 class UnityUIMinimizer : StartupActivity {
     companion object {
@@ -50,8 +51,10 @@ class UnityUIMinimizer : StartupActivity {
     override fun runActivity(project: Project) {
         application.invokeLater {
             val unityUIManager = UnityUIManager.getInstance(project)
-            if (unityUIManager.hasMinimizedUi.hasTrueValue()) {
-                ensureMinimizedUI(project)
+            // Only hide UI for generated projects, so that sidecar projects can still access nuget
+            if (UnityProjectDiscoverer.getInstance(project).isUnityGeneratedProject) {
+                if (unityUIManager.hasMinimizedUi.value == null || unityUIManager.hasMinimizedUi.hasTrueValue())
+                    ensureMinimizedUI(project)
             }
         }
     }

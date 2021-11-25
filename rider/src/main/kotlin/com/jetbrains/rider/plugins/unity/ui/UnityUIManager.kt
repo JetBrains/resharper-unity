@@ -2,15 +2,11 @@ package com.jetbrains.rider.plugins.unity.ui
 
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
-import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.util.reactive.Property
-import com.jetbrains.rd.util.reactive.whenTrue
-import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
-import com.jetbrains.rider.projectView.SolutionLifecycleHost
 import org.jdom.Element
 
 @State(name = "UnityProjectConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
-class UnityUIManager(project: Project) : LifetimedService(), PersistentStateComponent<Element> {
+class UnityUIManager : PersistentStateComponent<Element> {
 
     companion object {
         const val hasMinimizedUiAttribute = "hasMinimizedUI"
@@ -18,13 +14,6 @@ class UnityUIManager(project: Project) : LifetimedService(), PersistentStateComp
     }
 
     val hasMinimizedUi: Property<Boolean?> = Property(null) //null means undefined, default value
-
-    init {
-        SolutionLifecycleHost.getInstance(project).isBackendLoaded.whenTrue(serviceLifetime) {
-            // Only hide UI for generated projects, so that sidecar projects can still access nuget
-            if (UnityProjectDiscoverer.getInstance(project).isUnityGeneratedProject && hasMinimizedUi.value == null) hasMinimizedUi.set(true)
-        }
-    }
 
     override fun getState(): Element {
         val element = Element("state")
