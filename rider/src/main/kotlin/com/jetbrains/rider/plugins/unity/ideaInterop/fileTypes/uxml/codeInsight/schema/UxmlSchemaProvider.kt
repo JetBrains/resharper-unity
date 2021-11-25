@@ -15,6 +15,7 @@ import com.intellij.xml.XmlSchemaProvider
 import com.jetbrains.rd.platform.util.idea.getOrCreateUserData
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectDir
+import com.jetbrains.rider.projectView.solutionDirectory
 import java.nio.file.Paths
 
 class UxmlSchemaProvider: XmlSchemaProvider(), DumbAware {
@@ -61,7 +62,7 @@ class UxmlSchemaProvider: XmlSchemaProvider(), DumbAware {
     override fun getLocations(namespace: String, context: XmlFile): Set<String>? {
         val schemas = getSchemas(context.project)
         if (schemas.containsKey(namespace)) {
-            return mutableSetOf(Paths.get(context.project.projectDir.canonicalPath, "UIElementsSchema", "$namespace.xsd").toUri().toString())
+            return mutableSetOf(context.project.solutionDirectory.resolve("UIElementsSchema/$namespace.xsd").toURI().toString())
         }
 
         return null

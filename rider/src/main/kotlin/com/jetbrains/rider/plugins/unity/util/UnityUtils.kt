@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.util
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.util.Restarter
+import com.jetbrains.rider.projectView.solutionDirectory
 
 fun convertPidToDebuggerPort(port: Int) = convertPidToDebuggerPort(port.toLong())
 
@@ -38,7 +39,7 @@ fun MutableList<String>.withDebugCodeOptimization() : MutableList<String> {
 }
 
 fun MutableList<String>.withProjectPath(project: Project) : MutableList<String> {
-    this.addAll(mutableListOf("-projectPath", project.basePath.toString()))
+    this.addAll(mutableListOf("-projectPath", project.solutionDirectory.canonicalPath))
     return this
 }
 

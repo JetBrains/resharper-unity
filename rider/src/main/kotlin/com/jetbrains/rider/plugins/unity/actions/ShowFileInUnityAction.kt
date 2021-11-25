@@ -7,13 +7,11 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.util.Utils
-import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solution
-import java.io.File
 
 open class ShowFileInUnityAction : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {

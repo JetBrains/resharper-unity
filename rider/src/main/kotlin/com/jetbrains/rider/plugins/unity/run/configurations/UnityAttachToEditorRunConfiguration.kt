@@ -22,8 +22,8 @@ import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeCon
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeDebugProfileState
 import com.jetbrains.rider.plugins.unity.util.*
-import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.run.configurations.exe.ExeConfigurationParameters
 import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
@@ -80,7 +80,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
             val params = ExeConfigurationParameters(
                 exePath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath().toString(),
                 programParameters = mutableListOf<String>().withProjectPath(project).withDebugCodeOptimization().withRiderPath().toProgramParameters(),
-                workingDirectory = project.basePath!!,
+                workingDirectory = project.solutionDirectory.canonicalPath,
                 envs = hashMapOf(),
                 isPassParentEnvs = true,
                 useExternalConsole = false
@@ -173,7 +173,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         // If we're a generated project, or a class library project that lives in the root of a Unity project alongside
         // a generated project, we can use the project dir as the expected project name.
         if (project.isUnityProject()) {
-            val expectedProjectName = project.projectDir.name
+            val expectedProjectName = project.solutionDirectory.name
             val entry = map.entries.firstOrNull { expectedProjectName.equals(it.value.projectName, true) }
             if (entry != null) {
                 return entry.key

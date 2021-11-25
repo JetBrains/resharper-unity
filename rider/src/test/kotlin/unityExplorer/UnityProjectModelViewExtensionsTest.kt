@@ -1,6 +1,7 @@
 package unityExplorer
 
 import base.*
+import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.ProjectModelBaseTest
 import com.jetbrains.rider.test.scriptingApi.TemplateType
@@ -8,7 +9,6 @@ import com.jetbrains.rider.test.scriptingApi.testProjectModel
 import org.testng.Assert
 import org.testng.annotations.Test
 import java.io.File
-import java.nio.file.Paths
 
 class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     override fun getSolutionDirectoryName() = "UnityProjectModelViewExtensionsTest"
@@ -39,13 +39,13 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     fun testRenameFile() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename file", project, activeSolutionDirectory) {
-                val metaFileContent = Paths.get(project.basePath!!).resolve("Assets").resolve("AsmdefResponse").resolve("NewBehaviourScript.cs.meta").toFile().readText()
+                val metaFileContent = project.solutionDirectory.resolve("Assets").resolve("AsmdefResponse").resolve("NewBehaviourScript.cs.meta").readText()
 
                 doActionAndWait(project, {
                     renameItem(project, arrayOf("Assets", "AsmdefResponse", "NewBehaviourScript.cs"), "NewBehaviourScript_renamed.cs")
                 },true)
 
-                val metaFile = Paths.get(project.basePath!!).resolve("Assets").resolve("AsmdefResponse").resolve("NewBehaviourScript_renamed.cs.meta").toFile()
+                val metaFile = project.solutionDirectory.resolve("Assets").resolve("AsmdefResponse").resolve("NewBehaviourScript_renamed.cs.meta")
                 Assert.assertTrue(metaFile.exists(), "meta file $metaFile doesn't exist.")
                 Assert.assertEquals(metaFileContent, metaFile.readText())
             }
@@ -57,13 +57,13 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     fun testRenameFolder() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename folder", project, activeSolutionDirectory) {
-                val metaFileContent = Paths.get(project.basePath!!).resolve("Assets").resolve("Dir1.meta").toFile().readText()
+                val metaFileContent = project.solutionDirectory.resolve("Assets").resolve("Dir1.meta").readText()
 
                 doActionAndWait(project, {
                     renameItem(project, arrayOf("Assets", "Dir1"), "Dir1_renamed")
                 },true)
 
-                val metaFile = Paths.get(project.basePath!!).resolve("Assets").resolve("Dir1_renamed.meta").toFile()
+                val metaFile = project.solutionDirectory.resolve("Assets").resolve("Dir1_renamed.meta")
                 Assert.assertTrue(metaFile.exists(), "meta file $metaFile doesn't exist.")
                 Assert.assertEquals(metaFileContent, metaFile.readText())
             }
@@ -99,7 +99,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     @Test
     @TestEnvironment
     fun testDeleteFile() {
-        val metaFile = Paths.get(project.basePath!!).resolve("Assets").resolve("AsmdefResponse").resolve("NewBehaviourScript.cs.meta").toFile()
+        val metaFile = project.solutionDirectory.resolve("Assets/AsmdefResponse/NewBehaviourScript.cs.meta")
         Assert.assertTrue(metaFile.exists(), "We expect meta file exists.")
         testProjectModel(testGoldFile, project, false) {
             dump("Delete element", project, activeSolutionDirectory) {
@@ -113,10 +113,10 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     @Test
     @TestEnvironment // RIDER-41182
     fun testMoveFile() {
-        val originFile = Paths.get(project.basePath!!).resolve("Assets").resolve("Class1.cs").toFile()
+        val originFile = project.solutionDirectory.resolve("Assets").resolve("Class1.cs")
         val originMetaFile = File(originFile.absolutePath+".meta")
         val metaFileContent = originMetaFile.readText()
-        val movedFile = Paths.get(project.basePath!!).resolve("Assets").resolve("AsmdefResponse").resolve("NewDirectory1").resolve("Class1.cs").toFile()
+        val movedFile = project.solutionDirectory.resolve("Assets").resolve("AsmdefResponse").resolve("NewDirectory1").resolve("Class1.cs")
         Assert.assertTrue(originFile.exists(), "We expect file exists.")
         Assert.assertTrue(originMetaFile.exists(), "We expect meta file exists.")
 
@@ -138,10 +138,10 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     @Test
     @TestEnvironment // RIDER-63575
     fun testMoveFile2() {
-        val originFile = Paths.get(project.basePath!!).resolve("Assets/AsmdefResponse/SS/rrr.cs").toFile()
+        val originFile = project.solutionDirectory.resolve("Assets/AsmdefResponse/SS/rrr.cs")
         val originMetaFile = File(originFile.absolutePath+".meta")
         val metaFileContent = originMetaFile.readText()
-        val movedFile = Paths.get(project.basePath!!).resolve("Assets/rrr.cs").toFile()
+        val movedFile = project.solutionDirectory.resolve("Assets/rrr.cs")
         Assert.assertTrue(originFile.exists(), "We expect file exists.")
         Assert.assertTrue(originMetaFile.exists(), "We expect meta file exists.")
 
