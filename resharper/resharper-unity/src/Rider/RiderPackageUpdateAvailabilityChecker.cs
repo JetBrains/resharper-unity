@@ -102,24 +102,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     myNotificationShown.Add(mySolution.SolutionFilePath);
                     myLogger.Info($"{packageId} {package.PackageDetails.Version} is older then expected.");
-                    var neverShowLink = new NotificationHyperlink("Never show for this solution",
-                        myHyperlinkId);
+                    var neverShowLink = new NotificationHyperlink("Never show for this solution", myHyperlinkId);
+                    var notificationId = 123409;
                     var notification = new NotificationModel("Update available - JetBrains Rider package.", 
                         "Check for JetBrains Rider package updates in Unity Package Manager.", 
-                        true, RdNotificationEntryType.INFO, new List<NotificationHyperlink> {neverShowLink}, 123409);
-                    var notificationLifetime = lt.CreateNested();
-                    myNotifications.ExecuteHyperlink.Advise(notificationLifetime.Lifetime, id =>
+                        true, RdNotificationEntryType.INFO, new List<NotificationHyperlink> {neverShowLink}, notificationId);
+                    myNotifications.ExecuteHyperlink.Advise(lt, id =>
                     {
                         if (id == myHyperlinkId)
                         {
                             mySettingsStore.BindToContextTransient(ContextRange.ManuallyRestrictWritesToOneContext(mySolution.ToDataContext()))
                                 .SetValue((UnitySettings key) => key.AllowRiderUpdateNotifications, false);
-                            notificationLifetime.Terminate();
-                            myNotifications.NotificationExpired.Fire(notification.Id.Value);
+                            myNotifications.NotificationExpired.Fire(notificationId);
                         }
                     });
                     
-                    myShellLocks.ExecuteOrQueueEx(notificationLifetime.Lifetime, "RiderPackageUpdateAvailabilityChecker.ShowNotificationIfNeeded", () => myNotifications.Notification(notification));
+                    myShellLocks.ExecuteOrQueueEx(lt, "RiderPackageUpdateAvailabilityChecker.ShowNotificationIfNeeded", () => myNotifications.Notification(notification));
                 }
             } );
         }
