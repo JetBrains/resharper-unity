@@ -65,6 +65,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options
 
             AddBoolOption((UnitySettings s) => s.AllowAutomaticRefreshInUnity,
                 "Automatically refresh assets in Unity");
+            
+            AddBoolOption((UnitySettings s) => s.AllowRiderUpdateNotifications,
+                "Notify when Rider package update is available");
         }
 
         private void AddCSharpSection()
