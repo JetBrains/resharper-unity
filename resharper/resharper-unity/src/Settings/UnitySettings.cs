@@ -13,6 +13,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
     {
         [SettingsEntry(true, "If this option is enabled, the Rider Unity editor plugin will be automatically installed and updated.")]
         public bool InstallUnity3DRiderPlugin;
+        
+        [SettingsEntry(true, "If this option is disabled, Rider package update notifications would never be shown.")]
+        public bool AllowRiderUpdateNotifications;
 
         [SettingsEntry(true, "If this option is enabled, Rider will automatically notify the Unity editor to refresh assets.")]
         public bool AllowAutomaticRefreshInUnity;
