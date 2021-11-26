@@ -107,17 +107,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     var notification = new NotificationModel("Update available - JetBrains Rider package.", 
                         "Check for JetBrains Rider package updates in Unity Package Manager.", 
                         true, RdNotificationEntryType.INFO, new List<NotificationHyperlink> {neverShowLink}, notificationId);
-                    myNotifications.ExecuteHyperlink.Advise(lt, id =>
+                    var notificationLifetime = lt.CreateNested();
+                    myNotifications.ExecuteHyperlink.Advise(notificationLifetime.Lifetime, id =>
                     {
                         if (id == myHyperlinkId)
                         {
                             mySettingsStore.BindToContextTransient(ContextRange.ManuallyRestrictWritesToOneContext(mySolution.ToDataContext()))
                                 .SetValue((UnitySettings key) => key.AllowRiderUpdateNotifications, false);
                             myNotifications.NotificationExpired.Fire(notificationId);
+                            notificationLifetime.Terminate();
                         }
                     });
                     
-                    myShellLocks.ExecuteOrQueueEx(lt, "RiderPackageUpdateAvailabilityChecker.ShowNotificationIfNeeded", () => myNotifications.Notification(notification));
+                    myShellLocks.ExecuteOrQueueEx(notificationLifetime.Lifetime, "RiderPackageUpdateAvailabilityChecker.ShowNotificationIfNeeded", () => myNotifications.Notification(notification));
                 }
             } );
         }
