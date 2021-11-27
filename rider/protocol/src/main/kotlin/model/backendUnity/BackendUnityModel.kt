@@ -173,5 +173,7 @@ object BackendUnityModel: Root() {
         call("runUnitTestLaunch", void, bool).documentation = "Start the unit test session. Results are fired via UnitTestLaunch.TestResult"
 
         call ("hasUnsavedScenes", void, bool)
+
+        property ("riderPackagePotentialUpdateVersion", string).documentation = "Version of the latest compatible update for the Rider package"
     }
 }
