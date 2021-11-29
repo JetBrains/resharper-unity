@@ -161,7 +161,6 @@
 
   <project-components>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.unitTesting.UnitTestLauncherState</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.OutOfSyncEditorNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.YamlHugeFileNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.AssetModeForceTextNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.settings.RiderUnitySettings</implementation-class></component>
