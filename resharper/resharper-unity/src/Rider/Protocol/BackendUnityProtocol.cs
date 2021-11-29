@@ -97,18 +97,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             myLogger.Info(
                 $"EditorPlugin protocol port {protocolInstance.Port} for Solution: {protocolInstance.SolutionName}.");
 
+            var thisSessionLifetime = mySessionLifetimes.Next();
+            
             if (protocolInstance.ProtocolGuid != ProtocolCompatibility.ProtocolGuid)
             {
-                OnOutOfSync(myLifetime);
+                OnOutOfSync(thisSessionLifetime);
                 myLogger.Info("Avoid attempt to create protocol, incompatible.");
                 return;
             }
 
             try
             {
-                var thisSessionLifetime = mySessionLifetimes.Next();
                 myLogger.Info("Create protocol...");
-
                 myLogger.Info("Creating SocketWire with port = {0}", protocolInstance.Port);
                 var wire = new SocketWire.Client(thisSessionLifetime, myDispatcher, protocolInstance.Port,
                     "UnityClient") { BackwardsCompatibleWireFormat = true };
