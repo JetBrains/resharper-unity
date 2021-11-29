@@ -7,6 +7,7 @@ using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Unity.Editor.Logger;
 using UnityEditor;
 using UnityEngine;
+#pragma warning disable CS0618
 
 namespace JetBrains.Rider.Unity.Editor
 {
