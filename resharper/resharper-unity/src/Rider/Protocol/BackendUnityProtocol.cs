@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
+using JetBrains.Application.Notifications;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
@@ -17,7 +18,7 @@ using JetBrains.RdBackend.Common.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Rider.Model.Notifications;
+using JetBrains.Rider.Backend.Features.Notifications;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Util;
@@ -36,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
         private readonly UnityVersion myUnityVersion;
-        private readonly NotificationsModel myNotificationsModel;
+        private readonly RiderNotificationPopupHost myNotificationPopupHost;
         private readonly IHostProductInfo myHostProductInfo;
         private readonly FrontendBackendHost myFrontendBackendHost;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
@@ -49,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                                     IScheduler dispatcher, IShellLocks locks, ISolution solution,
                                     IApplicationWideContextBoundSettingStore settingsStore,
                                     UnitySolutionTracker unitySolutionTracker,
-                                    UnityVersion unityVersion, NotificationsModel notificationsModel,
+                                    UnityVersion unityVersion, RiderNotificationPopupHost notificationPopupHost,
                                     IHostProductInfo hostProductInfo, IFileSystemTracker fileSystemTracker)
         {
             myPluginInstallations = new JetHashSet<VirtualFileSystemPath>();
@@ -61,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             myLocks = locks;
             mySolution = solution;
             myUnityVersion = unityVersion;
-            myNotificationsModel = notificationsModel;
+            myNotificationPopupHost = notificationPopupHost;
             myHostProductInfo = hostProductInfo;
             myFrontendBackendHost = frontendBackendHost;
             myBoundSettingsStore = settingsStore.BoundSettingsStore;
@@ -215,11 +216,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             }
             else
             {
-                var notification = new NotificationModel("Advanced Unity integration is unavailable",
-                    $"Make sure Rider {myHostProductInfo.VersionMarketingString} is set as the External Editor in Unity preferences.",
-                    true, RdNotificationEntryType.WARN, new List<NotificationHyperlink>());
                 mySolution.Locks.ExecuteOrQueue(lifetime, "OutOfSyncModels.Notify",
-                    () => myNotificationsModel.Notification(notification));
+                    () =>
+                    {
+                        var notification = RiderNotification.Create(
+                            NotificationSeverity.WARNING, "Advanced Unity integration is unavailable",
+                            $"Make sure Rider {myHostProductInfo.VersionMarketingString} is set as the External Editor in Unity preferences."
+                        );
+                        myNotificationPopupHost.ShowNotification(lifetime, notification);
+                    });
             }
         }
     }
