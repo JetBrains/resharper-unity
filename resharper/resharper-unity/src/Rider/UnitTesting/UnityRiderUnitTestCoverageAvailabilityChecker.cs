@@ -1,8 +1,6 @@
 using System;
 using JetBrains.Application;
 using JetBrains.Application.Components;
-using JetBrains.Collections.Viewable;
-using JetBrains.ProjectModel;
 using JetBrains.RdBackend.Common.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.UnitTestFramework.Elements;
@@ -20,11 +18,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         // this method should be very fast as it gets called a lot
         public HostProviderAvailability GetAvailability(IUnitTestElement element)
         {
-            var solution = element.Project.GetSolution();
-            var tracker = solution.GetComponent<UnitySolutionTracker>();
-            if (tracker.IsUnityProject.HasValue() && !tracker.IsUnityProject.Value)
+            if (!element.Project.IsUnityProject())
                 return HostProviderAvailability.Available;
 
+            var solution = element.Project.GetSolution();
             var frontendBackendModel = solution.GetProtocolSolution().GetFrontendBackendModel();
             switch (frontendBackendModel.UnitTestPreference.Value)
             {
