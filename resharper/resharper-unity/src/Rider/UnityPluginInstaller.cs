@@ -352,44 +352,43 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 backup.Value.MoveFile(backup.Key, true);
             }
         }
-        
+
         internal void ShowOutOfSyncNotification(Lifetime lifetime)
         {
             var notificationLifetime = lifetime.CreateNested();
             var appVersion = myUnityVersion.ActualVersionForSolution.Value;
             if (appVersion < new Version(2019, 2))
             {
-                var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
+                var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) =>
+                    s.InstallUnity3DRiderPlugin);
                 var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lifetime, entry, null).Value;
-                if (!isEnabled)
-                {
-                    var notification = RiderNotification.Create(
-                        NotificationSeverity.WARNING, "Unity editor plugin update required",
-                        "The Unity editor plugin is out of date and automatic plugin updates are disabled. Advanced Unity integration features are unavailable until the plugin is updated.",
-                        additionalCommands: new[]
+                if (isEnabled) return;
+                var notification = RiderNotification.Create(
+                    NotificationSeverity.WARNING, "Unity editor plugin update required",
+                    "The Unity editor plugin is out of date and automatic plugin updates are disabled. Advanced Unity integration features are unavailable until the plugin is updated.",
+                    additionalCommands: new[]
+                    {
+                        new UserNotificationCommand("Never show for this solution", () =>
                         {
-                            new UserNotificationCommand("Never show for this solution", () =>
-                            {
-                                mySolution.Locks.ExecuteOrQueueReadLockEx(notificationLifetime.Lifetime,
-                                    "UnityPluginInstaller.InstallEditorPlugin", () =>
-                                    {
-                                        var installationInfo = myDetector.GetInstallationInfo(myCurrentVersion);
-                                        QueueInstall(installationInfo, true);
-                                        notificationLifetime.Terminate();
-                                    });
-                            })
-                        }
-                    );
-                    myNotificationPopupHost.ShowNotification(notificationLifetime.Lifetime, notification);
-                }
-                else
-                {
-                    var notification = RiderNotification.Create(
-                        NotificationSeverity.WARNING, "Advanced Unity integration is unavailable",
-                        $"Make sure Rider {myHostProductInfo.VersionMarketingString} is set as the External Editor in Unity preferences."
-                    );
-                    myNotificationPopupHost.ShowNotification(notificationLifetime.Lifetime, notification);
-                }
+                            mySolution.Locks.ExecuteOrQueueReadLockEx(notificationLifetime.Lifetime,
+                                "UnityPluginInstaller.InstallEditorPlugin", () =>
+                                {
+                                    var installationInfo = myDetector.GetInstallationInfo(myCurrentVersion);
+                                    QueueInstall(installationInfo, true);
+                                    notificationLifetime.Terminate();
+                                });
+                        })
+                    }
+                );
+                myNotificationPopupHost.ShowNotification(notificationLifetime.Lifetime, notification);
+            }
+            else
+            {
+                var notification = RiderNotification.Create(
+                    NotificationSeverity.WARNING, "Advanced Unity integration is unavailable",
+                    $"Make sure Rider {myHostProductInfo.VersionMarketingString} is set as the External Editor in Unity preferences."
+                );
+                myNotificationPopupHost.ShowNotification(notificationLifetime.Lifetime, notification);
             }
         }
     }
