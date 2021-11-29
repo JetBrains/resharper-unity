@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Application.Notifications;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
@@ -12,7 +13,7 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Rider.Model.Notifications;
+using JetBrains.Rider.Backend.Features.Notifications;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -21,22 +22,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class RiderPackageUpdateAvailabilityChecker
     {
         private readonly ILogger myLogger;
-        private readonly NotificationsModel myNotifications;
         private readonly ISolution mySolution;
         private readonly IShellLocks myShellLocks;
         private readonly PackageManager myPackageManager;
         private readonly UnityVersion myUnityVersion;
         private readonly ISettingsStore mySettingsStore;
         private readonly BackendUnityHost myBackendUnityHost;
+        private readonly RiderNotificationPopupHost myNotificationPopupHost;
         private readonly JetHashSet<VirtualFileSystemPath> myNotificationShown;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
         private string packageId = "com.unity.ide.rider";
-        private string myHyperlinkId = "NeverShowRiderPackageUpdateAvailable";
 
         public RiderPackageUpdateAvailabilityChecker(
             Lifetime lifetime,
             ILogger logger,
-            NotificationsModel notifications,
             ISolution solution,
             IShellLocks shellLocks,
             PackageManager packageManager,
@@ -44,17 +43,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             UnityVersion unityVersion,
             IApplicationWideContextBoundSettingStore applicationWideContextBoundSettingStore,
             ISettingsStore settingsStore,
-            BackendUnityHost backendUnityHost
+            BackendUnityHost backendUnityHost, 
+            RiderNotificationPopupHost notificationPopupHost
         )
         {
             myLogger = logger;
-            myNotifications = notifications;
             mySolution = solution;
             myShellLocks = shellLocks;
             myPackageManager = packageManager;
             myUnityVersion = unityVersion;
             mySettingsStore = settingsStore;
             myBackendUnityHost = backendUnityHost;
+            myNotificationPopupHost = notificationPopupHost;
             myNotificationShown = new JetHashSet<VirtualFileSystemPath>();
             myBoundSettingsStore = applicationWideContextBoundSettingStore.BoundSettingsStore;
             unitySolutionTracker.IsUnityProjectFolder.WhenTrue(lifetime, lt =>
@@ -113,40 +113,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     {
                         myNotificationShown.Add(mySolution.SolutionFilePath);
                         myLogger.Info($"{packageId} is missing.");
-                        var notification = new NotificationModel($"JetBrains Rider package in Unity is missing.",
-                            "Make sure JetBrains Rider package is installed in Unity Package Manager.", true,
-                            RdNotificationEntryType.WARN, new List<NotificationHyperlink>());
+                        var notification = RiderNotification.Create(NotificationSeverity.WARNING,
+                            "JetBrains Rider package in Unity is missing.",
+                            "Make sure JetBrains Rider package is installed in Unity Package Manager."
+                        );
                         myShellLocks.ExecuteOrQueueEx(lt,
                             "RiderPackageUpdateAvailabilityChecker.ShowNotificationIfNeeded",
-                            () => myNotifications.Notification(notification));
+                            () =>
+                            {
+                                myNotificationPopupHost.ShowNotification(lt, notification);
+                            });
                     }
                     else if (package.Source == PackageSource.Registry &&
                              new Version(package.PackageDetails.Version) < expectedVersion)
                     {
+                        var notificationLifetime = lt.CreateNested();
                         myNotificationShown.Add(mySolution.SolutionFilePath);
                         myLogger.Info($"{packageId} {package.PackageDetails.Version} is older then expected.");
-                        var neverShowLink = new NotificationHyperlink("Never show for this solution", myHyperlinkId);
-                        var notificationId = new Random().Next();
-                        var notification = new NotificationModel("Update available - JetBrains Rider package.",
+                        var notification = RiderNotification.Create(NotificationSeverity.INFO,
+                            "Update available - JetBrains Rider package.",
                             "Check for JetBrains Rider package updates in Unity Package Manager.",
-                            true, RdNotificationEntryType.INFO, new List<NotificationHyperlink> { neverShowLink },
-                            notificationId);
-                        var notificationLifetime = lt.CreateNested();
-                        myNotifications.ExecuteHyperlink.Advise(notificationLifetime.Lifetime, id =>
-                        {
-                            if (id == myHyperlinkId)
+                            additionalCommands: new[]
                             {
-                                mySettingsStore.BindToContextTransient(
-                                        ContextRange.ManuallyRestrictWritesToOneContext(mySolution.ToDataContext()))
-                                    .SetValue((UnitySettings key) => key.AllowRiderUpdateNotifications, false);
-                                myNotifications.NotificationExpired.Fire(notificationId);
-                                notificationLifetime.Terminate();
+                                new UserNotificationCommand("Never show for this solution", () =>
+                                {
+                                    mySettingsStore.BindToContextTransient(
+                                            ContextRange.ManuallyRestrictWritesToOneContext(mySolution.ToDataContext()))
+                                        .SetValue((UnitySettings key) => key.AllowRiderUpdateNotifications, false);
+                                    notificationLifetime.Terminate();
+                                })
                             }
-                        });
+                        );
 
-                        myShellLocks.ExecuteOrQueueEx(notificationLifetime.Lifetime,
+                        myShellLocks.ExecuteOrQueueEx(lt,
                             "RiderPackageUpdateAvailabilityChecker.ShowNotificationIfNeeded",
-                            () => myNotifications.Notification(notification));
+                            () => myNotificationPopupHost.ShowNotification(notificationLifetime.Lifetime, notification));
                     }
                 });
             });
