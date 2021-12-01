@@ -20,11 +20,8 @@ import com.jetbrains.rider.model.debuggerWorker.OutputMessageWithSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputType
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachProfileState
-import com.jetbrains.rider.run.ExternalConsoleMediator
-import com.jetbrains.rider.run.WorkerRunInfo
+import com.jetbrains.rider.run.*
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
-import com.jetbrains.rider.run.createEmptyConsoleCommandLine
-import com.jetbrains.rider.run.withRawParameters
 import com.jetbrains.rider.util.NetUtils
 
 /**
@@ -35,6 +32,8 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
                                 executionEnvironment: ExecutionEnvironment,
                                 isEditor: Boolean = false)
     : UnityAttachProfileState(remoteConfiguration, executionEnvironment, "Unity Executable", isEditor) {
+
+    override val consoleKind: ConsoleKind = ConsoleKind.Normal
 
     override suspend fun createWorkerRunInfo(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
         val runCmd = super.createWorkerRunInfo(lifetime, helper, port)
