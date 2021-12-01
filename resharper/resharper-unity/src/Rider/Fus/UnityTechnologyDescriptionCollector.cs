@@ -20,10 +20,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
         private readonly PackageManager myPackageManager;
         private readonly List<IUnityTechnologyDescription> myDescriptions;
 
+
+        public IReadOnlyDictionary<string, bool> DiscoveredTechnologies => myDiscoveredTechnologies;
+
         private Dictionary<string, bool> myDiscoveredTechnologies = new Dictionary<string, bool>();
 
         private ViewableProperty<bool> myProjectsProcessed = new ViewableProperty<bool>(false);
         private ViewableProperty<bool> myPackagesProcessed = new ViewableProperty<bool>(false);
+
+        public readonly ViewableProperty<bool> Ready = new ViewableProperty<bool>(false);
 
         public UnityTechnologyDescriptionCollector(Lifetime lifetime, ISolution solution, ISolutionLoadTasksScheduler tasksScheduler, 
             UnityReferencesTracker referencesTracker, PackageManager packageManager, FrontendBackendHost frontendBackendHost)
@@ -49,6 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
             {
                 if (v)
                 {
+                    Ready.Value = true;
                     frontendBackendHost.Do(m =>
                     {
                         foreach (var (id, v) in myDiscoveredTechnologies)
@@ -63,6 +69,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
 
                 return false;
             });
+            
+            foreach (var description in myDescriptions)
+            {
+                myDiscoveredTechnologies[description.Id] = false;
+            }
             
             myTasksScheduler.EnqueueTask(new SolutionLoadTask("UnityTechnologyDescriptionCollector", SolutionLoadTaskKinds.Done,
                 () =>
@@ -108,12 +119,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
                         }
                     }
                 }));
-
-
-            foreach (var description in myDescriptions)
-            {
-                myDiscoveredTechnologies[description.Id] = false;
-            }
         }
 
         private void ProcessProject(IProject project)
