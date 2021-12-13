@@ -61,8 +61,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         {
             if (!myAssetIndexingSupport.IsEnabled.Value)
                 return false;
+
+            if (sourceFile.PsiModule is UnityExternalFilesPsiModule && sourceFile.IsYamlDataFile())
+                return ValidateSize(sourceFile);
             
-            return sourceFile.PsiModule is UnityExternalFilesPsiModule;
+            return false;
+        }
+
+        private const int AnimMaxSize = 50 * 1024 * 1024; //50mb
+        private bool ValidateSize(IPsiSourceFile sourceFile)
+        {
+            var location = sourceFile.GetLocation();
+            if (!location.IsAnim() && !location.IsController())
+                return true;
+            
+            return myLogger.CatchSilent(() =>
+            {
+                return location.GetFileLength() <= AnimMaxSize;
+            });
         }
 
         protected override void MergeData(IPsiSourceFile sourceFile, UnityAssetData data)
