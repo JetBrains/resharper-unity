@@ -43,6 +43,21 @@ fun MutableList<String>.withProjectPath(project: Project) : MutableList<String> 
     return this
 }
 
+fun MutableList<String>.withBatchMode(project: Project) : MutableList<String> {
+    this.add("-batchmode")
+    return this
+}
+
+fun MutableList<String>.withRunTests(project: Project) : MutableList<String> {
+    this.add("-runTests")
+    return this
+}
+
+fun MutableList<String>.withTestResults(project: Project) : MutableList<String> {
+    this.addAll(listOf("-testResults", project.solutionDirectory.resolve("results.xml").canonicalPath))
+    return this
+}
+
 fun MutableList<String>.toProgramParameters() : String {
     return ParametersListUtil.join(this)
 }
