@@ -67,21 +67,20 @@ class FrontendBackendHost(project: Project) : ProtocolSubscribedProjectComponent
                 return@set task
             }
 
-            val unityPath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath()
             val unityAttachConfiguration = configuration.configuration as UnityAttachToEditorRunConfiguration
+            unityAttachConfiguration.updatePidAndPort()
 
             val isAttached = sessions.any {
                 if (it.runProfile == null) return@any false
                 if (it.runProfile is UnityAttachToEditorRunConfiguration) {
-                    unityAttachConfiguration.updatePidAndPort()
                     return@any (it.runProfile as UnityAttachToEditorRunConfiguration).pid == unityAttachConfiguration.pid
                 }
                 if (it.runProfile is UnityProcessRunProfile) {
-                    unityAttachConfiguration.updatePidAndPort()
                     return@any ((it.runProfile as UnityProcessRunProfile).process as UnityRemoteConnectionDetails).port == unityAttachConfiguration.port
                 }
                 if (it.runProfile is UnityExeConfiguration) {
                     val params = (it.runProfile as UnityExeConfiguration).parameters
+                    val unityPath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath()
                     return@any File(params.exePath) == unityPath?.toFile() && params.programParameters.contains(
                         mutableListOf<String>().withProjectPath(project).toProgramParameters()
                     )
