@@ -25,7 +25,7 @@ fun attachToUnityProcess(project: Project, process: UnityProcess) {
 /**
  * Simple [RunProfile] implementation to connect to a [UnityProcess] via the Attach To menu
  */
-class UnityProcessRunProfile(private val project: Project, private val process: UnityProcess)
+class UnityProcessRunProfile(private val project: Project, val process: UnityProcess)
     : RunProfile, IRiderDebuggable {
 
     override fun getName(): String = process.displayName
