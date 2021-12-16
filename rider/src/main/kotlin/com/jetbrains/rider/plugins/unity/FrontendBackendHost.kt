@@ -60,15 +60,13 @@ class FrontendBackendHost(project: Project) : ProtocolSubscribedProjectComponent
                 task.set(false)
             else {
                 val unityAttachConfiguration = configuration.configuration as UnityAttachToEditorRunConfiguration
-                val isAttached = sessions.any { it.runProfile != null &&
-                    (it.runProfile is UnityAttachToEditorRunConfiguration &&
-                        (it.runProfile as UnityAttachToEditorRunConfiguration).pid == unityAttachConfiguration.pid)
-                    ||
-                    (it.runProfile is UnityProcessRunProfile &&
-                        ((it.runProfile as UnityProcessRunProfile).process as UnityRemoteConnectionDetails).port == unityAttachConfiguration.port)
-                    ||
-                    (it.runProfile is UnityExeConfiguration &&
-                        (it.debugProcess.processHandler as DebuggerWorkerProcessHandler).pid == unityAttachConfiguration.pid)
+                val isAttached = sessions.any {
+                    it.runProfile != null &&
+                        (it.runProfile is UnityAttachToEditorRunConfiguration &&
+                            (it.runProfile as UnityAttachToEditorRunConfiguration).pid == unityAttachConfiguration.pid)
+                        ||
+                        (it.runProfile is UnityProcessRunProfile &&
+                            ((it.runProfile as UnityProcessRunProfile).process as UnityRemoteConnectionDetails).port == unityAttachConfiguration.port)
                 }
                 if (!isAttached) {
                     val processTracker: RiderDebugActiveDotNetSessionsTracker = RiderDebugActiveDotNetSessionsTracker.getInstance(project)
