@@ -15,13 +15,17 @@ import com.jetbrains.rd.framework.impl.RdTask
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.*
 import com.jetbrains.rider.debugger.DebuggerInitializingState
+import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.model.LogEvent
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
+import com.jetbrains.rider.plugins.unity.run.UnityRemoteConnectionDetails
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
+import com.jetbrains.rider.plugins.unity.run.configurations.UnityProcessRunProfile
+import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
 import com.jetbrains.rider.plugins.unity.util.Utils.Companion.AllowUnitySetForegroundWindow
 import com.jetbrains.rider.projectView.solution
 import java.awt.Frame
@@ -57,9 +61,14 @@ class FrontendBackendHost(project: Project) : ProtocolSubscribedProjectComponent
             else {
                 val unityAttachConfiguration = configuration.configuration as UnityAttachToEditorRunConfiguration
                 val isAttached = sessions.any { it.runProfile != null &&
-                    it.runProfile is UnityAttachToEditorRunConfiguration &&
-                        (it.runProfile as UnityAttachToEditorRunConfiguration).pid == unityAttachConfiguration.pid
-
+                    (it.runProfile is UnityAttachToEditorRunConfiguration &&
+                        (it.runProfile as UnityAttachToEditorRunConfiguration).pid == unityAttachConfiguration.pid)
+                    ||
+                    (it.runProfile is UnityProcessRunProfile &&
+                        ((it.runProfile as UnityProcessRunProfile).process as UnityRemoteConnectionDetails).port == unityAttachConfiguration.port)
+                    ||
+                    (it.runProfile is UnityExeConfiguration &&
+                        (it.debugProcess.processHandler as DebuggerWorkerProcessHandler).pid == unityAttachConfiguration.pid)
                 }
                 if (!isAttached) {
                     val processTracker: RiderDebugActiveDotNetSessionsTracker = RiderDebugActiveDotNetSessionsTracker.getInstance(project)
