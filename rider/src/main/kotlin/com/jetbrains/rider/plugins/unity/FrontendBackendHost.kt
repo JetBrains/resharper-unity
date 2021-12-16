@@ -69,7 +69,7 @@ class FrontendBackendHost(project: Project) : ProtocolSubscribedProjectComponent
 
             val unityPath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath()
             val unityAttachConfiguration = configuration.configuration as UnityAttachToEditorRunConfiguration
-            unityAttachConfiguration.updatePidAndPort()
+
             val isAttached = sessions.any {
                 if (it.runProfile == null) return@any false
                 if (it.runProfile is UnityAttachToEditorRunConfiguration) {
