@@ -9,6 +9,9 @@ public class Foo : MonoBehaviour
 0: Accessor must declare a body because property is not marked as 'abstract' or 'extern'
 QUICKFIXES:
 Make property 'Prop' abstract
+--Make property 'Prop' abstract in file
+--Make property 'Prop' abstract in project
+--Make property 'Prop' abstract in solution
 To property with serialized backing field
 Add accessor body
 To property with backing field
