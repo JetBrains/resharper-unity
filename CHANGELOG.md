@@ -8,9 +8,36 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 Since 2018.1, the version numbers and release cycle match Rider's versions and release dates. The plugin is always bundled with Rider, but is released for ReSharper separately. Sometimes the ReSharper version isn't released. This is usually because the changes are not applicable to ReSharper, but also by mistake.
 
+## 2021.3.2
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net213-rtm-2021.3.0...net213)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/51?closed=1)
+
+### Changed
+
+- Stop indexing `.anim` files that are larger than 50Mb ([RIDER-71633](https://youtrack.jetbrains.com/issue/RIDER-71633), [#2229](https://github.com/JetBrains/resharper-unity/pull/2229))
+
+### Fixed
+
+- Rider: Fix starting Unity with project path containing spaces ([RIDER-62209](https://youtrack.jetbrains.com/issue/RIDER-62209), [#2225](https://github.com/JetBrains/resharper-unity/pull/2225))
+- Rider: Fix missing debug output when launching Unity editor or player ([RIDER-71411](https://youtrack.jetbrains.com/issue/RIDER-71411), [#2227](https://github.com/JetBrains/resharper-unity/pull/2227))
+- ReSharper: Fix exception when placing caret on GUID reference in `.asmdef` file ([RSPL-6988](https://youtrack.jetbrains.com/issue/RSPL-6988), [#2234](https://github.com/JetBrains/resharper-unity/pull/2234))
+
+
+
+## 2021.3.1
+* Released: [2021-12-10](https://blog.jetbrains.com/dotnet/2021/12/10/rider-2021-3-1-and-resharper-2021-3-1/)
+* Build: 2021.3.0.216
+* [No code changes](https://github.com/JetBrains/resharper-unity/compare/net213-rtm-2021.3.0...net213-rtm-2021.3.0-rtm-2021.3.1)
+
+
+
 ## 2021.3.0
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net212...net213)
+* Released: [2021-12-08](https://blog.jetbrains.com/dotnet/2021/12/08/rider-2021-3-released/)
+* Build: 2021.3.0.208
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net212...net213-rtm-2021.3.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/48?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net213-rtm-2021.3.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2021.3.0.208)
 
 ### Added
 
