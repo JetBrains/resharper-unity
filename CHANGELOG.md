@@ -12,6 +12,12 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net213...net221)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/50?closed=1)
 
+### Fixed
+
+- Rider: Fix incorrectly showing both Unity and Unity DLL project action groups ([#2219](https://github.com/JetBrains/resharper-unity/pull/2219))
+- Rider: Fix incorrectly showing "switch to full UI" action when already in full UI ([RIDER-71185](https://youtrack.jetbrains.com/issue/RIDER-71185), [#2220](https://github.com/JetBrains/resharper-unity/pull/2220))
+- Rider: Fix debugging unit test when debugger is already attached to the editor ([RIDER-70660](https://youtrack.jetbrains.com/issue/RIDER-70660), [#2232](https://github.com/JetBrains/resharper-unity/pull/2232))
+
 
 
 ## 2021.3.2

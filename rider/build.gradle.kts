@@ -197,7 +197,7 @@ tasks {
         <p>
         ${changelog.get(pluginVersion).toHTML()}
         </p>
-        <p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/net213/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
+        <p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/net221/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
         </body>""".trimIndent()
         )
     }

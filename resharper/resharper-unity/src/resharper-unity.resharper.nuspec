@@ -37,7 +37,7 @@
     <projectUrl>https://github.com/JetBrains/resharper-unity</projectUrl>
     <licenseUrl>https://raw.githubusercontent.com/JetBrains/resharper-unity/master/license.txt</licenseUrl>
     <iconUrl>http://resharper-plugins.jetbrains.com/Content/Images/packageReSharper.png</iconUrl>
-    <copyright>Copyright 2020 JetBrains, s.r.o</copyright>
+    <copyright>Copyright 2022 JetBrains, s.r.o</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
       <dependency id="Wave" version="[221.0]" />
