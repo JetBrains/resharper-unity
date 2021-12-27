@@ -9,8 +9,12 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 Since 2018.1, the version numbers and release cycle match Rider's versions and release dates. The plugin is always bundled with Rider, but is released for ReSharper separately. Sometimes the ReSharper version isn't released. This is usually because the changes are not applicable to ReSharper, but also by mistake.
 
 ## 2021.3.2
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net213-rtm-2021.3.0...net213)
+* Released: [2021-12-24](https://blog.jetbrains.com/dotnet/2021/12/24/resharper-2021-3-2-and-rider-2021-3-2-bug-fixes/)
+* Build: 2021.3.2.229
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net213-rtm-2021.3.0...net213-rtm-2021.3.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/51?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net213-rtm-2021.3.2)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2021.3.2.229)
 
 ### Changed
 
