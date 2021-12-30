@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Util.DataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
 {
@@ -7,21 +8,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
     internal static class ColorUtils
     {
         // Normalised so that h is 0..1, not 0..360
-        public static void ColorToHSV(System.Drawing.Color color, out float hue, out float saturation, out float value)
+        public static void ColorToHSV(JetRgbaColor color, out float hue, out float saturation, out float value)
         {
             int max = Math.Max(color.R, Math.Max(color.G, color.B));
             int min = Math.Min(color.R, Math.Min(color.G, color.B));
 
-            hue = color.GetHue() / 360.0f;
+            hue = GetHue(color) / 360.0f;
             saturation = (float) (max == 0 ? 0 : 1d - 1d * min / max);
             value = (float) (max / 255d);
         }
 
+        public static float GetHue(JetRgbaColor color)
+        {
+            // TODO add getHue impl for JetRgbaColor
+            var nativeColor = System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
+            var hue = nativeColor.GetHue();
+            return hue;
+        }
+        
         // Expects h as 0..1, not 0..360
-        public static System.Drawing.Color ColorFromHSV(float hue, float saturation, float value)
+        public static JetRgbaColor ColorFromHSV(float hue, float saturation, float value)
         {
             if (value <= 0)
-                return System.Drawing.Color.FromArgb(0, 0, 0);
+                return JetRgbaColor.FromRgb(0, 0, 0);
             if (saturation <= 0)
                 return FromRgb(value, value, value);
 
@@ -52,9 +61,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
             }
         }
 
-        private static System.Drawing.Color FromRgb(double r, double g, double b)
+        private static JetRgbaColor FromRgb(double r, double g, double b)
         {
-            return System.Drawing.Color.FromArgb((int) (r * 255.0), (int) (g * 255.0), (int) (b * 255.0));
+            return JetRgbaColor.FromRgb((byte) (r * 255.0), (byte) (g * 255.0), (byte) (b * 255.0));
         }
     }
 }

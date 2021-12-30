@@ -13,6 +13,7 @@ using JetBrains.ReSharper.Psi.Colors;
 using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util.DataStructures;
 using JetBrains.Util.Special;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
@@ -72,14 +73,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
             var arguments = constructorExpression.Arguments;
             if (arguments.Count < 3 || arguments.Count > 4) return null;
 
-            System.Drawing.Color? color = null;
+            JetRgbaColor? color = null;
             if (unityColorTypes.UnityColorType != null && unityColorTypes.UnityColorType.Equals(constructedType))
             {
                 var baseColor = GetColorFromFloatARGB(arguments);
                 if (baseColor == null) return null;
 
                 color = baseColor.Item1.HasValue
-                    ? System.Drawing.Color.FromArgb((int) (255.0 * baseColor.Item1.Value), baseColor.Item2)
+                    ? baseColor.Item2.WithA((byte)(255.0 * baseColor.Item1.Value))
                     : baseColor.Item2;
             }
             else if (unityColorTypes.UnityColor32Type != null && unityColorTypes.UnityColor32Type.Equals(constructedType))
@@ -88,7 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
                 if (baseColor == null) return null;
 
                 color = baseColor.Item1.HasValue
-                    ? System.Drawing.Color.FromArgb(baseColor.Item1.Value, baseColor.Item2)
+                    ? baseColor.Item2.WithA((byte)baseColor.Item1.Value)
                     : baseColor.Item2;
             }
 
@@ -153,7 +154,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
                  colorQualifiedMemberExpression, colorQualifiedMemberExpression.NameIdentifier.GetDocumentRange());
         }
 
-        private static Tuple<float?, System.Drawing.Color> GetColorFromFloatARGB(ICollection<ICSharpArgument> arguments)
+        private static Tuple<float?, JetRgbaColor> GetColorFromFloatARGB(ICollection<ICSharpArgument> arguments)
         {
             var a = GetArgumentAsFloatConstant(arguments, "a", 0, 1);
             var r = GetArgumentAsFloatConstant(arguments, "r", 0, 1);
@@ -163,10 +164,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
             if (!r.HasValue || !g.HasValue || !b.HasValue)
                 return null;
 
-            return Tuple.Create(a, System.Drawing.Color.FromArgb((int)(255.0 * r.Value), (int)(255.0 * g.Value), (int)(255.0 * b.Value)));
+            return Tuple.Create(a, JetRgbaColor.FromRgb((byte)(255.0 * r.Value), (byte)(255.0 * g.Value), (byte)(255.0 * b.Value)));
         }
 
-        private static Tuple<int?, System.Drawing.Color> GetColorFromIntARGB(ICollection<ICSharpArgument> arguments)
+        private static Tuple<int?, JetRgbaColor> GetColorFromIntARGB(ICollection<ICSharpArgument> arguments)
         {
             var a = GetArgumentAsIntConstant(arguments, "a", 0, 255);
             var r = GetArgumentAsIntConstant(arguments, "r", 0, 255);
@@ -176,10 +177,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
             if (!r.HasValue || !g.HasValue || !b.HasValue)
                 return null;
 
-            return Tuple.Create(a, System.Drawing.Color.FromArgb(r.Value, g.Value, b.Value));
+            return Tuple.Create(a, JetRgbaColor.FromRgb((byte)r.Value, (byte)g.Value, (byte)b.Value));
         }
 
-        private static System.Drawing.Color? GetColorFromHSV(ICollection<ICSharpArgument> arguments)
+        private static JetRgbaColor? GetColorFromHSV(ICollection<ICSharpArgument> arguments)
         {
             var h = GetArgumentAsFloatConstant(arguments, "H", 0, 1);
             var s = GetArgumentAsFloatConstant(arguments, "S", 0, 1);

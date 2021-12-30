@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Colors;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util.DataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.VisualElements
 {
@@ -43,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.VisualEle
                     var b = GetColorValue(values[2]);
                     // Technically, the colour should have 4 values, but show the highlight even if we're unfinished
                     var a = values.Count == 4 ? GetColorValue(values[3]) : 255;
-                    var colorElement = new ColorElement(Color.FromArgb(a, r, g, b));
+                    var colorElement = new ColorElement(JetRgbaColor.FromArgb((byte)a, (byte)r, (byte)g, (byte)b));
                     var range = GetDocumentRange(values[0], values.Last());
                     return new ShaderLabColorReference(colorElement,
                         VectorPropertyValueNavigator.GetByVector(vectorLiteral),

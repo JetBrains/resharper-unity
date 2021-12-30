@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using JetBrains.ReSharper.Psi.Colors;
+using JetBrains.Util.DataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
 {
@@ -23,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
                 {"clear", 0x00000000}
             };
 
-        public static Color? Get(string name)
+        public static JetRgbaColor? Get(string name)
         {
             uint value;
             if (name != null && NamedColors.TryGetValue(name, out value))
@@ -39,18 +40,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
             }
         }
 
-        private static Color ToColor(uint color)
+        private static JetRgbaColor ToColor(uint color)
         {
             var value = color;
 
-            return Color.FromArgb(
+            return JetRgbaColor.FromArgb(
                 (byte)(value >> 24),
                 (byte)(value >> 16),
                 (byte)(value >> 8),
                 (byte)value);
         }
 
-        public static string GetColorName(Color color)
+        public static string GetColorName(JetRgbaColor color)
         {
             foreach (var namedColor in NamedColors)
             {
