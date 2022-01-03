@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiParser", "src\ApiParser.csproj", "{D71C4B2E-8A62-4FCD-92EC-16C6069D16B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiParser", "apiParser\src\ApiParser.csproj", "{D71C4B2E-8A62-4FCD-92EC-16C6069D16B0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiParserTest", "test\ApiParserTest.csproj", "{55B304B3-5F66-4702-8119-21724F5F4060}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiParserTest", "apiParser\test\ApiParserTest.csproj", "{55B304B3-5F66-4702-8119-21724F5F4060}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
