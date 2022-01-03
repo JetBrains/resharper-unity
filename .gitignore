@@ -52,10 +52,10 @@ resharper/**/.idea/**/modules.xml
 resharper/**/.idea/**/*.iml
 resharper/**/.idea/**/contentModel.xml
 
-apiParser/.idea/**/.name
-apiParser/.idea/**/modules.xml
-apiParser/.idea/**/*.iml
-apiParser/.idea/**/contentModel.xml
+tools/**/.idea/**/.name
+tools/**/.idea/**/modules.xml
+tools/**/.idea/**/*.iml
+tools/**/.idea/**/contentModel.xml
 
 
 # Gradle output
