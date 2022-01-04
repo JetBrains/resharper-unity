@@ -549,9 +549,30 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         }
     }
 
+    // TODO: Remove this!
+    // Workaround for a bug in the SDK which isn't preserving the permissions for lib/ReSharperHost/[macosx|linux]-x64/dotnet/dotnet
+    val fixSdkPermissions by registering {
+        doLast {
+            if (!isWindows) {
+                logger.lifecycle("==============================================================================")
+                logger.lifecycle("Temporary fix for file permissions. Resetting executable permission for:")
+                logger.lifecycle(backend.getDotNetSdkPath().toString() + "/../ReSharperHost/linux-x64/dotnet/dotnet")
+                logger.lifecycle(backend.getDotNetSdkPath().toString() + "/../ReSharperHost/macosx-x64/dotnet/dotnet")
+                logger.lifecycle("==============================================================================")
+
+                project.exec {
+                    commandLine("chmod", "+x", backend.getDotNetSdkPath().toString() + "/../ReSharperHost/linux-x64/dotnet/dotnet")
+                }
+                project.exec {
+                    commandLine("chmod", "+x", backend.getDotNetSdkPath().toString() + "/../ReSharperHost/macos-x64/dotnet/dotnet")
+                }
+            }
+        }
+    }
+
     withType<PrepareSandboxTask> {
         // Default dependsOn includes the standard Java build/jar task
-        dependsOn(buildReSharperHostPlugin, buildUnityEditorPlugin)
+        dependsOn(buildReSharperHostPlugin, buildUnityEditorPlugin, fixSdkPermissions)
 
         // Have dependent tasks use upToDateWhen { project.buildServer.automatedBuild etc. }
         //inputs.files(buildRiderPlugin.outputs)
