@@ -177,7 +177,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
-            unitySolutionTracker.IsUnityProjectFolder.AdviseOnce(lifetime, args =>
+            unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
             {
                 if (!args) return;
 
@@ -196,11 +196,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         else
                             myGroupingEvent.FireIncoming();
                     }));
-            });
-
-            unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
-            {
-                if (!args) return;
 
                 fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
             });

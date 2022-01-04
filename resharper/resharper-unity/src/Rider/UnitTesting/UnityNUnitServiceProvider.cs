@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         public static bool IsUnityUnitTestStrategy(UnitySolutionTracker unitySolutionTracker,
             FrontendBackendModel frontendBackendModel, BackendUnityHost backendUnityHost)
         {
-            if (!unitySolutionTracker.IsUnityProjectFolder.HasTrueValue())
+            if (!unitySolutionTracker.IsUnityProject.HasTrueValue())
                 return false;
 
             // first run from gutter mark should try to run in Unity by default. https://github.com/JetBrains/resharper-unity/issues/605

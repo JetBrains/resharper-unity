@@ -9,6 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         public const string AssetsFolder = "Assets";
         public const string PackagesFolder = "Packages";
         public const string ProjectSettingsFolder = "ProjectSettings";
+        public const string LibraryFolder = "Library";
 
         public static bool HasUnityReference([NotNull] this ISolution solution)
         {

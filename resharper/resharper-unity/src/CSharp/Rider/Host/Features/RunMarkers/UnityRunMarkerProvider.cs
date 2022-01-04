@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarker
     {
         public void CollectRunMarkers(IFile file, IContextBoundSettingsStore settings, IHighlightingConsumer consumer)
         {
-            if (!file.GetSolution().GetComponent<UnitySolutionTracker>().IsUnityProjectFolder.HasTrueValue()) return;
+            if (!file.GetSolution().GetComponent<UnitySolutionTracker>().IsUnityProject.HasTrueValue()) return;
             if (!(file is ICSharpFile csharpFile)) return;
 
             foreach (var declaration in CachedDeclarationsCollector.Run<IMethodDeclaration>(csharpFile))

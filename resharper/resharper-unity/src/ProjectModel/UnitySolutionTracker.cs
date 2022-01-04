@@ -15,8 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private readonly ISolution mySolution;
 
         public readonly ViewableProperty<bool> IsUnityProjectFolder = new ViewableProperty<bool>();
-        public readonly ViewableProperty<bool> IsUnityGeneratedProject = new ViewableProperty<bool>();
         public readonly ViewableProperty<bool> IsUnityProject = new ViewableProperty<bool>();
+        public readonly ViewableProperty<bool> IsUnityGeneratedProject = new ViewableProperty<bool>();
 
         public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime, bool inTests = false)
         {
@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private void SetValues()
         {
             IsUnityProjectFolder.SetValue(HasUnityFileStructure(mySolution.SolutionDirectory));
-            IsUnityProject.SetValue(IsUnityProjectFolder.Value && mySolution.IsValid() && mySolution.SolutionFilePath.ExistsFile);
+            IsUnityProject.SetValue(IsUnityProjectFolder.Value && mySolution.IsValid() && mySolution.SolutionFilePath.ExistsFile && HasLibraryFolder(mySolution.SolutionDirectory));
             IsUnityGeneratedProject.SetValue(IsUnityProject.Value && SolutionNameMatchesUnityProjectName());
         }
 
@@ -61,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         {
             // Don't rely on correct casing. We expect Unity to generate the names correctly, but they could be edited
             // by other tooling that doesn't respect case. We've seen similar problems with solution names (see below)
-            return string.Equals(path.Name, "ProjectSettings", StringComparison.OrdinalIgnoreCase)
+            return string.Equals(path.Name, ProjectExtensions.ProjectSettingsFolder, StringComparison.OrdinalIgnoreCase)
                    || string.Equals(path.Name, "ProjectVersion.txt", StringComparison.OrdinalIgnoreCase)
                    || string.Equals(path.ExtensionNoDot, "asset", StringComparison.OrdinalIgnoreCase);
         }
@@ -88,6 +88,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                                            && projectSettingsFolder.IsAbsolute && projectSettingsFolder.ExistsDirectory
                                            && (projectVersionTxtFile.IsAbsolute && projectVersionTxtFile.ExistsFile
                                                || projectSettingsFolder.GetChildFiles("*.asset").Any());
+        }
+        
+        private static bool HasLibraryFolder(VirtualFileSystemPath solutionDir)
+        {
+            var folder = solutionDir.CombineWithShortName(ProjectExtensions.LibraryFolder);
+            return folder.IsAbsolute && folder.ExistsDirectory;
         }
     }
 }
