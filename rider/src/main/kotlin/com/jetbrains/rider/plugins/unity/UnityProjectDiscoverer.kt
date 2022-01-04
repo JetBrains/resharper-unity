@@ -19,7 +19,7 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
     // These values will be false unless we've opened a .sln file. Note that the "sidecar" project is a solution that
     // lives in the same folder as generated unity project (not the same as a class library project, which could live
     // anywhere)
-    val isUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project)
+    val isUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project) && hasLibraryFolder(project)
     val isUnityGeneratedProject = isUnityProject && solutionNameMatchesUnityProjectName(project)
     @Suppress("unused")
     val isUnitySidecarProject = isUnityProject && !solutionNameMatchesUnityProjectName(project)
@@ -56,6 +56,12 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
                 it.name == "ProjectVersion.txt" || it.extension == "asset"
             }
         }
+    }
+
+    // When Unity has generated sln, Library folder was also created. Lets' be more strict and check it.
+    private fun hasLibraryFolder(project: Project): Boolean {
+        val projectDir = project.projectDir
+        return projectDir.findChild("Library")?.isDirectory != false
     }
 
     // Returns false when opening a Unity project as a plain folder
