@@ -429,6 +429,7 @@ tasks {
 
     val packReSharperPlugin by registering(com.ullink.NuGetPack::class) {
         group = backendGroup
+        onlyIf { isWindows }
         description = "Packs resulting DLLs into a NuGet package which is an R# extension."
         dependsOn(buildReSharperHostPlugin)
 
