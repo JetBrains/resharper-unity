@@ -41,6 +41,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
     // We need to explicitly activate the language zones, since PsiFeatureTestZone activates leaf languages, rather
     // than IPsiLanguageZone (which would activate all other languages due to inheritance). But we can't activate HLSL
     // on Mono, as the managed C++ Cpp PSI doesn't work on Mono
+
+    // Note that not all Rider components can be tested, as many of them require the protocol. It appears that we can't
+    // activate IResharperHost* zones
     [ZoneActivator]
     public class UnityTestZonesActivator : IActivate<PsiFeatureTestZone>,
 #if RIDER

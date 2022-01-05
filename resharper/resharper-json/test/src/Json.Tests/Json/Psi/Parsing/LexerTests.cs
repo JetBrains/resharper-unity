@@ -1,5 +1,4 @@
 using System.IO;
-using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Json.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.TestFramework;
@@ -8,7 +7,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Json.Psi.Parsing
 {
-    [TestFileExtension(JsonProjectFileType.JSON_EXTENSION)]
+    [TestFileExtension(".json")]
     public class LexerTests : LexerTestBase
     {
         protected override string RelativeTestDataPath => @"Json\Psi\Lexing";
