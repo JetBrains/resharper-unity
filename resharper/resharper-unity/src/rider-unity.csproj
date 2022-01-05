@@ -104,17 +104,6 @@
     </Compile>
   </ItemGroup>
   <!-- ********** -->
-  <ItemGroup Label="JsonNew">
-    <PsiLanguageNames Include="JsonNew">
-      <Visible>False</Visible>
-    </PsiLanguageNames>
-    <CsLex Include="JsonNew\Psi\Parsing\JsonNew.lex" References="JsonNew\Psi\Parsing\Chars.lex" />
-    <TokenGenerator Include="JsonNew\Psi\Parsing\TokenNodeTypes\JsonNewTokenNodeTypes.Tokens.xml">
-      <OutputFile>JsonNew\Psi\Parsing\TokenNodeTypes\JsonNewTokenNodeTypes.Tokens.generated.cs</OutputFile>
-    </TokenGenerator>
-    <ParserGen Include="JsonNew\Psi\Parsing\JsonNew.psi" />
-  </ItemGroup>
-  <!-- ********** -->
   <ItemGroup Label="AsmDef">
     <ErrorsGen Include="AsmDef\Daemon\Errors\AsmDefErrors.xml">
       <Namespace>JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors</Namespace>
@@ -171,6 +160,7 @@
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
+    <ProjectReference Include="..\..\resharper-json\src\Json\Json.csproj" />
     <ProjectReference Include="..\..\resharper-yaml\src\resharper-yaml.csproj" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Rider_Rider.Backend.Props" />

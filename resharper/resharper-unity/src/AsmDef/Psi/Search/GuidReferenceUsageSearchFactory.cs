@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree.Impl;
+using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
@@ -97,7 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
 
         public bool ProcessProjectItem<TResult>(IPsiSourceFile sourceFile, IFindResultConsumer<TResult> consumer)
         {
-            if (!sourceFile.IsAsmDef() || sourceFile.GetPrimaryPsiFile() is not JsonNewFile jsonNewFile)
+            if (!sourceFile.IsAsmDef() || sourceFile.GetPrimaryPsiFile() is not IJsonNewFile jsonNewFile)
                 return false;
             return ProcessElement(jsonNewFile, consumer);
         }

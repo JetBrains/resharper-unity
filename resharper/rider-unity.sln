@@ -39,6 +39,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "resharper-yaml", "resharper
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests.resharper-yaml", "resharper-yaml\test\src\tests.resharper-yaml.csproj", "{ABD92079-2A1B-4023-BD63-812A58529BAF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Json", "resharper-json\src\Json\Json.csproj", "{EF962353-83C6-44AE-974A-BD17D0FAAB44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Json.Tests", "resharper-json\test\src\Json.Tests\Json.Tests.csproj", "{9DD7931D-1405-4F85-95F3-A52857720FEF}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\debugger\usbmuxd\usbmuxd.projitems*{337e452f-b0cf-4a6f-91a0-d373fe0e525f}*SharedItemsImports = 5
@@ -102,6 +106,14 @@ Global
 		{ABD92079-2A1B-4023-BD63-812A58529BAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABD92079-2A1B-4023-BD63-812A58529BAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABD92079-2A1B-4023-BD63-812A58529BAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF962353-83C6-44AE-974A-BD17D0FAAB44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF962353-83C6-44AE-974A-BD17D0FAAB44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF962353-83C6-44AE-974A-BD17D0FAAB44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF962353-83C6-44AE-974A-BD17D0FAAB44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DD7931D-1405-4F85-95F3-A52857720FEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DD7931D-1405-4F85-95F3-A52857720FEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DD7931D-1405-4F85-95F3-A52857720FEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DD7931D-1405-4F85-95F3-A52857720FEF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -121,6 +133,8 @@ Global
 		{CD880599-D091-4FFB-8028-64471E130B20} = {27FAB5DF-2272-44E7-9BCE-41508F24C07B}
 		{644DFD3D-FD39-4A46-A00F-46D03E34CDED} = {5B475CDF-F046-4823-A994-BD5261058461}
 		{ABD92079-2A1B-4023-BD63-812A58529BAF} = {5B475CDF-F046-4823-A994-BD5261058461}
+		{EF962353-83C6-44AE-974A-BD17D0FAAB44} = {5B475CDF-F046-4823-A994-BD5261058461}
+		{9DD7931D-1405-4F85-95F3-A52857720FEF} = {5B475CDF-F046-4823-A994-BD5261058461}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BB709F74-6787-4CF8-A698-C0DE1683B39B}

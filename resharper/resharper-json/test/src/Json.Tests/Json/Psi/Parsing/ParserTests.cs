@@ -6,7 +6,6 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.JsonNew.Psi.Parsing
 {
-    [TestUnity]
     [TestFileExtension(JsonProjectFileType.JSON_EXTENSION)]
     public class ParserTests : ParserTestBase<JsonNewLanguage>
     {
