@@ -13,7 +13,7 @@ import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
 
-@TestEnvironment(platform = [PlatformType.MAC_OS, PlatformType.WINDOWS])
+@TestEnvironment(platform = [PlatformType.MAC_OS, PlatformType.WINDOWS]) // requires mono
 class UnityClassLibTest : BaseTestWithSolutionBase() {
 
     private val templateId = TemplateIdWithVersion("JetBrains.Common.Unity.Library.CSharp", CoreVersion.NONE)
