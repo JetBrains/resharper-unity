@@ -2,14 +2,18 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
 import com.jetbrains.rider.test.enums.CoreVersion
+import com.jetbrains.rider.test.enums.PlatformType
+import com.jetbrains.rider.test.enums.ToolsetVersion
 import com.jetbrains.rider.test.framework.*
 import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
 
+@TestEnvironment(platform = [PlatformType.MAC_OS, PlatformType.WINDOWS])
 class UnityClassLibTest : BaseTestWithSolutionBase() {
 
     private val templateId = TemplateIdWithVersion("JetBrains.Common.Unity.Library.CSharp", CoreVersion.NONE)
