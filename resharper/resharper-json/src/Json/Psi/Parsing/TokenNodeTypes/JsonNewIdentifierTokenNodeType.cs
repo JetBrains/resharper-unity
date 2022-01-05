@@ -24,5 +24,6 @@ namespace JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes
         }
 
         public override string TokenRepresentation => "identifier";
+        public override bool IsIdentifier => true;
     }
 }

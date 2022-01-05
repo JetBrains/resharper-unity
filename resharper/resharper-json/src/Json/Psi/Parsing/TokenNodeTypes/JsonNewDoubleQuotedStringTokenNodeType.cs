@@ -16,6 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes
         public override string TokenRepresentation => "\"double quoted string\"";
 
         public override bool IsConstantLiteral => true;
+        public override bool IsStringLiteral => true;
 
         public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
         {
