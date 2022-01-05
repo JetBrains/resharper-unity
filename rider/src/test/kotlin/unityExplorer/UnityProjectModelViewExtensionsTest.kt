@@ -4,12 +4,14 @@ import base.*
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.ProjectModelBaseTest
+import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
 import org.testng.Assert
 import org.testng.annotations.Test
 import java.io.File
 
+@TestEnvironment(platform = [PlatformType.WINDOWS]) // todo: restore Linux/Mac after fix of RIDER-72946
 class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     override fun getSolutionDirectoryName() = "UnityProjectModelViewExtensionsTest"
     override val persistCaches: Boolean
