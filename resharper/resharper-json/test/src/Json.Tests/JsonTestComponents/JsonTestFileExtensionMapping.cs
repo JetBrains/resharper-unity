@@ -6,12 +6,12 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.ProjectModel;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests
+namespace JetBrains.ReSharper.Plugins.Tests.JsonTestComponents
 {
     [ShellComponent]
-    public class JsonNewTestFileExtensionMapping : FileTypeDefinitionExtensionMapping
+    public class JsonTestFileExtensionMapping : FileTypeDefinitionExtensionMapping
     {
-        public JsonNewTestFileExtensionMapping(Lifetime lifetime, IProjectFileTypes fileTypes)
+        public JsonTestFileExtensionMapping(Lifetime lifetime, IProjectFileTypes fileTypes)
             : base(lifetime, fileTypes)
         {
         }

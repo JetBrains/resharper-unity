@@ -6,12 +6,12 @@ using JetBrains.ReSharper.TestFramework;
 using JetBrains.Text;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.JsonNew.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Tests.Json.Psi.Parsing
 {
     [TestFileExtension(JsonProjectFileType.JSON_EXTENSION)]
     public class LexerTests : LexerTestBase
     {
-        protected override string RelativeTestDataPath => @"JsonNew\Psi\Lexing";
+        protected override string RelativeTestDataPath => @"Json\Psi\Lexing";
 
         protected override ILexer CreateLexer(IBuffer buffer)
         {

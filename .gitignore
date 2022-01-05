@@ -91,7 +91,7 @@ resharper/**/test/data/**/*.tmp
 resharper/**/test/JetTestPackages
 
 # Generated file. Includes the nuget packages from the gradle downloaded SDK
-NuGet.Config
+/NuGet.Config
 
 rider/**/testData/**/*.tmp
 
