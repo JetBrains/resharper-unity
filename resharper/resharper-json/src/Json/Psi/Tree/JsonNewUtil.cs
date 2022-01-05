@@ -6,7 +6,7 @@ using JetBrains.Util;
 
 #nullable enable
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree
+namespace JetBrains.ReSharper.Plugins.Json.Psi.Tree
 {
     public static class JsonNewUtil
     {

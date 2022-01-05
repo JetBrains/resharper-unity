@@ -1,10 +1,10 @@
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodeTypes;
+using JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree.Impl
+namespace JetBrains.ReSharper.Plugins.Json.Psi.Tree.Impl
 {
     internal partial class JsonNewArray
     {

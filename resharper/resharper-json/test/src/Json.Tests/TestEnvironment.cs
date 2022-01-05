@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Environment;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew;
+using JetBrains.ReSharper.Plugins.Json;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;
 using JetBrains.TestFramework.Application.Zones;

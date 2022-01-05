@@ -1,9 +1,9 @@
 ﻿using System;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Json.Psi;
+using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;

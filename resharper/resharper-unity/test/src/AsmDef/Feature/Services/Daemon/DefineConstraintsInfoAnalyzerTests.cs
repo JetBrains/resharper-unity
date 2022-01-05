@@ -1,5 +1,5 @@
+using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;

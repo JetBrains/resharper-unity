@@ -4,7 +4,7 @@ using System.Text;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Util
+namespace JetBrains.ReSharper.Plugins.Json.Util
 {
     // from JetBrains.ReSharper.Psi.JavaScript.Util.StringLiteralUtil
     public static class StringLiteralUtil

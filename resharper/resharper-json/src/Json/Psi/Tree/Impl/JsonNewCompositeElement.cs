@@ -1,7 +1,7 @@
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree.Impl
+namespace JetBrains.ReSharper.Plugins.Json.Psi.Tree.Impl
 {
     public abstract class JsonNewCompositeElement : CompositeElement, IJsonNewTreeNode
     {

@@ -1,17 +1,17 @@
 using System.Text;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Text;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodes
+namespace JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodes
 {
     public abstract class JsonNewTokenNodeBase : LeafElementBase, ITokenNode, IJsonNewTreeNode
     {
         public override PsiLanguageType Language => LanguageFromParent;
-        
+
         public TokenNodeType GetTokenType()
         {
             return (TokenNodeType) NodeType;

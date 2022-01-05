@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion
+namespace JetBrains.ReSharper.Plugins.Json.Feature.CodeCompletion
 {
   public class JsonNewReparsedCompletionContext : ReparsedCodeCompletionContext, IJsonNewCodeCompletionParseContext
   {

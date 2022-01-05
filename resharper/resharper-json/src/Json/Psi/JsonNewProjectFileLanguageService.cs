@@ -1,11 +1,11 @@
 ﻿using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.ProjectModel;
+using JetBrains.ReSharper.Plugins.Json.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 using JetBrains.UI.Icons;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi
+namespace JetBrains.ReSharper.Plugins.Json.Psi
 {
     [ProjectFileType(typeof(JsonNewProjectFileType))]
     public class JsonNewProjectFileLanguageService : ProjectFileLanguageService

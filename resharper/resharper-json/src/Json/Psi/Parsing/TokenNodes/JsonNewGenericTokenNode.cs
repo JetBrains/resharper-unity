@@ -1,7 +1,7 @@
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodes
+namespace JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodes
 {
     internal class JsonNewGenericTokenNode : JsonNewTokenNodeBase
     {

@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util.DataStructures;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements
+namespace JetBrains.ReSharper.Plugins.Json.Psi.DeclaredElements
 {
     public abstract class JsonNewDeclaredElementBase : IDeclaredElement, IJsonSearchDomainOwner
     {

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel.Resources;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Json.Psi.DeclaredElements;
 using JetBrains.ReSharper.Psi.Naming.Impl;
 using JetBrains.UI.Icons;
 

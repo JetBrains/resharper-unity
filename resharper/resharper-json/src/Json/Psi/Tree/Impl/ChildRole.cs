@@ -1,4 +1,4 @@
-﻿namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree.Impl
+﻿namespace JetBrains.ReSharper.Plugins.Json.Psi.Tree.Impl
 {
     public static class ChildRole
     {

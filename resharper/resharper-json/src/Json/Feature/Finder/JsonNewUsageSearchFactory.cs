@@ -1,15 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Diagnostics;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Json.Psi;
+using JetBrains.ReSharper.Plugins.Json.Psi.DeclaredElements;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Impl.Search.SearchDomain;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.Finder
+namespace JetBrains.ReSharper.Plugins.Json.Feature.Finder
 {
     [PsiSharedComponent]
     public class JsonNewUsageSearchFactory : DomainSpecificSearcherFactoryBase

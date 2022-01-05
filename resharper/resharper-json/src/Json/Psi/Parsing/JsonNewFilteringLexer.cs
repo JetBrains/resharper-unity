@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi.Parsing;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Json.Psi.Parsing
 {
     public class JsonNewFilteringLexer : FilteringLexer, ILexer<int>
     {

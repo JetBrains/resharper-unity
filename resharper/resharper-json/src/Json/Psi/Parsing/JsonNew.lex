@@ -1,6 +1,6 @@
 using System;
 using JetBrains.ReSharper.Psi.Parsing;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodeTypes;
+using JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes;
 using JetBrains.Text;
 using JetBrains.Util;
 
@@ -12,7 +12,7 @@ using JetBrains.Util;
   currentTokenType = null;
 %init}
 
-%namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing
+%namespace JetBrains.ReSharper.Plugins.Json.Psi.Parsing
 %class JsonNewLexerGenerated
 %implements IIncrementalLexer
 %function _locateToken

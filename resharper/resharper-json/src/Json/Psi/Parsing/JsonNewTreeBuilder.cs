@@ -1,20 +1,19 @@
 using JetBrains.Annotations;
 using JetBrains.Lifetimes;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodeTypes;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree.Impl;
+using JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes;
+using JetBrains.ReSharper.Plugins.Json.Psi.Tree.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.TreeBuilder;
 using JetBrains.Text;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Json.Psi.Parsing
 {
     public class JsonNewTreeBuilder : TreeStructureBuilderBase, IPsiBuilderTokenFactory
     {
-        
         private readonly PsiBuilder myBuilder;
-        
+
         public JsonNewTreeBuilder(ILexer<int> lexer, Lifetime lifetime) : base(lifetime)
         {
             myBuilder = new PsiBuilder(lexer, ElementType.JSON_NEW_FILE, this, lifetime);
@@ -28,18 +27,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing
         protected override PsiBuilder Builder => myBuilder;
         protected override TokenNodeType NewLine => JsonNewTokenNodeTypes.NEW_LINE;
         protected override NodeTypeSet CommentsOrWhiteSpacesTokens => JsonNewTokenNodeTypes.COMMENTS_AND_WHITESPACES;
-     
+
         public LeafElementBase CreateToken(TokenNodeType tokenNodeType, IBuffer buffer, int startOffset, int endOffset)
         {
             return tokenNodeType.Create(buffer, new TreeOffset(startOffset), new TreeOffset(endOffset));
         }
-        
+
         public void ParseFile()
         {
             var mark = MarkNoSkipWhitespace();
             ParseJsonValue();
             SkipWhitespaces();
-            
+
             if (!myBuilder.Eof())
             {
                 var errorMark = MarkNoSkipWhitespace();
@@ -50,14 +49,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing
 
                 myBuilder.Error(errorMark, GetExpectedMessage("EOF"));
             }
-            
+
             Done(mark, ElementType.JSON_NEW_FILE);
         }
 
         public bool ParseJsonValue()
         {
             var mark = Mark();
-            
+
             var tt = myBuilder.GetTokenType();
             if (tt == JsonNewTokenNodeTypes.LBRACE)
             {
@@ -79,14 +78,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing
                 myBuilder.Drop(mark);
                 return false;
             }
-            
+
             if (GetTokenType() == JsonNewTokenNodeTypes.RBRACE)
             {
                 Advance();
-                Done(mark, ElementType.JSON_NEW_OBJECT); 
+                Done(mark, ElementType.JSON_NEW_OBJECT);
                 return true;
             }
-            
+
             ParseMembers();
 
             if (!ExpectToken(JsonNewTokenNodeTypes.RBRACE))
@@ -107,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing
                 ParseMember();
             }
         }
-        
+
         private bool ParseMember()
         {
             var mark = Mark();
@@ -116,15 +115,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing
                 myBuilder.Drop(mark);
                 return false;
             }
-            
+
             if (!ExpectToken(JsonNewTokenNodeTypes.COLON))
             {
                 myBuilder.Drop(mark);
                 return false;
             }
-            
+
             ParseJsonValue();
-            
+
             Done(mark,ElementType.JSON_NEW_MEMBER);
             return true;
         }
@@ -140,10 +139,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing
             if (GetTokenType() == JsonNewTokenNodeTypes.RBRACKET)
             {
                 Advance();
-                Done(mark, ElementType.JSON_NEW_ARRAY); 
+                Done(mark, ElementType.JSON_NEW_ARRAY);
                 return true;
             }
-            
+
             ParseJsonValue();
 
             while (GetTokenType() == JsonNewTokenNodeTypes.COMMA)
@@ -167,7 +166,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing
             var mark = Mark();
             ParseJsonLiteral(mark);
         }
-        
+
         private bool ParseJsonLiteral(int mark)
         {
             if (GetTokenType() == JsonNewTokenNodeTypes.DOUBLE_QUOTED_STRING ||
@@ -187,7 +186,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing
                 myBuilder.Error(mark, GetExpectedMessage("Double quoted string"));
                 return true;
             }
-            
+
             myBuilder.Drop(mark);
 
             return false;
@@ -199,6 +198,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing
             // this.Mark() calls SkipWhitespace() first
             return myBuilder.Mark();
         }
-        
+
     }
 }

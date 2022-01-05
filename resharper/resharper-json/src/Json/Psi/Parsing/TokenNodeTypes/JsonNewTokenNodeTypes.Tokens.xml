@@ -18,7 +18,7 @@
 
   <!-- Default is 1000 -->
   <BaseTokenNodeTypeIndex>1000</BaseTokenNodeTypeIndex>
-  <TokenTypeNamespace>JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodeTypes</TokenTypeNamespace>
+  <TokenTypeNamespace>JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes</TokenTypeNamespace>
   <TokenTypeClass>JsonNewTokenNodeTypes</TokenTypeClass>
 
   <Tokens NodeType="JsonNewFixedLengthTokenNodeType">
@@ -37,5 +37,5 @@
     <Keyword name="TRUE_KEYWORD" representation="true" />
     <Keyword name="NULL_KEYWORD" representation="null" />
   </Keywords>
-  
+
 </JsonNewTokens>

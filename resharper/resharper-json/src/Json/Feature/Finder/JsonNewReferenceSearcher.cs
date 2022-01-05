@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Diagnostics;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Finder;
@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.Finder
+namespace JetBrains.ReSharper.Plugins.Json.Feature.Finder
 {
     public class JsonNewReferenceSearcher : IDomainSpecificSearcher
     {

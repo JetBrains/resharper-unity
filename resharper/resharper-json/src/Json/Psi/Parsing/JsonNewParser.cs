@@ -1,16 +1,16 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.Lifetimes;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Json.Psi.Parsing
 {
     internal class JsonNewParser : IParser
     {
         [NotNull]
         private readonly ILexer<int> myLexer;
-        
+
         public JsonNewParser(ILexer<int> lexer)
         {
             myLexer = lexer;
@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing
                 return (IFile) builder.GetTree();
             });
         }
-        
+
         private JsonNewTreeBuilder CreateTreeBuilder(Lifetime lifetime)
         {
             return new JsonNewTreeBuilder(myLexer, lifetime);

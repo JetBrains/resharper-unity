@@ -1,6 +1,6 @@
 using System.IO;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Json.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Text;

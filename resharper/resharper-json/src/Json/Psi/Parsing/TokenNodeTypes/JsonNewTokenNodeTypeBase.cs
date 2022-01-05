@@ -1,6 +1,6 @@
 ﻿using JetBrains.ReSharper.Psi.Parsing;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodeTypes
+namespace JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes
 {
     internal abstract class JsonNewTokenNodeTypeBase : TokenNodeType
     {

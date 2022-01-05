@@ -1,11 +1,11 @@
 using JetBrains.Application.InlayHints;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.Tree;

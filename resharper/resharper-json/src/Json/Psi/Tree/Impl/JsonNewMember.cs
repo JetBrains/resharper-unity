@@ -1,6 +1,6 @@
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Util;
+using JetBrains.ReSharper.Plugins.Json.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree.Impl
+namespace JetBrains.ReSharper.Plugins.Json.Psi.Tree.Impl
 {
     internal partial class JsonNewMember
     {

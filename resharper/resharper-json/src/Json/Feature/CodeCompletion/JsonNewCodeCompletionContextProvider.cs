@@ -1,15 +1,15 @@
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Impl;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion.Settings;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodeTypes;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Json.Feature.CodeCompletion.Settings;
+using JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes;
+using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 
 #nullable enable
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion
+namespace JetBrains.ReSharper.Plugins.Json.Feature.CodeCompletion
 {
     [IntellisensePart]
     public class JsonNewCodeCompletionContextProvider : CodeCompletionContextProviderBase

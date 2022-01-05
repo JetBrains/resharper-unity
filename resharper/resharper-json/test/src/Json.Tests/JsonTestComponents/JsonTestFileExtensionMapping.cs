@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.ProjectModel;
+using JetBrains.ReSharper.Plugins.Json.ProjectModel;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Tests.JsonTestComponents

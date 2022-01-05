@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Json.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Json.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Caches2;
 using JetBrains.ReSharper.Psi.Impl;
@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Text;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Language
+namespace JetBrains.ReSharper.Plugins.Json.Psi
 {
     [Language(typeof(JsonNewLanguage))]
     public class JsonNewLanguageService : LanguageService

@@ -1,10 +1,10 @@
 using System;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
+using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.Services.Daemon
+namespace JetBrains.ReSharper.Plugins.Json.Feature.Services.Daemon
 {
     public class ResolveProblemHighlighter
     {

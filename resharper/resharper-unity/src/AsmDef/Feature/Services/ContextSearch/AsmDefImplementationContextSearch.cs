@@ -2,8 +2,8 @@ using System.Linq;
 using JetBrains.Application;
 using JetBrains.Application.DataContext;
 using JetBrains.ReSharper.Feature.Services.Navigation.ContextNavigation;
+using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.ContextSearch

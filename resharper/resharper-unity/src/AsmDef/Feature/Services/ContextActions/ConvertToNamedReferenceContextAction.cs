@@ -2,9 +2,9 @@ using System;
 using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
+using JetBrains.ReSharper.Plugins.Json.Feature.Services.ContextActions;
+using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.Services.ContextActions;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
@@ -13,7 +13,6 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
-// ScopedContextActionBase<> is NRT ready!
 #nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.ContextActions

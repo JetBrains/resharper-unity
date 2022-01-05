@@ -1,9 +1,9 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodeTypes;
+﻿using JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodes
+namespace JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodes
 {
     public class JsonNewDelimitedCommentNode : JsonNewTokenNodeBase, ICommentNode
     {
@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodes
         public override int GetTextLength() => myText.Length;
         public override string GetText() => myText;
         public override bool IsFiltered() => true;
-        
+
         public TreeTextRange GetCommentRange()
         {
             // remove slash and asterisk from both ends

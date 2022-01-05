@@ -2,14 +2,14 @@ using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Settings;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion.Settings;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodeTypes;
+using JetBrains.ReSharper.Plugins.Json.Feature.CodeCompletion.Settings;
+using JetBrains.ReSharper.Plugins.Json.Psi;
+using JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion
+namespace JetBrains.ReSharper.Plugins.Json.Feature.CodeCompletion
 {
     [SolutionComponent]
     public class JsonNewAutopopupCodeCompletionStrategy : IAutomaticCodeCompletionStrategy

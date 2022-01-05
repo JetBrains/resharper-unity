@@ -2,10 +2,10 @@
 using JetBrains.Application;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Settings;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
+using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion.Settings
+namespace JetBrains.ReSharper.Plugins.Json.Feature.CodeCompletion.Settings
 {
     [ShellComponent]
     public class JsonNewIntellisenseManager : LanguageSpecificIntellisenseManager

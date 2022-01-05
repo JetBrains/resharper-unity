@@ -2,7 +2,7 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
 
 #nullable enable
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion
+namespace JetBrains.ReSharper.Plugins.Json.Feature.CodeCompletion
 {
     public class JsonNewCodeCompletionContext : SpecificCodeCompletionContext
     {

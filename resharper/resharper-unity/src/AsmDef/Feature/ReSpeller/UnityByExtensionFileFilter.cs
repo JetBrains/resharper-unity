@@ -1,6 +1,6 @@
 using System;
 using JetBrains.ReSharper.Features.ReSpeller.Analyzers;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
+using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;

@@ -1,11 +1,11 @@
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodeTypes;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Util;
+using JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes;
+using JetBrains.ReSharper.Plugins.Json.Util;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 
 #nullable enable
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree.Impl
+namespace JetBrains.ReSharper.Plugins.Json.Psi.Tree.Impl
 {
     internal partial class JsonNewLiteralExpression
     {
@@ -31,10 +31,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree.Impl
             if (token == null) return TreeTextRange.InvalidRange;
 
             var tokenType = token.GetTokenType();
-            if (tokenType == JsonNewTokenNodeTypes.NULL_KEYWORD) return this.GetTreeTextRange();
-            if (tokenType == JsonNewTokenNodeTypes.TRUE_KEYWORD) return this.GetTreeTextRange();
-            if (tokenType == JsonNewTokenNodeTypes.FALSE_KEYWORD) return this.GetTreeTextRange();
-            if (tokenType == JsonNewTokenNodeTypes.NUMERIC_LITERAL) return this.GetTreeTextRange();
+            if (tokenType == JsonNewTokenNodeTypes.NULL_KEYWORD) return TreeNodeExtensions.GetTreeTextRange(this);
+            if (tokenType == JsonNewTokenNodeTypes.TRUE_KEYWORD) return TreeNodeExtensions.GetTreeTextRange(this);
+            if (tokenType == JsonNewTokenNodeTypes.FALSE_KEYWORD) return TreeNodeExtensions.GetTreeTextRange(this);
+            if (tokenType == JsonNewTokenNodeTypes.NUMERIC_LITERAL) return TreeNodeExtensions.GetTreeTextRange(this);
             if (tokenType == JsonNewTokenNodeTypes.DOUBLE_QUOTED_STRING)
             {
                 var text = token.GetText();
@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree.Impl
 
                 var firstChar = text[0];
                 var lastChar = text[^1];
-                var treeTextRange = this.GetTreeTextRange();
+                var treeTextRange = TreeNodeExtensions.GetTreeTextRange(this);
 
                 var hasStartQuote = firstChar == '\"' || firstChar == '\'';
                 var hasEndQuote = hasStartQuote ? firstChar == lastChar : lastChar == '\"' || lastChar == '\'';

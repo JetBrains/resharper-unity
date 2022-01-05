@@ -4,7 +4,7 @@ using JetBrains.IDE;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Navigation.NavigationExtensions;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
+using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.Util;

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.ProjectModel
+namespace JetBrains.ReSharper.Plugins.Json.ProjectModel
 {
     // Create a project file type we can register a PSI language against. We can't use the JsonProjectFileType in the
     // platform because we'll clash with ReSharper's JavaScript based PSI, which isn't available in Rider.

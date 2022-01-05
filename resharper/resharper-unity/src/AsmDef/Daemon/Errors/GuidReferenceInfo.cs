@@ -1,7 +1,7 @@
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon.Attributes;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors
 {

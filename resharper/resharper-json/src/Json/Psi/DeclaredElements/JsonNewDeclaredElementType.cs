@@ -2,7 +2,7 @@
 using JetBrains.ReSharper.Psi.Naming.Impl;
 using JetBrains.UI.Icons;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements
+namespace JetBrains.ReSharper.Plugins.Json.Psi.DeclaredElements
 {
     public class JsonNewDeclaredElementType : DeclaredElementType
     {

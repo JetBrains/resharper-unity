@@ -1,6 +1,6 @@
 ﻿using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree
+namespace JetBrains.ReSharper.Plugins.Json.Psi.Tree
 {
     public abstract class JsonNewCompositeNodeType : CompositeNodeType
     {

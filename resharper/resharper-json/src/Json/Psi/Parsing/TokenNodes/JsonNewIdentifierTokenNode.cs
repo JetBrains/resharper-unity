@@ -1,7 +1,7 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodeTypes;
+﻿using JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodes
+namespace JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodes
 {
     internal class JsonNewIdentifierTokenNode : JsonNewTokenNodeBase
     {

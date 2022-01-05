@@ -1,10 +1,10 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodes;
+﻿using JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodes;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.Text;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodeTypes
+namespace JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes
 {
     internal class JsonNewSingleQuotedStringTokenNodeType : JsonNewTokenNodeTypeBase
     {
@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing.TokenNodeTypes
         public override string TokenRepresentation => "'single quoted string'";
 
         public override bool IsConstantLiteral => true;
-        
+
         public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
         {
             return new JsonNewGenericTokenNode(this, buffer.GetText(new TextRange(startOffset.Offset, endOffset.Offset)));

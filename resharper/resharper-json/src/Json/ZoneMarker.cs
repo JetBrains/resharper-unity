@@ -1,6 +1,6 @@
 using JetBrains.Application.BuildScript.Application.Zones;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew
+namespace JetBrains.ReSharper.Plugins.Json
 {
     [ZoneMarker]
     public class ZoneMarker : IRequire<ILanguageJsonNewZone>

@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Json.Psi.Parsing
 {
     public partial class JsonNewLexerGenerated
     {

@@ -4,8 +4,8 @@ using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
+using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.TextControl;
 using JetBrains.Util;
 

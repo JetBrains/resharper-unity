@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.UI.RichText;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements
+namespace JetBrains.ReSharper.Plugins.Json.Psi.DeclaredElements
 {
     [PsiSharedComponent]
     public class JsonNewDeclaredElementPresenter : IDeclaredElementPresenter
@@ -66,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements
 
             return string.Empty;
         }
-        
+
         private static void TrimString(StringBuilder sb)
         {
             while (sb.Length > 0 && sb[sb.Length - 1] == ' ')
@@ -78,6 +78,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements
             var s = sb.Length;
             sb.Append(substr);
             return substr.Length == 0 ? TextRange.InvalidRange : new TextRange(s, sb.Length);
-        } 
+        }
     }
 }
