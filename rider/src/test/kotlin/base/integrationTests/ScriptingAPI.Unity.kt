@@ -63,7 +63,7 @@ val unityActionsTimeout: Duration = Duration.ofSeconds(30)
 //region UnityDll
 
 fun downloadUnityDll(): File {
-    return downloadAndExtractArchiveArtifactIntoPersistentCache("https://repo.labs.intellij.net/dotnet-rider-test-data/UnityEngine-2018.3-08-01-2019.dll.zip").combine("UnityEngine.dll")
+    return downloadAndExtractArchiveArtifactIntoPersistentCache("https://repo.labs.intellij.net/dotnet-rider-test-data/UnityEngine-2018.3-08-01-2019.dll.tar.gz").combine("UnityEngine.dll")
 }
 
 fun copyUnityDll(unityDll: File, project: Project, activeSolutionDirectory: File) {

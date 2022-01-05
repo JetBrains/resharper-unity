@@ -429,7 +429,7 @@ tasks {
 
     val packReSharperPlugin by registering(com.ullink.NuGetPack::class) {
         group = backendGroup
-        onlyIf { isWindows }
+        onlyIf { isWindows } // non-windows builds are just for running tests, and agents don't have `mono` installed. NuGetPack requires `mono` though.
         description = "Packs resulting DLLs into a NuGet package which is an R# extension."
         dependsOn(buildReSharperHostPlugin)
 
