@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>JetBrains.ReSharper.Plugins.Json.Rider</AssemblyName>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Json.Rider</RootNamespace>
+    <LangVersion>9</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\..\..\sign.snk</AssemblyOriginatorKeyFile>
+    <Company>JetBrains</Company>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
+    <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <ProjectReference Include="..\Json\Json.csproj" />
+  </ItemGroup>
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Rider_Rider.Backend.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" />
+</Project>

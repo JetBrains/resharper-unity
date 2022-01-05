@@ -161,6 +161,7 @@
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
     <ProjectReference Include="..\..\resharper-json\src\Json\Json.csproj" />
+    <ProjectReference Include="..\..\resharper-json\src\Json.Rider\Json.Rider.csproj" />
     <ProjectReference Include="..\..\resharper-yaml\src\resharper-yaml.csproj" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Rider_Rider.Backend.Props" />

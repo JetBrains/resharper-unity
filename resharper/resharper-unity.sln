@@ -50,6 +50,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Json", "resharper-json\src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Json.Tests", "resharper-json\test\src\Json.Tests\Json.Tests.csproj", "{0F66CA51-1FCE-4E8B-8AF4-742C46553E2A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Json.Rider", "resharper-json\src\Json.Rider\Json.Rider.csproj", "{5CF16E9D-4EFB-46CA-81B5-5502814C4C91}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\debugger\usbmuxd\usbmuxd.projitems*{4e49cd68-6ba2-4765-80ac-d82537a0996b}*SharedItemsImports = 5
@@ -129,6 +131,10 @@ Global
 		{0F66CA51-1FCE-4E8B-8AF4-742C46553E2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F66CA51-1FCE-4E8B-8AF4-742C46553E2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F66CA51-1FCE-4E8B-8AF4-742C46553E2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CF16E9D-4EFB-46CA-81B5-5502814C4C91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CF16E9D-4EFB-46CA-81B5-5502814C4C91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CF16E9D-4EFB-46CA-81B5-5502814C4C91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CF16E9D-4EFB-46CA-81B5-5502814C4C91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -152,6 +158,7 @@ Global
 		{31338488-0C08-43C2-884F-A38485E2FA2F} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
 		{1F26BB39-DC5A-4FCD-9E3A-6BD3C6A1C88B} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
 		{0F66CA51-1FCE-4E8B-8AF4-742C46553E2A} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
+		{5CF16E9D-4EFB-46CA-81B5-5502814C4C91} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F132919A-F861-4C4F-923A-C956B82D9EE6}

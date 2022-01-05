@@ -63,6 +63,8 @@ val dotnetDllFiles = files(
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.pdb",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.dll",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.pdb",
+    "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.Rider.dll",
+    "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.Rider.pdb",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.dll",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.pdb"
 )
