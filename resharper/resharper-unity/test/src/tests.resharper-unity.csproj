@@ -32,7 +32,7 @@
     <PackageReference Include="Lib.Harmony" Version="2.0.0.8" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\resharper-unity.csproj" />
+    <ProjectReference Include="..\..\src\Unity\resharper-unity.csproj" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props" />

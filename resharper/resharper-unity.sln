@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "resharper-unity", "resharper-unity\src\resharper-unity.csproj", "{DF42F23E-46F3-4798-8B16-024619FA5E46}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "resharper-unity", "resharper-unity\src\Unity\resharper-unity.csproj", "{DF42F23E-46F3-4798-8B16-024619FA5E46}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests.resharper-unity", "resharper-unity\test\src\tests.resharper-unity.csproj", "{849CDA2E-35FC-49A8-A755-C3216B72BAB9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rider-unity", "resharper-unity\src\rider-unity.csproj", "{D8A177C3-8ADF-4B53-AA48-BB5DC1150869}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rider-unity", "resharper-unity\src\Unity\rider-unity.csproj", "{D8A177C3-8ADF-4B53-AA48-BB5DC1150869}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DF42F23E-46F3-4798-8B16-024619FA5E46} = {DF42F23E-46F3-4798-8B16-024619FA5E46}
 	EndProjectSection

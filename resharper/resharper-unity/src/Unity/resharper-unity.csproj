@@ -8,24 +8,17 @@
     <LangVersion>9</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\..\sign.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\..\..\sign.snk</AssemblyOriginatorKeyFile>
     <Company>JetBrains</Company>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RIDER;$(CommandLineConstants)</DefineConstants>
+    <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RESHARPER;$(CommandLineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;RIDER;$(CommandLineConstants)</DefineConstants>
+    <DefineConstants>TRACE;RESHARPER;$(CommandLineConstants)</DefineConstants>
   </PropertyGroup>
-  <ItemGroup Label="Model">
-    <Compile Include="..\..\build\generated\Model\**\*" LinkBase="Rider/Model">
-      <Visible>False</Visible>
-    </Compile>
-  </ItemGroup>
+  <!-- ********** -->
   <ItemGroup Label="C#">
-    <Compile Include="..\..\..\unity\EditorPlugin\NonUnity\ProtocolCompatibility.cs">
-      <Link>Rider\Protocol\ProtocolCompatibility.cs</Link>
-    </Compile>
     <ErrorsGen Include="CSharp\Daemon\Errors\CSharpErrors.xml">
       <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
       <OutputFile>CSharp\Daemon\Errors\CSharpErrors.generated.cs</OutputFile>
@@ -118,15 +111,6 @@
   <ItemGroup Label="Resources">
     <None Remove="api.xml" />
     <EmbeddedResource Include="api.xml" />
-    <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatterns.xaml" />
-    <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatternsWithRegions.xaml" />
-    <EmbeddedResource Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AdditionalFileLayoutResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Compile Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.Designer.cs">
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <None Remove="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
     <EmbeddedResource Include="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
   </ItemGroup>
@@ -141,13 +125,19 @@
     </EmbeddedResource>
   </ItemGroup>
   <!-- ********** -->
-  <ItemGroup Label="Remove Visual Studio or ReSharper specific files">
-    <Compile Remove="**\VisualStudio\**" />
-    <EmbeddedResource Remove="**\VisualStudio\**" />
-    <None Remove="**\VisualStudio\**" />
-    <Compile Remove="**\ReSharper\**" />
-    <EmbeddedResource Remove="**\ReSharper\**" />
-    <None Remove="**\ReSharper\**" />
+  <ItemGroup Label="Remove Rider specific files">
+    <Compile Remove="**\Rider\**" />
+    <EmbeddedResource Remove="**\Rider\**" />
+    <None Remove="**\Rider\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Format definitions can't compile on Mac/Linux due to missing PresentationCore dependencies -->
+    <Compile Remove="**\VisualStudio\**\*FormatDefinitions.cs" Condition=" '$(OS)' == 'Unix' " />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="ShaderLab\Host\**" />
+    <EmbeddedResource Remove="ShaderLab\Host\**" />
+    <None Remove="ShaderLab\Host\**" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="References">
@@ -156,18 +146,20 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="VSSDK.Text.10" Version="10.0.4" />
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
-    <ProjectReference Include="..\..\resharper-json\src\Json\Json.csproj" />
-    <ProjectReference Include="..\..\resharper-json\src\Json.Rider\Json.Rider.csproj" />
-    <ProjectReference Include="..\..\resharper-yaml\src\Yaml\Yaml.csproj" />
-    <ProjectReference Include="..\..\resharper-yaml\src\Yaml.Rider\Yaml.Rider.csproj" />
+    <ProjectReference Include="..\..\..\resharper-json\src\Json\Json.csproj" />
+    <ProjectReference Include="..\..\..\resharper-yaml\src\Yaml\Yaml.csproj" />
   </ItemGroup>
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Rider_Rider.Backend.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Web_Core.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio_SinceVs10.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_VisualStudio_ReSpeller.Props" />
   <Target Name="CppHack" AfterTargets="PrepareForRun">
-     <Move SourceFiles="$(OutDir)JetBrains.ReSharper.Psi.Cpp.dll" DestinationFiles="$(OutDir)x86\JetBrains.ReSharper.Psi.Cpp.dll" />
+    <Move SourceFiles="$(OutDir)JetBrains.ReSharper.Psi.Cpp.dll" DestinationFiles="$(OutDir)x86\JetBrains.ReSharper.Psi.Cpp.dll" />
   </Target>
 </Project>
