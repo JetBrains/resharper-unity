@@ -23,7 +23,7 @@
     <PackageReference Include="Lib.Harmony" Version="2.0.0.8" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\resharper-yaml.csproj" />
+    <ProjectReference Include="..\..\src\Yaml.csproj" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props" />

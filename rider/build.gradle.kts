@@ -495,7 +495,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         outputs.upToDateWhen { false }
         val buildDir = File(repoRoot, "resharper/build")
         val testDll =
-            File(buildDir, "resharper-yaml/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.Tests.dll")
+            File(buildDir, "Yaml.Tests/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.Tests.dll")
         testAssemblies = listOf(testDll)
     }
 

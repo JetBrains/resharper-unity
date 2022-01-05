@@ -35,9 +35,9 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "usbmuxd", "..\debugger\usbm
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EditorPlugin.5.5.0f3", "..\unity\EditorPlugin\EditorPlugin.5.5.0f3.csproj", "{CD880599-D091-4FFB-8028-64471E130B20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "resharper-yaml", "resharper-yaml\src\resharper-yaml.csproj", "{644DFD3D-FD39-4A46-A00F-46D03E34CDED}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaml", "resharper-yaml\src\Yaml.csproj", "{644DFD3D-FD39-4A46-A00F-46D03E34CDED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests.resharper-yaml", "resharper-yaml\test\src\tests.resharper-yaml.csproj", "{ABD92079-2A1B-4023-BD63-812A58529BAF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaml.Tests", "resharper-yaml\test\src\Yaml.Tests.csproj", "{ABD92079-2A1B-4023-BD63-812A58529BAF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Json", "resharper-json\src\Json\Json.csproj", "{EF962353-83C6-44AE-974A-BD17D0FAAB44}"
 EndProject
