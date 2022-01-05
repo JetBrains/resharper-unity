@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Json.Psi
         {
             return new JsonNewElementFactory(psiModule, psiModule.GetSolution(), JsonNewLanguage.Instance);
         }
-        
+
         private JsonNewElementFactory([NotNull] IPsiModule module, [NotNull] ISolution solution, [NotNull] PsiLanguageType language)
         {
             myModule = module;
@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Json.Psi
 
             return myLanguageService.CreateParser(lexer, myModule, null) as JsonNewParser;
         }
-        
+
         public IJsonNewLiteralExpression CreateStringLiteral(string literal)
         {
             var parser = CreateParser($"\"{literal}\"");
