@@ -54,6 +54,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Json.Rider", "resharper-jso
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaml.Rider", "resharper-yaml\src\Yaml.Rider\Yaml.Rider.csproj", "{1FBDC32F-0A3A-4A3C-BEC0-9129A03B3652}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.VisualStudio", "resharper-unity\src\Unity.VisualStudio\Unity.VisualStudio.csproj", "{15A703B1-1A74-4A67-9BD3-FB64368FAA05}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\debugger\usbmuxd\usbmuxd.projitems*{4e49cd68-6ba2-4765-80ac-d82537a0996b}*SharedItemsImports = 5
@@ -141,6 +143,10 @@ Global
 		{1FBDC32F-0A3A-4A3C-BEC0-9129A03B3652}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FBDC32F-0A3A-4A3C-BEC0-9129A03B3652}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FBDC32F-0A3A-4A3C-BEC0-9129A03B3652}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15A703B1-1A74-4A67-9BD3-FB64368FAA05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15A703B1-1A74-4A67-9BD3-FB64368FAA05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15A703B1-1A74-4A67-9BD3-FB64368FAA05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15A703B1-1A74-4A67-9BD3-FB64368FAA05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -166,6 +172,7 @@ Global
 		{0F66CA51-1FCE-4E8B-8AF4-742C46553E2A} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
 		{5CF16E9D-4EFB-46CA-81B5-5502814C4C91} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
 		{1FBDC32F-0A3A-4A3C-BEC0-9129A03B3652} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
+		{15A703B1-1A74-4A67-9BD3-FB64368FAA05} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F132919A-F861-4C4F-923A-C956B82D9EE6}

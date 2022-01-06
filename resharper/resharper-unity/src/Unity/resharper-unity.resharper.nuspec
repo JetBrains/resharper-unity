@@ -45,12 +45,14 @@
     <tags>resharper unity unity3d</tags>
   </metadata>
   <files>
-    <file src="..\..\..\build\resharper-unity\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
-    <file src="..\..\..\build\resharper-unity\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.pdb" target="DotFiles" />
-    <file src="..\..\..\build\resharper-unity\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Json.dll" target="DotFiles" />
-    <file src="..\..\..\build\resharper-unity\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Json.pdb" target="DotFiles" />
-    <file src="..\..\..\build\resharper-unity\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Yaml.dll" target="DotFiles" />
-    <file src="..\..\..\build\resharper-unity\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Yaml.pdb" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.pdb" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.VisualStudio.dll" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.VisualStudio.pdb" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Json.dll" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Json.pdb" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Yaml.dll" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Yaml.pdb" target="DotFiles" />
     <file src="annotations\UnityEngine*.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations" />
     <file src="annotations\UnityEditor*.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations" />
     <file src="..\..\..\..\common\dictionaries\*.dic" target="DotFiles\Extensions\JetBrains.Unity\dictionaries" />
