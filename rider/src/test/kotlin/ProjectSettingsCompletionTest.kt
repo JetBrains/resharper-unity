@@ -1,5 +1,4 @@
-import base.integrationTests.copyUnityDll
-import base.integrationTests.downloadUnityDll
+import base.integrationTests.prepareAssemblies
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
 import com.intellij.testFramework.TestModeFlags
@@ -14,20 +13,11 @@ import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
-import org.testng.annotations.BeforeSuite
 import org.testng.annotations.Test
 import java.io.File
 
 @TestEnvironment(toolset = ToolsetVersion.TOOLSET_17_CORE, coreVersion = CoreVersion.DOT_NET_6)
 class ProjectSettingsCompletionTest : BaseTestWithSolution() {
-
-    lateinit var unityDll : File
-
-    @BeforeSuite(alwaysRun = true)
-    fun getUnityDll() {
-        unityDll = downloadUnityDll()
-    }
-
     override fun getSolutionDirectoryName(): String = "ProjectSettingsTestData"
 
     override val traceCategories: List<String>
@@ -176,7 +166,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
 
         //all tests were written with this setting which default was changed only in 18.3
         RiderCodeCompletionExtraSettings.instance.allowToCompleteWithWhitespace = true
-        copyUnityDll(unityDll, project, activeSolutionDirectory)
+        prepareAssemblies(project, activeSolutionDirectory)
     }
 
     // debug only

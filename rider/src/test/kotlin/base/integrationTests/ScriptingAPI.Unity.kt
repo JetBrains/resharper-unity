@@ -62,26 +62,23 @@ val unityActionsTimeout: Duration = Duration.ofSeconds(30)
 
 //region UnityDll
 
-fun downloadUnityDll(): File {
+private fun downloadUnityDll(): File {
     return downloadAndExtractArchiveArtifactIntoPersistentCache("https://repo.labs.intellij.net/dotnet-rider-test-data/UnityEngine-2018.3-08-01-2019.dll.tar.gz").combine("UnityEngine.dll")
 }
 
-fun downloadMsCorLib():File{
+private fun downloadMsCorLib():File{
     return downloadAndExtractArchiveArtifactIntoPersistentCache("https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_mscorlib_2018.4.tar.gz").combine("mscorlib.dll")
 }
 
-fun downloadAndCopyMsCorLibDll(activeSolutionDirectory: File) {
-    val dll = downloadMsCorLib()
-    dll.copyTo(activeSolutionDirectory.combine(dll.name))
-}
-
-fun copyUnityDll(unityDll: File, project: Project, activeSolutionDirectory: File) {
-    copyUnityDll(unityDll, activeSolutionDirectory)
+fun prepareAssemblies(project: Project, activeSolutionDirectory: File) {
+    prepareAssemblies(activeSolutionDirectory)
     refreshFileSystem(project)
 }
 
-fun copyUnityDll(unityDll: File, activeSolutionDirectory: File) {
-    downloadAndCopyMsCorLibDll(activeSolutionDirectory)
+fun prepareAssemblies(activeSolutionDirectory: File) {
+    val dll = downloadMsCorLib()
+    dll.copyTo(activeSolutionDirectory.combine(dll.name))
+    val unityDll = downloadUnityDll()
     unityDll.copyTo(activeSolutionDirectory.combine(unityDll.name))
 }
 

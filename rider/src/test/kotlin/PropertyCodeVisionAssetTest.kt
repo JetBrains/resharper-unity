@@ -1,5 +1,4 @@
-import base.integrationTests.copyUnityDll
-import base.integrationTests.downloadUnityDll
+import base.integrationTests.prepareAssemblies
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
@@ -14,7 +13,6 @@ import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
-import org.testng.annotations.BeforeSuite
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 import java.io.File
@@ -27,15 +25,8 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 	        <s:Boolean x:Key="/Default/CodeEditing/Unity/IsAssetIndexingEnabled/@EntryValue">False</s:Boolean>
             </wpf:ResourceDictionary>"""
 
-    lateinit var unityDll: File
-
-    @BeforeSuite(alwaysRun = true)
-    fun getUnityDll() {
-        unityDll = downloadUnityDll()
-    }
-
     override fun preprocessTempDirectory(tempDir: File) {
-        copyUnityDll(unityDll, activeSolutionDirectory)
+        prepareAssemblies(activeSolutionDirectory)
         if (testMethod.name.contains("YamlOff")) {
             val dotSettingsFile = activeSolutionDirectory.combine("$activeSolution.sln.DotSettings.user")
             dotSettingsFile.writeText(disableYamlDotSettingsContents)
