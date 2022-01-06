@@ -152,7 +152,7 @@
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
     <ProjectReference Include="..\..\resharper-json\src\Json\Json.csproj" />
-    <ProjectReference Include="..\..\resharper-yaml\src\Yaml.csproj" />
+    <ProjectReference Include="..\..\resharper-yaml\src\Yaml\Yaml.csproj" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" />

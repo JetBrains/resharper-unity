@@ -30,9 +30,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "gradle-launcher", "gradle-l
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Debugger", "Debugger", "{D61F53F1-F209-4313-9FF2-B1DBD286BE11}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaml", "resharper-yaml\src\Yaml.csproj", "{696CBCCC-09AB-42C1-B139-5BCD8EC2FDD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaml", "resharper-yaml\src\Yaml\Yaml.csproj", "{696CBCCC-09AB-42C1-B139-5BCD8EC2FDD7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaml.Tests", "resharper-yaml\test\src\Yaml.Tests.csproj", "{653E0090-709A-4DB5-A35A-CE1F954E8362}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaml.Tests", "resharper-yaml\test\src\Yaml.Tests\Yaml.Tests.csproj", "{653E0090-709A-4DB5-A35A-CE1F954E8362}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EditorPlugin.5.5.0f3", "..\unity\EditorPlugin\EditorPlugin.5.5.0f3.csproj", "{8970E10C-ADA7-4041-9A98-59AFABF3ED98}"
 EndProject
