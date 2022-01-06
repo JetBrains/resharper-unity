@@ -4,12 +4,16 @@ import base.*
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.ProjectModelBaseTest
+import com.jetbrains.rider.test.enums.CoreVersion
+import com.jetbrains.rider.test.enums.PlatformType
+import com.jetbrains.rider.test.enums.ToolsetVersion
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
 import org.testng.Assert
 import org.testng.annotations.Test
 import java.io.File
 
+@TestEnvironment(platform = [PlatformType.WINDOWS], toolset = ToolsetVersion.TOOLSET_17_CORE, coreVersion = CoreVersion.DOT_NET_6) // todo: restore Linux/Mac after fix of RIDER-72946
 class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     override fun getSolutionDirectoryName() = "UnityProjectModelViewExtensionsTest"
     override val persistCaches: Boolean
@@ -18,7 +22,6 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     // todo: add test with solution, where one of the asmdef-s doesn't target Editor, this would cause only .Player project without normal one
 
     @Test
-    @TestEnvironment
     fun testAddNewItem() {
         testProjectModel(testGoldFile, project, false) {
             //dump("Init", project, activeSolutionDirectory) {}
@@ -35,7 +38,6 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     }
 
     @Test
-    @TestEnvironment
     fun testRenameFile() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename file", project, activeSolutionDirectory) {
@@ -97,7 +99,6 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     }
 
     @Test
-    @TestEnvironment
     fun testDeleteFile() {
         val metaFile = project.solutionDirectory.resolve("Assets/AsmdefResponse/NewBehaviourScript.cs.meta")
         Assert.assertTrue(metaFile.exists(), "We expect meta file exists.")
@@ -110,8 +111,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         Assert.assertFalse(metaFile.exists(), "We expect meta file removed.")
     }
 
-    @Test
-    @TestEnvironment // RIDER-41182
+    @Test // RIDER-41182
     fun testMoveFile() {
         val originFile = project.solutionDirectory.resolve("Assets").resolve("Class1.cs")
         val originMetaFile = File(originFile.absolutePath+".meta")
@@ -135,8 +135,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         Assert.assertEquals(metaFileContent, movedMetaFile.readText())
     }
 
-    @Test
-    @TestEnvironment // RIDER-63575
+    @Test // RIDER-63575
     fun testMoveFile2() {
         val originFile = project.solutionDirectory.resolve("Assets/AsmdefResponse/SS/rrr.cs")
         val originMetaFile = File(originFile.absolutePath+".meta")

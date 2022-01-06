@@ -1,7 +1,6 @@
 package base
 
-import base.integrationTests.copyUnityDll
-import base.integrationTests.downloadUnityDll
+import base.integrationTests.prepareAssemblies
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.waitAndPump
@@ -10,19 +9,11 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.*
-import org.testng.annotations.BeforeSuite
 import org.testng.annotations.DataProvider
 import java.io.File
 import java.time.Duration
 
 abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
-    protected var unityDll : File? = null
-
-    @BeforeSuite(alwaysRun = true)
-    fun getUnityDll() {
-        unityDll = downloadUnityDll()
-    }
-
     @DataProvider(name = "findUsagesGrouping")
     fun test1() = arrayOf(
         arrayOf("allGroupsEnabled", listOf("SolutionFolder", "Project", "Directory", "File", "Namespace", "Type", "Member", "UnityComponent", "UnityGameObject"))
@@ -30,9 +21,7 @@ abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
 
     override fun preprocessTempDirectory(tempDir: File) {
         super.preprocessTempDirectory(tempDir)
-        if (unityDll == null)
-            unityDll = downloadUnityDll()
-        copyUnityDll(unityDll!!, activeSolutionDirectory)
+        prepareAssemblies(activeSolutionDirectory)
     }
 
     protected fun doTest(line : Int, column : Int, groups: List<String>?) {

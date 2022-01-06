@@ -1,24 +1,21 @@
-import base.integrationTests.copyUnityDll
-import base.integrationTests.downloadUnityDll
+import base.integrationTests.prepareAssemblies
 import com.jetbrains.rdclient.editors.FrontendTextControlHost
+import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.RefactoringsTestBase
+import com.jetbrains.rider.test.enums.CoreVersion
+import com.jetbrains.rider.test.enums.ToolsetVersion
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.executeWithGold
-import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.test.scriptingApi.callAltEnterMenu
+import com.jetbrains.rider.test.scriptingApi.executeItemByPrefix
+import com.jetbrains.rider.test.scriptingApi.waitBackendDocumentChange
+import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import org.testng.annotations.BeforeMethod
-import org.testng.annotations.BeforeSuite
 import org.testng.annotations.Test
 import java.io.File
 
+@TestEnvironment(toolset = ToolsetVersion.TOOLSET_17_CORE, coreVersion = CoreVersion.DOT_NET_6)
 class QuickFixProjectSettingsTest : RefactoringsTestBase() {
-
-    lateinit var unityDll : File
-
-    @BeforeSuite(alwaysRun = true)
-    fun getUnityDll() {
-        unityDll = downloadUnityDll()
-    }
-
     override fun getSolutionDirectoryName(): String = "ProjectSettingsTestData"
     override val editorGoldFile: File
         get() = File(testCaseGoldDirectory,  testMethod.name)
@@ -75,6 +72,6 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
 
     @BeforeMethod
     fun InitializeEnvironement() {
-        copyUnityDll(unityDll, project, activeSolutionDirectory)
+        prepareAssemblies(project, activeSolutionDirectory)
     }
 }
