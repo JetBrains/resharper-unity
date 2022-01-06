@@ -163,6 +163,7 @@
     <ProjectReference Include="..\..\resharper-json\src\Json\Json.csproj" />
     <ProjectReference Include="..\..\resharper-json\src\Json.Rider\Json.Rider.csproj" />
     <ProjectReference Include="..\..\resharper-yaml\src\Yaml\Yaml.csproj" />
+    <ProjectReference Include="..\..\resharper-yaml\src\Yaml.Rider\Yaml.Rider.csproj" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Rider_Rider.Backend.Props" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" />
