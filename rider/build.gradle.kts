@@ -61,6 +61,10 @@ val backend = BackendPaths(project, logger, repoRoot, productVersion).apply {
 val dotnetDllFiles = files(
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.dll",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.pdb",
+    "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.dll",
+    "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.pdb",
+    "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.Rider.dll",
+    "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.Rider.pdb",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.dll",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.pdb"
 )
@@ -429,6 +433,7 @@ tasks {
 
     val packReSharperPlugin by registering(com.ullink.NuGetPack::class) {
         group = backendGroup
+        onlyIf { isWindows } // non-windows builds are just for running tests, and agents don't have `mono` installed. NuGetPack requires `mono` though.
         description = "Packs resulting DLLs into a NuGet package which is an R# extension."
         dependsOn(buildReSharperHostPlugin)
 
@@ -474,6 +479,16 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         }
     }
 
+    val nunitReSharperJson by registering(NUnit::class) {
+        group = testGroup
+        shadowCopy = false
+        outputs.upToDateWhen { false }
+        val buildDir = File(repoRoot, "resharper/build")
+        val testDll =
+            File(buildDir, "resharper-json/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.Tests.dll")
+        testAssemblies = listOf(testDll)
+    }
+
     val nunitReSharperYaml by registering(NUnit::class) {
         group = testGroup
         shadowCopy = false
@@ -517,6 +532,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         dependsOn(
             buildReSharperHostPlugin,
             buildUnityEditorPlugin,
+            nunitReSharperJson,
             nunitReSharperYaml,
             nunitReSharperUnity,
             nunitRiderUnity

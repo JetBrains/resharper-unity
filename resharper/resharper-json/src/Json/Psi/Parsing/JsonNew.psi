@@ -1,0 +1,94 @@
+options
+{
+// Parser options
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// Parser class name and namespace
+  parserPackage="JetBrains.ReSharper.Plugins.Json.Psi.Gen";
+  parserClassName="JsonNewParserGenerated";
+// Strongly type the lexer we're using. ILexer<int> is the caching lexer instance
+  "lexerClassName"="JetBrains.ReSharper.Psi.Parsing.ILexer<int>";
+// FQN of (non-generated) class that provides messages for the parser
+  parserMessagesClass="JetBrains.ReSharper.Plugins.Json.Psi.Parsing.ParserMessages";
+// Parser, error messages + token bitsets target folder
+  parserTargetSubdir="Parsing/JsonNew";
+// Don't generate a bitset unless there's 4 or more comparisons to be made
+  tokenBitsetThreshold=4;
+// Composite node type/element generation options
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// Existing language specific ITreeNode
+  "psiElementClassFQName"="JetBrains.ReSharper.Plugins.Json.Psi.Tree.IJsonNewTreeNode";
+// Existing token type containing class + namespace
+  tokenTypePackageName="JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes";
+  tokenTypeClassName="JsonNewTokenNodeTypes";
+// Set base index for generated (element, not token) node types. Defaults to 2000, tokens default to 1000
+// tokenTypeBaseIndex=2000;
+// Tree node interface namespace + target folder (also target folder for navigators + visitors)
+  psiInterfacePackageName="JetBrains.ReSharper.Plugins.Json.Psi.Tree";
+  psiInterfacesTargetSubdir="Psi/JsonNew/Tree";
+// Tree node implementation namespace, base type and target folder
+  psiStubsPackageName="JetBrains.ReSharper.Plugins.Json.Psi.Tree.Impl";
+  psiStubsBaseClass="JsonNewCompositeElement";
+  psiStubsTargetSubdir="Psi/JsonNew/Tree/Impl";
+// Existing composite node type base class
+  elementTypeBaseClass="JsonNewCompositeNodeType";
+// Namespace for generating custom interface when `customInterface` option used
+  customInterfacePackage="JetBrains.ReSharper.Plugins.Json.Psi.Tree";
+// Any role used in this file that begins with this prefix must be defined in `ChildRole`
+  publicChildRolePrefix="JsonNew_";
+// Namespace and suffix for custom element instance implementation created by
+// node type when `customImpl` option is specfied.
+// Default suffix is `Impl`
+  customImplPackage="JetBrains.ReSharper.Plugins.Json.Psi.Tree.Impl";
+  "customImplSuffix"="";
+// Required on. Changes behaviour of various things, e.g. public child role values based on prefix
+  disableReflection;
+// Required. If missing, generates Add/Remove methods for each collection
+  generateWorkingPsi;
+}
+
+errorhandling jsonNewFile
+options {
+  stubBase="JsonNewFileElement";
+}
+:
+  jsonNewValue<VALUE, Value>
+;
+
+
+errorhandling jsonNewObject
+:
+  LBRACE
+  LIST (jsonNewMember<MEMBER, Members>?) SEP COMMA
+  RBRACE
+;
+
+errorhandling jsonNewArray
+:
+  LBRACKET
+  LIST (jsonNewValue<VALUE, Values>?) SEP COMMA
+  RBRACKET
+;
+
+errorhandling jsonNewMember
+:
+  (SINGLE_QUOTED_STRING<KEY, KeyToken> | DOUBLE_QUOTED_STRING<KEY, KeyToken>)
+  COLON
+  jsonNewValue<VALUE, Value>
+;
+
+interface jsonNewValue
+:
+  jsonNewObject
+    | jsonNewArray
+    | jsonNewLiteralExpression
+;
+
+errorhandling jsonNewLiteralExpression
+:
+  TRUE_KEYWORD<LITERAL, Literal> |
+  FALSE_KEYWORD<LITERAL, Literal> |
+  NULL_KEYWORD<LITERAL, Literal> |
+  NUMERIC_LITERAL<LITERAL, Literal> |
+  SINGLE_QUOTED_STRING<LITERAL, Literal> |
+  DOUBLE_QUOTED_STRING<LITERAL, Literal>
+;

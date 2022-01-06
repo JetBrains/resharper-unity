@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.ProjectModel;
+using JetBrains.ReSharper.Plugins.Json.ProjectModel;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.ProjectModel
 {

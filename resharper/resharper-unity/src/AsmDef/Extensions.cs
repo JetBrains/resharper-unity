@@ -1,5 +1,5 @@
 ﻿using JetBrains.Annotations;
-using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
 #nullable enable

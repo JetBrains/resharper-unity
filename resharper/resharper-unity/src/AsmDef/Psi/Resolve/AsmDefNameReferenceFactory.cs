@@ -1,4 +1,4 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
+﻿using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;

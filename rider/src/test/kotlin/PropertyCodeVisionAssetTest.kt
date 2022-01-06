@@ -1,5 +1,4 @@
-import base.integrationTests.copyUnityDll
-import base.integrationTests.downloadUnityDll
+import base.integrationTests.prepareAssemblies
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
@@ -8,31 +7,26 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendMo
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.CodeLensTestBase
+import com.jetbrains.rider.test.enums.CoreVersion
+import com.jetbrains.rider.test.enums.ToolsetVersion
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
-import org.testng.annotations.BeforeSuite
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
 
+@TestEnvironment(toolset = ToolsetVersion.TOOLSET_17_CORE, coreVersion = CoreVersion.DOT_NET_6)
 class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     private val disableYamlDotSettingsContents = """<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	        <s:Boolean x:Key="/Default/CodeEditing/Unity/IsAssetIndexingEnabled/@EntryValue">False</s:Boolean>
             </wpf:ResourceDictionary>"""
 
-    lateinit var unityDll: File
-
-    @BeforeSuite(alwaysRun = true)
-    fun getUnityDll() {
-        unityDll = downloadUnityDll()
-    }
-
     override fun preprocessTempDirectory(tempDir: File) {
-        copyUnityDll(unityDll, activeSolutionDirectory)
+        prepareAssemblies(activeSolutionDirectory)
         if (testMethod.name.contains("YamlOff")) {
             val dotSettingsFile = activeSolutionDirectory.combine("$activeSolution.sln.DotSettings.user")
             dotSettingsFile.writeText(disableYamlDotSettingsContents)

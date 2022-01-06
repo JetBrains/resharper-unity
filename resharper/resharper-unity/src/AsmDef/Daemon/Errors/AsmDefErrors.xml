@@ -4,7 +4,7 @@
 
   <Usings>
     JetBrains.ReSharper.Psi.Util;
-    JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
+    JetBrains.ReSharper.Plugins.Json.Psi.Tree;
     JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
   </Usings>
 
