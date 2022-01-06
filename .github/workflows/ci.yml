@@ -26,6 +26,7 @@ jobs:
         shell: powershell
         run: powershell -File .\build.ps1 -RunTests -Verbose
       - name: Upload artifact
+        if: always()
         uses: actions/upload-artifact@v1
         with:
           name: nunit-reports
