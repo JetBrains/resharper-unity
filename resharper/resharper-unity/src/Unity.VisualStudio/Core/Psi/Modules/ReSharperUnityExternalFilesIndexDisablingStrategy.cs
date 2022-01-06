@@ -5,7 +5,7 @@ using JetBrains.ProjectModel.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Psi.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Core.VisualStudio.Psi.Modules
+namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Core.Psi.Modules
 {
     [SolutionComponent]
     public class ReSharperUnityExternalFilesIndexDisablingStrategy : UnityExternalFilesIndexDisablingStrategy

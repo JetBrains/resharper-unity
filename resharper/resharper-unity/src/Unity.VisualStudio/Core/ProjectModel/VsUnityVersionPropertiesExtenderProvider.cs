@@ -1,7 +1,4 @@
-﻿#if !RIDER
-// TODO: Sort out zoning properly so this Just Works when run in Rider
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
@@ -9,7 +6,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.PropertiesExtender;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 
-namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.ProjectModel
+namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Core.ProjectModel
 {
     [SolutionComponent]
     public class VsUnityVersionPropertiesExtenderProvider : IPropertiesExtenderProvider
@@ -19,7 +16,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.ProjectModel
         private readonly UnityVersion myUnityVersion;
         private readonly UnityApi myUnityApi;
 
-        public VsUnityVersionPropertiesExtenderProvider(Lifetime lifetime, IShellLocks locks, UnityVersion unityVersion, UnityApi unityApi)
+        public VsUnityVersionPropertiesExtenderProvider(Lifetime lifetime, IShellLocks locks, UnityVersion unityVersion,
+                                                        UnityApi unityApi)
         {
             myLifetime = lifetime;
             myLocks = locks;
@@ -27,11 +25,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.ProjectModel
             myUnityApi = unityApi;
         }
 
-        public bool CanExtend(IProjectItem projectItem, PropertiesLocation location)
-        {
-            var project = projectItem as IProject;
-            return project != null && project.IsUnityProject();
-        }
+        public bool CanExtend(IProjectItem projectItem, PropertiesLocation location) =>
+            projectItem is IProject project && project.IsUnityProject();
 
         public IEnumerable<PropertyDescriptor> GetPropertyDescriptors(IProjectItem projectItem)
         {
@@ -43,16 +38,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.ProjectModel
               displayName: "Unity Version",
               description: "The version of Unity being targeted by the project. Used by ReSharper to validate APIs.",
               projectItem: project,
-              getValueAction: p =>
+              getValueAction: _ =>
               {
                   var s = myUnityVersion.GetActualVersion(project).ToString(2);
                   var n = myUnityApi.GetNormalisedActualVersion(project).ToString(2);
                   if (s == n) return s;
                   return $"{s} (using API info for {n})";
               },
-              setValueAction: (p, value) => { });
+              setValueAction: (_, _) => { });
         }
     }
 }
-
-#endif

@@ -1,5 +1,3 @@
-// NOTE: This file is explicitly excluded by the .csproj for Mac/Linux!
-
 using System.ComponentModel.Composition;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using Microsoft.VisualStudio.Text.Classification;
@@ -9,7 +7,7 @@ using Microsoft.VisualStudio.Utilities;
 // Field is never assigned to, and will always have its default value null
 #pragma warning disable 649
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.VisualStudio
+namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Documents.Markup.FormatDefinitions
 {
     [ClassificationType(ClassificationTypeNames = Name)]
     [Export(typeof(EditorFormatDefinition))]
@@ -86,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         [Export, Name(Name), BaseDefinition("formal language")]
         internal ClassificationTypeDefinition ClassificationTypeDefinition;
     }
-    
+
     [ClassificationType(ClassificationTypeNames = Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
@@ -105,7 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         [Export, Name(Name), BaseDefinition("formal language")]
         internal ClassificationTypeDefinition ClassificationTypeDefinition;
     }
-    
+
     [ClassificationType(ClassificationTypeNames = Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]

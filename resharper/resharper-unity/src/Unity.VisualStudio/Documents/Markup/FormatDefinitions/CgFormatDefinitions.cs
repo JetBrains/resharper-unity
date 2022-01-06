@@ -1,8 +1,4 @@
-﻿#if !RIDER
-
-// NOTE: This file is explicitly excluded by the .csproj for Mac/Linux!
-
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.Windows.Media;
 using JetBrains.Platform.VisualStudio.SinceVs10.TextControl.Markup.FormatDefinitions;
 using JetBrains.ReSharper.Plugins.Unity.Cg.Daemon;
@@ -10,11 +6,10 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
 // ReSharper disable UnassignedField.Global
-
 // Field is never assigned to, and will always have its default value null
 #pragma warning disable 649
 
-namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.FormatDefinitions
+namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Documents.Markup.FormatDefinitions
 {
     [ClassificationType(ClassificationTypeNames = Name)]
     [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
@@ -196,5 +191,3 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.FormatDefinitions
         internal ClassificationTypeDefinition ClassificationTypeDefinition;
     }
 }
-
-#endif

@@ -1,11 +1,10 @@
 using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.ReSharper.Features.ReSpeller;
-using JetBrains.VsIntegration.Shell.Zones;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Respeller
+namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Core.Feature.Respeller
 {
     [ZoneMarker]
-    public class ZoneMarker : IRequire<IReSpellerZone>, IRequire<IVisualStudioFrontendEnvZone>
+    public class ZoneMarker : IRequire<IReSpellerZone>
     {
     }
 }

@@ -1,5 +1,6 @@
 using System.ComponentModel.Composition;
 using JetBrains.Platform.VisualStudio.SinceVs10.TextControl.Markup.FormatDefinitions;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
@@ -7,7 +8,7 @@ using Microsoft.VisualStudio.Utilities;
 // Field is never assigned to, and will always have its default value null
 #pragma warning disable 649
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.VisualStudio
+namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Documents.Markup.FormatDefinitions
 {
     [ClassificationType(ClassificationTypeNames = Name)]
     [Order(After = VsAnalysisPriorityClassificationDefinition.Name,

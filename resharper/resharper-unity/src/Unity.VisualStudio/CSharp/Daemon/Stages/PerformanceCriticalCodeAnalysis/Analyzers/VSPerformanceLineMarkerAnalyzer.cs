@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.VisualStudio
+namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers
 {
     [SolutionComponent]
     public class VSPerformanceLineMarkerAnalyzer : PerformanceLineMarkerAnalyzer
@@ -24,6 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             if (LineMarkerStatus.Value == PerformanceHighlightingMode.Always)
             {
+                // Highlight the name, because ReSharper doesn't support line markers
                 consumer.AddHighlighting(new UnityPerformanceCriticalCodeLineMarker(t.GetNameDocumentRange()));
             }
         }
