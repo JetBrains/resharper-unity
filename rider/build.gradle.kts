@@ -468,7 +468,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         // We can't have HTML encoded entities (e.g. &quot;)
         if (releaseNotes.contains(";")) throw GradleException("Release notes cannot semi-colon")
 
-        setNuspecFile(File(backend.backendRoot, "resharper-unity/src/resharper-unity.resharper.nuspec").canonicalPath)
+        setNuspecFile(File(backend.backendRoot, "resharper-unity/src/Unity/resharper-unity.resharper.nuspec").canonicalPath)
         setDestinationDir(File(backend.backendRoot, "build/distributions/$buildConfiguration").canonicalPath)
         packageAnalysis = false
         packageVersion = version
