@@ -19,6 +19,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle
             if (!declaration.GetSolution().HasUnityReference())
                 return null;
 
+            // TODO: This doesn't work with ReSharper - the resources haven't been added
+            // If we add them, how do we edit them?
+
             try
             {
                 var pattern = store.GetValue((AdditionalFileLayoutSettings s) => s.Pattern);
