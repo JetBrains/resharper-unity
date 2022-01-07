@@ -13,7 +13,7 @@ import org.testng.Assert
 import org.testng.annotations.Test
 import java.io.File
 
-@TestEnvironment(platform = [PlatformType.WINDOWS], toolset = ToolsetVersion.TOOLSET_17_CORE, coreVersion = CoreVersion.DOT_NET_6) // todo: restore Linux/Mac after fix of RIDER-72946
+@TestEnvironment(toolset = ToolsetVersion.TOOLSET_17_CORE, coreVersion = CoreVersion.DOT_NET_6) // todo: restore Linux/Mac after fix of RIDER-72946
 class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     override fun getSolutionDirectoryName() = "UnityProjectModelViewExtensionsTest"
     override val persistCaches: Boolean

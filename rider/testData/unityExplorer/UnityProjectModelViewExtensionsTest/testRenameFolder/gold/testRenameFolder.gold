@@ -85,16 +85,6 @@ Project [Name:Assembly-CSharp, GUID:GUID]
           Child items:
             ProjectFileImpl(Path : ClassInDir1.cs)[COMPILE ]
 
-Project [Name:Assembly-CSharp.Player, GUID:GUID]
-  Child items:
-    ProjectFileImpl(Path : Assembly-CSharp.Player.csproj)[]
-    Folder [Name:Assets]
-      Child items:
-        ProjectFileImpl(Path : Class1.cs)[COMPILE ]
-        Folder [Name:Dir1_renamed]
-          Child items:
-            ProjectFileImpl(Path : ClassInDir1.cs)[COMPILE ]
-
 Project [Name:Assembly-CSharp-Editor, GUID:GUID]
   Child items:
     ProjectFileImpl(Path : Assembly-CSharp-Editor.csproj)[]
@@ -105,6 +95,16 @@ Project [Name:Assembly-CSharp-Editor, GUID:GUID]
             Folder [Name:Editor]
               Child items:
                 ProjectFileImpl(Path : XMLUtilities.cs)[COMPILE ]
+
+Project [Name:Assembly-CSharp.Player, GUID:GUID]
+  Child items:
+    ProjectFileImpl(Path : Assembly-CSharp.Player.csproj)[]
+    Folder [Name:Assets]
+      Child items:
+        ProjectFileImpl(Path : Class1.cs)[COMPILE ]
+        Folder [Name:Dir1_renamed]
+          Child items:
+            ProjectFileImpl(Path : ClassInDir1.cs)[COMPILE ]
 
 Project [Name:Miscellaneous Files, GUID:GUID]
 
