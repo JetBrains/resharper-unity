@@ -243,7 +243,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return $"{version.Major}.{version.Minor}{build}{type}{rev}";
         }
 
-        internal static bool RequiresRiderPackage(Version version)
+        public static bool RequiresRiderPackage(Version version)
         {
             return version >= new Version(2019,2);
         }
@@ -258,7 +258,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return myUnityPathToVersion.GetOrAdd(appPath, p => GetVersionByAppPathInternal(p));
         }
 
-        private static Version GetVersionByAppPathInternal(VirtualFileSystemPath appPath) 
+        private static Version GetVersionByAppPathInternal(VirtualFileSystemPath appPath)
         {
             Version version = null;
             ourLogger.CatchWarn(() => // RIDER-23674
@@ -270,7 +270,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                         ourLogger.CatchWarn(() =>
                         {
                             var fileVersion = FileVersionInfo.GetVersionInfo(appPath.FullPath).FileVersion;
-                            if (!string.IsNullOrEmpty(fileVersion)) 
+                            if (!string.IsNullOrEmpty(fileVersion))
                                 version = Version.Parse(Version.Parse(fileVersion).ToString(3));
                         });
 

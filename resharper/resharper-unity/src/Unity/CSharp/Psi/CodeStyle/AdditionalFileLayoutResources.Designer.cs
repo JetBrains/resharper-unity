@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class AdditionalFileLayoutResources {
+    public class AdditionalFileLayoutResources {
         
         private static System.Resources.ResourceManager resourceMan;
         
@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle {
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static System.Resources.ResourceManager ResourceManager {
+        public static System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.Equals(null, resourceMan)) {
                     System.Resources.ResourceManager temp = new System.Resources.ResourceManager("JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.AdditionalFileLayoutResour" +
@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle {
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static System.Globalization.CultureInfo Culture {
+        public static System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -46,13 +46,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle {
             }
         }
         
-        internal static string DefaultAdditionalFileLayoutPatterns {
+        public static string DefaultAdditionalFileLayoutPatterns {
             get {
                 return ResourceManager.GetString("DefaultAdditionalFileLayoutPatterns", resourceCulture);
             }
         }
         
-        internal static string DefaultAdditionalFileLayoutPatternsWithRegions {
+        public static string DefaultAdditionalFileLayoutPatternsWithRegions {
             get {
                 return ResourceManager.GetString("DefaultAdditionalFileLayoutPatternsWithRegions", resourceCulture);
             }

@@ -125,17 +125,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <!-- ********** -->
-  <ItemGroup Label="Remove Rider specific files">
-    <Compile Remove="**\Rider\**" />
-    <EmbeddedResource Remove="**\Rider\**" />
-    <None Remove="**\Rider\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="ShaderLab\Host\**" />
-    <EmbeddedResource Remove="ShaderLab\Host\**" />
-    <None Remove="ShaderLab\Host\**" />
-  </ItemGroup>
-  <!-- ********** -->
   <ItemGroup Label="References">
     <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="3.1.0" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.2">

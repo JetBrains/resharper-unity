@@ -75,9 +75,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 
                     // TODO: Let's avoid #defines
 #if RIDER
-                    var provider = solution.GetComponent<JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights.UnityCodeInsightProvider>();
-                    return settings.GetIndexedValue((JetBrains.RdBackend.Common.Platform.CodeInsights.CodeInsightsSettings key) => key.DisabledProviders,
-                        provider.ProviderId);
+                    // TODO: Fix this magic constant!!!!
+                    // var provider = solution.GetComponent<JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights.UnityCodeInsightProvider>();
+                    var providerId = "Unity implicit usage"; // provider.ProviderId;
+                    return settings.GetIndexedValue(
+                        (JetBrains.RdBackend.Common.Platform.CodeInsights.CodeInsightsSettings key) =>
+                            key.DisabledProviders, providerId);
 #else
                     return true;
 #endif
