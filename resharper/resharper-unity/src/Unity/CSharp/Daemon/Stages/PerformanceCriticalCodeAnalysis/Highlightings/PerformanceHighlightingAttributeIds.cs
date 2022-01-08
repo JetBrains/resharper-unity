@@ -35,24 +35,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         NotRecyclable = true,
         EffectType = EffectType.SOLID_UNDERLINE,
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
-        // ReSharper doesn't currently support EffectType.LINE_MARKER, so we'll use SOLID_UNDERLINE on the method name
-        // instead. Make sure the range is updated in any usages when this is removed!
-#if RIDER
-    [RegisterHighlighter(PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER,
-        GroupId = UnityHighlightingAttributeIds.GROUP_ID,
-        BackgroundColor = "#ff7526",
-        DarkBackgroundColor = "#ff7526",
-        EffectType = EffectType.LINE_MARKER,
-        EffectColor = "#ff7526",
-        Layer = HighlighterLayer.ADDITIONAL_SYNTAX,
-        TransmitUpdates = true)]
-#else
-    [RegisterHighlighter(PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER,
-        GroupId = UnityHighlightingAttributeIds.GROUP_ID,
-        EffectColor = "#ff7526",
-        EffectType = EffectType.SOLID_UNDERLINE,
-        Layer = HighlighterLayer.WARNING + 1)]
-#endif
+    // Note that PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER is registered separately for Rider and ReSharper, because VS/R#
+    // don't support EffectType.LINE_MARKER
     public static class PerformanceHighlightingAttributeIds
     {
         // All attribute IDs should begin "ReSharper Unity ". See UnityHighlighterNamesProvider
