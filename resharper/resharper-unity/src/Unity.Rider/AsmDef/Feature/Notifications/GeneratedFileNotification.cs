@@ -15,7 +15,7 @@ using JetBrains.Rider.Backend.Features.TextControls;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.Notifications
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.AsmDef.Feature.Notifications
 {
     [SolutionComponent]
     public class GeneratedFileNotification
