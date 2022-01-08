@@ -41,6 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
     public interface IUnityTestsZone : IZone,
 #if RIDER
         IRequire<JetBrains.Rider.Backend.Env.IRiderPlatformZone>,
+        IRequire<JetBrains.ReSharper.Plugins.Unity.Rider.IUnityRiderZone>,
 #else
         IRequire<JetBrains.ReSharper.Plugins.Unity.VisualStudio.IUnityVisualStudioZone>,
 #endif
