@@ -6,7 +6,7 @@ using JetBrains.Rider.Backend.Features.ProjectModel.ProjectTemplates.DotNetTempl
 using JetBrains.Rider.Model;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.ProjectModel.ProjectTemplates.DotNetExtensions
 {
     public class UnityPathTemplateParameter : DotNetTemplateParameter
     {

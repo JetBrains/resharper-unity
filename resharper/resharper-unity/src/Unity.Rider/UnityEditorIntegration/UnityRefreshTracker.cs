@@ -8,7 +8,6 @@ using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
-using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
 using JetBrains.RdBackend.Common.Features;
@@ -20,10 +19,11 @@ using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Backend.Features.BackgroundTasks;
 using JetBrains.Rider.Backend.Features.FileSystem;
 using JetBrains.Rider.Model;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Threading;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration
 {
     [SolutionComponent]
     public class UnityRefresher

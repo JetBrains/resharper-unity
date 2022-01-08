@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Core.Rider.Psi.Modules
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Psi.Modules
 {
     // Rider requires us to have an IProjectFile for the IPsiSourceFiles in the external files module. This is primarily
     // because PSI modifications won't be saved without one. When a PSI transaction completes, Rider looks for a project

@@ -4,12 +4,12 @@ using JetBrains.Application.Settings;
 using JetBrains.Collections.Viewable;
 using JetBrains.RdBackend.Common.Platform.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
+using JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Rider.Model;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
     public static class RiderIconProviderUtil
     {

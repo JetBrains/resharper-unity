@@ -2,7 +2,6 @@ using System;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
-using JetBrains.DocumentModel;
 using JetBrains.IDE;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -12,9 +11,7 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
-using JetBrains.TextControl;
 using JetBrains.Util;
-using JetBrains.Util.dataStructures.TypedIntrinsics;
 using FrontendOpenArgs = JetBrains.Rider.Model.Unity.FrontendBackend.RdOpenFileArgs;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
@@ -62,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                         backendUnityHost.BackendUnityModel.ViewNotNull(unityProjectLifetime,
                             AdviseUnityToFrontendModel);
                     }
-                    
+
                     backendUnityHost.BackendUnityModel.Advise(lifetime, backendUnityModel =>
                     {
                         // https://github.com/JetBrains/resharper-unity/pull/2023
@@ -115,7 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                     ? Rd.Tasks.RdTask<RunMethodResult>.Cancelled()
                     : backendUnityModel.RunMethodInUnity.Start(l, data).ToRdTask(l);
             });
-            
+
             frontendBackendModel.HasUnsavedScenes.Set((l, u) =>
                 backendUnityModelProperty.Maybe.ValueOrDefault?.HasUnsavedScenes.Start(l, u).ToRdTask(l));
         }
@@ -213,7 +210,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                             result.Set(false);
                             return result;
                         }
-                        
+
                         return frontendBackendModel.OpenFileLineCol.Start(lf, new FrontendOpenArgs(args.Path, args.Line, args.Col)).ToRdTask(lf);
                     }
                     catch (Exception e)

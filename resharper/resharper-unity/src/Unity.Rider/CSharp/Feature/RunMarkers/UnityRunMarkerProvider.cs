@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Rider.Backend.Features.RunMarkers;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarkers
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.RunMarkers
 {
     [Language(typeof(CSharpLanguage))]
     public class UnityRunMarkerProvider : IRunMarkerProvider

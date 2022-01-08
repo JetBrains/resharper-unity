@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Rider.Model;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.CodeInsights
 {
     public abstract class AbstractUnityCodeInsightProvider : ICodeInsightsProvider
     {

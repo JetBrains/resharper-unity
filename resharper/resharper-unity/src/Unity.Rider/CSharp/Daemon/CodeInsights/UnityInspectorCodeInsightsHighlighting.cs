@@ -8,7 +8,7 @@ using JetBrains.Rider.Model;
 using JetBrains.TextControl.DocumentMarkup;
 using Severity = JetBrains.ReSharper.Feature.Services.Daemon.Severity;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.CodeInsights
 {
     [ 
         RegisterHighlighter(

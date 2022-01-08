@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Collections;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
@@ -10,7 +9,7 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Resources.Shell;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.Services.FeatureStatistics
 {
     [SolutionComponent]
     public class UnityTechnologyDescriptionCollector

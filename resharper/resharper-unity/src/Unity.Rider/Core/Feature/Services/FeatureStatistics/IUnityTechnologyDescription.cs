@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using JetBrains.ProjectModel;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.Services.FeatureStatistics
 {
     public interface IUnityTechnologyDescription
     {
@@ -30,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
             yield break;
         }
     }
-    
+
     public class CoreRPUnityTechnologyDescription : IUnityTechnologyDescription
     {
         public string Id => "CoreRP";
@@ -69,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
         {
             yield break;
         }
-        
+
     }
 
     public class EntitiesUnityTechnologyDescription : IUnityTechnologyDescription
@@ -111,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
             yield break;
         }
     }
-    
+
     public class BurstUnityTechnologyDescription : IUnityTechnologyDescription
     {
         public string Id => "Burst";
@@ -174,7 +173,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
             yield return "Ludiq.PeekCore.Editor";
         }
     }
-    
+
     public class UniRxUnityTechnologyDescription : IUnityTechnologyDescription
     {
         public string Id => "UniRx";
@@ -194,7 +193,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
             yield return "UniRx";
         }
     }
-    
+
     public class UniTaskUnityTechnologyDescription : IUnityTechnologyDescription
     {
         public string Id => "UniTask";

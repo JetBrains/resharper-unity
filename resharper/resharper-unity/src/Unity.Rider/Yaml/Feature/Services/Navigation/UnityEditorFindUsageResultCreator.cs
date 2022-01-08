@@ -7,13 +7,11 @@ using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Lifetimes;
-using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.RdBackend.Common.Features.BackgroundTasks;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
-using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
@@ -25,9 +23,10 @@ using JetBrains.ReSharper.Psi.Impl.Search.Operations;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Backend.Features.BackgroundTasks;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Yaml.Feature.Services.Navigation
 {
     [SolutionComponent]
     public class UnityEditorFindUsageResultCreator

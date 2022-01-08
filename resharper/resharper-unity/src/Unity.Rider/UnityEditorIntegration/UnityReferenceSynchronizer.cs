@@ -4,7 +4,7 @@ using JetBrains.Rd.Base;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration
 {
     [SolutionComponent]
     public class UnityReferenceSynchronizer

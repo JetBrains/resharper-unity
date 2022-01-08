@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToU
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.Navigation.GoToUnityUsages
 {
     [SolutionComponent]
     public class RiderUnityUsagesNotification : UnityUsagesDeferredCachesNotification

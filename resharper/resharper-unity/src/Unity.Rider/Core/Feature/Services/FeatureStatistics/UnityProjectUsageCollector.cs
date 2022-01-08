@@ -9,7 +9,7 @@ using JetBrains.UsageStatistics.FUS.EventLog;
 using JetBrains.UsageStatistics.FUS.EventLog.Events;
 using JetBrains.UsageStatistics.FUS.EventLog.Fus;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Fus
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.Services.FeatureStatistics
 {
     [SolutionComponent]
     public class UnityProjectUsageCollector : SolutionUsagesCollector

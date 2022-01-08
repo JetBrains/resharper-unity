@@ -8,7 +8,7 @@ using JetBrains.ReSharper.UnitTestFramework.Execution.Hosting;
 using JetBrains.Rider.Backend.Features.UnitTesting;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting
 {
     [ShellComponent]
     public class UnityRiderUnitTestCoverageAvailabilityChecker : IRiderUnitTestCoverageAvailabilityChecker, IHideImplementation<DefaultRiderUnitTestCoverageAvailabilityChecker>

@@ -8,7 +8,7 @@ using JetBrains.Util;
 using JetBrains.Util.Logging;
 using ProjectExtensions = JetBrains.ReSharper.Plugins.Unity.ProjectModel.ProjectExtensions;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorPlugin
 {
     [SolutionComponent]
     public class UnityPluginDetector

@@ -10,7 +10,7 @@ using JetBrains.RdBackend.Common.Features.Documents;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.Documents
 {
     /// <summary>
     /// Removes auto sync through disk for shared files, to avoid unity refresh

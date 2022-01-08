@@ -1,10 +1,9 @@
 using JetBrains.Application;
-using JetBrains.RdBackend.Common.Features.Daemon;
 using JetBrains.RdBackend.Common.Features.Daemon.Registration;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages;
 using JetBrains.Rider.Model.HighlighterRegistration;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.ShaderLab.Feature.Daemon.Registration
 {
     [ShellComponent]
     public class ShaderLabHighlighterPropertiesProvider : IRiderHighlighterPropertiesProvider

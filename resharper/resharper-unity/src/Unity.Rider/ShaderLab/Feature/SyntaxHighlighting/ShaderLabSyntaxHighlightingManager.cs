@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Daemon.SyntaxHighlighting;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Host.Features.SyntaxHighlighting
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.ShaderLab.Feature.SyntaxHighlighting
 {
     [Language(typeof (ShaderLabLanguage))]
     internal class ShaderLabSyntaxHighlightingManager : RiderSyntaxHighlightingManager

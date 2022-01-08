@@ -26,7 +26,7 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
 using JetBrains.UI.Icons;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.CodeInsights
 {
     [ShellComponent]
     public class UnityUsagesCodeVisionProvider : ICodeInsightsProvider

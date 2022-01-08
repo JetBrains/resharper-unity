@@ -15,7 +15,7 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.CaretDependentFeatures
 {
     [ContainsContextConsumer]
     public class PerformanceCriticalCodeContextHighlighter : ContextHighlighterBase

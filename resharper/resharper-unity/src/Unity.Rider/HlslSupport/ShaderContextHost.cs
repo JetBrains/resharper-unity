@@ -16,7 +16,7 @@ using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.HlslSupport
 {
     [SolutionComponent]
     public class ShaderContextHost

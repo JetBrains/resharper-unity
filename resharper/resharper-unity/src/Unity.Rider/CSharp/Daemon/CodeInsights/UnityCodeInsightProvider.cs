@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.Rider.Model;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.CodeInsights
 {
     [SolutionComponent]
     public class UnityCodeInsightProvider : AbstractUnityCodeInsightProvider

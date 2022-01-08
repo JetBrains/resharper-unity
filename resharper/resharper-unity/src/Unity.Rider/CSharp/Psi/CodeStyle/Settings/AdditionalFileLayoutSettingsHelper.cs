@@ -2,11 +2,12 @@ using System;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle;
 using JetBrains.Rider.Backend.Features.Dialog;
 using JetBrains.Rider.Backend.Features.Settings.OptionsPage.CSharpFileLayout;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Settings
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Psi.CodeStyle.Settings
 {
     public class AdditionalFileLayoutSettingsHelper
     {

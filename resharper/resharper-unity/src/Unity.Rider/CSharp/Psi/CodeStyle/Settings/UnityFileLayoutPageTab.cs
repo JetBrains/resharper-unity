@@ -8,7 +8,7 @@ using JetBrains.Rider.Backend.Features.Settings.OptionsPage.CSharpFileLayout;
 using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.UIAutomation;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Settings
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Psi.CodeStyle.Settings
 {
     [OptionsComponent]
     public class UnityFileLayoutPageTab : IFileLayoutPageTab

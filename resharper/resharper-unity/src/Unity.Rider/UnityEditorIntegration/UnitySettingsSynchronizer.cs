@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration
 {
     [SolutionComponent]
     public class UnitySettingsSynchronizer

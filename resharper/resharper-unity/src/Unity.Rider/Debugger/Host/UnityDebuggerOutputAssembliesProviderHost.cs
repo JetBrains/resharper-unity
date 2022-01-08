@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Backend.Features.Debugger.Utils;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Debugger.Host.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Host
 {
     // Unity sets up the C# projects to build to Temp\Bin\Debug, but doesn't use these at runtime. It compiles its own
     // versions to Library/ScriptAssemblies, optionally post-processing/IL rewriting, and loads them from here. This can

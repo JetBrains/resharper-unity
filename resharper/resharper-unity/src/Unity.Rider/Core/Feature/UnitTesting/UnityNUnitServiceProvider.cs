@@ -10,7 +10,7 @@ using JetBrains.ReSharper.UnitTestFramework.Execution;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting
 {
     [SolutionComponent]
     public class UnityNUnitServiceProvider : NUnitServiceProvider

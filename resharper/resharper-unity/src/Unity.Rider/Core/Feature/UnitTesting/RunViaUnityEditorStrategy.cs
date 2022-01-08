@@ -13,13 +13,13 @@ using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Access;
 using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Features.SolutionBuilders.Prototype.Services.Execution;
 using JetBrains.Rd.Base;
 using JetBrains.RdBackend.Common.Features;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
+using JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration;
+using JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.ReSharper.UnitTestFramework.Elements;
 using JetBrains.ReSharper.UnitTestFramework.Execution;
@@ -28,6 +28,7 @@ using JetBrains.ReSharper.UnitTestFramework.Execution.Launch;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30.Elements;
 using JetBrains.Rider.Backend.Features.UnitTesting;
 using JetBrains.Rider.Model.Notifications;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
@@ -39,7 +40,7 @@ using IUnitTestRun = JetBrains.ReSharper.UnitTestFramework.Execution.Launch.IUni
 using Status = JetBrains.Rider.Model.Unity.BackendUnity.Status;
 using UnitTestLaunch = JetBrains.Rider.Model.Unity.BackendUnity.UnitTestLaunch;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting
 {
     [SolutionComponent]
     public class RunViaUnityEditorStrategy : IExternalRunnerUnitTestRunStrategy

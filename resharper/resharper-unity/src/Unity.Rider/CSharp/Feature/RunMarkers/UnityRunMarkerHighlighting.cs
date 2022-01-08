@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Rider.Backend.Features.RunMarkers;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarkers
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.RunMarkers
 {
     [StaticSeverityHighlighting(Severity.INFO, typeof(RunMarkers), OverlapResolve = OverlapResolveKind.NONE)]
     public class UnityRunMarkerHighlighting : RunMarkerHighlighting

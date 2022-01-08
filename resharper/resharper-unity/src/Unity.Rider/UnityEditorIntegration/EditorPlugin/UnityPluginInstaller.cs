@@ -3,23 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
-using JetBrains.DataFlow;
-using JetBrains.ProjectModel;
-using JetBrains.Rider.Model.Notifications;
-using JetBrains.Util;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
+using JetBrains.DataFlow;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
-using JetBrains.Rider.Model.Unity.BackendUnity;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
-using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Rider.Model.Notifications;
+using JetBrains.Rider.Model.Unity.BackendUnity;
+using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorPlugin
 {
     [SolutionComponent]
     public class UnityPluginInstaller

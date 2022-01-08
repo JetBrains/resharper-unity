@@ -12,7 +12,7 @@ using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.UI.RichText;
 using JetBrains.UI.ThemedIcons;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarkers
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.RunMarkers
 {
     public class UnityStaticMethodRunMarkerGutterMark : RunMarkerGutterMark
     {

@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCritical
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
-using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
+using JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
@@ -20,7 +20,7 @@ using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Backend.Platform.Icons;
 using JetBrains.Rider.Model;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
     [SolutionComponent]
     public class RiderEventHandlerDetector : EventHandlerDetector

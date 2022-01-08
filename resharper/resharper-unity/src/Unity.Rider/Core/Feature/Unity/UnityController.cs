@@ -12,14 +12,14 @@ using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
 using JetBrains.RdBackend.Common.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
-using JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting;
 using JetBrains.ReSharper.UnitTestFramework.Execution;
 using JetBrains.Rider.Backend.Features.Unity;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.Unity
 {
     [SolutionComponent]
     public class UnityController : IUnityController, IHideImplementation<DefaultUnityController>

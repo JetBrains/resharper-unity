@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Sc
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.Rider.Model;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.LiveTemplates
 {
     [ZoneMarker(typeof(IRiderModelZone))]
     [OptionsPage("RiderUnityLiveTemplatesSettings", "Unity", typeof(LogoIcons.Unity))]

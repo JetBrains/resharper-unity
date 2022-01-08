@@ -7,7 +7,7 @@ using JetBrains.Application.Threading.Tasks;
 using JetBrains.Lifetimes;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Utils
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorPlugin
 {
     internal sealed class ProcessingQueue
     {

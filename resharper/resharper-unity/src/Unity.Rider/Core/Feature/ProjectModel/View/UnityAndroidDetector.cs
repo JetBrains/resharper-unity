@@ -4,7 +4,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties.Managed;
 using JetBrains.RdBackend.Common.Features.ProjectModel.View;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.ProjectModel.View
 {
     [ShellComponent]
     public class UnityAndroidDetector: ProjectModelViewPresenterExtension

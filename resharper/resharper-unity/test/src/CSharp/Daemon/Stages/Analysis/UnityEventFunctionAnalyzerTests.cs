@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 #if RIDER
-using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
+using JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.CodeInsights;
 #endif
 using JetBrains.ReSharper.Psi;
 using NUnit.Framework;

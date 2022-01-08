@@ -11,7 +11,7 @@ using JetBrains.Rider.Backend.Features.Usages;
 using JetBrains.Rider.Backend.Platform.Icons;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Rider.Feature.Usages
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.AsmDef.Feature.Usages
 {
     [SolutionComponent]
     public class UnityAsmDefCustomGroupingProjectItemProvider : ProjectItemRule.ICustomProjectItemProvider

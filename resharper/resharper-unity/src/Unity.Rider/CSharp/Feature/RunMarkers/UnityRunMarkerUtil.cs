@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarkers
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.RunMarkers
 {
     public static class UnityRunMarkerUtil
     {

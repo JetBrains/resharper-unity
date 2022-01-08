@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Host.Features.Foldings
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.ShaderLab.Daemon.CodeFolding
 {
     internal class ShaderLabCodeFoldingProcessor : TreeNodeVisitor<FoldingHighlightingConsumer>, ICodeFoldingProcessor
     {

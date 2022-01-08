@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+
 // ReSharper disable InconsistentNaming
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnassignedField.Global
@@ -9,7 +10,7 @@ using Newtonsoft.Json;
 // ReSharper disable MemberCanBePrivate.Global
 #pragma warning disable 649
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.Packages
 {
     public class ManifestJson
     {

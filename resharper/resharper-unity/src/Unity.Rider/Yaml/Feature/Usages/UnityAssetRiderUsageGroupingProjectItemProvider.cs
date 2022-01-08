@@ -9,7 +9,7 @@ using JetBrains.Rider.Backend.Platform.Icons;
 using JetBrains.UI.Icons;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Yaml.Feature.Usages
 {
     [SolutionComponent]
     public class UnityAssetRiderUsageGroupingProjectItemProvider : ProjectItemRule.ICustomProjectItemProvider

@@ -2,10 +2,11 @@ using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Rider.Backend.Features.RunMarkers;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Settings
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.RunMarkers
 {
     [SolutionComponent]
     public class ShowMarkerOnStaticMethodSettings : IUnityProjectSettingsProvider

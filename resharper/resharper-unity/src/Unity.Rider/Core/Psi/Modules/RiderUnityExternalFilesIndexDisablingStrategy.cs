@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Psi.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Core.Rider.Psi.Modules
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Psi.Modules
 {
     [SolutionComponent]
     public class RiderUnityExternalFilesIndexDisablingStrategy : UnityExternalFilesIndexDisablingStrategy

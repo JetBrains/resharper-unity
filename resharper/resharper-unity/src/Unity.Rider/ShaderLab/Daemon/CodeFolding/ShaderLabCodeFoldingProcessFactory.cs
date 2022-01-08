@@ -2,7 +2,7 @@ using JetBrains.ReSharper.Daemon.CodeFolding;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Host.Features.Foldings
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.ShaderLab.Daemon.CodeFolding
 {
     [Language(typeof(ShaderLabLanguage))]
     internal class ShaderLabCodeFoldingProcessFactory : ICodeFoldingProcessorFactory

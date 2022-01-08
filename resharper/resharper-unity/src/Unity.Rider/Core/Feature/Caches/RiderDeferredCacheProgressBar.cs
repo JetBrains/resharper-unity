@@ -10,7 +10,7 @@ using JetBrains.RdBackend.Common.Features.BackgroundTasks;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.Rider.Backend.Features.BackgroundTasks;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.Caches
 {
     [SolutionComponent]
     public class RiderDeferredCacheProgressBar : DeferredCacheProgressBar

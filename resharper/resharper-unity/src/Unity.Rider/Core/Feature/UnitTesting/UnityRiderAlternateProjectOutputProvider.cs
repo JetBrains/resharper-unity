@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.Rider.Backend.Features.UnitTesting;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting
 {
     [SolutionComponent]
     internal class UnityRiderAlternateProjectOutputProvider : DefaultRiderAlternateProjectOutputProvider

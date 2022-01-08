@@ -4,7 +4,7 @@ using JetBrains.ReSharper.UnitTestFramework.Exploration.Artifacts;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting
 {
     [SolutionComponent]
     public class UnityUnitTestProjectArtifactResolverCollaborator : IUnitTestProjectArtifactResolverCollaborator

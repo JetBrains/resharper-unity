@@ -6,14 +6,14 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.Icons
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
-using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
+using JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Backend.Platform.Icons;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
     [SolutionComponent]
     public sealed class RiderUnityCommonIconProvider : UnityCommonIconProvider

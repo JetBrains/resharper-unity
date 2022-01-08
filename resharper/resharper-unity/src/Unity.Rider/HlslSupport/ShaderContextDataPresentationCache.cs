@@ -17,7 +17,7 @@ using JetBrains.Serialization;
 using JetBrains.Util;
 using JetBrains.Util.PersistentMap;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.HlslSupport
 {
     [SolutionComponent]
     public class ShaderContextDataPresentationCache : SimpleICache<List<ShaderContextDataPresentationCache.ShaderProgramInfo>>, IBuildMergeParticipant<IPsiSourceFile>

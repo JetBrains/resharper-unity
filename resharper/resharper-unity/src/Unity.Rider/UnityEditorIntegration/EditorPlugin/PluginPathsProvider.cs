@@ -3,7 +3,7 @@ using JetBrains.Application.Environment;
 using JetBrains.ProjectModel;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorPlugin
 {
     [SolutionComponent]
     public class PluginPathsProvider

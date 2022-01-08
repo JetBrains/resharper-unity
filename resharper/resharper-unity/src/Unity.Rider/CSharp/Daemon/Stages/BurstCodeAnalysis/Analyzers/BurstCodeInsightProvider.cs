@@ -3,12 +3,13 @@ using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
 using JetBrains.RdBackend.Common.Features.CodeInsights.Providers;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
+using JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.Rider.Model;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
     [SolutionComponent]
     public class BurstCodeInsightProvider : AbstractUnityCodeInsightProvider

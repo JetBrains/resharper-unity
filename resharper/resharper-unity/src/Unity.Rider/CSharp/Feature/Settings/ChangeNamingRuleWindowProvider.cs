@@ -3,7 +3,6 @@ using JetBrains.Application.UI.Options.OptionsDialog;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Intentions.Options;
 using JetBrains.ReSharper.Plugins.Unity.Application.UI.Options;
-using JetBrains.ReSharper.Plugins.Unity.Rider;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Naming;
 using JetBrains.ReSharper.Psi.Naming.Settings;
@@ -12,7 +11,7 @@ using JetBrains.TextControl;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.Settings
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Settings
 {
     // TODO: Get rid of this once RIDER-8339 is implemented
     [SolutionComponent]

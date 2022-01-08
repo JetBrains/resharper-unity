@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Threading;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration
 {
     [SolutionComponent]
     public class UnityInstallationSynchronizer

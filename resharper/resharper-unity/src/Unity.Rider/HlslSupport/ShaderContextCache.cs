@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.Caches;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.HlslSupport
 {
     [SolutionComponent]
     public class ShaderContextCache : IPreferredRootFileProvider

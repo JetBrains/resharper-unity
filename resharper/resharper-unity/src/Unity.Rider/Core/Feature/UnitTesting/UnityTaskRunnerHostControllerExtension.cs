@@ -14,7 +14,7 @@ using JetBrains.ReSharper.UnitTestFramework.Execution.Launch;
 using JetBrains.Rider.Backend.Features.Unity;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting
 {
     [SolutionComponent]
     public class UnityTaskRunnerHostControllerExtension : ITaskRunnerHostControllerExtension

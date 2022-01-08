@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.TextControl.TextControlsManagement;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Yaml.Feature.Services.Navigation
 {
     [SolutionComponent]
     public class RiderUnityAssetOccurrenceNavigator : UnityAssetOccurrenceNavigator

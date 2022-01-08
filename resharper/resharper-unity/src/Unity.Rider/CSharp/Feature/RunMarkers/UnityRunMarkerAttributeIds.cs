@@ -1,6 +1,6 @@
 using JetBrains.TextControl.DocumentMarkup;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarkers
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.RunMarkers
 {
     [
         RegisterHighlighter(
