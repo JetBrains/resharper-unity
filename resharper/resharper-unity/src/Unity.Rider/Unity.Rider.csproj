@@ -32,7 +32,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <ProjectReference Include="..\Unity\resharper-unity.csproj" />
+    <ProjectReference Include="..\Unity\Unity.csproj" />
     <ProjectReference Include="..\..\..\resharper-json\src\Json.Rider\Json.Rider.csproj" />
     <ProjectReference Include="..\..\..\resharper-yaml\src\Yaml.Rider\Yaml.Rider.csproj" />
   </ItemGroup>
