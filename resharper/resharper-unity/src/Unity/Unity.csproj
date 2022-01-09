@@ -65,8 +65,8 @@
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="Resources">
+    <EmbeddedResource Include="UnityEditorIntegration\Api\api.xml" />
     <None Remove="api.xml" />
-    <EmbeddedResource Include="api.xml" />
     <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatterns.xaml" />
     <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatternsWithRegions.xaml" />
     <EmbeddedResource Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.resx">

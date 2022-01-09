@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             unityVersion = unityTypes.Types.NormaliseSupportedVersion(unityVersion);
             return GetBaseUnityTypes(unityTypes, type, unityVersion, knownTypesCache);
         }
-        
+
         public static IEnumerable<UnityType> GetBaseUnityTypes(UnityTypesProvider typesProvider, ITypeElement type,
             Version normalisedVersion, KnownTypesCache knownTypesCache)
         {

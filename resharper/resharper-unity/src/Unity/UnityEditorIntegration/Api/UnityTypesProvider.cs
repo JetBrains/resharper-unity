@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
     public class UnityTypesProvider
     {
         private readonly Lazy<UnityTypes> myTypes;
-        
+
         public UnityTypesProvider()
         {
             myTypes = Lazy.Of(() =>

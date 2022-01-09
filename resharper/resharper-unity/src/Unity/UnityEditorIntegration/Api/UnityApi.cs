@@ -43,6 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             myUnityTypesProvider = unityTypesProvider;
             myKnownTypesCache = knownTypesCache;
         }
+
         public bool IsUnityType([CanBeNull] ITypeElement type)
         {
             if (type == null)
