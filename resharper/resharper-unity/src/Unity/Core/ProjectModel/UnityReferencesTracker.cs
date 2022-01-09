@@ -11,6 +11,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Assemblies.Impl;
 using JetBrains.ProjectModel.Tasks;
 using JetBrains.Rd.Base;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.Util;
 using JetBrains.Util.Reflection;
 
@@ -99,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             // files on every startup
             scheduler.EnqueueTask(new SolutionLoadTask("Preparing Unity project", SolutionLoadTaskKinds.PreparePsiModules,
                 OnSolutionPreparePsiModules));
-            
+
             HasUnityReference.WhenTrue(lifetime, lt => unityVersion.UpdateActualVersionForSolution());
         }
 
@@ -193,7 +194,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             // Only VSTU adds the Unity project flavour. Unity + Rider don't, so we have to look at references
             if (project.HasUnityFlavour())
                 return true;
-            
+
             return myUnityProjects.Contains(project);
         }
 

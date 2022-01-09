@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.FileTypes;
-using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
 {

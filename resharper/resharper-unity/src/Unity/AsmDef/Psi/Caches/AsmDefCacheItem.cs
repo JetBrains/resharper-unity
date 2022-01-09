@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.VersionUtils;
 using JetBrains.Serialization;
 using JetBrains.Util.PersistentMap;
 

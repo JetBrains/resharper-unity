@@ -14,6 +14,7 @@ using JetBrains.RdBackend.Common.Features;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.UnitTestFramework.Execution;
 using JetBrains.Rider.Backend.Features.Unity;
 using JetBrains.Rider.Model.Unity.FrontendBackend;

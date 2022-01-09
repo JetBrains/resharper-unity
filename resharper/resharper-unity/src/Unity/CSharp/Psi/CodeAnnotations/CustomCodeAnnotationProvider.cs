@@ -6,6 +6,8 @@ using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeAnnotations;
 using JetBrains.ReSharper.Psi.Impl.Reflection2.ExternalAnnotations;
@@ -13,7 +15,6 @@ using JetBrains.ReSharper.Psi.Impl.Special;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 using JetBrains.Util.Caches;
-using JetBrains.Util.dataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
 {

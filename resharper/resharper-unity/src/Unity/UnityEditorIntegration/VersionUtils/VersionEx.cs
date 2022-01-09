@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Utils
+namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.VersionUtils
 {
     public static class VersionEx
     {

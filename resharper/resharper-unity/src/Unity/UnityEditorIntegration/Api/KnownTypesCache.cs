@@ -5,7 +5,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 
-namespace JetBrains.ReSharper.Plugins.Unity
+namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 {
     [SolutionComponent]
     public class KnownTypesCache

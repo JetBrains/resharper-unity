@@ -4,7 +4,7 @@ using JetBrains.Util;
 
 #nullable enable
 
-namespace JetBrains.ReSharper.Plugins.Unity.Utils
+namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.VersionUtils
 {
     public class JetSemanticVersionRange
     {

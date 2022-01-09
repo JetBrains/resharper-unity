@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.Packages

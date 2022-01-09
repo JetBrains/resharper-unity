@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
-using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;

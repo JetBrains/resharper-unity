@@ -1,6 +1,6 @@
 using System;
 
-namespace JetBrains.ReSharper.Plugins.Unity
+namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 {
     [Flags]
     public enum MethodSignatureMatch

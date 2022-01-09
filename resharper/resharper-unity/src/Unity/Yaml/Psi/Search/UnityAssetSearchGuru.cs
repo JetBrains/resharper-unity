@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;

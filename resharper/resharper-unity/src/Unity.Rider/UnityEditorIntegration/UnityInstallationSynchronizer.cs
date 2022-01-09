@@ -5,6 +5,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Threading;
 
@@ -44,10 +45,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration
                 // correct than any counted value
                 if (myBackendUnityHost.BackendUnityModel.Value != null)
                     return;
-                
+
                 if (info == null)
                     return;
-                
+
                 var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(info.Path);
                 rd.UnityApplicationData.SetValue(new UnityApplicationData(info.Path.FullPath,
                     contentsPath.FullPath,

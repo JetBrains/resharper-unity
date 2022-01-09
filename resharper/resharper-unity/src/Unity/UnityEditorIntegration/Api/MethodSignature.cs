@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity
+namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 {
     // Be very careful about caching this. The IType can easily become invalid. It's ok to cache for highlightings and
     // references, as the daemon will invalidate correctly. Call IsValid to be sure.

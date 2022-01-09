@@ -15,6 +15,7 @@ using JetBrains.RdBackend.Common.Features.BackgroundTasks;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Backend.Features.BackgroundTasks;
 using JetBrains.Rider.Backend.Features.FileSystem;

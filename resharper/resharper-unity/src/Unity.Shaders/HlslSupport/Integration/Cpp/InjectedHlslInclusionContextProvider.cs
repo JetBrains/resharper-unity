@@ -3,6 +3,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties.VCXProj;
 using JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Caches;

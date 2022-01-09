@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -8,7 +9,7 @@ using QualifierEqualityComparer = JetBrains.ReSharper.Psi.CSharp.Impl.ControlFlo
 
 namespace JetBrains.ReSharper.Plugins.Unity.Utils
 {
-        // Note: this class is heuristic for finding related expression for unity component and do not 
+        // Note: this class is heuristic for finding related expression for unity component and do not
         // consider all cases (e.g. ICSharpClosure is ignored, if user assigned reference expression to variable,
         // this variable will not take participate in analysis)
         public class UnityComponentRelatedReferenceExpressionFinder
@@ -21,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
             protected readonly IClrDeclaredElement DeclaredElement;
 
             private bool isFound = false;
-            
+
             public UnityComponentRelatedReferenceExpressionFinder([NotNull]IReferenceExpression referenceExpression, bool ignoreNotComponentInvocations = false)
             {
                 ReferenceExpression = referenceExpression;
@@ -29,10 +30,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
 
                 DeclaredElement = ReferenceExpression.Reference.Resolve().DeclaredElement as IClrDeclaredElement;
                 Assertion.Assert(DeclaredElement != null, "DeclaredElement != null");
-                    
+
                 ContainingType = DeclaredElement.GetContainingType();
                 Assertion.Assert(ContainingType != null, "ContainingType != null");
-                
+
                 ComponentReferenceExpression = referenceExpression.QualifierExpression as IReferenceExpression;
             }
 
@@ -41,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
                 isFound = from == null;
                 return GetRelatedExpressionsInner(scope, from);
             }
-            
+
             private IEnumerable<IReferenceExpression> GetRelatedExpressionsInner([NotNull] ITreeNode scope, [CanBeNull] ITreeNode from = null)
             {
                 var descendants = scope.ThisAndDescendants();
@@ -50,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
                     var current = descendants.Current;
                     if (current == from)
                         isFound = true;
-                    
+
                     switch (current)
                     {
                         case ICSharpClosure _:
@@ -68,13 +69,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
                                 }
                             }
 
-                            var invokedExpression = invocationExpression.InvokedExpression; 
+                            var invokedExpression = invocationExpression.InvokedExpression;
                             foreach (var re in GetRelatedExpressionsInner(invokedExpression, from))
                             {
                                 if (isFound)
                                     yield return re;
                             }
-                            
+
                             continue;
                         case IAssignmentExpression assignmentExpression:
                             descendants.SkipThisNode();
@@ -109,13 +110,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
                                     var qualifier = referenceExpression.QualifierExpression as IReferenceExpression;
                                     if (!ReComparer.Equals(ComponentReferenceExpression, qualifier))
                                         continue;
-                                    
+
                                     if (currentNodeContainingType == null)
                                         continue;
 
                                     if (!ContainingType.Equals(currentNodeContainingType))
                                         continue;
-                                    
+
                                     break;
                                 case IMethod method:
                                     if (currentNodeContainingType == null ||
@@ -124,30 +125,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
                                         if (!myIgnoreNotComponentInvocations && isFound)
                                         {
                                             yield return referenceExpression;
-                                        } 
+                                        }
                                         continue;
                                     }
                                     break;
                                 default:
                                     continue;
                             }
-                            
+
                             if (isFound && !IsReferenceExpressionNotRelated(referenceExpression, currentNodeDeclaredElement, currentNodeContainingType) )
                                 yield return referenceExpression;
-                            
+
                             break;
                     }
                 }
             }
-            
-            
-            protected virtual bool IsReferenceExpressionNotRelated([NotNull]IReferenceExpression currentReference, 
+
+
+            protected virtual bool IsReferenceExpressionNotRelated([NotNull]IReferenceExpression currentReference,
                 IClrDeclaredElement currentElement, ITypeElement currentContainingType)
             {
                 return ReComparer.Equals(currentReference, ReferenceExpression);
             }
         }
-   
+
         public class TransformRelatedReferenceFinder : UnityComponentRelatedReferenceExpressionFinder
         {
             public TransformRelatedReferenceFinder([NotNull] IReferenceExpression referenceExpression)
@@ -155,7 +156,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
             {
             }
 
-            protected override bool IsReferenceExpressionNotRelated([NotNull] IReferenceExpression currentReference, 
+            protected override bool IsReferenceExpressionNotRelated([NotNull] IReferenceExpression currentReference,
                 IClrDeclaredElement currentElement, ITypeElement currentContainingType)
             {
                 if (base.IsReferenceExpressionNotRelated(currentReference, currentElement, currentContainingType))
@@ -163,7 +164,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
 
                 if (!currentContainingType.GetClrName().Equals(KnownTypes.Transform))
                     return true;
-            
+
                 if (ourTransformConflicts.ContainsKey(DeclaredElement.ShortName))
                 {
                     var conflicts = ourTransformConflicts[DeclaredElement.ShortName];
@@ -172,7 +173,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
 
                 return true;
             }
-            
+
             #region TransformPropertiesConflicts
 
             // Short name of transform property to short name of method or properties which get change source property.
@@ -327,12 +328,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
                         "localPosition",
                         "Translate",
                     }
-                } 
+                }
             };
-    
+
             #endregion
         }
-    
+
         public class TransformParentRelatedReferenceFinder : TransformRelatedReferenceFinder
         {
             public TransformParentRelatedReferenceFinder([NotNull] IReferenceExpression referenceExpression)
@@ -340,12 +341,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
             {
             }
 
-            protected override bool IsReferenceExpressionNotRelated([NotNull] IReferenceExpression currentReference, 
+            protected override bool IsReferenceExpressionNotRelated([NotNull] IReferenceExpression currentReference,
                 IClrDeclaredElement currentElement, ITypeElement currentContainingType)
             {
                 return !ourTransformConflicts.Contains(currentElement.ShortName);
             }
-            
+
             #region TransformPropertiesConflicts
 
             // Short name of transform property to short name of method or properties which get change source property.

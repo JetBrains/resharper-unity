@@ -4,6 +4,7 @@ using JetBrains.Application;
 using JetBrains.Application.StdApplicationUI;
 using JetBrains.Application.UI.Help;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help

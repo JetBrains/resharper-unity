@@ -22,7 +22,7 @@ using JetBrains.Util;
 using JetBrains.Util.Logging;
 using Vestris.ResourceLib;
 
-namespace JetBrains.ReSharper.Plugins.Unity
+namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 {
     [SolutionComponent]
     public class UnityVersion

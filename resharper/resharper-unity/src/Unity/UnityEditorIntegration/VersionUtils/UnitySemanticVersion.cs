@@ -5,7 +5,7 @@ using JetBrains.Util;
 
 #nullable enable
 
-namespace JetBrains.ReSharper.Plugins.Unity.Utils
+namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.VersionUtils
 {
     // Wrappers to make it look like Unity's product version is actually semver compatible. It simply converts
     // e.g. 2019.4.12f1 to 2019.4.12-f1, but never lets that be visible

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Drawing;
 using JetBrains.ReSharper.Psi.Colors;
 using JetBrains.Util.DataStructures;
 

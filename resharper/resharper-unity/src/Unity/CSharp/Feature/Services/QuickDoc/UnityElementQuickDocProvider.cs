@@ -14,6 +14,7 @@ using JetBrains.ReSharper.Feature.Services.QuickDoc.Render;
 using JetBrains.ReSharper.Feature.Services.Util;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.UI.RichText;

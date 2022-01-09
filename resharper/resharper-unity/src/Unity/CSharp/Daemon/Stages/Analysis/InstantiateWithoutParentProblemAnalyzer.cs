@@ -5,6 +5,7 @@ using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -31,30 +32,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var reference = (expression.InvokedExpression as IReferenceExpression)?.Reference;
             if (reference == null)
                 return;
-            
+
             var info = reference.Resolve();
-            if (info.ResolveErrorType != ResolveErrorType.OK) 
+            if (info.ResolveErrorType != ResolveErrorType.OK)
                 return;
 
             var method = info.DeclaredElement as IMethod;
             if (method == null)
                 return;
-            
-            if (!method.ShortName.Equals(ourKnownMethod)) 
+
+            if (!method.ShortName.Equals(ourKnownMethod))
                 return;
 
             if (method.GetContainingType()?.GetClrName().Equals(KnownTypes.Object) != true)
                 return;
 
-           
+
             var parameters = method.Parameters;
-            if (parameters.Count != 1) 
+            if (parameters.Count != 1)
                 return;
 
             var scope = expression.GetContainingFunctionLikeDeclarationOrClosure().GetCodeBody().GetAnyTreeNode();
             if (scope == null)
                 return;
-            
+
             IEnumerable<ITreeNode> usages = null;
             ITreeNode storage = null;
             var containingParenthesizedExpression = expression.GetContainingParenthesizedExpression();
@@ -117,7 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 var firstDeclaredElement = referenceExpression.Reference.Resolve().DeclaredElement;
                 if (firstDeclaredElement == null)
                     return false;
-                
+
                 var secondDeclaredElement = dest.Reference.Resolve().DeclaredElement;
                 if (secondDeclaredElement == null)
                     return false;
@@ -127,16 +128,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
                 var firstParent = referenceExpression.QualifierExpression;
                 var secondParent = dest.QualifierExpression;
-                
+
                 if (firstParent == null && secondParent == null)
                     return true;
-                
+
                 if (firstParent is IThisExpression && !(secondParent is IThisExpression) ||
                     !(firstParent is IThisExpression) && secondParent is IThisExpression)
                 {
                     return false;
                 }
-                
+
                 referenceExpression = firstParent as IReferenceExpression;
                 dest = secondParent as IReferenceExpression;
                 if (referenceExpression == null || dest == null)
@@ -161,19 +162,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
             if (declaredElement == null)
                 return false;
-                        
+
             if (declaredElement is IProperty property)
             {
                 expression = AssignmentExpressionNavigator.GetByDest(referenceExpression)?.Source;
-                if (!property.ShortName.Equals("parent")) 
+                if (!property.ShortName.Equals("parent"))
                     return false;
             }
-                        
+
             if (declaredElement is IMethod setParentMethod)
             {
                 if (!setParentMethod.ShortName.Equals("SetParent"))
                     return false;
-                
+
                 var invocation = InvocationExpressionNavigator.GetByInvokedExpression(referenceExpression);
                 if (invocation == null)
                     return false;
@@ -191,7 +192,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     }
                 }
             }
-                        
+
             var containingType = declaredElement.GetContainingType();
             if (containingType != null && containingType.GetClrName().Equals(KnownTypes.Transform))
             {

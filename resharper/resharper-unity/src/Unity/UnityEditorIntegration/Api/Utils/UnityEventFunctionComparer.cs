@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Utils
+namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api.Utils
 {
     // Sort event functions, mostly alphabetically, but with some commonly used messages at the top
     internal class UnityEventFunctionComparer : IComparer<string>

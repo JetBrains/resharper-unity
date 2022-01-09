@@ -2,7 +2,7 @@ using System;
 using JetBrains.Annotations;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Utils
+namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 {
     public class UnityCachesFinder
     {

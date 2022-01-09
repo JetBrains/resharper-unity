@@ -8,6 +8,8 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 {

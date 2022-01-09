@@ -5,6 +5,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -17,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     public class PerformanceCriticalCodeMarksProvider : PerformanceAnalysisRootMarksProviderBase
     {
         public const string MarkId = "Unity.PerformanceCriticalContext";
-        
+
         public PerformanceCriticalCodeMarksProvider(Lifetime lifetime, ISolution solution,
             UnityReferencesTracker referencesTracker, UnitySolutionTracker tracker)
             : base(MarkId, new CallGraphOutcomingPropagator(solution, MarkId))
@@ -101,10 +102,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             // it means we are in functional type member like methodDeclaration
             if (containingFunction == null)
                 return result;
-            
+
             var declaration = currentNode as ITypeMemberDeclaration;
             var typeMember = declaration?.DeclaredElement;
-            
+
             if (PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(typeMember))
                 result.Add(typeMember);
 

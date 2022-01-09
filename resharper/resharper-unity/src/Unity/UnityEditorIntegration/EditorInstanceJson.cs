@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 using JetBrains.Util;
 using Newtonsoft.Json;
 
-namespace JetBrains.ReSharper.Plugins.Unity
+namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 {
     public static class EditorInstanceJson
     {

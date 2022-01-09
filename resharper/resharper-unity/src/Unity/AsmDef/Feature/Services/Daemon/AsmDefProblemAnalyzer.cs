@@ -2,7 +2,7 @@
 using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
-using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 

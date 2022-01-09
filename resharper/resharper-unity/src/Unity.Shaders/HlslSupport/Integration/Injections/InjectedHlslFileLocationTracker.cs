@@ -7,6 +7,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Injections;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
@@ -56,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
         {
             return Exists(cppFileLocation.GetRandomSourceFile(mySolution), cppFileLocation);
         }
-        
+
         protected override bool Exists(IPsiSourceFile sourceFile, CppFileLocation cppFileLocation)
         {
             if (Map.TryGetValue(sourceFile, out var result)
@@ -70,21 +71,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
         {
             if (type == InjectedHlslProgramType.Uknown)
                 return EnumerableCollection<CppFileLocation>.Empty;
-            
+
             return Map[sourceFile]
                 .Where(d => d.ProgramType == type)
                 .Select(d => d.ToCppFileLocation());
         }
-        
+
         public (IEnumerable<CppFileLocation> includeLocations, Dictionary<string, string> defines) GetProgramInfo(CppFileLocation cppFileLocation)
         {
             // PSI is not commited here
             // TODO: cpp global cache should calculate cache only when PSI for file with cpp injects is committed.
-            
+
             var sourceFile = cppFileLocation.GetRandomSourceFile(mySolution);
             var range = cppFileLocation.RootRange;
             Assertion.Assert(range.IsValid, "range.IsValid");
-            
+
             var buffer = sourceFile.Document.Buffer;
             var type = GetShaderProgramType(buffer, range.StartOffset);
 
@@ -132,7 +133,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
 
                     if (pragmaType.Equals("geometry"))
                         shaderTarget = Math.Max(shaderTarget, HlslConstants.SHADER_TARGET_40);
-                    
+
                     if (pragmaType.Equals("hull") || pragmaType.Equals("domain"))
                         shaderTarget = Math.Max(shaderTarget, HlslConstants.SHADER_TARGET_46);
 
@@ -142,11 +143,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
                         // multi_compile_lightpass == multi_compile DIRECTIONAL, DIRECTIONAL_COOKIE, POINT, POINT_NOATT, POINT_COOKIE, SPOT
                         definedMacroses["DIRECTIONAL"] = "1";
                     }
-                    
+
                     // TODO: handle built-in https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html
-                    // multi_compile_fwdbase, multi_compile_fwdadd, multi_compile_fwdadd_fullshadows, multi_compile_fog 
+                    // multi_compile_fwdbase, multi_compile_fwdadd, multi_compile_fwdadd_fullshadows, multi_compile_fog
                     // could not find information about that directives
-                    
+
                 }
                 lexer.Advance();
             }
@@ -154,14 +155,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
             definedMacroses["SHADER_TARGET"] = shaderTarget.ToString();
             return definedMacroses;
         }
-        
+
         private IEnumerable<CppFileLocation> GetIncludes(IPsiSourceFile sourceFile, InjectedHlslProgramType type, bool isSurface)
         {
             var includeType = GetIncludeProgramType(type);
-            
+
             var includeList = new List<CppFileLocation>();
             includeList.Add(new CppFileLocation(myCppExternalModule, mySolution.SolutionDirectory.Combine(Utils.ShaderConfigFile)));
-            
+
             if (includeType != InjectedHlslProgramType.Uknown)
             {
                 var includes = GetIncludesLocation(sourceFile, includeType);
@@ -193,7 +194,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
                     {
                         includeList.Add(new CppFileLocation(myCppExternalModule, unityCG));
                     }
-                    
+
                     // from surface shader generated code
                     if (isSurface)
                     {
@@ -220,7 +221,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
 
             return includeList;
         }
-        
+
         private (string, string) GetPragmaAndValue(string context)
         {
             int i = 0;
@@ -246,7 +247,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
             Assertion.Assert(locationStartOffset < buffer.Length, "locationStartOffset < buffer.Length");
             if (locationStartOffset >= buffer.Length)
                 return InjectedHlslProgramType.Uknown;
-            
+
             int curPos = locationStartOffset - 1;
             while (curPos > 0)
             {

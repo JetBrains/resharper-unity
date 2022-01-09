@@ -16,6 +16,7 @@ using JetBrains.ProjectModel.Impl;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Packages;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;

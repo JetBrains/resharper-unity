@@ -1,7 +1,7 @@
 ﻿using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 
-namespace JetBrains.ReSharper.Plugins.Unity
+namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 {
     public static class KnownTypes
     {

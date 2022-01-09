@@ -10,6 +10,8 @@ using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.MoveQuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -131,14 +133,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var fieldType = selectedField.Type.GetTypeElement();
             if (fieldType == null)
                 return false;
-            
+
             if (!fieldType.IsUnityComponent(out _))
                 return false;
-            
+
             var ownerType = selectedField.DeclaredElement?.ContainingType;
             if (ownerType == null)
                 return false;
-            
+
             if (!ownerType.IsUnityComponent(out _))
                 return false;
 

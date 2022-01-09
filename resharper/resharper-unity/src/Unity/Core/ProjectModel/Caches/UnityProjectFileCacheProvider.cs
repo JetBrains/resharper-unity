@@ -8,6 +8,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Caches;
 using JetBrains.ProjectModel.Properties.CSharp;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 

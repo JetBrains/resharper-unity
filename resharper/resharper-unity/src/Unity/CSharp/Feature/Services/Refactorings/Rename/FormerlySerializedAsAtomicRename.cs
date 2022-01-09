@@ -5,6 +5,7 @@ using JetBrains.Application.Settings;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
@@ -40,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         {
             // hide confirmation page only, refactoring should update shared document too otherwise
             // we will get inconsistent change modification message box
-            
+
             return new FormerlySerializedAsRefactoringPage(
                 ((RefactoringWorkflowBase) renameWorkflow).WorkflowExecuterLifetime, myModel);
         }

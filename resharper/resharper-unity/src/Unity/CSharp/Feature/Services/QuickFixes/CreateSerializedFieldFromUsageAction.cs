@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Intentions.CreateDeclaration;
 using JetBrains.ReSharper.Feature.Services.Intentions.Impl.DeclarationBuilders;
 using JetBrains.ReSharper.Intentions.CSharp.QuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.CSharp;

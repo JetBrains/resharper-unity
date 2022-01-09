@@ -2,7 +2,7 @@ using System;
 using JetBrains.ProjectModel;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity
+namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 {
     [SolutionComponent]
     public class UnityTypesProvider

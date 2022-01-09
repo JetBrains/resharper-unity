@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Text;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity
+namespace JetBrains.ReSharper.Plugins.Unity.Utils
 {
     public static class TreeNodeExtensions
     {

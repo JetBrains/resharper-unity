@@ -1,4 +1,5 @@
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Impl.CodeStyle.MemberReordering;
 using JetBrains.ReSharper.Psi.Tree;

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api.Utils;
 using JetBrains.ReSharper.Psi.CSharp.Impl.CodeStyle.MemberReordering;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;

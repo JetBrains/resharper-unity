@@ -5,6 +5,8 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.PropertiesExtender;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 
 namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Core.ProjectModel
 {

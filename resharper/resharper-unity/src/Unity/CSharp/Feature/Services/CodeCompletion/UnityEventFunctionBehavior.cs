@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Feature.Services.Generate.Workflows;
 using JetBrains.ReSharper.Feature.Services.Lookup;
 using JetBrains.ReSharper.Feature.Services.Util;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;

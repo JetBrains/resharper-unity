@@ -3,6 +3,7 @@ using JetBrains.Application.UI.Options.OptionsDialog;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Intentions.Options;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Naming;
 using JetBrains.ReSharper.Psi.Naming.Settings;

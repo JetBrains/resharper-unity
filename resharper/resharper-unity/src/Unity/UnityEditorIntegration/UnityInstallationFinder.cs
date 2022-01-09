@@ -10,7 +10,7 @@ using JetBrains.Util;
 using JetBrains.Util.Interop;
 using JetBrains.Util.Logging;
 
-namespace JetBrains.ReSharper.Plugins.Unity
+namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 {
     public static class UnityInstallationFinder
     {
