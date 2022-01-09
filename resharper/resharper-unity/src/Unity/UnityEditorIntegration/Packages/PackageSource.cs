@@ -1,4 +1,4 @@
-namespace JetBrains.ReSharper.Plugins.Unity.Packages
+namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 {
     public enum PackageSource
     {

@@ -8,8 +8,8 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupI
 using JetBrains.ReSharper.Plugins.Json.Feature.CodeCompletion;
 using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
-using JetBrains.ReSharper.Plugins.Unity.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi;
 
 #nullable enable

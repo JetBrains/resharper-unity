@@ -14,12 +14,11 @@ using JetBrains.Extension;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.Threading;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Packages
+namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 {
 #region Notes
     // Empirically, this appears to be the process that Unity goes through when adding a new package:

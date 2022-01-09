@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable NotAccessedField.Global
 
-namespace JetBrains.ReSharper.Plugins.Unity.Packages
+namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 {
     public class PackageData
     {
