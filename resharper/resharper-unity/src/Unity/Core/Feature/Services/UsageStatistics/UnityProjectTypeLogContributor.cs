@@ -1,10 +1,10 @@
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.UsageStatistics;
 using Newtonsoft.Json.Linq;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.UsageStatistics
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics
 {
     [SolutionComponent]
     public class UnityProjectTypeLogContributor : IActivityLogContributorSolutionComponent

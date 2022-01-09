@@ -13,7 +13,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches
 {
     [SolutionComponent]
     public class DeferredHelperCache : IPsiSourceFileCache

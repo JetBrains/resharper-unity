@@ -7,7 +7,7 @@ using JetBrains.ProjectModel.Assemblies.Impl;
 using JetBrains.ProjectModel.ProjectImplementation;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Propoerties;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;

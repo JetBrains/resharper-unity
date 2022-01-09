@@ -1,7 +1,7 @@
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 

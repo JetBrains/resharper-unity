@@ -23,7 +23,7 @@ using JetBrains.Threading;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches
 {
     [SolutionComponent]
     public class DeferredCacheController : IDaemonTaskBeforeInvisibleProcessProvider
@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
         public IReadonlyProperty<bool> CompletedOnce => myCompletedOnce;
         private readonly ViewableProperty<bool> myCompletedOnce;
-        
+
         private Lifetime myCurrentBackgroundActivityLifetime = Lifetime.Terminated;
         private LifetimeDefinition myCurrentBackgroundActivityLifetimeDefinition;
 
@@ -66,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             myLogger = logger;
             var defaultValue = solutionCaches.PersistentProperties.TryGetValue("DeferredCachesCompletedOnce", out var result) && result.Equals("True");
             myCompletedOnce = new ViewableProperty<bool>(defaultValue);
-            
+
             myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "DeferredCachesCoreActivity",  TimeSpan.FromMilliseconds(500), Rgc.Guarded, RunBackgroundActivity);
         }
 
@@ -84,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
             myCurrentBackgroundActivityLifetimeDefinition = new LifetimeDefinition(myLifetime);
             myCurrentBackgroundActivityLifetime = myCurrentBackgroundActivityLifetimeDefinition.Lifetime;
-            
+
             mySolutionAnalysisConfiguration.Pause(myCurrentBackgroundActivityLifetime, "Calculating deferred index");
             myProgressBar.Start(myCurrentBackgroundActivityLifetime);
             myIsProcessing = true;
@@ -106,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                 {
                     var filesToDelete = new SynchronizedList<IPsiSourceFile>(myDeferredHelperCache.FilesToDrop.Take(BATCH_SIZE));
                     var filesToAdd = new SynchronizedList<IPsiSourceFile>(myDeferredHelperCache.FilesToProcess.Take(BATCH_SIZE));
-                
+
                     var calculatedData = new ConcurrentDictionary<IPsiSourceFile, (long, Dictionary<IDeferredCache, object>)>();
                     ScheduleBackgroundProcess(filesToDelete, filesToAdd, calculatedData);
                 }
@@ -127,11 +127,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             ConcurrentDictionary<IPsiSourceFile, (long, Dictionary<IDeferredCache, object>)> calculatedData)
         {
             myShellLocks.Dispatcher.AssertAccess();
-            
+
             myPsiFiles.ExecuteAfterCommitAllDocuments(() =>
             {
                 myPsiFiles.AssertAllDocumentAreCommitted();
-          
+
                 new InterruptableReadActivityThe(myLifetime, myShellLocks, () => !myLifetime.IsAlive || myShellLocks.ContentModelLocks.IsWriteLockRequested)
                 {
                     FuncRun = () => RunActivity(toDelete, toProcess, calculatedData),
@@ -144,7 +144,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                 }.DoStart();
             });
         }
-        
+
         public bool HasDirtyFiles()
         {
             return myDeferredHelperCache.FilesToDrop.Count > 0 || myDeferredHelperCache.FilesToProcess.Count > 0;
@@ -171,7 +171,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                     toProcess.Remove(psiSourceFile);
                     continue;
                 }
-                
+
                 if (!psiSourceFile.IsValid())
                 {
                     // file could be dropped, because we are working with snapshot, do not call build for invalid files
@@ -180,12 +180,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                     calculatedData.TryRemove(psiSourceFile, out var _);
                     continue;
                 }
-                
+
                 if (calculatedData.TryGetValue(psiSourceFile, out var result))
                 {
                     if (result.Item1 == psiSourceFile.GetAggregatedTimestamp())
                         continue;
-                    
+
                     // drop unactual data
 
                     calculatedData.TryRemove(psiSourceFile, out _);
@@ -199,7 +199,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                 {
                     if (!cache.IsApplicable(psiSourceFile))
                         continue;
-                    
+
                     if (cache.UpToDate(psiSourceFile))
                         continue;
 
@@ -311,7 +311,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         public void Invalidate<T>() where T : IDeferredCache
         {
             myShellLocks.AssertWriteAccessAllowed();
-            
+
             foreach (var deferredCache in myDeferredCaches)
             {
                 if (deferredCache is T)
@@ -335,7 +335,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
                     myDeferredHelperCache.AfterAddToProcess.Advise(myLifetime, _ => ScheduleBackgroundActivity());
                     myDeferredHelperCache.AfterRemoveFromProcess.Advise(myLifetime, _ => ScheduleBackgroundActivity());
-                    
+
                     ScheduleBackgroundActivity();
 
                 });

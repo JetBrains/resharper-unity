@@ -5,8 +5,8 @@ using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 

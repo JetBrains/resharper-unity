@@ -2,7 +2,7 @@ using System;
 using JetBrains.Application;
 using JetBrains.Application.Components;
 using JetBrains.RdBackend.Common.Features;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.UnitTestFramework.Elements;
 using JetBrains.ReSharper.UnitTestFramework.Execution.Hosting;
 using JetBrains.Rider.Backend.Features.UnitTesting;

@@ -13,7 +13,7 @@ using JetBrains.Diagnostics;
 using JetBrains.Extension;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.Threading;
 using JetBrains.Util;

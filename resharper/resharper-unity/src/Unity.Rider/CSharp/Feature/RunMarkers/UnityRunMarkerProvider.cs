@@ -2,7 +2,7 @@ using JetBrains.Application.Settings;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches.SymbolCache;
 using JetBrains.ReSharper.Psi.CSharp;

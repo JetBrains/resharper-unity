@@ -1,6 +1,6 @@
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.Navigation.GoToUnityUsages

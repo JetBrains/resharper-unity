@@ -2,7 +2,7 @@ using System;
 using JetBrains.Application;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.CSharp.FileLayout;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Psi.CSharp.CodeStyle;
 using JetBrains.ReSharper.Psi.CSharp.Impl.CodeStyle.MemberReordering;
 using JetBrains.ReSharper.Psi.CSharp.Tree;

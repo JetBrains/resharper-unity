@@ -1,4 +1,4 @@
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Pencils
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Pencils
 {
     public static class PencilsGroupKind
     {

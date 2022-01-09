@@ -7,7 +7,7 @@ using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
+namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
 {
     [SolutionComponent]
     public class UnitySolutionTracker

@@ -6,7 +6,7 @@ using JetBrains.Application.UI.Help;
 using JetBrains.ProjectModel;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
 {
     [ShellComponent]
     public class ShowUnityHelp : IShowHelp

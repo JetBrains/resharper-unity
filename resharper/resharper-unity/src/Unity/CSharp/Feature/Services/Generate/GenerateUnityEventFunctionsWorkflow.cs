@@ -2,7 +2,7 @@ using JetBrains.Application.DataContext;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.Generate.Actions;
 using JetBrains.ReSharper.Feature.Services.Generate.Workflows;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate

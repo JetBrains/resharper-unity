@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.Util.PersistentMap;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches
 {
     // Life cycle of cache is similar to SimpleICache
     // At startup: Load -> MergeLoaded

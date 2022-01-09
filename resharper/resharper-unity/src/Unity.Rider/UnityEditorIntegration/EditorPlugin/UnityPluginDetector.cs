@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
-using ProjectExtensions = JetBrains.ReSharper.Plugins.Unity.ProjectModel.ProjectExtensions;
+using ProjectExtensions = JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.ProjectExtensions;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorPlugin
 {
@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorP
                 // Check the default location
                 if (TryFindExistingPluginOnDisk(defaultDir, newVersion, out installationInfo))
                     return installationInfo;
-                
+
                 // dll is there, but was not referenced by any project, for example - only Assembly-CSharp project is present
                 if (TryFindExistingPluginOnDiskInFolderRecursive(assetsDir, newVersion, out var installationInfo1))
                 {
@@ -85,11 +85,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorP
                 return InstallationInfo.DoNotInstall;
             }
         }
-        
+
         private bool TryFindExistingPluginOnDiskInFolderRecursive(VirtualFileSystemPath directory, Version newVersion, [NotNull] out InstallationInfo result)
         {
             myLogger.Verbose("Looking for plugin on disk: '{0}'", directory);
-            
+
             var pluginFiles = directory
                 .GetChildFiles("*.dll", PathSearchFlags.RecurseIntoSubdirectories)
                 .Where(f => f.Name == PluginPathsProvider.BasicPluginDllFile)
@@ -104,7 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorP
             result = GetInstallationInfoFromFoundInstallation(pluginFiles, newVersion);
             return true;
         }
-        
+
         private bool TryFindExistingPluginOnDisk(VirtualFileSystemPath directory, Version newVersion, [NotNull] out InstallationInfo result)
         {
             myLogger.Verbose("Looking for plugin on disk: '{0}'", directory);
@@ -216,7 +216,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorP
                     logger.Error($"pluginDirectory ${pluginDirectory} Is Not Absolute ${installReason}, ${existingVersion}, ${existingFiles.Count}");
                 else
                     logger.Info($"pluginDirectory ${pluginDirectory} ${installReason}, ${existingVersion}, ${existingFiles.Count}");
-                
+
                 InstallReason = installReason;
                 PluginDirectory = pluginDirectory;
                 ExistingFiles = existingFiles;

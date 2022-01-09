@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.UsageStatistics;
 using Newtonsoft.Json.Linq;
 

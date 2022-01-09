@@ -21,7 +21,7 @@ using JetBrains.ReSharper.Psi.Naming.Settings;
 using JetBrains.Rider.Model.UIAutomation;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
 {
     [OptionsPage(PID, Name, typeof(LogoIcons.Unity), ParentId = CodeEditingPage.PID)]
     public class UnityOptionsPage : BeSimpleOptionsPage

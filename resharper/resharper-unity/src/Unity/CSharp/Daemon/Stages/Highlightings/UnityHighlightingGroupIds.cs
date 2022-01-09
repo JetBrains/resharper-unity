@@ -1,5 +1,5 @@
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Services.Pencils;
+using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Pencils;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
 {

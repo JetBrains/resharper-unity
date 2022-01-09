@@ -2,8 +2,8 @@ using System;
 using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.ReSharper.Feature.Services.OnlineHelp;
-using JetBrains.ReSharper.Plugins.Unity.Application.UI.Help;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 

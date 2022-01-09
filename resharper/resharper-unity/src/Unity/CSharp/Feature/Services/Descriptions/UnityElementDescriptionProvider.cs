@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Descriptions;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.UI.RichText;

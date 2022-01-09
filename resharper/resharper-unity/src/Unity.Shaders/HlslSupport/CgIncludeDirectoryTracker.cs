@@ -6,7 +6,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Caches;
 using JetBrains.ProjectModel.Tasks;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.Util;
 using JetBrains.Util.Threading.Tasks;
 

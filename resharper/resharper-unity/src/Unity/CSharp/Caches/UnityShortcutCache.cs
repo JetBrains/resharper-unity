@@ -5,7 +5,7 @@ using JetBrains.Collections;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -23,14 +23,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
         private readonly UnityReferencesTracker myUnityReferencesTracker;
         private CountingSet<string> myLocalCache = new CountingSet<string>();
         private OneToCompactCountingSet<string, IPsiSourceFile> myFilesWithShortCut = new OneToCompactCountingSet<string, IPsiSourceFile>();
-        
+
         public UnityShortcutCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, UnityReferencesTracker unityReferencesTracker)
             : base(lifetime, shellLocks, persistentIndexManager,  CreateMarshaller())
         {
             myUnityReferencesTracker = unityReferencesTracker;
         }
 
-        
+
         private static IUnsafeMarshaller<CountingSet<string>> CreateMarshaller()
         {
             return new UniversalMarshaller<CountingSet<string>>(reader =>
@@ -55,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
                 });
         }
 
-        
+
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
             return myUnityReferencesTracker.HasUnityReference.HasTrueValue() && base.IsApplicable(sf) && sf.PrimaryPsiLanguage.Is<CSharpLanguage>();
@@ -69,7 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
 
             var childrenEnumerator = file.Descendants();
             var result = new CountingSet<string>();
-            
+
             while (childrenEnumerator.MoveNext())
             {
                 var current = childrenEnumerator.Current;
@@ -111,7 +111,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
             return null;
         }
 
-        
+
         public static string ExtractShortcutFromName(string name)
         {
             var parts = name.Split(' ');
@@ -121,7 +121,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
             var shortCut = parts[parts.Length - 1];
             if (shortCut.Length == 0)
                 return null;
-            
+
             if (shortCut[0] == '_' || shortCut[0] == '&' || shortCut[0] == '#' || shortCut[0] == '%')
             {
                 return shortCut;
@@ -142,7 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
 
             return positionalArguments[position];
         }
-        
+
         public override void Merge(IPsiSourceFile sourceFile, object builtPart)
         {
             RemoveFromLocalCache(sourceFile);

@@ -15,7 +15,7 @@ using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Internal
 {
     [Action("Unity_Internal_DumpSpellCheckWordLists", "Dump Spell Check Word Lists")]
     public class DumpSpellCheckWordListsAction : IExecutableAction

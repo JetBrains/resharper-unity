@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using JetBrains.IDE.UsageStatistics;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.UsageStatistics
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics
 {
     [SolutionComponent]
     public class UnityProjectTechnologyProvider : IProjectTechnologyProvider

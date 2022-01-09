@@ -3,7 +3,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches
 {
     [SolutionComponent]
     public class DeferredCacheProgressBar

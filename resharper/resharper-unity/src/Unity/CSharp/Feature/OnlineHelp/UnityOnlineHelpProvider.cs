@@ -2,7 +2,7 @@ using System;
 using JetBrains.Application;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.OnlineHelp;
-using JetBrains.ReSharper.Plugins.Unity.Application.UI.Help;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp

@@ -1,7 +1,7 @@
 ﻿using System;
 using JetBrains.ProjectModel.Properties;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours
+namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Properties.Flavours
 {
     [ProjectFlavor]
     public class UnityProjectFlavor : IProjectFlavor

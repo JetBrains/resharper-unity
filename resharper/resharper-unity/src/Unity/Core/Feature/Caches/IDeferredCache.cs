@@ -1,6 +1,6 @@
 using JetBrains.ReSharper.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches
 {
     public interface IDeferredCache
     {

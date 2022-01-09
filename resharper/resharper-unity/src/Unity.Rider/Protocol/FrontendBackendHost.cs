@@ -8,7 +8,7 @@ using JetBrains.Lifetimes;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 using JetBrains.RdBackend.Common.Features;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Packages;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 

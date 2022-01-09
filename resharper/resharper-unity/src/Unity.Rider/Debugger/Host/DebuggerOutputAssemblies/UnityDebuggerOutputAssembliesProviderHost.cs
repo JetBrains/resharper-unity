@@ -7,7 +7,7 @@ using JetBrains.Debugger.Host.DebuggerOutputAssemblies;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Utils;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Backend.Features.Debugger.Utils;
 using JetBrains.Util;

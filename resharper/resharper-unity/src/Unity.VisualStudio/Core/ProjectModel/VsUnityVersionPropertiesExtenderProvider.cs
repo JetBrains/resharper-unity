@@ -4,7 +4,7 @@ using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.PropertiesExtender;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 
 namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Core.ProjectModel
 {

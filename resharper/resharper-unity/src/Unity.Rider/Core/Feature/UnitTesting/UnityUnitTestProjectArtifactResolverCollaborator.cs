@@ -1,5 +1,5 @@
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.UnitTestFramework.Exploration.Artifacts;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;

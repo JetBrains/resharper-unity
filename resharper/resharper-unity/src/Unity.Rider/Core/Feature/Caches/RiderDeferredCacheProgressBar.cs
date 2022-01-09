@@ -7,7 +7,7 @@ using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.RdBackend.Common.Features.BackgroundTasks;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
 using JetBrains.Rider.Backend.Features.BackgroundTasks;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.Caches

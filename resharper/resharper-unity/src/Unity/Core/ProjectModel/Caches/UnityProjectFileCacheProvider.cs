@@ -11,7 +11,7 @@ using JetBrains.ProjectModel.Properties.CSharp;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
+namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches
 {
     [SolutionComponent]
     public class UnityProjectFileCacheProvider : IProjectFileDataProvider<UnityProjectDataCache>

@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Feature.Services.ExternalSources.Pdb;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.ExternalSources
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.ExternalSources
 {
     // Read only packages are compiled and turned into assembly references. We show them as source in the Unity Explorer
     // but can only navigate to the symbols in the referenced assemblies. This class ensures that the External Sources

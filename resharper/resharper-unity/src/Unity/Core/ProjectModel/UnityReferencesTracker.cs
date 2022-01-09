@@ -14,7 +14,7 @@ using JetBrains.Rd.Base;
 using JetBrains.Util;
 using JetBrains.Util.Reflection;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
+namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
 {
     public interface IUnityReferenceChangeHandler
     {

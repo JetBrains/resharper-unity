@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Feature.Services.Navigation.Requests;
 using JetBrains.ReSharper.Features.Navigation.Features.FindUsages;
 using JetBrains.ReSharper.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Navigation.FindUsages
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Navigation.FindUsages
 {
     [ShellComponent]
     public class UnityFindUsagesProvider : FindUsagesProvider
