@@ -12,10 +12,10 @@
     <Company>JetBrains</Company>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RESHARPER;$(CommandLineConstants)</DefineConstants>
+    <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;$(CommandLineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;RESHARPER;$(CommandLineConstants)</DefineConstants>
+    <DefineConstants>TRACE;$(CommandLineConstants)</DefineConstants>
   </PropertyGroup>
   <!-- ********** -->
   <ItemGroup Label="C#">
@@ -111,6 +111,15 @@
   <ItemGroup Label="Resources">
     <None Remove="api.xml" />
     <EmbeddedResource Include="api.xml" />
+    <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatterns.xaml" />
+    <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatternsWithRegions.xaml" />
+    <EmbeddedResource Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdditionalFileLayoutResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <None Remove="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
     <EmbeddedResource Include="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
   </ItemGroup>
@@ -131,7 +140,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="VSSDK.Text.10" Version="10.0.4" />
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />
@@ -141,7 +149,6 @@
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" />
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Web_Core.Props" />
   <Target Name="CppHack" AfterTargets="PrepareForRun">
     <Move SourceFiles="$(OutDir)JetBrains.ReSharper.Psi.Cpp.dll" DestinationFiles="$(OutDir)x86\JetBrains.ReSharper.Psi.Cpp.dll" />
   </Target>

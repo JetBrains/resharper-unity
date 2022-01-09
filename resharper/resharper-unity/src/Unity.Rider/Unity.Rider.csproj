@@ -33,6 +33,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <ProjectReference Include="..\Unity\resharper-unity.csproj" />
+    <ProjectReference Include="..\..\..\resharper-json\src\Json.Rider\Json.Rider.csproj" />
+    <ProjectReference Include="..\..\..\resharper-yaml\src\Yaml.Rider\Yaml.Rider.csproj" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" />

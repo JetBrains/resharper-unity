@@ -16,7 +16,6 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.JavaScript.Util.Literals;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Serialization;
 using JetBrains.Text;
@@ -93,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             index++;
 
             var sb = new StringBuilder();
-            while (index != buffer.Length && (buffer[index].IsDigit() || buffer[index] == '-'))
+            while (index != buffer.Length && (char.IsDigit(buffer[index]) || buffer[index] == '-'))
             {
                 sb.Append(buffer[index++]);
             }
@@ -137,7 +136,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
             while (start < assetDocumentBuffer.Length)
             {
-                if (assetDocumentBuffer[start].IsDigit())
+                if (char.IsDigit(assetDocumentBuffer[start]))
                 {
                     result.Append(assetDocumentBuffer[start]);
                     start++;
