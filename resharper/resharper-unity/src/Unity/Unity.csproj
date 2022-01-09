@@ -53,50 +53,6 @@
     </Compile>
   </ItemGroup>
   <!-- ********** -->
-  <ItemGroup Label="Cg">
-    <PsiLanguageNames Include="Cg">
-      <Visible>False</Visible>
-    </PsiLanguageNames>
-    <CsLex Include="Cg\Psi\Parsing\Cg.lex" References="Cg\Psi\Parsing\Chars.lex" />
-    <TokenGenerator Include="Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.xml">
-      <OutputFile>Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs</OutputFile>
-    </TokenGenerator>
-    <Compile Update="Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs">
-      <DependentUpon>CgTokenNodeTypes.Tokens.xml</DependentUpon>
-    </Compile>
-    <ParserGen Include="Cg\Psi\Parsing\Cg.psi" />
-    <ErrorsGen Include="Cg\Daemon\Errors\CgErrors.xml">
-      <Namespace>JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Errors</Namespace>
-      <OutputFile>Cg\Daemon\Errors\CgErrors.Generated.cs</OutputFile>
-      <Mode>ERRORS</Mode>
-    </ErrorsGen>
-    <Compile Update="Cg\Daemon\Errors\CgErrors.Generated.cs">
-      <DependentUpon>CgErrors.xml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <!-- ********** -->
-  <ItemGroup Label="ShaderLab">
-    <PsiLanguageNames Include="ShaderLab">
-      <Visible>False</Visible>
-    </PsiLanguageNames>
-    <CsLex Include="ShaderLab\Psi\Parsing\ShaderLab.lex" References="ShaderLab\Psi\Parsing\Chars.lex" />
-    <TokenGenerator Include="ShaderLab\Psi\Parsing\ShaderLabTokenType.Tokens.xml">
-      <OutputFile>ShaderLab\Psi\Parsing\ShaderLabTokenType.Tokens.generated.cs</OutputFile>
-    </TokenGenerator>
-    <Compile Update="ShaderLab\Psi\Parsing\ShaderLabTokenType.Tokens.generated.cs">
-      <DependentUpon>ShaderLabTokenType.Tokens.xml</DependentUpon>
-    </Compile>
-    <ParserGen Include="ShaderLab\Psi\Parsing\ShaderLab.psi" />
-    <ErrorsGen Include="ShaderLab\Daemon\Errors\ShaderLabErrors.xml">
-      <Namespace>JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors</Namespace>
-      <OutputFile>ShaderLab\Daemon\Errors\ShaderLabErrors.generated.cs</OutputFile>
-      <Mode>ERRORS</Mode>
-    </ErrorsGen>
-    <Compile Update="ShaderLab\Daemon\Errors\ShaderLabErrors.generated.cs">
-      <DependentUpon>ShaderLabErrors.xml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <!-- ********** -->
   <ItemGroup Label="AsmDef">
     <ErrorsGen Include="AsmDef\Daemon\Errors\AsmDefErrors.xml">
       <Namespace>JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors</Namespace>
@@ -148,8 +104,4 @@
     <ProjectReference Include="..\..\..\resharper-yaml\src\Yaml\Yaml.csproj" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" />
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" />
-  <Target Name="CppHack" AfterTargets="PrepareForRun">
-    <Move SourceFiles="$(OutDir)JetBrains.ReSharper.Psi.Cpp.dll" DestinationFiles="$(OutDir)x86\JetBrains.ReSharper.Psi.Cpp.dll" />
-  </Target>
 </Project>

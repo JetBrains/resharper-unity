@@ -26,6 +26,9 @@
     </PackageReference>
     <PackageReference Include="VSSDK.Text.10" Version="10.0.4" />
     <ProjectReference Include="..\Unity\Unity.csproj" />
+    <!-- TODO: Do we need Unity.Shaders.VisualStudio for shader specific classification definitions?
+         If not, then I think we'd get entries in Fonts + Colours for highlightings that aren't available, e.g. Cg -->
+    <ProjectReference Include="..\Unity.Shaders\Unity.Shaders.csproj" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio_SinceVs10.Props" />

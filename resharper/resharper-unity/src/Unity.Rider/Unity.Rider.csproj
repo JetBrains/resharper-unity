@@ -33,6 +33,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <ProjectReference Include="..\Unity\Unity.csproj" />
+    <ProjectReference Include="..\Unity.Shaders\Unity.Shaders.csproj" />
     <ProjectReference Include="..\..\..\resharper-json\src\Json.Rider\Json.Rider.csproj" />
     <ProjectReference Include="..\..\..\resharper-yaml\src\Yaml.Rider\Yaml.Rider.csproj" />
   </ItemGroup>

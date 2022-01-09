@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.LiveTemplates.Scope
 {
     [ScopeCategoryUIProvider(Priority = Priority)]
     public class UnityScopeCategoryUIProvider : ScopeCategoryUIProvider
@@ -14,15 +15,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         public UnityScopeCategoryUIProvider()
             : base(LogoIcons.Unity.Id)
         {
-            MainPoint = new InUnityCSharpProject();
+            MainPoint = new InUnityShaderLabFile();
         }
 
         public override IEnumerable<ITemplateScopePoint> BuildAllPoints()
         {
-            yield return new InUnityCSharpProject();
-            yield return new MustBeInUnitySerializableType();
-            yield return new MustBeInUnityType();
-            yield return new MustBeInUnityCSharpFile();
+            yield return new InUnityShaderLabFile();
         }
 
         public override string CategoryCaption => "Unity";
@@ -31,14 +29,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         {
             switch (point)
             {
-                case InUnityCSharpProject _:
-                    return "In Unity project";
-                case MustBeInUnityCSharpFile _:
-                    return "In Unity C# file";
-                case MustBeInUnityType _:
-                    return "In Unity type where type members are allowed";
-                case MustBeInUnitySerializableType _:
-                    return "In Unity serializable type where type members are allowed";
+                case InUnityShaderLabFile _:
+                    return "In Unity ShaderLab file";
                 default:
                     return base.Present(point);
             }
