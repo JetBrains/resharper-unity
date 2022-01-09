@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Lifetimes;
@@ -11,6 +12,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Rider.Backend.Env;
 using JetBrains.Rider.Backend.Features.Documents;
 using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
@@ -19,6 +21,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.HlslSupport
 {
     [SolutionComponent]
+    [ZoneMarker(typeof(IRiderFeatureZone))]
     public class ShaderContextHost
     {
         private readonly ISolution mySolution;
