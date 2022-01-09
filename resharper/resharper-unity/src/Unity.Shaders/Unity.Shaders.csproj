@@ -2,7 +2,10 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Shaders</AssemblyName>
-    <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Shaders</RootNamespace>
+    <!-- We use the same namespace as the root Unity project, as this is still conceptually part of the main project,
+         but split purely for deployment reasons - so R# without C++ can still install Unity, albeit without shader
+         support. We have no need to split by zone -->
+    <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
     <LangVersion>9</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <SignAssembly>true</SignAssembly>
