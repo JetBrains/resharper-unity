@@ -8,20 +8,16 @@ public class Test01
     [|FormerlySerializedAs("foo3")|(2)] public const string constant1;
 }
 
-public class ||Test02|(3)|(4) : MonoBehaviour
+public class Test02 : MonoBehaviour
 {
-    [|FormerlySerializedAs("foo")|(5)] private int myNotSerialized;
-    [FormerlySerializedAs("foo2")] public string ||field1|(6)|(7);
-    [|FormerlySerializedAs("foo3")|(8)] public const string constant1;
+    [|FormerlySerializedAs("foo")|(3)] private int myNotSerialized;
+    [FormerlySerializedAs("foo2")] public string field1;
+    [|FormerlySerializedAs("foo3")|(4)] public const string constant1;
 }
 
 ---------------------------------------------------------
 (0): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
 (1): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
 (2): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
-(3): ReSharper Unity Implicitly Used Identifier: 
-(4): Unity Gutter Icon: Unity script
-(5): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
-(6): ReSharper Unity Implicitly Used Identifier: 
-(7): Unity Gutter Icon: This field is initialized from Inspector
-(8): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
+(3): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
+(4): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute

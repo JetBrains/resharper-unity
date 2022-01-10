@@ -61,7 +61,7 @@
           Writing to a static field is not supported
         </Description>
       </Tag>
-      
+
       <Tag externalName="BurstForeachNotSupportedWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title>The 'foreach' construction is not supported</Title>
         <Description>
@@ -105,7 +105,7 @@
       </Tag>
     </Group>
   </SeverityConfiguration>
-  
+
   <Warning name="BurstAccessingManagedMethod" configurableSeverity="Unity.BurstAccessingManagedMethod">
     <Parameter type="ITreeNode" name="node" />
     <Parameter type="string" name="methodQualification"/>

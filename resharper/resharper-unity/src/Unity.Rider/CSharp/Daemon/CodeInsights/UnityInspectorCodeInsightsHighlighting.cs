@@ -10,13 +10,13 @@ using Severity = JetBrains.ReSharper.Feature.Services.Daemon.Severity;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.CodeInsights
 {
-    [ 
+    [
         RegisterHighlighter(
-            Id, 
+            Id,
             GroupId = HighlighterGroupIds.HIDDEN,
-            Layer = HighlighterLayer.SYNTAX + 1, 
-            EffectType = EffectType.NONE, 
-            NotRecyclable = false, 
+            Layer = HighlighterLayer.SYNTAX + 1,
+            EffectType = EffectType.NONE,
+            NotRecyclable = false,
             TransmitUpdates = true
         )
     ]
@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.CodeInsights
         AttributeId = Id,
         OverlapResolve = OverlapResolveKind.NONE
     )]
-    public class UnityInspectorCodeInsightsHighlighting : CodeInsightsHighlighting, IUnityHighlighting
+    public class UnityInspectorCodeInsightsHighlighting : CodeInsightsHighlighting, IUnityIndicatorHighlighting
     {
         public new const string Id = "UnityInspectorCodeInsights";
 

@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.CodeInsights
         TransmitUpdates = true)]
     [StaticSeverityHighlighting(Severity.INFO, typeof(HighlightingGroupIds.CodeInsights), AttributeId = Id,
         OverlapResolve = OverlapResolveKind.NONE)]
-    public class UnityCodeInsightsHighlighting : CodeInsightsHighlighting, IUnityHighlighting
+    public class UnityCodeInsightsHighlighting : CodeInsightsHighlighting, IUnityIndicatorHighlighting
     {
         public new const string Id = "UnityCodeInsights";
 

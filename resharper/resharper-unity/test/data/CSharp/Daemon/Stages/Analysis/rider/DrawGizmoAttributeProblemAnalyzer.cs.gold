@@ -51,11 +51,11 @@ public class TestDrawGizmoMethod
     [DrawGizmo]
     private static void JustRight6(Collider arg1, GizmoType arg2) { }
     
-    public class ||TestClass1|(10)|(11) : MonoBehaviour
+    public class TestClass1 : MonoBehaviour
     {
     }
     
-    public class ||TestClass2|(12)|(13) : TestClass1
+    public class TestClass2 : TestClass1
     {
     }
 }
@@ -72,7 +72,3 @@ public class TestDrawGizmoMethod
 (7): ReSharper Warning: Incorrect type parameters
 (8): ReSharper Warning: Incorrect method parameters. Expected '(Transform arg2, GizmoType arg3)'
 (9): ReSharper Warning: Incorrect method parameters. Expected '(Transform arg1, GizmoType arg2)'
-(10): ReSharper Unity Implicitly Used Identifier: 
-(11): UnityCodeInsights: 
-(12): ReSharper Unity Implicitly Used Identifier: 
-(13): UnityCodeInsights: 

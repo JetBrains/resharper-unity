@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
 {
     [TestUnity]
-    public class AttributedMethodSignatureAnalyzerTests : CSharpHighlightingTestBase<IUnityHighlighting>
+    public class AttributedMethodSignatureAnalyzerTests : CSharpHighlightingTestBase<IUnityAnalyzerHighlighting>
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis\AttributedMethodSignatures";
 

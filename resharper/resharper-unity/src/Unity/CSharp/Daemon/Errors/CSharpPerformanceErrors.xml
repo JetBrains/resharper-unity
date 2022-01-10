@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Errors language="C#" configurableSeverityImplementationLanguage="CSHARP"
-        baseClass="UnityPerformanceHighlightingBase">
+        baseClass="CSharpUnityHighlightingBase, IUnityPerformanceHighlighting">
 
   <Usings>
     JetBrains.ReSharper.Psi.CSharp;
@@ -10,7 +10,7 @@
     JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
   </Usings>
-  
+
   <SeverityConfiguration>
     <Group name="UnityHighlightingGroupIds.UnityPerformance">
       <Tag externalName="InefficientMultiplicationOrderWarning.HIGHLIGHTING_ID"
@@ -88,5 +88,5 @@
     <Range>ReferenceExpression.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.CAMERA_MAIN"/>
   </Warning>
-  
+
 </Errors>

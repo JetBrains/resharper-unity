@@ -61,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         [StaticSeverityHighlighting(Severity.INFO, typeof(HighlightingGroupIds.GutterMarks),
             OverlapResolve = OverlapResolveKind.NONE, ShowToolTipInStatusBar = false)]
-        private class UnityEventFunctionInheritanceMarkOnGutter : InheritanceMarkOnGutter, IUnityHighlighting
+        private class UnityEventFunctionInheritanceMarkOnGutter : InheritanceMarkOnGutter, IUnityIndicatorHighlighting
         {
             public UnityEventFunctionInheritanceMarkOnGutter(IDeclaration inheritor, ITypeMember typeMember)
                 : base(inheritor, typeMember)

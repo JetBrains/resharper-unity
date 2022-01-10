@@ -51,6 +51,14 @@
     <Compile Update="CSharp\Daemon\Errors\CSharpPerformanceErrors.generated.cs">
       <DependentUpon>CSharpPerformanceErrors.xml</DependentUpon>
     </Compile>
+    <ErrorsGen Include="CSharp\Daemon\Errors\GutterMarkInfos.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
+      <OutputFile>CSharp/Daemon/Errors/GutterMarkInfos.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="CSharp\Daemon\Errors\GutterMarkInfos.generated.cs">
+      <DependentUpon>GutterMarkInfos.xml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="AsmDef">

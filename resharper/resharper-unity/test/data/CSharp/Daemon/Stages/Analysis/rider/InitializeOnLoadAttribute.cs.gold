@@ -8,11 +8,10 @@ public class MissingConstructor
 [InitializeOnLoad]
 public class WithStaticConstructor
 {
-    static |WithStaticConstructor|(1)()
+    static WithStaticConstructor()
     {
     }
 }
 
 ---------------------------------------------------------
 (0): ReSharper Dead Code: 'InitializeOnLoad' attribute is redundant when static constructor is missing
-(1): UnityCodeInsights: 

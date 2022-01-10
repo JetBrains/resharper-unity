@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         {
             return (!(highlighting is IHighlightingTestBehaviour highlightingTestBehaviour) ||
                     !highlightingTestBehaviour.IsSuppressed) &&
-                   highlighting is UnityPerformanceHighlightingBase && !(highlighting is UnityPerformanceCriticalCodeLineMarker);
+                   highlighting is IUnityPerformanceHighlighting && !(highlighting is UnityPerformanceCriticalCodeLineMarker);
         }
     }
 

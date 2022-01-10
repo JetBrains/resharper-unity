@@ -1,26 +1,20 @@
 ﻿using System;
 using UnityEngine;
 
-public class ||Test|(0)|(1) : MonoBehaviour
+public class Test : MonoBehaviour
 {
-    [SerializeField] public int ||NotRedundant1|(2)|(3);  // OK to be explicit
-    [SerializeField] private int ||NotRedundant2|(4)|(5);
-    [|SerializeField|(6)] [NonSerialized] public int Redundant1;
-    [|SerializeField|(7)] [NonSerialized] private int Redundant1;
-    [|SerializeField|(8)] private readonly int ReadonlyFieldsAreNotSerialized;
-    [|SerializeField|(9)] private const int ConstFieldsAreNotSerialized;
-    [|SerializeField|(10)] private static int StaticFieldsAreNotSerialized;
+    [SerializeField] public int NotRedundant1;  // OK to be explicit
+    [SerializeField] private int NotRedundant2;
+    [|SerializeField|(0)] [NonSerialized] public int Redundant1;
+    [|SerializeField|(1)] [NonSerialized] private int Redundant1;
+    [|SerializeField|(2)] private readonly int ReadonlyFieldsAreNotSerialized;
+    [|SerializeField|(3)] private const int ConstFieldsAreNotSerialized;
+    [|SerializeField|(4)] private static int StaticFieldsAreNotSerialized;
 }
 
 ---------------------------------------------------------
-(0): ReSharper Unity Implicitly Used Identifier: 
-(1): UnityCodeInsights: 
-(2): ReSharper Unity Implicitly Used Identifier: 
-(3): UnityCodeInsights: 
-(4): ReSharper Unity Implicitly Used Identifier: 
-(5): UnityCodeInsights: 
-(6): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(7): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(8): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(9): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(10): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(0): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(1): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(2): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(3): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(4): ReSharper Dead Code: Redundant 'SerializeField' attribute

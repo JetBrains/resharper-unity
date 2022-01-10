@@ -1,6 +1,7 @@
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.TextControl.DocumentMarkup.LineMarkers;
@@ -13,9 +14,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         AttributeId = PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER,
         ShowToolTipInStatusBar = false,
         ToolTipFormatString = MESSAGE)]
-    public class UnityPerformanceCriticalCodeLineMarker : UnityPerformanceHighlightingBase, IHighlighting, IActiveLineMarkerInfo
+    public class UnityPerformanceCriticalCodeLineMarker : CSharpUnityHighlightingBase, IUnityPerformanceHighlighting, IHighlighting, IActiveLineMarkerInfo
     {
-        public const string MESSAGE = "Performance critical context";
+        private const string MESSAGE = "Performance critical context";
 
         private readonly DocumentRange myRange;
 

@@ -8,17 +8,13 @@ public class Test01
     [|FormerlySerializedAs("myStatic")|(2)] private static int myValue4 = 42;
 }
 
-public class ||Test02|(3)|(4) : MonoBehaviour
+public class Test02 : MonoBehaviour
 {
-    [|FormerlySerializedAs("myValue")|(5), FormerlySerializedAs("foo")] public int ||myValue|(6)|(7);
+    [|FormerlySerializedAs("myValue")|(3), FormerlySerializedAs("foo")] public int myValue;
 }
 
 ---------------------------------------------------------
 (0): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
 (1): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
 (2): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
-(3): ReSharper Unity Implicitly Used Identifier: 
-(4): Unity Gutter Icon: Unity script
-(5): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
-(6): ReSharper Unity Implicitly Used Identifier: 
-(7): Unity Gutter Icon: This field is initialized from Inspector
+(3): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute

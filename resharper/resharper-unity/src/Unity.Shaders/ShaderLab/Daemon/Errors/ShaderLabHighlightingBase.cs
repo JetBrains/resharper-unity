@@ -1,8 +1,6 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
-
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors
+﻿namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors
 {
-    public abstract class ShaderLabHighlightingBase : IUnityHighlighting
+    public abstract class ShaderLabHighlightingBase
     {
         // ErrorsGen makes IsValid override if we specify a base class
         public abstract bool IsValid();

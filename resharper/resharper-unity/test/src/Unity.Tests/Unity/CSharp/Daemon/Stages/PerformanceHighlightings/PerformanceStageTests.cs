@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.PerformanceHighlightings
 {
     [TestUnity]
-    public class PerformanceStageTest : UnityGlobalHighlightingsStageTestBase<UnityPerformanceHighlightingBase>
+    public class PerformanceStageTest : UnityGlobalHighlightingsStageTestBase<IUnityPerformanceHighlighting>
     {
         protected override string RelativeTestDataRoot => @"CSharp\Daemon\Stages\PerformanceCriticalCodeAnalysis\";
 

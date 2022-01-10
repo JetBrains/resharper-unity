@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
 {
     [TestUnity]
-    public class HiddenEventFunctionAnalyzerTests : CSharpHighlightingTestWithProductDependentGoldBase<IUnityHighlighting>
+    public class HiddenEventFunctionAnalyzerTests : CSharpHighlightingTestWithProductDependentGoldBase<IUnityAnalyzerHighlighting>
     {
         protected override string RelativeTestDataRoot => @"CSharp\Daemon\Stages\Analysis";
 

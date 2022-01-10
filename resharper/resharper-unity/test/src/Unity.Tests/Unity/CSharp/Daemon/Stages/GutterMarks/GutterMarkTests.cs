@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.GutterMarks
 {
     [TestUnity]
-    public class GutterMarkTests : CSharpHighlightingTestWithProductDependentGoldBase<IUnityHighlighting>
+    public class GutterMarkTests : CSharpHighlightingTestWithProductDependentGoldBase<IUnityIndicatorHighlighting>
     {
         protected override string RelativeTestDataRoot => @"CSharp\Daemon\Stages\GutterMark";
 

@@ -21,7 +21,6 @@
       </Tag>
     </Group>
   </SeverityConfiguration>
-  
 
   <Warning name="SharedStaticUnmanagedType" configurableSeverity="Unity.SharedStaticUnmanagedType">
     <Parameter type="ITreeNode" name="node" />

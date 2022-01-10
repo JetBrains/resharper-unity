@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
         AttributeId = UnityHighlightingAttributeIds.UNITY_IMPLICITLY_USED_IDENTIFIER_ATTRIBUTE,
         Languages = CSharpLanguage.Name,
         OverlapResolve = OverlapResolveKind.NONE)]
-    public class UnityImplicitlyUsedIdentifierHighlighting : IHighlighting, IUnityHighlighting
+    public class UnityImplicitlyUsedIdentifierHighlighting : IHighlighting, IUnityIndicatorHighlighting
     {
         private readonly DocumentRange myDocumentRange;
 

@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
             IContextBoundSettingsStore boundSettingsStore)
         {
-            return highlighting is IUnityHighlighting
+            return highlighting is IUnityAnalyzerHighlighting
                    && base.HighlightingPredicate(highlighting, psiSourceFile, boundSettingsStore);
         }
 
