@@ -159,9 +159,6 @@
     <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\UnityGlobalHighlightingsStageTestBase.cs">
       <Link>UnityRider\Daemon\Stages\UnityGlobalHighlightingsStageTestBase.cs</Link>
     </Compile>
-    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\UnityHighlightings\UnityHighlightingStageTest.cs">
-      <Link>UnityRider\Daemon\Stages\UnityHighlightings\UnityHighlightingStageTest.cs</Link>
-    </Compile>
     <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\UsageChecking\UsageInspectionsSuppressorTest.cs">
       <Link>UnityRider\Daemon\UsageChecking\UsageInspectionsSuppressorTest.cs</Link>
     </Compile>
