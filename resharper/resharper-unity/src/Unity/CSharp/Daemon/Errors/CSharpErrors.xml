@@ -9,6 +9,7 @@
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
+    JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
   </Usings>
 
   <!-- Register the static severity groups. This is mostly used in grouping items in SWEA results.
