@@ -3,7 +3,6 @@ using System.Linq;
 using JetBrains.DocumentManagers;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Tests.Framework;
-using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TextControl;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;

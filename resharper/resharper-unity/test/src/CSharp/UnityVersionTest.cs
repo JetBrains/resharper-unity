@@ -12,26 +12,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         {
             var marketingVersion = "2018.2.13p1";
             var realVersion = Version.Parse("2018.2.13.128001");
-            Assert.AreEqual(realVersion, Unity.UnityVersion.Parse(marketingVersion));
-            Assert.AreEqual(marketingVersion, Unity.UnityVersion.VersionToString(realVersion));
+            Assert.AreEqual(realVersion, UnityEditorIntegration.UnityVersion.Parse(marketingVersion));
+            Assert.AreEqual(marketingVersion, UnityEditorIntegration.UnityVersion.VersionToString(realVersion));
         }
-        
+
         [Test]
         public void CustomUnityVersionConversionTest()
         {
             var marketingVersion = "2017.2.1f1-CustomPostfix";
             var realVersion = Version.Parse("2017.2.1.118001");
-            Assert.AreEqual(realVersion, Unity.UnityVersion.Parse(marketingVersion));
-            Assert.AreEqual("2017.2.1f1", Unity.UnityVersion.VersionToString(realVersion));
+            Assert.AreEqual(realVersion, UnityEditorIntegration.UnityVersion.Parse(marketingVersion));
+            Assert.AreEqual("2017.2.1f1", UnityEditorIntegration.UnityVersion.VersionToString(realVersion));
         }
-        
+
         [Test]
         public void VersionToStringTest()
         {
             var marketingVersion = "2018.2.13";
             var realVersion = Version.Parse("2018.2.13.0");
-            
-            Assert.AreEqual(marketingVersion, Unity.UnityVersion.VersionToString(realVersion));
+
+            Assert.AreEqual(marketingVersion, UnityEditorIntegration.UnityVersion.VersionToString(realVersion));
         }
 
         [Test]
@@ -39,10 +39,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         {
             var mVersions = new[] {"2018.2.13a20",  "2018.2.13b1", "2018.2.13b3", "2018.2.13b10", "2018.2.13b20", "2018.2.13f1","2018.2.13f20", "2018.2.13p1", "2018.2.13p20"};
             var expected = new[] {"2018.2.13", "2018.2.13a20",  "2018.2.13b1", "2018.2.13b3", "2018.2.13b10", "2018.2.13b20", "2018.2.13f1","2018.2.13f20", "2018.2.13p1", "2018.2.13p20"};
-            var actualVersions = mVersions.Select(Unity.UnityVersion.Parse).ToList();
+            var actualVersions = mVersions.Select(UnityEditorIntegration.UnityVersion.Parse).ToList();
             actualVersions.Add(Version.Parse("2018.2.13"));
             actualVersions = actualVersions.OrderBy().ToList();
-            var actual = actualVersions.Select(Unity.UnityVersion.VersionToString).ToArray(); // Select preserves Ordering
+            var actual = actualVersions.Select(UnityEditorIntegration.UnityVersion.VersionToString).ToArray(); // Select preserves Ordering
             Assert.AreEqual(expected, actual);
         }
     }

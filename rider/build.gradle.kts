@@ -61,12 +61,18 @@ val backend = BackendPaths(project, logger, repoRoot, productVersion).apply {
 val dotnetDllFiles = files(
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.dll",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.pdb",
+    "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.dll",
+    "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.pdb",
+    "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Shaders.dll",
+    "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Shaders.pdb",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.dll",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.pdb",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.Rider.dll",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.Rider.pdb",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.dll",
-    "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.pdb"
+    "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.pdb",
+    "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.Rider.dll",
+    "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.Rider.pdb"
 )
 
 val debuggerDllFiles = files(
@@ -450,9 +456,9 @@ tasks {
             }
         }
         val releaseNotes = """New in $pluginVersion
-                            
+
 $changelogNotes
-                            
+
 See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.""".let {
             if (isWindows) {
                 it.replace("&quot;", "\\\"")
@@ -466,7 +472,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         // We can't have HTML encoded entities (e.g. &quot;)
         if (releaseNotes.contains(";")) throw GradleException("Release notes cannot semi-colon")
 
-        setNuspecFile(File(backend.backendRoot, "resharper-unity/src/resharper-unity.resharper.nuspec").canonicalPath)
+        setNuspecFile(File(backend.backendRoot, "resharper-unity/src/Unity/resharper-unity.resharper.nuspec").canonicalPath)
         setDestinationDir(File(backend.backendRoot, "build/distributions/$buildConfiguration").canonicalPath)
         packageAnalysis = false
         packageVersion = version
@@ -485,7 +491,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         outputs.upToDateWhen { false }
         val buildDir = File(repoRoot, "resharper/build")
         val testDll =
-            File(buildDir, "resharper-json/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.Tests.dll")
+            File(buildDir, "Json.Tests/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.Tests.dll")
         testAssemblies = listOf(testDll)
     }
 
@@ -495,7 +501,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         outputs.upToDateWhen { false }
         val buildDir = File(repoRoot, "resharper/build")
         val testDll =
-            File(buildDir, "resharper-yaml/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.Tests.dll")
+            File(buildDir, "Yaml.Tests/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.Tests.dll")
         testAssemblies = listOf(testDll)
     }
 

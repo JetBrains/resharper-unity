@@ -3,14 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "resharper-unity", "resharper-unity\src\resharper-unity.csproj", "{DF42F23E-46F3-4798-8B16-024619FA5E46}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Unity", "resharper-unity\src\Unity\Unity.csproj", "{DF42F23E-46F3-4798-8B16-024619FA5E46}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests.resharper-unity", "resharper-unity\test\src\tests.resharper-unity.csproj", "{849CDA2E-35FC-49A8-A755-C3216B72BAB9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rider-unity", "resharper-unity\src\rider-unity.csproj", "{D8A177C3-8ADF-4B53-AA48-BB5DC1150869}"
-	ProjectSection(ProjectDependencies) = postProject
-		{DF42F23E-46F3-4798-8B16-024619FA5E46} = {DF42F23E-46F3-4798-8B16-024619FA5E46}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests.rider-unity", "resharper-unity\test\src\tests.rider-unity.csproj", "{31338488-0C08-43C2-884F-A38485E2FA2F}"
 EndProject
@@ -30,9 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "gradle-launcher", "gradle-l
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Debugger", "Debugger", "{D61F53F1-F209-4313-9FF2-B1DBD286BE11}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "resharper-yaml", "resharper-yaml\src\resharper-yaml.csproj", "{696CBCCC-09AB-42C1-B139-5BCD8EC2FDD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaml", "resharper-yaml\src\Yaml\Yaml.csproj", "{696CBCCC-09AB-42C1-B139-5BCD8EC2FDD7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests.resharper-yaml", "resharper-yaml\test\src\tests.resharper-yaml.csproj", "{653E0090-709A-4DB5-A35A-CE1F954E8362}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaml.Tests", "resharper-yaml\test\src\Yaml.Tests\Yaml.Tests.csproj", "{653E0090-709A-4DB5-A35A-CE1F954E8362}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EditorPlugin.5.5.0f3", "..\unity\EditorPlugin\EditorPlugin.5.5.0f3.csproj", "{8970E10C-ADA7-4041-9A98-59AFABF3ED98}"
 EndProject
@@ -51,6 +46,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Json.Tests", "resharper-json\test\src\Json.Tests\Json.Tests.csproj", "{0F66CA51-1FCE-4E8B-8AF4-742C46553E2A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Json.Rider", "resharper-json\src\Json.Rider\Json.Rider.csproj", "{5CF16E9D-4EFB-46CA-81B5-5502814C4C91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaml.Rider", "resharper-yaml\src\Yaml.Rider\Yaml.Rider.csproj", "{1FBDC32F-0A3A-4A3C-BEC0-9129A03B3652}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.VisualStudio", "resharper-unity\src\Unity.VisualStudio\Unity.VisualStudio.csproj", "{15A703B1-1A74-4A67-9BD3-FB64368FAA05}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Rider", "resharper-unity\src\Unity.Rider\Unity.Rider.csproj", "{5119DFB7-E869-419E-9BB4-12C9F51F0BC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Shaders", "resharper-unity\src\Unity.Shaders\Unity.Shaders.csproj", "{84DFE3E6-2303-4D71-8CA5-819D66DE0912}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -71,10 +74,6 @@ Global
 		{849CDA2E-35FC-49A8-A755-C3216B72BAB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{849CDA2E-35FC-49A8-A755-C3216B72BAB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{849CDA2E-35FC-49A8-A755-C3216B72BAB9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D8A177C3-8ADF-4B53-AA48-BB5DC1150869}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D8A177C3-8ADF-4B53-AA48-BB5DC1150869}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D8A177C3-8ADF-4B53-AA48-BB5DC1150869}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D8A177C3-8ADF-4B53-AA48-BB5DC1150869}.Release|Any CPU.Build.0 = Release|Any CPU
 		{31338488-0C08-43C2-884F-A38485E2FA2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{31338488-0C08-43C2-884F-A38485E2FA2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31338488-0C08-43C2-884F-A38485E2FA2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -135,6 +134,22 @@ Global
 		{5CF16E9D-4EFB-46CA-81B5-5502814C4C91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CF16E9D-4EFB-46CA-81B5-5502814C4C91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CF16E9D-4EFB-46CA-81B5-5502814C4C91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FBDC32F-0A3A-4A3C-BEC0-9129A03B3652}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FBDC32F-0A3A-4A3C-BEC0-9129A03B3652}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FBDC32F-0A3A-4A3C-BEC0-9129A03B3652}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FBDC32F-0A3A-4A3C-BEC0-9129A03B3652}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15A703B1-1A74-4A67-9BD3-FB64368FAA05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15A703B1-1A74-4A67-9BD3-FB64368FAA05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15A703B1-1A74-4A67-9BD3-FB64368FAA05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15A703B1-1A74-4A67-9BD3-FB64368FAA05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5119DFB7-E869-419E-9BB4-12C9F51F0BC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5119DFB7-E869-419E-9BB4-12C9F51F0BC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5119DFB7-E869-419E-9BB4-12C9F51F0BC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5119DFB7-E869-419E-9BB4-12C9F51F0BC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84DFE3E6-2303-4D71-8CA5-819D66DE0912}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84DFE3E6-2303-4D71-8CA5-819D66DE0912}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84DFE3E6-2303-4D71-8CA5-819D66DE0912}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84DFE3E6-2303-4D71-8CA5-819D66DE0912}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -154,11 +169,14 @@ Global
 		{53672050-AE7E-4ED9-B1A1-5604536DC42C} = {D61F53F1-F209-4313-9FF2-B1DBD286BE11}
 		{4E49CD68-6BA2-4765-80AC-D82537A0996B} = {D61F53F1-F209-4313-9FF2-B1DBD286BE11}
 		{D6E7087B-D314-4609-8024-AE5F163C8605} = {D61F53F1-F209-4313-9FF2-B1DBD286BE11}
-		{D8A177C3-8ADF-4B53-AA48-BB5DC1150869} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
 		{31338488-0C08-43C2-884F-A38485E2FA2F} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
 		{1F26BB39-DC5A-4FCD-9E3A-6BD3C6A1C88B} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
 		{0F66CA51-1FCE-4E8B-8AF4-742C46553E2A} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
 		{5CF16E9D-4EFB-46CA-81B5-5502814C4C91} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
+		{1FBDC32F-0A3A-4A3C-BEC0-9129A03B3652} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
+		{15A703B1-1A74-4A67-9BD3-FB64368FAA05} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
+		{5119DFB7-E869-419E-9BB4-12C9F51F0BC9} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
+		{84DFE3E6-2303-4D71-8CA5-819D66DE0912} = {9C7433E8-E8C8-4EAA-ADBC-A0B635734CF1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F132919A-F861-4C4F-923A-C956B82D9EE6}

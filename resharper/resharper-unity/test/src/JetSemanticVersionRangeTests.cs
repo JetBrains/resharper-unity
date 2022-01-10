@@ -1,4 +1,4 @@
-using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.VersionUtils;
 using JetBrains.Util;
 using NUnit.Framework;
 

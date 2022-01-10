@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>JetBrains.Unity</id>
+    <title>Unity Support</title>
+    <version>$version$</version>
+    <authors>JetBrains</authors>
+    <owners>JetBrains</owners>
+    <summary>ReSharper support for the Unity engine</summary>
+    <description>Adds support for the Unity engine.
+
+- Code completion of event function declarations in a class.
+- Use Generate Code to create event functions, with parameters, or start typing for automatic completion.
+- Highlights Unity event functions and serializable fields and marks as implicitly used by Unity.
+- Supports Unity API 5.0 - 2020.1, plus undocumented functions.
+- Inspections, Quick Fixes and Context Actions for Unity specific issues, with documented explanations.
+- Performance indicators to avoid known code patterns that affect performance.
+- Parse class and method usage from scene, prefab and assets.
+- Support for ShaderLab and Assembly Definition files.
+- Automatically connect debugger to Unity editor.
+- Lists and debugs external players.
+- Extra Unity data in debugger views.
+- Play/pause/step directly from Rider.
+- View Unity console in Rider, with parsed stack traces and text filter.
+- Run Unity editor tests directly from Rider.
+- Unity Explorer to view project as shown in Unity's Assets view, with Packages.
+- Navigate to external Unity documentation.
+- Correctly updates .meta files.
+- Code completion, rename and find usages for "magic strings" in method calls.
+- Automatically adds FormerlySerializedAs attribute when renaming fields.
+- Automatically sets Unity projects to C# 4 or C# 6. No more suggestions for features that won't compile!
+- Highlights UnityEngine.Color and Color32. Edit via colour palette quick fix.
+- Unity specific file and live templates.
+- And much more!
+</description>
+    <releaseNotes>$ReleaseNotes$</releaseNotes>
+    <projectUrl>https://github.com/JetBrains/resharper-unity</projectUrl>
+    <licenseUrl>https://raw.githubusercontent.com/JetBrains/resharper-unity/master/license.txt</licenseUrl>
+    <iconUrl>http://resharper-plugins.jetbrains.com/Content/Images/packageReSharper.png</iconUrl>
+    <copyright>Copyright 2022 JetBrains, s.r.o</copyright>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <dependencies>
+      <dependency id="Wave" version="[221.0]" />
+    </dependencies>
+    <tags>resharper unity unity3d</tags>
+  </metadata>
+  <files>
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.pdb" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.Shaders.dll" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.Shaders.pdb" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.VisualStudio.dll" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.VisualStudio.pdb" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Json.dll" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Json.pdb" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Yaml.dll" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Yaml.pdb" target="DotFiles" />
+    <file src="annotations\UnityEngine*.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations" />
+    <file src="annotations\UnityEditor*.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations" />
+    <file src="..\..\..\..\common\dictionaries\*.dic" target="DotFiles\Extensions\JetBrains.Unity\dictionaries" />
+    <file src="..\..\..\..\common\dictionaries\*.aff" target="DotFiles\Extensions\JetBrains.Unity\dictionaries" />
+  </files>
+</package>

@@ -35,6 +35,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
     {
     }
 
+    // Note that this zone doesn't require ILanguageHlslSupportZone, because we need to be disable it separately from
+    // the other required zones
+    [ZoneDefinition]
+    public interface IUnityTestsZone : IZone,
+#if RIDER
+        IRequire<JetBrains.Rider.Backend.Env.IRiderPlatformZone>,
+        IRequire<JetBrains.ReSharper.Plugins.Unity.Rider.IUnityRiderZone>,
+#else
+        IRequire<JetBrains.ReSharper.Plugins.Unity.VisualStudio.IUnityVisualStudioZone>,
+#endif
+        IRequire<PsiFeatureTestZone>,
+        IRequire<ILanguageJsonNewZone>,
+        IRequire<ILanguageYamlZone>
+    {
+    }
+
     // Activate the zones we require for shell/solution containers. This is normally handled by product specific zone
     // activators. But we don't have any product environment zones, so these activators aren't loaded, and we need to
     // activate pretty much everything we need.
@@ -45,13 +61,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
     // Note that not all Rider components can be tested, as many of them require the protocol. It appears that we can't
     // activate IResharperHost* zones
     [ZoneActivator]
-    public class UnityTestZonesActivator : IActivate<PsiFeatureTestZone>,
-#if RIDER
-        IActivate<JetBrains.Rider.Backend.Env.IRiderPlatformZone>,
-#endif
-        IActivateDynamic<ILanguageHlslSupportZone>,
-        IActivate<ILanguageJsonNewZone>,
-        IActivate<ILanguageYamlZone>
+    public class UnityTestZonesActivator : IActivate<IUnityTestsZone>,
+        IActivateDynamic<ILanguageHlslSupportZone>
     {
         bool IActivateDynamic<ILanguageHlslSupportZone>.ActivatorEnabled() => !PlatformUtil.IsRunningOnMono;
     }

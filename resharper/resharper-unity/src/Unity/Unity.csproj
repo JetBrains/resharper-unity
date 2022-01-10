@@ -1,0 +1,107 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>JetBrains.ReSharper.Plugins.Unity</AssemblyName>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
+    <!-- TODO: Fix up the .psi files so we don't get the obsolete warnings -->
+    <NoWarn>0618</NoWarn>
+    <LangVersion>9</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\..\..\sign.snk</AssemblyOriginatorKeyFile>
+    <Company>JetBrains</Company>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;$(CommandLineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;$(CommandLineConstants)</DefineConstants>
+  </PropertyGroup>
+  <!-- ********** -->
+  <ItemGroup Label="C#">
+    <ErrorsGen Include="CSharp\Daemon\Errors\CSharpErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
+      <OutputFile>CSharp\Daemon\Errors\CSharpErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="CSharp\Daemon\Errors\CSharpErrors.generated.cs">
+      <DependentUpon>CSharpErrors.xml</DependentUpon>
+    </Compile>
+    <ErrorsGen Include="CSharp\Daemon\Errors\CommonCodeErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
+      <OutputFile>CSharp\Daemon\Errors\CommonCodeErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="CSharp\Daemon\Errors\CommonCodeErrors.generated.cs">
+      <DependentUpon>CommonCodeErrors.xml</DependentUpon>
+    </Compile>
+    <ErrorsGen Include="CSharp\Daemon\Errors\BurstErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
+      <OutputFile>CSharp\Daemon\Errors\BurstErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="CSharp\Daemon\Errors\BurstErrors.generated.cs">
+      <DependentUpon>BurstErrors.xml</DependentUpon>
+    </Compile>
+    <ErrorsGen Include="CSharp\Daemon\Errors\CSharpPerformanceErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
+      <OutputFile>CSharp\Daemon\Errors\CSharpPerformanceErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="CSharp\Daemon\Errors\CSharpPerformanceErrors.generated.cs">
+      <DependentUpon>CSharpPerformanceErrors.xml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <!-- ********** -->
+  <ItemGroup Label="AsmDef">
+    <ErrorsGen Include="AsmDef\Daemon\Errors\AsmDefErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors</Namespace>
+      <OutputFile>AsmDef\Daemon\Errors\AsmDefErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="AsmDef\Daemon\Errors\AsmDefErrors.generated.cs">
+      <DependentUpon>AsmDefErrors.xml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <!-- ********** -->
+  <ItemGroup Label="Resources">
+    <EmbeddedResource Include="UnityEditorIntegration\Api\api.xml" />
+    <None Remove="api.xml" />
+    <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatterns.xaml" />
+    <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatternsWithRegions.xaml" />
+    <EmbeddedResource Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdditionalFileLayoutResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Remove="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
+    <EmbeddedResource Include="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
+  </ItemGroup>
+  <!-- ********** -->
+  <ItemGroup Label="Live templates">
+    <LiveTemplate Include="Templates\**\*.md">
+      <OutputFile>Templates\templates.generated.dotSettings</OutputFile>
+      <ReadmeFile>Templates\README.md</ReadmeFile>
+    </LiveTemplate>
+    <EmbeddedResource Include="Templates\templates.generated.dotSettings">
+      <LogicalName>JetBrains.ReSharper.Plugins.Unity.Templates.templates.dotSettings</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <!-- ********** -->
+  <ItemGroup Label="References">
+    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="3.1.0" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
+    <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
+    <ProjectReference Include="..\..\..\resharper-json\src\Json\Json.csproj" />
+    <ProjectReference Include="..\..\..\resharper-yaml\src\Yaml\Yaml.csproj" />
+  </ItemGroup>
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" />
+</Project>

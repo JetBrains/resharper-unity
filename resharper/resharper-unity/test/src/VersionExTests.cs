@@ -1,5 +1,5 @@
 using System;
-using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.VersionUtils;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests

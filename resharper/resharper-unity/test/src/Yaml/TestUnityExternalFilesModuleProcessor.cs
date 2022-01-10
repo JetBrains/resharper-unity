@@ -5,8 +5,8 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi.Modules;
-using JetBrains.ReSharper.Plugins.Unity.Packages;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Yaml

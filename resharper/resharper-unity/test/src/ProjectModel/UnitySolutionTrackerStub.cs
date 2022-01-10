@@ -1,7 +1,7 @@
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.ProjectModel
 {

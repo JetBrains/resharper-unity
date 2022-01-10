@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.Impl;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.TestFramework;
@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
         protected override string RelativeTestDataPath => @"CSharp\Daemon\UsageChecking";
 
         protected virtual bool DisableYamlParsing() => false;
-        
+
         protected override void DoTest(Lifetime lifetime, IProject project)
         {
             var swea = SolutionAnalysisService.GetInstance(Solution);
