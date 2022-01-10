@@ -1,15 +1,13 @@
-using JetBrains.Application.Settings;
-using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Highlightings;
-using JetBrains.ReSharper.Psi;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Burst
 {
     [TestUnity]
-    public class BurstStageTest : UnityGlobalHighlightingsStageTestBase
+    public class BurstStageTest : UnityGlobalHighlightingsStageTestBase<IBurstHighlighting>
     {
-        protected override string RelativeTestDataRoot => @"CSharp\Daemon\Stages\BurstCodeAnalysis\";
+        protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\BurstCodeAnalysis\";
+
         [Test] public void SmartMarkingTests() { DoNamedTest(); }
         [Test] public void PrimitivesTests() { DoNamedTest(); }
         [Test] public void ReferenceExpressionTests() { DoNamedTest(); }
@@ -31,9 +29,5 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Burst
         // Bug - youtrack
         // Issue - github.com/jetbrains/resharper-unity
         [Test] public void IssueRider2181() { DoNamedTest(); }
-        protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile file, IContextBoundSettingsStore settingsStore)
-        {
-            return highlighting is IBurstHighlighting;
-        }
     }
 }

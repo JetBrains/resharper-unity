@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
@@ -17,10 +18,10 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages
 {
     [Category("Daemon"), Category("PerformanceCriticalCode")]
-    public abstract class UnityGlobalHighlightingsStageTestBase : BaseTestWithSingleProject
+    public abstract class UnityGlobalHighlightingsStageTestBase<THighlighting> : BaseTestWithSingleProject
     {
-        protected sealed override string RelativeTestDataPath=> $@"{RelativeTestDataRoot}\{Utils.ProductGoldSuffix}";
-        protected abstract string RelativeTestDataRoot { get; }
+        protected override string RelativeTestDataPath => $@"{RelativeTestDataRoot}\{Utils.ProductGoldSuffix}";
+        protected virtual string RelativeTestDataRoot => throw new InvalidOperationException();
 
         protected override void DoTest(Lifetime lifetime, IProject project)
         {
@@ -56,7 +57,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages
             }
         }
 
-        protected abstract bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile file,
-            IContextBoundSettingsStore settingsStore);
+        protected virtual bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile file,
+                                                     IContextBoundSettingsStore settingsStore)
+        {
+            return highlighting is THighlighting;
+        }
     }
 }
