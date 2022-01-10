@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Rider
+namespace JetBrains.ReSharper.Plugins.Tests.UnityRiderTestComponents
 {
     [SolutionComponent]
     public class FrontendBackendHostStub : FrontendBackendHost

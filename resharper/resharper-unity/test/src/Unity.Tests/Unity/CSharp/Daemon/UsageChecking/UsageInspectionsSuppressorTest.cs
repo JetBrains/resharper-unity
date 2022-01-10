@@ -2,7 +2,7 @@ using System;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Tests.TestFramework;
-using JetBrains.ReSharper.Plugins.Tests.Unity.Yaml;
+using JetBrains.ReSharper.Plugins.Tests.UnityTestComponents;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using NUnit.Framework;
 

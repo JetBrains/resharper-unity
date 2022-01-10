@@ -1,0 +1,185 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Rider.Tests</AssemblyName>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Tests</RootNamespace>
+    <LangVersion>9</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <JetTestProject>True</JetTestProject>
+    <!-- Force 32 bit x86 for Windows as we need to load a specific build of the Cpp assembly, and we have X86 defined
+         in the app.config. Use OS default for other platforms as Mono can't run Cpp. Mac only runs 64 bit processes -->
+    <PlatformTarget Condition="'$([MSBuild]::IsOsPlatform(Windows))' == 'True'">X86</PlatformTarget>
+    <PlatformTarget Condition="'$([MSBuild]::IsOsPlatform(Windows))' != 'True'">X64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;RIDER;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;$(CommandLineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;RIDER;$(CommandLineConstants)</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="WindowsBase" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="NUnit.Console" Version="3.10.0" />
+    <PackageReference Include="Lib.Harmony" Version="2.0.0.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Unity\Unity.csproj" />
+    <ProjectReference Include="..\..\..\src\Unity.Shaders\Unity.Shaders.csproj" />
+    <ProjectReference Include="..\..\..\src\Unity.Rider\Unity.Rider.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Unity.Tests\TestFramework\BaseScopeProviderTest.cs">
+      <Link>TestFramework\BaseScopeProviderTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\TestFramework\DrivenTestBase.cs">
+      <Link>TestFramework\DrivenTestBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\TestFramework\Intentions\ContextActionAvailabilityAfterSwaTestBase.cs">
+      <Link>TestFramework\Intentions\ContextActionAvailabilityAfterSwaTestBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\TestFramework\Intentions\ContextActionExecuteAfterSwaTestBase.cs">
+      <Link>TestFramework\Intentions\ContextActionExecuteAfterSwaTestBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\TestFramework\Intentions\CSharpQuickFixAfterSwaTestBase.cs">
+      <Link>TestFramework\Intentions\CSharpQuickFixAfterSwaTestBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\TestFramework\Intentions\QuickFixAfterSwaAvailabilityTestBase.cs">
+      <Link>TestFramework\Intentions\QuickFixAfterSwaAvailabilityTestBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\TestFramework\QuickDocTestBase.cs">
+      <Link>TestFramework\QuickDocTestBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\TestFramework\RenameTestBase.cs">
+      <Link>TestFramework\RenameTestBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\TestFramework\UsageCheckBaseTest.cs">
+      <Link>TestFramework\UsageCheckBaseTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\UnityTestComponents\AnnotationsLoader.cs">
+      <Link>UnityRiderTestComponents\AnnotationsLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\UnityTestComponents\TestableAssetSerializationMode.cs">
+      <Link>UnityRiderTestComponents\TestableAssetSerializationMode.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\AttributedMethodSignatureAnalyzerTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\AttributedMethodSignatureAnalyzerTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\CommonProblemAnalyzersTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\CommonProblemAnalyzersTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\ComponentPropertyAccessProblemAnalyzerTest.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\ComponentPropertyAccessProblemAnalyzerTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\CSharpHighlightingTestBase.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\CSharpHighlightingTestBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\DrawGizmoAttributeProblemAnalyzerTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\DrawGizmoAttributeProblemAnalyzerTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\ExpectedComponentInStringLiteralArgumentTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\ExpectedComponentInStringLiteralArgumentTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\ExpectedScriptableObjectInStringLiteralArgumentTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\ExpectedScriptableObjectInStringLiteralArgumentTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\ExplicitTagStringComparisonWarningTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\ExplicitTagStringComparisonWarningTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\FormerlySerializedAsAttributeProblemAnalyzerTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\FormerlySerializedAsAttributeProblemAnalyzerTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\HiddenEventFunctionAnalyzerTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\HiddenEventFunctionAnalyzerTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\IncorrectMonoBehaviourInstantiationWarningTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\IncorrectMonoBehaviourInstantiationWarningTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\IncorrectScriptableObjectInstantiationWarningTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\IncorrectScriptableObjectInstantiationWarningTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\InefficientCameraMainUsageWarningTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\InefficientCameraMainUsageWarningTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\PropertyDrawerOnGUIBaseCallWarningTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\PropertyDrawerOnGUIBaseCallWarningTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\RedundantAttributeOnTargetAnalyzerTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\RedundantAttributeOnTargetAnalyzerTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\RedundantEventFunctionWarningTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\RedundantEventFunctionWarningTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\RedundantHideInInspectorAttributeAnalyzerTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\RedundantHideInInspectorAttributeAnalyzerTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\RedundantInitializeOnLoadAttributeAnalyzerTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\RedundantInitializeOnLoadAttributeAnalyzerTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\RedundantSerializeFieldAttributeAnalyzerTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\RedundantSerializeFieldAttributeAnalyzerTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\SyncVarUsageErrorTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\SyncVarUsageErrorTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\UnityEventFunctionAnalyzerTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\UnityEventFunctionAnalyzerTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\UnityNullCoalescingWarningTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\UnityNullCoalescingWarningTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\UnityNullImplicitCastTest.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\UnityNullImplicitCastTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\UnityNullPropagationWarningTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\UnityNullPropagationWarningTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\UnityObjectCompareThisToNullWarningTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\UnityObjectCompareThisToNullWarningTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Analysis\UnityObjectEqualitySuspiciousComparisonWarningTests.cs">
+      <Link>UnityRider\Daemon\Stages\Analysis\UnityObjectEqualitySuspiciousComparisonWarningTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Burst\BurstStageTest.cs">
+      <Link>UnityRider\Daemon\Stages\Burst\BurstStageTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\Color\UnityColorHiglightingTest.cs">
+      <Link>UnityRider\Daemon\Stages\Color\UnityColorHiglightingTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\GutterMarks\GutterMarkTests.cs">
+      <Link>UnityRider\Daemon\Stages\GutterMarks\GutterMarkTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\PerformanceHighlightings\PerformanceStageTests.cs">
+      <Link>UnityRider\Daemon\Stages\PerformanceHighlightings\PerformanceStageTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\UnityGlobalHighlightingsStageTestBase.cs">
+      <Link>UnityRider\Daemon\Stages\UnityGlobalHighlightingsStageTestBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\UnityHighlightings\UnityHighlightingStageTest.cs">
+      <Link>UnityRider\Daemon\Stages\UnityHighlightings\UnityHighlightingStageTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\UsageChecking\UsageInspectionsSuppressorTest.cs">
+      <Link>UnityRider\Daemon\UsageChecking\UsageInspectionsSuppressorTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\UsageChecking\UsageInspectionsSuppressorTestDisabledYaml.cs">
+      <Link>UnityRider\Daemon\UsageChecking\UsageInspectionsSuppressorTestDisabledYaml.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\RequireHlslSupportAttribute.cs">
+      <Link>UnityRider\RequireHlslSupportAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Unity.Tests\Unity\TestUnityAttribute.cs">
+      <Link>UnityRider\TestUnityAttribute.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Rider_Rider.Backend.Props" />
+  <Target Name="CppHack" AfterTargets="PrepareForRun">
+    <Move SourceFiles="$(OutDir)JetBrains.ReSharper.Psi.Cpp.dll" DestinationFiles="$(OutDir)x86\JetBrains.ReSharper.Psi.Cpp.dll" />
+  </Target>
+</Project>

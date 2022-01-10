@@ -5,9 +5,10 @@ using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Environment;
 using JetBrains.ReSharper.Plugins.Json;
 using JetBrains.ReSharper.Plugins.Unity.HlslSupport;
-using JetBrains.ReSharper.Plugins.Unity.VisualStudio;
+using JetBrains.ReSharper.Plugins.Unity.Rider;
 using JetBrains.ReSharper.Plugins.Yaml;
 using JetBrains.ReSharper.TestFramework;
+using JetBrains.Rider.Backend.Env;
 using JetBrains.TestFramework;
 using JetBrains.TestFramework.Application.Zones;
 using JetBrains.TestFramework.Utils;
@@ -40,7 +41,8 @@ namespace JetBrains.ReSharper.Plugins.Tests
     // the other required zones
     [ZoneDefinition]
     public interface IUnityTestsZone : IZone,
-        IRequire<IUnityVisualStudioZone>,       // TODO: Get rid of this
+        IRequire<IUnityRiderZone>,
+        IRequire<IRiderPlatformZone>,
         IRequire<PsiFeatureTestZone>,
         IRequire<ILanguageJsonNewZone>,
         IRequire<ILanguageYamlZone>

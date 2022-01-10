@@ -3,7 +3,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.RunMarkers;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Rider
+namespace JetBrains.ReSharper.Plugins.Tests.UnityRiderTestComponents
 {
     [SolutionComponent]
     public class ShowMarkerOnStaticMethodSettingsStub : ShowMarkerOnStaticMethodSettings

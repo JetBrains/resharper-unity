@@ -30,6 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Unity\Unity.csproj" />
     <ProjectReference Include="..\..\..\src\Unity.Shaders\Unity.Shaders.csproj" />
+    <ProjectReference Include="..\..\..\src\Unity.VisualStudio\Unity.VisualStudio.csproj" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props" />
