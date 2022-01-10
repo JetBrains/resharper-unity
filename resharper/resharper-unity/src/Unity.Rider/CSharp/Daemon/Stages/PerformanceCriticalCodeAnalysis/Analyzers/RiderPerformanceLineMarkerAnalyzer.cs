@@ -1,10 +1,7 @@
+using JetBrains.DocumentModel;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
@@ -18,13 +15,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.Stages.Performan
         {
         }
 
-        protected override void Analyze(IFunctionDeclaration t,
-            IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
+        protected override DocumentRange GetHighlightRange(IFunctionDeclaration functionDeclaration)
         {
-            if (LineMarkerStatus.Value == PerformanceHighlightingMode.Always)
-            {
-                consumer.AddHighlighting(new UnityPerformanceCriticalCodeLineMarker(t.GetDocumentRange()));
-            }
+            // Rider supports line markers (unlike ReSharper), so highlight the entire function
+            return functionDeclaration.GetDocumentRange();
         }
     }
 }
