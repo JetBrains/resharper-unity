@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Psi.CSharp;
 using NuGet.Packaging;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.ContextActions
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActions
 {
     [TestUnity]
     public class GenerateUnityEventFunctionsActionAvailabilityTest
@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.ContextActio
 
         public GenerateUnityEventFunctionsActionExecutionTest()
         {
-            ExecuteBeforeTest = solution =>
+            ExecuteBeforeTest = _ =>
             {
                 var provider = Solution.GetComponent<TestGenerateUnityEventFunctionsProvider>();
                 provider.SelectElement("Awake");

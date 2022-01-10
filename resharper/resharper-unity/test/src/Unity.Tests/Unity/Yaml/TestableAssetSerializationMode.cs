@@ -2,7 +2,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Yaml
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.Yaml
 {
     [SolutionComponent]
     public class TestableAssetSerializationMode : AssetSerializationMode

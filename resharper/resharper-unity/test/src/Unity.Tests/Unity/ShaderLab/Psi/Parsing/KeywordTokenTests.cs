@@ -3,7 +3,7 @@ using System.Linq;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
 {
     [TestFixture]
     public class KeywordTokenTests

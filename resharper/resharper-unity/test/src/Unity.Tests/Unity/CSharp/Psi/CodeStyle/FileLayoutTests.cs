@@ -2,7 +2,7 @@ using JetBrains.ReSharper.FeaturesTestFramework.CodeCleanup;
 using JetBrains.Util;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Psi.CodeStyle
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.CodeStyle
 {
     // This test does not currently run on Mac, because the system Mono's System.Xaml.dll expects a single mapping
     // between CLR and XAML namespaces in [assembly: XmlnsDefinition(...)], and ReSharper has two attributes to map a

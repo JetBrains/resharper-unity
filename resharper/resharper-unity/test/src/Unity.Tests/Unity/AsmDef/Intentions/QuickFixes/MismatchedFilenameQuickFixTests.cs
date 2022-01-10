@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Intentions.QuickFixes
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Intentions.QuickFixes
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]

@@ -3,7 +3,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
+namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
 {
     public class QuickFixAfterSwaAvailabilityTestBase : QuickFixAvailabilityTestBase
     {

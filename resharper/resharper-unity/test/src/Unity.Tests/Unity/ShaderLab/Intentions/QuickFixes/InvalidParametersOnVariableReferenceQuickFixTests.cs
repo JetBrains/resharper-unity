@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Intentions.QuickFixes
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Intentions.QuickFixes
 {
     [TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]

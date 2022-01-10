@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Plugins.Unity.Cg.Psi;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.Cg.Psi.Parsing
 {
     [TestUnity]
     [TestFileExtension(CgProjectFileType.GLSL_EXTENSION)]

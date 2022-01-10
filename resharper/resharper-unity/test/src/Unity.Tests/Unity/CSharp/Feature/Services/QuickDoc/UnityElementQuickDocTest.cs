@@ -1,8 +1,9 @@
 ﻿using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Tests.TestFramework;
 using JetBrains.ReSharper.Psi;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.QuickDoc
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.QuickDoc
 {
     [TestUnity]
     public class UnityElementQuickDocTest : QuickDocTestBase

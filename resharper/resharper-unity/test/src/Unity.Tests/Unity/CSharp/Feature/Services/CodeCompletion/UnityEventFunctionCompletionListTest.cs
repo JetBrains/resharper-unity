@@ -2,7 +2,7 @@
 using JetBrains.ReSharper.FeaturesTestFramework.Completion;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.CodeCompletion
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.CodeCompletion
 {
     // TODO: This doesn't test automatic completion
     // The AutomaticCodeCompletionTestBase class is not in the SDK

@@ -5,7 +5,7 @@ using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Intentions.Navigation
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Intentions.Navigation
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]

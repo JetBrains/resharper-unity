@@ -11,7 +11,7 @@ using JetBrains.TextControl;
 using JetBrains.Util.Special;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
 {
     [TestUnity]
     public class CreateSerializedFieldFromUsageTest

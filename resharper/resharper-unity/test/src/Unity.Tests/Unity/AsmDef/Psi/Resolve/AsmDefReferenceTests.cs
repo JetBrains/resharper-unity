@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Psi.Resolve
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Psi.Resolve
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]

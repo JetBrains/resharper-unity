@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Formatting;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Feature.Services.TypingAssist
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.TypingAssist
 {
     [RequireHlslSupport]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]

@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Psi.Resolve
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.Resolve
 {
     [TestUnity(UnityVersion.Unity55, IncludeNetworking = true)]
     [IncludeMsCorLib]

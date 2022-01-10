@@ -1,8 +1,8 @@
 ﻿using JetBrains.ReSharper.Daemon.VisualElements;
-using JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis;
+using JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Color
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Color
 {
     [Category("ColorHighlighting")]
     [TestUnity]

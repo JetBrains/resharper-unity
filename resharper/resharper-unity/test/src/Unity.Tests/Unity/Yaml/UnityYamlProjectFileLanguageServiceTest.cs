@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Yaml
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.Yaml
 {
     [ProjectFileType(typeof(UnityYamlProjectFileType))]
     public class UnityYamlProjectFileLanguageServiceTest : UnityYamlProjectFileLanguageService

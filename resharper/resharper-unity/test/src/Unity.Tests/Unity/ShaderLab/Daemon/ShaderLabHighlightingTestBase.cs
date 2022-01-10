@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.TestFramework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Daemon
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon
 {
     [TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]

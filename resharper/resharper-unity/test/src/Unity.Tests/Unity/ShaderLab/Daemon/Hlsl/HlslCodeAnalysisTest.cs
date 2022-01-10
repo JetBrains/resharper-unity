@@ -1,7 +1,7 @@
 using JetBrains.ReSharper.Feature.Services.Cpp.Daemon.Highlightings;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Daemon.Hlsl
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Hlsl
 {
     [RequireHlslSupport]
     public class HlslCodeAnalysisTest : ShaderLabHighlightingTestBase<CppHighlightingBase>

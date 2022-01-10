@@ -3,7 +3,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.ProjectModel
+namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 {
     [SolutionComponent]
     public class UnitySolutionTrackerStub : UnitySolutionTracker

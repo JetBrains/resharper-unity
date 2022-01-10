@@ -14,13 +14,14 @@ using JetBrains.ReSharper.TestFramework.Components.Psi;
 using JetBrains.Util;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages
 {
     [Category("Daemon"), Category("PerformanceCriticalCode")]
     public abstract class UnityGlobalHighlightingsStageTestBase : BaseTestWithSingleProject
     {
         protected sealed override string RelativeTestDataPath=> $@"{RelativeTestDataRoot}\{Utils.ProductGoldSuffix}";
         protected abstract string RelativeTestDataRoot { get; }
+
         protected override void DoTest(Lifetime lifetime, IProject project)
         {
             var swea = SolutionAnalysisService.GetInstance(Solution);
@@ -28,12 +29,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages
             using (TestPsiConfigurationSettings.Instance.PersistCachesCookie())
             using (swea.RunAnalysisCookie())
             {
-                ChangeSettingsTemporarily(lifetime).BoundStore.SetValue((UnitySettings key) => 
+                ChangeSettingsTemporarily(lifetime).BoundStore.SetValue((UnitySettings key) =>
                     key.PerformanceHighlightingMode, PerformanceHighlightingMode.Always);
 
                 var files = swea.GetFilesToAnalyze().OrderBy(f => f.Name).ToList();
                 swea.ReanalyzeAll();
-                
+
                 ExecuteWithGold(TestMethodName + ".cs", writer =>
                 {
                     foreach (var file in files)

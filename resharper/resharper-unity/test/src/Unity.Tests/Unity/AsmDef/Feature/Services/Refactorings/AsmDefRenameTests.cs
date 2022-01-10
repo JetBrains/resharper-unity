@@ -2,13 +2,13 @@
 using System.Linq;
 using JetBrains.DocumentManagers;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Tests.Framework;
+using JetBrains.ReSharper.Plugins.Tests.TestFramework;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TextControl;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Feature.Services.Refactorings
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Refactorings
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]

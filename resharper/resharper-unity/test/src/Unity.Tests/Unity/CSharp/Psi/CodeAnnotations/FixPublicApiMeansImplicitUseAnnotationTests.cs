@@ -1,7 +1,7 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking;
+﻿using JetBrains.ReSharper.Plugins.Tests.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Psi.CodeAnnotations
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.CodeAnnotations
 {
     [TestUnity]
     public class FixPublicApiMeansImplicitUseAnnotationTests : UsageCheckBaseTest

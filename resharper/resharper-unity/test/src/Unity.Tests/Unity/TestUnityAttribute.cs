@@ -14,9 +14,9 @@ using JetBrains.TestFramework;
 using JetBrains.TestFramework.JetNuGet;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
-using PackageDependency = NuGet.Packaging.Core.PackageDependency;
+using NuGet.Packaging.Core;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests
+namespace JetBrains.ReSharper.Plugins.Tests.Unity
 {
     // ReSharper disable InconsistentNaming
     public enum UnityVersion

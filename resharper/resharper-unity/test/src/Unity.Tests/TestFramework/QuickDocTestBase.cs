@@ -17,7 +17,7 @@ using JetBrains.TextControl;
 using JetBrains.TextControl.DataContext;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.QuickDoc
+namespace JetBrains.ReSharper.Plugins.Tests.TestFramework
 {
     [Category("QuickDoc")]
     [TestReferences("System.Core", DoesNotInherit = false)]
@@ -65,10 +65,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.QuickD
             var actionManager = componentContainer.GetComponent<IActionManager>();
 
             var dataRules = DataRules
-                .AddRule("Test", ProjectModelDataConstants.SOLUTION, x => solution)
-                .AddRule("Test", TextControlDataConstants.TEXT_CONTROL, x => control)
-                .AddRule("Test", DocumentModelDataConstants.DOCUMENT, x => control.Document)
-                .AddRule("Test", DocumentModelDataConstants.EDITOR_CONTEXT, x => new DocumentEditorContext(new DocumentOffset(control.Document, control.Caret.Offset())));
+                .AddRule("Test", ProjectModelDataConstants.SOLUTION, _ => solution)
+                .AddRule("Test", TextControlDataConstants.TEXT_CONTROL, _ => control)
+                .AddRule("Test", DocumentModelDataConstants.DOCUMENT, _ => control.Document)
+                .AddRule("Test", DocumentModelDataConstants.EDITOR_CONTEXT, _ => new DocumentEditorContext(new DocumentOffset(control.Document, control.Caret.Offset())));
             return actionManager.DataContexts.CreateWithDataRules(control.Lifetime, dataRules);
         }
 

@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.ExternalAnnotations;
 using JetBrains.TestFramework.Utils;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests
+namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 {
     [ShellComponent]
     public class AnnotationsLoader : IExternalAnnotationsFileProvider

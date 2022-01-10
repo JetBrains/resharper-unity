@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.ProjectModel
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.ProjectModel
 {
     [TestFixture]
     public class ShaderLabProjectFileTypeTests : BaseTest

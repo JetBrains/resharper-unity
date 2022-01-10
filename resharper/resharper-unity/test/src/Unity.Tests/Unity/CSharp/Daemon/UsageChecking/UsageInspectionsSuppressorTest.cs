@@ -1,11 +1,12 @@
 using System;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Tests.Yaml;
+using JetBrains.ReSharper.Plugins.Tests.TestFramework;
+using JetBrains.ReSharper.Plugins.Tests.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.UsageChecking
 {
     // Require 2020.1 to test suppressing Dictionary<string, string> as a field
     // TODO: Create separate tests for serialisation logic
@@ -42,13 +43,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
         public void PotentialEventHandlerMethodsSerializationNotText()
         {
             var oldMode = AssetSerializationMode.SerializationMode.Unknown;
-            myOnProjectStarted = project =>
+            myOnProjectStarted = _ =>
             {
                 var assetSerializationMode = Solution.GetComponent<TestableAssetSerializationMode>();
                 oldMode = assetSerializationMode.SetMode(AssetSerializationMode.SerializationMode.Mixed);
             };
 
-            myOnProjectFinished = project =>
+            myOnProjectFinished = _ =>
             {
                 var assetSerializationMode = Solution.GetComponent<TestableAssetSerializationMode>();
                 assetSerializationMode.SetMode(oldMode);

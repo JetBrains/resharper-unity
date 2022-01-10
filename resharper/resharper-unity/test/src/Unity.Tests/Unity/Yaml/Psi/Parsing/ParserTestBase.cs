@@ -15,7 +15,7 @@ using JetBrains.ReSharper.TestFramework;
 using JetBrains.ReSharper.TestFramework.Components.Psi;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Yaml.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.Yaml.Psi.Parsing
 {
   // This is a replacement for the standard ParserTestBase<TLanguage> that will check the nodes of the parsed tree
   // against the gold file, but will also assert that all top level chameleons are closed by default and open correctly.

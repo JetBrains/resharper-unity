@@ -2,7 +2,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.VersionUtils;
 using JetBrains.Util;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.VersionUtils
 {
     [TestFixture]
     public class JetSemanticVersionRangeTests

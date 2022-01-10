@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Descriptions
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Descriptions
 {
     [TestUnity]
     // The tests include tooltips from all highlighters at the caret position, which will include gutter icons for

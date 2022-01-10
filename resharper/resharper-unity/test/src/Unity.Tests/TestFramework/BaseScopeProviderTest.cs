@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TextControl;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Framework
+namespace JetBrains.ReSharper.Plugins.Tests.TestFramework
 {
     // Not provided by the default test framework
     public abstract class BaseScopeProviderTest : BaseTestWithTextControl

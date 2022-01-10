@@ -1,4 +1,4 @@
-namespace JetBrains.ReSharper.Plugins.Unity.Tests
+namespace JetBrains.ReSharper.Plugins.Tests
 {
   public static class Utils
   {

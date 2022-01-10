@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Yaml
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.Yaml
 {
     [SolutionComponent]
     public class TestUnityExternalFilesModuleProcessor : UnityExternalFilesModuleProcessor

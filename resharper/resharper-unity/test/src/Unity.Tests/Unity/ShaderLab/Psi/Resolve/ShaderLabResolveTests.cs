@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Resolve
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Resolve
 {
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabResolveTests : ReferenceTestBase

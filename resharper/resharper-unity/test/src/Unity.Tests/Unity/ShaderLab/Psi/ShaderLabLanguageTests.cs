@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi
 {
     [TestFixture]
     public class ShaderLabLanguageTests : BaseTest

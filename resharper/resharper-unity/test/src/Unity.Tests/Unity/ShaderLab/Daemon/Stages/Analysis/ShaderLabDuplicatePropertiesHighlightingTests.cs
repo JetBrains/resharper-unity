@@ -1,7 +1,7 @@
 ﻿using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Daemon.Stages.Analysis
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Stages.Analysis
 {
     public class ShaderLabDuplicatePropertiesHighlightingTests : ShaderLabHighlightingTestBase<ShaderLabHighlightingBase>
     {

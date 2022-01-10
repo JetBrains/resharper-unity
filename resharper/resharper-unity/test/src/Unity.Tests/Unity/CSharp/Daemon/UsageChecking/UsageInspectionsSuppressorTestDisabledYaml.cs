@@ -1,6 +1,7 @@
+using JetBrains.ReSharper.Plugins.Tests.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.UsageChecking
 {
     [TestUnity]
     public class UsageInspectionsSuppressorTestDisabledYaml : UsageCheckBaseTest

@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCritical
 using JetBrains.ReSharper.Psi;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.PerformanceHighlightings
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.PerformanceHighlightings
 {
     [TestUnity]
     public class PerformanceStageTest : UnityGlobalHighlightingsStageTestBase
@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Performan
         [Test] public void CommentRootsTest2() { DoNamedTest(); }
         // this test gold does not contain ".gen" part!
         // gold - "SimpleGenTest.cs.gold"
-        // but test file - "SimpleGenTest.gen.cs" 
+        // but test file - "SimpleGenTest.gen.cs"
         [Test] public void SimpleGenTest() { DoOneTest(nameof(SimpleGenTest) + ".gen"); }
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile file, IContextBoundSettingsStore settingsStore)

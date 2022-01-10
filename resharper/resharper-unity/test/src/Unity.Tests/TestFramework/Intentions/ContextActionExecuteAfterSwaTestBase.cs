@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.ContextActions
+namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
 {
     public abstract class ContextActionExecuteAfterSwaTestBase<TContextAction> : ContextActionExecuteTestBase<TContextAction> where TContextAction : class, IContextAction
     {
@@ -26,13 +26,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.ContextActio
             var swea = SolutionAnalysisService.GetInstance(Solution);
             using (swea.RunAnalysisCookie())
             {
-                ChangeSettingsTemporarily(lifetime).BoundStore.SetValue((UnitySettings key) => 
+                ChangeSettingsTemporarily(lifetime).BoundStore.SetValue((UnitySettings key) =>
                     key.EnableIconsForBurstCode, false);
-                ChangeSettingsTemporarily(lifetime).BoundStore.SetValue((UnitySettings key) => 
+                ChangeSettingsTemporarily(lifetime).BoundStore.SetValue((UnitySettings key) =>
                     key.EnableIconsForPerformanceCriticalCode, false);
 
                 var files = new List<IPsiSourceFile>(swea.GetFilesToAnalyze());
-                
+
                 foreach (var file in files)
                     swea.AnalyzeInvisibleFile(file);
 

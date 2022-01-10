@@ -1,7 +1,8 @@
+using JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.ContextActions
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActions
 {
     [TestUnity]
     public class ConvertXmlDocToTooltipAttributeAvailabilityTests

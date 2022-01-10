@@ -5,7 +5,7 @@ using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Daemon.ContextHighlighters
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Daemon.ContextHighlighters
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]

@@ -3,7 +3,7 @@ using JetBrains.ReSharper.FeaturesTestFramework.Completion;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.AsmDef.Feature.Services.CodeCompletion
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.CodeCompletion
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]

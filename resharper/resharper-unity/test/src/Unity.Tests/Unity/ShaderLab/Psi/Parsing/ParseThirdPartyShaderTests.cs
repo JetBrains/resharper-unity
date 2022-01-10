@@ -16,7 +16,7 @@ using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
 {
     public class ParseBuiltinShadersTests : ThirdPartyShaderTests
     {

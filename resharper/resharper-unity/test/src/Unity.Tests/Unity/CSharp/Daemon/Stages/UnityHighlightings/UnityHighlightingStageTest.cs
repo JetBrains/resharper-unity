@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.UnityHighlightings
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.UnityHighlightings
 {
     [TestUnity]
     public class UnityHighlightingStageTest : UnityGlobalHighlightingsStageTestBase

@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Plugins.Unity.Cg.ProjectModel;
 using JetBrains.ReSharper.Resources.Shell;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.ProjectModel
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.Cg.ProjectModel
 {
     [TestFixture]
     public class CgProjectFileTypeTests

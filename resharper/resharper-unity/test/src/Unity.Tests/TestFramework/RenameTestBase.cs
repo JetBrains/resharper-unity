@@ -9,7 +9,7 @@ using JetBrains.ReSharper.TestFramework;
 using JetBrains.TextControl;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Framework
+namespace JetBrains.ReSharper.Plugins.Tests.TestFramework
 {
     [Category("Rename")]
     [TestReferences("System.Core")]

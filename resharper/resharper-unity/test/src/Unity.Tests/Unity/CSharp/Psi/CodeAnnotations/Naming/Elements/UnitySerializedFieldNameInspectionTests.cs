@@ -1,8 +1,8 @@
 using JetBrains.ReSharper.Daemon.Specific.NamingConsistencyCheck;
-using JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis;
+using JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Psi.Naming.Elements
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.CodeAnnotations.Naming.Elements
 {
     [TestUnity]
     public class UnitySerializedFieldNameInspectionTests : CSharpHighlightingTestBase<InconsistentNamingWarning>

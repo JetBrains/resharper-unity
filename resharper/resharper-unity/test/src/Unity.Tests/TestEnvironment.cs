@@ -25,7 +25,7 @@ using NUnit.Framework;
 [assembly: TestDataPathBase("resharper-unity/test/data")]
 #pragma warning restore 618
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests
+namespace JetBrains.ReSharper.Plugins.Tests
 {
     // Define the zone that should be active in the environment container, pre-startup. We can use this to implement
     // components that should be available in the environment container. Any required zones will be automatically added

@@ -6,7 +6,7 @@ using JetBrains.ReSharper.TestFramework;
 using JetBrains.Text;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
 {
     [TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]

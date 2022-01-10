@@ -1,9 +1,9 @@
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
+using JetBrains.ReSharper.Plugins.Tests.TestFramework;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope;
-using JetBrains.ReSharper.Plugins.Unity.Tests.Framework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.LiveTemplates
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.LiveTemplates
 {
     [TestFixture]
     public class UnityProjectVersionScopeProviderTest : BaseScopeProviderTest

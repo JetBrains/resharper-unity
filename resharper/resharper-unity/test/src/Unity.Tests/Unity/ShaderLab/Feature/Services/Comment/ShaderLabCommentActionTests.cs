@@ -1,7 +1,7 @@
 ﻿using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Feature.Services.Comment
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Comment
 {
     [TestFileExtension(".shader")]
     [TestFixture]

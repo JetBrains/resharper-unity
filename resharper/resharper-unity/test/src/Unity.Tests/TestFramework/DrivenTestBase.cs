@@ -17,7 +17,7 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.Framework
+namespace JetBrains.ReSharper.Plugins.Tests.TestFramework
 {
     public abstract class DrivenTestBase : RefactoringTestBase
     {
@@ -110,18 +110,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Framework
 
                 dataRules.AddRule("Test", DocumentModelDataConstants.DOCUMENT, textControl.Document);
                 dataRules.AddRule("Test", ProjectModelDataConstants.PROJECT, project);
-                dataRules.AddRule("Test", PsiDataConstants.REFERENCE, ctx =>
+                dataRules.AddRule("Test", PsiDataConstants.REFERENCE, _ =>
                 {
                     var references = TextControlToPsi.GetReferencesAtCaret(solution, textControl);
                     return references != null ? references.FirstOrDefault() : null;
                 });
 
                 dataRules.AddRule("Test", PsiDataConstants.REFERENCES,
-                    ctx => TextControlToPsi.GetReferencesAtCaret(solution, textControl));
-                dataRules.AddRule("Test", ProjectModelDataConstants.PROJECT_MODEL_ELEMENT, ctx => null);
+                    _ => TextControlToPsi.GetReferencesAtCaret(solution, textControl));
+                dataRules.AddRule("Test", ProjectModelDataConstants.PROJECT_MODEL_ELEMENT, _ => null);
                 dataRules.AddRule("Test", PsiDataConstants.SELECTED_EXPRESSION,
-                    ctx => ExpressionSelectionUtil.GetSelectedExpression<ITreeNode>(Solution, textControl, false));
-                dataRules.AddRule("Test", DocumentModelDataConstants.EDITOR_CONTEXT, ctx =>
+                    _ => ExpressionSelectionUtil.GetSelectedExpression<ITreeNode>(Solution, textControl, false));
+                dataRules.AddRule("Test", DocumentModelDataConstants.EDITOR_CONTEXT, _ =>
                     textControl.Selection.HasSelection()
                         ? new DocumentEditorContext(textControl.Selection.OneDocumentRangeWithCaret())
                         : null);
