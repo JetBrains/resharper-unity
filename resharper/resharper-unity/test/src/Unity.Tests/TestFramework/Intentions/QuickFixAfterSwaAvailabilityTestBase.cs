@@ -5,7 +5,7 @@ using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
 
 namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
 {
-    public class QuickFixAfterSwaAvailabilityTestBase : QuickFixAvailabilityTestBase
+    public abstract class QuickFixAfterSwaAvailabilityTestBase : QuickFixAvailabilityTestBase
     {
         protected override bool ShouldGlobalWarnings => true;
 
