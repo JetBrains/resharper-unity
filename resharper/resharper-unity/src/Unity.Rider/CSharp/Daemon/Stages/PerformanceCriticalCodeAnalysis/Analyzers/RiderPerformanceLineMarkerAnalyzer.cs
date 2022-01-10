@@ -8,14 +8,13 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCritical
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers
 {
     [SolutionComponent]
-    public class VSPerformanceLineMarkerAnalyzer : PerformanceLineMarkerAnalyzer
+    public class RiderPerformanceLineMarkerAnalyzer : PerformanceLineMarkerAnalyzer
     {
-        public VSPerformanceLineMarkerAnalyzer(Lifetime lifetime, ISolution solution,
-                                               IApplicationWideContextBoundSettingStore store)
-            : base(lifetime, solution, store)
+        public RiderPerformanceLineMarkerAnalyzer(Lifetime lifetime, IApplicationWideContextBoundSettingStore store)
+            : base(lifetime, store)
         {
         }
 
@@ -24,8 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.CSharp.Daemon.Stages.Pe
         {
             if (LineMarkerStatus.Value == PerformanceHighlightingMode.Always)
             {
-                // Highlight the name, because ReSharper doesn't support line markers
-                consumer.AddHighlighting(new UnityPerformanceCriticalCodeLineMarker(t.GetNameDocumentRange()));
+                consumer.AddHighlighting(new UnityPerformanceCriticalCodeLineMarker(t.GetDocumentRange()));
             }
         }
     }

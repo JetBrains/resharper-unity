@@ -16,8 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     {
         protected readonly IProperty<PerformanceHighlightingMode> LineMarkerStatus;
 
-        public PerformanceLineMarkerAnalyzer(Lifetime lifetime, ISolution solution,
-                                             IApplicationWideContextBoundSettingStore settingsStore)
+        public PerformanceLineMarkerAnalyzer(Lifetime lifetime, IApplicationWideContextBoundSettingStore settingsStore)
         {
             LineMarkerStatus = settingsStore.BoundSettingsStore
                 .GetValueProperty(lifetime, (UnitySettings key) => key.PerformanceHighlightingMode);
@@ -28,7 +27,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             if (LineMarkerStatus.Value == PerformanceHighlightingMode.Always)
             {
-                consumer.AddHighlighting(new UnityPerformanceCriticalCodeLineMarker(t.GetDocumentRange()));
+                // As always, ReSharper behaviour is the default, and we override with Rider. This makes code and
+                // testing easier. We can avoid having Unity.Tests, Unity.Rider.Tests and Unity.VisualStudio.Tests
+                consumer.AddHighlighting(new UnityPerformanceCriticalCodeLineMarker(t.GetNameDocumentRange()));
             }
         }
     }
