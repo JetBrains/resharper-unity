@@ -47,6 +47,8 @@
   <files>
     <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
     <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.pdb" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.Shaders.dll" target="DotFiles" />
+    <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.Shaders.pdb" target="DotFiles" />
     <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.VisualStudio.dll" target="DotFiles" />
     <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Unity.VisualStudio.pdb" target="DotFiles" />
     <file src="..\..\..\build\Unity.VisualStudio\bin\$Configuration$\net472\JetBrains.ReSharper.Plugins.Json.dll" target="DotFiles" />

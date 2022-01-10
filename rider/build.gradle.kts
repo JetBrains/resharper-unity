@@ -63,6 +63,8 @@ val dotnetDllFiles = files(
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.pdb",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.dll",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.pdb",
+    "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Shaders.dll",
+    "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Shaders.pdb",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.dll",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.pdb",
     "../resharper/build/rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.Rider.dll",
@@ -454,9 +456,9 @@ tasks {
             }
         }
         val releaseNotes = """New in $pluginVersion
-                            
+
 $changelogNotes
-                            
+
 See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.""".let {
             if (isWindows) {
                 it.replace("&quot;", "\\\"")
