@@ -7,6 +7,7 @@ using JetBrains.Application.Settings.Implementation;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties.CSharp;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
@@ -15,7 +16,7 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Settings
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi
 {
     [SolutionComponent]
     public class LangVersionProjectSettingsProvider : IUnityProjectSettingsProvider

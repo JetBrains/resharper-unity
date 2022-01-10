@@ -1,5 +1,5 @@
 using JetBrains.Application.Settings;
-using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle
 {

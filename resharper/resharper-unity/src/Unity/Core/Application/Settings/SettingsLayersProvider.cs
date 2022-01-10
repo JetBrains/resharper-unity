@@ -11,7 +11,7 @@ using JetBrains.ProjectModel.Settings.Storages;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Settings
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
 {
     [SolutionComponent]
     public class SettingsLayersProvider : IUnityReferenceChangeHandler

@@ -5,12 +5,13 @@ using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.Cg.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes;
 using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree;
-using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
+// ReSharper disable StringLiteralTypo
 
 namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
 {

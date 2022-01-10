@@ -3,7 +3,7 @@ using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.Threading;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Psi.CSharp.Naming2;
 using JetBrains.Util;
 

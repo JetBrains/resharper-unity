@@ -1,4 +1,4 @@
-namespace JetBrains.ReSharper.Plugins.Unity.Settings
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
 {
     public enum PerformanceHighlightingMode
     {

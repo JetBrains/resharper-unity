@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.Application.Settings;
-using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.Rider.Backend.Features.Settings.Layers.ExportImportWorkaround;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.Settings.Layers.ExportImportWorkaround

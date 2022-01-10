@@ -1,7 +1,7 @@
 ﻿using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
-using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;

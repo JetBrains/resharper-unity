@@ -1,7 +1,7 @@
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Resources.Settings;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Settings
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
 {
     // TODO: Should all of these settings be under CodeEditingSettings?
     // See also CodeInspectionSettings

@@ -2,11 +2,12 @@ using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.ImportType;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Settings
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.ImportType
 {
     [SolutionComponent]
     public class AutoImportSolutionSettingsProvider : IUnitySolutionSettingsProvider

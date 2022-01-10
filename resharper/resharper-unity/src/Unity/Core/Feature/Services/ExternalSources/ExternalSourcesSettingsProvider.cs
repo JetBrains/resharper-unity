@@ -3,7 +3,7 @@ using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.ExternalSource;
 using JetBrains.ReSharper.Feature.Services.ExternalSources.Pdb;
-using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.ExternalSources

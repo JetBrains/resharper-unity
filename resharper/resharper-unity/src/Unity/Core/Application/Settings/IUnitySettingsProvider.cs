@@ -2,7 +2,7 @@ using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Settings
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
 {
     public interface IUnitySolutionSettingsProvider
     {

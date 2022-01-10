@@ -2,7 +2,7 @@ using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
 using JetBrains.PsiFeatures.VisualStudio.ReSpeller;
-using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Core.Feature.Respeller
