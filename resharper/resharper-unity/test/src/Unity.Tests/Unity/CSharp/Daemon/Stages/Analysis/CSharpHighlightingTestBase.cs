@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
 {
     public abstract class CSharpHighlightingTestBase<T> : CSharpHighlightingTestBase
     {
-        protected sealed override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
+        protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
             IContextBoundSettingsStore settingsStore)
         {
             return highlighting is T;

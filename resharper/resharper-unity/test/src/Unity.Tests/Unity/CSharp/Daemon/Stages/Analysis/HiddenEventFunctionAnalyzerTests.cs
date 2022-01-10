@@ -8,9 +8,9 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
 {
     [TestUnity]
-    public class HiddenEventFunctionAnalyzerTests : CSharpHighlightingTestWithProductDependentGoldBase<IUnityAnalyzerHighlighting>
+    public class HiddenEventFunctionAnalyzerTests : CSharpHighlightingTestBase<IUnityAnalyzerHighlighting>
     {
-        protected override string RelativeTestDataRoot => @"CSharp\Daemon\Stages\Analysis";
+        protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
                                                       IContextBoundSettingsStore settingsStore)

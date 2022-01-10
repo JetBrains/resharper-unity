@@ -4,9 +4,9 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
 {
     [TestUnity]
-    public class IncorrectMonoBehaviourInstantiationWarningTests : CSharpHighlightingTestWithProductDependentGoldBase<IUnityAnalyzerHighlighting>
+    public class IncorrectMonoBehaviourInstantiationWarningTests : CSharpHighlightingTestBase<IUnityAnalyzerHighlighting>
     {
-        protected override string RelativeTestDataRoot => @"CSharp\Daemon\Stages\Analysis";
+        protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
         [Test] public void TestInstantiateMonoBehaviourWarning() { DoNamedTest2(); }
     }

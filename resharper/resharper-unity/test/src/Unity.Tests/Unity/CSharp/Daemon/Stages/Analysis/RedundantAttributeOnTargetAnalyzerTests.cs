@@ -4,9 +4,9 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
 {
     [TestUnity]
-    public class RedundantAttributeOnTargetAnalyzerTests : CSharpHighlightingTestWithProductDependentGoldBase<IUnityAnalyzerHighlighting>
+    public class RedundantAttributeOnTargetAnalyzerTests : CSharpHighlightingTestBase<IUnityAnalyzerHighlighting>
     {
-        protected override string RelativeTestDataRoot => @"CSharp\Daemon\Stages\Analysis\RedundantAttributeOnTarget";
+        protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis\RedundantAttributeOnTarget";
 
         [Test] public void TestAddComponentMenu() { DoNamedTest2(); }
         [Test] public void TestExecuteInEditMode() { DoNamedTest2(); }

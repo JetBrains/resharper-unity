@@ -4,9 +4,9 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
 {
     [TestUnity]
-    public class IncorrectScriptableObjectInstantiationWarningTests : CSharpHighlightingTestWithProductDependentGoldBase<IUnityAnalyzerHighlighting>
+    public class IncorrectScriptableObjectInstantiationWarningTests : CSharpHighlightingTestBase<IUnityAnalyzerHighlighting>
     {
-        protected override string RelativeTestDataRoot => @"CSharp\Daemon\Stages\Analysis";
+        protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
         [Test] public void TestInstantiateScriptableObjectWarning() { DoNamedTest2(); }
     }
