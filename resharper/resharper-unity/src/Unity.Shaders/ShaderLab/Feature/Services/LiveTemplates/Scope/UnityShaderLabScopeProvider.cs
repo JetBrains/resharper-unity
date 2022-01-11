@@ -7,9 +7,8 @@ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Files;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope
+namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.LiveTemplates.Scope
 {
-    // TODO: Move this to ShaderLab folder hierarchy
     [ShellComponent]
     public class UnityShaderLabScopeProvider : ScopeProvider
     {

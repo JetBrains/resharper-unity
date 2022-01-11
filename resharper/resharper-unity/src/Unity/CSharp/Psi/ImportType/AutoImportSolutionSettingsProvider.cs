@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.ImportType;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.ImportType
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.ImportType
 {
     [SolutionComponent]
     public class AutoImportSolutionSettingsProvider : IUnitySolutionSettingsProvider

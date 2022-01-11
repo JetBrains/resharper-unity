@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi.PerformanceThreshold.Settings;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Settings
+namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Settings
 {
     [ShellComponent]
     public class UnityDefaultPerformanceThresholdSettingsProvider : HaveDefaultSettings
