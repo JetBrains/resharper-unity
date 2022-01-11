@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.CodeInsights
         AttributeId = Id,
         OverlapResolve = OverlapResolveKind.NONE
     )]
-    public class UnityInspectorCodeInsightsHighlighting : CodeInsightsHighlighting, IUnityIndicatorHighlighting
+    public class UnityInspectorCodeInsightsHighlighting : CodeInsightsHighlighting, IUnityIndicatorHighlighting, IHighlightingWithTestOutput
     {
         public new const string Id = "UnityInspectorCodeInsights";
 
@@ -39,5 +39,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.CodeInsights
         {
             UnityPresentationType = unityPresentationType;
         }
+
+        public string TestOutput => ((TextCodeLensEntry)Entry).Text
+                                    + " | " + ((TextCodeLensEntry)Entry).LongPresentation
+                                    + " | " + ((TextCodeLensEntry)Entry).Tooltip;
     }
 }

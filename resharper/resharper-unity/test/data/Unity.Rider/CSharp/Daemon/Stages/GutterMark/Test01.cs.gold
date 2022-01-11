@@ -189,72 +189,72 @@ static class NotSerialisableStaticClass
 }
 
 ---------------------------------------------------------
-(0): ReSharper Unity Implicitly Used Identifier: 
-(1): UnityCodeInsights: 
-(2): ReSharper Unity Implicitly Used Identifier: 
-(3): UnityCodeInsights: 
-(4): ReSharper Unity Implicitly Used Identifier: 
-(5): UnityCodeInsights: 
-(6): ReSharper Unity Implicitly Used Identifier: 
-(7): UnityCodeInsights: 
-(8): ReSharper Unity Implicitly Used Identifier: 
-(9): UnityCodeInsights: 
-(10): ReSharper Unity Implicitly Used Identifier: 
-(11): UnityCodeInsights: 
-(12): ReSharper Unity Implicitly Used Identifier: 
-(13): UnityCodeInsights: 
-(14): ReSharper Unity Implicitly Used Identifier: 
-(15): UnityCodeInsights: 
-(16): ReSharper Unity Implicitly Used Identifier: 
-(17): UnityCodeInsights: 
-(18): ReSharper Unity Implicitly Used Identifier: 
-(19): UnityCodeInsights: 
-(20): ReSharper Unity Implicitly Used Identifier: 
-(21): UnityCodeInsights: 
-(22): ReSharper Unity Implicitly Used Identifier: 
-(23): UnityCodeInsights: 
-(24): ReSharper Unity Implicitly Used Identifier: 
-(25): UnityCodeInsights: 
-(26): ReSharper Unity Implicitly Used Identifier: 
-(27): UnityCodeInsights: 
-(28): ReSharper Unity Implicitly Used Identifier: 
-(29): UnityCodeInsights: 
-(30): ReSharper Unity Implicitly Used Identifier: 
-(31): UnityCodeInsights: 
-(32): ReSharper Unity Implicitly Used Identifier: 
-(33): UnityCodeInsights: 
-(34): UnityCodeInsights: 
-(35): ReSharper Unity Implicitly Used Identifier: 
-(36): UnityCodeInsights: 
-(37): ReSharper Unity Implicitly Used Identifier: 
-(38): UnityCodeInsights: 
-(39): ReSharper Unity Implicitly Used Identifier: 
-(40): UnityCodeInsights: 
-(41): ReSharper Unity Implicitly Used Identifier: 
-(42): UnityCodeInsights: 
-(43): ReSharper Unity Implicitly Used Identifier: 
-(44): UnityCodeInsights: 
-(45): ReSharper Unity Implicitly Used Identifier: 
-(46): UnityCodeInsights: 
-(47): ReSharper Unity Implicitly Used Identifier: 
-(48): UnityCodeInsights: 
-(49): ReSharper Unity Implicitly Used Identifier: 
-(50): UnityCodeInsights: 
-(51): ReSharper Unity Implicitly Used Identifier: 
-(52): UnityCodeInsights: 
-(53): ReSharper Unity Implicitly Used Identifier: 
-(54): UnityCodeInsights: 
-(55): ReSharper Unity Implicitly Used Identifier: 
-(56): UnityCodeInsights: 
-(57): ReSharper Unity Implicitly Used Identifier: 
-(58): UnityCodeInsights: 
-(59): ReSharper Unity Implicitly Used Identifier: 
-(60): UnityCodeInsights: 
-(61): ReSharper Unity Implicitly Used Identifier: 
-(62): UnityCodeInsights: 
-(63): ReSharper Unity Implicitly Used Identifier: 
-(64): UnityCodeInsights: 
-(65): ReSharper Unity Implicitly Used Identifier: 
-(66): UnityCodeInsights: 
-(67): ReSharper Unity Implicitly Used Identifier: 
-(68): UnityCodeInsights: 
+(0): ReSharper Unity Implicitly Used Identifier:
+(1): UnityCodeInsights: Script | Script | Unity script
+(2): ReSharper Unity Implicitly Used Identifier:
+(3): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(4): ReSharper Unity Implicitly Used Identifier:
+(5): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(6): ReSharper Unity Implicitly Used Identifier:
+(7): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(8): ReSharper Unity Implicitly Used Identifier:
+(9): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(10): ReSharper Unity Implicitly Used Identifier:
+(11): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(12): ReSharper Unity Implicitly Used Identifier:
+(13): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(14): ReSharper Unity Implicitly Used Identifier:
+(15): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(16): ReSharper Unity Implicitly Used Identifier:
+(17): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(18): ReSharper Unity Implicitly Used Identifier:
+(19): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(20): ReSharper Unity Implicitly Used Identifier:
+(21): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(22): ReSharper Unity Implicitly Used Identifier:
+(23): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(24): ReSharper Unity Implicitly Used Identifier:
+(25): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(26): ReSharper Unity Implicitly Used Identifier:
+(27): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
+(28): ReSharper Unity Implicitly Used Identifier:
+(29): UnityCodeInsights: Event function | Event function | Destroying the attached Behaviour will result in the game or Scene receiving OnDestroy.
+(30): ReSharper Unity Implicitly Used Identifier:
+(31): UnityCodeInsights: Event function | Event function | Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
+(32): ReSharper Unity Implicitly Used Identifier:
+(33): UnityCodeInsights: Event function | Event function | OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody.
+(34): UnityCodeInsights: Used implicitly | Used implicitly | Called when Unity first launches the editor, the player, or recompiles scripts
+(35): ReSharper Unity Implicitly Used Identifier:
+(36): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(37): ReSharper Unity Implicitly Used Identifier:
+(38): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(39): ReSharper Unity Implicitly Used Identifier:
+(40): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(41): ReSharper Unity Implicitly Used Identifier:
+(42): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(43): ReSharper Unity Implicitly Used Identifier:
+(44): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(45): ReSharper Unity Implicitly Used Identifier:
+(46): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(47): ReSharper Unity Implicitly Used Identifier:
+(48): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(49): ReSharper Unity Implicitly Used Identifier:
+(50): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(51): ReSharper Unity Implicitly Used Identifier:
+(52): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(53): ReSharper Unity Implicitly Used Identifier:
+(54): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(55): ReSharper Unity Implicitly Used Identifier:
+(56): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(57): ReSharper Unity Implicitly Used Identifier:
+(58): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(59): ReSharper Unity Implicitly Used Identifier:
+(60): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(61): ReSharper Unity Implicitly Used Identifier:
+(62): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(63): ReSharper Unity Implicitly Used Identifier:
+(64): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(65): ReSharper Unity Implicitly Used Identifier:
+(66): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
+(67): ReSharper Unity Implicitly Used Identifier:
+(68): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity

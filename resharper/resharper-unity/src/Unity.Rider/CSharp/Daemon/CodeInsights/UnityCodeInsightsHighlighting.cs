@@ -21,9 +21,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.CodeInsights
         TransmitUpdates = true)]
     [StaticSeverityHighlighting(Severity.INFO, typeof(HighlightingGroupIds.CodeInsights), AttributeId = Id,
         OverlapResolve = OverlapResolveKind.NONE)]
-    public class UnityCodeInsightsHighlighting : CodeInsightsHighlighting, IUnityIndicatorHighlighting
+    public class UnityCodeInsightsHighlighting : CodeInsightsHighlighting, IUnityIndicatorHighlighting, IHighlightingWithTestOutput
     {
-        public new const string Id = "UnityCodeInsights";
+        private new const string Id = "UnityCodeInsights";
 
         public UnityCodeInsightsHighlighting(DocumentRange range, [NotNull] string lenText, string tooltipText, [NotNull] string moreText,
                                              [NotNull] ICodeInsightsProvider provider, IDeclaredElement element,
@@ -35,5 +35,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Daemon.CodeInsights
         }
 
         public List<BulbMenuItem> MenuItems { get; }
+
+        public string TestOutput => ((TextCodeLensEntry)Entry).Text
+                                    + " | " + ((TextCodeLensEntry)Entry).LongPresentation
+                                    + " | " + ((TextCodeLensEntry)Entry).Tooltip;
     }
 }
