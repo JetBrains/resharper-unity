@@ -1,6 +1,6 @@
 <Project>
   <ItemGroup>
-      <!-- The JetBrains.Psi.Features.Tasks package incorrectly includes $(PsiGenToolsDir)/TokenGenerator.exe 
+      <!-- The JetBrains.Psi.Features.Tasks package incorrectly includes $(PsiGenToolsDir)/TokenGenerator.exe
            in the inputs, but that file doesn't exist - $(PsiGenToolsDir)..\TokenGenerator.exe does.
            This is a workaround that ignores changes to the .exe and the .targets. See RSRP-465228 -->
     <GenerateTokenGeneratorInputs Remove="$(PsiGenToolsDir)/TokenGenerator.exe" />
@@ -9,8 +9,17 @@
     <GenerateErrorsGenInputs Remove="$(PsiGenToolsDir)/ErrorsGen.exe" />
     <GenerateErrorsGenInputs Include="$(PsiGenToolsDir)/../ErrorsGen.exe" />
   </ItemGroup>
-  <Target Name="ReportVersion" BeforeTargets="Build">
-    <Message Importance="High" Text="Build are using version: '$(Version)'" />
+
+  <!-- The x86 version of Psi.Cpp.dll is copied to the output folder, and the x64 version is copied to the output/x64
+       folder. If running 64 bit, the runtime will always try to load the version in the output folder. Move it to x86.
+       For tests, we'll tell the runtime which version to load using app.config -->
+  <Target Name="CppHack" AfterTargets="PrepareForRun">
+    <Move SourceFiles="$(OutDir)JetBrains.ReSharper.Psi.Cpp.dll"
+          DestinationFiles="$(OutDir)x86\JetBrains.ReSharper.Psi.Cpp.dll"
+          Condition="Exists('$(OutDir)JetBrains.Resharper.Psi.Cpp.dll')" />
   </Target>
 
+  <Target Name="ReportVersion" BeforeTargets="Build">
+    <Message Importance="High" Text="Build is using version: '$(Version)'" />
+  </Target>
 </Project>

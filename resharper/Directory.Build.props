@@ -1,32 +1,51 @@
 <Project>
-  <!-- We have multiple projects in the same folder, so need to rename the bin and obj
-       folders so that they are unique and we don't overwrite anything. We can do this
-       in the project files for the bin folders, but not for the obj folders, because
-       the Sdk attribute indirectly imports Microsoft.Common.props before we have a
-       chance to set any properties. Microsoft.Common.props defines the BaseIntermediateOutputPath
-       value, and then immediately uses it to include props files from the obj folder,
-       before we've had a chance to override it. Fortunately, this Directory.Build.props
-       file gets automatically imported first, so we can override it here.
-       We also have to set it to something outside of the source tree, or the default
-       wildcard includes only exclude bin and obj for the current project, and we'd
-       pick up extra files.
-       See:
-       * https://github.com/Microsoft/msbuild/issues/1603
-       * https://github.com/dotnet/sdk/issues/803
-       * https://github.com/dotnet/sdk/issues/802 -->
   <PropertyGroup>
+    <!-- Use a per project obj folder in a common build folder. Each project needs its own obj folder, as this contains
+         e.g. nuget import files and generated files, and can't be shared across all projects.
+         Note that we must set it in Directory.Build.Props as Microsoft.Common.props (included by Microsoft.Net.Sdk)
+         will set the property and immediately use it. Fortunately, it includes Directory.build.props first.
+         Also make sure that obj folder is outside of the project folder, or the default wildcards will include it in
+         the project
+         See:
+         * https://github.com/Microsoft/msbuild/issues/1603
+         * https://github.com/dotnet/sdk/issues/803
+         * https://github.com/dotnet/sdk/issues/802 -->
     <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+
+    <!-- Use a per-project bin folder, again outside of the project folder to avoid wildcard inclusion -->
+    <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\$(Configuration)</OutputPath>
+
+    <!-- Define a single bin folder to contain the ReSharper plugins. This means we only get one copy of the SDK, and
+         all plugin files and all tests are output to the same folder. This works even though it contains both Rider and
+         VisualStudio plugin assemblies because we don't use this folder to run code. Rider uses the idea-sandbox gradle
+         infrastructure and ReSharper requires a proper install/custom hive. This bin folder is only used for tests, and
+         tests will only load assemblies that are directly referenced (e.g. a Rider test assembly wouldn't load a
+         VisualStudio test assembly) and only starts components from zones that are activated by the TestEnvironment.
+         We don't know which projects need the common bin folder, so we can only define it here and have to use it in
+         each assembly directly.
+         For reference, the standard SDK package entry points would mean that production code would skip copying
+         @(JetContent) such as external annotations or schemas, would also skip copying all product assemblies defined
+         in @(JetReference) and would set JetReferencesPrivate=False to avoid creating a private copy of reference
+         assemblies in the bin dir. For test projects, JetTestProject=True, and @(JetContent) and @(JetReference) are
+         always copied. -->
+    <ReSharperUnityCommonOutputPath>$(MSBuildThisFileDirectory)\build\Unity\bin\$(Configuration)</ReSharperUnityCommonOutputPath>
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- Build tests and production to a common bin folder to reduce unnecessary duplication and copies. By default,
-         production would skip copying @(JetContent) and should skip @(JetReference) but because we're not using the
-         standard SDK entry point, which would set JetReferencesPrivate=False, production gets all @(JetReference)
-         assemblies. It also gets all nuget assemblies. Combining test and production means we only get a single copy
-         of @(JetReference), nuget assemblies and @(JetContent) for each build - rider and resharper.
-         Note that obj folders are kept separate because per-project files are saved there, e.g. nuget restore details
-         and generated source files. -->
-    <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName.Replace("tests.", ""))\bin\$(Configuration)</OutputPath>
+    <Company>JetBrains</Company>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)..\sign.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <!-- Set default constants to enable asserts and exceptions in debug mode -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
 
   <!-- Do not try to auto-unify referenced assembly versions. The SDK has a couple of clashes that are not easily

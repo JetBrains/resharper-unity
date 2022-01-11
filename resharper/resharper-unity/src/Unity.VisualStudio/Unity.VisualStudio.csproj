@@ -5,15 +5,7 @@
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity.VisualStudio</RootNamespace>
     <LangVersion>9</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\..\..\sign.snk</AssemblyOriginatorKeyFile>
-    <Company>JetBrains</Company>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />

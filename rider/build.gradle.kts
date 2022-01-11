@@ -59,20 +59,20 @@ val backend = BackendPaths(project, logger, repoRoot, productVersion).apply {
     extra["backend"] = this
 }
 val dotnetDllFiles = files(
-    "../resharper/build/Unity.Rider/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.dll",
-    "../resharper/build/Unity.Rider/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.pdb",
-    "../resharper/build/Unity.Rider/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.dll",
-    "../resharper/build/Unity.Rider/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.pdb",
-    "../resharper/build/Unity.Rider/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Shaders.dll",
-    "../resharper/build/Unity.Rider/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Shaders.pdb",
-    "../resharper/build/Unity.Rider/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.dll",
-    "../resharper/build/Unity.Rider/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.pdb",
-    "../resharper/build/Unity.Rider/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.Rider.dll",
-    "../resharper/build/Unity.Rider/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.Rider.pdb",
-    "../resharper/build/Unity.Rider/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.dll",
-    "../resharper/build/Unity.Rider/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.pdb",
-    "../resharper/build/Unity.Rider/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.Rider.dll",
-    "../resharper/build/Unity.Rider/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.Rider.pdb"
+    "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.dll",
+    "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.pdb",
+    "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.dll",
+    "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.pdb",
+    "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Shaders.dll",
+    "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Shaders.pdb",
+    "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.dll",
+    "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.pdb",
+    "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.Rider.dll",
+    "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Json.Rider.pdb",
+    "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.dll",
+    "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.pdb",
+    "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.Rider.dll",
+    "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Yaml.Rider.pdb"
 )
 
 val debuggerDllFiles = files(

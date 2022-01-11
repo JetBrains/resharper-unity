@@ -8,17 +8,9 @@
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
     <LangVersion>9</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\..\..\sign.snk</AssemblyOriginatorKeyFile>
-    <Company>JetBrains</Company>
+    <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
     <!-- TODO: Fix obsolete warnings! -->
     <NoWarn>0618</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <!-- ********** -->
   <ItemGroup Label="Cg">
@@ -78,7 +70,4 @@
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" />
-  <Target Name="CppHack" AfterTargets="PrepareForRun">
-    <Move SourceFiles="$(OutDir)JetBrains.ReSharper.Psi.Cpp.dll" DestinationFiles="$(OutDir)x86\JetBrains.ReSharper.Psi.Cpp.dll" />
-  </Target>
 </Project>

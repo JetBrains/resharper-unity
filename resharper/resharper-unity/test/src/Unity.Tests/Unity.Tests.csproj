@@ -6,16 +6,12 @@
     <LangVersion>9</LangVersion>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <JetTestProject>True</JetTestProject>
+    <SignAssembly>False</SignAssembly>
+    <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
     <!-- Force 32 bit x86 for Windows as we need to load a specific build of the Cpp assembly, and we have X86 defined
          in the app.config. Use OS default for other platforms as Mono can't run Cpp. Mac only runs 64 bit processes -->
     <PlatformTarget Condition="'$([MSBuild]::IsOsPlatform(Windows))' == 'True'">X86</PlatformTarget>
     <PlatformTarget Condition="'$([MSBuild]::IsOsPlatform(Windows))' != 'True'">X64</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;$(CommandLineConstants)</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;$(CommandLineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="WindowsBase" />
@@ -26,15 +22,10 @@
     </PackageReference>
     <PackageReference Include="NUnit.Console" Version="3.10.0" />
     <PackageReference Include="Lib.Harmony" Version="2.0.0.8" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\..\src\Unity\Unity.csproj" />
     <ProjectReference Include="..\..\..\src\Unity.Shaders\Unity.Shaders.csproj" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" />
-  <Target Name="CppHack" AfterTargets="PrepareForRun">
-    <Move SourceFiles="$(OutDir)JetBrains.ReSharper.Psi.Cpp.dll" DestinationFiles="$(OutDir)x86\JetBrains.ReSharper.Psi.Cpp.dll" />
-  </Target>
 </Project>
