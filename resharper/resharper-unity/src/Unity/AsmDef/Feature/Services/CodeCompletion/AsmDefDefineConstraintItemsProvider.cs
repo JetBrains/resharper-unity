@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.CodeCompleti
 
         protected override bool AddLookupItems(JsonNewCodeCompletionContext context, IItemsCollector collector)
         {
-            var file = (context.BasicContext.File as IJsonNewFile).NotNull("context.BasicContext.File as IJsonNewFile != null")!;
+            var file = (context.BasicContext.File as IJsonNewFile).NotNull("context.BasicContext.File as IJsonNewFile != null");
             var literal = context.UnterminatedContext.TreeNode?.GetContainingNode<IJsonNewLiteralExpression>();
             if (literal == null)
                 return false;

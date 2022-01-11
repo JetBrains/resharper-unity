@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
                                              UnityExternalFilesModuleFactory externalFilesPsiModuleFactory)
         {
             myPreProcessingDirectiveCache = preProcessingDirectiveCache;
-            myExternalFilesPsiModule = externalFilesPsiModuleFactory.PsiModule.NotNull("externalFilesPsiModuleFactory.PsiModule != null")!;
+            myExternalFilesPsiModule = externalFilesPsiModuleFactory.PsiModule.NotNull("externalFilesPsiModuleFactory.PsiModule != null");
         }
 
         public override bool ShouldRun(IFile file, ElementProblemAnalyzerData data) =>
