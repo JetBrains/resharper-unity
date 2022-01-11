@@ -518,7 +518,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         testAssemblies = listOf(testDll)
     }
 
-    val nunitRiderUnity by registering(NUnit::class) {
+    val nunitReSharperUnityRider by registering(NUnit::class) {
         group = testGroup
         shadowCopy = false
         outputs.upToDateWhen { false }
@@ -526,10 +526,11 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         val buildDir = File(repoRoot, "resharper/build")
         val testDll = File(
             buildDir,
-            "rider-unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Tests.Rider.dll"
+            "Unity.Rider.Tests/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Tests.dll"
         )
         testAssemblies = listOf(testDll)
     }
+
 
     val runNunit by registering {
         group = testGroup
@@ -537,18 +538,17 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         // The nunit plugin doesn't have the ability to disable this, so we'll do it long hand...
         dependsOn(
             buildReSharperHostPlugin,
-            buildUnityEditorPlugin,
             nunitReSharperJson,
             nunitReSharperYaml,
             nunitReSharperUnity,
-            nunitRiderUnity
+            nunitReSharperUnityRider
         )
     }
 
     // It might be better to make it top-level task that is called separately, e.g. gradle buildPlugin nunit
     // (and we could get rid of RunTests then, too)
     if (runTests) {
-        runNunit.get().shouldRunAfter(buildReSharperHostPlugin, buildUnityEditorPlugin)
+        runNunit.get().shouldRunAfter(buildReSharperHostPlugin)
         buildReSharperHostPlugin.get().finalizedBy(runNunit)
     }
 
@@ -594,11 +594,10 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
 
     withType<PrepareSandboxTask> {
         // Default dependsOn includes the standard Java build/jar task
-        dependsOn(buildReSharperHostPlugin, buildUnityEditorPlugin, fixSdkPermissions)
+        dependsOn(buildReSharperHostPlugin, fixSdkPermissions)
 
         // Have dependent tasks use upToDateWhen { project.buildServer.automatedBuild etc. }
         //inputs.files(buildRiderPlugin.outputs)
-        //inputs.files(buildUnityEditorPlugin.packedPath)
 
         // Backend:
         // Copy unity editor plugin repacked file to `rider-unity/EditorPlugin`
