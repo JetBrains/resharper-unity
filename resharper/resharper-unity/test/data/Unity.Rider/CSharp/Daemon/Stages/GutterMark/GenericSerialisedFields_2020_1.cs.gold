@@ -26,17 +26,17 @@ public class SerialisableClass2<T1, T2>
 
 
 ---------------------------------------------------------
-(0): ReSharper Unity Implicitly Used Identifier:
+(0): ReSharper Unity Implicitly Used Identifier: 
 (1): UnityCodeInsights: Script | Script | Unity script
-(2): ReSharper Unity Implicitly Used Identifier:
+(2): ReSharper Unity Implicitly Used Identifier: 
 (3): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
-(4): ReSharper Unity Implicitly Used Identifier:
+(4): ReSharper Unity Implicitly Used Identifier: 
 (5): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
-(6): ReSharper Unity Implicitly Used Identifier:
+(6): ReSharper Unity Implicitly Used Identifier: 
 (7): UnityCodeInsights: Serializable | Serializable | This field is initialized from Inspector
-(8): ReSharper Unity Implicitly Used Identifier:
+(8): ReSharper Unity Implicitly Used Identifier: 
 (9): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
-(10): ReSharper Unity Implicitly Used Identifier:
+(10): ReSharper Unity Implicitly Used Identifier: 
 (11): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity
-(12): ReSharper Unity Implicitly Used Identifier:
+(12): ReSharper Unity Implicitly Used Identifier: 
 (13): UnityCodeInsights: Serializable | Serializable | This field is serialized by Unity

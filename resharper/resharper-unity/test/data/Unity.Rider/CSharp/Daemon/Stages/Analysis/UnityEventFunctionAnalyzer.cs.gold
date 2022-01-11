@@ -91,41 +91,41 @@ public class ||AllWrong|(34)|(35) : AssetPostprocessor
 }
 
 ---------------------------------------------------------
-(0): ReSharper Unity Implicitly Used Identifier:
+(0): ReSharper Unity Implicitly Used Identifier: 
 (1): UnityCodeInsights: Script | Script | Unity script
-(2): ReSharper Unity Implicitly Used Identifier:
+(2): ReSharper Unity Implicitly Used Identifier: 
 (3): UnityCodeInsights: Event function | Event function | Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
-(4): ReSharper Unity Implicitly Used Identifier:
+(4): ReSharper Unity Implicitly Used Identifier: 
 (5): UnityCodeInsights: Script | Script | Unity script
-(6): ReSharper Unity Implicitly Used Identifier:
+(6): ReSharper Unity Implicitly Used Identifier: 
 (7): UnityCodeInsights: Event function | Event function | OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody.
-(8): ReSharper Unity Implicitly Used Identifier:
+(8): ReSharper Unity Implicitly Used Identifier: 
 (9): UnityCodeInsights: Event function | Event function | OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody.
-(10): ReSharper Unity Implicitly Used Identifier:
+(10): ReSharper Unity Implicitly Used Identifier: 
 (11): UnityCodeInsights: Script | Script | Unity script
-(12): ReSharper Unity Implicitly Used Identifier:
+(12): ReSharper Unity Implicitly Used Identifier: 
 (13): UnityCodeInsights: Event function | Event function | Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
-(14): ReSharper Unity Implicitly Used Identifier:
+(14): ReSharper Unity Implicitly Used Identifier: 
 (15): UnityCodeInsights: Event function | Event function | Update is called every frame, if the MonoBehaviour is enabled.
-(16): ReSharper Unity Implicitly Used Identifier:
+(16): ReSharper Unity Implicitly Used Identifier: 
 (17): UnityCodeInsights: Event function | Event function | OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody.
-(18): ReSharper Unity Implicitly Used Identifier:
+(18): ReSharper Unity Implicitly Used Identifier: 
 (19): UnityCodeInsights: Event function | Event function | Callback for setting up animation IK (inverse kinematics).
-(20): ReSharper Unity Implicitly Used Identifier:
+(20): ReSharper Unity Implicitly Used Identifier: 
 (21): UnityCodeInsights: Unity type | Unity type | Custom Unity type
-(22): ReSharper Unity Implicitly Used Identifier:
+(22): ReSharper Unity Implicitly Used Identifier: 
 (23): UnityCodeInsights: Event function | Event function | This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or just completely replace them). Hopefully we'll never need this.
-(24): ReSharper Unity Implicitly Used Identifier:
+(24): ReSharper Unity Implicitly Used Identifier: 
 (25): UnityCodeInsights: Event function | Event function | This callback is used by UnityVS to take over project generation from Unity
-(26): ReSharper Unity Implicitly Used Identifier:
-(27): UnityCodeInsights: Event function | Event function |
-(28): ReSharper Unity Implicitly Used Identifier:
+(26): ReSharper Unity Implicitly Used Identifier: 
+(27): UnityCodeInsights: Event function | Event function | 
+(28): ReSharper Unity Implicitly Used Identifier: 
 (29): UnityCodeInsights: Scriptable object | Scriptable object | Scriptable Object
-(30): ReSharper Unity Implicitly Used Identifier:
+(30): ReSharper Unity Implicitly Used Identifier: 
 (31): UnityCodeInsights: Script | Script | Unity script
-(32): ReSharper Unity Implicitly Used Identifier:
+(32): ReSharper Unity Implicitly Used Identifier: 
 (33): UnityCodeInsights: Event function | Event function | Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
-(34): ReSharper Unity Implicitly Used Identifier:
+(34): ReSharper Unity Implicitly Used Identifier: 
 (35): UnityCodeInsights: Unity type | Unity type | Custom Unity type
-(36): ReSharper Unity Implicitly Used Identifier:
+(36): ReSharper Unity Implicitly Used Identifier: 
 (37): UnityCodeInsights: Event function | Event function | This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or just completely replace them). Hopefully we'll never need this.
