@@ -1,5 +1,5 @@
 ﻿using System;
-using JetBrains.Util.DataStructures;
+using JetBrains.Util.Media;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
 {

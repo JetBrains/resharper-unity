@@ -13,7 +13,7 @@ using JetBrains.ReSharper.Psi.Colors;
 using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.Util.DataStructures;
+using JetBrains.Util.Media;
 using JetBrains.Util.Special;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color

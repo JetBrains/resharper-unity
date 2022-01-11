@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using System.Globalization;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.VisualElements;
@@ -10,7 +9,7 @@ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Colors;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.Util.DataStructures;
+using JetBrains.Util.Media;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.VisualElements
 {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.ReSharper.Psi.Colors;
-using JetBrains.Util.DataStructures;
+using JetBrains.Util.Media;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
 {
