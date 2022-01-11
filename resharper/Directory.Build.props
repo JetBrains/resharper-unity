@@ -12,17 +12,18 @@
          * https://github.com/dotnet/sdk/issues/802 -->
     <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
 
-    <!-- Use a per-project bin folder, again outside of the project folder to avoid wildcard inclusion -->
+    <!-- Use a per-project bin folder, again outside of the project folder to avoid wildcard inclusion. We'll use this
+         for all non-plugin projects, and also the tests, which need to be in their own separate folders so they can be
+         run in parallel without stepping on each other's toes -->
     <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\$(Configuration)</OutputPath>
 
-    <!-- Define a single bin folder to contain the ReSharper plugins. This means we only get one copy of the SDK, and
-         all plugin files and all tests are output to the same folder. This works even though it contains both Rider and
-         VisualStudio plugin assemblies because we don't use this folder to run code. Rider uses the idea-sandbox gradle
-         infrastructure and ReSharper requires a proper install/custom hive. This bin folder is only used for tests, and
-         tests will only load assemblies that are directly referenced (e.g. a Rider test assembly wouldn't load a
-         VisualStudio test assembly) and only starts components from zones that are activated by the TestEnvironment.
-         We don't know which projects need the common bin folder, so we can only define it here and have to use it in
-         each assembly directly.
+    <!-- The main plugin projects (Unity, Unity.Rider, Unity.VisualStudio, Unity.Shaders, Yaml, Json, etc.) are all
+         built into a single bin folder, to reduce copies of the SDK. Technically, we can run tests from this folder
+         without problems, because the test environment is created from assemblies referenced by the test assembly, and
+         we handle zoning correctly. However, TC wants to run the tests in parallel, so let's build tests to separate
+         folders.
+         Non-plugin projects will get the defualt $(OutputPath) set above, as will test projects. Plugins will use the
+         output path below and build to a central location.
          For reference, the standard SDK package entry points would mean that production code would skip copying
          @(JetContent) such as external annotations or schemas, would also skip copying all product assemblies defined
          in @(JetReference) and would set JetReferencesPrivate=False to avoid creating a private copy of reference

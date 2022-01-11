@@ -7,7 +7,6 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <JetTestProject>True</JetTestProject>
     <SignAssembly>False</SignAssembly>
-    <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
     <!-- Force 32 bit x86 for Windows as we need to load a specific build of the Cpp assembly, and we have X86 defined
          in the app.config. Use OS default for other platforms as Mono can't run Cpp. Mac only runs 64 bit processes -->
     <PlatformTarget Condition="'$([MSBuild]::IsOsPlatform(Windows))' == 'True'">X86</PlatformTarget>
