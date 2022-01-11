@@ -22,7 +22,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup Label="References">
-    <Reference Include="WindowsBase" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
