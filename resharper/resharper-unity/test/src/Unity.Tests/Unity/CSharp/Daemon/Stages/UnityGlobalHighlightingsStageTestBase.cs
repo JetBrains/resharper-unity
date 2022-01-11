@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
@@ -20,9 +19,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages
     [Category("Daemon"), Category("PerformanceCriticalCode")]
     public abstract class UnityGlobalHighlightingsStageTestBase<THighlighting> : BaseTestWithSingleProject
     {
-        protected override string RelativeTestDataPath => $@"{RelativeTestDataRoot}\{Utils.ProductGoldSuffix}";
-        protected virtual string RelativeTestDataRoot => throw new InvalidOperationException();
-
         protected override void DoTest(Lifetime lifetime, IProject project)
         {
             var swea = SolutionAnalysisService.GetInstance(Solution);

@@ -1,7 +1,9 @@
+using JetBrains.ReSharper.Plugins.Tests.Unity;
+using JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.PerformanceHighlightings
+namespace JetBrains.ReSharper.Plugins.Tests.UnityRider.CSharp.Daemon.Stages.PerformanceHighlightings
 {
     [TestUnity]
     public class PerformanceStageTest : UnityGlobalHighlightingsStageTestBase<IUnityPerformanceHighlighting>
@@ -9,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Performan
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\PerformanceCriticalCodeAnalysis\";
 
         // ********************************************************************
-        // IMPORTANT! Keep in sync with equivalent class in Unity.Rider.Tests
+        // IMPORTANT! Keep in sync with equivalent class in Unity.Tests
         // ********************************************************************
 
         [Test] public void SimpleTest() { DoNamedTest(); }
