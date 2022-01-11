@@ -22,7 +22,7 @@
          without problems, because the test environment is created from assemblies referenced by the test assembly, and
          we handle zoning correctly. However, TC wants to run the tests in parallel, so let's build tests to separate
          folders.
-         Non-plugin projects will get the defualt $(OutputPath) set above, as will test projects. Plugins will use the
+         Non-plugin projects will get the default $(OutputPath) set above, as will test projects. Plugins will use the
          output path below and build to a central location.
          For reference, the standard SDK package entry points would mean that production code would skip copying
          @(JetContent) such as external annotations or schemas, would also skip copying all product assemblies defined
@@ -30,6 +30,17 @@
          assemblies in the bin dir. For test projects, JetTestProject=True, and @(JetContent) and @(JetReference) are
          always copied. -->
     <ReSharperUnityCommonOutputPath>$(MSBuildThisFileDirectory)\build\Unity\bin\$(Configuration)</ReSharperUnityCommonOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Treat *.Tests.csproj as a R# SDK test project, and also define JetReferencesPrivate. If set to False, it
+         prevents copying JetBrains references to the output folder. Ideally, this means we only get our production
+         assemblies copied to the common plugin output folder. But it doesn't stop copying nuget transitive, so
+         we've still got a fair amount of rubbish in the bin folder. We also copy everything to each of the test
+         folders, which is more data -->
+    <JetTestProject Condition="'$(JetTestProject)' == '' AND $(MSBuildProjectName.EndsWith('Tests'))">True</JetTestProject>
+    <JetReferencesPrivate Condition="'$(JetReferencesPrivate)' == '' AND '$(JetTestProject)' == 'True'">True</JetReferencesPrivate>
+    <JetReferencesPrivate Condition="'$(JetReferencesPrivate)' == ''">False</JetReferencesPrivate>
   </PropertyGroup>
 
   <PropertyGroup>
