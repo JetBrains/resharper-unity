@@ -55,8 +55,9 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                     // We check that Library/EditorInstance.json is present, but protocol connection was not initialized
                     // also check that all projects are loaded fine
                     if (EditorInstanceJson.getInstance(project).status == EditorInstanceJsonStatus.Valid
+                        && !project.solution.frontendBackendModel.unityEditorConnected.valueOrDefault(false)
                         && !hasUnloadedProjects(project)
-                        && !project.solution.frontendBackendModel.unityEditorConnected.valueOrDefault(false)) {
+                    ) {
 
                         if (!UnityInstallationFinder.getInstance(project).requiresRiderPackage())
                             content = "Make sure Rider $marketingVersion is set as the External Editor in Unity preferences."
