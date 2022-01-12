@@ -16,7 +16,7 @@
   <Target Name="CppHack" AfterTargets="PrepareForRun">
     <Move SourceFiles="$(OutDir)JetBrains.ReSharper.Psi.Cpp.dll"
           DestinationFiles="$(OutDir)x86\JetBrains.ReSharper.Psi.Cpp.dll"
-          Condition="Exists('$(OutDir)JetBrains.Resharper.Psi.Cpp.dll')" />
+          Condition="Exists('$(OutDir)JetBrains.ReSharper.Psi.Cpp.dll')" />
   </Target>
 
   <Target Name="ReportVersion" BeforeTargets="Build">
