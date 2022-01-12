@@ -41,6 +41,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
       myTreeViewState = new FindUsagesWindowTreeState(data);
       myTreeView = new FindUsagesTreeView(myTreeViewState);
       myTreeView.Reload();
+      myTreeView.ExpandAll();
       myTreeView.Repaint();
     }
 
