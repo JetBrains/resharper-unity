@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application;
+using JetBrains.Application.Notifications;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
@@ -15,6 +17,7 @@ using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Rider.Backend.Features.Notifications;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;
@@ -35,6 +38,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorP
         private readonly UnityVersion myUnityVersion;
         private readonly UnitySolutionTracker myUnitySolutionTracker;
         private readonly UnityRefresher myRefresher;
+        private readonly RiderNotificationPopupHost myNotificationPopupHost;
+        private readonly IHostProductInfo myHostProductInfo;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
         private readonly ProcessingQueue myQueue;
 
@@ -50,7 +55,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorP
             UnityVersion unityVersion,
             FrontendBackendHost frontendBackendHost,
             UnitySolutionTracker unitySolutionTracker,
-            UnityRefresher refresher)
+            UnityRefresher refresher,
+            RiderNotificationPopupHost notificationPopupHost,
+            IHostProductInfo hostProductInfo)
         {
             myPluginInstallations = new JetHashSet<VirtualFileSystemPath>();
 
@@ -64,13 +71,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorP
             myUnityVersion = unityVersion;
             myUnitySolutionTracker = unitySolutionTracker;
             myRefresher = refresher;
+            myNotificationPopupHost = notificationPopupHost;
+            myHostProductInfo = hostProductInfo;
 
             myBoundSettingsStore = settingsStore.BoundSettingsStore;
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
 
             frontendBackendHost.Do(frontendBackendModel =>
             {
-                frontendBackendModel.InstallEditorPlugin.AdviseNotNull(lifetime, x =>
+                frontendBackendModel.InstallEditorPlugin.AdviseNotNull(lifetime, _ =>
                 {
                     myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.InstallEditorPlugin", () =>
                     {
@@ -341,6 +350,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorP
             {
                 myLogger.Info($"Restoring from backup {backup.Value} -> {backup.Key}");
                 backup.Value.MoveFile(backup.Key, true);
+            }
+        }
+        
+        internal void ShowOutOfSyncNotification(Lifetime lifetime)
+        {
+            var notificationLifetime = lifetime.CreateNested();
+            var appVersion = myUnityVersion.ActualVersionForSolution.Value;
+            if (appVersion < new Version(2019, 2))
+            {
+                var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
+                var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lifetime, entry, null).Value;
+                if (isEnabled) return;
+                var notification = RiderNotification.Create(
+                    NotificationSeverity.WARNING, "Unity editor plugin update required",
+                    "The Unity editor plugin is out of date and automatic plugin updates are disabled. Advanced Unity integration features are unavailable until the plugin is updated.",
+                    additionalCommands: new[]
+                    {
+                        new UserNotificationCommand("Never show for this solution", () =>
+                        {
+                            mySolution.Locks.ExecuteOrQueueReadLockEx(notificationLifetime.Lifetime,
+                                "UnityPluginInstaller.InstallEditorPlugin", () =>
+                                {
+                                    var installationInfo = myDetector.GetInstallationInfo(myCurrentVersion);
+                                    QueueInstall(installationInfo, true);
+                                    notificationLifetime.Terminate();
+                                });
+                        })
+                    }
+                );
+                myNotificationPopupHost.ShowNotification(notificationLifetime.Lifetime, notification);
+            }
+            else
+            {
+                var notification = RiderNotification.Create(
+                    NotificationSeverity.WARNING, "Advanced Unity integration is unavailable",
+                    $"Make sure Rider {myHostProductInfo.VersionMarketingString} is set as the External Editor in Unity preferences."
+                );
+                myNotificationPopupHost.ShowNotification(notificationLifetime.Lifetime, notification);
             }
         }
     }

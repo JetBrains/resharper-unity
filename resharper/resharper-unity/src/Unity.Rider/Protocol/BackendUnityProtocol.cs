@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using JetBrains.Application;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
-using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
@@ -14,11 +12,8 @@ using JetBrains.Rd;
 using JetBrains.Rd.Base;
 using JetBrains.Rd.Impl;
 using JetBrains.RdBackend.Common.Features;
-using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
-using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Rider.Model.Notifications;
+using JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorPlugin;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Util;
@@ -36,22 +31,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
-        private readonly UnityVersion myUnityVersion;
-        private readonly NotificationsModel myNotificationsModel;
-        private readonly IHostProductInfo myHostProductInfo;
-        private readonly FrontendBackendHost myFrontendBackendHost;
-        private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
+        private readonly UnityPluginInstaller myPluginInstaller;
         private readonly JetHashSet<VirtualFileSystemPath> myPluginInstallations;
 
         private DateTime myLastChangeTime;
 
         public BackendUnityProtocol(Lifetime lifetime, ILogger logger,
-                                    BackendUnityHost backendUnityHost, FrontendBackendHost frontendBackendHost,
-                                    IScheduler dispatcher, IShellLocks locks, ISolution solution,
-                                    IApplicationWideContextBoundSettingStore settingsStore,
-                                    UnitySolutionTracker unitySolutionTracker,
-                                    UnityVersion unityVersion, NotificationsModel notificationsModel,
-                                    IHostProductInfo hostProductInfo, IFileSystemTracker fileSystemTracker)
+            BackendUnityHost backendUnityHost,
+            IScheduler dispatcher, IShellLocks locks, ISolution solution,
+            UnitySolutionTracker unitySolutionTracker, 
+            IFileSystemTracker fileSystemTracker,
+            UnityPluginInstaller pluginInstaller)
         {
             myPluginInstallations = new JetHashSet<VirtualFileSystemPath>();
 
@@ -61,11 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             myDispatcher = dispatcher;
             myLocks = locks;
             mySolution = solution;
-            myUnityVersion = unityVersion;
-            myNotificationsModel = notificationsModel;
-            myHostProductInfo = hostProductInfo;
-            myFrontendBackendHost = frontendBackendHost;
-            myBoundSettingsStore = settingsStore.BoundSettingsStore;
+            myPluginInstaller = pluginInstaller;
             mySessionLifetimes = new SequentialLifetimes(lifetime);
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
@@ -109,17 +95,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                 return;
 
             myLogger.Info($"EditorPlugin protocol port {protocolInstance.Port} for Solution: {protocolInstance.SolutionName}.");
+            
+            var thisSessionLifetime = mySessionLifetimes.Next();
 
             if (protocolInstance.ProtocolGuid != ProtocolCompatibility.ProtocolGuid)
             {
-                OnOutOfSync(myLifetime);
+                OnOutOfSync(thisSessionLifetime);
                 myLogger.Info("Avoid attempt to create protocol, incompatible.");
                 return;
             }
 
             try
             {
-                var thisSessionLifetime = mySessionLifetimes.Next();
                 myLogger.Info("Create protocol...");
 
                 myLogger.Info("Creating SocketWire with port = {0}", protocolInstance.Port);
@@ -204,24 +191,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             // avoid displaying Notification multiple times on each AppDomain.Reload in Unity
             myPluginInstallations.Add(mySolution.SolutionFilePath);
 
-            var appVersion = myUnityVersion.ActualVersionForSolution.Value;
-            if (appVersion < new Version(2019, 2))
-            {
-                var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
-                var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lifetime, entry, null).Value;
-                if (!isEnabled)
-                {
-                    myFrontendBackendHost.Do(model => model.OnEditorModelOutOfSync());
-                }
-            }
-            else
-            {
-                var notification = new NotificationModel("Advanced Unity integration is unavailable",
-                    $"Make sure Rider {myHostProductInfo.VersionMarketingString} is set as the External Editor in Unity preferences.",
-                    true, RdNotificationEntryType.WARN, new List<NotificationHyperlink>());
-                mySolution.Locks.ExecuteOrQueue(lifetime, "OutOfSyncModels.Notify",
-                    () => myNotificationsModel.Notification(notification));
-            }
+            myPluginInstaller.ShowOutOfSyncNotification(lifetime);
         }
     }
 
