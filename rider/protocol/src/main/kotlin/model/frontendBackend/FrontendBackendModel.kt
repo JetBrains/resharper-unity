@@ -141,7 +141,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         sink("notifyYamlHugeFiles", void)
         sink("notifyAssetModeForceText", void)
         sink("showDeferredCachesProgressNotification", void)
-        sink("onEditorModelOutOfSync", void)
         callback("attachDebuggerToUnityEditor", void, bool).documentation = "Tell the frontend to attach the debugger to the Unity editor. Used for debugging unit tests"
         callback("allowSetForegroundWindow", void, bool).documentation = "Tell the frontend to call AllowSetForegroundWindow for the current Unity editor process ID. Called before the backend tells Unity to show itself"
 
