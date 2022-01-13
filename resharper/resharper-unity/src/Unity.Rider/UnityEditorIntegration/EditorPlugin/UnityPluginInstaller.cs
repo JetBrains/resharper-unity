@@ -56,8 +56,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorP
             FrontendBackendHost frontendBackendHost,
             UnitySolutionTracker unitySolutionTracker,
             UnityRefresher refresher,
-            RiderNotificationPopupHost notificationPopupHost,
-            IHostProductInfo hostProductInfo)
+            IHostProductInfo hostProductInfo,
+            RiderNotificationPopupHost notificationPopupHost = null)
         {
             myPluginInstallations = new JetHashSet<VirtualFileSystemPath>();
 
@@ -71,9 +71,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorP
             myUnityVersion = unityVersion;
             myUnitySolutionTracker = unitySolutionTracker;
             myRefresher = refresher;
-            myNotificationPopupHost = notificationPopupHost;
             myHostProductInfo = hostProductInfo;
-
+            myNotificationPopupHost = notificationPopupHost;
+            
             myBoundSettingsStore = settingsStore.BoundSettingsStore;
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
 
