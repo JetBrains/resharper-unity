@@ -54,7 +54,7 @@ fun MutableList<String>.withRunTests(project: Project) : MutableList<String> {
 }
 
 fun MutableList<String>.withTestResults(project: Project) : MutableList<String> {
-    this.addAll(listOf("-testResults", project.solutionDirectory.resolve("results.xml").canonicalPath))
+    this.addAll(listOf("-testResults", project.solutionDirectory.resolve("Temp/results.xml").canonicalPath))
     return this
 }
 
