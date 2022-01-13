@@ -19,6 +19,7 @@ import com.jetbrains.rider.plugins.unity.util.*
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDirectory
 import java.io.File
+import java.nio.file.Paths
 
 class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedProjectComponent(project) {
 
@@ -57,24 +58,32 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
                 runManager.addConfiguration(runConfiguration)
             }
 
-            if (project.isUnityProject() && !runManager.allSettings.any { s -> s.type is UnityExeConfigurationType
-                    && s.factory is UnityExeConfigurationFactory && s.name == RUN_DEBUG_BATCH_MODE_UNITTESTS_CONFIGURATION_NAME}) {
-                val exePath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath()
-                if (exePath != null) {
-                    val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityExeConfigurationType::class.java)
-                    val runConfiguration = runManager.createConfiguration(
-                        RUN_DEBUG_BATCH_MODE_UNITTESTS_CONFIGURATION_NAME,
-                        configurationType.factory
-                    )
-                    val unityExeConfiguration = runConfiguration.configuration as UnityExeConfiguration
-                    unityExeConfiguration.parameters.exePath = exePath.toFile().canonicalPath
-                    unityExeConfiguration.parameters.workingDirectory = project.solutionDirectory.canonicalPath
-                    unityExeConfiguration.parameters.programParameters =
-                        mutableListOf<String>().withRunTests(project).withBatchMode(project)
-                            .withProjectPath(project).withTestResults(project).withDebugCodeOptimization()
-                            .toProgramParameters()
-                    runConfiguration.storeInLocalWorkspace()
-                    runManager.addConfiguration(runConfiguration)
+            project.solution.frontendBackendModel.unityApplicationData.adviseNotNull(projectComponentLifetime) {
+                val exePath = Paths.get(it.applicationPath)
+                if (exePath.toFile().isFile) {
+                    val config = runManager.allSettings.firstOrNull { s -> s.type is UnityExeConfigurationType
+                        && s.factory is UnityExeConfigurationFactory && s.name == RUN_DEBUG_BATCH_MODE_UNITTESTS_CONFIGURATION_NAME}
+
+                    // if config doesn't exist - create, otherwise only update path to Unity
+                    if (config == null) {
+                        val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityExeConfigurationType::class.java)
+                        val runConfiguration = runManager.createConfiguration(
+                            RUN_DEBUG_BATCH_MODE_UNITTESTS_CONFIGURATION_NAME,
+                            configurationType.factory
+                        )
+                        val unityExeConfiguration = runConfiguration.configuration as UnityExeConfiguration
+                        unityExeConfiguration.parameters.exePath = exePath.toFile().canonicalPath
+                        unityExeConfiguration.parameters.workingDirectory = project.solutionDirectory.canonicalPath
+                        unityExeConfiguration.parameters.programParameters =
+                            mutableListOf<String>().withRunTests(project).withBatchMode(project)
+                                .withProjectPath(project).withTestResults(project).withDebugCodeOptimization()
+                                .toProgramParameters()
+                        runConfiguration.storeInLocalWorkspace()
+                        runManager.addConfiguration(runConfiguration)
+                    }
+                    else{
+                        (config.configuration as UnityExeConfiguration).parameters.exePath = exePath.toFile().absolutePath
+                    }
                 }
             }
 
