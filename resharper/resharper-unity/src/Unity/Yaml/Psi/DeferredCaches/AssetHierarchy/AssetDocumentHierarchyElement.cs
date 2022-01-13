@@ -150,8 +150,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 if (myIsRestored)
                     return;
                 
-                myIsRestored = true;
-                
                 AssetDocumentHierarchyElementContainer = hierarchyElementContainer;
                 IsScene = sourceFile.GetLocation().ExtensionWithDot.Equals(UnityYamlConstants.Scene);
 
@@ -192,6 +190,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                             prefabInstanceHierarchy.Location, correspondingSourceObject));
                     }
                 }
+                
+                myIsRestored = true;
             }
         }
 
