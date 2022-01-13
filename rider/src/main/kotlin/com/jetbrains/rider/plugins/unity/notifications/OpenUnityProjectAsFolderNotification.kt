@@ -17,6 +17,7 @@ import com.jetbrains.rd.ide.model.RdVirtualSolution
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rd.util.reactive.whenTrue
+import com.jetbrains.rider.model.*
 import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
@@ -28,6 +29,9 @@ import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionManager
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
+import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
+import com.jetbrains.rider.projectView.workspace.ProjectModelEntityVisitor
+import com.jetbrains.rider.projectView.workspace.getSolutionEntity
 import javax.swing.event.HyperlinkEvent
 
 class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
@@ -49,7 +53,12 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                 it.launchNonUrgentBackground {
                     // Sometimes in Unity "External Script Editor" is set to "Open by file extension"
                     // We check that Library/EditorInstance.json is present, but protocol connection was not initialized
-                    if (EditorInstanceJson.getInstance(project).status == EditorInstanceJsonStatus.Valid && !project.solution.frontendBackendModel.unityEditorConnected.valueOrDefault(false)) {
+                    // also check that all projects are loaded fine
+                    if (EditorInstanceJson.getInstance(project).status == EditorInstanceJsonStatus.Valid
+                        && !project.solution.frontendBackendModel.unityEditorConnected.valueOrDefault(false)
+                        && !hasUnloadedProjects(project)
+                    ) {
+
                         if (!UnityInstallationFinder.getInstance(project).requiresRiderPackage())
                             content = "Make sure Rider $marketingVersion is set as the External Editor in Unity preferences."
                         val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
@@ -115,5 +124,23 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                 Notifications.Bus.notify(notification, project)
             }
         }
+    }
+
+    private fun hasUnloadedProjects(project: Project): Boolean {
+        val visitor = object : ProjectModelEntityVisitor() {
+            var unloadedProjects = 0
+
+            override fun visitUnloadedProject(entity: ProjectModelEntity): Result {
+                val state = (entity.descriptor as RdUnloadProjectDescriptor).state
+                if (state == RdUnloadProjectState.LoadFailed)
+                    unloadedProjects++
+                return Result.Stop
+            }
+        }
+
+        val solutionEntity = WorkspaceModel.getInstance(project).getSolutionEntity() ?: return true
+        visitor.visit(solutionEntity)
+
+        return visitor.unloadedProjects > 0
     }
 }
