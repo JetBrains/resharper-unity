@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         {
         }
 
-        public CreateFromUsageFix(NotResolvedInTextWarning warning) 
+        public CreateFromUsageFix(NotResolvedInTextWarning warning)
         {
             if (warning.Reference is UnityEventFunctionReference unityEventFunctionReference)
             {
@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 myUnfilteredItems = new List<ICreateFromUsageActionProvider>();
             }
         }
-        
+
         public CreateFromUsageFix(RedundantInitializeOnLoadAttributeWarning warning)
         {
             myUnfilteredItems = new List<ICreateFromUsageActionProvider>
@@ -120,7 +120,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
             foreach (var consistencyGroup in consistencyGroupToBulbItem.Keys)
             {
-                InterruptableActivityCookie.CheckAndThrow();
+                Interruption.Current.CheckAndThrow();
 
                 var bulbItems = consistencyGroupToBulbItem[consistencyGroup];
 

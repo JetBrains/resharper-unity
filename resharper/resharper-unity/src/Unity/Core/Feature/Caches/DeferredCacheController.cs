@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections;
@@ -11,12 +12,10 @@ using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Caches;
-using JetBrains.ProjectModel.Tasks;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon.Experimental;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Threading;
@@ -49,10 +48,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches
         private LifetimeDefinition myCurrentBackgroundActivityLifetimeDefinition;
 
         public DeferredCacheController(Lifetime lifetime, ISolution solution, SolutionCaches solutionCaches,
-            ISolutionLoadTasksScheduler tasksScheduler, IPersistentIndexManager persistentIndexManager, IPsiFiles psiFiles,
-            SolutionAnalysisConfiguration solutionAnalysisConfiguration, IShellLocks shellLocks,
-            DeferredHelperCache deferredHelperCache, IEnumerable<IDeferredCache> deferredCaches,
-            DeferredCacheProgressBar progressBar, ILogger logger)
+                                       IPsiFiles psiFiles,
+                                       SolutionAnalysisConfiguration solutionAnalysisConfiguration,
+                                       IShellLocks shellLocks,
+                                       DeferredHelperCache deferredHelperCache,
+                                       IEnumerable<IDeferredCache> deferredCaches,
+                                       DeferredCacheProgressBar progressBar, ILogger logger)
         {
             myLifetime = lifetime;
             mySolution = solution;
@@ -64,10 +65,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches
             myDeferredCaches = deferredCaches;
             myProgressBar = progressBar;
             myLogger = logger;
-            var defaultValue = solutionCaches.PersistentProperties.TryGetValue("DeferredCachesCompletedOnce", out var result) && result.Equals("True");
+            var defaultValue =
+                solutionCaches.PersistentProperties.TryGetValue("DeferredCachesCompletedOnce", out var result) &&
+                result.Equals("True");
             myCompletedOnce = new ViewableProperty<bool>(defaultValue);
 
-            myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "DeferredCachesCoreActivity",  TimeSpan.FromMilliseconds(500), Rgc.Guarded, RunBackgroundActivity);
+            myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "DeferredCachesCoreActivity",
+                TimeSpan.FromMilliseconds(500), Rgc.Guarded, RunBackgroundActivity);
         }
 
         private void ScheduleBackgroundActivity()
@@ -101,7 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches
 
             using (ReadLockCookie.Create())
             {
-                Assertion.Assert(myCurrentBackgroundActivityLifetime.IsAlive, "myCurrentBackgroundActivityLifetime.IsAlive");
+                Assertion.Assert(myCurrentBackgroundActivityLifetime.IsAlive);
                 if (HasDirtyFiles())
                 {
                     var filesToDelete = new SynchronizedList<IPsiSourceFile>(myDeferredHelperCache.FilesToDrop.Take(BATCH_SIZE));
@@ -132,7 +136,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches
             {
                 myPsiFiles.AssertAllDocumentAreCommitted();
 
-                new InterruptableReadActivityThe(myLifetime, myShellLocks, () => !myLifetime.IsAlive || myShellLocks.ContentModelLocks.IsWriteLockRequested)
+                var interruptionSet = new InterruptionSet(LifetimeInterruptionSource.Create(myLifetime),
+                    myShellLocks.ContentModelLocks.Interruption);
+                new InterruptableReadActivityThe(myLifetime, myShellLocks, interruptionSet)
                 {
                     FuncRun = () => RunActivity(toDelete, toProcess, calculatedData),
                     FuncCancelled = () => myShellLocks.Tasks.StartNew(myLifetime, Scheduling.MainGuard, () => ScheduleBackgroundProcess(toDelete, toProcess, calculatedData)),

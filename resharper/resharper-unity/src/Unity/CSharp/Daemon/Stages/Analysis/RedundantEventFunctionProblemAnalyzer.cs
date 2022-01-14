@@ -1,3 +1,4 @@
+using JetBrains.Application.Progress;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
@@ -77,19 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var consumer = new FindFirstResultConsumer();
             var searchDomain = SearchDomainFactory.Instance.CreateSearchDomain(data.Solution, false);
             var finder = methodDeclaration.GetPsiServices().Finder;
-            finder.FindImmediateImplementingMembers(method, searchDomain, consumer, true,
-                new ProgressIndicatorWithInterruptChecker(() =>
-                {
-                    try
-                    {
-                        data.ThrowIfInterrupted();
-                        return false;
-                    }
-                    catch
-                    {
-                        return true;
-                    }
-                }));
+            finder.FindImmediateImplementingMembers(method, searchDomain, consumer, true, NullProgressIndicator.Create());
             return consumer.FoundImplementingMethod;
         }
 
