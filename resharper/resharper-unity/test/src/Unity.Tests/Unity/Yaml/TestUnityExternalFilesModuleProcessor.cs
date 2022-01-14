@@ -28,5 +28,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.Yaml
                 psiSourceFileFactory, moduleFactory, indexDisablingStrategy, usageStatistics)
         {
         }
+
+        public override void OnHasUnityReference()
+        {
+        }
     }
 }
