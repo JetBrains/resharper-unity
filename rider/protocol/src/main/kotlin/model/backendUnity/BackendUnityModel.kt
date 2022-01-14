@@ -141,6 +141,7 @@ object BackendUnityModel: Root() {
         call("getUnityEditorState", void, Library.UnityEditorState).documentation = "Polled from the backend to get what the editor is currently doing"
 
         property("unityApplicationData", Library.UnityApplicationData)
+        property ("riderPackagePotentialUpdateVersion", string).documentation = "Version of the latest compatible update for the Rider package"
         field("unityApplicationSettings", Library.UnityApplicationSettings)
         field("unityProjectSettings", Library.UnityProjectSettings)
 
