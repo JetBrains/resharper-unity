@@ -17,12 +17,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public const string MarkId = "Unity.ExpensiveCode";
 
         public ExpensiveCodeMarksProvider(Lifetime lifetime, ISolution solution,
-            UnityReferencesTracker referencesTracker,
             UnitySolutionTracker unitySolutionTracker)
             : base(MarkId, new CallGraphIncomingPropagator(solution, MarkId))
         {
             Enabled.Value = unitySolutionTracker.IsUnityProject.HasTrueValue();
-            referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
+            unitySolutionTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
         }
 
         public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode,

@@ -8,16 +8,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
     [SolutionComponent]
     public class UnityProjectTechnologyProvider : IProjectTechnologyProvider
     {
-        private readonly UnityReferencesTracker myUnityReferencesTracker;
+        private readonly UnitySolutionTracker myUnitySolutionTracker;
 
-        public UnityProjectTechnologyProvider(UnityReferencesTracker unityReferencesTracker)
+        public UnityProjectTechnologyProvider(UnitySolutionTracker unitySolutionTracker)
         {
-            myUnityReferencesTracker = unityReferencesTracker;
+            myUnitySolutionTracker = unitySolutionTracker;
         }
 
         public IEnumerable<string> GetProjectTechnology(IProject project)
         {
-            if (myUnityReferencesTracker.HasUnityReference.Value) yield return "Unity";
+            if (myUnitySolutionTracker.HasUnityReference.Value) yield return "Unity";
         }
     }
 }

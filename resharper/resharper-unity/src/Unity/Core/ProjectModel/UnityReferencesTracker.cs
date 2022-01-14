@@ -3,15 +3,12 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.changes;
 using JetBrains.Collections;
-using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Utils;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Assemblies.Impl;
 using JetBrains.ProjectModel.Tasks;
-using JetBrains.Rd.Base;
-using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.Util;
 using JetBrains.Util.Reflection;
 
@@ -58,12 +55,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
         private readonly ICollection<IUnityReferenceChangeHandler> myHandlers;
         private readonly Dictionary<IProject, Lifetime> myAllProjectLifetimes;
         private readonly HashSet<IProject> myUnityProjects;
-
-        // If you only want to be notified that we're a Unity solution, advise this.
-        // If all you're interested in is being notified that we're a Unity solution, advise this. If you need to know
-        // we're a Unity solution *and*/or know about Unity projects (and get a per-project lifetime), implement
-        // IUnityReferenceChangeHandler
-        public readonly ViewableProperty<bool> HasUnityReference = new ViewableProperty<bool>(false);
+        
+        private bool myHasUnityReference;
 
         static UnityReferencesTracker()
         {
@@ -80,8 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             ModuleReferenceResolveSync moduleReferenceResolveSync,
             ChangeManager changeManager,
             IViewableProjectsCollection projects,
-            ILogger logger,
-            UnityVersion unityVersion)
+            ILogger logger)
         {
             myAllProjectLifetimes = new Dictionary<IProject, Lifetime>();
             myUnityProjects = new HashSet<IProject>();
@@ -100,8 +92,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             // files on every startup
             scheduler.EnqueueTask(new SolutionLoadTask("Preparing Unity project", SolutionLoadTaskKinds.PreparePsiModules,
                 OnSolutionPreparePsiModules));
-
-            HasUnityReference.WhenTrue(lifetime, lt => unityVersion.UpdateActualVersionForSolution());
         }
 
         private void OnSolutionPreparePsiModules()
@@ -129,9 +119,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
 
         private void NotifyHasUnityReference()
         {
-            if (!HasUnityReference.Value)
+            if (!myHasUnityReference)
             {
-                HasUnityReference.SetValue(true);
+                myHasUnityReference = true;
                 foreach (var handler in myHandlers) handler.OnHasUnityReference();
             }
         }
@@ -203,7 +193,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             return project.HasUnityFlavour() || ReferencesUnity(project);
         }
 
-        public static bool ReferencesUnity(IProject project)
+        private static bool ReferencesUnity(IProject project)
         {
             var targetFrameworkId = project.GetCurrentTargetFrameworkId();
             foreach (var reference in project.GetModuleReferences(targetFrameworkId))

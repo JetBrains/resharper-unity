@@ -27,7 +27,7 @@ using JetBrains.Util.dataStructures;
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
     [SolutionComponent]
-    public class UnityExternalFilesModuleProcessor : IChangeProvider, IUnityReferenceChangeHandler
+    public class UnityExternalFilesModuleProcessor : IChangeProvider
     {
         private const ulong AssetFileCheckSizeThreshold = 20 * (1024 * 1024); // 20 MB
 
@@ -54,7 +54,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                                                  UnityExternalPsiSourceFileFactory psiSourceFileFactory,
                                                  UnityExternalFilesModuleFactory moduleFactory,
                                                  UnityExternalFilesIndexDisablingStrategy indexDisablingStrategy,
-                                                 UnityExternalFilesFileSizeLogContributor usageStatistics)
+                                                 UnityExternalFilesFileSizeLogContributor usageStatistics,
+                                                 UnitySolutionTracker solutionTracker)
         {
             myLifetime = lifetime;
             myLogger = logger;
@@ -77,33 +78,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
             changeManager.RegisterChangeProvider(lifetime, this);
             changeManager.AddDependency(lifetime, psiModules, this);
-        }
+            solutionTracker.HasUnityReference.WhenTrue(lifetime, _ =>
+            {
+                // Called once when we know it's a Unity solution. I.e. a solution that has a Unity reference (so can be true
+                // for non-generated solutions)
+                
+                // For project model access
+                myLocks.AssertReadAccessAllowed();
 
-        // Called once when we know it's a Unity solution. I.e. a solution that has a Unity reference (so can be true
-        // for non-generated solutions)
-        public virtual void OnHasUnityReference()
-        {
-            // For project model access
-            myLocks.AssertReadAccessAllowed();
+                var externalFiles = new ExternalFiles(mySolution, myLogger);
+                CollectExternalFilesForSolutionDirectory(externalFiles, "Assets");
+                CollectExternalFilesForSolutionDirectory(externalFiles, "ProjectSettings");
+                CollectExternalFilesForPackages(externalFiles);
 
-            var externalFiles = new ExternalFiles(mySolution, myLogger);
-            CollectExternalFilesForSolutionDirectory(externalFiles, "Assets");
-            CollectExternalFilesForSolutionDirectory(externalFiles, "ProjectSettings");
-            CollectExternalFilesForPackages(externalFiles);
+                // Disable asset indexing for massive projects. Note that we still collect all files, and always index
+                // project settings, meta and asmdef files.
+                myIndexDisablingStrategy.Run(externalFiles.AssetFiles);
 
-            // Disable asset indexing for massive projects. Note that we still collect all files, and always index
-            // project settings, meta and asmdef files.
-            myIndexDisablingStrategy.Run(externalFiles.AssetFiles);
-
-            AddExternalFiles(externalFiles);
-            UpdateStatistics(externalFiles);
-            SubscribeToPackageUpdates();
-            SubscribeToProjectModelUpdates();
-        }
-
-        public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
-        {
-            // Do nothing. A project will either be in Assets or in a package, so either way, we've got it covered.
+                AddExternalFiles(externalFiles);
+                UpdateStatistics(externalFiles);
+                SubscribeToPackageUpdates();
+                SubscribeToProjectModelUpdates();
+            });
         }
 
         public void TryAddExternalPsiSourceFileForMiscFilesProjectFile(PsiModuleChangeBuilder builder,

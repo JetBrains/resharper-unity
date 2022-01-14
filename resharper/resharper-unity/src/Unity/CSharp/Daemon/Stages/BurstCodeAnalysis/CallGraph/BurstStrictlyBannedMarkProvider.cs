@@ -19,12 +19,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         
         public BurstStrictlyBannedMarkProvider(
             Lifetime lifetime,
-            [NotNull] UnitySolutionTracker tracker,
-            [NotNull] UnityReferencesTracker referencesTracker)
+            [NotNull] UnitySolutionTracker tracker)
             : base(BurstMarksProvider.MarkId, MarkId, new SimplePropagator())
         {
             Enabled.Value = tracker.IsUnityProject.HasTrueValue();
-            referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
+            tracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
         }
 
         public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)

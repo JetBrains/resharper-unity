@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.Services.FeatureS
         public readonly ViewableProperty<bool> Ready = new ViewableProperty<bool>(false);
 
         public UnityTechnologyDescriptionCollector(Lifetime lifetime, ISolution solution, ISolutionLoadTasksScheduler tasksScheduler, 
-            UnityReferencesTracker referencesTracker, PackageManager packageManager, FrontendBackendHost frontendBackendHost)
+            UnitySolutionTracker solutionTracker, PackageManager packageManager, FrontendBackendHost frontendBackendHost)
         {
             myLifetime = lifetime;
             myTasksScheduler = tasksScheduler;
@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.Services.FeatureS
             myTasksScheduler.EnqueueTask(new SolutionLoadTask("UnityTechnologyDescriptionCollector", SolutionLoadTaskKinds.Done,
                 () =>
                 {
-                    if (!referencesTracker.HasUnityReference.HasTrueValue())
+                    if (!solutionTracker.HasUnityReference.HasTrueValue())
                         return;
 
                     myPackageManager.IsInitialUpdateFinished.AdviseUntil(lifetime, v =>

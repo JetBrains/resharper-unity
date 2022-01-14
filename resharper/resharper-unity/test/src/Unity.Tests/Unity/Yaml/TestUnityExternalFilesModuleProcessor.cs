@@ -4,6 +4,7 @@ using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi.Modules;
@@ -23,13 +24,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.Yaml
                                                      UnityExternalPsiSourceFileFactory psiSourceFileFactory,
                                                      UnityExternalFilesModuleFactory moduleFactory,
                                                      UnityExternalFilesIndexDisablingStrategy indexDisablingStrategy,
-                                                     UnityExternalFilesFileSizeLogContributor usageStatistics)
+                                                     UnityExternalFilesFileSizeLogContributor usageStatistics,
+                                                     UnitySolutionTracker solutionTracker)
             : base(lifetime, logger, solution, changeManager, psiModules, packageManager, locks, fileSystemTracker,
-                psiSourceFileFactory, moduleFactory, indexDisablingStrategy, usageStatistics)
-        {
-        }
-
-        public override void OnHasUnityReference()
+                psiSourceFileFactory, moduleFactory, indexDisablingStrategy, usageStatistics, solutionTracker)
         {
         }
     }

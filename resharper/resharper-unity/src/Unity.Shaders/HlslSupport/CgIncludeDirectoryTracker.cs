@@ -18,14 +18,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
     {
         private const string CG_INCLUDE_DIRECTORY_PATH = "CgIncludeFolderPath";
 
-        public CgIncludeDirectoryTracker(Lifetime lifetime, UnityReferencesTracker unityReferencesTracker,
+        public CgIncludeDirectoryTracker(Lifetime lifetime, UnitySolutionTracker unitySolutionTracker,
             SolutionCaches solutionCaches, IShellLocks shellLocks, ISolutionLoadTasksScheduler scheduler,
             CppGlobalCacheImpl cppGlobalCache, UnityVersion unityVersion, ILogger logger)
         {
             scheduler.EnqueueTask(new SolutionLoadTask("InitCgIncludeDirectoryTracker", SolutionLoadTaskKinds.PreparePsiModules,
                 () =>
                 {
-                    unityReferencesTracker.HasUnityReference.AdviseOnce(lifetime, _ =>
+                    unitySolutionTracker.HasUnityReference.AdviseOnce(lifetime, _ =>
                     {
                         if (solutionCaches.PersistentProperties.TryGetValue(CG_INCLUDE_DIRECTORY_PATH, out var result))
                         {
