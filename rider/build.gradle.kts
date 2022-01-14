@@ -23,7 +23,7 @@ plugins {
     id("org.jetbrains.changelog") version "1.2.1"
     id("org.jetbrains.intellij") // version in rider/buildSrc/build.gradle.kts
     id("org.jetbrains.grammarkit") version "2021.1.3"
-    kotlin("jvm") version "1.4.20"
+    kotlin("jvm") version "1.6.10"
 }
 
 repositories {

@@ -228,7 +228,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
     private fun removeProcess(process: UnityProcess) {
         synchronized(treeModelLock) {
-            TreeUtil.findNode(treeModel.root as @org.jetbrains.annotations.NotNull DefaultMutableTreeNode) {
+            TreeUtil.findNode(treeModel.root as DefaultMutableTreeNode) {
                 (it as? UnityProcessTreeNode)?.process == process
             }?.let {
                 treeModel.removeNodeFromParent(it)
