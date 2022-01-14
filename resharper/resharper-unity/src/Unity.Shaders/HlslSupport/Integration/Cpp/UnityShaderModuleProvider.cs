@@ -118,17 +118,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
     [SolutionComponent]
     public class UnityShaderPsiModuleProviderFilter : IProjectPsiModuleProviderFilter
     {
-        private readonly UnityReferencesTracker myTracker;
-
-        public UnityShaderPsiModuleProviderFilter(UnityReferencesTracker tracker)
-        {
-            myTracker = tracker;
-        }
-
         public Tuple<IProjectPsiModuleHandler, IPsiModuleDecorator> OverrideHandler(Lifetime lifetime, IProject project,
             IProjectPsiModuleHandler handler)
         {
-            if ( handler.PrimaryModule != null && myTracker.IsUnityProject(project))
+            if ( handler.PrimaryModule != null && project.GetComponent<UnityReferencesTracker>().IsUnityProject(project))
             {
                 var module = new UnityShaderModule(project.GetSolution(), project.Name, handler.PrimaryModule.TargetFrameworkId);
                 var newHandlerAndDecorator = new UnityShaderModuleHandlerAndDecorator(module, handler);
