@@ -1,10 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <InternalBuild Condition="Exists('ManagedProject.Generated.Targets')">True</InternalBuild>
+    <InternalBuild Condition="$(InternalBuild) == ''">False</InternalBuild>
+  </PropertyGroup>
+  <Import Project="Sdk.props" Sdk="JetBrains.NET.Sdk" Version="0.0.4" Condition="$(InternalBuild)" />
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
+  
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
     <!-- TODO: Fix up the .psi files so we don't get the obsolete warnings -->
     <NoWarn>0618</NoWarn>
+    <NoWarn Condition="$(InternalBuild)">8002</NoWarn>
     <LangVersion>9</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
@@ -91,14 +99,24 @@
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="References">
-    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="3.1.0" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.2">
+    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <Reference Include="System.Xaml" />
     <ProjectReference Include="..\..\..\resharper-json\src\Json\Json.csproj" />
     <ProjectReference Include="..\..\..\resharper-yaml\src\Yaml\Yaml.csproj" />
+
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Core" />
+    <Reference Include="mscorlib" />
   </ItemGroup>
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="!$(InternalBuild)" />
+  <Import Project="ManagedProject.Generated.Targets" Condition="$(InternalBuild)" />
+
+  <Import Project="Sdk.targets" Sdk="JetBrains.NET.Sdk" Version="0.0.4" Condition="$(InternalBuild)" />
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
 </Project>

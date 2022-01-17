@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ItemGroup>
+        <PackageLock Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="3.2.0" />
+        <PackageLock Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.2" IsDevelopmentDependency="True" />
+        <PackageLock Include="VSSDK.Text.10" Version="10.0.4" />
+    </ItemGroup>
+</Project>

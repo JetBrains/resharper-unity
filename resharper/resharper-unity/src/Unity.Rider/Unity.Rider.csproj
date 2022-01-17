@@ -1,4 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <InternalBuild Condition="Exists('ManagedProject.Generated.Targets')">True</InternalBuild>
+    <InternalBuild Condition="$(InternalBuild) == ''">False</InternalBuild>
+  </PropertyGroup>
+  <Import Project="Sdk.props" Sdk="JetBrains.NET.Sdk" Version="0.0.4" Condition="$(InternalBuild)" />
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
+  
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Rider</AssemblyName>
@@ -18,7 +25,7 @@
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="References">
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.2">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -26,8 +33,18 @@
     <ProjectReference Include="..\Unity.Shaders\Unity.Shaders.csproj" />
     <ProjectReference Include="..\..\..\resharper-json\src\Json.Rider\Json.Rider.csproj" />
     <ProjectReference Include="..\..\..\resharper-yaml\src\Yaml.Rider\Yaml.Rider.csproj" />
+
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="mscorlib" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" />
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" />
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Rider_Rider.Backend.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="!$(InternalBuild)" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" Condition="!$(InternalBuild)" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Rider_Rider.Backend.Props" Condition="!$(InternalBuild)" />
+  <Import Project="ManagedProject.Generated.Targets" Condition="$(InternalBuild)" />
+
+  <Import Project="Sdk.targets" Sdk="JetBrains.NET.Sdk" Version="0.0.4" Condition="$(InternalBuild)" />
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
 </Project>
