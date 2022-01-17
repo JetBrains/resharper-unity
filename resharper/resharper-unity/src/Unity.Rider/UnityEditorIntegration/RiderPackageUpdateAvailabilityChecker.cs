@@ -14,7 +14,6 @@ using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Rider.Backend.Features.Notifications;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration
@@ -29,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration
         private readonly UnityVersion myUnityVersion;
         private readonly ISettingsStore mySettingsStore;
         private readonly BackendUnityHost myBackendUnityHost;
-        private readonly RiderNotificationPopupHost myNotificationPopupHost;
+        private readonly UserNotifications myUserNotifications;
         private readonly JetHashSet<VirtualFileSystemPath> myNotificationShown;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
         private string packageId = "com.unity.ide.rider";
@@ -46,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration
             IApplicationWideContextBoundSettingStore applicationWideContextBoundSettingStore,
             ISettingsStore settingsStore,
             BackendUnityHost backendUnityHost, 
-            RiderNotificationPopupHost notificationPopupHost
+            UserNotifications userNotifications
         )
         {
             myLogger = logger;
@@ -56,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration
             myUnityVersion = unityVersion;
             mySettingsStore = settingsStore;
             myBackendUnityHost = backendUnityHost;
-            myNotificationPopupHost = notificationPopupHost;
+            myUserNotifications = userNotifications;
             myNotificationShown = new JetHashSet<VirtualFileSystemPath>();
             myBoundSettingsStore = applicationWideContextBoundSettingStore.BoundSettingsStore;
             unitySolutionTracker.IsUnityGeneratedProject.WhenTrue(lifetime, lt =>
@@ -115,15 +114,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration
                     {
                         myNotificationShown.Add(mySolution.SolutionFilePath);
                         myLogger.Info($"{packageId} is missing.");
-                        var notification = RiderNotification.Create(NotificationSeverity.WARNING,
-                            "JetBrains Rider package in Unity is missing.",
-                            "Make sure JetBrains Rider package is installed in Unity Package Manager."
-                        );
                         myShellLocks.ExecuteOrQueueEx(lt,
                             "RiderPackageUpdateAvailabilityChecker.ShowNotificationIfNeeded",
                             () =>
                             {
-                                myNotificationPopupHost.ShowNotification(lt, notification);
+                                myUserNotifications.CreateNotification(lt, NotificationSeverity.WARNING,
+                                    "JetBrains Rider package in Unity is missing.",
+                                    "Make sure JetBrains Rider package is installed in Unity Package Manager.");
                             });
                     }
                     else if (package.Source == PackageSource.Registry &&
@@ -132,24 +129,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration
                         var notificationLifetime = lt.CreateNested();
                         myNotificationShown.Add(mySolution.SolutionFilePath);
                         myLogger.Info($"{packageId} {package.PackageDetails.Version} is older then expected.");
-                        var notification = RiderNotification.Create(NotificationSeverity.INFO,
-                            "Update available - JetBrains Rider package.",
-                            "Check for JetBrains Rider package updates in Unity Package Manager.",
-                            additionalCommands: new[]
-                            {
-                                new UserNotificationCommand("Never show for this solution", () =>
-                                {
-                                    mySettingsStore.BindToContextTransient(
-                                            ContextRange.ManuallyRestrictWritesToOneContext(mySolution.ToDataContext()))
-                                        .SetValue((UnitySettings key) => key.AllowRiderUpdateNotifications, false);
-                                    notificationLifetime.Terminate();
-                                })
-                            }
-                        );
 
                         myShellLocks.ExecuteOrQueueEx(lt,
                             "RiderPackageUpdateAvailabilityChecker.ShowNotificationIfNeeded",
-                            () => myNotificationPopupHost.ShowNotification(notificationLifetime.Lifetime, notification));
+                            () => myUserNotifications.CreateNotification(notificationLifetime.Lifetime,
+                                NotificationSeverity.INFO,
+                                "Update available - JetBrains Rider package.",
+                                "Check for JetBrains Rider package updates in Unity Package Manager.",
+                                additionalCommands: new[]
+                                {
+                                    new UserNotificationCommand("Never show for this solution", () =>
+                                    {
+                                        mySettingsStore.BindToContextTransient(
+                                                ContextRange.ManuallyRestrictWritesToOneContext(
+                                                    mySolution.ToDataContext()))
+                                            .SetValue((UnitySettings key) => key.AllowRiderUpdateNotifications, false);
+                                        notificationLifetime.Terminate();
+                                    })
+                                }));
                     }
                 });
             });
