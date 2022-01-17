@@ -136,9 +136,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches
             {
                 myPsiFiles.AssertAllDocumentAreCommitted();
 
-                var interruptionSet = new InterruptionSet(LifetimeInterruptionSource.Create(myLifetime),
-                    myShellLocks.ContentModelLocks.Interruption);
-                new InterruptableReadActivityThe(myLifetime, myShellLocks, interruptionSet)
+                new InterruptableReadActivityThe(myLifetime, myShellLocks)
                 {
                     FuncRun = () => RunActivity(toDelete, toProcess, calculatedData),
                     FuncCancelled = () => myShellLocks.Tasks.StartNew(myLifetime, Scheduling.MainGuard, () => ScheduleBackgroundProcess(toDelete, toProcess, calculatedData)),
