@@ -4,6 +4,7 @@ using JetBrains.Application.UI.Controls.JetPopupMenu;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.UI.RichText;
+using JetBrains.Util.Media;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
@@ -43,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
                 sb.Append($"in {relatedFolderPresentation}");
             }
             
-            descriptor.ShortcutText = new RichText(sb.ToString(), TextStyle.FromForeColor(Color.DarkGray));
+            descriptor.ShortcutText = new RichText(sb.ToString(), TextStyle.FromForeColor(JetRgbaColors.DarkGray));
         }
 
         

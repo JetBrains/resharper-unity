@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.UI.Icons;
 using JetBrains.UI.RichText;
+using JetBrains.Util.Media;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Occurrences
 {
@@ -37,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Occurrences
             var fileName = cache.GetAsmDefLocationByAssemblyName(asmDefNameOccurrence.Name);
             if (fileName != null && !fileName.IsEmpty)
             {
-                var style = TextStyle.FromForeColor(SystemColors.GrayText);
+                var style = TextStyle.FromForeColor(JetSystemColors.GrayText);
                 descriptor.ShortcutText = new RichText($" in {fileName.Name}", style);
                 descriptor.TailGlyph = AsmDefDeclaredElementType.AsmDef.GetImage();
             }
