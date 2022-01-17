@@ -1,4 +1,5 @@
 <Project>
+  <Sdk Name="JetBrains.Build.VersionLockFileTargets" Version="0.0.4" />
   <ItemGroup>
       <!-- The JetBrains.Psi.Features.Tasks package incorrectly includes $(PsiGenToolsDir)/TokenGenerator.exe
            in the inputs, but that file doesn't exist - $(PsiGenToolsDir)..\TokenGenerator.exe does.

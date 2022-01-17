@@ -1,4 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <InternalBuild Condition="Exists('ManagedProject.Generated.Targets')">True</InternalBuild>
+    <InternalBuild Condition="$(InternalBuild) == ''">False</InternalBuild>
+  </PropertyGroup>
+  <Import Project="Sdk.props" Sdk="JetBrains.NET.Sdk" Version="0.0.4" Condition="$(InternalBuild)" />
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
+  
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.VisualStudio</AssemblyName>
@@ -8,17 +15,30 @@
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.2">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="VSSDK.Text.10" Version="10.0.4" />
+    <PackageReference Include="VSSDK.Text" />
+    <PackageReference Include="VSSDK.CoreUtility" />
+    <PackageReference Include="VSSDK.IDE.10" />
     <ProjectReference Include="..\Unity\Unity.csproj" />
     <!-- TODO: Do we need Unity.Shaders.VisualStudio for shader specific classification definitions?
          If not, then I think we'd get entries in Fonts + Colours for highlightings that aren't available, e.g. Cg -->
     <ProjectReference Include="..\Unity.Shaders\Unity.Shaders.csproj" />
+
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="mscorlib" />
+    <Reference Include="PresentationCore" />
   </ItemGroup>
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" />
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio_SinceVs10.Props" />
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_VisualStudio_ReSpeller.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="!$(InternalBuild)" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio_SinceVs10.Props" Condition="!$(InternalBuild)" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_VisualStudio_ReSpeller.Props" Condition="!$(InternalBuild)" />
+  <Import Project="ManagedProject.Generated.Targets" Condition="$(InternalBuild)" />
+
+  <Import Project="Sdk.targets" Sdk="JetBrains.NET.Sdk" Version="0.0.4" Condition="$(InternalBuild)" />
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
 </Project>

@@ -1,4 +1,9 @@
 <Project>
+    
+  <PropertyGroup>
+      <ImportGuard-DeirectoryBuildProps>True</ImportGuard-DeirectoryBuildProps>
+  </PropertyGroup>
+    
   <PropertyGroup>
     <!-- Use a per project obj folder in a common build folder. Each project needs its own obj folder, as this contains
          e.g. nuget import files and generated files, and can't be shared across all projects.
@@ -30,6 +35,9 @@
          assemblies in the bin dir. For test projects, JetTestProject=True, and @(JetContent) and @(JetReference) are
          always copied. -->
     <ReSharperUnityCommonOutputPath>$(MSBuildThisFileDirectory)\build\Unity\bin\$(Configuration)</ReSharperUnityCommonOutputPath>
+      
+    <!-- Always specify embedded resources explicitly -->
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
   </PropertyGroup>
 
   <PropertyGroup>
