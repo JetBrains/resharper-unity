@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
                 yield return guid;
         }
 
-        public override IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements, bool findCandidates)
+        public override IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements, ReferenceSearcherParameters referenceSearcherParameters)
         {
             if (elements.Any(e => e is not AsmDefNameDeclaredElement))
                 return null;
@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
                     guids.Add(guid);
             }
 
-            return new AsmDefReferenceSearcher(elements, guids, findCandidates);
+            return new AsmDefReferenceSearcher(elements, guids, referenceSearcherParameters);
         }
 
         [CanBeNull]
@@ -80,15 +80,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
     public class AsmDefReferenceSearcher : IDomainSpecificSearcher
     {
         private readonly IDeclaredElementsSet myElements;
-        private readonly bool myFindCandidates;
         private readonly List<string> myElementNames;
         private readonly List<string> myElementGuids;
+        private readonly ReferenceSearcherParameters myReferenceSearcherParameters;
 
-        public AsmDefReferenceSearcher(IDeclaredElementsSet elements, List<string> guids, bool findCandidates)
+        public AsmDefReferenceSearcher(IDeclaredElementsSet elements, List<string> guids, ReferenceSearcherParameters referenceSearcherParameters)
         {
             myElements = elements;
             myElementGuids = guids;
-            myFindCandidates = findCandidates;
+            myReferenceSearcherParameters = referenceSearcherParameters;
 
             myElementNames = new List<string>();
             foreach (var element in elements)
@@ -104,7 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
 
         public bool ProcessElement<TResult>(ITreeNode element, IFindResultConsumer<TResult> consumer)
         {
-            var result = new GuidReferenceSearchSourceFileProcessor<TResult>(element, myFindCandidates, consumer,
+            var result = new GuidReferenceSearchSourceFileProcessor<TResult>(element, myReferenceSearcherParameters, consumer,
                 myElements, myElementNames, myElementGuids).Run();
             return result == FindExecution.Stop;
         }
@@ -128,12 +128,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
         {
             private readonly IEnumerable<StringSearcher> myStringSearchers;
 
-            public GuidReferenceSearchSourceFileProcessor(ITreeNode treeNode, bool findCandidates,
+            public GuidReferenceSearchSourceFileProcessor(ITreeNode treeNode, ReferenceSearcherParameters referenceSearcherParameters,
                                                           IFindResultConsumer<TResult> resultConsumer,
                                                           IDeclaredElementsSet elements,
                                                           List<string> elementNames,
                                                           List<string> elementGuids)
-                : base(treeNode, findCandidates, resultConsumer, elements, elementNames, null)
+                : base(treeNode, referenceSearcherParameters, resultConsumer, elements, elementNames, null)
             {
                 myStringSearchers = elementGuids.Select(g => new StringSearcher(g, false));
             }

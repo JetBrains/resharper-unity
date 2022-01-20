@@ -29,8 +29,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Search
             return null;
         }
 
-        public IDomainSpecificSearcher CreateTargetTypedObjectCreationSearcher(IReadOnlyList<IConstructor> constructors, IReadOnlyList<ITypeElement> typeElements,
-            bool findCandidates)
+        public IDomainSpecificSearcher CreateTargetTypedObjectCreationSearcher(IReadOnlyList<IConstructor> constructors, IReadOnlyList<ITypeElement> typeElements, 
+            ReferenceSearcherParameters referenceSearcherParameters)
         {
             return null;
         }
@@ -40,14 +40,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Search
             return null;
         }
 
-        public IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements, bool findCandidates)
+        public IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements, ReferenceSearcherParameters referenceSearcherParameters)
         {
             if (elements.Any(element => !(element is IShaderLabDeclaredElement)))
                 return null;
-            return new ShaderLabReferenceSearcher(elements, findCandidates);
+            return new ShaderLabReferenceSearcher(elements, referenceSearcherParameters);
         }
 
-        public IDomainSpecificSearcher CreateLateBoundReferenceSearcher(IDeclaredElementsSet elements)
+        public IDomainSpecificSearcher CreateLateBoundReferenceSearcher(IDeclaredElementsSet elements, ReferenceSearcherParameters referenceSearcherParameters)
         {
             return null;
         }

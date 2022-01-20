@@ -37,14 +37,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         }
 
         public override IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements,
-            bool findCandidates)
+            ReferenceSearcherParameters referenceSearcherParameters)
         {
             return elements.Any(IsInterestingElement)
-                ? CreateSearcher(elements, findCandidates)
+                ? CreateSearcher(elements, referenceSearcherParameters)
                 : null;
         }
 
-        private UnityAssetReferenceSearcher CreateSearcher(IDeclaredElementsSet elements, bool findCandidates)
+        private UnityAssetReferenceSearcher CreateSearcher(IDeclaredElementsSet elements, ReferenceSearcherParameters referenceSearcherParameters)
         {
             var solution = elements.FirstOrDefault().NotNull("elements.FirstOrDefault() != null").GetSolution();
             var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
@@ -57,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 
             return new UnityAssetReferenceSearcher(controller, hierarchyContainer, scriptsUsagesContainers,
                 methodsContainer, animationEventUsagesContainer, assetValuesContainer, metaFileGuidCache, elements,
-                findCandidates);
+                referenceSearcherParameters);
         }
 
         // Used to filter files before searching for references. Files must contain ANY of these search terms. An

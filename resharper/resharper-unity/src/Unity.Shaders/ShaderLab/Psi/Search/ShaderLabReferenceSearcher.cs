@@ -13,13 +13,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Search
     public class ShaderLabReferenceSearcher : IDomainSpecificSearcher
     {
         private readonly IDeclaredElementsSet myElements;
-        private readonly bool myFindCandidates;
+        private readonly ReferenceSearcherParameters myReferenceSearcherParameters;
         private readonly List<string> myElementNames;
 
-        public ShaderLabReferenceSearcher(IDeclaredElementsSet elements, bool findCandidates)
+        public ShaderLabReferenceSearcher(IDeclaredElementsSet elements, ReferenceSearcherParameters referenceSearcherParameters)
         {
             myElements = elements;
-            myFindCandidates = findCandidates;
+            myReferenceSearcherParameters = referenceSearcherParameters;
 
             myElementNames = new List<string>();
             foreach (var element in elements)
@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Search
         public bool ProcessElement<TResult>(ITreeNode element, IFindResultConsumer<TResult> consumer)
         {
             Assertion.AssertNotNull(element, "element != null");
-            var result = new ReferenceSearchSourceFileProcessor<TResult>(element, myFindCandidates, consumer,
+            var result = new ReferenceSearchSourceFileProcessor<TResult>(element, myReferenceSearcherParameters, consumer,
                 myElements, myElementNames, myElementNames).Run();
             return result == FindExecution.Stop;
         }
