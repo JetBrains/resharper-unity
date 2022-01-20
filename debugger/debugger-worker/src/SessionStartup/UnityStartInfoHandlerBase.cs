@@ -12,6 +12,7 @@ using Mono.Debugging.Autofac;
 using Mono.Debugging.Client;
 using Mono.Debugging.Client.DebuggerOptions;
 using Mono.Debugging.Soft;
+using Mono.Debugging.Soft.Connections.StartArgs;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 {
@@ -42,7 +43,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
                 (Il2CppAwareSessionOptions) debuggerSessionOptions);
         }
 
-        protected static SoftDebuggerStartInfo CreateSoftDebuggerStartInfo(UnityStartInfoBase startInfo)
+        protected static SoftDebuggerStartArgs  CreateSoftDebuggerStartInfo(UnityStartInfoBase startInfo)
         {
             var address = IPAddress.Loopback;
             var monoAddress = startInfo.MonoAddress;
@@ -65,10 +66,9 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
                 }
             }
 
-            return new SoftDebuggerStartInfo((startInfo.ListenForConnections
+            return (startInfo.ListenForConnections
                     ? (SoftDebuggerStartArgs) new SoftDebuggerListenArgs(string.Empty, address, startInfo.MonoPort)
-                    : new SoftDebuggerConnectArgs(string.Empty, address, startInfo.MonoPort))
-                .SetConnectionProperties());
+                    : new SoftDebuggerConnectArgs(string.Empty, address, startInfo.MonoPort)).SetConnectionProperties();
         }
 
         private class Il2CppAwareSessionOptions : DelegatingDebuggerSessionOptions

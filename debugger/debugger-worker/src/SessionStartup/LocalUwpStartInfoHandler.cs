@@ -9,6 +9,7 @@ using Mono.Debugging.Autofac;
 using Mono.Debugging.Client;
 using Mono.Debugging.Client.DebuggerOptions;
 using Mono.Debugging.Soft;
+using Mono.Debugging.Soft.Connections.StartArgs;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 {
@@ -45,12 +46,12 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
         {
             private readonly Lifetime myLifetime;
             private readonly UnityLocalUwpStartInfo myLocalUwpStartInfo;
-            private readonly SoftDebuggerStartInfo mySoftDebuggerStartInfo;
+            private readonly SoftDebuggerStartArgs mySoftDebuggerStartInfo;
             private readonly ILogger myLogger;
 
             public LocalUwpSessionStarter(Lifetime lifetime,
                                           UnityLocalUwpStartInfo localUwpStartInfo,
-                                          SoftDebuggerStartInfo softDebuggerStartInfo,
+                                          SoftDebuggerStartArgs softDebuggerStartInfo,
                                           IDebuggerSessionOptions evaluationOptions,
                                           ILogger logger)
                 : base(evaluationOptions)
