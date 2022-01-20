@@ -2,6 +2,7 @@
 using System.Linq;
 using JetBrains.Application;
 using JetBrains.Application.Progress;
+using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
@@ -16,14 +17,15 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Refactorings.Rename;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
-using JetBrains.Util.Special;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Refactorings
 {
     public class AsmDefNameAtomicRename : AtomicRenameBase
     {
         private readonly IDeclaredElementPointer<AsmDefNameDeclaredElement> myPointer;
-        private IDeclaredElementPointer<AsmDefNameDeclaredElement> myNewPointer;
+        private IDeclaredElementPointer<AsmDefNameDeclaredElement>? myNewPointer;
 
         public AsmDefNameAtomicRename(AsmDefNameDeclaredElement declaredElement, string newName)
         {
@@ -38,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Refactorings
             // Rename the "declaration"
             var declaredElement = myPointer.FindDeclaredElement();
             var originalTreeNode = declaredElement?.GetTreeNode();
-            if (originalTreeNode == null)
+            if (declaredElement == null || originalTreeNode == null)
                 return;
 
             var originalRange = originalTreeNode.GetDocumentRange();
@@ -68,7 +70,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Refactorings
             {
                 foreach (var sortedReference in LanguageUtil.GetSortedReferences(pair.Value))
                 {
+#pragma warning disable CS0618
+                    // TODO: Update once interruption set refactoring is complete
+                    // ProgressIndicator should already have been added to the interruption set. This is the
+                    // responsibility of the refactoring subsystem, but it's not clear that this has yet been done
+                    // - other rename refactorings are still using this overload
                     InterruptableActivityCookie.CheckAndThrow(pi);
+#pragma warning restore CS0618
 
                     var referenceRange = sortedReference.GetDocumentRange();
 
@@ -85,9 +93,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Refactorings
             myNewPointer = element.CreateElementPointer();
         }
 
-        private static void RemoveFromTextualOccurrences(IRenameRefactoring executer, DocumentRange handledRange)
+        private static void RemoveFromTextualOccurrences(IRenameRefactoring executor, DocumentRange handledRange)
         {
-            if (!(executer.Workflow is RenameWorkflow workflow))
+            if (!(executor.Workflow is RenameWorkflow workflow))
                 return;
 
             foreach (var occurrence in workflow.DataModel.ActualOccurrences ?? EmptyList<TextOccurrenceRenameMarker>.InstanceList)
@@ -104,14 +112,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Refactorings
             }
         }
 
-        public override IDeclaredElement NewDeclaredElement
-        {
-            get { return myNewPointer.IfNotNull(p => p.FindDeclaredElement()); }
-        }
+        public override IDeclaredElement NewDeclaredElement =>
+            (myNewPointer?.FindDeclaredElement()).NotNull("pointer.FindDeclaredElement() != null");
 
         public override string NewName { get; }
         public override string OldName { get; }
-        public override IDeclaredElement PrimaryDeclaredElement => myPointer.FindDeclaredElement();
-        public override IList<IDeclaredElement> SecondaryDeclaredElements => null;
+        public override IDeclaredElement? PrimaryDeclaredElement => myPointer.FindDeclaredElement();
+        public override IList<IDeclaredElement>? SecondaryDeclaredElements => null;
     }
 }

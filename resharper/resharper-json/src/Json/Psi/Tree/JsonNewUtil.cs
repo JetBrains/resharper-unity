@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi.Tree;
@@ -8,22 +9,24 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Json.Psi.Tree
 {
+    [PublicAPI]
     public static class JsonNewUtil
     {
         public static IJsonNewObject? GetRootObject(this IJsonNewFile file) => file.Value as IJsonNewObject;
 
-        public static bool IsRootObject(this IJsonNewObject? jsonObject) =>
+        public static bool IsRootObject([NotNullWhen(true)] this IJsonNewObject? jsonObject) =>
             JsonNewFileNavigator.GetByValue(jsonObject) != null;
 
-        public static bool IsRootProperty(this IJsonNewMember? member) =>
+        public static bool IsRootProperty([NotNullWhen(true)] this IJsonNewMember? member) =>
             JsonNewObjectNavigator.GetByMember(member).IsRootObject();
 
-        public static bool IsRootPropertyValue(this IJsonNewValue? value, string expectedKey)
+        public static bool IsRootPropertyValue([NotNullWhen(true)] this IJsonNewValue? value, string expectedKey)
         {
             var member = JsonNewMemberNavigator.GetByValue(value);
-            return member.IsRootProperty() && member?.Key == expectedKey;
+            return member.IsRootProperty() && member.Key == expectedKey;
         }
 
+        [ContractAnnotation("node:null => null")]
         public static IJsonNewLiteralExpression? AsStringLiteralValue(this ITreeNode? node)
         {
             if (node is IJsonNewLiteralExpression { ConstantValueType: ConstantValueTypes.String } literal)
@@ -44,6 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Json.Psi.Tree
             return jsonObject.GetFirstPropertyValue<IJsonNewLiteralExpression>(key)?.GetStringValue();
         }
 
+        [ContractAnnotation("jsonValue:null => null")]
         public static IJsonNewMember? GetNamedMemberByValue(this IJsonNewValue? jsonValue, string key)
         {
             var property = JsonNewMemberNavigator.GetByValue(jsonValue);

@@ -7,10 +7,9 @@
          support. We have no need to split by zone -->
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
     <LangVersion>9</LangVersion>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- We still have lots of obsolete warnings from ParserGen, and disabling obsolete warnings totally is too broad -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
-    <!-- TODO: Fix obsolete warnings! -->
-    <NoWarn>0618</NoWarn>
   </PropertyGroup>
   <!-- ********** -->
   <ItemGroup Label="Cg">

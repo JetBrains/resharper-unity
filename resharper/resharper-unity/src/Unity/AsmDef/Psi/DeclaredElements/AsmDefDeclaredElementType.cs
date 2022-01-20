@@ -1,9 +1,10 @@
 ﻿using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.ProjectModel.Resources;
 using JetBrains.ReSharper.Plugins.Json.Psi.DeclaredElements;
-using JetBrains.ReSharper.Psi.Naming.Impl;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.UI.Icons;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements
 {
@@ -12,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements
         public static readonly AsmDefDeclaredElementType AsmDef = new("assembly definition",
             ProjectModelThemedIcons.Assembly.Id);
 
-        private AsmDefDeclaredElementType(string name, [CanBeNull] IconId imageName)
+        private AsmDefDeclaredElementType(string name, IconId? imageName)
             : base(name, imageName)
         {
         }

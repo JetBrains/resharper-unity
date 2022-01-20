@@ -16,31 +16,33 @@ using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 using JetBrains.Util.Caches;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
 {
     [SolutionComponent]
     public class CustomCodeAnnotationProvider : ICustomCodeAnnotationProvider, IInvalidatingCache
     {
-        // ReSharper disable AssignNullToNotNullAttribute
         private static readonly IClrTypeName ourMustUseReturnValueAttributeFullName = new ClrTypeName(typeof(MustUseReturnValueAttribute).FullName);
         private static readonly IClrTypeName ourMeansImplicitUseAttribute = new ClrTypeName(typeof(MeansImplicitUseAttribute).FullName);
         private static readonly IClrTypeName ourPublicAPIAttribute = new ClrTypeName(typeof(PublicAPIAttribute).FullName);
         private static readonly IClrTypeName ourUsedImplicitlyAttributeFullName = new ClrTypeName(typeof(UsedImplicitlyAttribute).FullName);
         private static readonly IClrTypeName ourValueRangeAttributeFullName = new ClrTypeName(typeof(ValueRangeAttribute).FullName);
         private static readonly IClrTypeName ourImplicitUseTargetFlags = new ClrTypeName(typeof(ImplicitUseTargetFlags).FullName);
-        // ReSharper restore AssignNullToNotNullAttribute
 
         private readonly ExternalAnnotationsModuleFactory myExternalAnnotationsModuleFactory;
         private readonly IPredefinedTypeCache myPredefinedTypeCache;
+        private readonly KnownTypesCache myKnownTypesCache;
         private readonly UnityApi myUnityApi;
 
-        [NotNull] private readonly DirectMappedCache<ITypeElement, bool> myCompiledElementsCache = new DirectMappedCache<ITypeElement, bool>(10);
-        [NotNull] private readonly DirectMappedCache<ITypeElement, bool> mySourceElementsCache = new DirectMappedCache<ITypeElement, bool>(10);
-        
+        private readonly DirectMappedCache<ITypeElement, bool> myCompiledElementsCache = new(10);
+        private readonly DirectMappedCache<ITypeElement, bool> mySourceElementsCache = new(10);
+
         public CustomCodeAnnotationProvider(ExternalAnnotationsModuleFactory externalAnnotationsModuleFactory,
-            IPredefinedTypeCache predefinedTypeCache, UnityApi unityApi)
+            IPredefinedTypeCache predefinedTypeCache, KnownTypesCache knownTypesCache, UnityApi unityApi)
         {
             myPredefinedTypeCache = predefinedTypeCache;
+            myKnownTypesCache = knownTypesCache;
             myUnityApi = unityApi;
             myExternalAnnotationsModuleFactory = externalAnnotationsModuleFactory;
         }
@@ -65,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
 
             var method = element as IMethod;
             var type = method?.GetContainingType();
-            if (type == null || !myUnityApi.IsUnityType(type)) return false;
+            if (method == null || type == null || !myUnityApi.IsUnityType(type)) return false;
 
             var returnType = method.ReturnType;
             var predefinedType = myPredefinedTypeCache.GetOrCreatePredefinedType(element.Module);
@@ -96,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
         {
             collection = EmptyList<IAttributeInstance>.InstanceList;
 
-            if (!(element is ITypeElement type) || !element.IsFromUnityProject()) return false;
+            if (element is not ITypeElement || !element.IsFromUnityProject()) return false;
 
             foreach (var attributeInstance in attributeInstanceCollection.GetAllOwnAttributes().Where(t => t.GetClrName().Equals(ourPublicAPIAttribute)))
             {
@@ -107,7 +109,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
                     continue;
 
                 // The ctorArguments lambda result is not cached, so let's allocate everything up front
-                var flagsType = TypeFactory.CreateTypeByCLRName(ourImplicitUseTargetFlags, element.Module);
+                var flagsType = myKnownTypesCache.GetByClrTypeName(ourImplicitUseTargetFlags, element.Module);
                 var args = new[] {new AttributeValue(new ConstantValue(3, flagsType))};
                 collection = new[]
                 {
@@ -142,7 +144,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
 
             return true;
         }
-        
+
         // Treat Unity's RangeAttribute as ReSharper's ValueRangeAttribute annotation
         private bool GetValueRangeAttribute(IClrDeclaredElement element,
             AttributeInstanceCollection attributeInstanceCollection,
@@ -206,7 +208,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
             return false;
         }
 
-        [NotNull]
         private IAttributeInstance[] CreateRangeAttributeInstance(IClrDeclaredElement element,
                                                                   PredefinedType predefinedType,
                                                                   long from, long to)
@@ -224,7 +225,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
 
             return new IAttributeInstance[]
             {
-                new AnnotationAttributeInstance(ourValueRangeAttributeFullName, GetModule(element), project, args)
+                new AnnotationAttributeInstance(ourValueRangeAttributeFullName, GetModule(element), project, args, myKnownTypesCache)
             };
         }
 
@@ -244,26 +245,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
             private readonly IPsiModule myExternalAnnotationsModule;
             private readonly IProject myProject;
             private readonly AttributeValue[] myCtorArguments;
+            private readonly KnownTypesCache myKnownTypesCache;
 
-            public AnnotationAttributeInstance(IClrTypeName clrTypeName, IPsiModule externalAnnotationsModule,
-                IProject project, AttributeValue[] ctorArguments)
+            public AnnotationAttributeInstance(IClrTypeName clrTypeName,
+                                               IPsiModule externalAnnotationsModule,
+                                               IProject project,
+                                               AttributeValue[] ctorArguments,
+                                               KnownTypesCache knownTypesCache)
             {
                 myClrTypeName = clrTypeName;
                 myExternalAnnotationsModule = externalAnnotationsModule;
                 myProject = project;
                 myCtorArguments = ctorArguments;
+                myKnownTypesCache = knownTypesCache;
             }
 
             public IClrTypeName GetClrName() => myClrTypeName;
             public string GetAttributeShortName() => myClrTypeName.ShortName;
 
-            public IDeclaredType GetAttributeType()
-            {
-                return TypeFactory.CreateTypeByCLRName(myClrTypeName, NullableAnnotation.NotNullable,
-                    myExternalAnnotationsModule);
-            }
+            public IDeclaredType GetAttributeType() =>
+                myKnownTypesCache.GetByClrTypeName(myClrTypeName, myExternalAnnotationsModule);
 
-            public IConstructor Constructor
+            public IConstructor? Constructor
             {
                 get
                 {
