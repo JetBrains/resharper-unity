@@ -27,10 +27,10 @@ namespace JetBrains.ReSharper.Plugins.Json.Feature.Finder
         }
 
         public override IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements,
-            bool findCandidates)
+            ReferenceSearcherParameters referenceSearcherParameters)
         {
             return elements.Any(IsInterestingElement)
-                ? new JsonNewReferenceSearcher(this, elements, findCandidates)
+                ? new JsonNewReferenceSearcher(this, elements, referenceSearcherParameters)
                 : null;
         }
 
