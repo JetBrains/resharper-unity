@@ -5,7 +5,6 @@ using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Application.UI.Help;
 using JetBrains.Application.UI.Icons.CommonThemedIcons;
-using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -181,8 +180,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (!iconsEnabled)
                 return EmptyList<BulbMenuItem>.Instance;
 
-            var textControl = myTextControlManager.LastFocusedTextControlPerClient.ForCurrentClient()
-                .NotNull("myTextControlManager.LastFocusedTextControlPerClient.ForCurrentClient() != null");
+            var textControl = myTextControlManager.LastFocusedTextControlPerClient.ForCurrentClient();
+            if (textControl == null)
+                return EmptyList<BulbMenuItem>.Instance;
+
             var result = new List<BulbMenuItem>();
 
             foreach (var provider in myMenuItemProviders)

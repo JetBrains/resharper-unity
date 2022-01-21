@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Collections;
-using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -29,8 +28,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         public IEnumerable<BulbMenuItem> GetBurstActions(IMethodDeclaration methodDeclaration, IReadOnlyCallGraphContext context)
         {
             var result = new CompactList<BulbMenuItem>();
-            var textControl = myTextControlManager.LastFocusedTextControlPerClient.ForCurrentClient()
-                .NotNull("myTextControlManager.LastFocusedTextControlPerClient.ForCurrentClient() != null");
+            var textControl = myTextControlManager.LastFocusedTextControlPerClient.ForCurrentClient();
+            if (textControl == null)
+                return result;
 
             foreach (var bulbProvider in myBulbProviders)
             {

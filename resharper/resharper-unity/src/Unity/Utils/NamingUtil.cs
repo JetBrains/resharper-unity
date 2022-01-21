@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Naming.Extentions;
 using JetBrains.ReSharper.Psi.Naming.Impl;
 using JetBrains.ReSharper.Psi.Naming.Settings;
+using JetBrains.Util;
 
 #nullable enable
 
@@ -40,7 +41,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
             collectionModifier?.Invoke(namesCollection);
             var suggestionOptions = new SuggestionOptions
             {
-                DefaultName = baseName, UniqueNameContext = node, IsConflictingElement = isConflictingElement
+                DefaultName = baseName,
+                UniqueNameContext = node,
+                IsConflictingElement = isConflictingElement ?? JetFunc<IDeclaredElement>.True
             };
             var namesSuggestion = namesCollection.Prepare(elementKind, ScopeKind.TypeAndNamespace, suggestionOptions);
             return namesSuggestion.FirstName();
