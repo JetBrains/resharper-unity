@@ -70,13 +70,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Refactorings
             {
                 foreach (var sortedReference in LanguageUtil.GetSortedReferences(pair.Value))
                 {
-#pragma warning disable CS0618
                     // TODO: Update once interruption set refactoring is complete
                     // ProgressIndicator should already have been added to the interruption set. This is the
                     // responsibility of the refactoring subsystem, but it's not clear that this has yet been done
                     // - other rename refactorings are still using this overload
                     InterruptableActivityCookie.CheckAndThrow(pi);
-#pragma warning restore CS0618
 
                     var referenceRange = sortedReference.GetDocumentRange();
 
