@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Tests
     // the other required zones
     [ZoneDefinition]
     public interface IUnityTestsZone : IZone,
-        IRequire<IUnityRiderZone>,
+        // IRequire<IUnityRiderZone>,
         IRequire<IRiderPlatformZone>,
         IRequire<PsiFeatureTestZone>,
         IRequire<ILanguageJsonNewZone>,

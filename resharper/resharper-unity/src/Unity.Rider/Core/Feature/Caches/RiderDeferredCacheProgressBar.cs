@@ -1,5 +1,6 @@
 using System;
 using JetBrains.Annotations;
+using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
@@ -8,11 +9,14 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.RdBackend.Common.Features.BackgroundTasks;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
+using JetBrains.Rider.Backend.Env;
 using JetBrains.Rider.Backend.Features.BackgroundTasks;
+using JetBrains.Rider.Backend.Product;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.Caches
 {
     [SolutionComponent]
+    [ZoneMarker(typeof(IRiderFeatureZone), typeof(IRiderProductEnvironmentZone))] // TODO Restructure Zone
     public class RiderDeferredCacheProgressBar : DeferredCacheProgressBar
     {
         private readonly Lifetime myLifetime;
