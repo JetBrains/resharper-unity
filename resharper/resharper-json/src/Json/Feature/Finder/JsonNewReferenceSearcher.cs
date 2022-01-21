@@ -13,14 +13,14 @@ namespace JetBrains.ReSharper.Plugins.Json.Feature.Finder
     public class JsonNewReferenceSearcher : IDomainSpecificSearcher
     {
         private readonly IDeclaredElementsSet myElements;
-        private readonly bool myFindCandidates;
+        private readonly ReferenceSearcherParameters myReferenceSearcherParameters;
         private readonly List<string> myElementNames;
 
         public JsonNewReferenceSearcher(IDomainSpecificSearcherFactory searchWordsProvider,
-            IDeclaredElementsSet elements, bool findCandidates)
+            IDeclaredElementsSet elements, ReferenceSearcherParameters referenceSearcherParameters)
         {
             myElements = elements;
-            myFindCandidates = findCandidates;
+            myReferenceSearcherParameters = referenceSearcherParameters;
 
             myElementNames = new List<string>(elements.Count);
             foreach (var element in elements)
@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Json.Feature.Finder
             Assertion.AssertNotNull(element, "element != null");
             var wordsInText = myElementNames;
             var referenceNames = myElementNames;
-            var result = new ReferenceSearchSourceFileProcessor<TResult>(element, myFindCandidates, consumer,
+            var result = new ReferenceSearchSourceFileProcessor<TResult>(element, myReferenceSearcherParameters, consumer,
                 myElements, wordsInText, referenceNames).Run();
             return result == FindExecution.Stop;
         }

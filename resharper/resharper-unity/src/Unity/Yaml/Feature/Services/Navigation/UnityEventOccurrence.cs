@@ -12,6 +12,7 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.UI.Icons;
 using JetBrains.UI.RichText;
+using JetBrains.Util.Media;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
@@ -47,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
                 return "";
             
             var elementRichText = DeclaredElementMenuItemFormatter.FormatText(declaredElement, declaredElement.PresentationLanguage, out _);
-            var grayTextStyle = TextStyle.FromForeColor(SystemColors.GrayText);
+            var grayTextStyle = TextStyle.FromForeColor(JetSystemColors.GrayText);
             var containerText = DeclaredElementPresenter.Format(declaredElement.PresentationLanguage,
                 DeclaredElementMenuItemFormatter.ContainerPresentationStyle, declaredElement, EmptySubstitution.INSTANCE).Text;
             

@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.UI.Icons;
 using JetBrains.UI.RichText;
+using JetBrains.Util.Media;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
@@ -36,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
                 return valuePresentation;
 
             var richText = new RichText(valuePresentation);
-            var inText = new RichText(" in ", TextStyle.FromForeColor(Color.DarkGray));
+            var inText = new RichText(" in ", TextStyle.FromForeColor(JetRgbaColors.DarkGray));
             var objectText = base.GetDisplayText();
 
             return richText.Append(inText).Append(objectText);

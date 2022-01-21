@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                                            AssetInspectorValuesContainer assetInspectorValuesContainer,
                                            MetaFileGuidCache metaFileGuidCache,
                                            IDeclaredElementsSet elements,
-                                           bool findCandidates)
+                                           ReferenceSearcherParameters referenceSearcherParameters)
         {
             myDeferredCacheController = deferredCacheController;
             myAssetDocumentHierarchyElementContainer = assetDocumentHierarchyElementContainer;
