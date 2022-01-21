@@ -10,13 +10,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
     public class UnityProjectTypeLogContributor : IActivityLogContributorSolutionComponent
     {
         private readonly UnitySolutionTracker myUnitySolutionTracker;
-        private readonly UnityReferencesTracker myUnityReferencesTracker;
-
-        public UnityProjectTypeLogContributor(UnitySolutionTracker unitySolutionTracker,
-                                              UnityReferencesTracker unityReferencesTracker)
+        
+        public UnityProjectTypeLogContributor(UnitySolutionTracker unitySolutionTracker)
         {
             myUnitySolutionTracker = unitySolutionTracker;
-            myUnityReferencesTracker = unityReferencesTracker;
         }
 
         public void ProcessSolutionStatistics([NotNull] JObject log)
@@ -25,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
                 log["unity_pt"] = "UnityGenerated";
             else if (myUnitySolutionTracker.IsUnityProject.Value)
                 log["unity_pt"] = "UnitySidecar";
-            else if (myUnityReferencesTracker.HasUnityReference.Value)
+            else if (myUnitySolutionTracker.HasUnityReference.Value)
                 log["unity_pt"] = "UnityClassLib";
         }
     }

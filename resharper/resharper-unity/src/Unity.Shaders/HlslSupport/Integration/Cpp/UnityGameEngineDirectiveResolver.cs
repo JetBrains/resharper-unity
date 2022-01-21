@@ -17,19 +17,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
     {
         private readonly ISolution mySolution;
         private readonly UnitySolutionTracker mySolutionTracker;
-        private readonly UnityReferencesTracker myReferencesTracker;
         private readonly ILogger myLogger;
         private readonly object myLockObject = new object();
         private readonly ConcurrentDictionary<string, string> myVersionsFromDirectories = new ConcurrentDictionary<string, string>();
         private readonly ConcurrentDictionary<string, string> myPackageLockPaths = new ConcurrentDictionary<string, string>();
         private bool myCacheInitialized = false;
 
-        public UnityGameEngineDirectiveResolver(ISolution solution, UnitySolutionTracker solutionTracker,
-                                                UnityReferencesTracker referencesTracker, ILogger logger)
+        public UnityGameEngineDirectiveResolver(ISolution solution, UnitySolutionTracker solutionTracker, ILogger logger)
         {
             mySolution = solution;
             mySolutionTracker = solutionTracker;
-            myReferencesTracker = referencesTracker;
             myLogger = logger;
         }
 
@@ -37,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
         {
             return path.StartsWith("Packages/") &&
                    (mySolutionTracker.IsUnityProject.HasTrueValue() ||
-                    myReferencesTracker.HasUnityReference.HasTrueValue());
+                    mySolutionTracker.HasUnityReference.HasTrueValue());
         }
 
         public string TransformPath(CppInclusionContext context, string path)

@@ -11,12 +11,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Pencils
 {
     public class UnityPencilsFilter : PencilsFilterSettingsBase<UnitySettings>
     {
-        public UnityPencilsFilter(Lifetime lifetime, UnitySolutionTracker solutionTracker,
-                                  UnityReferencesTracker referencesTracker, ISettingsStore store)
+        public UnityPencilsFilter(Lifetime lifetime, UnitySolutionTracker solutionTracker, ISettingsStore store)
             : base("Unity", "Plugins", "Unity", "", solutionTracker.IsUnityProject.HasTrueValue(), store,
                 s => s.EnablePerformanceCriticalCodeHighlighting)
         {
-            referencesTracker.HasUnityReference.Advise(lifetime,
+            solutionTracker.HasUnityReference.Advise(lifetime,
                 b => IsVisible.Value = solutionTracker.IsUnityProject.HasTrueValue() || b);
         }
 
@@ -27,17 +26,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Pencils
     public class UnityPencilsFilterProvider : IPencilsFiltersProvider
     {
         private readonly UnitySolutionTracker mySolutionTracker;
-        private readonly UnityReferencesTracker myReferencesTracker;
 
-        public UnityPencilsFilterProvider(UnitySolutionTracker solutionTracker, UnityReferencesTracker referencesTracker)
+        public UnityPencilsFilterProvider(UnitySolutionTracker solutionTracker)
         {
             mySolutionTracker = solutionTracker;
-            myReferencesTracker = referencesTracker;
         }
 
         public IEnumerable<IPencilsFilter> GetFilters(Lifetime lifetime, ISolution solution, ISettingsStore store)
         {
-            return new IPencilsFilter[] {new UnityPencilsFilter(lifetime, mySolutionTracker, myReferencesTracker, store)};
+            return new IPencilsFilter[] {new UnityPencilsFilter(lifetime, mySolutionTracker, store)};
         }
     }
 }

@@ -25,7 +25,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         public const string MarkId = "Unity.BurstContext";
 
         public BurstMarksProvider(Lifetime lifetime, ISolution solution,
-            UnityReferencesTracker referencesTracker,
             UnitySolutionTracker tracker,
             BurstStrictlyBannedMarkProvider strictlyBannedMarkProvider,
             IEnumerable<IBurstBannedAnalyzer> prohibitedContextAnalyzers)
@@ -34,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             myBurstBannedAnalyzers = prohibitedContextAnalyzers;
             myStrictlyBannedMarkProvider = strictlyBannedMarkProvider;
             Enabled.Value = tracker.IsUnityProject.HasTrueValue();
-            referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
+            tracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
         }
 
         private static void AddMarksFromStruct([NotNull] IStruct @struct, ref LocalList<IDeclaredElement> result)

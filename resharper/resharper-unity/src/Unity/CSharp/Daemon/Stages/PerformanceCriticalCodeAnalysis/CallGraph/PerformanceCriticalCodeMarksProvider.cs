@@ -19,12 +19,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     {
         public const string MarkId = "Unity.PerformanceCriticalContext";
 
-        public PerformanceCriticalCodeMarksProvider(Lifetime lifetime, ISolution solution,
-            UnityReferencesTracker referencesTracker, UnitySolutionTracker tracker)
+        public PerformanceCriticalCodeMarksProvider(Lifetime lifetime, ISolution solution, UnitySolutionTracker tracker)
             : base(MarkId, new CallGraphOutcomingPropagator(solution, MarkId))
         {
             Enabled.Value = tracker.IsUnityProject.HasTrueValue();
-            referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
+            tracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
         }
 
         private IDeclaredElement ExtractCoroutineOrInvokeRepeating(ITreeNode currentNode)
