@@ -626,7 +626,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         helperExeFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
         helperExeNetFxFiles.forEach { from(it) { into("${pluginName}/DotFiles/netfx") } }
 
-        from("../resharper/resharper-unity/src/annotations") {
+        from("../resharper/resharper-unity/src/Unity/annotations") {
             into("${pluginName}/dotnet/Extensions/com.intellij.resharper.unity/annotations")
         }
         from("projectTemplates") { into("${pluginName}/projectTemplates") }
