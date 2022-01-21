@@ -24,6 +24,10 @@ namespace UnityTest
       var c12 = Color.HSVToRGB(|0, 1, 1, false|(9));
 
       var c13 = Color.HSVToRGB(0, 1, 1, 1, 1);
+
+      Color c14 = new(|1, 0, 0|(10));
+      Color c15 = new(|0, 1, 1, 0.5f|(11));
+      Color c16 = new(10, 20, -2);
     }
   }
 }
@@ -59,3 +63,9 @@ HEX:  FF, 7F, 7F, 7F' (E) ''
 (9): : (T) '|   | 
 ARGB:  255, 255, 0, 0
 HEX:  FF, FF, 0, 0' (E) ''
+(10): : (T) '|   | 
+ARGB:  255, 255, 0, 0
+HEX:  FF, FF, 0, 0' (E) ''
+(11): : (T) '|   | 
+ARGB:  127, 0, 255, 255
+HEX:  7F, 0, FF, FF' (E) ''

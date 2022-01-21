@@ -6,12 +6,16 @@ namespace UnityTest
   {
     public Class1()
     {
+      // Color32 doesn't have an overload that takes 3 parameters, but we recognise it because it's the same as Color(r,g,b)
       var c1 = new Color32(|255, 0, 0|(0));
       var c2 = new Color32(|0, 255, 255, 127|(1));
       var c3 = new Color32(10, 20, -2);
 
       var c4 = new Color32(255, 0, 0, 0, 0);
       var c5 = new Color32(|0xFF / 2, 128, 128|(2));
+
+      Color32 c6 = new(|200, 180, 190, 255|(3));
+      Color32 c7 = new(1, 3, 0.5f, 0.8f);
     }
   }
 }
@@ -26,3 +30,6 @@ HEX:  7F, 0, FF, FF' (E) ''
 (2): : (T) '|   | 
 ARGB:  255, 127, 128, 128
 HEX:  FF, 7F, 80, 80' (E) ''
+(3): : (T) '|   | 
+ARGB:  255, 200, 180, 190
+HEX:  FF, C8, B4, BE' (E) ''
