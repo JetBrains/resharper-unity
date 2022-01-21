@@ -4,10 +4,8 @@
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Rider</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Rider</RootNamespace>
     <LangVersion>9</LangVersion>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
-    <!-- TODO: Fix obsolete warnings! -->
-    <NoWarn>0618</NoWarn>
   </PropertyGroup>
   <!-- ********** -->
   <ItemGroup Label="Model">

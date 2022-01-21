@@ -59,9 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration
 
         public void StartRefresh(RefreshType refreshType)
         {
-#pragma warning disable 4014
             Refresh(myLifetime, refreshType);
-#pragma warning restore 4014
         }
 
         /// <summary>

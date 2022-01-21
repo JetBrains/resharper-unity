@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Threading;
@@ -18,6 +17,8 @@ using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Util;
 using Newtonsoft.Json;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 {
@@ -36,12 +37,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 
         private DateTime myLastChangeTime;
 
-        public BackendUnityProtocol(Lifetime lifetime, ILogger logger,
-            BackendUnityHost backendUnityHost,
-            IScheduler dispatcher, IShellLocks locks, ISolution solution,
-            UnitySolutionTracker unitySolutionTracker, 
-            IFileSystemTracker fileSystemTracker,
-            UnityPluginInstaller pluginInstaller)
+        public BackendUnityProtocol(Lifetime lifetime,
+                                    ILogger logger,
+                                    BackendUnityHost backendUnityHost,
+                                    IScheduler dispatcher,
+                                    IShellLocks locks,
+                                    ISolution solution,
+                                    UnitySolutionTracker unitySolutionTracker,
+                                    IFileSystemTracker fileSystemTracker,
+                                    UnityPluginInstaller pluginInstaller)
         {
             myPluginInstallations = new JetHashSet<VirtualFileSystemPath>();
 
@@ -95,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                 return;
 
             myLogger.Info($"EditorPlugin protocol port {protocolInstance.Port} for Solution: {protocolInstance.SolutionName}.");
-            
+
             var thisSessionLifetime = mySessionLifetimes.Next();
 
             if (protocolInstance.ProtocolGuid != ProtocolCompatibility.ProtocolGuid)
@@ -115,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                     BackwardsCompatibleWireFormat = true
                 };
 
-                var protocol = new Rd.Impl.Protocol("UnityEditorPlugin", new Serializers(thisSessionLifetime, null, null),
+                var protocol = new Rd.Impl.Protocol("UnityEditorPlugin", new Serializers(null, null),
                     new Identities(IdKind.Client), myDispatcher, wire, thisSessionLifetime)
                 {
                     ThrowErrorOnOutOfSyncModels = false
@@ -150,13 +154,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             }
         }
 
-        [CanBeNull]
-        private ProtocolInstance GetProtocolInstanceData(VirtualFileSystemPath protocolInstancePath)
+        private ProtocolInstance? GetProtocolInstanceData(VirtualFileSystemPath protocolInstancePath)
         {
             if (!protocolInstancePath.ExistsFile)
                 return null;
 
-            List<ProtocolInstance> protocolInstanceList;
+            List<ProtocolInstance>? protocolInstanceList;
             try
             {
                 protocolInstanceList = ProtocolInstance.FromJson(protocolInstancePath.ReadAllText2().Text);
@@ -209,7 +212,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             ProtocolGuid = protocolGuid;
         }
 
-        public static List<ProtocolInstance> FromJson(string json)
+        public static List<ProtocolInstance>? FromJson(string json)
         {
             return JsonConvert.DeserializeObject<List<ProtocolInstance>>(json);
         }

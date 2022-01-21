@@ -4,7 +4,8 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Resources.Shell;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.ShaderLab.Daemon.ContextHighlighters
 {
@@ -13,8 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.ShaderLab.Daemon.ContextHighli
     {
         public override bool IsAvailable(IPsiSourceFile psiSourceFile)
         {
-            return Shell.Instance.IsTestShell ||
-                   psiSourceFile.GetSolution().GetSettingsStore().GetValue(HighlightingSettingsAccessor.HighlightUsages);
+            return psiSourceFile.GetSolution().GetSettingsStore()
+                .GetValue(HighlightingSettingsAccessor.HighlightUsages);
         }
     }
 }
