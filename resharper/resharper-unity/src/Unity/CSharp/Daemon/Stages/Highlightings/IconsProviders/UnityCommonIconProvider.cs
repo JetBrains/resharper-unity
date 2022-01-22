@@ -21,7 +21,10 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.TextControl;
+using JetBrains.TextControl.CodeWithMe;
 using JetBrains.Util;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
@@ -29,12 +32,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     public class UnityCommonIconProvider
     {
         protected readonly IApplicationWideContextBoundSettingStore SettingsStore;
-        protected readonly UnityApi UnityApi;
         protected readonly PerformanceCriticalContextProvider PerformanceContextProvider;
+        private readonly UnityApi myUnityApi;
         private readonly ISolution mySolution;
         private readonly ITextControlManager myTextControlManager;
         private readonly IEnumerable<IPerformanceAnalysisBulbItemsProvider> myMenuItemProviders;
-       
+
         public UnityCommonIconProvider(ISolution solution, UnityApi unityApi,
                                        IApplicationWideContextBoundSettingStore settingsStore,
                                        PerformanceCriticalContextProvider performanceContextProvider,
@@ -42,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         {
             mySolution = solution;
             myTextControlManager = solution.GetComponent<ITextControlManager>();
-            UnityApi = unityApi;
+            myUnityApi = unityApi;
             SettingsStore = settingsStore;
             PerformanceContextProvider = performanceContextProvider;
             myMenuItemProviders = menuItemProviders;
@@ -69,23 +72,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         {
             // gutter mark
             var actions = GetActions(cSharpDeclaration, context);
-            
+
             consumer.AddHotHighlighting(PerformanceContextProvider, cSharpDeclaration,
                 SettingsStore.BoundSettingsStore, text, tooltip, context, actions, true);
         }
 
         protected IReadOnlyList<BulbMenuItem> GetEventFunctionActions(ICSharpDeclaration declaration, IReadOnlyCallGraphContext context)
         {
-            if (!(declaration is IMethodDeclaration methodDeclaration)) 
+            if (!(declaration is IMethodDeclaration methodDeclaration))
                 return EmptyList<BulbMenuItem>.Instance;
-            
-            var declaredElement = methodDeclaration.DeclaredElement;
-            var textControl = mySolution.GetComponent<ITextControlManager>().LastFocusedTextControl.Value;
 
-            if (textControl == null || declaredElement == null) 
+            var declaredElement = methodDeclaration.DeclaredElement;
+            var textControl = mySolution.GetComponent<ITextControlManager>().LastFocusedTextControlPerClient.ForCurrentClient();
+            if (textControl == null || declaredElement == null)
                 return EmptyList<BulbMenuItem>.Instance;
-            
-            var isCoroutine = IsCoroutine(methodDeclaration, UnityApi);
+
+            var isCoroutine = IsCoroutine(methodDeclaration, myUnityApi);
             var result = GetBulbMenuItems(declaration, context) as List<BulbMenuItem> ?? new List<BulbMenuItem>();
 
             if (isCoroutine.HasValue)
@@ -95,16 +97,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                     : new ConvertToCoroutineBulbAction(methodDeclaration);
 
                 var menuITem = UnityCallGraphUtil.BulbActionToMenuItem(bulbAction, textControl, mySolution, BulbThemedIcons.ContextAction.Id);
-                        
+
                 result.Add(menuITem);
             }
 
-            if (UnityApi.IsEventFunction(declaredElement))
+            if (myUnityApi.IsEventFunction(declaredElement))
             {
                 var showUnityHelp = mySolution.GetComponent<ShowUnityHelp>();
-                var documentationNavigationAction = new DocumentationNavigationAction(showUnityHelp, declaredElement, UnityApi);
+                var documentationNavigationAction = new DocumentationNavigationAction(showUnityHelp, declaredElement, myUnityApi);
                 var menuItem = UnityCallGraphUtil.BulbActionToMenuItem(documentationNavigationAction, textControl, mySolution, CommonThemedIcons.Question.Id);
-                
+
                 result.Add(menuItem);
             }
 
@@ -135,8 +137,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 myUnityApi = unityApi;
             }
 
-            protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution,
-                IProgressIndicator progress)
+            protected override Action<ITextControl>? ExecutePsiTransaction(ISolution solution,
+                                                                           IProgressIndicator progress)
             {
                 myShowUnityHelp.ShowHelp(myMethod.GetUnityEventFunctionName(myUnityApi), HelpSystem.HelpKind.Msdn);
                 return null;
@@ -145,9 +147,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             public override string Text => "View documentation";
         }
 
-        protected static bool? IsCoroutine(IMethodDeclaration methodDeclaration, UnityApi unityApi)
+        private static bool? IsCoroutine(IMethodDeclaration methodDeclaration, UnityApi unityApi)
         {
-            if (methodDeclaration == null) return null;
             if (!methodDeclaration.IsFromUnityProject()) return null;
 
             var method = methodDeclaration.DeclaredElement;
@@ -161,32 +162,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
 
             return Equals(type.GetClrName(), PredefinedType.IENUMERATOR_FQN);
         }
-        
+
         protected IReadOnlyList<BulbMenuItem> GetActions(ICSharpDeclaration declaration, IReadOnlyCallGraphContext context)
         {
-            if (declaration.DeclaredElement is IMethod method && UnityApi.IsEventFunction(method))
+            if (declaration.DeclaredElement is IMethod method && myUnityApi.IsEventFunction(method))
                 return GetEventFunctionActions(declaration, context);
 
             return GetBulbMenuItems(declaration, context);
         }
 
-        protected IReadOnlyList<BulbMenuItem> GetBulbMenuItems(ICSharpDeclaration declaration, IReadOnlyCallGraphContext context)
+        private IReadOnlyList<BulbMenuItem> GetBulbMenuItems(ICSharpDeclaration declaration, IReadOnlyCallGraphContext context)
         {
             if (!(declaration is IMethodDeclaration methodDeclaration))
                 return EmptyList<BulbMenuItem>.Instance;
 
             var iconsEnabled = context.DaemonProcess.ContextBoundSettingsStore.GetValue((UnitySettings key) => key.EnableIconsForPerformanceCriticalCode);
-                    
             if (!iconsEnabled)
                 return EmptyList<BulbMenuItem>.Instance;
-            
-            var textControl = myTextControlManager.LastFocusedTextControl.Value;
+
+            var textControl = myTextControlManager.LastFocusedTextControlPerClient.ForCurrentClient();
+            if (textControl == null)
+                return EmptyList<BulbMenuItem>.Instance;
+
             var result = new List<BulbMenuItem>();
 
             foreach (var provider in myMenuItemProviders)
             {
                 var menuItems = provider.GetMenuItems(methodDeclaration, textControl, context);
-
                 foreach (var item in menuItems)
                     result.Add(item);
             }

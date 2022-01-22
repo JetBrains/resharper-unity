@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Psi;
@@ -6,17 +5,19 @@ using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 {
     public class UnityTypeSpec
     {
-        public static UnityTypeSpec Void = new UnityTypeSpec(PredefinedType.VOID_FQN);
+        public static readonly UnityTypeSpec Void = new(PredefinedType.VOID_FQN);
 
-        public UnityTypeSpec(IClrTypeName typeName, bool isArray = false, IClrTypeName[] typeParameters = null)
+        public UnityTypeSpec(IClrTypeName typeName, bool isArray = false, IClrTypeName[]? typeParameters = null)
         {
-           ClrTypeName = typeName;
-           IsArray = isArray;
-           TypeParameters = typeParameters ?? EmptyArray<IClrTypeName>.Instance;
+            ClrTypeName = typeName;
+            IsArray = isArray;
+            TypeParameters = typeParameters ?? EmptyArray<IClrTypeName>.Instance;
         }
 
         // CLR type name, not C# type name. Mostly the same, but can only represent open generics
@@ -27,7 +28,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public IClrTypeName[] TypeParameters { get; }
 
         // TODO: Perhaps this should be an extension method
-        [NotNull]
         public IType AsIType(KnownTypesCache knownTypesCache, IPsiModule module)
         {
             // TODO: It would be nice to also cache the closed generic and array types
@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             if (TypeParameters.Length > 0)
             {
                 var typeParameters = new IType[TypeParameters.Length];
-                for (int i = 0; i < TypeParameters.Length; i++)
+                for (var i = 0; i < TypeParameters.Length; i++)
                 {
                     typeParameters[i] = knownTypesCache.GetByClrTypeName(TypeParameters[i], module);
                 }
@@ -46,8 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 type = TypeFactory.CreateType(typeElement, typeParameters);
             }
 
-            if (IsArray)
-                type = TypeFactory.CreateArrayType(type, 1);
+            if (IsArray) type = TypeFactory.CreateArrayType(type, 1, NullableAnnotation.Unknown);
 
             return type;
         }

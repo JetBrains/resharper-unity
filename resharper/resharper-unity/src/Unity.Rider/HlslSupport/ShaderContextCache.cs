@@ -10,6 +10,8 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.Caches;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.HlslSupport
 {
     [SolutionComponent]
@@ -19,8 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.HlslSupport
         private readonly InjectedHlslFileLocationTracker myLocationTracker;
         private readonly DocumentManager myManager;
         private readonly ILogger myLogger;
-        private readonly DirectMappedCache<VirtualFileSystemPath, IRangeMarker> myShaderContext = new DirectMappedCache<VirtualFileSystemPath, IRangeMarker>(100);
-    
+        private readonly DirectMappedCache<VirtualFileSystemPath, IRangeMarker> myShaderContext = new(100);
+
         public ShaderContextCache(ISolution solution, InjectedHlslFileLocationTracker locationTracker, DocumentManager manager, ILogger logger)
         {
             mySolution = solution;
@@ -28,7 +30,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.HlslSupport
             myManager = manager;
             myLogger = logger;
         }
-
 
         public void SetContext(IPsiSourceFile psiSourceFile, CppFileLocation? root)
         {
@@ -65,7 +66,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.HlslSupport
                     var path = myManager.TryGetProjectFile(result.Document)?.Location;
                     if (path != null)
                     {
-                        var location = new CppFileLocation(new FileSystemPathWithRange(path, result.Range));
+                        var location =
+                            new CppFileLocation(new FileSystemPathWithRange(path, result.DocumentRange.TextRange));
                         if (!myLocationTracker.Exists(location))
                         {
                             myLogger.Trace(

@@ -3,10 +3,8 @@
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
-    <!-- TODO: Fix up the .psi files so we don't get the obsolete warnings -->
-    <NoWarn>0618</NoWarn>
     <LangVersion>9</LangVersion>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
   <!-- ********** -->

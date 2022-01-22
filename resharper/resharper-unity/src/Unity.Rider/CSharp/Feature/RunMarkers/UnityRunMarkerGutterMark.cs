@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
+using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Psi;
@@ -11,6 +12,8 @@ using JetBrains.Rider.Model.Unity;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.UI.RichText;
 using JetBrains.UI.ThemedIcons;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.RunMarkers
 {
@@ -23,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.RunMarkers
 
         public override IEnumerable<BulbMenuItem> GetBulbMenuItems(IHighlighter highlighter)
         {
-            if (!(highlighter.UserData is UnityRunMarkerHighlighting runMarker)) yield break;
+            if (highlighter.UserData is not UnityRunMarkerHighlighting runMarker) yield break;
 
             var solution = Shell.Instance.GetComponent<SolutionsManager>().Solution;
             if (solution == null) yield break;
@@ -39,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.RunMarkers
             }
         }
 
-        private IEnumerable<BulbMenuItem> GetRunMethodItems(ISolution solution, UnityRunMarkerHighlighting runMarker)
+        private static IEnumerable<BulbMenuItem> GetRunMethodItems(ISolution solution, UnityRunMarkerHighlighting runMarker)
         {
             var backendUnityHost = solution.GetComponent<BackendUnityHost>();
             var notificationsModel = solution.GetComponent<NotificationsModel>();
@@ -59,11 +62,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.RunMarkers
                         return;
                     }
 
+                    var containingType =
+                        runMarker.Method.ContainingType.NotNull("runMarker.Method.ContainingType != null");
                     var data = new RunMethodData(
                         runMarker.Project.GetOutputFilePath(runMarker.TargetFrameworkId).NameWithoutExtension,
-                        runMarker.Method.GetContainingType().GetClrName().FullName,
-                        runMarker.Method.ShortName);
-                    model.RunMethodInUnity.Start(data);
+                        containingType.GetClrName().FullName, runMarker.Method.ShortName);
+                    model.RunMethodInUnity.Start(solution.GetLifetime(), data);
                 }),
                 new RichText($"Run '{methodFqn}'"),
                 iconId,

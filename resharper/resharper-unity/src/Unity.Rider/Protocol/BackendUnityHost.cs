@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Components;
 using JetBrains.Collections.Viewable;
@@ -16,6 +15,8 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 {
@@ -34,8 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 
         // Do not use for subscriptions! Should only be used to read values and start tasks.
         // The property's value will be null when the backend/Unity protocol is not available
-        [NotNull]
-        public readonly ViewableProperty<BackendUnityModel> BackendUnityModel = new ViewableProperty<BackendUnityModel>(null);
+        public readonly ViewableProperty<BackendUnityModel?> BackendUnityModel = new(null!);
 
         // TODO: Remove FrontendBackendHost. It's too easy to get circular dependencies
         public BackendUnityHost(Lifetime lifetime, ILogger logger,
@@ -49,14 +49,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 
             myEditorState = UnityEditorState.Disconnected;
 
-            BackendUnityModel.ViewNotNull(lifetime, (modelLifetime, backendUnityModel) =>
+            // TODO: ReactiveEx.ViewNotNull isn't NRT ready
+            BackendUnityModel!.ViewNotNull<BackendUnityModel>(lifetime, (modelLifetime, backendUnityModel) =>
             {
+                Assertion.AssertNotNull(backendUnityModel);
                 InitialiseModel(backendUnityModel);
                 AdviseModel(backendUnityModel, modelLifetime, packageManager);
                 StartPollingUnityEditorState(backendUnityModel, modelLifetime, frontendBackendHost, threading,
                     isApplicationActiveState, logger);
             });
-            BackendUnityModel.ViewNull(lifetime, _ =>
+            BackendUnityModel!.ViewNull<BackendUnityModel>(lifetime, _ =>
             {
                 myEditorState = UnityEditorState.Disconnected;
                 if (frontendBackendHost.IsAvailable)
@@ -75,10 +77,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             }
         }
 
-        public bool IsConnectionEstablished()
-        {
-            return myEditorState != UnityEditorState.Refresh && myEditorState != UnityEditorState.Disconnected;
-        }
+        public bool IsConnectionEstablished() => myEditorState != UnityEditorState.Refresh &&
+                                                 myEditorState != UnityEditorState.Disconnected;
 
         // Push values into the protocol
         private static void InitialiseModel(BackendUnityModel backendUnityModel)
@@ -131,7 +131,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             backendUnityModel.UnityApplicationData.AdviseOnce(modelLifetime, data =>
             {
                 // ApplicationVersion may look like `2017.2.1f1-CustomPostfix`
-                var unityVersion = UnityVersion.VersionToString(UnityVersion.Parse(data.ApplicationVersion));
+                var parsedVersion = UnityVersion.Parse(data.ApplicationVersion)
+                    .NotNull("UnityVersion.Parse(data.ApplicationVersion) != null");
+                var unityVersion = UnityVersion.VersionToString(parsedVersion);
                 if (data.ApplicationVersion.StartsWith(unityVersion) && unityVersion != data.ApplicationVersion)
                     myUsageStatistics.TrackActivity("UnityVersion", unityVersion + "-custom"); // impersonate, but still track that it is custom build
                 else
@@ -176,8 +178,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                 return;
             }
 
-            var task = backendUnityModel.GetUnityEditorState.Start(Unit.Instance);
-            task?.Result.AdviseOnce(modelLifetime, result =>
+            var task = backendUnityModel.GetUnityEditorState.Start(modelLifetime, Unit.Instance);
+            task.Result.AdviseOnce(modelLifetime, result =>
             {
                 logger.Trace($"Got poll result from Unity editor: {result.Result}");
                 myEditorState = result.Result;
@@ -186,7 +188,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 
             Task.Delay(TimeSpan.FromSeconds(2), modelLifetime).ContinueWith(_ =>
             {
-                if (task != null && !task.AsTask().IsCompleted)
+                if (!task.AsTask().IsCompleted)
                 {
                     logger.Trace(
                         "There were no response from Unity in two seconds. Setting state to Disconnected.");

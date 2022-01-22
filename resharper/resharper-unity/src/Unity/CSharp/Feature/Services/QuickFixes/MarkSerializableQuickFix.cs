@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -17,6 +18,8 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
 using JetBrains.Util;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
@@ -66,16 +69,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 myTypeDeclaration = typeDeclaration;
             }
 
-            protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+            protected override Action<ITextControl>? ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
             {
-                var attributeType = TypeFactory.CreateTypeByCLRName(PredefinedType.SERIALIZABLE_ATTRIBUTE_CLASS,
-                    myTypeDeclaration.GetPsiModule()).GetTypeElement();
-                if (attributeType != null)
-                {
-                    var elementFactory = CSharpElementFactory.GetInstance(myTypeDeclaration);
-                    var attribute = elementFactory.CreateAttribute(attributeType);
-                    myTypeDeclaration.AddAttributeAfter(attribute, null);
-                }
+                AttributeUtil.AddAttributeToSingleDeclaration(myTypeDeclaration,
+                    PredefinedType.SERIALIZABLE_ATTRIBUTE_CLASS, myTypeDeclaration.GetPsiModule(),
+                    CSharpElementFactory.GetInstance(myTypeDeclaration));
 
                 return null;
             }

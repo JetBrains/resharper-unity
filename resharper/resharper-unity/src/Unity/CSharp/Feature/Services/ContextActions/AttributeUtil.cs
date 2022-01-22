@@ -5,6 +5,7 @@ using JetBrains.DocumentModel;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Hotspots;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
@@ -15,82 +16,90 @@ using JetBrains.ReSharper.Psi.Util;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     public static class AttributeUtil
     {
-        [CanBeNull]
-        public static IAttribute AddAttributeToSingleDeclaration([CanBeNull] IAttributesOwnerDeclaration fieldDeclaration,
-                                                                 IClrTypeName attributeTypeName,
-                                                                 [NotNull] AttributeValue[] attributeValues,
-                                                                 [CanBeNull] Pair<string, AttributeValue>[] namedValues,
-                                                                 IPsiModule module,
-                                                                 CSharpElementFactory elementFactory, bool allowMultiply = false)
-        {
-            if (fieldDeclaration == null) return null;
-
-            // TODO: Should we do this check here?
-            var existingAttribute = GetAttribute(fieldDeclaration, attributeTypeName);
-            if (existingAttribute != null && !allowMultiply) return null;
-
-            var attribute = CreateAttribute(attributeTypeName, attributeValues, namedValues, module, elementFactory);
-            if (attribute != null)
-            {
-                // This will split a multiple declaration, if necessary
-                return fieldDeclaration.AddAttributeAfter(attribute, null);
-            }
-
-            return null;
-        }
-
-        [CanBeNull]
-        public static IAttribute AddAttributeToSingleDeclaration([CanBeNull] IAttributesOwnerDeclaration fieldDeclaration,
-            IClrTypeName attributeTypeName, IPsiModule module, CSharpElementFactory elementFactory)
+        public static IAttribute? AddAttributeToSingleDeclaration(IAttributesOwnerDeclaration fieldDeclaration,
+                                                                  IClrTypeName attributeTypeName,
+                                                                  IPsiModule module,
+                                                                  CSharpElementFactory elementFactory)
         {
             return AddAttributeToSingleDeclaration(fieldDeclaration, attributeTypeName,
-                EmptyArray<AttributeValue>.Instance, null, module, elementFactory);
+                EmptyArray<AttributeValue>.Instance,
+                EmptyArray<Pair<string, AttributeValue>>.Instance,
+                module, elementFactory);
+        }
+
+        public static IAttribute? AddAttributeToSingleDeclaration(IAttributesOwnerDeclaration fieldDeclaration,
+                                                                  IClrTypeName attributeTypeName,
+                                                                  AttributeValue[] fixedArguments,
+                                                                  Pair<string, AttributeValue>[]? namedArguments,
+                                                                  IPsiModule module,
+                                                                  CSharpElementFactory elementFactory,
+                                                                  bool allowMultiple = false)
+        {
+            // TODO: Should we do this check here?
+            var existingAttribute = GetAttribute(fieldDeclaration, attributeTypeName);
+            if (existingAttribute != null && !allowMultiple) return null;
+
+            var attribute = CreateAttribute(attributeTypeName, fixedArguments, namedArguments, module, elementFactory);
+
+            // This will split a multiple declaration, if necessary
+            return attribute != null ? fieldDeclaration.AddAttributeAfter(attribute, null) : null;
+        }
+
+        public static IAttribute? AddAttributeToEntireDeclaration(IMultipleFieldDeclaration fieldDeclaration,
+                                                                  IClrTypeName attributeTypeName,
+                                                                  IPsiModule module,
+                                                                  CSharpElementFactory elementFactory)
+        {
+            return AddAttributeToEntireDeclaration(fieldDeclaration, attributeTypeName,
+                EmptyArray<AttributeValue>.Instance,
+                EmptyArray<Pair<string, AttributeValue>>.Instance,
+                module, elementFactory);
         }
 
         // Given a multiple field declaration (a declaration with multiple fields declared at once), adds an attribute
         // to the entire declaration, which when compiled has the effect of applying the attribute to each field
-        [CanBeNull]
-        public static IAttribute AddAttributeToEntireDeclaration(
-            [NotNull] IMultipleFieldDeclaration multipleFieldDeclaration,
-            IClrTypeName attributeTypeName,
-            [NotNull] AttributeValue[] attributeValues,
-            [CanBeNull] Pair<string, AttributeValue>[] namedValues,
-            IPsiModule module,
-            CSharpElementFactory elementFactory)
+        public static IAttribute? AddAttributeToEntireDeclaration(IMultipleFieldDeclaration multipleFieldDeclaration,
+                                                                  IClrTypeName attributeTypeName,
+                                                                  AttributeValue[] fixedArguments,
+                                                                  Pair<string, AttributeValue>[]? namedArguments,
+                                                                  IPsiModule module,
+                                                                  CSharpElementFactory elementFactory)
         {
             // TODO: Do we need to do this check here?
             var existingAttribute = GetAttribute(multipleFieldDeclaration.Attributes, attributeTypeName);
             if (existingAttribute != null) return null;
 
-            var attribute = CreateAttribute(attributeTypeName, attributeValues, namedValues, module, elementFactory);
+            var attribute = CreateAttribute(attributeTypeName, fixedArguments, namedArguments, module, elementFactory);
             if (attribute != null)
             {
                 // It doesn't matter which declaration we use, it will be applied to the multiple field declaration
-                var firstFieldDeclaration = (IFieldDeclaration) multipleFieldDeclaration.Declarators[0];
+                var firstFieldDeclaration = (IFieldDeclaration)multipleFieldDeclaration.Declarators[0];
                 return CSharpSharedImplUtil.AddAttributeAfter(firstFieldDeclaration, attribute, null);
             }
 
             return null;
         }
 
-        private static IAttribute CreateAttribute(IClrTypeName attributeTypeName,
-                                                  [NotNull] AttributeValue[] attributeValues,
-                                                  [CanBeNull] Pair<string, AttributeValue>[] namedValues,
-                                                  IPsiModule module,
-                                                  CSharpElementFactory elementFactory)
+        private static IAttribute? CreateAttribute(IClrTypeName attributeTypeName,
+                                                   AttributeValue[] fixedArguments,
+                                                   Pair<string, AttributeValue>[]? namedArguments,
+                                                   IPsiModule module,
+                                                   CSharpElementFactory elementFactory)
         {
-            var typeElement = TypeFactory.CreateTypeByCLRName(attributeTypeName, module).GetTypeElement();
+            var typeElement = KnownTypesFactory.GetByClrTypeName(attributeTypeName, module).GetTypeElement();
+            namedArguments ??= EmptyArray<Pair<string, AttributeValue>>.Instance;
             return typeElement != null
-                ? elementFactory.CreateAttribute(typeElement, attributeValues,
-                    namedValues ?? EmptyArray<Pair<string, AttributeValue>>.Instance)
+                ? elementFactory.CreateAttribute(typeElement, fixedArguments, namedArguments)
                 : null;
         }
 
-        public static void RemoveAttributeFromSingleDeclaration([CanBeNull] IFieldDeclaration fieldDeclaration,
+        public static void RemoveAttributeFromSingleDeclaration(IFieldDeclaration fieldDeclaration,
             IClrTypeName attributeTypeName)
         {
             var attribute = GetAttribute(fieldDeclaration, attributeTypeName);
@@ -101,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             }
         }
 
-        public static void RemoveAttributeFromAllDeclarations([CanBeNull] IFieldDeclaration fieldDeclaration,
+        public static void RemoveAttributeFromAllDeclarations(IFieldDeclaration fieldDeclaration,
             IClrTypeName attributeTypeName)
         {
             var attribute = GetAttribute(fieldDeclaration, attributeTypeName);
@@ -109,9 +118,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 CSharpSharedImplUtil.RemoveAttribute(fieldDeclaration, attribute);
         }
 
-        [CanBeNull, ContractAnnotation("attributeSectionList:null => null")]
-        private static IAttribute GetAttribute([CanBeNull] IAttributeSectionList attributeSectionList,
-                                               IClrTypeName requiredAttributeTypeName)
+        [ContractAnnotation("attributeSectionList:null => null")]
+        private static IAttribute? GetAttribute(IAttributeSectionList? attributeSectionList,
+                                                IClrTypeName requiredAttributeTypeName)
         {
             if (attributeSectionList == null) return null;
 
@@ -128,14 +137,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             return null;
         }
 
-        [CanBeNull, ContractAnnotation("attributesOwner:null => null")]
-        public static IAttribute GetAttribute([CanBeNull] this IAttributesOwnerDeclaration attributesOwner,
-            IClrTypeName requiredAttributeTypeName)
+        [ContractAnnotation("attributesOwner:null => null")]
+        public static IAttribute? GetAttribute(this IAttributesOwnerDeclaration? attributesOwner,
+                                               IClrTypeName requiredAttributeTypeName)
         {
             return GetAttributes(attributesOwner, requiredAttributeTypeName).FirstOrDefault(null);
         }
-        
-        public static IEnumerable<IAttribute> GetAttributes([CanBeNull] IAttributesOwnerDeclaration attributesOwner,
+
+        public static IEnumerable<IAttribute> GetAttributes(IAttributesOwnerDeclaration? attributesOwner,
             IClrTypeName requiredAttributeTypeName)
         {
             if (attributesOwner == null) yield break;
@@ -150,31 +159,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 }
             }
         }
-        
+
         public static Action<ITextControl> CreateHotspotSession(this IAttribute attribute)
         {
             var hotspotsRegistry = new HotspotsRegistry(attribute.GetSolution().GetPsiServices());
 
             var arguments = attribute.Arguments;
-            for (var i = 0; i < arguments.Count; i++)
+            foreach (var argument in arguments)
             {
-                if (arguments[i].Value is ICSharpLiteralExpression literalExpression)
+                if (argument.Value is ICSharpLiteralExpression literalExpression)
                 {
                     var range = literalExpression.Literal.GetUnquotedDocumentRange().CreateRangeMarker();
-                    hotspotsRegistry.Register(range, new NameSuggestionsExpression(new[] { literalExpression.ConstantValue.GetPresentation(attribute.Language)}));
+                    hotspotsRegistry.Register(range,
+                        new NameSuggestionsExpression(new[]
+                        {
+                            literalExpression.ConstantValue.GetPresentation(attribute.Language, DeclaredElementPresenterTextStyles.Empty).Text
+                        }));
                 }
             }
-            
+
             var propertyAssignments = attribute.PropertyAssignments;
-            for (var i = 0; i < propertyAssignments.Count; i++)
+            foreach (var argument in propertyAssignments)
             {
-                if (propertyAssignments[i].Source is ICSharpLiteralExpression literalExpression)
+                if (argument.Source is ICSharpLiteralExpression literalExpression)
                 {
                     var range = literalExpression.Literal.GetUnquotedDocumentRange().CreateRangeMarker();
-                    hotspotsRegistry.Register(range, new NameSuggestionsExpression(new[] { literalExpression.ConstantValue.GetPresentation(attribute.Language)}));
+                    hotspotsRegistry.Register(range,
+                        new NameSuggestionsExpression(new[]
+                        {
+                            literalExpression.ConstantValue.GetPresentation(attribute.Language, DeclaredElementPresenterTextStyles.Empty).Text
+                        }));
                 }
             }
-            
+
             return BulbActionUtils.ExecuteHotspotSession(hotspotsRegistry, DocumentOffset.InvalidOffset);
         }
     }

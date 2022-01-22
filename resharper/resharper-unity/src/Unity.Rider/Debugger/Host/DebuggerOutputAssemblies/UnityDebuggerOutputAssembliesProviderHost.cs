@@ -5,12 +5,15 @@ using Debugger.Common.OutputAssemblies;
 using JetBrains.Application.Infra;
 using JetBrains.Debugger.Host.DebuggerOutputAssemblies;
 using JetBrains.Lifetimes;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Utils;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Backend.Features.Debugger.Utils;
 using JetBrains.Util;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Host.DebuggerOutputAssemblies
 {
@@ -63,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Host.DebuggerOutputAs
                         projectLocation.Combine("Library/ScriptAssemblies").Combine(outputAssemblyName);
                     if (!unityOutputPath.IsEmpty && unityOutputPath.IsAbsolute)
                     {
-                        var assemblyNameInfo = assemblyInfoDatabase.GetAssemblyName(unityOutputPath);
+                        var assemblyNameInfo = assemblyInfoDatabase.GetAssemblyName(unityOutputPath.ToAssemblyLocation());
                         if (assemblyNameInfo.IsNullOrEmpty())
                         {
                             // The file should always exist - Unity will make sure it's there, as long as there are no

@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
                 return ReferenceCollection.Empty;
 
             var invocationReference = invocationExpression.Reference;
-            if (!(invocationReference?.Resolve().DeclaredElement is IMethod invokedMethod))
+            if (invocationReference.Resolve().DeclaredElement is not IMethod invokedMethod)
                 return ReferenceCollection.Empty;
 
             var kind = GetExpectedReferenceKind(invokedMethod);
@@ -76,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 
         private bool DoesMethodBelongToType(IMethod invokedMethod, IClrTypeName typeName)
         {
-            var containingType = invokedMethod.GetContainingType();
+            var containingType = invokedMethod.ContainingType;
             return containingType != null && Equals(containingType.GetClrName(), typeName);
         }
 
@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
                 var endIndex = nextDotIndex != -1 ? nextDotIndex : literalValue.Length;
 
                 // startIndex + 1 to skip leading quote in tree node, which doesn't exist in literalValue
-                var rangeWithin = TextRange.FromLength(startIndex + 1, endIndex - startIndex);
+                var rangeWithin = TreeTextRange.FromLength(new TreeOffset(startIndex + 1), endIndex - startIndex);
 
                 // Behaviour and resolution is almost identical for each part.
                 // For a single component, it is either a Unity object with an inferred namespace, a type in the global
