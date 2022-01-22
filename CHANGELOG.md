@@ -12,11 +12,22 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net213...net221)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/50?closed=1)
 
+### Added
+
+- Rider: Add new run configuration to run Unity tests in batch mode ([RIDER-70675](https://youtrack.jetbrains.com/issue/RIDER-70675), [#2231](https://github.com/JetBrains/resharper-unity/pull/2231))
+
+### Changed
+
+- Show preview for target typed new instances of `Color` ([RIDER-64151](https://youtrack.jetbrains.com/issue/RIDER-64151), [#2250](https://github.com/JetBrains/resharper-unity/pull/2250))
+- Unity editor: Expand Find Usages editor window by default ([#2239](https://github.com/JetBrains/resharper-unity/pull/2239))
+
 ### Fixed
 
 - Rider: Fix incorrectly showing both Unity and Unity DLL project action groups ([#2219](https://github.com/JetBrains/resharper-unity/pull/2219))
 - Rider: Fix incorrectly showing "switch to full UI" action when already in full UI ([RIDER-71185](https://youtrack.jetbrains.com/issue/RIDER-71185), [#2220](https://github.com/JetBrains/resharper-unity/pull/2220))
 - Rider: Fix debugging unit test when debugger is already attached to the editor ([RIDER-70660](https://youtrack.jetbrains.com/issue/RIDER-70660), [#2232](https://github.com/JetBrains/resharper-unity/pull/2232))
+- Rider: Fix issues displaying the "advanced integration unavailable" notification ([#73086](https://youtrack.jetbrains.com/issue/RIDER-73086), [#2240](https://github.com/JetBrains/resharper-unity/pull/2240))
+- Rider: Fix exception when showing Quick Doc tooltip ([DEXP-619767](https://youtrack.jetbrains.com/issue/DEXP-619767), [#2240](https://github.com/JetBrains/resharper-unity/pull/2240))
 
 
 
