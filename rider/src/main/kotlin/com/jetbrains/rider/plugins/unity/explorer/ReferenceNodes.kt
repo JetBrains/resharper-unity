@@ -68,7 +68,7 @@ class ReferenceItemNode(
     override val entities: List<ProjectModelEntity>
         get() = entityReferences.mapNotNull { it.getEntity(myProject) }
     override val entity: ProjectModelEntity?
-        get() = entities.firstOrNull()
+        get() = entityReference?.getEntity(myProject)
     override val entityReference: ProjectModelEntityReference?
         get() = entityReferences.firstOrNull()
 
