@@ -87,6 +87,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
             var appPath = mySolutionsManager.Solution?.GetComponent<UnityVersion>().GetActualAppPathForSolution();
             var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(appPath);
             var root = contentsPath.Combine("Documentation");
+
+            // I see /home/ivan-shakhov/Unity/Hub/Editor/2021.2.4f1/Editor/Data/Documentation/Documentation/en path on my machine
+            if (root.Combine("Documentation").ExistsDirectory)
+                root = root.Combine("Documentation");
+            
             var englishRoot = root.Combine("en");
             if (root.IsAbsolute && !englishRoot.ExistsDirectory && root.ExistsDirectory)
                 return root.GetChildDirectories().FirstOrDefault(englishRoot).ToNativeFileSystemPath();
