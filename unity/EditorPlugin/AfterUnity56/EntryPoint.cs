@@ -13,10 +13,12 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
       
       PluginEntryPoint.OnModelInitialization += UnitTesting.Initialization.OnModelInitializationHandler;
       PluginEntryPoint.OnModelInitialization += Navigation.Initialization.OnModelInitializationHandler;
+      PluginEntryPoint.OnModelInitialization += Packages.Initialization.OnModelInitializationHandler;
       AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
       {
         PluginEntryPoint.OnModelInitialization -= UnitTesting.Initialization.OnModelInitializationHandler;
         PluginEntryPoint.OnModelInitialization -= Navigation.Initialization.OnModelInitializationHandler;
+        PluginEntryPoint.OnModelInitialization -= Packages.Initialization.OnModelInitializationHandler;
       });
     }
   }
