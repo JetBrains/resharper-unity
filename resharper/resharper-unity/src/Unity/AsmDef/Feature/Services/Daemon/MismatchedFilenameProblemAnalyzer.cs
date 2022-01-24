@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.LiveTemplates;
 using JetBrains.ReSharper.Psi.Util;
 
-#nullable  enable
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {

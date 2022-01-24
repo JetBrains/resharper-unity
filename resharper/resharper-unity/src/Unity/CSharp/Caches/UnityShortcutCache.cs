@@ -20,14 +20,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
     [SolutionComponent]
     public class UnityShortcutCache : SimpleICache<CountingSet<string>>
     {
-        private readonly UnityReferencesTracker myUnityReferencesTracker;
+        private readonly UnitySolutionTracker myUnitySolutionTracker;
         private CountingSet<string> myLocalCache = new CountingSet<string>();
         private OneToCompactCountingSet<string, IPsiSourceFile> myFilesWithShortCut = new OneToCompactCountingSet<string, IPsiSourceFile>();
 
-        public UnityShortcutCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, UnityReferencesTracker unityReferencesTracker)
+        public UnityShortcutCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, UnitySolutionTracker unitySolutionTracker)
             : base(lifetime, shellLocks, persistentIndexManager,  CreateMarshaller())
         {
-            myUnityReferencesTracker = unityReferencesTracker;
+            myUnitySolutionTracker = unitySolutionTracker;
         }
 
 
@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
 
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return myUnityReferencesTracker.HasUnityReference.HasTrueValue() && base.IsApplicable(sf) && sf.PrimaryPsiLanguage.Is<CSharpLanguage>();
+            return myUnitySolutionTracker.HasUnityReference.HasTrueValue() && base.IsApplicable(sf) && sf.PrimaryPsiLanguage.Is<CSharpLanguage>();
         }
 
         public override object Build(IPsiSourceFile sourceFile, bool isStartup)

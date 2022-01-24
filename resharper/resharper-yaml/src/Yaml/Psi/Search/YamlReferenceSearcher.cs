@@ -13,14 +13,14 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Search
   public class YamlReferenceSearcher : IDomainSpecificSearcher
   {
     private readonly IDeclaredElementsSet myElements;
-    private readonly bool myFindCandidates;
+    private readonly ReferenceSearcherParameters myReferenceSearcherParameters;
     protected readonly List<string> ElementNames;
 
     public YamlReferenceSearcher(IDomainSpecificSearcherFactory searchWordsProvider, IDeclaredElementsSet elements,
-      bool findCandidates)
+      ReferenceSearcherParameters referenceSearcherParameters)
     {
       myElements = elements;
-      myFindCandidates = findCandidates;
+      myReferenceSearcherParameters = referenceSearcherParameters;
 
       ElementNames = new List<string>(elements.Count);
       foreach (var element in elements)
@@ -53,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Search
       // .ctor, but would appear in text as this or base
       var wordsInText = ElementNames;
       var referenceNames = ElementNames;
-      var result = new ReferenceSearchSourceFileProcessor<TResult>(element, myFindCandidates, consumer, myElements,
+      var result = new ReferenceSearchSourceFileProcessor<TResult>(element, myReferenceSearcherParameters, consumer, myElements,
         wordsInText, referenceNames).Run();
       return result == FindExecution.Stop;
     }

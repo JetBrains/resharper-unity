@@ -1,17 +1,13 @@
-using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Occurrences
 {
     public static class UnityAssetSpecificOccurrenceKinds
     {
-        [NotNull] public static readonly OccurrenceKind EventHandler =
-            new OccurrenceKind("Unity event handler", OccurrenceKind.SemanticAxis, false);
-
-        [NotNull] public static readonly OccurrenceKind ComponentUsage =
-            new OccurrenceKind("Unity component usage", OccurrenceKind.SemanticAxis, false);
-        
-        [NotNull] public static readonly OccurrenceKind InspectorUsage =
-            new OccurrenceKind("Inspector values", OccurrenceKind.SemanticAxis, false);
+        public static readonly OccurrenceKind EventHandler = OccurrenceKind.CreateSemantic("Unity event handler");
+        public static readonly OccurrenceKind ComponentUsage = OccurrenceKind.CreateSemantic("Unity component usage");
+        public static readonly OccurrenceKind InspectorUsage = OccurrenceKind.CreateSemantic("Inspector values");
     }
 }

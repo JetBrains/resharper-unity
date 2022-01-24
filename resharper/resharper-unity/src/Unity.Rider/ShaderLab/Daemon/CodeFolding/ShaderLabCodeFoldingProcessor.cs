@@ -5,6 +5,8 @@ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.ShaderLab.Daemon.CodeFolding
 {
     internal class ShaderLabCodeFoldingProcessor : TreeNodeVisitor<FoldingHighlightingConsumer>, ICodeFoldingProcessor
@@ -33,27 +35,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.ShaderLab.Daemon.CodeFolding
         public override void VisitBlockValueNode(IBlockValue blockValue, FoldingHighlightingConsumer consumer)
 #pragma warning restore 672
         {
-            var containingNode = blockValue.GetContainingNode<IBlockCommand>();
-            Assertion.AssertNotNull(containingNode, "containingNode != null");
-            if (containingNode != null)
-                consumer.AddFoldingForBracedConstruct(blockValue.LBrace, blockValue.RBrace, containingNode);
+            var containingNode = blockValue.GetContainingNode<IBlockCommand>()
+                .NotNull("blockValue.GetContainingNode<IBlockCommand>() != null");
+            consumer.AddFoldingForBracedConstruct(blockValue.LBrace, blockValue.RBrace, containingNode);
         }
 
         public override void VisitTexturePropertyValueNode(ITexturePropertyValue texturePropertyValue, FoldingHighlightingConsumer consumer)
         {
+#pragma warning disable 618
             VisitBlockValueNode(texturePropertyValue, consumer);
+#pragma warning restore 618
         }
 
         public override void VisitCgContentNode(ICgContent cgContent, FoldingHighlightingConsumer consumer)
         {
             var range = cgContent.GetHighlightingRange();
             if (!range.IsEmpty)
-            {
-                // TODO: Might be nice to have a better repreentation
-                // This will fold to `CGPROGRAM{...}ENDCG`
-                // But what? `{ CGPROGRAM }`?
                 consumer.AddDefaultPriorityFolding(CodeFoldingAttributes.DEFAULT_FOLDING_ATTRIBUTE, range, "{...}");
-            }
         }
     }
 }

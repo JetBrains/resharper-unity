@@ -11,6 +11,8 @@ using JetBrains.ReSharper.Psi.Util;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
 {
     [QuickFix]
@@ -23,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
             myLiteral = warning.LiteralExpression;
         }
 
-        protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+        protected override Action<ITextControl>? ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
             var projectFile = myLiteral.GetSourceFile().ToProjectFile();
             if (projectFile == null)
@@ -39,11 +41,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
                 }
                 else
                 {
-                    using (var transactionCookie = solution.CreateTransactionCookie(DefaultAction.Commit, Text,
-                        NullProgressIndicator.Instance))
-                    {
-                        transactionCookie.Rename(projectFile, newName);
-                    }
+                    using var transactionCookie = solution.CreateTransactionCookie(DefaultAction.Commit, Text,
+                        NullProgressIndicator.Create());
+                    transactionCookie.Rename(projectFile, newName);
                 }
             };
         }

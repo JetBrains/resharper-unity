@@ -1,6 +1,5 @@
-using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
@@ -26,6 +25,8 @@ using JetBrains.Rider.Backend.Features.BackgroundTasks;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Yaml.Feature.Services.Navigation
 {
     [SolutionComponent]
@@ -36,9 +37,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Yaml.Feature.Services.Navigati
         private readonly ISearchDomain myYamlSearchDomain;
         private readonly IShellLocks myLocks;
         private readonly AssetHierarchyProcessor myAssetHierarchyProcessor;
-        [NotNull] private readonly AnimatorScriptUsagesElementContainer myAnimatorContainer;
+        private readonly AnimatorScriptUsagesElementContainer myAnimatorContainer;
         private readonly BackendUnityHost myBackendUnityHost;
-        private readonly RiderBackgroundTaskHost myBackgroundTaskHost;
+        private readonly RiderBackgroundTaskHost? myBackgroundTaskHost;
         private readonly FrontendBackendHost myFrontendBackendHost;
         private readonly IPersistentIndexManager myPersistentIndexManager;
         private readonly VirtualFileSystemPath mySolutionDirectoryPath;
@@ -50,8 +51,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Yaml.Feature.Services.Navigati
                                                  FrontendBackendHost frontendBackendHost,
                                                  UnityExternalFilesModuleFactory externalFilesModuleFactory,
                                                  IPersistentIndexManager persistentIndexManager,
-                                                 [NotNull] AnimatorScriptUsagesElementContainer animatorContainer,
-                                                 [CanBeNull] RiderBackgroundTaskHost backgroundTaskHost = null)
+                                                 AnimatorScriptUsagesElementContainer animatorContainer,
+                                                 RiderBackgroundTaskHost? backgroundTaskHost = null)
         {
             myLifetime = lifetime;
             mySolution = solution;
@@ -66,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Yaml.Feature.Services.Navigati
             mySolutionDirectoryPath = solution.SolutionDirectory;
         }
 
-        public void CreateRequestToUnity([NotNull] IDeclaredElement declaredElement, LocalReference location, bool focusUnity)
+        public void CreateRequestToUnity(IDeclaredElement declaredElement, LocalReference location)
         {
             var finder = mySolution.GetPsiServices().AsyncFinder;
             var consumer = new UnityUsagesFinderConsumer(myAssetHierarchyProcessor, myAnimatorContainer, myPersistentIndexManager,
@@ -77,10 +78,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Yaml.Feature.Services.Navigati
                 return;
 
             var selectRequest = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, myAnimatorContainer,
-                location, sourceFile, declaredElement, false);
+                location, sourceFile, declaredElement);
+            if (selectRequest == null)
+                return;
 
-
-            var lifetimeDef = myLifetime.CreateNested();
+            var requestLifetimeDefinition = myLifetime.CreateNested();
             var pi = new ProgressIndicator(myLifetime);
             if (myBackgroundTaskHost != null)
             {
@@ -90,28 +92,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Yaml.Feature.Services.Navigati
                     .AsCancelable(() => { pi.Cancel(); })
                     .Build();
 
-                myBackgroundTaskHost.AddNewTask(lifetimeDef.Lifetime, task);
+                myBackgroundTaskHost.AddNewTask(requestLifetimeDefinition.Lifetime, task);
             }
 
             myLocks.Tasks.StartNew(myLifetime, Scheduling.MainGuard, () =>
             {
                 using (ReadLockCookie.Create())
                 {
-                    finder.FindAsync(new[] {declaredElement}, myYamlSearchDomain,
-                        consumer, SearchPattern.FIND_USAGES ,pi,
-                        FinderSearchRoot.Empty, new UnityUsagesAsyncFinderCallback(lifetimeDef, myLifetime, consumer, myFrontendBackendHost, myBackendUnityHost, myLocks,
-                            declaredElement.ShortName, selectRequest, focusUnity));
+                    finder.FindAsync(new[] { declaredElement }, myYamlSearchDomain, consumer, SearchPattern.FIND_USAGES,
+                        pi, FinderSearchRoot.Empty,
+                        new UnityUsagesAsyncFinderCallback(myLifetime, requestLifetimeDefinition, consumer, myFrontendBackendHost,
+                            myBackendUnityHost, myLocks, declaredElement.ShortName, selectRequest));
                 }
             });
         }
 
-        private static AssetFindUsagesResultBase CreateRequest(VirtualFileSystemPath solutionDirPath,
-                                                               AssetHierarchyProcessor assetDocumentHierarchy,
-                                                               [NotNull]
-                                                               AnimatorScriptUsagesElementContainer animatorContainer,
-                                                               LocalReference location, IPsiSourceFile sourceFile,
-                                                               [NotNull] IDeclaredElement declaredElement,
-                                                               bool needExpand = false)
+        private static AssetFindUsagesResultBase? CreateRequest(VirtualFileSystemPath solutionDirPath,
+                                                                AssetHierarchyProcessor assetDocumentHierarchy,
+                                                                AnimatorScriptUsagesElementContainer animatorContainer,
+                                                                LocalReference location, IPsiSourceFile sourceFile,
+                                                                IDeclaredElement declaredElement,
+                                                                bool needExpand = false)
         {
             if (!GetPathFromAssetFolder(solutionDirPath, sourceFile, out var pathFromAsset, out var fileName, out var extension))
                 return null;
@@ -142,22 +143,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Yaml.Feature.Services.Navigati
             return new HierarchyFindUsagesResult(consumer.NameParts.ToArray(), consumer.RootIndexes.ToArray(), needExpand, pathFromAsset, fileName, extension);
         }
 
-        private static bool GetPathFromAssetFolder([NotNull] VirtualFileSystemPath solutionDirPath, [NotNull] IPsiSourceFile file,
-            out string filePath, out string fileName, out string extension)
+        private static bool GetPathFromAssetFolder(VirtualFileSystemPath solutionDirPath,
+                                                   IPsiSourceFile file,
+                                                   [NotNullWhen(true)] out string? filePath,
+                                                   [NotNullWhen(true)] out string? fileName,
+                                                   [NotNullWhen(true)] out string? extension)
         {
             extension = null;
             filePath = null;
             fileName = null;
+
             var path = file.GetLocation().MakeRelativeTo(solutionDirPath);
-            var assetFolder = path.Components.FirstOrEmpty;
+            var pathComponents = path.Components;
+            var assetFolder = pathComponents.FirstOrEmpty;
             if (!assetFolder.Equals(UnityYamlConstants.AssetsFolder))
                 return false;
 
-            var pathComponents = path.Components;
-
             extension = path.ExtensionWithDot;
             fileName = path.NameWithoutExtension;
-            filePath =  String.Join("/", pathComponents.Select(t => t.ToString()));
+            filePath = string.Join("/", pathComponents.Select(t => t.ToString()));
 
             return true;
         }
@@ -165,19 +169,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Yaml.Feature.Services.Navigati
         private class UnityUsagesFinderConsumer : IFindResultConsumer<UnityAssetFindResult>
         {
             private readonly AssetHierarchyProcessor myAssetHierarchyProcessor;
-            [NotNull] private readonly AnimatorScriptUsagesElementContainer myAnimatorContainer;
+            private readonly AnimatorScriptUsagesElementContainer myAnimatorContainer;
             private readonly IPersistentIndexManager myPersistentIndexManager;
             private readonly VirtualFileSystemPath mySolutionDirectoryPath;
-            private FindExecution myFindExecution = FindExecution.Continue;
-            [NotNull] private readonly IDeclaredElement myDeclaredElement;
+            private readonly IDeclaredElement myDeclaredElement;
 
-            public List<AssetFindUsagesResultBase> Result = new List<AssetFindUsagesResultBase>();
+            public readonly List<AssetFindUsagesResultBase> Result = new();
 
             public UnityUsagesFinderConsumer(AssetHierarchyProcessor assetHierarchyProcessor,
-                                             [NotNull] AnimatorScriptUsagesElementContainer animatorContainer,
+                                             AnimatorScriptUsagesElementContainer animatorContainer,
                                              IPersistentIndexManager persistentIndexManager,
                                              VirtualFileSystemPath solutionDirectoryPath,
-                                             [NotNull] IDeclaredElement declaredElement)
+                                             IDeclaredElement declaredElement)
             {
                 myAssetHierarchyProcessor = assetHierarchyProcessor;
                 myPersistentIndexManager = persistentIndexManager;
@@ -188,23 +191,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Yaml.Feature.Services.Navigati
 
             public UnityAssetFindResult Build(FindResult result)
             {
-                return result as UnityAssetFindResult;
+                // IFindResultConsumer<T> doesn't mark T Build(FindResult) as allowing to return null
+                return (result as UnityAssetFindResult)!;
             }
 
             public FindExecution Merge(UnityAssetFindResult data)
             {
                 var sourceFile = myPersistentIndexManager[data.OwningElemetLocation.OwningPsiPersistentIndex];
                 if (sourceFile == null)
-                    return myFindExecution;
+                    return FindExecution.Continue;
 
                 var request = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, myAnimatorContainer,
                     data.OwningElemetLocation, sourceFile, myDeclaredElement);
                 if (request != null)
                     Result.Add(request);
 
-                return myFindExecution;
+                return FindExecution.Continue;
             }
-
         }
 
         private class UnityUsagesAsyncFinderCallback : IFinderAsyncCallback
@@ -218,12 +221,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Yaml.Feature.Services.Navigati
             private readonly string myDisplayName;
             private readonly AssetFindUsagesResultBase mySelected;
 
-            public UnityUsagesAsyncFinderCallback(LifetimeDefinition progressBarLifetimeDefinition,
-                                                  Lifetime componentLifetime, UnityUsagesFinderConsumer consumer,
+            public UnityUsagesAsyncFinderCallback(Lifetime componentLifetime,
+                                                  LifetimeDefinition progressBarLifetimeDefinition,
+                                                  UnityUsagesFinderConsumer consumer,
                                                   FrontendBackendHost frontendBackendHost,
-                                                  BackendUnityHost backendUnityHost, IShellLocks shellLocks,
-                                                  string displayName, AssetFindUsagesResultBase selected,
-                                                  bool focusUnity)
+                                                  BackendUnityHost backendUnityHost,
+                                                  IShellLocks shellLocks,
+                                                  string displayName,
+                                                  AssetFindUsagesResultBase selected)
             {
                 myProgressBarLifetimeDefinition = progressBarLifetimeDefinition;
                 myComponentLifetime = componentLifetime;
@@ -243,15 +248,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Yaml.Feature.Services.Navigati
                     {
                         if (myBackendUnityHost.BackendUnityModel.Value == null) return;
 
-                        myFrontendBackendHost.Do(a => a.AllowSetForegroundWindow.Start(Unit.Instance).Result
+                        myFrontendBackendHost.Do(a => a.AllowSetForegroundWindow
+                            .Start(myProgressBarLifetimeDefinition.Lifetime, Unit.Instance).Result
                             .AdviseOnce(myComponentLifetime,
-                                result =>
+                                _ =>
                                 {
                                     var model = myBackendUnityHost.BackendUnityModel.Value;
-                                    if (mySelected != null)
-                                        model.ShowUsagesInUnity.Fire(mySelected);
+                                    model.ShowUsagesInUnity.Fire(mySelected);
                                     // pass all references to Unity TODO temp workaround, replace with async api
-                                    model.SendFindUsagesSessionResult.Fire(new FindUsagesSessionResult(myDisplayName, myConsumer.Result.ToArray()));
+                                    model.SendFindUsagesSessionResult.Fire(
+                                        new FindUsagesSessionResult(myDisplayName, myConsumer.Result.ToArray()));
                                 }));
                     }
 

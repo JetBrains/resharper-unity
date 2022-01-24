@@ -1,36 +1,43 @@
 using System.Collections.Concurrent;
-using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 {
     [SolutionComponent]
     public class KnownTypesCache
     {
-        private readonly ConcurrentDictionary<IClrTypeName, IDeclaredType> myTypes = new ConcurrentDictionary<IClrTypeName, IDeclaredType>();
+        private readonly ConcurrentDictionary<IClrTypeName, IDeclaredType> myTypes = new();
 
-        [NotNull]
         public IDeclaredType GetByClrTypeName(IClrTypeName typeName, IPsiModule module)
         {
-            var type = module.GetPredefinedType().TryGetType(typeName, NullableAnnotation.Unknown);
+            // TODO: If/when Unity support nullability, add this as a parameter, and as a key to the cache
+            const NullableAnnotation nullableAnnotation = NullableAnnotation.Unknown;
+
+            var type = module.GetPredefinedType().TryGetType(typeName, nullableAnnotation);
             if (type != null)
                 return type;
 
             // Make sure the type is still valid before handing it out. It might be invalid if the module used to create
             // it has been changed
-            type = myTypes.AddOrUpdate(typeName, name => TypeFactory.CreateTypeByCLRName(name, module),
+            type = myTypes.AddOrUpdate(typeName, name => TypeFactory.CreateTypeByCLRName(name, nullableAnnotation, module),
                 (name, existingValue) => existingValue.Module.IsValid()
                     ? existingValue
-                    : TypeFactory.CreateTypeByCLRName(name, module));
+                    : TypeFactory.CreateTypeByCLRName(name, nullableAnnotation, module));
             return type;
         }
+    }
 
-        private IDeclaredType ValueFactory(IClrTypeName arg)
+    public static class KnownTypesFactory
+    {
+        public static IDeclaredType GetByClrTypeName(IClrTypeName typeName, IPsiModule module)
         {
-            throw new System.NotImplementedException();
+            var knownTypesCache = module.GetSolution().GetComponent<KnownTypesCache>();
+            return knownTypesCache.GetByClrTypeName(typeName, module);
         }
     }
 }

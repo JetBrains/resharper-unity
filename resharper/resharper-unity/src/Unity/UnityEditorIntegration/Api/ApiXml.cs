@@ -5,51 +5,49 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Xml;
-using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 {
     public class ApiXml
     {
-        private readonly IDictionary<string, IClrTypeName> myTypeNames = new Dictionary<string, IClrTypeName>();
-        private readonly IDictionary<string, UnityTypeSpec> myTypeSpecs = new Dictionary<string, UnityTypeSpec>();
-        private readonly IDictionary<string, Version> myVersions = new Dictionary<string, Version>();
-        private readonly JetHashSet<string> myIdentifiers = new JetHashSet<string>();
-        private readonly UnityTypeSpec myDefaultReturnTypeSpec = new UnityTypeSpec(PredefinedType.INT_FQN);
+        private readonly Dictionary<string, IClrTypeName> myTypeNames = new();
+        private readonly Dictionary<string, UnityTypeSpec> myTypeSpecs = new();
+        private readonly Dictionary<string, Version> myVersions = new();
+        private readonly JetHashSet<string> myIdentifiers = new();
+        private readonly UnityTypeSpec myDefaultReturnTypeSpec = new(PredefinedType.INT_FQN);
 
         public UnityTypes LoadTypes()
         {
             var types = new List<UnityType>();
 
             var ns = GetType().Namespace;
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(ns + @".api.xml"))
-            {
-                Assertion.AssertNotNull(stream, "stream != null");
+            using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(ns + @".api.xml");
+            Assertion.AssertNotNull(stream, "stream != null");
 
-                var document = new XmlDocument();
-                document.Load(stream);
+            var document = new XmlDocument();
+            document.Load(stream);
 
-                var apiNode = document.DocumentElement?.SelectSingleNode("/api");
-                Assertion.AssertNotNull(apiNode, "apiNode != null");
+            var apiNode = document.DocumentElement?.SelectSingleNode("/api");
+            Assertion.AssertNotNull(apiNode, "apiNode != null");
 
-                var minimumVersion = apiNode.Attributes?["minimumVersion"]?.Value;
-                var maximumVersion = apiNode.Attributes?["maximumVersion"]?.Value;
+            var minimumVersion = apiNode.Attributes?["minimumVersion"]?.Value;
+            var maximumVersion = apiNode.Attributes?["maximumVersion"]?.Value;
 
-                Assertion.Assert(minimumVersion != null && maximumVersion != null,
-                    "minimumVersion != null && maximumVersion != null");
+            Assertion.Assert(minimumVersion != null && maximumVersion != null);
 
-                var nodes = document.DocumentElement?.SelectNodes(@"/api/type");
-                Assertion.AssertNotNull(nodes, "nodes != null");
-                foreach (XmlNode type in nodes)
-                    types.Add(CreateUnityType(type, minimumVersion, maximumVersion));
+            var nodes = document.DocumentElement?.SelectNodes(@"/api/type");
+            Assertion.AssertNotNull(nodes, "nodes != null");
+            foreach (XmlNode type in nodes)
+                types.Add(CreateUnityType(type, minimumVersion, maximumVersion));
 
-                return new UnityTypes(types, GetInternedVersion(minimumVersion), GetInternedVersion(maximumVersion));
-            }
+            return new UnityTypes(types, GetInternedVersion(minimumVersion), GetInternedVersion(maximumVersion));
         }
 
         private IClrTypeName GetInternedClrTypeName(string typeName)
@@ -89,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                         }
 
                         var outerTypeName = GetInternedClrTypeName(outer.Value);
-                        typeSpec = new UnityTypeSpec(outerTypeName, isArray, typeNames);
+                        typeSpec = new UnityTypeSpec(outerTypeName, isArray: isArray, typeParameters:typeNames);
 
                         myTypeSpecs.Add(key, typeSpec);
                     }
@@ -102,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 else
                 {
                     var clrTypeName = GetInternedClrTypeName(typeName);
-                    typeSpec = new UnityTypeSpec(clrTypeName, isArray);
+                    typeSpec = new UnityTypeSpec(clrTypeName, isArray: isArray);
                     myTypeSpecs.Add(key, typeSpec);
                 }
             }
@@ -189,7 +187,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 canBeCoroutine, description, isUndocumented, minimumVersion, maximumVersion, parameters);
         }
 
-        private UnityEventFunctionParameter LoadParameter([NotNull] XmlNode node, int i)
+        private UnityEventFunctionParameter LoadParameter(XmlNode node, int i)
         {
             var type = node.Attributes?["type"]?.Value;
             var name = node.Attributes?["name"].Value;

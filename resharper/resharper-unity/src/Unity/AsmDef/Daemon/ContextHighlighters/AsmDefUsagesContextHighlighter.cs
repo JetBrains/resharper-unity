@@ -1,10 +1,9 @@
 ﻿using System;
-using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Daemon.CaretDependentFeatures;
 using JetBrains.ReSharper.Feature.Services.Contexts;
-using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
 using JetBrains.ReSharper.Feature.Services.Navigation.Requests;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Json.Psi;
@@ -21,28 +20,30 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.ContextHighlighters
 {
     [ContainsContextConsumer]
     public class AsmDefUsagesContextHighlighter : ContextHighlighterBase
     {
-        private const string HIGHLIGHTING_ID = HighlightingAttributeIds.USAGE_OF_ELEMENT_UNDER_CURSOR;
+        private const string HIGHLIGHTING_ID = GeneralHighlightingAttributeIds.USAGE_OF_ELEMENT_UNDER_CURSOR;
 
-        [NotNull] private readonly IDeclaredElement myDeclaredElement;
-        [CanBeNull] private readonly IJsonNewLiteralExpression myLiteralExpressionUnderCaret;
+        private readonly IDeclaredElement myDeclaredElement;
+        private readonly IJsonNewLiteralExpression? myLiteralExpressionUnderCaret;
 
         private AsmDefUsagesContextHighlighter(IDeclaredElement declaredElement,
-                                               [CanBeNull] IJsonNewLiteralExpression literalExpressionUnderCaret)
+                                               IJsonNewLiteralExpression? literalExpressionUnderCaret)
         {
             myDeclaredElement = declaredElement;
             myLiteralExpressionUnderCaret = literalExpressionUnderCaret;
         }
 
-        [CanBeNull, AsyncContextConsumer]
-        public static Action ProcessContext(
+        [AsyncContextConsumer]
+        public static Action? ProcessContext(
             Lifetime lifetime,
-            [NotNull] HighlightingProlongedLifetime prolongedLifetime,
-            [NotNull, ContextKey(typeof(ContextHighlighterPsiFileView.ContextKey))] IPsiDocumentRangeView psiDocumentRangeView
+            HighlightingProlongedLifetime prolongedLifetime,
+            [ContextKey(typeof(ContextHighlighterPsiFileView.ContextKey))] IPsiDocumentRangeView psiDocumentRangeView
         )
         {
             var psiView = psiDocumentRangeView.View<JsonNewLanguage>();
@@ -58,8 +59,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.ContextHighlighters
             return highlighter.GetDataProcessAction(prolongedLifetime, psiDocumentRangeView);
         }
 
-        private static IDeclaredElement FindDeclaredElement(IPsiView psiView,
-            out IJsonNewLiteralExpression literalExpressionUnderCaret)
+        private static IDeclaredElement? FindDeclaredElement(IPsiView psiView,
+                                                             out IJsonNewLiteralExpression? literalExpressionUnderCaret)
         {
             literalExpressionUnderCaret = null;
 

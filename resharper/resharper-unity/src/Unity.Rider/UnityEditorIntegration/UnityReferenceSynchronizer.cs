@@ -9,11 +9,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration
     [SolutionComponent]
     public class UnityReferenceSynchronizer
     {
-        public UnityReferenceSynchronizer(Lifetime lifetime, FrontendBackendHost host, UnityReferencesTracker referencesTracker)
+        public UnityReferenceSynchronizer(Lifetime lifetime, FrontendBackendHost host, UnitySolutionTracker unitySolutionTracker)
         {
             host.Do(m =>
             {
-                referencesTracker.HasUnityReference.Advise(lifetime, res => { m.HasUnityReference.SetValue(res); });
+                unitySolutionTracker.HasUnityReference.Advise(lifetime, res => { m.HasUnityReference.SetValue(res); });
             });
         }
     }

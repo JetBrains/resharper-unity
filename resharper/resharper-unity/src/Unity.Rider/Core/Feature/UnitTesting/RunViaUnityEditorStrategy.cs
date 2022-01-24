@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
@@ -39,6 +38,8 @@ using IUnitTestLaunch = JetBrains.ReSharper.UnitTestFramework.Execution.Launch.I
 using IUnitTestRun = JetBrains.ReSharper.UnitTestFramework.Execution.Launch.IUnitTestRun;
 using Status = JetBrains.Rider.Model.Unity.BackendUnity.Status;
 using UnitTestLaunch = JetBrains.Rider.Model.Unity.BackendUnity.UnitTestLaunch;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting
 {
@@ -109,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting
                     myUnityProcessId.Value = null;
             });
 
-            myBackendUnityHost.BackendUnityModel.ViewNotNull(lifetime, (lt, model) =>
+            myBackendUnityHost.BackendUnityModel!.ViewNotNull<BackendUnityModel>(lifetime, (lt, model) =>
             {
                 // This will set the current value, if it exists
                 model.UnityApplicationData.FlowInto(lt, myUnityProcessId, data => data.UnityProcessId);
@@ -167,7 +168,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting
                             return;
                         }
 
-                        var task = myFrontendBackendHost.Model.AttachDebuggerToUnityEditor.Start(Unit.Instance);
+                        var task = myFrontendBackendHost.Model.AttachDebuggerToUnityEditor.Start(myLifetime, Unit.Instance);
                         task.Result.AdviseNotNull(myLifetime, result =>
                         {
                             if (!run.Lifetime.IsAlive)
@@ -190,8 +191,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting
 
         private void RefreshAndRunTask(IUnitTestRun run, TaskCompletionSource<bool> tcs, Lifetime taskLifetime)
         {
-            var cancellationTs = run.GetData(ourCancellationTokenSourceKey);
-            var cancellationToken = cancellationTs.NotNull().Token;
+            var cancellationTs = run.GetData(ourCancellationTokenSourceKey)
+                .NotNull("run.GetData(ourCancellationTokenSourceKey) != null");
+            var cancellationToken = cancellationTs.Token;
 
             myLogger.Trace("Before calling Refresh.");
             Refresh(run.Lifetime, tcs, cancellationToken).ContinueWith(_ =>
@@ -200,6 +202,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting
                     return;
 
                 myLogger.Trace("Refresh. OnCompleted.");
+
                 // KS: Can't use run.Lifetime for ExecuteOrQueueEx here and in all similar places: run.Lifetime is terminated when
                 // Unit Test Session is closed from UI without cancelling the run. This will leave task completion source in running state forever.
                 mySolution.Locks.ExecuteOrQueueEx(myLifetime, "Check compilation", () =>
@@ -210,7 +213,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting
                         return;
                     }
 
-                    if (myBackendUnityHost.BackendUnityModel.Value == null)
+                    var backendUnityModel = myBackendUnityHost.BackendUnityModel.Value;
+                    if (backendUnityModel == null)
                     {
                         tcs.SetException(new Exception("Unity Editor connection unavailable."));
                         return;
@@ -218,52 +222,60 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting
 
                     var filters = GetFilters(run);
 
-                    UnitTestLaunchClientControllerInfo unityClientControllerInfo = null;
+                    UnitTestLaunchClientControllerInfo? unityClientControllerInfo = null;
                     var clientControllerInfo = run.HostController.GetClientControllerInfo(run);
                     if (clientControllerInfo != null)
+                    {
                         unityClientControllerInfo = new UnitTestLaunchClientControllerInfo(
                             clientControllerInfo.AssemblyLocation,
                             clientControllerInfo.ExtraDependencies?.ToList(),
                             clientControllerInfo.TypeName);
+                    }
 
-                    var frontendBackendModel = mySolution.GetProtocolSolution().GetFrontendBackendModel();
-                    myUsageStatistics.TrackActivity("UnityUnitTestPreference", frontendBackendModel.UnitTestPreference.Value.ToString());
-                    var mode = TestMode.Edit;
-                    if (frontendBackendModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode)
-                        mode = TestMode.Play;
+                    var preference = mySolution.GetProtocolSolution().GetFrontendBackendModel().UnitTestPreference.Value;
+                    if (preference == null)
+                        return;
+
+                    myUsageStatistics.TrackActivity("UnityUnitTestPreference", preference.ToString());
+
+                    // If we select Both, then start with Edit mode tests
+                    var mode = preference == UnitTestLaunchPreference.PlayMode ? TestMode.Play : TestMode.Edit;
                     var launch = new UnitTestLaunch(run.Launch.Session.Id, filters, mode, unityClientControllerInfo);
 
-                    myBackendUnityHost.BackendUnityModel.ViewNotNull(taskLifetime, (lt, model) =>
+                    // Set up the launch and subscribe to results. Called immediately, because we know the model isn't
+                    // null. Also called when the appdomain is reloaded for play mode tests. The lifetime will correctly
+                    // unsubscribe when the appdomain is unloaded
+                    myBackendUnityHost.BackendUnityModel!.ViewNotNull<BackendUnityModel>(taskLifetime, (lt, model) =>
                     {
-                        // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
                         myLogger.Trace("UnitTestLaunch.SetValue.");
-                        if (frontendBackendModel.UnitTestPreference.Value == UnitTestLaunchPreference.Both)
+
+                        model.UnitTestLaunch.SetValue(launch);
+                        SubscribeResults(run, lt, launch);
+
+                        if (preference == UnitTestLaunchPreference.Both)
                         {
-                            model.UnitTestLaunch.SetValue(launch);
-                            SubscribeResults(run, lt, launch);
                             launch.RunResult.Advise(lt, result =>
                             {
                                 if (launch.TestMode == TestMode.Play)
                                     tcs.SetResult(result.Passed);
                                 else
                                 {
+                                    // Now run Play mode
                                     launch = new UnitTestLaunch(launch.SessionId, launch.TestFilters, TestMode.Play,
                                         launch.ClientControllerInfo);
                                     model.UnitTestLaunch.SetValue(launch);
                                     SubscribeResults(run, lt, launch);
-                                    StartTests(run, tcs, lt);
+                                    StartTests(model, run, tcs, lt);
                                 }
                             });
                         }
                         else
                         {
-                            model.UnitTestLaunch.SetValue(launch);
-                            SubscribeResults(run, lt, launch);
                             launch.RunResult.Advise(lt, result => { tcs.SetResult(result.Passed); });
                         }
                     });
 
-                    StartTests(run, tcs, taskLifetime);
+                    StartTests(backendUnityModel, run, tcs, taskLifetime);
 
                     // set results for explicit tests
                     foreach (var element in run.Elements.OfType<INUnitTestElement>().Where(a =>
@@ -276,11 +288,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting
             }, cancellationToken);
         }
 
-        private void StartTests(IUnitTestRun run, TaskCompletionSource<bool> tcs, Lifetime taskLifetime)
+        private void StartTests(BackendUnityModel model, IUnitTestRun run, TaskCompletionSource<bool> tcs, Lifetime taskLifetime)
         {
             myLogger.Trace("RunUnitTestLaunch.Start.");
-            var rdTask = myBackendUnityHost.BackendUnityModel.Value.RunUnitTestLaunch.Start(Unit.Instance);
-            rdTask?.Result.Advise(taskLifetime, res =>
+            var rdTask = model.RunUnitTestLaunch.Start(taskLifetime, Unit.Instance);
+            rdTask.Result.Advise(taskLifetime, res =>
             {
                 myLogger.Trace($"RunUnitTestLaunch result = {res.Result}");
                 if (!res.Result)
@@ -294,7 +306,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting
                     if (myPackageValidator.HasNonCompatiblePackagesCombination(isCoverage, out var message))
                         defaultMessage = $"{defaultMessage} {message}";
 
-                    if (myBackendUnityHost.BackendUnityModel.Value.UnitTestLaunch.Value.TestMode == TestMode.Play)
+                    if (model.UnitTestLaunch.Value.TestMode == TestMode.Play)
                     {
                         if (!myPackageValidator.CanRunPlayModeTests(out var playMessage))
                             defaultMessage = $"{defaultMessage} {playMessage}";
@@ -339,7 +351,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting
                         return;
                     }
 
-                    var task = myBackendUnityHost.BackendUnityModel.Value.GetCompilationResult.Start(Unit.Instance);
+                    var task = myBackendUnityHost.BackendUnityModel.Value.GetCompilationResult.Start(refreshLifetime, Unit.Instance);
                     task.Result.AdviseNotNull(refreshLifetime, result =>
                     {
                         if (result.Result)
@@ -508,8 +520,7 @@ else if (criterion is CategoryCriterion categoryCriterion)
    categories.Add(categoryCriterion.Category.Name);*/
         }
 
-        [CanBeNull]
-        private IUnitTestElement GetElementById(IUnitTestRun run, string projectName, string resultTestId)
+        private IUnitTestElement? GetElementById(IUnitTestRun run, string projectName, string resultTestId)
         {
             return run.Elements.SingleOrDefault(a => a.Project.Name == projectName && resultTestId == a.NaturalId.TestId);
         }
@@ -521,7 +532,7 @@ else if (criterion is CategoryCriterion categoryCriterion)
                 var launchProperty = myBackendUnityHost.BackendUnityModel.Value?.UnitTestLaunch;
                 var launch = launchProperty?.Maybe.ValueOrDefault;
                 if (launch != null && launch.SessionId == run.Launch.Session.Id)
-                    launch.Abort.Start(Unit.Instance);
+                    launch.Abort.Start(run.Lifetime, Unit.Instance);
                 // Operation Cancel can be called before Run by design.
                 run.GetData(ourCancellationTokenSourceKey)?.Cancel();
             });
@@ -550,7 +561,7 @@ else if (criterion is CategoryCriterion categoryCriterion)
                 return TargetPlatform == other.TargetPlatform && Equals(Project, other.Project);
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 if (ReferenceEquals(null, obj)) return false;
                 if (ReferenceEquals(this, obj)) return true;
@@ -563,12 +574,12 @@ else if (criterion is CategoryCriterion categoryCriterion)
                 return (int) TargetPlatform;
             }
 
-            public static bool operator ==(UnityRuntimeEnvironment left, UnityRuntimeEnvironment right)
+            public static bool operator ==(UnityRuntimeEnvironment? left, UnityRuntimeEnvironment? right)
             {
                 return Equals(left, right);
             }
 
-            public static bool operator !=(UnityRuntimeEnvironment left, UnityRuntimeEnvironment right)
+            public static bool operator !=(UnityRuntimeEnvironment? left, UnityRuntimeEnvironment? right)
             {
                 return !Equals(left, right);
             }

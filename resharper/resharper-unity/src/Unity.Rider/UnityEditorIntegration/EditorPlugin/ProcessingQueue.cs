@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Lifetimes;
 using JetBrains.Util;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorPlugin
 {
@@ -13,10 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorP
     {
         private readonly Lifetime myLifetime;
         private readonly IShellLocks myLocks;
-
-        private readonly object mySync = new object();
-
-        private readonly Queue<Action> myElements = new Queue<Action>();
+        private readonly object mySync = new();
+        private readonly Queue<Action> myElements = new();
         private bool myIsActive;
 
         public ProcessingQueue(IShellLocks locks, Lifetime lifetime)
@@ -25,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorP
             myLifetime = lifetime;
         }
 
-        public void Enqueue([NotNull] Action request)
+        public void Enqueue(Action request)
         {
             lock(mySync)
             {
@@ -43,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorP
         {
             while (true)
             {
-                if (myLifetime.IsTerminated)
+                if (myLifetime.IsNotAlive)
                     break;
 
                 Task task;
@@ -55,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnityEditorIntegration.EditorP
                         break;
                     }
 
-                    task = Task.Run(myElements.Dequeue());
+                    task = Task.Run(myElements.Dequeue(), myLifetime);
                 }
 
                 await task;

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Positions;
@@ -22,6 +21,8 @@ using JetBrains.TextControl;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     public abstract class AddInspectorAttributeAction : IContextAction
@@ -29,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         protected static readonly IAnchorPosition LayoutPosition = AnchorPosition.BeforePosition;
         protected static readonly IAnchorPosition AnnotationPosition = LayoutPosition.GetNext();
         protected static readonly SubmenuAnchor BaseAnchor =
-            new SubmenuAnchor(IntentionsAnchors.LowPriorityContextActionsAnchor, SubmenuBehavior.Static("Modify Inspector attributes"));
+            new(IntentionsAnchors.LowPriorityContextActionsAnchor, SubmenuBehavior.Static("Modify Inspector attributes"));
 
         private readonly ICSharpContextActionDataProvider myDataProvider;
         private readonly IAnchor myAnchor;
@@ -55,8 +56,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var multipleFieldDeclaration = MultipleFieldDeclarationNavigator.GetByDeclarator(selectedFieldDeclaration);
             var unityApi = myDataProvider.Solution.GetComponent<UnityApi>();
 
-            if (!unityApi.IsSerialisedField(selectedFieldDeclaration?.DeclaredElement) || multipleFieldDeclaration == null)
+            if (selectedFieldDeclaration == null || multipleFieldDeclaration == null ||
+                !unityApi.IsSerialisedField(selectedFieldDeclaration.DeclaredElement))
+            {
                 return EmptyList<IntentionAction>.Enumerable;
+            }
 
             var existingAttribute = selectedFieldDeclaration.GetAttribute(AttributeTypeName);
 
@@ -85,8 +89,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             // If it's an annotation attribute (e.g. 'Tooltip'):
             // "Add 'Attr' to 'field'" -> "Add 'Attr' to all fields"
             return IsLayoutAttribute
-                ? new[] {actionToApplyToEntireDeclaration, actionToExtractAndApply}
-                : new[] {actionToExtractAndApply, actionToApplyToEntireDeclaration};
+                ? new[] { actionToApplyToEntireDeclaration, actionToExtractAndApply }
+                : new[] { actionToExtractAndApply, actionToApplyToEntireDeclaration };
         }
 
         public bool IsAvailable(IUserDataHolder cache)
@@ -114,7 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             IFieldDeclaration selectedFieldDeclaration,
             IPsiModule module,
             CSharpElementFactory elementFactory,
-            IAttribute existingAttribute)
+            IAttribute? existingAttribute)
         {
             // Don't pass selectedFieldDeclaration to the actions, as we're applying the action to all fields
             // We only have selectedFieldDeclaration to get default attribute values, and even that's not actually used
@@ -131,7 +135,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             IFieldDeclaration selectedFieldDeclaration,
             IPsiModule module,
             CSharpElementFactory elementFactory,
-            IAttribute existingAttribute)
+            IAttribute? existingAttribute)
         {
             if (existingAttribute != null)
                 return new RemoveAttributeAction(multipleFieldDeclaration, selectedFieldDeclaration, existingAttribute);
@@ -141,15 +145,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 attributeValues, IsLayoutAttribute, module, elementFactory);
         }
 
-        [NotNull]
         protected virtual AttributeValue[] GetAttributeValues(IPsiModule module,
-                                                              IFieldDeclaration selectedFieldDeclaration) =>
-            EmptyArray<AttributeValue>.Instance;
+                                                              IFieldDeclaration selectedFieldDeclaration)
+        {
+            return EmptyArray<AttributeValue>.Instance;
+        }
 
         private class AddAttributeAction : BulbActionBase
         {
             private readonly IMultipleFieldDeclaration myMultipleFieldDeclaration;
-            [CanBeNull] private readonly IFieldDeclaration mySelectedFieldDeclaration;
+            private readonly IFieldDeclaration? mySelectedFieldDeclaration;
             private readonly IPsiModule myModule;
             private readonly CSharpElementFactory myElementFactory;
             private readonly IClrTypeName myAttributeTypeName;
@@ -157,9 +162,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             private readonly bool myIsLayoutAttribute;
 
             public AddAttributeAction(IMultipleFieldDeclaration multipleFieldDeclaration,
-                                      [CanBeNull] IFieldDeclaration selectedFieldDeclaration,
+                                      IFieldDeclaration? selectedFieldDeclaration,
                                       IClrTypeName attributeTypeName,
-                                      [NotNull] AttributeValue[] attributeValues,
+                                      AttributeValue[] attributeValues,
                                       bool isLayoutAttribute,
                                       IPsiModule module, CSharpElementFactory elementFactory)
             {
@@ -172,23 +177,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 myElementFactory = elementFactory;
             }
 
-            protected override Action<ITextControl> ExecutePsiTransaction(
-                ISolution solution, IProgressIndicator progress)
+            protected override Action<ITextControl>? ExecutePsiTransaction(ISolution solution,
+                                                                           IProgressIndicator progress)
             {
-                IAttribute attribute;
-
-                if (mySelectedFieldDeclaration == null)
-                {
-                    attribute = AttributeUtil.AddAttributeToEntireDeclaration(myMultipleFieldDeclaration,
+                var attribute = mySelectedFieldDeclaration == null
+                    ? AttributeUtil.AddAttributeToEntireDeclaration(myMultipleFieldDeclaration,
+                        myAttributeTypeName, myAttributeValues, null, myModule, myElementFactory)
+                    : AttributeUtil.AddAttributeToSingleDeclaration(mySelectedFieldDeclaration,
                         myAttributeTypeName, myAttributeValues, null, myModule, myElementFactory);
-                }
-                else
-                {
-                    attribute = AttributeUtil.AddAttributeToSingleDeclaration(mySelectedFieldDeclaration,
-                        myAttributeTypeName, myAttributeValues, null, myModule, myElementFactory);
-                }
 
-                if (myAttributeValues.Length == 0)
+                if (attribute == null || myAttributeValues.Length == 0)
                     return null;
 
                 return attribute.CreateHotspotSession();
@@ -214,11 +212,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         private class RemoveAttributeAction : BulbActionBase
         {
             private readonly IMultipleFieldDeclaration myMultipleFieldDeclaration;
-            [CanBeNull] private readonly IFieldDeclaration mySelectedFieldDeclaration;
+            private readonly IFieldDeclaration? mySelectedFieldDeclaration;
             private readonly IAttribute myExistingAttribute;
 
             public RemoveAttributeAction(IMultipleFieldDeclaration multipleFieldDeclaration,
-                                         [CanBeNull] IFieldDeclaration selectedFieldDeclaration,
+                                         IFieldDeclaration? selectedFieldDeclaration,
                                          IAttribute existingAttribute)
             {
                 myMultipleFieldDeclaration = multipleFieldDeclaration;
@@ -226,7 +224,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 myExistingAttribute = existingAttribute;
             }
 
-            protected override Action<ITextControl> ExecutePsiTransaction(
+            protected override Action<ITextControl>? ExecutePsiTransaction(
                 ISolution solution, IProgressIndicator progress)
             {
                 if (mySelectedFieldDeclaration != null)

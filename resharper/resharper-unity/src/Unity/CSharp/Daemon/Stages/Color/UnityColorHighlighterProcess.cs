@@ -14,64 +14,68 @@ using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util.Media;
-using JetBrains.Util.Special;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
 {
     public class UnityColorHighlighterProcess : CSharpIncrementalDaemonStageProcessBase
     {
         public UnityColorHighlighterProcess(IDaemonProcess process, IContextBoundSettingsStore settingsStore,
-            ICSharpFile file)
+                                            ICSharpFile file)
             : base(process, settingsStore, file)
         {
         }
 
         public override void VisitNode(ITreeNode element, IHighlightingConsumer consumer)
         {
-            var tokenNode = element as ITokenNode;
-            if (tokenNode != null && tokenNode.GetTokenType().IsWhitespace) return;
+            if (element is ITokenNode tokenNode && tokenNode.GetTokenType().IsWhitespace) return;
 
             var colorInfo = CreateColorHighlightingInfo(element);
             if (colorInfo != null)
                 consumer.AddHighlighting(colorInfo.Highlighting, colorInfo.Range);
         }
 
-        private HighlightingInfo CreateColorHighlightingInfo(ITreeNode element)
+        private HighlightingInfo? CreateColorHighlightingInfo(ITreeNode element)
         {
             var colorReference = GetColorReference(element);
-            var constantRange = colorReference?.ColorConstantRange;
-            if (constantRange == null) return null;
-
-            var documentRange = constantRange.Value;
-            if (!documentRange.IsValid()) return null;
-
-            return new HighlightingInfo(documentRange, new ColorHighlighting(colorReference));
+            var range = colorReference?.ColorConstantRange;
+            return range?.IsValid() == true
+                ? new HighlightingInfo(range.Value, new ColorHighlighting(colorReference))
+                : null;
         }
 
-        private IColorReference GetColorReference(ITreeNode element)
+        private static IColorReference? GetColorReference(ITreeNode element)
         {
-            var constructorExpression = element as IObjectCreationExpression;
-            if (constructorExpression != null)
+            if (element is IObjectCreationExpression constructorExpression)
                 return ReferenceFromConstructor(constructorExpression);
 
             var referenceExpression = element as IReferenceExpression;
-            var qualifier = referenceExpression?.QualifierExpression as IReferenceExpression;
-            if (qualifier == null) return null;
+            if (referenceExpression?.QualifierExpression is not IReferenceExpression qualifier)
+                return null;
 
             return ReferenceFromInvocation(qualifier, referenceExpression)
                    ?? ReferenceFromProperty(qualifier, referenceExpression);
         }
 
-        private static IColorReference ReferenceFromConstructor(IObjectCreationExpression constructorExpression)
+        private static IColorReference? ReferenceFromConstructor(IObjectCreationExpression constructorExpression)
         {
-            var constructedType = constructorExpression.TypeReference?.Resolve().DeclaredElement as ITypeElement;
-            if (constructedType == null) return null;
+            // Get the type from the constructor, which allows us to support target typed new. This will fail to resolve
+            // if the parameters don't match (e.g. calling new Color32(r, g, b) without passing a), so fall back to the
+            // expression's type, if available.
+            // Note that we don't do further validation of the parameters, so we'll still show a colour preview for
+            // Color32(r, g, b) even though it's an invalid method call.
+            var constructedType =
+                (constructorExpression.ConstructorReference.Resolve().DeclaredElement as IConstructor)?.ContainingType
+                ?? constructorExpression.TypeReference?.Resolve().DeclaredElement as ITypeElement;
+            if (constructedType == null)
+                return null;
 
             var unityColorTypes = UnityColorTypes.GetInstance(constructedType.Module);
             if (!unityColorTypes.IsUnityColorType(constructedType)) return null;
 
             var arguments = constructorExpression.Arguments;
-            if (arguments.Count < 3 || arguments.Count > 4) return null;
+            if (arguments.Count is < 3 or > 4) return null;
 
             JetRgbaColor? color = null;
             if (unityColorTypes.UnityColorType != null && unityColorTypes.UnityColorType.Equals(constructedType))
@@ -79,18 +83,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
                 var baseColor = GetColorFromFloatARGB(arguments);
                 if (baseColor == null) return null;
 
-                color = baseColor.Item1.HasValue
-                    ? baseColor.Item2.WithA((byte)(255.0 * baseColor.Item1.Value))
-                    : baseColor.Item2;
+                var (a, rgb) = baseColor.Value;
+                color = a.HasValue ? rgb.WithA((byte)(255.0 * a)) : rgb;
             }
             else if (unityColorTypes.UnityColor32Type != null && unityColorTypes.UnityColor32Type.Equals(constructedType))
             {
                 var baseColor = GetColorFromIntARGB(arguments);
                 if (baseColor == null) return null;
 
-                color = baseColor.Item1.HasValue
-                    ? baseColor.Item2.WithA((byte)baseColor.Item1.Value)
-                    : baseColor.Item2;
+                var (a, rgb) = baseColor.Value;
+                color = a.HasValue ? rgb.WithA((byte)a) : rgb;
             }
 
             if (color == null) return null;
@@ -100,14 +102,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
             return new UnityColorReference(colorElement, constructorExpression, argumentList, argumentList.GetDocumentRange());
         }
 
-        private static IColorReference ReferenceFromInvocation(IReferenceExpression qualifier,
-            IReferenceExpression methodReferenceExpression)
+        private static IColorReference? ReferenceFromInvocation(IReferenceExpression qualifier,
+                                                                IReferenceExpression methodReferenceExpression)
         {
             var invocationExpression = InvocationExpressionNavigator.GetByInvokedExpression(methodReferenceExpression);
             if (invocationExpression == null || invocationExpression.Arguments.IsEmpty)
-            {
                 return null;
-            }
 
             var methodReference = methodReferenceExpression.Reference;
 
@@ -115,7 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
             if (!string.Equals(name, "HSVToRGB", StringComparison.Ordinal)) return null;
 
             var arguments = invocationExpression.Arguments;
-            if (arguments.Count < 3 || arguments.Count > 4) return null;
+            if (arguments.Count is < 3 or > 4) return null;
 
             var color = GetColorFromHSV(arguments);
             if (color == null) return null;
@@ -132,8 +132,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
                 argumentList, argumentList.GetDocumentRange());
         }
 
-        private static IColorReference ReferenceFromProperty(IReferenceExpression qualifier,
-            IReferenceExpression colorQualifiedMemberExpression)
+        private static IColorReference? ReferenceFromProperty(IReferenceExpression qualifier,
+                                                              IReferenceExpression colorQualifiedMemberExpression)
         {
             var name = colorQualifiedMemberExpression.Reference.GetName();
 
@@ -154,7 +154,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
                  colorQualifiedMemberExpression, colorQualifiedMemberExpression.NameIdentifier.GetDocumentRange());
         }
 
-        private static Tuple<float?, JetRgbaColor> GetColorFromFloatARGB(ICollection<ICSharpArgument> arguments)
+        private static (float? alpha, JetRgbaColor)? GetColorFromFloatARGB(ICollection<ICSharpArgument> arguments)
         {
             var a = GetArgumentAsFloatConstant(arguments, "a", 0, 1);
             var r = GetArgumentAsFloatConstant(arguments, "r", 0, 1);
@@ -164,10 +164,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
             if (!r.HasValue || !g.HasValue || !b.HasValue)
                 return null;
 
-            return Tuple.Create(a, JetRgbaColor.FromRgb((byte)(255.0 * r.Value), (byte)(255.0 * g.Value), (byte)(255.0 * b.Value)));
+            return (a, JetRgbaColor.FromRgb((byte)(255.0 * r.Value), (byte)(255.0 * g.Value), (byte)(255.0 * b.Value)));
         }
 
-        private static Tuple<int?, JetRgbaColor> GetColorFromIntARGB(ICollection<ICSharpArgument> arguments)
+        private static (int? alpha, JetRgbaColor)? GetColorFromIntARGB(ICollection<ICSharpArgument> arguments)
         {
             var a = GetArgumentAsIntConstant(arguments, "a", 0, 255);
             var r = GetArgumentAsIntConstant(arguments, "r", 0, 255);
@@ -177,7 +177,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
             if (!r.HasValue || !g.HasValue || !b.HasValue)
                 return null;
 
-            return Tuple.Create(a, JetRgbaColor.FromRgb((byte)r.Value, (byte)g.Value, (byte)b.Value));
+            return (a, JetRgbaColor.FromRgb((byte)r.Value, (byte)g.Value, (byte)b.Value));
         }
 
         private static JetRgbaColor? GetColorFromHSV(ICollection<ICSharpArgument> arguments)
@@ -266,14 +266,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
             return value.Value;
         }
 
-        private static ICSharpArgument GetNamedArgument(IEnumerable<ICSharpArgument> arguments, string parameterName)
+        private static ICSharpArgument? GetNamedArgument(IEnumerable<ICSharpArgument> arguments, string parameterName)
         {
-            var namedArgument =
-                arguments.FirstOrDefault(
-                    a =>
-                        a.MatchingParameter.IfNotNull(
-                            p => parameterName.Equals(p.Element.ShortName, StringComparison.Ordinal)));
-            return namedArgument;
+            return arguments.FirstOrDefault(a =>
+                parameterName.Equals(a.MatchingParameter?.Element.ShortName, StringComparison.Ordinal));
         }
     }
 }

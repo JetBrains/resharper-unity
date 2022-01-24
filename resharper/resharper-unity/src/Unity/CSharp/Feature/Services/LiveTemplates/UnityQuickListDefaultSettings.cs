@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Settings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope;
 using JetBrains.Util;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates
 {
@@ -23,12 +26,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         public UnityQuickListDefaultSettings(ILogger logger, ISettingsSchema settingsSchema,
                                              UnityProjectScopeCategoryUIProvider projectScopeProvider,
                                              UnityScopeCategoryUIProvider filesScopeProvider)
-            : base(logger, settingsSchema)
+            : base(settingsSchema, logger)
         {
             myLogger = logger;
             mySettingsSchema = settingsSchema;
-            myProjectMainPoint = projectScopeProvider.MainPoint;
-            myFilesMainPoint = filesScopeProvider.MainPoint;
+            myProjectMainPoint = projectScopeProvider.MainPoint.NotNull("projectScopeProvider.MainPoint != null");
+            myFilesMainPoint = filesScopeProvider.MainPoint.NotNull("filesScopeProvider.MainPoint != null");
         }
 
         public override void InitDefaultSettings(ISettingsStorageMountPoint mountPoint)

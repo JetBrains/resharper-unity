@@ -16,12 +16,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
     public class UnityElementDescriptionProvider : IDeclaredElementDescriptionProvider
     {
         private readonly UnityApi myUnityApi;
-        private readonly UnityReferencesTracker myUnityReferencesTracker;
+        private readonly UnitySolutionTracker myUnitySolutionTracker;
 
-        public UnityElementDescriptionProvider(UnityApi unityApi, UnityReferencesTracker unityReferencesTracker)
+        public UnityElementDescriptionProvider(UnityApi unityApi, UnitySolutionTracker unitySolutionTracker)
         {
             myUnityApi = unityApi;
-            myUnityReferencesTracker = unityReferencesTracker;
+            myUnitySolutionTracker = unitySolutionTracker;
         }
 
         // Higher than CLrDeclaredElementXmlDescriptionProvider, so XML doc comments take precedence.
@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
                                                    PsiLanguageType language,
                                                    IPsiModule module = null)
         {
-            if (!myUnityReferencesTracker.HasUnityReference.Value) return null;
+            if (!myUnitySolutionTracker.HasUnityReference.Value) return null;
 
             return element switch
             {

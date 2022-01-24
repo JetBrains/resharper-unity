@@ -24,6 +24,10 @@ namespace UnityTest
       var c12 = Color.HSVToRGB(0, 1, 1, false);
 
       var c13 = Color.HSVToRGB(0, 1, 1, 1, 1);
+
+      Color c14 = new(1, 0, 0);
+      Color c15 = new(0, 1, 1, 0.5f);
+      Color c16 = new(10, 20, -2);
     }
   }
 }

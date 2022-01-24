@@ -25,16 +25,16 @@
     TO: [O] "references": [ "|Ref1|", "Ref1" ] RANGE: (41,45) @ Test02.asmdef
     Menu item (enabled) :
       icon: UsageOther
-      text: Test02.asmdef      <font color="DarkRed">"references": [ "**Ref1**", "Ref1" ]</font><font color="HotTrack"> (3)</font>
-      tail: <font color="GrayText">in <TestProject></font>
+      text: Test02.asmdef      <font color="FF8B0000">"references": [ "**Ref1**", "Ref1" ]</font><font color="06C"> (3)</font>
+      tail: <font color="FF6D6D6D">in <TestProject></font>
       tooltip: "references": [ "**Ref1**", "Ref1" ]
     Navigation result:
       caret did not move
     TO: [O] "references": [ "Ref1", "|Ref1|" ] RANGE: (49,53) @ Test02.asmdef
     Menu item (enabled) :
       icon: UsageOther
-      text: Test02.asmdef      <font color="DarkRed">"references": [ "Ref1", "**Ref1**" ]</font><font color="HotTrack"> (3)</font>
-      tail: <font color="GrayText">in <TestProject></font>
+      text: Test02.asmdef      <font color="FF8B0000">"references": [ "Ref1", "**Ref1**" ]</font><font color="06C"> (3)</font>
+      tail: <font color="FF6D6D6D">in <TestProject></font>
       tooltip: "references": [ "Ref1", "**Ref1**" ]
     Navigation result:
       opened file: Test02.asmdef
