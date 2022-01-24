@@ -3,7 +3,7 @@ package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmref.spellchec
 import com.intellij.json.JsonSpellcheckerStrategy
 import com.intellij.psi.PsiElement
 import com.intellij.spellchecker.tokenizer.Tokenizer
-import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefFileType
+import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmref.AsmRefFileType
 
 class AsmRefSpellcheckerStrategy : JsonSpellcheckerStrategy() {
 
@@ -12,6 +12,6 @@ class AsmRefSpellcheckerStrategy : JsonSpellcheckerStrategy() {
 
     override fun isMyContext(element: PsiElement): Boolean {
         val viewProvider = element.containingFile?.viewProvider ?: return false
-        return viewProvider.fileType == AsmDefFileType
+        return viewProvider.fileType == AsmRefFileType
     }
 }

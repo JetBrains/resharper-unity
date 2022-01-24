@@ -7,7 +7,7 @@ import com.jetbrains.jsonSchema.extension.JsonSchemaProviderFactory
 import com.jetbrains.jsonSchema.extension.SchemaType
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefFileType
 
-class AsmDefJsonSchemeProviderFactory : JsonSchemaProviderFactory {
+class AsmDefJsonSchemaProviderFactory : JsonSchemaProviderFactory {
     override fun getProviders(project: Project): MutableList<JsonSchemaFileProvider> {
         return mutableListOf(
             object : JsonSchemaFileProvider {
