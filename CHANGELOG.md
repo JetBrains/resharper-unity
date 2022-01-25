@@ -14,7 +14,9 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Added
 
+- Add support for `.asmref` files ([#2252](https://github.com/JetBrains/resharper-unity/pull/2252))
 - Rider: Add new run configuration to run Unity tests in batch mode ([RIDER-70675](https://youtrack.jetbrains.com/issue/RIDER-70675), [#2231](https://github.com/JetBrains/resharper-unity/pull/2231))
+- Rider: Add notification if a newer version of the Rider package is available in Unity ([RIDER-70591](https://youtrack.jetbrains.com/issue/RIDER-70591), [#2244](https://github.com/JetBrains/resharper-unity/pull/2244))
 
 ### Changed
 
@@ -28,6 +30,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix debugging unit test when debugger is already attached to the editor ([RIDER-70660](https://youtrack.jetbrains.com/issue/RIDER-70660), [#2232](https://github.com/JetBrains/resharper-unity/pull/2232))
 - Rider: Fix issues displaying the "advanced integration unavailable" notification ([#73086](https://youtrack.jetbrains.com/issue/RIDER-73086), [#2240](https://github.com/JetBrains/resharper-unity/pull/2240))
 - Rider: Fix exception when showing Quick Doc tooltip ([DEXP-619767](https://youtrack.jetbrains.com/issue/DEXP-619767), [#2240](https://github.com/JetBrains/resharper-unity/pull/2240))
+- Rider: Fix performance issue while typing ([RIDER-71326](https://youtrack.jetbrains.com/issue/RIDER-71326))
+- Rider: Fix location of locally installed documentation on Linux ([#2251](https://github.com/JetBrains/resharper-unity/pull/2251))
 
 
 

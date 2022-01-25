@@ -19,7 +19,7 @@
   <extensionPoints>
     <extensionPoint name="unityAttachConfiguration" area="IDEA_PROJECT" interface="com.jetbrains.rider.run.configurations.unity.UnityAttachConfigurationExtension" />
   </extensionPoints>
-  
+
   <extensions defaultExtensionNs="com.intellij">
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.UnityUIMinimizer"/>
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater"
@@ -71,16 +71,20 @@
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgIconProvider" />
     <completion.contributor language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgCompletionContributor" />
 
-    <!-- asmdef support -->
+    <!-- asmdef + asmref support. Note the shared JSON registrations -->
     <fileType name="AsmDef" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefFileType" language="JSON" extensions="asmdef"/>
-    <lang.altEnter language="JSON" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperBulbMenuModelFactory" />
-    <backend.actions.support language="JSON" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefActionCallPolicy" />
-    <backend.markup.adapterFactory language="JSON" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
-    <completion.contributor language="JSON" implementationClass="com.jetbrains.rdclient.completion.ProtocolCompletionContributor" />
     <quoteHandler fileType="AsmDef" className="com.intellij.json.JsonQuoteHandler"/>
 
-    <!-- TODO: Create an asmdef language? -->
+    <fileType name="AsmRef" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmref.AsmRefFileType" language="JSON" extensions="asmref"/>
+    <quoteHandler fileType="AsmRef" className="com.intellij.json.JsonQuoteHandler"/>
+
+    <lang.altEnter language="JSON" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperBulbMenuModelFactory" />
+    <backend.markup.adapterFactory language="JSON" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
+    <completion.contributor language="JSON" implementationClass="com.jetbrains.rdclient.completion.ProtocolCompletionContributor" />
+    <backend.actions.support language="JSON" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefActionCallPolicy" />
+    <backend.actions.support language="JSON" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmref.AsmRefActionCallPolicy" />
     <spellchecker.support language="JSON" order="first" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.spellchecker.AsmDefSpellcheckerStrategy" />
+    <spellchecker.support language="JSON" order="first" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmref.spellchecker.AsmRefSpellcheckerStrategy" />
 
     <!-- YAML asset support -->
     <fileType name="UnityYaml" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlFileType" language="UnityYaml" extensions="meta;unity;prefab;asset"/>
@@ -317,7 +321,8 @@
   </extensions>
 
   <extensions defaultExtensionNs="JavaScript">
-    <JsonSchema.ProviderFactory implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.jsonSchema.AsmDefJsonSchemeProviderFactory"/>
+    <JsonSchema.ProviderFactory implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.jsonSchema.AsmDefJsonSchemaProviderFactory"/>
+    <JsonSchema.ProviderFactory implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmref.jsonSchema.AsmRefJsonSchemaProviderFactory"/>
   </extensions>
 
 

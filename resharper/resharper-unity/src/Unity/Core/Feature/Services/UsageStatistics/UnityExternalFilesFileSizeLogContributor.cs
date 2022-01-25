@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
@@ -6,6 +7,8 @@ using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.UsageStatistics;
 using Newtonsoft.Json.Linq;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics
 {
@@ -23,6 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
             myAssetIndexingSupport = assetIndexingSupport;
         }
 
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
         public void ProcessSolutionStatistics(JObject log)
         {
             if (!myUnitySolutionTracker.IsUnityProject.HasTrueValue())
@@ -86,6 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
             Prefab,
             Scene,
             AsmDef,
+            AsmRef,
             Meta,
 
             KnownBinary,

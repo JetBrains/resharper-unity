@@ -42,6 +42,7 @@ class UnityIcons {
             val Cg = ShaderLab
 
             val AsmDef: Icon = ReSharperIcons.PsiJavaScript.Json
+            val AsmRef: Icon = ReSharperIcons.PsiJavaScript.Json
 
             val UnityYaml = IconLoader.getIcon("/resharper/YamlFileType/FileYaml.svg", UnityIcons::class.java)
             val UnityScene = IconLoader.getIcon("/resharper/UnityFileType/FileUnity.svg", UnityIcons::class.java)
