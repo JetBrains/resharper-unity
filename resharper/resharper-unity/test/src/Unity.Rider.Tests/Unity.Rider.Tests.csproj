@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Rider.Tests</AssemblyName>
-    <RootNamespace>JetBrains.ReSharper.Plugins.Tests</RootNamespace>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Rider.Tests</RootNamespace>
     <LangVersion>9</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <JetTestProject>True</JetTestProject>

@@ -10,7 +10,7 @@ using JetBrains.Util;
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedParameter.Local
 
-namespace JetBrains.ReSharper.Plugins.Tests
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests
 {
     // Yes. This is horrible. Bite me.
     // A combination of NuGet 2.x and Mono's naive implementation of System.IO.Packaging destroys any chance of

@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Tests.UnityRider.CSharp.Daemon.Stages.PerformanceHighlightings
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests.UnityRider.CSharp.Daemon.Stages.PerformanceHighlightings
 {
     [TestUnity]
     public class PerformanceStageTest : UnityGlobalHighlightingsStageTestBase<IUnityPerformanceHighlighting>

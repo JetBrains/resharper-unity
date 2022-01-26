@@ -19,11 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
                 return;
 
             var productConfigurations = Shell.Instance.GetComponent<RunsProducts.ProductConfigurations>();
-            if (productConfigurations.RunningZones.All(p =>
-                p.ZoneInterfaceType.FullName != typeof(ILanguageHlslSupportZone).FullName))
-            {
-                Assert.Ignore("HLSL zone is not available");
-            }
+
         }
     }
 }

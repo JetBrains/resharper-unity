@@ -4,8 +4,10 @@ using System.Reflection;
 using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Environment;
 using JetBrains.ReSharper.Plugins.Json;
+using JetBrains.ReSharper.Plugins.Unity;
 using JetBrains.ReSharper.Plugins.Unity.HlslSupport;
 using JetBrains.ReSharper.Plugins.Yaml;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;
 using JetBrains.TestFramework.Application.Zones;
@@ -35,16 +37,15 @@ namespace JetBrains.ReSharper.Plugins.Tests
     {
     }
 
-    // Note that this zone doesn't require ILanguageHlslSupportZone, because we need to be disable it separately from
-    // the other required zones
-    [ZoneDefinition]
-    public interface IUnityTestsZone : IZone,
-        IRequire<PsiFeatureTestZone>,
-        IRequire<ILanguageJsonNewZone>,
-        IRequire<ILanguageYamlZone>
-    {
-    }
+    // TODO TestIdGenerator is marker with ASP zone(???), replace asp zone with language zone and drop PsiLanguageZone activation.
 
+    [ZoneDefinition]
+    public interface IRiderUnityTestsZone : IZone, IRequire<IUnityPluginZone>, IRequire<PsiFeatureTestSlimZone>, IRequire<IPsiLanguageZone>
+    {
+        
+    }
+    
+    
     // Activate the zones we require for shell/solution containers. This is normally handled by product specific zone
     // activators. But we don't have any product environment zones, so these activators aren't loaded, and we need to
     // activate pretty much everything we need.
@@ -55,10 +56,9 @@ namespace JetBrains.ReSharper.Plugins.Tests
     // Note that not all Rider components can be tested, as many of them require the protocol. It appears that we can't
     // activate IResharperHost* zones
     [ZoneActivator]
-    public class UnityTestZonesActivator : IActivate<IUnityTestsZone>,
-        IActivateDynamic<ILanguageHlslSupportZone>
+    [ZoneMarker(typeof(IUnityTestsEnvZone))]
+    public class UnityTestZonesActivator : IActivate<IRiderUnityTestsZone>
     {
-        bool IActivateDynamic<ILanguageHlslSupportZone>.ActivatorEnabled() => !PlatformUtil.IsRunningOnMono;
     }
 
     [SetUpFixture]

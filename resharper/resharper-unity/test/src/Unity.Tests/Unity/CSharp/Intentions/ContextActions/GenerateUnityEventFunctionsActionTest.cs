@@ -4,6 +4,7 @@ using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Generate;
 using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
+using JetBrains.ReSharper.Plugins.Tests.UnityTestComponents;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -44,30 +45,5 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.ContextActio
 
         [Test] public void TestGenerateEvents() { DoNamedTest2(); }
         [Test] public void TestGenerateEventsAtCaretLocation() { DoNamedTest2(); }
-    }
-
-    [GeneratorElementProvider(GeneratorUnityKinds.UnityEventFunctions, typeof(CSharpLanguage))]
-    public class TestGenerateUnityEventFunctionsProvider : IGeneratorElementProvider
-    {
-        private readonly JetHashSet<string> myInputElements = new JetHashSet<string>();
-
-        public void SelectElement(string name)
-        {
-            myInputElements.Add(name);
-        }
-
-        public void Clear()
-        {
-            myInputElements.Clear();
-        }
-
-        public void Populate(IGeneratorContext context)
-        {
-            context.InputElements.AddRange(context.ProvidedElements.OfType<GeneratorDeclaredElement>()
-                .Where(e => myInputElements.Contains(e.DeclaredElement.ShortName)));
-        }
-
-        // Must be greater than GenerateUnityEventFunctionsProvider.Priority
-        public double Priority => 1000;
     }
 }
