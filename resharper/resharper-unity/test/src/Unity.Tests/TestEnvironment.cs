@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Tests
     }
     
     [ZoneDefinition]
-    public interface IUnityTestsZone : IZone, IRequire<IUnityPluginZone>, IRequire<PsiFeatureTestSlimZone>
+    public interface IUnityTestsZone : IZone, IRequire<IUnityPluginZone>, IRequire<PsiFeatureTestZone>
     {
         
     }
