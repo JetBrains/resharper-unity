@@ -9,17 +9,9 @@ using JetBrains.Rider.Backend.Env;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
-    // Various features require IRiderProductEnvironmentZone, but we can't seem to use that in tests
-    // Same with IRiderFeatureZone
-
-    [ZoneDefinition]
+    [ZoneDefinition()]
     public interface IRiderUnityPluginZone : IZone, IRequire<IRiderPlatformZone>, IRequire<IUnityPluginZone>
     {
         
-    }
-    
-    [ZoneMarker]
-    public class ZoneMarker : IRequire<IRiderUnityPluginZone>
-    {
     }
 }
