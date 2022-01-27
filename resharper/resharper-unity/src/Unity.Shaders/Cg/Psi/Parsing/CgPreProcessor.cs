@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Application;
 using JetBrains.Application.Threading;
 using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
@@ -26,11 +27,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
             return myRanges.BinarySearch(new TextRange(startOffset), TextRangeSearchingComparer.Instance) >= 0;
         }
 
-        public void Run(ILexer<int> lexer, CgParser parser, SeldomInterruptChecker interruptChecker)
+        public void Run(ILexer<int> lexer, CgParser parser)
         {
             for (var tokenType = lexer.TokenType; tokenType != null; tokenType = lexer.TokenType)
             {
-                interruptChecker.CheckForInterrupt();
+                Interruption.Current.CheckAndThrow();
 
                 if (tokenType == CgTokenNodeTypes.DIRECTIVE)
                 {

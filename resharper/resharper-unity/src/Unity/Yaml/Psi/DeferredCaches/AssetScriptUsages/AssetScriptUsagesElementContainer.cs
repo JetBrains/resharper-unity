@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptU
             return !currentAssetSourceFile.IsController();
         }
 
-        public object Build(SeldomInterruptChecker checker, IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)
+        public object Build(IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)
         {
             // TODO: deps for other assets
             if (AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))

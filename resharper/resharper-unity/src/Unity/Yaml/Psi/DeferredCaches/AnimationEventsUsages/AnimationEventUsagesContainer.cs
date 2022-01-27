@@ -58,8 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
             return currentAssetSourceFile.IsAnim();
         }
 
-        public object Build(SeldomInterruptChecker checker,
-                            IPsiSourceFile file,
+        public object Build(IPsiSourceFile file,
                             AssetDocument assetDocument)
         {
             return new AnimationExtractor(file, assetDocument).TryExtractEventUsage();

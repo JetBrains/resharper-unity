@@ -164,7 +164,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches
             ConcurrentDictionary<IPsiSourceFile, (long, Dictionary<IDeferredCache, object>)> calculatedData)
         {
             myShellLocks.AssertReadAccessAllowed();
-            var checker = new SeldomInterruptChecker();
             foreach (var psiSourceFile in toProcess)
             {
                 if (!psiSourceFile.GetLocation().ExistsFile)
@@ -220,7 +219,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches
                         myLogger.Error(e, "An error occurred during build cache {0}", cache.GetType().Name);
                     }
 
-                    checker.CheckForInterrupt();
+                    Interruption.Current.CheckAndThrow();
                 }
 
                 Assertion.Assert(!calculatedData.ContainsKey(psiSourceFile), "!myCalculatedData.ContainsKey(psiSourceFile)");

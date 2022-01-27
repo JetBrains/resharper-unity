@@ -1,5 +1,4 @@
 using System;
-using JetBrains.Application.Threading;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Text;
 using JetBrains.ReSharper.Feature.Services.Text.Trigrams;
@@ -22,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             myLogger = logger;
         }
 
-        public int[] Build(IPsiSourceFile sourceFile, SeldomInterruptChecker interruptChecker)
+        public int[] Build(IPsiSourceFile sourceFile)
         {
             using (UnsafeWriter.Cookie unsafeWriterCookie = UnsafeWriter.NewThreadLocalWriter())
             {
@@ -35,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             }
         }
 
-        public int[] Build(IDocument document, SeldomInterruptChecker interruptChecker, string displayName)
+        public int[] Build(IDocument document, string displayName)
         {
             myLogger.Error("Unsupported operation for yaml file");
             return Array.Empty<int>();

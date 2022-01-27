@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using JetBrains.Application.Threading;
+using JetBrains.Application;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Util;
@@ -43,11 +43,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
             return myRanges.BinarySearch(new TextRange(startOffset), TextRangeSearchingComparer.Instance) >= 0;
         }
 
-        public void Run(ILexer<int> lexer, ShaderLabParser parser, SeldomInterruptChecker interruptChecker)
+        public void Run(ILexer<int> lexer, ShaderLabParser parser)
         {
             for (var tokenType = lexer.TokenType; tokenType != null; tokenType = lexer.TokenType)
             {
-                interruptChecker.CheckForInterrupt();
+                Interruption.Current.CheckAndThrow();
 
                 if (tokenType == ShaderLabTokenType.PP_ERROR
                     || tokenType == ShaderLabTokenType.PP_WARNING

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using JetBrains.Application;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
@@ -110,7 +111,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private const int BUFFER_SIZE = 4096;
         public override object Build(IPsiSourceFile psiSourceFile)
         {
-            var checker = new SeldomInterruptChecker();
             if (!myAssetIndexingSupport.IsEnabled.Value)
                 return null;
                 
@@ -126,7 +126,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 var docId = 0;
                 while (lexer.TokenType != null)
                 {
-                    checker.CheckForInterrupt();
+                    Interruption.Current.CheckAndThrow();
                         
                     docId++;
 
@@ -135,7 +135,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                         if (lexer.TokenType == UnityYamlTokenType.DOCUMENT)
                         {
                             var documentBuffer = ProjectedBuffer.Create(buffer, new TextRange(lexer.TokenStart, lexer.TokenEnd));
-                            BuildDocument(result, checker, psiSourceFile, lexer.TokenStart, documentBuffer);
+                            BuildDocument(result, psiSourceFile, lexer.TokenStart, documentBuffer);
                         }
 
                         myDocumentNumber[psiSourceFile] = (result, docId);
@@ -185,18 +185,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return myDocumentNumber[psiSourceFile];
         }
 
-        private void BuildDocument(UnityAssetData data, SeldomInterruptChecker checker, IPsiSourceFile assetSourceFile, int start, IBuffer buffer)
+        private void BuildDocument(UnityAssetData data, IPsiSourceFile assetSourceFile, int start, IBuffer buffer)
         {
             var assetDocument = new AssetDocument(start, buffer, null);
             var results = new LocalList<(string, object)>();
             foreach (var unityAssetDataElementContainer in myOrderedContainers)
             {
-                checker.CheckForInterrupt();
+                Interruption.Current.CheckAndThrow();
                 
                 try
                 {
                     if (!unityAssetDataElementContainer.IsApplicable(assetSourceFile)) continue;
-                    var result = unityAssetDataElementContainer.Build(checker, assetSourceFile, assetDocument);
+                    var result = unityAssetDataElementContainer.Build(assetSourceFile, assetDocument);
                     if (result is IHierarchyElement hierarchyElement)
                         assetDocument = assetDocument.WithHiererchyElement(hierarchyElement);
 
