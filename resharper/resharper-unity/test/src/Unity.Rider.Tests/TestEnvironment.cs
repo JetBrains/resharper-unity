@@ -54,8 +54,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests
     // activate IResharperHost* zones
     [ZoneActivator]
     [ZoneMarker(typeof(IRiderUnityTestsEnvZone))]
-    public class UnityTestZonesActivator : IActivate<IRiderUnityTestsZone>
+    public class UnityTestZonesActivator : IActivate<IRiderUnityTestsZone>, IActivateDynamic<IUnityShaderZone>
     {
+        bool IActivateDynamic<IUnityShaderZone>.ActivatorEnabled() => !PlatformUtil.IsRunningOnMono;
     }
 
     [SetUpFixture]

@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Parsing;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.ShaderLab.Feature.SyntaxHighlighting
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.ShaderLab.Feature.SyntaxHighlighting
 {
     internal class ShaderLabSyntaxHighlightingProcessor : SyntaxHighlightingProcessor
     {

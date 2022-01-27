@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     // Same with IRiderFeatureZone
 
     [ZoneDefinition]
-    public interface IRiderUnityPluginZone : IZone, IRequire<IRiderPlatformZone>, IRequire<IUnityShaderZone>, IRequire<IUnityPluginZone>
+    public interface IRiderUnityPluginZone : IZone, IRequire<IRiderPlatformZone>, IRequire<IUnityPluginZone>
     {
         
     }

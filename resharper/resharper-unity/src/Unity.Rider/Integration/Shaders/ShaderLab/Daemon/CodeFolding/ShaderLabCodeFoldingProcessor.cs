@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 #nullable enable
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.ShaderLab.Daemon.CodeFolding
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.ShaderLab.Daemon.CodeFolding
 {
     internal class ShaderLabCodeFoldingProcessor : TreeNodeVisitor<FoldingHighlightingConsumer>, ICodeFoldingProcessor
     {

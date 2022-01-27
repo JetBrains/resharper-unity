@@ -18,7 +18,7 @@ using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.HlslSupport
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport
 {
     [SolutionComponent]
     [ZoneMarker(typeof(IRiderFeatureZone))]

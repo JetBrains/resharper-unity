@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Psi;
 
 #nullable enable
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.ShaderLab.Daemon.ContextHighlighters
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.ShaderLab.Daemon.ContextHighlighters
 {
     [ShellComponent]
     public class RiderShaderLabUsageContextHighlighterAvailability : ShaderLabUsageContextHighlighterAvailability
