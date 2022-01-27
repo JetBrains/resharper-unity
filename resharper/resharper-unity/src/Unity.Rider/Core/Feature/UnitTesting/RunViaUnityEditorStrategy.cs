@@ -423,7 +423,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Core.Feature.UnitTesting
                     else if (parent is NUnitTestFixtureElement fixtureParent)
                     {
                         run.CreateDynamicElement(() => new NUnitTestElement(result.TestId, fixtureParent,
-                            result.TestId.SubstringAfter(result.ParentId), null));
+                            result.TestId.SubstringAfter($"{result.ParentId}."), null));
                     }
                 }
 
