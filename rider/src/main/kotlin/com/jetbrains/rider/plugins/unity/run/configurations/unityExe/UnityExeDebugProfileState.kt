@@ -10,12 +10,14 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
+import com.intellij.openapi.rd.util.withLongBackgroundContext
 import com.intellij.openapi.util.Key
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.debugger.tryWriteMessageToConsoleView
+import com.jetbrains.rider.model.debuggerWorker.DebuggerWorkerModel
 import com.jetbrains.rider.model.debuggerWorker.OutputMessageWithSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputType
@@ -94,6 +96,9 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
                 })
 
                 targetProcessHandler.startNotify()
+                // might be worth to add the following line to let platform handle the target process, but it doesn't work, so we manually terminate targetProcessHandler by lifetime
+                // see also RIDER-3800 Add possibility to detach/attach from process, which was Run in Rider
+                // workerProcessHandler.attachTargetProcess(targetProcessHandler)
                 super.startNotified(event)
             }
         })
