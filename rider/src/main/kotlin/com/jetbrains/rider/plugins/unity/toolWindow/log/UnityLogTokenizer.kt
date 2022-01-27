@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
 import java.awt.Color
+import java.util.*
 
 class UnityLogTokenizer {
 
@@ -158,7 +159,7 @@ class UnityLogTokenizer {
 
     private fun parseColor(color: String): Color? {
         try {
-            when (color.toLowerCase()) {
+            when (color.lowercase(Locale.getDefault())) {
                 "aqua" -> return Color.decode("#00ffff")
                 "black" -> return Color.decode("#000000")
                 "blue" -> return Color.decode("#0000ff")
