@@ -36,11 +36,9 @@ namespace JetBrains.ReSharper.Plugins.Tests
     public interface IUnityTestsEnvZone : ITestsEnvZone
     {
     }
-
-    // TODO TestIdGenerator is marker with ASP zone(???), replace asp zone with language zone and drop PsiLanguageZone activation.
-
+    
     [ZoneDefinition]
-    public interface IRiderUnityTestsZone : IZone, IRequire<IUnityPluginZone>, IRequire<PsiFeatureTestSlimZone>, IRequire<IPsiLanguageZone>
+    public interface IUnityTestsZone : IZone, IRequire<IUnityPluginZone>, IRequire<PsiFeatureTestSlimZone>
     {
         
     }
@@ -57,8 +55,9 @@ namespace JetBrains.ReSharper.Plugins.Tests
     // activate IResharperHost* zones
     [ZoneActivator]
     [ZoneMarker(typeof(IUnityTestsEnvZone))]
-    public class UnityTestZonesActivator : IActivate<IRiderUnityTestsZone>
+    public class UnityTestZonesActivator : IActivate<IUnityTestsZone>, IActivateDynamic<IUnityShaderZone>
     {
+        bool IActivateDynamic<IUnityShaderZone>.ActivatorEnabled() => !PlatformUtil.IsRunningOnMono;
     }
 
     [SetUpFixture]

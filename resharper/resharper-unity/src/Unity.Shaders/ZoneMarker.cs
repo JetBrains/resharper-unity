@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Psi;
 namespace JetBrains.ReSharper.Plugins.Unity
 {
     [ZoneMarker]
-    public class ZoneMarker : IRequire<IUnityPluginZone>, IRequire<ILanguageCppZone>
+    public class ZoneMarker : IRequire<IUnityShaderZone>
     {
     }
 }

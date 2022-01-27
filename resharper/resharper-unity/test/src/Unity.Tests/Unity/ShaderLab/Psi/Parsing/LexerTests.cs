@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
 {
+    [RequireHlslSupport]
     [TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class LexerTests : LexerTestBase

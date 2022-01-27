@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.TodoItems
 {
+    [RequireHlslSupport]
     [TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class TodoHighlightingTest : ClrTodoHighlightingTestBase

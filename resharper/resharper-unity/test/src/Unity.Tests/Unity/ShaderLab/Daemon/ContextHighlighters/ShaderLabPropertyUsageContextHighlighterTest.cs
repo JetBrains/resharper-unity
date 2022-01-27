@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.ContextHighlighters
 {
+    [RequireHlslSupport]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabPropertyUsageContextHighlighterTest : ContextHighlighterTestBase
     {

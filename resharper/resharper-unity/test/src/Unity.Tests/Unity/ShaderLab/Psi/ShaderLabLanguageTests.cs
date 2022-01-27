@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi
 {
+    [RequireHlslSupport]
     [TestFixture]
     public class ShaderLabLanguageTests : BaseTest
     {

@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Colors
 {
+    [RequireHlslSupport]
     [Category("ColorHighlighting")]
     [TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]

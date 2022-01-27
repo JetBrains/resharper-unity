@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Intentions.QuickFixes
 {
+    [RequireHlslSupport]
     [TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class InvalidParametersOnVariableReferenceQuickFixAvailabilityTests : QuickFixAvailabilityTestBase
@@ -15,6 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Intentions.QuickFixe
         [Test] public void Test01() { DoNamedTest(); }
     }
 
+    [RequireHlslSupport]
     [TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class InvalidParametersOnVariableReferenceQuickFixTests : CSharpQuickFixTestBase<InvalidParametersOnVariableReferenceQuickFix>

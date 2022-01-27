@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
 {
+    [RequireHlslSupport]
     [TestFixture]
     public class KeywordTokenTests
     {

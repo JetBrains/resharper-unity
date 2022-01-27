@@ -8,6 +8,7 @@ using JetBrains.ReSharper.TestFramework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon
 {
+    [RequireHlslSupport]
     [TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public abstract class ShaderLabHighlightingTestBase<T> : HighlightingTestBase

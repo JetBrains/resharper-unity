@@ -18,6 +18,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
 {
+    [RequireHlslSupport]
     public class ParseBuiltinShadersTests : ThirdPartyShaderTests
     {
         private const string SHADER_FOLDER_NAME = "builtin_shaders-5.6.2f1";
@@ -30,6 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
         public void TestThirdPartyShaders(string name) => DoOneTest(name);
     }
 
+    [RequireHlslSupport]
     public class ParseMixedRealityToolkitShadersTests : ThirdPartyShaderTests
     {
         private const string SHADER_FOLDER_NAME = "MixedRealityToolkit-Unity";
@@ -43,6 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
         public void TestThirdPartyShaders(string name) => DoOneTest(name);
     }
 
+    [RequireHlslSupport]
     [Explicit]
     [TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]

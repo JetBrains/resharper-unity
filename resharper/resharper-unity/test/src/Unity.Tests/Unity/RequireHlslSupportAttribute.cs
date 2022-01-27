@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using JetBrains.Application.Environment;
+using JetBrains.ReSharper.Plugins.Unity;
 using JetBrains.ReSharper.Plugins.Unity.HlslSupport;
 using JetBrains.ReSharper.Resources.Shell;
 using NUnit.Framework;
@@ -19,7 +20,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
                 return;
 
             var productConfigurations = Shell.Instance.GetComponent<RunsProducts.ProductConfigurations>();
-
+            if (productConfigurations.RunningZones.All(p =>
+                    p.ZoneInterfaceType.FullName != typeof(IUnityShaderZone).FullName))
+            {
+                Assert.Ignore("HLSL zone is not available");
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
     // Zone requirements for non-environment test components. Separate namespace to environment components to avoid
     // adding inactive zones as requirements to environment components
     [ZoneMarker]
-    public class ZoneMarker : IRequire<IRiderUnityTestsZone>, IRequire<ITestsEnvZone>
+    public class ZoneMarker : IRequire<IUnityTestsZone>, IRequire<ITestsEnvZone>
     {
     }
 }

@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.ProjectModel
 {
+    [RequireHlslSupport]
     [TestFixture]
     public class ShaderLabProjectFileTypeTests : BaseTest
     {

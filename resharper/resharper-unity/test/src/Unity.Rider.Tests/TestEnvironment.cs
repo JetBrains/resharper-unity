@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests
     }
 
     [ZoneDefinition]
-    public interface IRiderUnityTestsZone : IZone, IRequire<IRiderUnityPluginZone>, IRequire<PsiFeatureTestSlimZone>, IRequire<IPsiLanguageZone>
+    public interface IRiderUnityTestsZone : IZone, IRequire<IRiderUnityPluginZone>, IRequire<PsiFeatureTestSlimZone>
     {
         
     }

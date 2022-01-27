@@ -10,6 +10,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon
 {
+    [RequireHlslSupport]
     [TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabSyntaxErrorHighlightingTest : HighlightingTestBase
