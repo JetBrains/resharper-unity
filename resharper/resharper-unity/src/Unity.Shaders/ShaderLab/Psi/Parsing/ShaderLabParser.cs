@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
             // preprocessor tokens!
             SetLexer(myOriginalLexer);
             myPreProcessor = new ShaderLabPreProcessor();
-            myPreProcessor.Run(myOriginalLexer, this, new SeldomInterruptChecker());
+            myPreProcessor.Run(myOriginalLexer, this);
 
             // Reset the lexer to the beginning, and use the filtered lexer. Pass in the
             // preprocessor, so we can filter on CG_CONTENT and CG_END when they're used
@@ -149,8 +149,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
 
         private void InsertMissingTokens(TreeElement root, ITokenIntern intern)
         {
-            var interruptChecker = new SeldomInterruptChecker();
-            ShaderLabMissingTokensInserter.Run(root, myOriginalLexer, this, myPreProcessor, interruptChecker, intern);
+            ShaderLabMissingTokensInserter.Run(root, myOriginalLexer, this, myPreProcessor, intern);
         }
 
         private TreeElement CreateToken(TokenNodeType tokenType)

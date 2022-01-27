@@ -17,7 +17,6 @@ using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Rider.Backend.Features.Notifications;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;

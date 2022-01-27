@@ -1,6 +1,5 @@
 using JetBrains.Application.Settings;
-using JetBrains.RdBackend.Common.Features.SyntaxHighlighting;
-using JetBrains.ReSharper.Daemon.SyntaxHighlighting;
+using JetBrains.ReSharper.Daemon.Syntax;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Psi;
@@ -12,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Rider.Feature.SyntaxHighlighting
     // highlighting based on token node types (string literal, keyword, comment, number, etc.). We don't want any
     // syntax highlighting, as it's handled by the frontend
     [Language(typeof(YamlLanguage))]
-    internal class YamlSyntaxHighlightingManager : RiderSyntaxHighlightingManager
+    internal class YamlSyntaxHighlightingManager : SyntaxHighlightingManager
     {
         public override SyntaxHighlightingStageProcess CreateProcess(IDaemonProcess process,
                                                                      IContextBoundSettingsStore settings,

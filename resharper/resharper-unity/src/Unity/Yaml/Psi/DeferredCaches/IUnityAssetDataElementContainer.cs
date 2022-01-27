@@ -1,5 +1,4 @@
 using JetBrains.Annotations;
-using JetBrains.Application.Threading;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Psi;
@@ -19,8 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         bool IsApplicable([NotNull] IPsiSourceFile currentAssetSourceFile);
         
         [CanBeNull]
-        object Build([NotNull] SeldomInterruptChecker checker,
-                     [NotNull] IPsiSourceFile currentAssetSourceFile,
+        object Build([NotNull] IPsiSourceFile currentAssetSourceFile,
                      [NotNull] AssetDocument assetDocument);
 
         void Drop([NotNull] IPsiSourceFile currentAssetSourceFile,
