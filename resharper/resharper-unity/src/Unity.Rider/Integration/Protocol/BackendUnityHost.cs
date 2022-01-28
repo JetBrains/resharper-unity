@@ -10,6 +10,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
 using JetBrains.Rd.Tasks;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Common.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.Rider.Model.Unity;
@@ -27,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
     // * Avoid using BackendUnityModel for subscriptions. It should be used to get values and start tasks
     // These guidelines help avoid introducing circular dependencies. Subscriptions should be handled by the host
     [SolutionComponent]
-    public class BackendUnityHost
+    public class BackendUnityHost : IBackendUnityHost
     {
         private readonly JetBrains.Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
 
