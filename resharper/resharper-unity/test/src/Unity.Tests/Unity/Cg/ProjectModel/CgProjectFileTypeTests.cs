@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.Cg.ProjectModel
 {
+    [RequireHlslSupport]
     [TestFixture]
     public class CgProjectFileTypeTests
     {

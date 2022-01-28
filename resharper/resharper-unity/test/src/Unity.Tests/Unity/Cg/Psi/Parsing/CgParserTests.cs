@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.Cg.Psi.Parsing
 {
+    [RequireHlslSupport]    
     [TestUnity]
     [TestFileExtension(CgProjectFileType.GLSL_EXTENSION)]
     public class CgParserTests : ParserTestBase<CgLanguage>

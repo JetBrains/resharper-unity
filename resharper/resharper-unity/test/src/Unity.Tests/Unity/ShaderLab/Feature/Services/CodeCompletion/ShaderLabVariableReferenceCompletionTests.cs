@@ -16,6 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         [Test] public void TestList01() { DoNamedTest(); }
     }
 
+    [RequireHlslSupport]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabVariableReferenceCompletionActionTests : CodeCompletionTestBase
     {
