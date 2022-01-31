@@ -128,22 +128,16 @@ class UnityLogTokenizer {
         var expectedTokenIndex = 0
 
         for (i in startIndex until fullString.length) {
-            val currentChar = fullString[i].toLowerCase()
-            val expectedChar = expectedToken[expectedTokenIndex].toLowerCase()
+            val currentChar = fullString[i].lowercaseChar()
+            val expectedChar = expectedToken[expectedTokenIndex].lowercaseChar()
 
-            if(expectedChar == '*')
-            {
-                if(currentChar == expectedToken[expectedTokenIndex + 1].toLowerCase())
-                {
+            if (expectedChar == '*') {
+                if (currentChar == expectedToken[expectedTokenIndex + 1].lowercaseChar()) {
                     expectedTokenIndex++
-                }
-                else
-                {
+                } else {
                     continue
                 }
-            }
-
-            else if (currentChar != expectedChar ) {
+            } else if (currentChar != expectedChar) {
                 return -1
             }
 
