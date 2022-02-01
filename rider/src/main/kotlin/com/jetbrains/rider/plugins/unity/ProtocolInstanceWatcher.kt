@@ -2,7 +2,6 @@ package com.jetbrains.rider.plugins.unity
 
 import com.intellij.openapi.project.Project
 import com.intellij.util.application
-import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.whenTrue
@@ -13,8 +12,12 @@ import com.jetbrains.rider.model.RdDeltaType
 import com.jetbrains.rider.model.fileSystemModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDirectory
-import java.nio.file.*
+import java.nio.file.ClosedWatchServiceException
+import java.nio.file.FileSystems
+import java.nio.file.StandardWatchEventKinds.ENTRY_CREATE
 import java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY
+import java.nio.file.WatchKey
+import java.nio.file.WatchService
 import kotlin.concurrent.thread
 
 
@@ -29,7 +32,7 @@ class ProtocolInstanceWatcher(project: Project) : LifetimedProjectComponent(proj
                     if (!(libraryPath.isDirectory())) // todo: rethink, see com.jetbrains.rider.UnityProjectDiscoverer.Companion.hasUnityFileStructure
                         return@thread
 
-                    libraryPath.register(watchService, ENTRY_MODIFY)
+                    libraryPath.register(watchService, ENTRY_CREATE, ENTRY_MODIFY)
 
                     it.onTerminationIfAlive {
                         watchService.close() // releases watchService.take()
