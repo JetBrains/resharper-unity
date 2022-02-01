@@ -59,7 +59,7 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
             }
 
             project.solution.frontendBackendModel.unityApplicationData.adviseNotNull(projectComponentLifetime) {
-                val exePath = Paths.get(it.applicationPath)
+                val exePath = UnityInstallationFinder.getOsSpecificPath(Paths.get(it.applicationPath))
                 if (exePath.toFile().isFile) {
                     val config = runManager.allSettings.firstOrNull { s -> s.type is UnityExeConfigurationType
                         && s.factory is UnityExeConfigurationFactory && s.name == RUN_DEBUG_BATCH_MODE_UNITTESTS_CONFIGURATION_NAME}
