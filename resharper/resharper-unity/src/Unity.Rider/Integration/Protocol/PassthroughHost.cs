@@ -205,13 +205,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                 {
                     try
                     {
-                        var path = VirtualFileSystemPath.Parse(args.Path, InteractionContext.SolutionContext);
-                        if (!path.ExistsFile)
-                        {
-                            result.Set(false);
-                            return result;
-                        }
-
                         return frontendBackendModel.OpenFileLineCol.Start(lf, new FrontendOpenArgs(args.Path, args.Line, args.Col)).ToRdTask(lf);
                     }
                     catch (Exception e)

@@ -70,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             return true;
         }
 
-        public object Build(SeldomInterruptChecker seldomInterruptChecker, IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)
+        public object Build(IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)
         {
             var modifications = ProcessPrefabModifications(currentAssetSourceFile, assetDocument);
             if (AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))

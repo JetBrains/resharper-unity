@@ -1,6 +1,5 @@
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
-using JetBrains.RdBackend.Common.Features.CodeInsights;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;

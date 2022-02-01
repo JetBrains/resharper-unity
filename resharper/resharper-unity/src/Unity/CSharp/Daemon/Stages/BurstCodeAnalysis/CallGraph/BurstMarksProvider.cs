@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Application;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -146,7 +147,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
             public override bool InteriorShouldBeProcessed(ITreeNode element)
             {
-                SeldomInterruptChecker.CheckForInterrupt();
+                Interruption.Current.CheckAndThrow();
 
                 if (element == StartTreeNode)
                     return true;

@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing
             SetLexer(myOriginalLexer);
 
             myPreProcessor = new CgPreProcessor();
-            myPreProcessor.Run(myOriginalLexer, this, new SeldomInterruptChecker());
+            myPreProcessor.Run(myOriginalLexer, this);
 
             SetLexer(new CgFilteringLexer(myOriginalLexer, myPreProcessor));
         }
@@ -64,8 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing
 
         private void InsertMissingTokens(TreeElement root, ITokenIntern intern)
         {
-            var interruptChecker = new SeldomInterruptChecker();
-            CgMissingTokensInserter.Run(root, myOriginalLexer, this, myPreProcessor, interruptChecker, intern);
+            CgMissingTokensInserter.Run(root, myOriginalLexer, this, myPreProcessor, intern);
         }
 
         private TreeElement CreateToken(TokenNodeType tokenType)

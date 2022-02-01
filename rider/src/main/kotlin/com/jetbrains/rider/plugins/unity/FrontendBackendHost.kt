@@ -119,7 +119,7 @@ class FrontendBackendHost(project: Project) : ProtocolSubscribedProjectComponent
 
         model.openFileLineCol.set { _, arg ->
             val manager = FileEditorManager.getInstance(project)
-            val file = VfsUtil.findFileByIoFile(File(arg.path), false) ?: return@set RdTask.fromResult(false)
+            val file = VfsUtil.findFileByIoFile(File(arg.path), true) ?: return@set RdTask.fromResult(false)
             manager.openEditor(OpenFileDescriptor(project, file, max(0, arg.line - 1), max(0, arg.col - 1)), true)
 
             activateRider()

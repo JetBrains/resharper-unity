@@ -6,6 +6,7 @@ import com.jetbrains.rider.ideaInterop.fileTypes.msbuild.CsprojFileType
 import com.jetbrains.rider.ideaInterop.fileTypes.sln.SolutionFileType
 import com.jetbrains.rider.plugins.unity.css.uss.UssFileType
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileType
+import java.util.*
 
 private val nonEditableExtensions = getExtensions()
 
@@ -41,7 +42,7 @@ private fun getExtensions(): Set<String> {
 }
 
 fun isNonEditableUnityFile(file: VirtualFile) = isNonEditableUnityFileExtension(file.extension)
-fun isNonEditableUnityFileExtension(extension: String?) = extension != null && nonEditableExtensions.contains(extension.toLowerCase())
+fun isNonEditableUnityFileExtension(extension: String?) = extension != null && nonEditableExtensions.contains(extension.lowercase(Locale.getDefault()))
 
 fun isGeneratedUnityFile(file: VirtualFile): Boolean {
     val fileTypeRegistry = FileTypeRegistry.getInstance()

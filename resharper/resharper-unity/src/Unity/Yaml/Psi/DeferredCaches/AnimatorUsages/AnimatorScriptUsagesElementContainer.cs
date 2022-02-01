@@ -55,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             return currentAssetSourceFile.IsController();
         }
 
-        public object Build(SeldomInterruptChecker checker, IPsiSourceFile file, AssetDocument document)
+        public object Build(IPsiSourceFile file, AssetDocument document)
         {
             if (AssetUtils.IsMonoBehaviourDocument(document.Buffer))
                 return ExtractStateMachineBehaviour(document, file);
