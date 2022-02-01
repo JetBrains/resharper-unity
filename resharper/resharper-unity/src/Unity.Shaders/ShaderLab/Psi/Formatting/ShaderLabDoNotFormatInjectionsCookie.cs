@@ -1,7 +1,7 @@
 using System;
 using JetBrains.Diagnostics;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Formatting
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
 {
     public class ShaderLabDoNotFormatInjectionsCookie : IDisposable
     {

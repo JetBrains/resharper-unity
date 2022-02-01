@@ -5,14 +5,14 @@ using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.CodeCleanup;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Formatting
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Formatting
 {
   [CodeCleanupModule]
   public class ShaderLabReformatCode : ICodeCleanupModule

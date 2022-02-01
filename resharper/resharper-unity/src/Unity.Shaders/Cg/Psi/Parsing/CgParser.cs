@@ -1,15 +1,15 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Gen;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Gen;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing
 {
     internal class CgParser : CgParserGenerated, IParser
     {

@@ -1,15 +1,15 @@
 ﻿using System.Text;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodes;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Text;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing
 {
     internal class CgMissingTokensInserter : MissingTokenInserterBase
     {

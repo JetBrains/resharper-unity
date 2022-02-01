@@ -1,9 +1,9 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes;
+﻿using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodes;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.Text;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodeTypes
 {
     internal class CgKeywordTokenNodeType : CgFixedLengthTokenNodeType
     {

@@ -1,6 +1,6 @@
 ﻿using JetBrains.ReSharper.Daemon.VisualElements;
 using JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 

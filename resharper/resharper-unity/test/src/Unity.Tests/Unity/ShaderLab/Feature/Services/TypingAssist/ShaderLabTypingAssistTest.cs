@@ -1,8 +1,8 @@
 using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.FeaturesTestFramework.TypingAssist;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Formatting;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 

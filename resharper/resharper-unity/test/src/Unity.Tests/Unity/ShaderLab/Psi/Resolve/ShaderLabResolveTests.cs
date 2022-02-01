@@ -1,4 +1,4 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
+﻿using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;

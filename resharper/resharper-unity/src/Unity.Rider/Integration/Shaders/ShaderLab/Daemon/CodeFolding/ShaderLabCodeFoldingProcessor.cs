@@ -1,8 +1,10 @@
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Daemon.CodeFolding;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
 #nullable enable

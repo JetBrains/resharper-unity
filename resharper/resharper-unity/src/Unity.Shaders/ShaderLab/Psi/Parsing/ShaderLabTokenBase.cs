@@ -1,12 +1,13 @@
 using System.Text;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Text;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
 {
     public abstract class ShaderLabTokenBase : LeafElementBase, IShaderLabTreeNode, ITokenNode
     {

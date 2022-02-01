@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Impl.Search.SearchDomain;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Search
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Search
 {
     [PsiSharedComponent]
     public class ShaderLabUsageSearchFactory : IDomainSpecificSearcherFactory

@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel
 {
     [ProjectFileTypeDefinition(Name)]
     public class ShaderLabProjectFileType : KnownProjectFileType

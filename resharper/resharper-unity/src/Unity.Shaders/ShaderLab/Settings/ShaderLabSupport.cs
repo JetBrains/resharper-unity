@@ -4,7 +4,7 @@ using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Settings
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Settings
 {
     [ShellComponent]
     public class ShaderLabSupport

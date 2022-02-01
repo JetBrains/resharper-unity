@@ -5,7 +5,7 @@ using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Environment;
 using JetBrains.ReSharper.Plugins.Json;
 using JetBrains.ReSharper.Plugins.Unity;
-using JetBrains.ReSharper.Plugins.Unity.HlslSupport;
+using JetBrains.ReSharper.Plugins.Unity.Shaders;
 using JetBrains.ReSharper.Plugins.Yaml;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.TestFramework;

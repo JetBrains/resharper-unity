@@ -1,10 +1,10 @@
 using JetBrains.ReSharper.Feature.Services.TypingAssist;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Parsing;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.TextControl;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.TypingAssist
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.TypingAssist
 {
     public class ShaderLabIndentTypingHelper : IndentTypingHelper<ShaderLabLanguage>
     {

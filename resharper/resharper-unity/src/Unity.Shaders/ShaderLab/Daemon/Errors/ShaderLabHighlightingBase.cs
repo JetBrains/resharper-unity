@@ -1,4 +1,4 @@
-﻿namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors
+﻿namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Errors
 {
     public abstract class ShaderLabHighlightingBase
     {

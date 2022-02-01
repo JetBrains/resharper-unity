@@ -1,7 +1,7 @@
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodes
 {
     internal class CgGenericTokenNode : CgTokenNodeBase
     {

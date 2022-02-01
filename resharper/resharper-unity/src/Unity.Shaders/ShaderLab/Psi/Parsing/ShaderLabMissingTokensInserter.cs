@@ -1,14 +1,14 @@
 using System.Text;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Text;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
 {
     internal class ShaderLabMissingTokensInserter : MissingTokenInserterBase
     {

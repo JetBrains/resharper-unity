@@ -1,6 +1,6 @@
-﻿﻿using JetBrains.Util;
+﻿ using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
+ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
 {
     public static class ParserMessages
     {

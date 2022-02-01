@@ -10,7 +10,7 @@ using JetBrains.Util;
 using JetBrains.Util.Extension;
 using Newtonsoft.Json.Linq;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 {
     [SolutionComponent]
     public class UnityGameEngineDirectiveResolver : IGameEngineIncludeDirectiveResolver

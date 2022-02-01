@@ -1,12 +1,12 @@
 ﻿using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Comment;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Comment
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Comment
 {
     [Language(typeof(ShaderLabLanguage))]
     public class ShaderLabBlockCommentActionProvider : IBlockCommentActionProvider

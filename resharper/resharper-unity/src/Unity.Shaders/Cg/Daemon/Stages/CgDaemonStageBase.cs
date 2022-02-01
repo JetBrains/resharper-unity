@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon.Stages
 {
     public abstract class CgDaemonStageBase : IDaemonStage
     {

@@ -11,8 +11,8 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.Cpp.TypingAssist;
 using JetBrains.ReSharper.Feature.Services.StructuralRemove;
 using JetBrains.ReSharper.Feature.Services.TypingAssist;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CachingLexers;
 using JetBrains.ReSharper.Psi.Cpp.Parsing;
@@ -20,7 +20,7 @@ using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingAssists
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services.TypingAssists
 {
   [SolutionComponent]
   public class InjectedHlslTypingAssist : TypingAssistLanguageBase<ShaderLabLanguage>, ITypingHandler

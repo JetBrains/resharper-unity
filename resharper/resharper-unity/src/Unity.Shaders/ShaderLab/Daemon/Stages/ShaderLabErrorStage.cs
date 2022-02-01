@@ -2,10 +2,10 @@ using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
 {
     [DaemonStage(StagesBefore = new[] { typeof(CollectUsagesStage), typeof(GlobalFileStructureCollectorStage) },
         StagesAfter = new[] { typeof(LanguageSpecificDaemonStage) })]

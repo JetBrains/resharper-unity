@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Psi.Cpp.Symbols;
 using JetBrains.ReSharper.Psi.Cpp.Util;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 {
     [SolutionComponent]
     public class UnityHlslCppCompilationPropertiesProvider : ICppCompilationPropertiesProvider

@@ -1,9 +1,9 @@
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl
 {
     internal abstract class WhitespaceBase : ShaderLabTokenBase, IWhitespaceNode
     {

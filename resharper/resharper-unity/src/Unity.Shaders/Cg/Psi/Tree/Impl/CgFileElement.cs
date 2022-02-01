@@ -1,7 +1,8 @@
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree.Impl
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree.Impl
 {
     public abstract class CgFileElement : FileElementBase
     {

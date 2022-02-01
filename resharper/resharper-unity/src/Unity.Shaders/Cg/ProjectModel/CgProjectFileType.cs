@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.ProjectModel
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.ProjectModel
 {
     [ProjectFileTypeDefinition(Name)]
     public class CgProjectFileType : KnownProjectFileType

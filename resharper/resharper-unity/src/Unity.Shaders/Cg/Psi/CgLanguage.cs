@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi
 {
     [LanguageDefinition(Name)]
     public class CgLanguage : KnownLanguage

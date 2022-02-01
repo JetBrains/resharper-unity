@@ -1,10 +1,11 @@
 ﻿using System.IO;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Text;
 using NUnit.Framework;
+using ShaderLabLexerGenerated = JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing.ShaderLabLexerGenerated;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
 {

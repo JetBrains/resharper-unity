@@ -1,9 +1,10 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Errors;
 using JetBrains.Util;
+using IPropertyDeclaration = JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.IPropertyDeclaration;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Analysis
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(typeof(IPropertiesValue), HighlightingTypes = new[] { typeof(ShaderLabFirstDuplicatePropertyWarning), typeof(ShaderLabSubsequentDuplicatePropertyWarning)})]
     public class DuplicatePropertyDeclarationProblemAnalyzer : ShaderLabElementProblemAnalyzer<IPropertiesValue>
@@ -26,12 +27,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Analysis
                 {
                     var propertyDeclaration = pair.Value[0];
                     consumer.AddHighlighting(new ShaderLabFirstDuplicatePropertyWarning(propertyDeclaration, pair.Key,
-                        propertyDeclaration.Name.GetHighlightingRange()));
+                        DaemonUtil.GetHighlightingRange(propertyDeclaration.Name)));
                     for (var i = 1; i < pair.Value.Count; i++)
                     {
                         propertyDeclaration = pair.Value[i];
                         consumer.AddHighlighting(new ShaderLabSubsequentDuplicatePropertyWarning(propertyDeclaration,
-                            pair.Key, propertyDeclaration.Name.GetHighlightingRange()));
+                            pair.Key, DaemonUtil.GetHighlightingRange(propertyDeclaration.Name)));
                     }
                 }
             }

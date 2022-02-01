@@ -4,9 +4,9 @@ using JetBrains.ReSharper.Daemon.CaretDependentFeatures;
 using JetBrains.ReSharper.Feature.Services.Contexts;
 using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
 using JetBrains.ReSharper.Feature.Services.MatchingBrace;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -16,7 +16,7 @@ using JetBrains.UI.RichText;
 
 #nullable enable
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.ContextHighlighters
 {
     // Note that the ContainingBracesContextHighlighterBase base class is for matching
     // tokens that are children of a single element

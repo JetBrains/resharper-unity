@@ -6,18 +6,20 @@ using JetBrains.ReSharper.Feature.Services.Contexts;
 using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
 using JetBrains.ReSharper.Feature.Services.Navigation.Requests;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Psi.Tree;
+using IReferenceName = JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.IReferenceName;
+using IShaderLabIdentifier = JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.IShaderLabIdentifier;
 
 #nullable enable
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.ContextHighlighters
 {
     [ContainsContextConsumer]
     public class ShaderLabUsagesContextHighlighter : ContextHighlighterBase

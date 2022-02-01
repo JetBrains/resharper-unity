@@ -2,16 +2,16 @@ using System;
 using System.Globalization;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.VisualElements;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Colors;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Colors;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Colors;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util.Media;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.VisualElements
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.VisualElements
 {
     [Language(typeof(ShaderLabLanguage))]
     public class VisualElementFactory : IVisualElementFactory

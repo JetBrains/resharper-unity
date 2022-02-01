@@ -1,10 +1,12 @@
 ﻿using System;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
+using IShaderLabFile = JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.IShaderLabFile;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
 {
     public abstract class ShaderLabDaemonStageProcessBase : TreeNodeVisitor<IHighlightingConsumer>,
         IRecursiveElementProcessor<IHighlightingConsumer>, IDaemonStageProcess

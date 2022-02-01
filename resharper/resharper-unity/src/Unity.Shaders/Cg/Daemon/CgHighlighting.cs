@@ -2,7 +2,7 @@
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon
 {
     [DaemonTooltipProvider(typeof(CgIdentifierTooltipProvider))]
     [StaticSeverityHighlighting(Severity.INFO, typeof(HighlightingGroupIds.IdentifierHighlightings), OverlapResolve = OverlapResolveKind.NONE, ShowToolTipInStatusBar = false)]

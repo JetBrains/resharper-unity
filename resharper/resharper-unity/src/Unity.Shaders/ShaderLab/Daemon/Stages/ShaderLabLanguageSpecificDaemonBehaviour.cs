@@ -1,8 +1,8 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
 {
     [Language(typeof(ShaderLabLanguage))]
     public class ShaderLabLanguageSpecificDaemonBehaviour : ILanguageSpecificDaemonBehavior

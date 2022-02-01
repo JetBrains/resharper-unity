@@ -2,10 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Shaders</AssemblyName>
-    <!-- We use the same namespace as the root Unity project, as this is still conceptually part of the main project,
-         but split purely for deployment reasons - so R# without C++ can still install Unity, albeit without shader
-         support. We have no need to split by zone -->
-    <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Shaders</RootNamespace>
     <LangVersion>9</LangVersion>
     <!-- We still have lots of obsolete warnings from ParserGen, and disabling obsolete warnings totally is too broad -->
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
@@ -25,7 +22,7 @@
     </Compile>
     <ParserGen Include="Cg\Psi\Parsing\Cg.psi" />
     <ErrorsGen Include="Cg\Daemon\Errors\CgErrors.xml">
-      <Namespace>JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Errors</Namespace>
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon.Errors</Namespace>
       <OutputFile>Cg\Daemon\Errors\CgErrors.Generated.cs</OutputFile>
       <Mode>ERRORS</Mode>
     </ErrorsGen>
@@ -47,7 +44,7 @@
     </Compile>
     <ParserGen Include="ShaderLab\Psi\Parsing\ShaderLab.psi" />
     <ErrorsGen Include="ShaderLab\Daemon\Errors\ShaderLabErrors.xml">
-      <Namespace>JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors</Namespace>
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Errors</Namespace>
       <OutputFile>ShaderLab\Daemon\Errors\ShaderLabErrors.generated.cs</OutputFile>
       <Mode>ERRORS</Mode>
     </ErrorsGen>

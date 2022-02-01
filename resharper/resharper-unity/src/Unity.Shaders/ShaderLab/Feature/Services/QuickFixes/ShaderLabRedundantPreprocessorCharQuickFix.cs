@@ -5,14 +5,14 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
 using JetBrains.Util;
 using JetBrains.Util.Text;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.QuickFixes
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.QuickFixes
 {
     [QuickFix]
     public class ShaderLabRedundantPreprocessorCharQuickFix : IQuickFix

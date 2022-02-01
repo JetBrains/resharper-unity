@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing
 {
     /// <summary>
     /// This is only used to not get errors from PP directives

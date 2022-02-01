@@ -1,4 +1,4 @@
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport
 {
     public static class HlslConstants
     {

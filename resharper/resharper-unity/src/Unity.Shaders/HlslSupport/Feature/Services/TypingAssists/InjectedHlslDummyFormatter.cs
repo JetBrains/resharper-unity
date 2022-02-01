@@ -2,7 +2,7 @@ using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.TypingAssist;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi.CachingLexers;
 using JetBrains.ReSharper.Psi.Cpp.Language;
 using JetBrains.ReSharper.Psi.Cpp.Parsing;
@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingAssists
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services.TypingAssists
 {
     [SolutionComponent]
     public class InjectedHlslDummyFormatter : CppDummyFormatterBase
@@ -27,8 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingA
         public CppCachingKeywordResolvingLexer ComposeKeywordResolvingLexer(ITextControl textControl)
         {
             var dialect = new CppHLSLDialect(true, false);
-            var cachingLexer = new ShaderLabLexerGenerated(textControl.Document.Buffer, CppLexer.Create)
-                .ToCachingLexer().TokenBuffer.CreateLexer();
+            var cachingLexer = LexerExtensions.ToCachingLexer(new ShaderLabLexerGenerated(textControl.Document.Buffer, CppLexer.Create)).TokenBuffer.CreateLexer();
 
             return new CppCachingKeywordResolvingLexer(cachingLexer, dialect);
         }
@@ -86,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingA
             public override CppCachingKeywordResolvingLexer ComposeKeywordResolvingLexer()
             {
                 var dialect = new CppHLSLDialect(true, false);
-                var cachingLexer = new ShaderLabLexerGenerated(Document.Buffer, CppLexer.Create).ToCachingLexer()
+                var cachingLexer = LexerExtensions.ToCachingLexer(new ShaderLabLexerGenerated(Document.Buffer, CppLexer.Create))
                     .TokenBuffer.CreateLexer();
                 return new CppCachingKeywordResolvingLexer(cachingLexer, dialect);
             }

@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Psi.Cpp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Daemon
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon
 {
     [SolutionComponent]
     public class UnityHlslAllErrorsPredicate : IHlslUnresolvedUnqualifiedNamesErrorsPredicate {

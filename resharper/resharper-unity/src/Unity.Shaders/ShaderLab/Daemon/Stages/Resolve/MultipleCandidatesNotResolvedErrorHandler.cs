@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Resolve
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages.Resolve
 {
     [Language(typeof(ShaderLabLanguage))]
     public class MultipleCandidatesNotResolvedErrorHandler : IResolveProblemHighlighter

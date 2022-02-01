@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Finder;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Search
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Search
 {
     // Finds the nodes that can contain text. Used in a rename operation when "search in text and comments" is enabled
     public class ShaderLabTextOccurrenceSearcher : TextOccurrenceSearcherBase<ShaderLabLanguage>, IDomainSpecificSearcher

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.Composition;
 using System.Windows.Media;
 using JetBrains.Platform.VisualStudio.SinceVs10.TextControl.Markup.FormatDefinitions;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 

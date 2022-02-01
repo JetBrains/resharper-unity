@@ -1,6 +1,6 @@
 ﻿using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
 using JetBrains.ReSharper.Intentions.QuickFixes;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 

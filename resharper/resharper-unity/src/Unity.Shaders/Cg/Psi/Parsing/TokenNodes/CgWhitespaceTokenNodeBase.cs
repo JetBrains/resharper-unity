@@ -1,6 +1,6 @@
 ﻿using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodes
 {
     internal abstract class CgWhitespaceTokenNodeBase : CgTokenNodeBase, IWhitespaceNode
     {

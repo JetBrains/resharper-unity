@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.Util;
 using JetBrains.Util.Threading.Tasks;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport
 {
     [SolutionComponent]
     public class CgIncludeDirectoryTracker

@@ -11,7 +11,7 @@ using JetBrains.Util;
   currentTokenType = null;
 %init}
 
-%namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
+%namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
 %class ShaderLabLexerGenerated
 %implements IIncrementalLexer
 %function _locateToken

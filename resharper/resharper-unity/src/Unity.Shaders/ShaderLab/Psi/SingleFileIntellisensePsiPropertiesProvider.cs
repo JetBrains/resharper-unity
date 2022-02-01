@@ -1,12 +1,12 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
 using JetBrains.ReSharper.Psi.PerformanceThreshold;
 using JetBrains.ReSharper.Resources.Shell;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi
 {
     // Visual C++ creates a hidden project to contain files for "single file intellisense".
     // https://blogs.msdn.microsoft.com/vcblog/2015/04/29/single-file-intellisense-and-other-ide-improvements-in-vs2015/

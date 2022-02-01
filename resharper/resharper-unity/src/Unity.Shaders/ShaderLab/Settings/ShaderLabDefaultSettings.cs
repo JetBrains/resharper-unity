@@ -1,13 +1,13 @@
 using JetBrains.Application;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi.PerformanceThreshold.Settings;
 using JetBrains.Util;
 
 #nullable enable
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Settings
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Settings
 {
     [ShellComponent]
     public class UnityDefaultPerformanceThresholdSettingsProvider : HaveDefaultSettings

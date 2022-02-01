@@ -1,5 +1,5 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.Cg.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi;
+﻿using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.ProjectModel;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 

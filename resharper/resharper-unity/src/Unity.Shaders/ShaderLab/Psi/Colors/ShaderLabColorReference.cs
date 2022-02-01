@@ -2,15 +2,15 @@ using System.Collections.Generic;
 using System.Globalization;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Colors;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Text;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Colors
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Colors
 {
     public class ShaderLabColorReference : IColorReference
     {

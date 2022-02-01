@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections
 {
     public static class InjectedHlslLocationHelper
     {

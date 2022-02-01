@@ -1,7 +1,8 @@
 ﻿using JetBrains.Util;
+
 // ReSharper disable InconsistentNaming
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing
 {
     public static class ParserMessages
     {

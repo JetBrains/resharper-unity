@@ -1,6 +1,6 @@
 using JetBrains.ReSharper.Daemon.SyntaxHighlighting;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi.Parsing;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.Cg.Daemon.SyntaxHighlighting

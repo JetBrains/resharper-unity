@@ -1,9 +1,9 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Injections;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Impl.Shared.InjectedPsi;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections
 {
     [SolutionComponent]
     public class InjectedHlslInjectionProvider : CppInjectionProviderBase

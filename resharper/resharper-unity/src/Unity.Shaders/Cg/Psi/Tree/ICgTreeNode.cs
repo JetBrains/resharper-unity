@@ -1,7 +1,8 @@
 ﻿using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree
 {
     public interface ICgTreeNode : ITreeNode
     {

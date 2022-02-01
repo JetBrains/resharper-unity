@@ -2,7 +2,7 @@
 using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.ContextHighlighters;
 using JetBrains.ReSharper.Psi;
 
 #nullable enable

@@ -1,14 +1,14 @@
 using System;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeStyle;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Formatting
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Formatting
 {
   [CodePreviewPreparatorComponent]
   public class ShaderLabCodeStylePreview : CodePreviewPreparator

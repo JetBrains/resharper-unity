@@ -6,17 +6,18 @@ using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Application.Settings;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Application.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodes;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
+using ICgFile = JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree.ICgFile;
 
 // ReSharper disable StringLiteralTypo
 #nullable enable
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon.Stages
 {
     [DaemonStage(StagesBefore = new[] { typeof(GlobalFileStructureCollectorStage) },
                  StagesAfter = new [] { typeof(CollectUsagesStage)} )]
