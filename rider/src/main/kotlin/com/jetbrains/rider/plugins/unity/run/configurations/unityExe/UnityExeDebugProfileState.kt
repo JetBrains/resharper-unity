@@ -4,20 +4,17 @@ import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.RunProfileState
-import com.intellij.execution.process.KillableProcessHandler
-import com.intellij.execution.process.ProcessAdapter
-import com.intellij.execution.process.ProcessEvent
-import com.intellij.execution.process.ProcessListener
+import com.intellij.execution.process.*
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
-import com.intellij.openapi.rd.util.withLongBackgroundContext
+import com.intellij.execution.ui.ConsoleView
+import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.util.Key
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.debugger.tryWriteMessageToConsoleView
-import com.jetbrains.rider.model.debuggerWorker.DebuggerWorkerModel
 import com.jetbrains.rider.model.debuggerWorker.OutputMessageWithSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputType
@@ -34,6 +31,7 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
                                 executionEnvironment: ExecutionEnvironment,
                                 isEditor: Boolean = false)
     : UnityAttachProfileState(remoteConfiguration, executionEnvironment, "Unity Executable", isEditor) {
+    private val ansiEscapeDecoder = AnsiEscapeDecoder()
 
     override val consoleKind: ConsoleKind = ConsoleKind.Normal
 
@@ -81,9 +79,10 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
 
                 targetProcessHandler.addProcessListener(object : ProcessListener {
                     override fun onTextAvailable(processEvent: ProcessEvent, key: Key<*>) {
-                        monoConnectResult.executionConsole.tryWriteMessageToConsoleView(
-                            OutputMessageWithSubject(processEvent.text, OutputType.Info, OutputSubject.Default)
-                        )
+                        ansiEscapeDecoder.escapeText(processEvent.text, ProcessOutputTypes.STDOUT) { textChunk, attributes ->
+                            val chunkContentType = ConsoleViewContentType.getConsoleViewType(attributes)
+                            (monoConnectResult.executionConsole as? ConsoleView)?.print(textChunk, chunkContentType)
+                        }
                     }
 
                     override fun processTerminated(processEvent: ProcessEvent) {
