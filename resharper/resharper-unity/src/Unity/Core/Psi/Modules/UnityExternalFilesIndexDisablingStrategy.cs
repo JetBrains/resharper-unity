@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
@@ -6,6 +7,9 @@ using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Util;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
@@ -21,16 +25,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
         private readonly SolutionCaches mySolutionCaches;
         private readonly AssetIndexingSupport myAssetIndexingSupport;
+        private readonly ILogger myLogger;
         private readonly bool myAllowRunHeuristic;
         private readonly bool myHeuristicDisabledForSolution;
-        private ulong myTotalSize;
 
         public UnityExternalFilesIndexDisablingStrategy(SolutionCaches solutionCaches,
                                                         IApplicationWideContextBoundSettingStore settingsStore,
-                                                        AssetIndexingSupport assetIndexingSupport)
+                                                        AssetIndexingSupport assetIndexingSupport,
+                                                        ILogger logger)
         {
             mySolutionCaches = solutionCaches;
             myAssetIndexingSupport = assetIndexingSupport;
+            myLogger = logger;
 
             myAllowRunHeuristic = settingsStore.BoundSettingsStore
                 .GetValue((UnitySettings s) => s.EnableAssetIndexingPerformanceHeuristic);
@@ -40,10 +46,50 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
         public void Run(List<UnityExternalFilesModuleProcessor.ExternalFile> externalFiles)
         {
-            if (!myAllowRunHeuristic || myHeuristicDisabledForSolution || !myAssetIndexingSupport.IsEnabled.Value)
-                return;
+            myLogger.Verbose("Checking automatic asset index disable heuristics for {0} external asset files",
+                externalFiles.Count);
 
-            if (DoesAnyFilePreventIndexing(externalFiles) || myTotalSize > TotalFileSizeThreshold)
+            if (externalFiles.IsEmpty()) return;
+
+            if (!myAllowRunHeuristic)
+            {
+                myLogger.Verbose(
+                    "'Automatically disable asset index' option disabled in settings. Not running heuristic. Asset indexing: {0}",
+                    myAssetIndexingSupport.IsEnabled.Value ? "enabled" : "disabled");
+                return;
+            }
+
+            if (!myAssetIndexingSupport.IsEnabled.Value)
+            {
+                myLogger.Verbose("Asset indexing disabled. No need to examine external file counts/sizes");
+                return;
+            }
+
+            if (myHeuristicDisabledForSolution)
+            {
+                myLogger.Verbose("Asset indexing heuristic previously disabled. Not running heuristic again. Asset indexing: {0}",
+                    myAssetIndexingSupport.IsEnabled.Value ? "enabled" : "disabled");
+                return;
+            }
+
+            var (maxFileSize, totalFileSize) = CalculateFileSizes(externalFiles);
+
+            var disableIndexing = false;
+            if (maxFileSize > AssetFileSizeThreshold)
+            {
+                // There's no point in logging the file path of the largest file. If we're interested in that sort of
+                // thing, run in TRACE mode and you'll get more details
+                myLogger.Verbose("Max external file size meets criteria to disable indexing: {0:n0} bytes", maxFileSize);
+                disableIndexing = true;
+            }
+
+            if (totalFileSize > TotalFileSizeThreshold)
+            {
+                myLogger.Verbose("Total external file size meets criteria to disable indexing: {0:n0} bytes", totalFileSize);
+                disableIndexing = true;
+            }
+
+            if (disableIndexing)
             {
                 // If the project is too big, disable asset indexing. This unchecks the "index text assets" checkbox
                 // in settings, saved at the solution level (more accurately .sln.DotSettings.user). It can be
@@ -77,30 +123,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             mySolutionCaches.PersistentProperties[HeuristicDisabledPersistentPropertyKey] = false.ToString();
         }
 
-        private bool DoesAnyFilePreventIndexing(List<UnityExternalFilesModuleProcessor.ExternalFile> externalFiles)
+        private static (ulong maxFileSize, ulong totalFileSize) CalculateFileSizes(
+            List<UnityExternalFilesModuleProcessor.ExternalFile> externalFiles)
         {
+            var maxFileSize = 0UL;
+            var totalFileSize = 0UL;
+
             foreach (var externalFile in externalFiles)
             {
-                if (DoesFilePreventIndexing(externalFile))
-                    return true;
+                // Don't count large binary asset files. We wouldn't index them anyway
+                if (externalFile.Length > AssetFileSizeThreshold && externalFile.Path.IsAsset() &&
+                    !externalFile.Path.SniffYamlHeader())
+                {
+                    continue;
+                }
+
+                totalFileSize += externalFile.Length;
+                maxFileSize = Math.Max(maxFileSize, externalFile.Length);
             }
 
-            return false;
-        }
-
-        private bool DoesFilePreventIndexing(UnityExternalFilesModuleProcessor.ExternalFile externalFile)
-        {
-            if (externalFile.Length > AssetFileSizeThreshold)
-            {
-                if (externalFile.Path.IsAsset() && !externalFile.Path.SniffYamlHeader())
-                    return false;
-
-                myTotalSize += externalFile.Length;
-                return true;
-            }
-
-            myTotalSize += externalFile.Length;
-            return false;
+            return (maxFileSize, totalFileSize);
         }
     }
 }

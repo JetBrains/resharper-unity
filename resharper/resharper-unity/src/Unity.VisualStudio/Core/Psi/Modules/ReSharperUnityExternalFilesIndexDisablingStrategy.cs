@@ -4,6 +4,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Core.Psi.Modules
 {
@@ -17,8 +18,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Core.Psi.Modules
                                                                  SolutionCaches solutionCaches,
                                                                  IApplicationWideContextBoundSettingStore settingsStore,
                                                                  AssetIndexingSupport assetIndexingSupport,
-                                                                 UserNotifications notifications)
-            : base(solutionCaches, settingsStore, assetIndexingSupport)
+                                                                 UserNotifications notifications,
+                                                                 ILogger logger)
+            : base(solutionCaches, settingsStore, assetIndexingSupport, logger)
         {
             myLifetime = lifetime;
             myNotifications = notifications;

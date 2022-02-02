@@ -4,6 +4,7 @@ using JetBrains.ProjectModel.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Psi.Modules
 {
@@ -16,8 +17,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Psi.Modules
                                                              SolutionCaches solutionCaches,
                                                              IApplicationWideContextBoundSettingStore settingsStore,
                                                              AssetIndexingSupport assetIndexingSupport,
-                                                             FrontendBackendHost frontendBackendHost)
-            : base(solutionCaches, settingsStore, assetIndexingSupport)
+                                                             FrontendBackendHost frontendBackendHost,
+                                                             ILogger logger)
+            : base(solutionCaches, settingsStore, assetIndexingSupport, logger)
         {
             myFrontendBackendHost = frontendBackendHost;
 
