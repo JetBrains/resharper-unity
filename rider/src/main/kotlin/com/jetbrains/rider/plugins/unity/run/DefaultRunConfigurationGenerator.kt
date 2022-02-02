@@ -76,7 +76,10 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
                         unityExeConfiguration.parameters.workingDirectory = project.solutionDirectory.canonicalPath
                         unityExeConfiguration.parameters.programParameters =
                             mutableListOf<String>().withRunTests().withBatchMode()
-                                .withProjectPath(project).withTestResults(project).withDebugCodeOptimization()
+                                .withProjectPath(project)
+                                .withTestResults(project)
+                                .withTestPlatform()
+                                .withDebugCodeOptimization()
                                 .toProgramParameters()
                         runConfiguration.storeInLocalWorkspace()
                         runManager.addConfiguration(runConfiguration)
