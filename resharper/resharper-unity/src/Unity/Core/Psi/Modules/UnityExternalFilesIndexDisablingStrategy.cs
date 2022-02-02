@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Application.Notifications;
 using JetBrains.Application.Settings;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
@@ -23,19 +25,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         private const ulong AssetFileSizeThreshold = 250L * (1024 * 1024); // 250 MB
         private const ulong TotalFileSizeThreshold = 4_000L * (1024 * 1024); // 4 GB
 
+        private readonly Lifetime myLifetime;
         private readonly SolutionCaches mySolutionCaches;
         private readonly AssetIndexingSupport myAssetIndexingSupport;
+        private readonly UserNotifications myUserNotifications;
         private readonly ILogger myLogger;
         private readonly bool myAllowRunHeuristic;
         private readonly bool myHeuristicDisabledForSolution;
 
-        public UnityExternalFilesIndexDisablingStrategy(SolutionCaches solutionCaches,
+        public UnityExternalFilesIndexDisablingStrategy(Lifetime lifetime,
+                                                        SolutionCaches solutionCaches,
                                                         IApplicationWideContextBoundSettingStore settingsStore,
                                                         AssetIndexingSupport assetIndexingSupport,
+                                                        UserNotifications userNotifications,
                                                         ILogger logger)
         {
+            myLifetime = lifetime;
             mySolutionCaches = solutionCaches;
             myAssetIndexingSupport = assetIndexingSupport;
+            myUserNotifications = userNotifications;
             myLogger = logger;
 
             myAllowRunHeuristic = settingsStore.BoundSettingsStore
@@ -105,8 +113,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             }
         }
 
-        protected virtual void NotifyAssetIndexingDisabled()
+        private void NotifyAssetIndexingDisabled()
         {
+            myUserNotifications.CreateNotification(myLifetime,
+                NotificationSeverity.WARNING,
+                "Disabled indexing of Unity assets",
+                @"Due to the size of the project, indexing of Unity scenes, assets and prefabs has been disabled. Usages of C# code in these files will not be detected. Re-enabling can impact initial file processing.",
+                closeAfterExecution: true,
+                executed: new UserNotificationCommand("Turn on anyway",
+                    () => myAssetIndexingSupport.IsEnabled.SetValue(true)));
         }
 
         private bool IsHeuristicDisabledForSolution()
