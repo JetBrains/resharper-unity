@@ -35,6 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             // No RequiredSignature (as of Unity 2020.2)
             KnownTypes.InitializeOnLoadMethodAttribute,
             KnownTypes.RuntimeInitializeOnLoadMethodAttribute,
+            KnownTypes.MenuItemAttribute,
 
             // These attributes had RequiredSignature added in 2018.3
             KnownTypes.DidReloadScripts,
@@ -69,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (methodDeclaration == null) return;
 
             var predefinedType = myPredefinedTypeCache.GetOrCreatePredefinedType(element.GetPsiModule());
-            var expectedMethodSignatures = GetExpectedMethodSignatures(attributeTypeElement, predefinedType);
+            var expectedMethodSignatures = GetExpectedMethodSignatures(methodDeclaration, attributeTypeElement, predefinedType);
             if (expectedMethodSignatures == null) return;
 
             if (expectedMethodSignatures.Length == 1)
@@ -90,7 +91,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         }
 
         [CanBeNull]
-        private MethodSignature[] GetExpectedMethodSignatures(ITypeElement attributeTypeElement,
+        private MethodSignature[] GetExpectedMethodSignatures(IMethodDeclaration methodDeclaration,
+            ITypeElement attributeTypeElement,
             PredefinedType predefinedType)
         {
             var attributeClrName = attributeTypeElement.GetClrName();
@@ -109,7 +111,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             // Remember that we're run on pooled threads, so try to add to the concurrent dictionary. It doesn't matter
             // if another thread beats us.
             signatures = GetSignaturesFromRequiredSignatureAttribute(attributeTypeElement)
-                         ?? GetSignaturesFromKnownAttributes(attributeClrName, predefinedType);
+                         ?? GetSignaturesFromKnownAttributes(methodDeclaration, attributeClrName, predefinedType);
             if (signatures != null) myMethodSignatures.TryAdd(attributeClrName.GetPersistent(), signatures);
             return signatures;
         }
@@ -139,14 +141,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         }
 
         [CanBeNull]
-        private MethodSignature[] GetSignaturesFromKnownAttributes(IClrTypeName attributeClrName,
+        private MethodSignature[] GetSignaturesFromKnownAttributes(IMethodDeclaration methodDeclaration,
+            IClrTypeName attributeClrName,
             PredefinedType predefinedType)
         {
             if (ourKnownAttributes.Contains(attributeClrName))
             {
                 // All of our attributes require a static void method with no arguments, apart from a couple that are
                 // special cases
-                return GetSpecialCaseSignatures(attributeClrName, predefinedType)
+                return GetSpecialCaseSignatures(methodDeclaration, attributeClrName, predefinedType)
                        ?? new[] {GetStaticVoidMethodSignature(predefinedType)};
             }
 
@@ -154,12 +157,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         }
 
         [CanBeNull]
-        private MethodSignature[] GetSpecialCaseSignatures(IClrTypeName attributeClrName, PredefinedType predefinedType)
+        private MethodSignature[] GetSpecialCaseSignatures(IMethodDeclaration methodDeclaration,
+            IClrTypeName attributeClrName, PredefinedType predefinedType)
         {
             if (Equals(attributeClrName, KnownTypes.OnOpenAssetAttribute))
                 return GetOnOpenAssetMethodSignature(predefinedType);
             if (Equals(attributeClrName, KnownTypes.PostProcessBuildAttribute))
                 return GetPostProcessBuildMethodSignature(predefinedType);
+            if (Equals(attributeClrName, KnownTypes.MenuItemAttribute))
+                return GetMenuItemMethodSignature(methodDeclaration);
+            return null;
+        }
+
+        private MethodSignature[] GetMenuItemMethodSignature(IMethodDeclaration methodDeclaration)
+        {
+            var declaredElement = methodDeclaration.DeclaredElement;
+            if (declaredElement != null)
+                return new[] { new MethodSignature(declaredElement.ReturnType, true) };
             return null;
         }
 

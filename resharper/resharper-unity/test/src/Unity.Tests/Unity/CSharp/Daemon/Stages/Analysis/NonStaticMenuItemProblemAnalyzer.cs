@@ -5,7 +5,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
 {
     [TestUnity]
     public class NonStaticMenuItemProblemAnalyzerTest
-        : CSharpHighlightingTestBase<InvalidStaticModifierWarning>
+        : CSharpHighlightingTestBase<IncorrectSignatureWarning>
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
 
