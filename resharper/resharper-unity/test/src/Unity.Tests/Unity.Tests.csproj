@@ -11,6 +11,7 @@
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Tests</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Tests</RootNamespace>
     <LangVersion>9</LangVersion>
+    <NoWarn Condition="$(InternalBuild)">CS8002</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <JetTestProject>True</JetTestProject>
     <!-- Force 32 bit x86 for Windows as we need to load a specific build of the Cpp assembly, and we have X86 defined
