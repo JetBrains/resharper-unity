@@ -2,7 +2,7 @@
 <Errors language="C#" configurableSeverityImplementationLanguage="SHADERLAB" baseClass="ShaderLabHighlightingBase">
 
   <Usings>
-    JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree
+    JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree
   </Usings>
 
   <StaticSeverityGroups>

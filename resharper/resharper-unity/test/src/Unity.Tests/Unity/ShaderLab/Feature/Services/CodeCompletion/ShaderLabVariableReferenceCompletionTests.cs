@@ -1,11 +1,12 @@
 ﻿using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
 using JetBrains.ReSharper.FeaturesTestFramework.Completion;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.CodeCompletion
 {
+    [RequireHlslSupport]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabVariableReferenceCompletionListTests : CodeCompletionTestBase
     {
@@ -15,6 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         [Test] public void TestList01() { DoNamedTest(); }
     }
 
+    [RequireHlslSupport]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabVariableReferenceCompletionActionTests : CodeCompletionTestBase
     {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.ProjectModel;
@@ -18,6 +17,8 @@ using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     [ContextAction(Group = UnityContextActions.GroupID,
@@ -25,8 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         Description = "Toggles a field in a Unity type between serialized and non-serialized. If the field is non-public, the 'UnityEngine.SerializeField' attribute is added. If the field is already serialized, the attribute is removed, and for public fields, the 'NonSerialized' field is added.")]
     public class ToggleSerializedFieldAction : IContextAction
     {
-        [NotNull] private static readonly SubmenuAnchor ourSubmenuAnchor =
-            new SubmenuAnchor(IntentionsAnchors.ContextActionsAnchor, SubmenuBehavior.Executable);
+        private static readonly SubmenuAnchor ourSubmenuAnchor =
+            new(IntentionsAnchors.ContextActionsAnchor, SubmenuBehavior.Executable);
 
         private readonly ICSharpContextActionDataProvider myDataProvider;
 
@@ -39,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         {
             var fieldDeclaration = myDataProvider.GetSelectedElement<IFieldDeclaration>();
             var multipleFieldDeclaration = MultipleFieldDeclarationNavigator.GetByDeclarator(fieldDeclaration);
-            if (multipleFieldDeclaration == null)
+            if (fieldDeclaration == null || multipleFieldDeclaration == null)
                 return EmptyList<IntentionAction>.Enumerable;
 
             var unityApi = myDataProvider.Solution.GetComponent<UnityApi>();
@@ -91,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 myIsSerialized = isSerialized;
             }
 
-            protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+            protected override Action<ITextControl>? ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
             {
                 if (myIsSerialized)
                 {
@@ -99,8 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                     if (myFieldDeclaration.GetAccessRights() == AccessRights.PUBLIC)
                     {
                         AttributeUtil.AddAttributeToEntireDeclaration(myMultipleFieldDeclaration,
-                            PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS, EmptyArray<AttributeValue>.Instance, null, myModule,
-                            myElementFactory);
+                            PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS, myModule, myElementFactory);
                     }
                 }
                 else
@@ -115,7 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                     if (myFieldDeclaration.GetAccessRights() != AccessRights.PUBLIC)
                     {
                         AttributeUtil.AddAttributeToEntireDeclaration(myMultipleFieldDeclaration,
-                            KnownTypes.SerializeField, EmptyArray<AttributeValue>.Instance, null, myModule, myElementFactory);
+                            KnownTypes.SerializeField, myModule, myElementFactory);
                     }
                 }
 
@@ -161,7 +161,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 myIsSerialized = isSerialized;
             }
 
-            protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+            protected override Action<ITextControl>? ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
             {
                 if (myIsSerialized)
                 {

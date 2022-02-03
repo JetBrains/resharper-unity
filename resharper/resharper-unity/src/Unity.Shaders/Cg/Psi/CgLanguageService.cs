@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Caches2;
 using JetBrains.ReSharper.Psi.Impl;
@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Text;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi
 {
     [Language(typeof(CgLanguage))]
     public class CgLanguageService : LanguageService

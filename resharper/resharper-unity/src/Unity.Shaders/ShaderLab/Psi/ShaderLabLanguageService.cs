@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements;
- using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Formatting;
- using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
- using JetBrains.ReSharper.Psi.CodeStyle;
- using JetBrains.ReSharper.Psi.ExtensionsAPI.Caches2;
+using JetBrains.ReSharper.Psi.CodeStyle;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Caches2;
 using JetBrains.ReSharper.Psi.Impl;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -13,7 +13,7 @@ using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Text;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi
 {
     [Language(typeof(ShaderLabLanguage))]
     public class ShaderLabLanguageService : LanguageService

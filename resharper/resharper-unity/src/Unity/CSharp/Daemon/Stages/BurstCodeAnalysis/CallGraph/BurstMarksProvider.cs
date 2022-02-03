@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Application;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -25,7 +26,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         public const string MarkId = "Unity.BurstContext";
 
         public BurstMarksProvider(Lifetime lifetime, ISolution solution,
-            UnityReferencesTracker referencesTracker,
             UnitySolutionTracker tracker,
             BurstStrictlyBannedMarkProvider strictlyBannedMarkProvider,
             IEnumerable<IBurstBannedAnalyzer> prohibitedContextAnalyzers)
@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             myBurstBannedAnalyzers = prohibitedContextAnalyzers;
             myStrictlyBannedMarkProvider = strictlyBannedMarkProvider;
             Enabled.Value = tracker.IsUnityProject.HasTrueValue();
-            referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
+            tracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
         }
 
         private static void AddMarksFromStruct([NotNull] IStruct @struct, ref LocalList<IDeclaredElement> result)
@@ -147,7 +147,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
             public override bool InteriorShouldBeProcessed(ITreeNode element)
             {
-                SeldomInterruptChecker.CheckForInterrupt();
+                Interruption.Current.CheckAndThrow();
 
                 if (element == StartTreeNode)
                     return true;

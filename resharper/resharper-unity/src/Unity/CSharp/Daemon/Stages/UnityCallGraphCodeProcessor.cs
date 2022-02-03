@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Application;
 using JetBrains.Application.Threading;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Psi;
@@ -9,7 +10,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
     public abstract class UnityCallGraphCodeProcessor : IRecursiveElementProcessor, IDisposable
     {
         protected ITreeNode StartTreeNode;
-        protected readonly SeldomInterruptChecker SeldomInterruptChecker = new SeldomInterruptChecker();
 
         protected UnityCallGraphCodeProcessor(ITreeNode startTreeNode)
         {
@@ -18,8 +18,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
 
         public virtual bool InteriorShouldBeProcessed(ITreeNode element)
         {
-            SeldomInterruptChecker.CheckForInterrupt();
-
+            Interruption.Current.CheckAndThrow();
+                
             if (element == StartTreeNode)
                 return true;
 

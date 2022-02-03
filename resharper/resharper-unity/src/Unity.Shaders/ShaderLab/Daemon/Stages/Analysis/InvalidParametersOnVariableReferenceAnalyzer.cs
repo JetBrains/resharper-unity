@@ -1,8 +1,8 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Errors;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Analysis
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(typeof(IInvalidVariableReferenceParameters), HighlightingTypes = new[] { typeof(ShaderLabInvalidVariableReferenceParametersWarning)})]
     public class InvalidParametersOnVariableReferenceAnalyzer : ShaderLabElementProblemAnalyzer<IInvalidVariableReferenceParameters>

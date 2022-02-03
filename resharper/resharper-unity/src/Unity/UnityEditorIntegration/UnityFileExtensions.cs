@@ -4,8 +4,11 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 {
+    [PublicAPI]
     public static class UnityFileExtensions
     {
         // Metadata (.meta is YAML, .asmdef/.asmref is JSON)
@@ -40,43 +43,49 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             Array.Copy(ourYamlDataFileExtensionsWithDot, 0, AllYamlFileExtensionsWithDot, 1, ourYamlDataFileExtensionsWithDot.Length);
         }
 
-        public static bool IsMeta([NotNull] this IPath path) =>
+        public static bool IsMeta(this IPath path) =>
             SimplePathEndsWith(path, MetaFileExtensionWithDot);
 
-        public static bool IsMeta([NotNull] this IPsiSourceFile psiSourceFile) =>
+        public static bool IsMeta(this IPsiSourceFile psiSourceFile) =>
             SourceFileNameEndsWith(psiSourceFile, MetaFileExtensionWithDot);
 
-        public static bool IsAsmDef([NotNull] this IPath path) =>
+        public static bool IsAsmDef(this IPath path) =>
             SimplePathEndsWith(path, AsmDefFileExtensionWithDot);
 
-        public static bool IsAsmDef([NotNull] this IPsiSourceFile psiSourceFile) =>
+        public static bool IsAsmDef(this IPsiSourceFile psiSourceFile) =>
             SourceFileNameEndsWith(psiSourceFile, AsmDefFileExtensionWithDot);
 
-        public static bool IsAsset([NotNull] this IPath path) =>
+        public static bool IsAsmRef(this IPath path) =>
+            SimplePathEndsWith(path, AsmRefFileExtensionWithDot);
+
+        public static bool IsAsmRef(this IPsiSourceFile psiSourceFile) =>
+            SourceFileNameEndsWith(psiSourceFile, AsmRefFileExtensionWithDot);
+
+        public static bool IsAsset(this IPath path) =>
             SimplePathEndsWith(path, AssetFileExtensionWithDot);
 
-        public static bool IsAsset([NotNull] this IPsiSourceFile sourceFile) =>
+        public static bool IsAsset(this IPsiSourceFile sourceFile) =>
             SourceFileNameEndsWith(sourceFile, AssetFileExtensionWithDot);
 
-        public static bool IsPrefab([NotNull] this IPath path) =>
+        public static bool IsPrefab(this IPath path) =>
             SimplePathEndsWith(path, PrefabFileExtensionWithDot);
 
-        public static bool IsScene([NotNull] this IPath path) =>
+        public static bool IsScene(this IPath path) =>
             SimplePathEndsWith(path, SceneFileExtensionWithDot);
 
-        public static bool IsScene([NotNull] this IPsiSourceFile sourceFile) =>
+        public static bool IsScene(this IPsiSourceFile sourceFile) =>
             SourceFileNameEndsWith(sourceFile, SceneFileExtensionWithDot);
 
-        public static bool IsController([NotNull] this IPath path) =>
+        public static bool IsController(this IPath path) =>
             SimplePathEndsWith(path, ControllerFileExtensionWithDot);
 
-        public static bool IsController([NotNull] this IPsiSourceFile sourceFile) =>
+        public static bool IsController(this IPsiSourceFile sourceFile) =>
             SourceFileNameEndsWith(sourceFile, ControllerFileExtensionWithDot);
 
-        public static bool IsAnim([NotNull] this IPath path) =>
+        public static bool IsAnim(this IPath path) =>
             SimplePathEndsWith(path, AnimFileExtensionWithDot);
 
-        public static bool IsAnim([NotNull] this IPsiSourceFile sourceFile) =>
+        public static bool IsAnim(this IPsiSourceFile sourceFile) =>
             SourceFileNameEndsWith(sourceFile, AnimFileExtensionWithDot);
 
         public static bool IsMetaOrProjectSettings(ISolution solution, VirtualFileSystemPath location)
@@ -90,13 +99,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             return false;
         }
 
-        public static bool IsIndexedExternalFile([NotNull] this IPath path)
-        {
-            // TODO: Add .asmref (coming soon)
-            return path.IsYamlDataFile() || path.IsMeta() || path.IsAsmDef();
-        }
+        public static bool IsIndexedExternalFile(this IPath path) =>
+            path.IsYamlDataFile() || path.IsMeta() || path.IsAsmDef() || path.IsAsmRef();
 
-        public static bool IsYamlDataFile([NotNull] this IPath path)
+        public static bool IsYamlDataFile(this IPath path)
         {
             foreach (var extension in ourYamlDataFileExtensionsWithDot)
             {
@@ -107,7 +113,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             return false;
         }
 
-        public static bool IsYamlDataFile([NotNull] this IPsiSourceFile sourceFile)
+        public static bool IsYamlDataFile(this IPsiSourceFile sourceFile)
         {
             foreach (var extension in ourYamlDataFileExtensionsWithDot)
             {

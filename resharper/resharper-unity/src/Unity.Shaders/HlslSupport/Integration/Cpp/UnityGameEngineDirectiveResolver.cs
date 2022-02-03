@@ -10,26 +10,23 @@ using JetBrains.Util;
 using JetBrains.Util.Extension;
 using Newtonsoft.Json.Linq;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 {
     [SolutionComponent]
     public class UnityGameEngineDirectiveResolver : IGameEngineIncludeDirectiveResolver
     {
         private readonly ISolution mySolution;
         private readonly UnitySolutionTracker mySolutionTracker;
-        private readonly UnityReferencesTracker myReferencesTracker;
         private readonly ILogger myLogger;
         private readonly object myLockObject = new object();
         private readonly ConcurrentDictionary<string, string> myVersionsFromDirectories = new ConcurrentDictionary<string, string>();
         private readonly ConcurrentDictionary<string, string> myPackageLockPaths = new ConcurrentDictionary<string, string>();
-        private bool myCacheInitialized = false;
+        private bool myCacheInitialized;
 
-        public UnityGameEngineDirectiveResolver(ISolution solution, UnitySolutionTracker solutionTracker,
-                                                UnityReferencesTracker referencesTracker, ILogger logger)
+        public UnityGameEngineDirectiveResolver(ISolution solution, UnitySolutionTracker solutionTracker, ILogger logger)
         {
             mySolution = solution;
             mySolutionTracker = solutionTracker;
-            myReferencesTracker = referencesTracker;
             myLogger = logger;
         }
 
@@ -37,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
         {
             return path.StartsWith("Packages/") &&
                    (mySolutionTracker.IsUnityProject.HasTrueValue() ||
-                    myReferencesTracker.HasUnityReference.HasTrueValue());
+                    mySolutionTracker.HasUnityReference.HasTrueValue());
         }
 
         public string TransformPath(CppInclusionContext context, string path)
@@ -45,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
             var solutionFolder = mySolution.SolutionDirectory;
             if (solutionFolder.Combine(path).Exists != FileSystemPath.Existence.Missing)
                 return path;
-            
+
             var pos = path.IndexOf('/') + 1;
             if (pos == -1)
                 return path;
@@ -61,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
 
             return packagePath + path.Substring(endPos);
         }
-        
+
         private void ParsePackageLock()
         {
             try
@@ -95,13 +92,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
                                 }
                                 else
                                 {
-                                    var relativePackagePath = VirtualFileSystemPath.Parse("Packages", InteractionContext.SolutionContext).Combine(packagePath);
+                                    var relativePackagePath = VirtualFileSystemPath
+                                        .Parse("Packages", InteractionContext.SolutionContext)
+                                        .Combine(packagePath.AssertRelative());
                                     myPackageLockPaths[packageName] = relativePackagePath.FullPath;
                                 }
                             }
                             else if (source.Equals("registry"))
                             {
-                                var cachedPackagePath = VirtualFileSystemPath.Parse("Library", InteractionContext.SolutionContext).Combine("PackageCache")
+                                var cachedPackagePath = VirtualFileSystemPath
+                                    .Parse("Library", InteractionContext.SolutionContext)
+                                    .Combine("PackageCache")
                                     .Combine(packageName + "@" + version);
                                 myPackageLockPaths[packageName] = cachedPackagePath.FullPath;
                             } else if (source.Equals("git"))
@@ -109,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
                                 var hash = (jProperty.Value["hash"] as JValue)?.Value as string;
                                 if (hash == null)
                                     continue;
-                                
+
                                 var cachedPackagePath = VirtualFileSystemPath.Parse("Library", InteractionContext.SolutionContext).Combine("PackageCache")
                                     .Combine(packageName + "@" + hash.Substring(0, Math.Min(hash.Length, 10)));
                                 myPackageLockPaths[packageName] = cachedPackagePath.FullPath;
@@ -151,13 +152,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
 
             if (myPackageLockPaths.TryGetValue(packageName, out var path))
                 return path;
-            
+
             if (!myVersionsFromDirectories.TryGetValue(packageName, out var version))
                 return null;
-            
+
             var solutionFolder = mySolution.SolutionDirectory;
             var localPackagePath = VirtualFileSystemPath.Parse("Packages", InteractionContext.SolutionContext)
-                .Combine(packageName + "@" + version);
+                .Combine(packageName + "@" + version).AssertRelative();
             if (solutionFolder.Combine(localPackagePath).Exists == FileSystemPath.Existence.File)
                 return localPackagePath.FullPath;
 

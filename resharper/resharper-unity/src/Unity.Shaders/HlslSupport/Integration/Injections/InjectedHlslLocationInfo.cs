@@ -3,7 +3,7 @@ using JetBrains.Serialization;
 using JetBrains.Util;
 using JetBrains.Util.PersistentMap;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections
 {
     public class InjectedHlslLocationInfo
     {

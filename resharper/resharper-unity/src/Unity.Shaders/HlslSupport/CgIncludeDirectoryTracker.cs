@@ -11,21 +11,21 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.Util;
 using JetBrains.Util.Threading.Tasks;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport
 {
     [SolutionComponent]
     public class CgIncludeDirectoryTracker
     {
         private const string CG_INCLUDE_DIRECTORY_PATH = "CgIncludeFolderPath";
 
-        public CgIncludeDirectoryTracker(Lifetime lifetime, UnityReferencesTracker unityReferencesTracker,
+        public CgIncludeDirectoryTracker(Lifetime lifetime, UnitySolutionTracker unitySolutionTracker,
             SolutionCaches solutionCaches, IShellLocks shellLocks, ISolutionLoadTasksScheduler scheduler,
             CppGlobalCacheImpl cppGlobalCache, UnityVersion unityVersion, ILogger logger)
         {
             scheduler.EnqueueTask(new SolutionLoadTask("InitCgIncludeDirectoryTracker", SolutionLoadTaskKinds.PreparePsiModules,
                 () =>
                 {
-                    unityReferencesTracker.HasUnityReference.AdviseOnce(lifetime, _ =>
+                    unitySolutionTracker.HasUnityReference.AdviseOnce(lifetime, _ =>
                     {
                         if (solutionCaches.PersistentProperties.TryGetValue(CG_INCLUDE_DIRECTORY_PATH, out var result))
                         {

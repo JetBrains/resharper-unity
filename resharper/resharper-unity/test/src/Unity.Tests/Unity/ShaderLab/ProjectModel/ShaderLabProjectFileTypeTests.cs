@@ -1,11 +1,12 @@
 ﻿using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TestFramework;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.ProjectModel
 {
+    [RequireHlslSupport]
     [TestFixture]
     public class ShaderLabProjectFileTypeTests : BaseTest
     {

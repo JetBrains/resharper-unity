@@ -1,6 +1,6 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon
 {
     public abstract class ShaderLabElementProblemAnalyzer<T> : ElementProblemAnalyzer<T>
     {

@@ -1,42 +1,45 @@
 ﻿using System;
-using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Daemon.CaretDependentFeatures;
 using JetBrains.ReSharper.Feature.Services.Contexts;
-using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
 using JetBrains.ReSharper.Feature.Services.Navigation.Requests;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Psi.Tree;
+using IReferenceName = JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.IReferenceName;
+using IShaderLabIdentifier = JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.IShaderLabIdentifier;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
+#nullable enable
+
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.ContextHighlighters
 {
     [ContainsContextConsumer]
     public class ShaderLabUsagesContextHighlighter : ContextHighlighterBase
     {
-        [NotNull] private readonly IDeclaredElement myDeclaredElement;
-        [CanBeNull] private readonly IDeclaration myDeclarationUnderCaret;
+        private readonly IDeclaredElement myDeclaredElement;
+        private readonly IDeclaration? myDeclarationUnderCaret;
 
-        private ShaderLabUsagesContextHighlighter([NotNull] IDeclaredElement declaredElement, [CanBeNull] IDeclaration declarationUnderCaret)
+        private ShaderLabUsagesContextHighlighter(IDeclaredElement declaredElement, IDeclaration? declarationUnderCaret)
         {
             myDeclaredElement = declaredElement;
             myDeclarationUnderCaret = declarationUnderCaret;
         }
 
-        private const string HIGHLIGHTING_ID = HighlightingAttributeIds.USAGE_OF_ELEMENT_UNDER_CURSOR;
+        private const string HIGHLIGHTING_ID = GeneralHighlightingAttributeIds.USAGE_OF_ELEMENT_UNDER_CURSOR;
 
-        [CanBeNull, AsyncContextConsumer]
-        public static Action ProcessContext(
-            [NotNull] Lifetime lifetime, [NotNull] HighlightingProlongedLifetime prolongedLifetime,
-            [NotNull, ContextKey(typeof(ContextHighlighterPsiFileView.ContextKey))] IPsiDocumentRangeView psiDocumentRangeView,
-            [NotNull] ShaderLabUsageContextHighlighterAvailability contextHighlighterAvailability)
+        [AsyncContextConsumer]
+        public static Action? ProcessContext(
+            Lifetime lifetime, HighlightingProlongedLifetime prolongedLifetime,
+            [ContextKey(typeof(ContextHighlighterPsiFileView.ContextKey))] IPsiDocumentRangeView psiDocumentRangeView,
+            ShaderLabUsageContextHighlighterAvailability contextHighlighterAvailability)
         {
             var psiView = psiDocumentRangeView.View<ShaderLabLanguage>();
 
@@ -52,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
             return highlighter.GetDataProcessAction(prolongedLifetime, psiDocumentRangeView);
         }
 
-        private static IDeclaredElement FindDeclaredElement(IPsiView psiView, out IDeclaration declarationUnderCaret)
+        private static IDeclaredElement? FindDeclaredElement(IPsiView psiView, out IDeclaration? declarationUnderCaret)
         {
             declarationUnderCaret = null;
 
@@ -84,7 +87,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
             var elements = new[] {new DeclaredElementInstance(declaredElement)};
             var searchRequest = new SearchSingleFileDeclaredElementRequest(elements, elements, searchDomain);
 
-            foreach (var occurrence in searchRequest.Search(NullProgressIndicator.Create()))
+            // Search is [CanBeNull] on base type, but derived types always return a value
+            foreach (var occurrence in searchRequest.Search(NullProgressIndicator.Create())!)
             {
                 if (!(occurrence is ReferenceOccurrence referenceOccurrence)) continue;
 

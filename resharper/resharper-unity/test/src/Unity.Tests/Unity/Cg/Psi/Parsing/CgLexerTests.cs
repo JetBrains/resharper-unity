@@ -1,10 +1,11 @@
 ﻿using System.IO;
-using JetBrains.ReSharper.Plugins.Unity.Cg.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.ProjectModel;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Text;
 using NUnit.Framework;
+using CgLexerGenerated = JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.CgLexerGenerated;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.Cg.Psi.Parsing
 {

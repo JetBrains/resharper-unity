@@ -1,10 +1,10 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes;
+﻿using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodes;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.Text;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodeTypes
 {
     internal class CgSingleLineCommentTokenNodeType : CgTokenNodeTypeBase
     {

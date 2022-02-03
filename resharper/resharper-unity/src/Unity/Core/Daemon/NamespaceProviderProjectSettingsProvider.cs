@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.Collections.Viewable;
@@ -11,6 +10,8 @@ using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.Util;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Daemon
 {
@@ -70,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Daemon
         {
             if (!myUnitySolutionTracker.IsUnityProject.HasTrueValue())
                 return;
-            
+
             ExcludeFolderFromNamespace(mountPoint, "Assets");
             ExcludeFolderFromNamespace(mountPoint, @"Assets\Scripts");
 
@@ -132,7 +133,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Daemon
                 //
                 // NOTE: KEEP UP TO DATE WITH ExternalPackageCustomNamespaceProvider!
                 if (folder.IsLinked && folder.ParentFolder != null)
-                    path = folder.Location.ConvertToRelativePath(folder.ParentFolder.Location).FullPath;
+                    path = folder.Location.MakeRelativeTo(folder.ParentFolder.Location).FullPath;
                 ExcludeFolderFromNamespace(mountPoint, path + @"\Runtime");
                 ExcludeFolderFromNamespace(mountPoint, path + @"\Scripts");
                 ExcludeFolderFromNamespace(mountPoint, path + @"\Runtime\Scripts");
@@ -164,11 +165,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Daemon
             }
         }
 
-        private void SetIndexedValue<TKeyClass, TEntryIndex, TEntryValue>([NotNull] ISettingsStorageMountPoint mount,
-                                                                          [NotNull] Expression<Func<TKeyClass, IIndexedEntry<TEntryIndex, TEntryValue>>> lambdaexpression,
-                                                                          [NotNull] TEntryIndex index,
-                                                                          [NotNull] TEntryValue value,
-                                                                          IDictionary<SettingsKey, object> keyIndices = null)
+        private void SetIndexedValue<TKeyClass, TEntryIndex, TEntryValue>(ISettingsStorageMountPoint mount,
+                                                                          Expression<Func<TKeyClass, IIndexedEntry<TEntryIndex, TEntryValue>>> lambdaexpression,
+                                                                          TEntryIndex index,
+                                                                          TEntryValue value,
+                                                                          IDictionary<SettingsKey, object>? keyIndices = null)
+            where TEntryIndex : class
+            where TEntryValue : notnull
         {
             ScalarSettingsStoreAccess.SetIndexedValue(mount, mySettingsSchema.GetIndexedEntry(lambdaexpression), index,
                 keyIndices, value, null, myLogger);

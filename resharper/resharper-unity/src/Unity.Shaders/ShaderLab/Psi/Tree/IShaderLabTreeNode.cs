@@ -1,7 +1,8 @@
 ﻿using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree
 {
     public interface IShaderLabTreeNode : ITreeNode
     {

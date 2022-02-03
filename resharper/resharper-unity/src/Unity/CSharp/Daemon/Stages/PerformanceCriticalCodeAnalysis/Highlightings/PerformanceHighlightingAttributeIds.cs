@@ -1,6 +1,8 @@
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.TextControl.DocumentMarkup;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings
 {
     // Note that these are registered as part of the main "Unity" group, as they should appear in the main "Unity"
@@ -8,30 +10,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [RegisterHighlighter(COSTLY_METHOD_INVOCATION,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
         EffectType = EffectType.SOLID_UNDERLINE,
-        EffectColor = "#ff7526",
+        ForegroundColor = "#ff7526",
+        DarkForegroundColor = "#ff7526",
         NotRecyclable = true,
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     [RegisterHighlighter(NULL_COMPARISON,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
         EffectType = EffectType.SOLID_UNDERLINE,
-        EffectColor = "#ff7526",
+        ForegroundColor = "#ff7526",
+        DarkForegroundColor = "#ff7526",
         NotRecyclable = true,
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     [RegisterHighlighter(CAMERA_MAIN,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
-        EffectColor = "#ff7526",
+        ForegroundColor = "#ff7526",
+        DarkForegroundColor = "#ff7526",
         NotRecyclable = true,
         EffectType = EffectType.SOLID_UNDERLINE,
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     [RegisterHighlighter(INEFFICIENT_MULTIDIMENSIONAL_ARRAYS_USAGE,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
-        EffectColor = "#ff7526",
+        ForegroundColor = "#ff7526",
+        DarkForegroundColor = "#ff7526",
         NotRecyclable = true,
         EffectType = EffectType.SOLID_UNDERLINE,
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     [RegisterHighlighter(INEFFICIENT_MULTIPLICATION_ORDER,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
-        EffectColor = "#ff7526",
+        ForegroundColor = "#ff7526",
+        DarkForegroundColor = "#ff7526",
         NotRecyclable = true,
         EffectType = EffectType.SOLID_UNDERLINE,
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]

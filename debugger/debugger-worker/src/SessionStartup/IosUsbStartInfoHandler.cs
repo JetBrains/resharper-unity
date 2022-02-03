@@ -8,6 +8,7 @@ using Mono.Debugging.Autofac;
 using Mono.Debugging.Client;
 using Mono.Debugging.Client.DebuggerOptions;
 using Mono.Debugging.Soft;
+using Mono.Debugging.Soft.Connections.StartArgs;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 {
@@ -36,12 +37,12 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
         {
             private readonly Lifetime myLifetime;
             private readonly UnityIosUsbStartInfo myIOSUsbStartInfo;
-            private readonly SoftDebuggerStartInfo mySoftDebuggerStartInfo;
+            private readonly SoftDebuggerStartArgs mySoftDebuggerStartInfo;
             private readonly ILogger myLogger;
 
             public IosUsbSessionStarter(Lifetime lifetime,
                                         UnityIosUsbStartInfo iosUsbStartInfo,
-                                        SoftDebuggerStartInfo softDebuggerStartInfo,
+                                        SoftDebuggerStartArgs softDebuggerStartInfo,
                                         IDebuggerSessionOptions evaluationOptions,
                                         ILogger logger)
                 : base(evaluationOptions)

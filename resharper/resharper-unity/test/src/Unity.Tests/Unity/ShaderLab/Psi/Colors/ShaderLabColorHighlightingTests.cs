@@ -1,11 +1,12 @@
 ﻿using JetBrains.ReSharper.Daemon.VisualElements;
 using JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Colors
 {
+    [RequireHlslSupport]
     [Category("ColorHighlighting")]
     [TestUnity]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]

@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("idea")
-    id("com.jetbrains.rdgen") version "2021.3.4"
+    id("com.jetbrains.rdgen") version "2022.1.2"
     id("com.ullink.nuget") version "2.23"
     id("com.ullink.nunit") version "2.4"
     id("me.filippov.gradle.jvm.wrapper") version "0.10.0"
@@ -626,7 +626,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         helperExeFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
         helperExeNetFxFiles.forEach { from(it) { into("${pluginName}/DotFiles/netfx") } }
 
-        from("../resharper/resharper-unity/src/annotations") {
+        from("../resharper/resharper-unity/src/Unity/annotations") {
             into("${pluginName}/dotnet/Extensions/com.intellij.resharper.unity/annotations")
         }
         from("projectTemplates") { into("${pluginName}/projectTemplates") }

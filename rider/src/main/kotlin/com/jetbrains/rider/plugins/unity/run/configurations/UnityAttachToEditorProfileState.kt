@@ -43,6 +43,11 @@ class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityEx
                 exeDebugProfileState.createWorkerRunInfo(lifetime, helper, port)
             }
             else {
+                // base class serializes listenPortForConnections, so
+                // user start debug, Unity is started, user stops debugging, listenPortForConnections is serialized to true
+                // later user starts Unity and wants to attach debugger - we need to set listenPortForConnections = false,
+                // otherwise old serialized value would be used.
+                remoteConfiguration.listenPortForConnections = false
                 super.createWorkerRunInfo(lifetime, helper, port)
             }
         }

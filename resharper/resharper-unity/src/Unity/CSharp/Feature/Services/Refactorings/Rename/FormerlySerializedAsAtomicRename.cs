@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
 using JetBrains.Diagnostics;
@@ -10,12 +9,13 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Refactorings.Rename;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings.Rename
 {
@@ -65,23 +65,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
                 return;
             }
 
-            var attribute = CreateFormerlySerializedAsAttribute(fieldDeclaration.GetPsiModule());
+            var attribute = CreateFormerlySerializedAsAttribute(fieldDeclaration);
             if (attribute != null)
                 fieldDeclaration.AddAttributeAfter(attribute, null);
         }
 
-        private IFieldDeclaration GetFieldDeclaration(IField field)
+        private static IFieldDeclaration? GetFieldDeclaration(IField? field)
         {
-            var declarations = field.GetDeclarations();
-            Assertion.Assert(declarations.Count == 1, "declarations.Count == 1");
-            return declarations[0] as IFieldDeclaration;
+            var declarations = field?.GetDeclarations();
+            if (declarations?.Count == 1)
+                return declarations[0] as IFieldDeclaration;
+            return null;
         }
 
-        public override IDeclaredElement NewDeclaredElement => myPointer.FindDeclaredElement();
+        public override IDeclaredElement NewDeclaredElement =>
+            myPointer.FindDeclaredElement().NotNull("myPointer.FindDeclaredElement() != null");
+
         public override string NewName { get; }
         public override string OldName { get; }
-        public override IDeclaredElement PrimaryDeclaredElement => myPointer.FindDeclaredElement();
-        public override IList<IDeclaredElement> SecondaryDeclaredElements => null;
+
+        public override IDeclaredElement PrimaryDeclaredElement =>
+            myPointer.FindDeclaredElement().NotNull("myPointer.FindDeclaredElement() != null");
+
+        public override IList<IDeclaredElement>? SecondaryDeclaredElements => null;
 
         private void RemoveExistingAttributesWithNewName(IFieldDeclaration fieldDeclaration)
         {
@@ -111,7 +117,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
                     var attributeInstance = attribute.GetAttributeInstance();
                     var nameParameter = attributeInstance.PositionParameter(0);
                     if (nameParameter.IsConstant && nameParameter.ConstantValue.IsString() &&
-                        (string) nameParameter.ConstantValue.Value == nameArgument)
+                        (string) nameParameter.ConstantValue.Value! == nameArgument)
                     {
                         list.Add(attribute);
                     }
@@ -121,9 +127,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             return list;
         }
 
-        private void RemoveFromTextualOccurrences(IRenameRefactoring executer, IFieldDeclaration fieldDeclaration)
+        private void RemoveFromTextualOccurrences(IRenameRefactoring executor, IFieldDeclaration fieldDeclaration)
         {
-            if (!(executer.Workflow is RenameWorkflow workflow))
+            if (!(executor.Workflow is RenameWorkflow workflow))
                 return;
 
             var attributes = fieldDeclaration.Attributes;
@@ -152,10 +158,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             }
         }
 
-        [CanBeNull]
-        private IAttribute CreateFormerlySerializedAsAttribute(IPsiModule module)
+        private IAttribute? CreateFormerlySerializedAsAttribute(ITreeNode owningNode)
         {
-            var elementFactory = CSharpElementFactory.GetInstance(module);
+            var module = owningNode.GetPsiModule();
+            var elementFactory = CSharpElementFactory.GetInstance(owningNode);
             var attributeType = myKnownTypesCache.GetByClrTypeName(KnownTypes.FormerlySerializedAsAttribute, module);
             var attributeTypeElement = attributeType.GetTypeElement();
             if (attributeTypeElement == null)

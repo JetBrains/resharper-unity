@@ -1,5 +1,5 @@
 {
-    "schema": "http://json-schema.org/draft-06/schema#",
+    "$schema": "http://json-schema.org/draft-06/schema#",
     "title": "Unity Assembly Definition",
     "description": "Defines an assembly in the Unity compilation pipeline",
     "type": "object",

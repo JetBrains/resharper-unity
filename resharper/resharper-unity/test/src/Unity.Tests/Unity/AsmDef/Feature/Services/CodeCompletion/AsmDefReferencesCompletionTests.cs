@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.CodeCo
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefReferencesCompletionListTests : CodeCompletionTestBase
+    public class AsmDefReferencesCompletionListTests : TwoProjectCodeCompletionTestBase
     {
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
         protected override string RelativeTestDataPath => @"AsmDef\CodeCompletion\AsmDefReferences";
@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.CodeCo
 
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class AsmDefReferencesCompletionActionTests : CodeCompletionTestBase
+    public class AsmDefReferencesCompletionActionTests : TwoProjectCodeCompletionTestBase
     {
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.Action;
         protected override string RelativeTestDataPath => @"AsmDef\CodeCompletion\AsmDefReferences";

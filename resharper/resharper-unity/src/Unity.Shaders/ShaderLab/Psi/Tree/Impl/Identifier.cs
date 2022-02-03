@@ -1,8 +1,8 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
+﻿using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl
 {
     // A token to represent an identifier name. Note that an identifier can also be another token
     // as the tokens for command names and values are not keywords as such

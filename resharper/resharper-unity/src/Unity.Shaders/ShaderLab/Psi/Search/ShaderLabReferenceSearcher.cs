@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Diagnostics;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Finder;
@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Search
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Search
 {
     public class ShaderLabReferenceSearcher : IDomainSpecificSearcher
     {

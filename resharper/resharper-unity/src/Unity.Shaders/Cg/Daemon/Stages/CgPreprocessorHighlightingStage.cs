@@ -2,10 +2,11 @@
 using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using ICgFile = JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree.ICgFile;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon.Stages
 {
     [DaemonStage(StagesBefore = new[] { typeof(GlobalFileStructureCollectorStage) },
         StagesAfter = new [] { typeof(CollectUsagesStage)} )]

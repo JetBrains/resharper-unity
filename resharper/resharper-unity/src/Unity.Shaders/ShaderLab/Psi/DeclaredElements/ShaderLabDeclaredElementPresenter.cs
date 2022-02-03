@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.UI.RichText;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements
 {
     [PsiSharedComponent]
     public class ShaderLabDeclaredElementPresenter : IDeclaredElementPresenter

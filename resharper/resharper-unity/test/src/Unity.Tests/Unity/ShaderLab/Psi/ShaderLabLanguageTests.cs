@@ -1,10 +1,11 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
+﻿using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.TestFramework;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi
 {
+    [RequireHlslSupport]
     [TestFixture]
     public class ShaderLabLanguageTests : BaseTest
     {

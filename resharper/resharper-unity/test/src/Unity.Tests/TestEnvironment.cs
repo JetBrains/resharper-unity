@@ -4,8 +4,10 @@ using System.Reflection;
 using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Environment;
 using JetBrains.ReSharper.Plugins.Json;
-using JetBrains.ReSharper.Plugins.Unity.HlslSupport;
+using JetBrains.ReSharper.Plugins.Unity;
+using JetBrains.ReSharper.Plugins.Unity.Shaders;
 using JetBrains.ReSharper.Plugins.Yaml;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;
 using JetBrains.TestFramework.Application.Zones;
@@ -34,17 +36,14 @@ namespace JetBrains.ReSharper.Plugins.Tests
     public interface IUnityTestsEnvZone : ITestsEnvZone
     {
     }
-
-    // Note that this zone doesn't require ILanguageHlslSupportZone, because we need to be disable it separately from
-    // the other required zones
+    
     [ZoneDefinition]
-    public interface IUnityTestsZone : IZone,
-        IRequire<PsiFeatureTestZone>,
-        IRequire<ILanguageJsonNewZone>,
-        IRequire<ILanguageYamlZone>
+    public interface IUnityTestsZone : IZone, IRequire<IUnityPluginZone>, IRequire<PsiFeatureTestZone>
     {
+        
     }
-
+    
+    
     // Activate the zones we require for shell/solution containers. This is normally handled by product specific zone
     // activators. But we don't have any product environment zones, so these activators aren't loaded, and we need to
     // activate pretty much everything we need.
@@ -55,10 +54,10 @@ namespace JetBrains.ReSharper.Plugins.Tests
     // Note that not all Rider components can be tested, as many of them require the protocol. It appears that we can't
     // activate IResharperHost* zones
     [ZoneActivator]
-    public class UnityTestZonesActivator : IActivate<IUnityTestsZone>,
-        IActivateDynamic<ILanguageHlslSupportZone>
+    [ZoneMarker(typeof(IUnityTestsEnvZone))]
+    public class UnityTestZonesActivator : IActivate<IUnityTestsZone>, IActivateDynamic<IUnityShaderZone>
     {
-        bool IActivateDynamic<ILanguageHlslSupportZone>.ActivatorEnabled() => !PlatformUtil.IsRunningOnMono;
+        bool IActivateDynamic<IUnityShaderZone>.ActivatorEnabled() => !PlatformUtil.IsRunningOnMono;
     }
 
     [SetUpFixture]

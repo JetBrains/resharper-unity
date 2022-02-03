@@ -5,15 +5,15 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Errors;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.QuickFixes
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.QuickFixes
 {
     [QuickFix]
     public class InvalidParametersOnVariableReferenceQuickFix : IQuickFix
@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.QuickFixe
                     // TODO: Remove this when we finally get a formatter
                     var firstWhitespace = reference?.Name?.NextSibling;
                     var lastWhitespace = reference?.RBrack?.PrevSibling;
-                    if (firstWhitespace.IsWhitespaceToken() && lastWhitespace.IsWhitespaceToken())
+                    if (TreeNodeExtensions.IsWhitespaceToken(firstWhitespace) && lastWhitespace.IsWhitespaceToken())
                         ModificationUtil.DeleteChildRange(firstWhitespace, lastWhitespace);
                 }
                 return null;

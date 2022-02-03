@@ -1,4 +1,6 @@
-﻿namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl
+﻿using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl
 {
     internal partial class BindChannelsCommand
     {

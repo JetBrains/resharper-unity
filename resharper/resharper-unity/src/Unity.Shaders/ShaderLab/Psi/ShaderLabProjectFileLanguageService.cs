@@ -1,13 +1,13 @@
 ﻿using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 using JetBrains.UI.Icons;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi
 {
     [ProjectFileType(typeof(ShaderLabProjectFileType))]
     public class ShaderLabProjectFileLanguageService : ProjectFileLanguageService

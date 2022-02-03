@@ -23,6 +23,7 @@ import com.jetbrains.rider.projectView.workspace.impl.WorkspaceEntityErrorsSuppo
 import com.jetbrains.rider.projectView.workspace.isProject
 import icons.UnityIcons
 import java.awt.Color
+import java.util.*
 import javax.swing.Icon
 
 enum class AncestorNodeType {
@@ -248,7 +249,7 @@ open class UnityExplorerFileSystemNode(project: Project,
                 }
 
                 if (parent is AssetsRootNode) {
-                    val rootSpecialIcon = when (name.toLowerCase()) {
+                    val rootSpecialIcon = when (name.lowercase(Locale.getDefault())) {
                         "editor default resources" -> UnityIcons.Explorer.EditorDefaultResourcesFolder
                         "gizmos" -> UnityIcons.Explorer.GizmosFolder
                         "plugins" -> UnityIcons.Explorer.PluginsFolder
@@ -296,12 +297,12 @@ open class UnityExplorerFileSystemNode(project: Project,
         }
 
         // See https://docs.unity3d.com/Manual/SpecialFolders.html
-        val extension = file.extension?.toLowerCase()
+        val extension = file.extension?.lowercase(Locale.getDefault())
         if (extension != null && UnityExplorer.IgnoredExtensions.contains(extension)) {
             return false
         }
 
-        val name = file.nameWithoutExtension.toLowerCase()
+        val name = file.nameWithoutExtension.lowercase(Locale.getDefault())
         if (name == "cvs" || file.name.startsWith(".")) {
             return false
         }

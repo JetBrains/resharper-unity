@@ -5,7 +5,7 @@ using JetBrains.Lifetimes;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Language;
 using JetBrains.ReSharper.Psi.Impl;
@@ -14,7 +14,7 @@ using JetBrains.Util;
 using JetBrains.Util.DataStructures.Collections;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 {
     public class ShaderFilesProperties : IPsiSourceFileProperties
     {
@@ -118,17 +118,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
     [SolutionComponent]
     public class UnityShaderPsiModuleProviderFilter : IProjectPsiModuleProviderFilter
     {
-        private readonly UnitySolutionTracker mySolutionTracker;
-
-        public UnityShaderPsiModuleProviderFilter(UnitySolutionTracker solutionTracker)
-        {
-            mySolutionTracker = solutionTracker;
-        }
-
         public Tuple<IProjectPsiModuleHandler, IPsiModuleDecorator> OverrideHandler(Lifetime lifetime, IProject project,
             IProjectPsiModuleHandler handler)
         {
-            if ( handler.PrimaryModule != null && UnityReferencesTracker.ReferencesUnity(project))
+            if ( handler.PrimaryModule != null && project.GetComponent<UnityReferencesTracker>().IsUnityProject(project))
             {
                 var module = new UnityShaderModule(project.GetSolution(), project.Name, handler.PrimaryModule.TargetFrameworkId);
                 var newHandlerAndDecorator = new UnityShaderModuleHandlerAndDecorator(module, handler);

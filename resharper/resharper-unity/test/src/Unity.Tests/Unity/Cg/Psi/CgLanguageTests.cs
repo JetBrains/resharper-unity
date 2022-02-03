@@ -1,9 +1,10 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.Cg.Psi;
+﻿using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi;
 using JetBrains.ReSharper.Psi;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.Cg.Psi
 {
+    [RequireHlslSupport]
     [TestFixture]
     public class CgLanguageTests
     {

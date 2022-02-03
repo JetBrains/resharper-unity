@@ -11,6 +11,8 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 {
     public class UnityElementQuickDocPresenter : IQuickDocPresenter
@@ -40,12 +42,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 
         public QuickDocTitleAndText GetHtml(PsiLanguageType presentationLanguage)
         {
-            var element = myEnvoy.GetValidDeclaredElement();
-            if (element == null) return QuickDocTitleAndText.Empty;
+            var elementInstance = myEnvoy.GetValidDeclaredElementInstance();
+            var element = elementInstance?.Element as IClrDeclaredElement;
+            if (elementInstance == null || element == null) return QuickDocTitleAndText.Empty;
 
             var details = GetXmlDoc(element);
             var text = myXmlDocHtmlPresenter.Run(details, element.Module,
-                element, presentationLanguage, XmlDocHtmlUtil.NavigationStyle.All,
+                elementInstance, presentationLanguage, XmlDocHtmlUtil.NavigationStyle.All,
                 XmlDocHtmlUtil.CrefManager);
             var title = DeclaredElementPresenter.Format(presentationLanguage,
                 DeclaredElementPresenter.FULL_NESTED_NAME_PRESENTER, element).Text;
@@ -58,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             var xmlDocNode = element.GetXMLDoc(true);
             if (xmlDocNode == null)
             {
-                var memberElement = CreateMemberElement(element);
+                var memberElement = CreateMemberElement(GetId() ?? string.Empty);
                 memberElement.CreateLeafElementWithValue("summary", myDescription);
                 xmlDocNode = memberElement;
             }
@@ -77,14 +80,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             return xmlDocNode;
         }
 
-        private XmlElement CreateMemberElement(IDeclaredElement element)
+        private static XmlElement CreateMemberElement(string name)
         {
             var xmlElement = new XmlDocument().CreateElement("member");
-            xmlElement.SetAttribute("name", element == null ? string.Empty : GetId());
+            xmlElement.SetAttribute("name", name);
             return xmlElement;
         }
 
-        public string GetId()
+        public string? GetId()
         {
             // We don't really use this ID. It gets added to the HTML, but
             // we never navigate to this item, so we never see it again
@@ -93,17 +96,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             {
                 if (element is IXmlDocIdOwner docOwner)
                     return "Unity:" + docOwner.XMLDocId;
-                if (element is IParameter parameter)
-                {
-                    docOwner = parameter.ContainingParametersOwner as IXmlDocIdOwner;
-                    if (docOwner != null)
-                        return "Unity:" + docOwner.XMLDocId + "#" + parameter.ShortName;
-                }
+                if (element is IParameter { ContainingParametersOwner: IXmlDocIdOwner xmlDocIdOwner } parameter)
+                    return "Unity:" + xmlDocIdOwner.XMLDocId + "#" + parameter.ShortName;
             }
             return null;
         }
 
-        public IQuickDocPresenter Resolve(string id)
+        public IQuickDocPresenter? Resolve(string id)
         {
             // Trying to navigate away. The id is the id of the thing we're trying to navigate to. For us, we're
             // navigating away from a Unity event function or parameter, and to a genuine type or type member. The id

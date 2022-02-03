@@ -1,10 +1,11 @@
 ﻿using System;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
+using ICgFile = JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree.ICgFile;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon.Stages
 {
     public abstract class CgDaemonStageProcessBase : TreeNodeVisitor<IHighlightingConsumer>, IRecursiveElementProcessor<IHighlightingConsumer>, IDaemonStageProcessWithPsiFile
     {

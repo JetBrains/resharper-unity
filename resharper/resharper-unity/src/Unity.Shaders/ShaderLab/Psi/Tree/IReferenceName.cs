@@ -1,6 +1,6 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Resolve;
+﻿using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Resolve;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree
 {
     public partial interface IReferenceName
     {

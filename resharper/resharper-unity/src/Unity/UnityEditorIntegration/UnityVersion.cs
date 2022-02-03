@@ -51,6 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
                 mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory().ToVirtualFileSystemPath());
 
             unitySolutionTracker.IsUnityProjectFolder.WhenTrue(lifetime, SetActualVersionForSolution);
+            unitySolutionTracker.HasUnityReference.WhenTrue(lifetime, SetActualVersionForSolution);
         }
 
         private void SetActualVersionForSolution(Lifetime lt)

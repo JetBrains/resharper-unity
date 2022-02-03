@@ -15,6 +15,12 @@ class UnityInstallationFinder(private val project: Project) {
         fun getInstance(project: Project): UnityInstallationFinder {
             return UnityInstallationFinder(project)
         }
+
+        fun getOsSpecificPath(path: Path): Path {
+            if (SystemInfo.isMac)
+                return path.resolve("Contents/MacOS/Unity")
+            return path
+        }
     }
 
     fun getBuiltInPackagesRoot(): Path? {
@@ -52,10 +58,10 @@ class UnityInstallationFinder(private val project: Project) {
     // Windows: C:\Program Files\Unity\Hub\Editor\2018.2.1f1\Editor\Unity.exe
     // Linux: /home/ivan/Unity-2018.1.0f2/Editor/Unity
     fun getApplicationExecutablePath(): Path? {
-        var path =  tryGetApplicationPathFromProtocol()
-        if (SystemInfo.isMac)
-            path = path?.resolve("Contents/MacOS/Unity")
-        return path
+        val path =  tryGetApplicationPathFromProtocol()
+        if (path != null)
+            return getOsSpecificPath(path)
+        return null
     }
 
     // The standalone player for the current platform is installed here, e.g. MacStandaloneSupport, WindowsStandaloneSupport

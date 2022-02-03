@@ -7,6 +7,7 @@ import com.intellij.openapi.vcs.FileStatus
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.workspaceModel.ide.impl.virtualFile
 import com.jetbrains.rd.util.getOrCreate
+import com.jetbrains.rider.model.RdCustomLocation
 import com.jetbrains.rider.projectView.workspace.*
 import icons.UnityIcons
 
@@ -28,7 +29,9 @@ class ReferenceRootNode(project: Project) : AbstractTreeNode<Any>(project, key) 
                 if (entity.isAssemblyReference()) {
                     val virtualFile = entity.url?.virtualFile
                     if (virtualFile != null) {
-                        val item = referenceNames.getOrCreate(entity.descriptor.location.toString()) {
+                        val itemLocation = entity.descriptor.location
+                        val itemKey = if (itemLocation is RdCustomLocation) itemLocation.customLocation else itemLocation.toString()
+                        val item = referenceNames.getOrCreate(itemKey) {
                             ReferenceItemNode(myProject, entity.descriptor.name, virtualFile, arrayListOf())
                         }
                         item.entityReferences.add(entity.toReference())
@@ -68,7 +71,7 @@ class ReferenceItemNode(
     override val entities: List<ProjectModelEntity>
         get() = entityReferences.mapNotNull { it.getEntity(myProject) }
     override val entity: ProjectModelEntity?
-        get() = entities.firstOrNull()
+        get() = entityReference?.getEntity(myProject)
     override val entityReference: ProjectModelEntityReference?
         get() = entityReferences.firstOrNull()
 

@@ -1,10 +1,9 @@
 ﻿using JetBrains.Application.BuildScript.Application.Zones;
-using JetBrains.ReSharper.Feature.Services.Daemon;
 
-namespace JetBrains.ReSharper.Plugins.Unity
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders
 {
     [ZoneMarker]
-    public class ZoneMarker : IRequire<DaemonZone>
+    public class ZoneMarker : IRequire<IUnityShaderZone>
     {
     }
 }

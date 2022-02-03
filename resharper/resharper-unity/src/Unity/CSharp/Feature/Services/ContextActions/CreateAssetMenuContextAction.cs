@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
+using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
@@ -17,6 +17,8 @@ using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     [ContextAction(Group = UnityContextActions.GroupID,
@@ -27,8 +29,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                       "and stored in the project as '.asset' files")]
     public class CreateAssetMenuContextAction : IContextAction
     {
-        [NotNull] private static readonly SubmenuAnchor ourSubmenuAnchor =
-            new SubmenuAnchor(IntentionsAnchors.HighPriorityContextActionsAnchor, SubmenuBehavior.Executable);
+        private static readonly SubmenuAnchor ourSubmenuAnchor =
+            new(IntentionsAnchors.HighPriorityContextActionsAnchor, SubmenuBehavior.Executable);
 
         private readonly ICSharpContextActionDataProvider myDataProvider;
 
@@ -39,9 +41,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 
         public IEnumerable<IntentionAction> CreateBulbItems()
         {
+            // We know this isn't null, because we checked in IsAvailable
+            var classLikeDeclaration = myDataProvider.GetSelectedElement<IClassLikeDeclaration>()
+                .NotNull("myDataProvider.GetSelectedElement<IClassLikeDeclaration>() != null");
             return new[]
             {
-                new CreateAssetMenuAction(myDataProvider.GetSelectedElement<IClassLikeDeclaration>(), myDataProvider.ElementFactory, myDataProvider.PsiModule).ToContextActionIntention(ourSubmenuAnchor)
+                new CreateAssetMenuAction(classLikeDeclaration, myDataProvider.ElementFactory, myDataProvider.PsiModule)
+                    .ToContextActionIntention(ourSubmenuAnchor)
             };
         }
 
@@ -53,12 +59,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             if (classLikeDeclaration == null)
                 return false;
 
-            ITypeElement declaredElement = classLikeDeclaration.DeclaredElement;
+            var declaredElement = classLikeDeclaration.DeclaredElement;
 
-            if (declaredElement.DerivesFrom(KnownTypes.EditorWindow))
-                return false;
-
-            if (declaredElement.DerivesFrom(KnownTypes.Editor))
+            if (declaredElement.DerivesFrom(KnownTypes.EditorWindow) || declaredElement.DerivesFrom(KnownTypes.Editor))
                 return false;
 
             var existingAttribute = classLikeDeclaration.GetAttribute(KnownTypes.CreateAssetMenuAttribute);
@@ -71,26 +74,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             private readonly IPsiModule myModule;
             private readonly CSharpElementFactory myElementFactory;
 
-            public CreateAssetMenuAction(IClassLikeDeclaration classLikeDeclaration, CSharpElementFactory elementFactory, IPsiModule module)
+            public CreateAssetMenuAction(IClassLikeDeclaration classLikeDeclaration,
+                                         CSharpElementFactory elementFactory, IPsiModule module)
             {
                 myClassLikeDeclaration = classLikeDeclaration;
                 myModule = module;
                 myElementFactory = elementFactory;
             }
 
-            protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+            protected override Action<ITextControl>? ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
             {
-                var values = new[]
+                var fixedArguments = EmptyArray<AttributeValue>.Instance;
+                var namedArguments = new[]
                 {
                     new Pair<string, AttributeValue>("menuName", new AttributeValue(new ConstantValue($"Create {myClassLikeDeclaration.DeclaredName}", myModule))),
                     new Pair<string, AttributeValue>("fileName", new AttributeValue(new ConstantValue(myClassLikeDeclaration.DeclaredName, myModule))),
                     new Pair<string, AttributeValue>("order", new AttributeValue(new ConstantValue(0, myModule))),
                 };
 
-                var attribute = AttributeUtil.AddAttributeToSingleDeclaration(myClassLikeDeclaration, KnownTypes.CreateAssetMenuAttribute, EmptyArray<AttributeValue>.Instance,
-                    values, myModule, myElementFactory);
-
-                return attribute.CreateHotspotSession();
+                var attribute = AttributeUtil.AddAttributeToSingleDeclaration(myClassLikeDeclaration,
+                    KnownTypes.CreateAssetMenuAttribute, fixedArguments, namedArguments, myModule,
+                    myElementFactory);
+                return attribute?.CreateHotspotSession();
             }
 
             public override string Text => "Add to Unity's 'Assets/Create' menu";

@@ -86,7 +86,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             return true;
         }
 
-        public object Build(SeldomInterruptChecker checker, IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)
+        public object Build(IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)
         {
             var modifications = ProcessPrefabModifications(currentAssetSourceFile, assetDocument);
             var buffer = assetDocument.Buffer;

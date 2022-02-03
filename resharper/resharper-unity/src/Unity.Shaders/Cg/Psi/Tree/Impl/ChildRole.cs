@@ -1,4 +1,4 @@
-﻿namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree.Impl
+﻿namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree.Impl
 {
     public static class ChildRole
     {

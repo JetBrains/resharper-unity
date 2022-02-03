@@ -129,7 +129,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         source("refresh", bool).documentation = "Refresh the asset database. Pass true to force a refresh. False will queue a refresh"
         source("showPreferences", void).documentation = "Tell the Unity model to show the preferences window"
         source("installEditorPlugin", void)
-        source("enableYamlParsing", void).documentation = "Override the heuristic to re-enable YAML parsing on large projects"
         source("showFileInUnity", string).documentation = "Focus Unity, focus the Project window and select and ping the given file path"
         call("generateUIElementsSchema", void, bool).documentation = "Tell the Unity backend to generate UIElement schema"
 
@@ -138,7 +137,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         sink("activateUnityLogView", void).documentation = "Show the Unity log tool window. E.g. in response to compilation failure"
         sink("showInstallMonoDialog", void)
         sink("startUnity", void)
-        sink("notifyYamlHugeFiles", void)
         sink("notifyAssetModeForceText", void)
         sink("showDeferredCachesProgressNotification", void)
         callback("attachDebuggerToUnityEditor", void, bool).documentation = "Tell the frontend to attach the debugger to the Unity editor. Used for debugging unit tests"

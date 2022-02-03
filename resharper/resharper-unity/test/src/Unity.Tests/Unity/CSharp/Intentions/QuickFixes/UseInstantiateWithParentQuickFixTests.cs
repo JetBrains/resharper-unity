@@ -39,6 +39,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         [Test] public void SetParentWithTrueTest() { DoNamedTest(); }
         [Test] public void SetParentByPropertyTest() { DoNamedTest(); }
         [Test] public void SomethingBetweenTest() { DoNamedTest(); }
-        [Test, ExecuteScopedQuickFixInFile] public void ScopedTest() { DoNamedTest(); }
+        [Test, ExecuteScopedActionInFile] public void ScopedTest() { DoNamedTest(); }
     }
 }

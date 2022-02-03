@@ -2,9 +2,9 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Rider.Tests</AssemblyName>
-    <RootNamespace>JetBrains.ReSharper.Plugins.Tests</RootNamespace>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Rider.Tests</RootNamespace>
     <LangVersion>9</LangVersion>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <JetTestProject>True</JetTestProject>
     <SignAssembly>False</SignAssembly>
     <!-- Force 32 bit x86 for Windows as we need to load a specific build of the Cpp assembly, and we have X86 defined

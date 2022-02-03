@@ -1,6 +1,6 @@
 ﻿using JetBrains.ReSharper.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements
 {
     public static class ShaderLabDeclaredElementPresenterStyles
     {

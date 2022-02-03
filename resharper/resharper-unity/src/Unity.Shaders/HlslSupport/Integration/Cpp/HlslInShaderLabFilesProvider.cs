@@ -1,13 +1,13 @@
 using System.Collections.Generic;
-using JetBrains.Application.Threading;
+using JetBrains.Application;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
-using JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Modules;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 {
     [SolutionComponent]
     public class InjectedHlslInitialFilesProvider : ICppInitialFilesProvider
@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
             myPsiModules = psiModules;
         }
 
-        public IEnumerable<CppFileLocation> GetCppFileLocations(SeldomInterruptCheckerWithCheckTime checker)
+        public IEnumerable<CppFileLocation> GetCppFileLocations()
         {
             foreach (var module in myPsiModules.GetSourceModules())
             {
@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
 
                 foreach (var f in module.SourceFiles)
                 {
-                    checker?.CheckForInterrupt();
+                    Interruption.Current.CheckAndThrow();
 
                     if (f.IsValid() && f.LanguageType.Is<ShaderLabProjectFileType>())
                     {

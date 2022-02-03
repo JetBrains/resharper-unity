@@ -1,10 +1,11 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
+﻿using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Resolve
 {
+    [RequireHlslSupport]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabResolveTests : ReferenceTestBase
     {

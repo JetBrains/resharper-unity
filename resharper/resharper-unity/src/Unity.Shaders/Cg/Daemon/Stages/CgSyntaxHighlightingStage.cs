@@ -5,15 +5,19 @@ using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Application.Settings;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree;
+using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Application.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodes;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
-// ReSharper disable StringLiteralTypo
+using ICgFile = JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree.ICgFile;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
+// ReSharper disable StringLiteralTypo
+#nullable enable
+
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon.Stages
 {
     [DaemonStage(StagesBefore = new[] { typeof(GlobalFileStructureCollectorStage) },
                  StagesAfter = new [] { typeof(CollectUsagesStage)} )]
@@ -140,7 +144,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             public override void VisitAsmStatementNode(IAsmStatement asmStatementParam, IHighlightingConsumer context)
             {
                 // TODO: custom HighlightingAttributeId
-                context.AddHighlighting(new CgHighlighting(HighlightingAttributeIds.INJECT_STRING_BACKGROUND, asmStatementParam.ContentNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(GeneralHighlightingAttributeIds.INJECT_STRING_BACKGROUND, asmStatementParam.ContentNode.GetDocumentRange()));
                 base.VisitAsmStatementNode(asmStatementParam, context);
             }
 
@@ -181,10 +185,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                     range = node.Parent.GetDocumentRange();
                 if (range.TextRange.IsEmpty)
                 {
-                    if (range.TextRange.EndOffset < range.Document.GetTextLength())
-                        range = range.ExtendRight(1);
-                    else
-                        range = range.ExtendLeft(1);
+                    range = range.TextRange.EndOffset < range.Document.GetTextLength()
+                        ? range.ExtendRight(1)
+                        : range.ExtendLeft(1);
                 }
 
                 return range;

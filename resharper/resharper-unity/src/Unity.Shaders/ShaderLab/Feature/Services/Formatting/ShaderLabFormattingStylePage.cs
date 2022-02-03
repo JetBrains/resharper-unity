@@ -7,13 +7,13 @@ using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.OptionPages;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeEditing;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeStyle;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Formatting;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.EditorConfig;
 using JetBrains.ReSharper.Resources.Resources.Icons;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Formatting
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Formatting
 {
     [OptionsPage(
         PID,

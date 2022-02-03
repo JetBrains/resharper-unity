@@ -1,22 +1,21 @@
 using System.Text;
-using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Text;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
 {
     internal class ShaderLabMissingTokensInserter : MissingTokenInserterBase
     {
         private readonly ILexer myLexer;
         private readonly ShaderLabPreProcessor myPreProcessor;
 
-        private ShaderLabMissingTokensInserter(ILexer lexer, ITokenOffsetProvider offsetProvider, ShaderLabPreProcessor preProcessor, SeldomInterruptChecker interruptChecker, ITokenIntern intern)
-            : base(offsetProvider, interruptChecker, intern)
+        private ShaderLabMissingTokensInserter(ILexer lexer, ITokenOffsetProvider offsetProvider, ShaderLabPreProcessor preProcessor, ITokenIntern intern)
+            : base(offsetProvider, intern)
         {
             myLexer = lexer;
             myPreProcessor = preProcessor;
@@ -69,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
             return TreeElementFactory.CreateLeafElement(myLexer);
         }
 
-        public static void Run(TreeElement node, ILexer lexer, ITokenOffsetProvider offsetProvider, ShaderLabPreProcessor preProcessor, SeldomInterruptChecker interruptChecker, ITokenIntern intern)
+        public static void Run(TreeElement node, ILexer lexer, ITokenOffsetProvider offsetProvider, ShaderLabPreProcessor preProcessor, ITokenIntern intern)
         {
             Assertion.Assert(node.parent == null, "node.parent == null");
 
@@ -82,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
             var eof = new EofToken(lexer.Buffer.Length);
             root.AppendNewChild(eof);
 
-            var inserter = new ShaderLabMissingTokensInserter(lexer, offsetProvider, preProcessor, interruptChecker, intern);
+            var inserter = new ShaderLabMissingTokensInserter(lexer, offsetProvider, preProcessor, intern);
 
             // Reset the lexer, walk the tree and call ProcessLeafElement on each leaf element
             lexer.Start();

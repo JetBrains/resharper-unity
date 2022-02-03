@@ -11,7 +11,6 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Filters;
 using JetBrains.ReSharper.Psi.Impl.Shared.References;
 using JetBrains.ReSharper.Psi.Impl.Shared.Util;
 using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.ReSharper.Psi.Resx.Utils;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
@@ -27,10 +26,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
         private readonly ExpectedObjectTypeFilter myExpectedObjectTypeFilter;
 
         public UnityObjectTypeOrNamespaceReference(ICSharpLiteralExpression owner, [CanBeNull] IQualifier qualifier,
-                                                   ITokenNode token, TextRange rangeWithin,
+                                                   ITokenNode token, TreeTextRange rangeWithin,
                                                    ExpectedObjectTypeReferenceKind kind, ISymbolCache symbolCache,
                                                    bool isFinalPart)
-            : base(owner, qualifier, token, rangeWithin.ToTreeTextRange())
+            : base(owner, qualifier, token, rangeWithin)
         {
             mySymbolCache = symbolCache;
             myIsFinalPart = isFinalPart;
@@ -189,7 +188,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
             // add another namespace. If we're in the middle of the string, they might be changing their mind, and
             // adding a new (qualified) type, so adding either type or namespace (the text to the right will fail to
             // resolve)
-            return new ISymbolFilter[]
+            return new[]
             {
                 CSharpTypeOrNamespaceFilter.INSTANCE,
                 TypeElementMustBeClassFilter.INSTANCE,

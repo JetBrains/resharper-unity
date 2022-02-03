@@ -1,6 +1,6 @@
 using JetBrains.Application.Progress;
 using JetBrains.Diagnostics;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util.Text;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Formatting
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
 {
   [Language(typeof(ShaderLabLanguage))]
   public class ShaderLabCodeFormatter : CodeFormatterBase<ShaderLabFormatSettingsKey>

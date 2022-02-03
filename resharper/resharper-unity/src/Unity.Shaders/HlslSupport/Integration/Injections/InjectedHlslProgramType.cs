@@ -1,4 +1,4 @@
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections
 {
     public enum InjectedHlslProgramType
     {

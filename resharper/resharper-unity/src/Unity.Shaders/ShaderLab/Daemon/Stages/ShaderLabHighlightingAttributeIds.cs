@@ -1,8 +1,8 @@
 using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.TextControl.DocumentMarkup;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
 {
     // Highlighters define the look of a highlighting. They belong to a group, which is used to create a settings page
     [RegisterHighlighterGroup(GROUP_ID, "ShaderLab",

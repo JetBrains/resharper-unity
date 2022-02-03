@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements
 {
     public abstract class ShaderLabDeclaredElementBase : IShaderLabDeclaredElement
     {

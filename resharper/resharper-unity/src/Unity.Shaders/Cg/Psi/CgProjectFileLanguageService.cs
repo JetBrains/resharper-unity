@@ -1,11 +1,11 @@
 ﻿using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Cg.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 using JetBrains.UI.Icons;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi
 {
     [ProjectFileType(typeof(CgProjectFileType))]
     public class CgProjectFileLanguageService : ProjectFileLanguageService

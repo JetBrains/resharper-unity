@@ -1,8 +1,8 @@
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties.VCXProj;
-using JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Psi.Cpp.Parsing.Preprocessor;
 using JetBrains.ReSharper.Psi.Cpp.Symbols;
 using JetBrains.ReSharper.Psi.Cpp.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 {
     [Language(typeof(ShaderLabLanguage))]
     public class InjectedHlslInclusionContextProvider : IInclusionContextProvider

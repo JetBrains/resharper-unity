@@ -15,6 +15,9 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Resources.Icons;
 using JetBrains.TextControl;
+using JetBrains.TextControl.CodeWithMe;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
@@ -95,7 +98,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         protected override IEnumerable<BulbMenuItem> GetActions(ICSharpDeclaration declaration)
         {
             var result = new List<BulbMenuItem>();
-            var textControl = Solution.GetComponent<ITextControlManager>().LastFocusedTextControl.Value;
+            var textControl = Solution.GetComponent<ITextControlManager>().LastFocusedTextControlPerClient
+                .ForCurrentClient();
             if (declaration is IClassLikeDeclaration classLikeDeclaration &&
                 textControl != null && myUnityApi.IsUnityType(classLikeDeclaration.DeclaredElement))
             {

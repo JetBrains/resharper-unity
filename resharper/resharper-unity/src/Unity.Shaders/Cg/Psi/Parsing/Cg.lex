@@ -1,5 +1,5 @@
 using System;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 using JetBrains.Util;
@@ -12,7 +12,7 @@ using JetBrains.Util;
   currentTokenType = null;
 %init}
 
-%namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
+%namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing
 %class CgLexerGenerated
 %implements IIncrementalLexer
 %function _locateToken

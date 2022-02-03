@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Resolve;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
@@ -10,7 +11,7 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl
 {
     internal partial class ReferenceName
     {
@@ -106,7 +107,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl
 
             private IList<IDeclaredElement> GetPropertyDeclaredElements(bool useReferenceName)
             {
-                if (!(myOwner.GetContainingFile() is IShaderLabFile file))
+                if (!(TreeNodeExtensions.GetContainingFile(myOwner) is IShaderLabFile file))
                     return EmptyList<IDeclaredElement>.InstanceList;
 
                 var referenceName = myOwner.Identifier?.Name;

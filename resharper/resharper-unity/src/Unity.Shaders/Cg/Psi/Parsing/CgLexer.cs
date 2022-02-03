@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing
 {
     public partial class CgLexerGenerated
     {
@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
 
         public void Start()
         {
-            Start(0, yy_buffer.Length, YYINITIAL);
+            Start(0, yy_buffer.Length, Unity.Shaders.Cg.Psi.Parsing.CgLexerGenerated.YYINITIAL);
         }
 
         public void Start(int startOffset, int endOffset, uint state)
@@ -122,7 +122,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
                     e.AddData("TokenPos", () => yy_buffer_index);
                     e.AddData("Buffer", () =>
                     {
-                        var start = Math.Max(0, yy_buffer_end);
+                        var start = Math.Max((int)0, (int)yy_buffer_end);
                         var tokenText = yy_buffer.GetText(new TextRange(start, yy_buffer_index));
                         tokenText = Regex.Replace(tokenText, @"\p{Cc}", a => string.Format("[{0:X2}]", (byte)a.Value[0]));
                         return tokenText;

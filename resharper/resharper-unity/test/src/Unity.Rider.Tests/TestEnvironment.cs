@@ -4,9 +4,10 @@ using System.Reflection;
 using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Environment;
 using JetBrains.ReSharper.Plugins.Json;
-using JetBrains.ReSharper.Plugins.Unity.HlslSupport;
 using JetBrains.ReSharper.Plugins.Unity.Rider;
+using JetBrains.ReSharper.Plugins.Unity.Shaders;
 using JetBrains.ReSharper.Plugins.Yaml;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Rider.Backend.Env;
 using JetBrains.TestFramework;
@@ -27,46 +28,39 @@ using NUnit.Framework;
 [assembly: TestDataPathBase("resharper-unity/test/data/Unity.Rider")]
 #pragma warning restore 618
 
-namespace JetBrains.ReSharper.Plugins.Tests
+
+
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests
 {
-    // Define the zone that should be active in the environment container, pre-startup. We can use this to implement
-    // components that should be available in the environment container. Any required zones will be automatically added
-    // to the environment zone (and therefore automatically activated)
-    [ZoneDefinition]
-    public interface IUnityTestsEnvZone : ITestsEnvZone
-    {
-    }
-
-    // Note that this zone doesn't require ILanguageHlslSupportZone, because we need to be disable it separately from
-    // the other required zones
-    [ZoneDefinition]
-    public interface IUnityTestsZone : IZone,
-        IRequire<IUnityRiderZone>,
-        IRequire<IRiderPlatformZone>,
-        IRequire<PsiFeatureTestZone>,
-        IRequire<ILanguageJsonNewZone>,
-        IRequire<ILanguageYamlZone>
-    {
-    }
-
     // Activate the zones we require for shell/solution containers. This is normally handled by product specific zone
     // activators. But we don't have any product environment zones, so these activators aren't loaded, and we need to
     // activate pretty much everything we need.
     // We need to explicitly activate the language zones, since PsiFeatureTestZone activates leaf languages, rather
     // than IPsiLanguageZone (which would activate all other languages due to inheritance). But we can't activate HLSL
     // on Mono, as the managed C++ Cpp PSI doesn't work on Mono
+    [ZoneDefinition]
+    public interface IRiderUnityTestsEnvZone : ITestsEnvZone
+    {
+    }
 
+    [ZoneDefinition]
+    public interface IRiderUnityTestsZone : IZone, IRequire<IRiderUnityPluginZone>, IRequire<PsiFeatureTestZone>
+    {
+        
+    }
+    
+    
     // Note that not all Rider components can be tested, as many of them require the protocol. It appears that we can't
     // activate IResharperHost* zones
     [ZoneActivator]
-    public class UnityTestZonesActivator : IActivate<IUnityTestsZone>,
-        IActivateDynamic<ILanguageHlslSupportZone>
+    [ZoneMarker(typeof(IRiderUnityTestsEnvZone))]
+    public class UnityTestZonesActivator : IActivate<IRiderUnityTestsZone>, IActivateDynamic<IUnityShaderZone>
     {
-        bool IActivateDynamic<ILanguageHlslSupportZone>.ActivatorEnabled() => !PlatformUtil.IsRunningOnMono;
+        bool IActivateDynamic<IUnityShaderZone>.ActivatorEnabled() => !PlatformUtil.IsRunningOnMono;
     }
 
     [SetUpFixture]
-    public class TestEnvironment : ExtensionTestEnvironmentAssembly<IUnityTestsEnvZone>
+    public class TestEnvironment : ExtensionTestEnvironmentAssembly<IRiderUnityTestsEnvZone>
     {
         static TestEnvironment()
         {

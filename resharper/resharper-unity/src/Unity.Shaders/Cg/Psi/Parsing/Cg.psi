@@ -3,12 +3,12 @@ options
 // Parser options
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 // Parser class name and namespace
-  parserPackage="JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Gen";
+  parserPackage="JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Gen";
   parserClassName="CgParserGenerated";
 // Strongly type the lexer we're using. ILexer<int> is the caching lexer instance
   "lexerClassName"="JetBrains.ReSharper.Psi.Parsing.ILexer<int>";
 // FQN of (non-generated) class that provides messages for the parser
-  parserMessagesClass="JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.ParserMessages";
+  parserMessagesClass="JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.ParserMessages";
 // Parser, error messages + token bitsets target folder
   parserTargetSubdir="Parsing/Cg";
 // Don't generate a bitset unless there's 4 or more comparisons to be made
@@ -16,29 +16,29 @@ options
 // Composite node type/element generation options
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 // Existing language specific ITreeNode
-  "psiElementClassFQName"="JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree.ICgTreeNode";
+  "psiElementClassFQName"="JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree.ICgTreeNode";
 // Existing token type containing class + namespace
-  tokenTypePackageName="JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes";
+  tokenTypePackageName="JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodeTypes";
   tokenTypeClassName="CgTokenNodeTypes";
 // Set base index for generated (element, not token) node types. Defaults to 2000, tokens default to 1000
 // tokenTypeBaseIndex=2000;
 // Tree node interface namespace + target folder (also target folder for navigators + visitors)
-  psiInterfacePackageName="JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree";
+  psiInterfacePackageName="JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree";
   psiInterfacesTargetSubdir="Psi/Cg/Tree";
 // Tree node implementation namespace, base type and target folder
-  psiStubsPackageName="JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree.Impl";
+  psiStubsPackageName="JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree.Impl";
   psiStubsBaseClass="CgCompositeElement";
   psiStubsTargetSubdir="Psi/Cg/Tree/Impl";
 // Existing composite node type base class
   elementTypeBaseClass="CgCompositeNodeType";
 // Namespace for generating custom interface when `customInterface` option used
-  customInterfacePackage="JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree";
+  customInterfacePackage="JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree";
 // Any role used in this file that begins with this prefix must be defined in `ChildRole`
   publicChildRolePrefix="CG_";
 // Namespace and suffix for custom element instance implementation created by
 // node type when `customImpl` option is specfied.
 // Default suffix is `Impl`
-  customImplPackage="JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree.Impl";
+  customImplPackage="JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree.Impl";
   "customImplSuffix"="";
 // Required on. Changes behaviour of various things, e.g. public child role values based on prefix
   disableReflection;

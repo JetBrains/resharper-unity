@@ -2,7 +2,7 @@
 using JetBrains.Application;
 using JetBrains.ReSharper.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.ContextHighlighters
 {
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global - derived in Rider
     [ShellComponent]

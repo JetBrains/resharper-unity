@@ -1,13 +1,12 @@
 using System;
-using JetBrains.Annotations;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Daemon.CaretDependentFeatures;
 using JetBrains.ReSharper.Feature.Services.Contexts;
-using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
 using JetBrains.ReSharper.Feature.Services.MatchingBrace;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -15,22 +14,23 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
 using JetBrains.UI.RichText;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
+#nullable enable
+
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.ContextHighlighters
 {
     // Note that the ContainingBracesContextHighlighterBase base class is for matching
     // tokens that are children of a single element
     [ContainsContextConsumer]
     public class ShaderLabMatchingBraceContextHighlighter : MatchingBraceContextHighlighterBase<ShaderLabLanguage>
     {
-        [CanBeNull, AsyncContextConsumer]
-        public static Action ProcessDataContext(
-            [NotNull] Lifetime lifetime,
-            [NotNull, ContextKey(typeof(ContextHighlighterPsiFileView.ContextKey))]
-           IPsiDocumentRangeView psiDocumentRangeView,
-            [NotNull] InvisibleBraceHintManager invisibleBraceHintManager,
-            [NotNull] MatchingBraceSuggester matchingBraceSuggester,
-            [NotNull] MatchingBraceConsumerFactory consumerFactory,
-            [NotNull] HighlightingProlongedLifetime prolongedLifetime)
+        [AsyncContextConsumer]
+        public static Action? ProcessDataContext(
+            Lifetime lifetime,
+            [ContextKey(typeof(ContextHighlighterPsiFileView.ContextKey))] IPsiDocumentRangeView psiDocumentRangeView,
+            InvisibleBraceHintManager invisibleBraceHintManager,
+            MatchingBraceSuggester matchingBraceSuggester,
+            MatchingBraceConsumerFactory consumerFactory,
+            HighlightingProlongedLifetime prolongedLifetime)
         {
             var highlighter = new ShaderLabMatchingBraceContextHighlighter();
             return highlighter.ProcessDataContextImpl(lifetime, prolongedLifetime, psiDocumentRangeView,
@@ -52,10 +52,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
                 }
                 else
                 {
-                    consumer.ConsumeHighlighting(HighlightingAttributeIds.UNMATCHED_BRACE, selectedToken.GetDocumentEndOffset().ExtendLeft(1));
+                    consumer.ConsumeHighlighting(GeneralHighlightingAttributeIds.UNMATCHED_BRACE, selectedToken.GetDocumentEndOffset().ExtendLeft(1));
 
                     if (matchedNode != null)
-                        consumer.ConsumeHighlighting(HighlightingAttributeIds.UNMATCHED_BRACE, matchedNode.GetDocumentStartOffset().ExtendRight(1));
+                        consumer.ConsumeHighlighting(GeneralHighlightingAttributeIds.UNMATCHED_BRACE, matchedNode.GetDocumentStartOffset().ExtendRight(1));
                 }
             }
             else if (selectedTokenType == ShaderLabTokenType.STRING_LITERAL)
@@ -81,10 +81,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
                 }
                 else
                 {
-                    consumer.ConsumeHighlighting(HighlightingAttributeIds.UNMATCHED_BRACE, selectedToken.GetDocumentStartOffset().ExtendRight(1));
+                    consumer.ConsumeHighlighting(GeneralHighlightingAttributeIds.UNMATCHED_BRACE, selectedToken.GetDocumentStartOffset().ExtendRight(1));
 
                     if (matchedNode != null)
-                        consumer.ConsumeHighlighting(HighlightingAttributeIds.UNMATCHED_BRACE, matchedNode.GetDocumentEndOffset().ExtendLeft(1));
+                        consumer.ConsumeHighlighting(GeneralHighlightingAttributeIds.UNMATCHED_BRACE, matchedNode.GetDocumentEndOffset().ExtendLeft(1));
                 }
             }
             else if (selectedTokenType == ShaderLabTokenType.STRING_LITERAL)
@@ -138,14 +138,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.ContextHighlighters
                    && tokenType != ShaderLabTokenType.CG_PROGRAM;
         }
 
-        private RichTextBlock GetHintText(ITextControl textControl, ITreeNode lBraceNode)
+        private static RichTextBlock? GetHintText(ITextControl textControl, ITreeNode? lBraceNode)
         {
             if (lBraceNode == null || lBraceNode.GetTokenType() != ShaderLabTokenType.LBRACE)
                 return null;
 
             var parent = lBraceNode.Parent as IBlockValue;
-            var blockCommand = parent?.Parent as IBlockCommand;
-            return blockCommand != null ? MatchingBraceUtil.PrepareRichText(textControl, blockCommand, lBraceNode, true) : null;
+            return parent?.Parent is IBlockCommand blockCommand
+                ? MatchingBraceUtil.PrepareRichText(textControl, blockCommand, lBraceNode, true)
+                : null;
         }
     }
 }

@@ -2,7 +2,7 @@
 using JetBrains.ReSharper.Psi.Resources;
 using JetBrains.UI.Icons;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements
 {
     public class ShaderLabDeclaredElementType : DeclaredElementType
     {

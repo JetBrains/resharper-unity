@@ -1,10 +1,11 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.Cg.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi;
+﻿using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.ProjectModel;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.Cg.Psi.Parsing
 {
+    [RequireHlslSupport]    
     [TestUnity]
     [TestFileExtension(CgProjectFileType.GLSL_EXTENSION)]
     public class CgParserTests : ParserTestBase<CgLanguage>

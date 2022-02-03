@@ -3,9 +3,9 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Descriptions;
 using JetBrains.ReSharper.Feature.Services.UI;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon
 {
     [SolutionComponent]
     public class CgIdentifierTooltipProvider : IdentifierTooltipProvider<CgLanguage>

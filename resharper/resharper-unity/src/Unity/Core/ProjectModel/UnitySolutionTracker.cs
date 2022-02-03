@@ -10,15 +10,22 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
 {
     [SolutionComponent]
-    public class UnitySolutionTracker
+    public class UnitySolutionTracker : IUnityReferenceChangeHandler
     {
         private readonly ISolution mySolution;
 
         public readonly ViewableProperty<bool> IsUnityProjectFolder = new ViewableProperty<bool>();
         public readonly ViewableProperty<bool> IsUnityProject = new ViewableProperty<bool>();
         public readonly ViewableProperty<bool> IsUnityGeneratedProject = new ViewableProperty<bool>();
+        
+        // If you only want to be notified that we're a Unity solution, advise this.
+        // If all you're interested in is being notified that we're a Unity solution, advise this. If you need to know
+        // we're a Unity solution *and*/or know about Unity projects (and get a per-project lifetime), implement
+        // IUnityReferenceChangeHandler
+        public readonly ViewableProperty<bool> HasUnityReference = new ViewableProperty<bool>(false);
 
-        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime, bool inTests = false)
+        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker,
+            Lifetime lifetime, bool inTests = false)
         {
             mySolution = solution;
             if (inTests)
@@ -26,9 +33,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
                 IsUnityGeneratedProject.Value = false;
                 IsUnityProject.Value = false;
                 IsUnityProjectFolder.Value = false;
+                HasUnityReference.Value = false;
                 return;
             }
-
+            
             SetValues();
 
             fileSystemTracker.AdviseDirectoryChanges(lifetime, mySolution.SolutionDirectory.Combine(ProjectExtensions.AssetsFolder), false,
@@ -94,6 +102,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
         {
             var folder = solutionDir.CombineWithShortName(ProjectExtensions.LibraryFolder);
             return folder.IsAbsolute && folder.ExistsDirectory;
+        }
+
+        public void OnHasUnityReference()
+        {
+            // called once
+            HasUnityReference.Set(true);
+        }
+
+        public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
+        {
+            // do nothing
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi;
 using JetBrains.TextControl.DocumentMarkup;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon
 {
     // Highlighters define the look of a highlighting. They belong to a group, which is used to create a settings page
     [RegisterHighlighterGroup(GROUP_ID, "Cg/HLSL",

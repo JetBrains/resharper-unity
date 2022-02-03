@@ -1,7 +1,7 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
+﻿using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements
 {
     public class PropertyDeclaredElement : ShaderLabDeclaredElementBase, IPropertyDeclaredElement
     {

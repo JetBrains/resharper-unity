@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
@@ -18,6 +17,8 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
 {
@@ -41,7 +42,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
                 yield return guid;
         }
 
-        public override IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements, ReferenceSearcherParameters referenceSearcherParameters)
+        public override IDomainSpecificSearcher? CreateReferenceSearcher(
+            IDeclaredElementsSet elements, ReferenceSearcherParameters referenceSearcherParameters)
         {
             if (elements.Any(e => e is not AsmDefNameDeclaredElement))
                 return null;
@@ -61,9 +63,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
             return new AsmDefReferenceSearcher(elements, guids, referenceSearcherParameters);
         }
 
-        [CanBeNull]
-        private static string GetGuid(IDeclaredElement element, AsmDefCache asmDefCache,
-                                      MetaFileGuidCache metaFileGuidCache)
+        private static string? GetGuid(IDeclaredElement element, AsmDefCache asmDefCache,
+                                       MetaFileGuidCache metaFileGuidCache)
         {
             var asmDefLocation = asmDefCache.GetAsmDefLocationByAssemblyName(element.ShortName);
             if (asmDefLocation != null)
@@ -97,8 +98,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
 
         public bool ProcessProjectItem<TResult>(IPsiSourceFile sourceFile, IFindResultConsumer<TResult> consumer)
         {
-            if (!sourceFile.IsAsmDef() || sourceFile.GetPrimaryPsiFile() is not IJsonNewFile jsonNewFile)
+            if ((!sourceFile.IsAsmDef() && !sourceFile.IsAsmRef())
+                || sourceFile.GetPrimaryPsiFile() is not IJsonNewFile jsonNewFile)
+            {
                 return false;
+            }
             return ProcessElement(jsonNewFile, consumer);
         }
 

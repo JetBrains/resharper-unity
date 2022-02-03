@@ -1,6 +1,6 @@
 ﻿using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Tree
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree
 {
     public abstract class CgCompositeNodeType : CompositeNodeType
     {

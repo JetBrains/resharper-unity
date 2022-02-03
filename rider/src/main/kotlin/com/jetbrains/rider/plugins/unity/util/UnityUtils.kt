@@ -43,18 +43,23 @@ fun MutableList<String>.withProjectPath(project: Project) : MutableList<String> 
     return this
 }
 
-fun MutableList<String>.withBatchMode(project: Project) : MutableList<String> {
+fun MutableList<String>.withBatchMode(): MutableList<String> {
     this.add("-batchmode")
     return this
 }
 
-fun MutableList<String>.withRunTests(project: Project) : MutableList<String> {
+fun MutableList<String>.withRunTests(): MutableList<String> {
     this.add("-runTests")
     return this
 }
 
 fun MutableList<String>.withTestResults(project: Project) : MutableList<String> {
-    this.addAll(listOf("-testResults", project.solutionDirectory.resolve("Temp/results.xml").canonicalPath))
+    this.addAll(listOf("-testResults", "Logs/results.xml"))
+    return this
+}
+
+fun MutableList<String>.withTestPlatform() : MutableList<String> {
+    this.addAll(listOf("-testPlatform", "EditMode"))
     return this
 }
 
