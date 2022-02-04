@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 if (!myDeferredCacheController.CompletedOnce.Value)
                     return false;
 
-                var set = myReferenceSearcherParameters.OriginalElements.ToHashSet();
+                var set = (myReferenceSearcherParameters.OriginalElements ?? myElements.ToList()).ToHashSet();
                 foreach (var element in myElements)
                 {
                     if (element is IMethod || element is IProperty)
