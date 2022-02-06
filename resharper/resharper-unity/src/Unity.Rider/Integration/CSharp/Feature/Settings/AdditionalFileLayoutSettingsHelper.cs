@@ -53,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Set
             if (previousText != myDefaultWithRegions && previousText != myDefaultWithoutRegions &&
                 previousText != EmptyPattern)
             {
-                if (!myDialogHost.ShowYesNoMessageBox(
+                if (!MessageBox.ShowYesNo(
                     "You are about to replace the set of patterns with a default one." +
                     Environment.NewLine +
                     "This will remove all changes you might have made." + Environment.NewLine +
