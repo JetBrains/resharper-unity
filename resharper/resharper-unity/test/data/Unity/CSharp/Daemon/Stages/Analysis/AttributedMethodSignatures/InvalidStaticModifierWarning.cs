@@ -27,3 +27,17 @@ public class Class2
         return Selection.activeTransform != null;
     }
 }
+
+public class Class3
+{
+    [MenuItem("MyMenu/Log Selected Transform Name")]
+    bool LogSelectedTransformName()
+    {
+    }
+
+    [MenuItem("MyMenu/Log Selected Transform Name", false)]
+    bool ValidateLogSelectedTransformName()
+    {
+        return Selection.activeTransform != null;
+    }
+}
