@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         public const string AnimFileExtensionWithDot = ".anim";
 
         // Data files - does not include .meta
-        private static readonly string[] ourYamlDataFileExtensionsWithDot =
+        public static readonly string[] YamlDataFileExtensionsWithDot =
         {
             SceneFileExtensionWithDot,
             AssetFileExtensionWithDot,
@@ -32,16 +32,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             ControllerFileExtensionWithDot,
             AnimFileExtensionWithDot
         };
-
-        // All YAML files, including .meta
-        public static readonly string[] AllYamlFileExtensionsWithDot;
-
-        static UnityFileExtensions()
-        {
-            AllYamlFileExtensionsWithDot = new string[ourYamlDataFileExtensionsWithDot.Length + 1];
-            AllYamlFileExtensionsWithDot[0] = MetaFileExtensionWithDot;
-            Array.Copy(ourYamlDataFileExtensionsWithDot, 0, AllYamlFileExtensionsWithDot, 1, ourYamlDataFileExtensionsWithDot.Length);
-        }
 
         public static bool IsMeta(this IPath path) =>
             SimplePathEndsWith(path, MetaFileExtensionWithDot);
@@ -104,7 +94,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
         public static bool IsYamlDataFile(this IPath path)
         {
-            foreach (var extension in ourYamlDataFileExtensionsWithDot)
+            foreach (var extension in YamlDataFileExtensionsWithDot)
             {
                 if (SimplePathEndsWith(path, extension))
                     return true;
@@ -115,7 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
         public static bool IsYamlDataFile(this IPsiSourceFile sourceFile)
         {
-            foreach (var extension in ourYamlDataFileExtensionsWithDot)
+            foreach (var extension in YamlDataFileExtensionsWithDot)
             {
                 if (SourceFileNameEndsWith(sourceFile, extension))
                     return true;
