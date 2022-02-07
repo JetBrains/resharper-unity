@@ -111,8 +111,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             // Remember that we're run on pooled threads, so try to add to the concurrent dictionary. It doesn't matter
             // if another thread beats us.
             signatures = GetSignaturesFromRequiredSignatureAttribute(attributeTypeElement)
-                         ?? GetSignaturesFromKnownAttributes(methodDeclaration, attributeClrName, predefinedType);
+                         ?? GetSignaturesFromKnownAttributes(attributeClrName, predefinedType);
             if (signatures != null) myMethodSignatures.TryAdd(attributeClrName.GetPersistent(), signatures);
+            if (signatures == null) signatures = GetNonCacheableSignatures(attributeTypeElement, attributeClrName, predefinedType);
             return signatures;
         }
 
@@ -141,15 +142,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         }
 
         [CanBeNull]
-        private MethodSignature[] GetSignaturesFromKnownAttributes(IMethodDeclaration methodDeclaration,
-            IClrTypeName attributeClrName,
+        private MethodSignature[] GetSignaturesFromKnownAttributes(IClrTypeName attributeClrName,
             PredefinedType predefinedType)
         {
             if (ourKnownAttributes.Contains(attributeClrName))
             {
                 // All of our attributes require a static void method with no arguments, apart from a couple that are
                 // special cases
-                return GetSpecialCaseSignatures(methodDeclaration, attributeClrName, predefinedType)
+                return GetSpecialCaseSignatures(attributeClrName, predefinedType)
                        ?? new[] {GetStaticVoidMethodSignature(predefinedType)};
             }
 
@@ -157,23 +157,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         }
 
         [CanBeNull]
-        private MethodSignature[] GetSpecialCaseSignatures(IMethodDeclaration methodDeclaration,
+        private MethodSignature[] GetSpecialCaseSignatures(
             IClrTypeName attributeClrName, PredefinedType predefinedType)
         {
             if (Equals(attributeClrName, KnownTypes.OnOpenAssetAttribute))
                 return GetOnOpenAssetMethodSignature(predefinedType);
             if (Equals(attributeClrName, KnownTypes.PostProcessBuildAttribute))
                 return GetPostProcessBuildMethodSignature(predefinedType);
+            return null;
+        }
+        
+        [CanBeNull]
+        private MethodSignature[] GetNonCacheableSignatures(ITypeElement attributeTypeElement,
+            IClrTypeName attributeClrName, PredefinedType predefinedType)
+        {
             if (Equals(attributeClrName, KnownTypes.MenuItemAttribute))
-                return GetMenuItemMethodSignature(methodDeclaration);
+                return GetMenuItemMethodSignature();
             return null;
         }
 
-        private MethodSignature[] GetMenuItemMethodSignature(IMethodDeclaration methodDeclaration)
+        private MethodSignature[] GetMenuItemMethodSignature()
         {
-            var declaredElement = methodDeclaration.DeclaredElement;
-            if (declaredElement != null)
-                return new[] { new MethodSignature(declaredElement.ReturnType, true) };
+            // var declaredElement = methodDeclaration.DeclaredElement;
+            // if (declaredElement != null)
+            //     return new[] { new MethodSignature(declaredElement.ReturnType, true) };
             return null;
         }
 
