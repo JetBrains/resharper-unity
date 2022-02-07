@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util.dataStructures;
 using MethodSignature = JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api.MethodSignature;
@@ -69,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (methodDeclaration == null) return;
 
             var predefinedType = myPredefinedTypeCache.GetOrCreatePredefinedType(element.GetPsiModule());
-            var expectedMethodSignatures = GetExpectedMethodSignatures(attributeTypeElement, predefinedType);
+            var expectedMethodSignatures = GetExpectedMethodSignatures(attributeTypeElement, element, predefinedType);
             if (expectedMethodSignatures == null) return;
 
             if (expectedMethodSignatures.Length == 1)
@@ -91,6 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         [CanBeNull]
         private MethodSignature[] GetExpectedMethodSignatures(ITypeElement attributeTypeElement,
+            IAttribute attribute,
             PredefinedType predefinedType)
         {
             var attributeClrName = attributeTypeElement.GetClrName();
@@ -111,6 +113,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             signatures = GetSignaturesFromRequiredSignatureAttribute(attributeTypeElement)
                          ?? GetSignaturesFromKnownAttributes(attributeClrName, predefinedType);
             if (signatures != null) myMethodSignatures.TryAdd(attributeClrName.GetPersistent(), signatures);
+            else signatures = GetNonCacheableSignatures(attribute, attributeClrName, predefinedType);
             return signatures;
         }
 
@@ -154,12 +157,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         }
 
         [CanBeNull]
-        private MethodSignature[] GetSpecialCaseSignatures(IClrTypeName attributeClrName, PredefinedType predefinedType)
+        private MethodSignature[] GetSpecialCaseSignatures(
+            IClrTypeName attributeClrName, PredefinedType predefinedType)
         {
             if (Equals(attributeClrName, KnownTypes.OnOpenAssetAttribute))
                 return GetOnOpenAssetMethodSignature(predefinedType);
             if (Equals(attributeClrName, KnownTypes.PostProcessBuildAttribute))
                 return GetPostProcessBuildMethodSignature(predefinedType);
+            return null;
+        }
+        
+        [CanBeNull]
+        private MethodSignature[] GetNonCacheableSignatures(IAttribute attribute,
+            IClrTypeName attributeClrName, PredefinedType predefinedType)
+        {
+            if (Equals(attributeClrName, KnownTypes.MenuItemAttribute))
+                return GetMenuItemMethodSignature(attribute, predefinedType);
+            return null;
+        }
+
+        private MethodSignature[] GetMenuItemMethodSignature(IAttribute attribute, PredefinedType predefinedType)
+        {
+            if (attribute.Arguments.Count <= 1) // MenuItem("text") 
+                return new[] { new MethodSignature(predefinedType.Void, true) };
+            var secondParameter = attribute.Arguments[1].FirstChild?.FirstChild;
+            if (secondParameter != null)
+            {
+                // MenuItem("text", true)
+                if (secondParameter.NodeType.Equals(CSharpTokenType.TRUE_KEYWORD))
+                    return new[] { new MethodSignature(predefinedType.Bool, true) };
+                // MenuItem("text", false)
+                if (secondParameter.NodeType.Equals(CSharpTokenType.FALSE_KEYWORD))
+                    return new[] { new MethodSignature(predefinedType.Void, true) };
+            }
+                
             return null;
         }
 

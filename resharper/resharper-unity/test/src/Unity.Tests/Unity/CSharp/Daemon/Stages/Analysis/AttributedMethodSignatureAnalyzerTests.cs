@@ -15,5 +15,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
         [Test] public void TestDidReloadScriptsSignature() { DoNamedTest2(); }
         [Test] public void TestPostProcessSceneAttributeSignature() { DoNamedTest2(); }
         [Test] public void TestPostProcessBuildAttributeSignature() { DoNamedTest2(); }
+        [Test] public void TestInvalidStaticModifierWarning() { DoNamedTest2(); }
     }
 }

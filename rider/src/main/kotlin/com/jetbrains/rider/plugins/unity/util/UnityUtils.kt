@@ -23,7 +23,7 @@ fun getUnityArgs(project: Project):MutableList<String>
 }
 
 fun MutableList<String>.withRiderPath() : MutableList<String> {
-    val riderPath = Restarter.getIdeStarter()?.toAbsolutePath()?.toString()
+    val riderPath = Restarter.getIdeStarter()?.toFile()?.canonicalPath
     if (riderPath != null) {
         this.addAll(mutableListOf("-riderPath", riderPath))
     }
