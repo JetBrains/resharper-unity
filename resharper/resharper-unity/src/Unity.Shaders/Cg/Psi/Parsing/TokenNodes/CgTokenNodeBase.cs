@@ -1,6 +1,5 @@
 using System.Text;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;

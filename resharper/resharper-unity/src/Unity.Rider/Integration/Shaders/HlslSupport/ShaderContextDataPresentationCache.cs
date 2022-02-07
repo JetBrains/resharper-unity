@@ -9,7 +9,6 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
