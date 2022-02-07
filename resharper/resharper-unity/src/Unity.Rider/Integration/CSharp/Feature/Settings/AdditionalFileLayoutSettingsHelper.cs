@@ -53,12 +53,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Set
             if (previousText != myDefaultWithRegions && previousText != myDefaultWithoutRegions &&
                 previousText != EmptyPattern)
             {
-                // todo: restore
-                // if (!myDialogHost.ShowYesNoMessageBox(
-                //     "You are about to replace the set of patterns with a default one." +
-                //     Environment.NewLine +
-                //     "This will remove all changes you might have made." + Environment.NewLine +
-                //     "Do you want to proceed?"))
+                if (!MessageBox.ShowYesNo(
+                    "You are about to replace the set of patterns with a default one." +
+                    Environment.NewLine +
+                    "This will remove all changes you might have made." + Environment.NewLine +
+                    "Do you want to proceed?"))
                 {
                     return;
                 }
