@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util.dataStructures;
 using MethodSignature = JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api.MethodSignature;
@@ -35,7 +36,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             // No RequiredSignature (as of Unity 2020.2)
             KnownTypes.InitializeOnLoadMethodAttribute,
             KnownTypes.RuntimeInitializeOnLoadMethodAttribute,
-            KnownTypes.MenuItemAttribute,
 
             // These attributes had RequiredSignature added in 2018.3
             KnownTypes.DidReloadScripts,
@@ -70,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (methodDeclaration == null) return;
 
             var predefinedType = myPredefinedTypeCache.GetOrCreatePredefinedType(element.GetPsiModule());
-            var expectedMethodSignatures = GetExpectedMethodSignatures(methodDeclaration, attributeTypeElement, predefinedType);
+            var expectedMethodSignatures = GetExpectedMethodSignatures(attributeTypeElement, element, predefinedType);
             if (expectedMethodSignatures == null) return;
 
             if (expectedMethodSignatures.Length == 1)
@@ -91,8 +91,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         }
 
         [CanBeNull]
-        private MethodSignature[] GetExpectedMethodSignatures(IMethodDeclaration methodDeclaration,
-            ITypeElement attributeTypeElement,
+        private MethodSignature[] GetExpectedMethodSignatures(ITypeElement attributeTypeElement,
+            IAttribute attribute,
             PredefinedType predefinedType)
         {
             var attributeClrName = attributeTypeElement.GetClrName();
@@ -113,7 +113,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             signatures = GetSignaturesFromRequiredSignatureAttribute(attributeTypeElement)
                          ?? GetSignaturesFromKnownAttributes(attributeClrName, predefinedType);
             if (signatures != null) myMethodSignatures.TryAdd(attributeClrName.GetPersistent(), signatures);
-            if (signatures == null) signatures = GetNonCacheableSignatures(attributeTypeElement, attributeClrName, predefinedType);
+            if (signatures == null) signatures = GetNonCacheableSignatures(attribute, attributeClrName, predefinedType);
             return signatures;
         }
 
@@ -168,19 +168,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         }
         
         [CanBeNull]
-        private MethodSignature[] GetNonCacheableSignatures(ITypeElement attributeTypeElement,
+        private MethodSignature[] GetNonCacheableSignatures(IAttribute attribute,
             IClrTypeName attributeClrName, PredefinedType predefinedType)
         {
             if (Equals(attributeClrName, KnownTypes.MenuItemAttribute))
-                return GetMenuItemMethodSignature();
+                return GetMenuItemMethodSignature(attribute, predefinedType);
             return null;
         }
 
-        private MethodSignature[] GetMenuItemMethodSignature()
+        private MethodSignature[] GetMenuItemMethodSignature(IAttribute attribute, PredefinedType predefinedType)
         {
-            // var declaredElement = methodDeclaration.DeclaredElement;
-            // if (declaredElement != null)
-            //     return new[] { new MethodSignature(declaredElement.ReturnType, true) };
+            if (attribute.Arguments.Count < 2) 
+                return new[] { new MethodSignature(predefinedType.Void, true) };
+            var secondParameter = attribute.Arguments[1]?.FirstChild?.FirstChild;
+            if (secondParameter != null)
+            {
+                if (secondParameter.NodeType.Equals(CSharpTokenType.TRUE_KEYWORD))
+                    return new[] { new MethodSignature(predefinedType.Bool, true) };
+                if (secondParameter.NodeType.Equals(CSharpTokenType.FALSE_KEYWORD))
+                    return new[] { new MethodSignature(predefinedType.Void, true) };
+            }
+                
             return null;
         }
 
