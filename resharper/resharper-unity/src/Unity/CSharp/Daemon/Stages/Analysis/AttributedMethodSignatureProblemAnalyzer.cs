@@ -113,7 +113,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             signatures = GetSignaturesFromRequiredSignatureAttribute(attributeTypeElement)
                          ?? GetSignaturesFromKnownAttributes(attributeClrName, predefinedType);
             if (signatures != null) myMethodSignatures.TryAdd(attributeClrName.GetPersistent(), signatures);
-            if (signatures == null) signatures = GetNonCacheableSignatures(attribute, attributeClrName, predefinedType);
+            else signatures = GetNonCacheableSignatures(attribute, attributeClrName, predefinedType);
             return signatures;
         }
 
@@ -178,13 +178,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         private MethodSignature[] GetMenuItemMethodSignature(IAttribute attribute, PredefinedType predefinedType)
         {
-            if (attribute.Arguments.Count < 2) 
+            if (attribute.Arguments.Count <= 1) // MenuItem("text") 
                 return new[] { new MethodSignature(predefinedType.Void, true) };
-            var secondParameter = attribute.Arguments[1]?.FirstChild?.FirstChild;
+            var secondParameter = attribute.Arguments[1].FirstChild?.FirstChild;
             if (secondParameter != null)
             {
+                // MenuItem("text", true)
                 if (secondParameter.NodeType.Equals(CSharpTokenType.TRUE_KEYWORD))
                     return new[] { new MethodSignature(predefinedType.Bool, true) };
+                // MenuItem("text", false)
                 if (secondParameter.NodeType.Equals(CSharpTokenType.FALSE_KEYWORD))
                     return new[] { new MethodSignature(predefinedType.Void, true) };
             }
