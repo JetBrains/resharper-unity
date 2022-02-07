@@ -241,11 +241,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             myPackageManager.Packages.AddRemove.Advise_NoAcknowledgement(myLifetime, args =>
             {
                 var packageData = args.Value.Value;
-                if (packageData.PackageFolder == null || packageData.PackageFolder.IsEmpty ||
-                    myModuleFactory.PsiModule == null)
-                {
+                if (packageData.PackageFolder == null || packageData.PackageFolder.IsEmpty)
                     return;
-                }
 
                 if (args.Action == AddRemove.Add)
                 {
@@ -520,10 +517,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         {
             // For project model access
             myLocks.AssertReadAccessAllowed();
-
-            var module = myModuleFactory.PsiModule;
-            if (module == null)
-                return;
 
             // Note that we watch for changes in all folders in a Unity solution - Assets and packages, wherever they
             // are - Packages, Library/PackageCache, file:, etc. Any package folder might contain projects, even read
