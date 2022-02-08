@@ -8,6 +8,8 @@ using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.TreeBuilder;
 using JetBrains.Text;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 {
   // General indent error handling tactic:
@@ -18,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
   // or break out of parsing that node and potentially be out of sync for the rest of the file
   internal class YamlTreeStructureBuilder : TreeStructureBuilderBase, IPsiBuilderTokenFactory
   {
-    private static readonly NodeTypeSet ourNsPlainInStopTokens = new NodeTypeSet(
+    private static readonly NodeTypeSet ourNsPlainInStopTokens = new(
       YamlTokenType.COLON,
       YamlTokenType.COMMA,
       YamlTokenType.LBRACE,
@@ -69,10 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       return tokenNodeType.Create(buffer, new TreeOffset(startOffset), new TreeOffset(endOffset));
     }
 
-    protected override string GetExpectedMessage(string name)
-    {
-      return ParserMessages.GetExpectedMessage(name);
-    }
+    protected override string GetExpectedMessage(string name) => ParserMessages.GetExpectedMessage(name);
 
     public void ParseFile()
     {
@@ -169,17 +168,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     private void ParseChameleonDocumentBody()
     {
       var mark = MarkNoSkipWhitespace();
-
-      // TODO: We need a better API than this
-      // We advance through the lexer once, roll back and then AlterToken will do it all again. The lexer is cached, so
-      // it's not that bad, but it would be better to have an overload of AlterToken that can avoid it
       var mark2 = MarkNoSkipWhitespace();
       while (!myBuilder.Eof() && !IsDocumentEnd(GetTokenTypeNoSkipWhitespace()))
         Advance();
-      var currentLexeme = myBuilder.GetCurrentLexeme();
-      myBuilder.RollbackTo(mark2);
-      var count = currentLexeme - myBuilder.GetCurrentLexeme();
-      myBuilder.AlterToken(YamlTokenType.CHAMELEON, count);
+      myBuilder.AlterToken(mark2, YamlTokenType.CHAMELEON);
 
       Done(mark, YamlChameleonElementTypes.CHAMELEON_DOCUMENT_BODY);
     }
@@ -220,10 +212,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     // NOTE! This method is not guaranteed to consume any tokens! Protect against endless loops!
     // [196] s-l+block-node(n,c)
     [MustUseReturnValue]
-    private bool TryParseBlockNode(int expectedIndent, bool isBlockIn)
-    {
-      return TryParseBlockInBlock(expectedIndent, isBlockIn) || TryParseFlowInBlock(expectedIndent);
-    }
+    private bool TryParseBlockNode(int expectedIndent, bool isBlockIn) =>
+      TryParseBlockInBlock(expectedIndent, isBlockIn) || TryParseFlowInBlock(expectedIndent);
 
     private void ParseBlockIndented(int expectedIndent, bool isBlockIn)
     {
@@ -235,10 +225,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     }
 
     // [198] s-l+block-in-block(n, c)
-    private bool TryParseBlockInBlock(int expectedIndent, bool isBlockIn)
-    {
-      return TryParseBlockScalar(expectedIndent) || TryParseBlockCollection(expectedIndent, isBlockIn);
-    }
+    private bool TryParseBlockInBlock(int expectedIndent, bool isBlockIn) =>
+      TryParseBlockScalar(expectedIndent) || TryParseBlockCollection(expectedIndent, isBlockIn);
 
     // [199] s-l+block-scalar(n, c)
     private bool TryParseBlockScalar(int expectedIndent)
@@ -505,10 +493,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     }
 
     [MustUseReturnValue]
-    private bool TryParseBlockMapEntry(int expectedIndent)
-    {
-      return TryParseBlockMapExplicitEntry(expectedIndent) || TryParseBlockMapImplicitEntry(expectedIndent);
-    }
+    private bool TryParseBlockMapEntry(int expectedIndent) =>
+      TryParseBlockMapExplicitEntry(expectedIndent) || TryParseBlockMapImplicitEntry(expectedIndent);
 
     [MustUseReturnValue]
     private bool TryParseBlockMapExplicitEntry(int expectedIndent)
@@ -562,7 +548,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         {
           var valueMark = MarkNoSkipWhitespace();
           Advance();
-          myBuilder.Done(valueMark, YamlChameleonElementTypes.MAP_VALUE_CHAMELEON, 
+          myBuilder.Done(valueMark, YamlChameleonElementTypes.MAP_VALUE_CHAMELEON,
             new ContentContext(myCurrentLineIndent, ((YamlTokenType.ChameleonTokenNodeType)currentToken).LexerIndent, expectedIndent));
         }
         else if (!myBuilder.Eof())
@@ -573,7 +559,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
             Done(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
             ParseComments();
           }
-          
+
           Done(contentMark, ElementType.CONTENT_NODE);
         }
 
@@ -593,16 +579,14 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       if (!TryParseBlockNode(expectedIndent, false))
       {
         while (!myBuilder.Eof())
-        {
           Advance();
-        }   
         myBuilder.Error(mark, "Unexpected content");
       }
       else
       {
         Done(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
         ParseComments();
-        
+
         if (!myBuilder.Eof())
         {
           var errorMark = MarkNoSkipWhitespace();
@@ -615,10 +599,9 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         }
 
         Done(mark, ElementType.CONTENT_NODE);
-        
       }
     }
-    
+
     private bool TryParseCompactNotation(int expectedIndent)
     {
       var mark = MarkNoSkipWhitespace();
@@ -765,8 +748,9 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       // --- !u!4 &154806035 stripped
       // Transform:
       //   m_PrefabParentObject: ...
-      if (GetTokenTypeNoSkipWhitespace().IsWhitespace && IsPlainScalarStartToken(LookAheadNoSkipWhitespaces(1)) &&
-          CompareLookAheadText(1, "stripped"))
+      if (GetTokenTypeNoSkipWhitespace()?.IsWhitespace == true
+          && IsPlainScalarStartToken(LookAheadNoSkipWhitespaces(1))
+          && CompareLookAheadText(1, "stripped"))
       {
         Advance(); // <whitespace>
         Advance(); // stripped
@@ -861,8 +845,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       // Make sure we don't try to match a primary tag handle followed by ns-plain. E.g. `!foo`
       var tt = GetTokenTypeNoSkipWhitespace();
       var la = LookAheadNoSkipWhitespaces(1);
-      if (tt != null && tt.IsWhitespace || ((tt == YamlTokenType.NS_WORD_CHARS || tt == YamlTokenType.NS_TAG_CHARS) &&
-                              la != YamlTokenType.BANG))
+      if (tt is { IsWhitespace: true } ||
+          ((tt == YamlTokenType.NS_WORD_CHARS || tt == YamlTokenType.NS_TAG_CHARS) && la != YamlTokenType.BANG))
       {
         return ElementType.PRIMARY_TAG_HANDLE;
       }
@@ -914,7 +898,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         tt = GetTokenTypeNoSkipWhitespace();
       }
 
-      CompositeNodeType elementType = null;
+      CompositeNodeType? elementType = null;
       if (tt == YamlTokenType.LBRACK)
         elementType = ParseFlowSequence(expectedIndent);
       else if (tt == YamlTokenType.LBRACE)
@@ -1188,10 +1172,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
       // Eat all tokens until the indent is decreased
       var tt = GetTokenTypeNoSkipWhitespace();
-
-      var stopTokens = new NodeTypeSet();
-      if (tt == YamlTokenType.NS_PLAIN_ONE_LINE_IN)
-        stopTokens = ourNsPlainInStopTokens;
+      var stopTokens = tt == YamlTokenType.NS_PLAIN_ONE_LINE_IN ? ourNsPlainInStopTokens : NodeTypeSet.Empty;
 
       while (!myBuilder.Eof() && !stopTokens[tt])
       {
@@ -1221,7 +1202,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       return ElementType.PLAIN_SCALAR_NODE;
     }
 
-    private bool IsPlainScalarStartToken(TokenNodeType tt)
+    private bool IsPlainScalarStartToken(TokenNodeType? tt)
     {
       if (myExpectImplicitKey)
         return tt == YamlTokenType.NS_PLAIN_ONE_LINE_IN || tt == YamlTokenType.NS_PLAIN_ONE_LINE_OUT;
@@ -1259,12 +1240,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
     // ReSharper disable once UnusedMember.Local
     [Obsolete("Skips whitespace. Be explicit and call GetTokenTypeNoSkipWhitespace", true)]
-    private new TokenNodeType GetTokenType()
-    {
+    private new TokenNodeType GetTokenType() =>
       throw new InvalidOperationException("Do not call - be explicit about whitespace");
-    }
 
-    private TokenNodeType GetTokenTypeNoSkipWhitespace()
+    private TokenNodeType? GetTokenTypeNoSkipWhitespace()
     {
       // this.GetTokenType() calls SkipWhitespace() first
       return myBuilder.GetTokenType();
@@ -1289,17 +1268,11 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
     // ReSharper disable once UnusedMember.Local
     [Obsolete("Skips whitespace. Be explicit and call MarkSkipWhitespace", true)]
-    private new int Mark()
-    {
-      throw new InvalidOperationException("Do not call Mark - be explicit about whitespace");
-    }
+    private new int Mark() => throw new InvalidOperationException("Do not call Mark - be explicit about whitespace");
 
     // ReSharper disable once UnusedMember.Local
     [MustUseReturnValue]
-    private int MarkSkipWhitespace()
-    {
-      return base.Mark();
-    }
+    private int MarkSkipWhitespace() => base.Mark();
 
     [MustUseReturnValue]
     private int MarkNoSkipWhitespace()
@@ -1309,7 +1282,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     }
 
 
-    private TokenNodeType LookAheadNextSignificantToken()
+    private TokenNodeType? LookAheadNextSignificantToken()
     {
       var tt = GetTokenTypeNoSkipWhitespace();
       var i = 1;
@@ -1319,10 +1292,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     }
 
 
-    private bool CompareLookAheadText(int index, string text)
-    {
-      return myBuilder.CompareTokenText(myBuilder.GetCurrentLexeme() + index, text);
-    }
+    private bool CompareLookAheadText(int index, string text) =>
+      myBuilder.CompareTokenText(myBuilder.GetCurrentLexeme() + index, text);
 
 
     // According to the spec:
@@ -1381,10 +1352,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
     // We don't care about the final indent. The next construct will have
     // to assert it itself
-    private void ParseTrailingCommentLines()
-    {
-      _EatWhitespaceAndIndent();
-    }
+    private void ParseTrailingCommentLines() => _EatWhitespaceAndIndent();
 
     // s-indent(n)
     // Note that s-indent(m) ("for some auto-detected m") needs to be auto-detected first
@@ -1422,7 +1390,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       while (!myBuilder.Eof())
       {
         var tt = GetTokenTypeNoSkipWhitespace();
-        if (tt == YamlTokenType.NEW_LINE || !tt.IsWhitespace)
+        if (tt == YamlTokenType.NEW_LINE || tt?.IsWhitespace == false)
           return;
 
         Advance();
@@ -1476,10 +1444,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       return !IsWhitespaceNewLineIndentOrComment() || TryParseSeparationSpaceWithoutRollback(expectedIndent);
     }
 
-    private void SkipLeadingWhitespace()
-    {
-      _EatWhitespaceAndIndent();
-    }
+    private void SkipLeadingWhitespace() => _EatWhitespaceAndIndent();
 
     // If you're calling this, you're probably calling the wrong method
     private void _EatWhitespaceAndIndent()
@@ -1502,29 +1467,23 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       while (!myBuilder.Eof())
       {
         var tt = GetTokenTypeNoSkipWhitespace();
-        if (tt == YamlTokenType.NEW_LINE || (!tt.IsWhitespace && !tt.IsComment))
+        if (tt == YamlTokenType.NEW_LINE || tt is { IsWhitespace: false, IsComment: false })
           return;
 
         Advance();
       }
     }
 
-    private bool IsDoubleQuoted(TokenNodeType tt)
-    {
-      return tt == YamlTokenType.C_DOUBLE_QUOTED_MULTI_LINE || tt == YamlTokenType.C_DOUBLE_QUOTED_SINGLE_LINE;
-    }
+    private static bool IsDoubleQuoted(TokenNodeType? tt) =>
+      tt == YamlTokenType.C_DOUBLE_QUOTED_MULTI_LINE || tt == YamlTokenType.C_DOUBLE_QUOTED_SINGLE_LINE;
 
-    private bool IsSingleQuoted(TokenNodeType tt)
-    {
-      return tt == YamlTokenType.C_SINGLE_QUOTED_MULTI_LINE || tt == YamlTokenType.C_SINGLE_QUOTED_SINGLE_LINE;
-    }
+    private static bool IsSingleQuoted(TokenNodeType? tt) =>
+      tt == YamlTokenType.C_SINGLE_QUOTED_MULTI_LINE || tt == YamlTokenType.C_SINGLE_QUOTED_SINGLE_LINE;
 
-    private bool IsReservedIndicator(TokenNodeType tt)
-    {
-      return tt == YamlTokenType.AT || tt == YamlTokenType.BACKTICK;
-    }
+    private static bool IsReservedIndicator(TokenNodeType? tt) =>
+      tt == YamlTokenType.AT || tt == YamlTokenType.BACKTICK;
 
-    private bool IsDocumentEnd(TokenNodeType tt)
+    private static bool IsDocumentEnd(TokenNodeType? tt)
     {
       // DIRECTIVES_END means the start of the next document
       return tt == YamlTokenType.DOCUMENT_END || tt == YamlTokenType.DIRECTIVES_END;
