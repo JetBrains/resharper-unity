@@ -28,15 +28,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         public IExternalPsiSourceFile CreateExternalPsiSourceFile(UnityExternalFilesPsiModule psiModule,
                                                                   VirtualFileSystemPath path,
                                                                   ProjectFileType projectFileType,
-                                                                  IPsiSourceFileProperties properties)
+                                                                  IPsiSourceFileProperties properties,
+                                                                  CachedFileSystemData fileSystemData)
         {
-            var file = new UnityExternalPsiSourceFile(path, psiModule, projectFileType,
-                file => psiModule.ContainsPath(file.Location), _ => properties,
+            return new UnityExternalPsiSourceFile(path, psiModule, projectFileType,
+                file1 => psiModule.ContainsPath(file1.Location), _ => properties,
                 myProjectFileExtensions, myProjectFileTypeCoordinator, myDocumentManager,
-                UniversalModuleReferenceContext.Instance);
-            // Prime the file system cache
-            file.GetCachedFileSystemData();
-            return file;
+                UniversalModuleReferenceContext.Instance, fileSystemData);
         }
     }
 }

@@ -21,9 +21,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                                           IProjectFileExtensions projectFileExtensions,
                                           PsiProjectFileTypeCoordinator projectFileTypeCoordinator,
                                           DocumentManager documentManager,
-                                          IModuleReferenceResolveContext resolveContext)
+                                          IModuleReferenceResolveContext resolveContext,
+                                          CachedFileSystemData fileSystemData)
             : base(projectFileExtensions, projectFileTypeCoordinator, module, path, validityCheck, propertiesFactory,
-                documentManager, resolveContext)
+                documentManager, resolveContext, fileSystemData)
         {
             LanguageType = projectFileType;
         }

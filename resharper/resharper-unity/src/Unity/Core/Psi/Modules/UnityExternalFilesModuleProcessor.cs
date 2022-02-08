@@ -11,7 +11,6 @@ using JetBrains.DataFlow;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.Impl;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -34,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
     [SolutionComponent]
     public class UnityExternalFilesModuleProcessor : IChangeProvider, IUnityReferenceChangeHandler
     {
-        private const ulong AssetFileCheckSizeThreshold = 20 * (1024 * 1024); // 20 MB
+        private const long AssetFileCheckSizeThreshold = 20 * (1024 * 1024); // 20 MB
 
         private readonly Lifetime myLifetime;
         private readonly ILogger myLogger;
@@ -142,9 +141,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
                 Assertion.AssertNotNull(myModuleFactory.PsiModule);
 
-                // Create the source file and add it to the change builder. Normal files are explicitly added to the
-                // module by FlushChanges, which doesn't get called in this scenario. Do it here.
-                var sourceFile = AddExternalPsiSourceFile(builder, projectFile.Location, projectFile.LanguageType, isUserEditable);
+                // Create the source file and add it to the change builder. In a bulk scenario, we use the contents of
+                // the builder to FlushChanges and update the module, but this isn't our builder, so update the module
+                // directly. Creating a new instance of CachedFileSystemData will hit the disk, but that's ok for a
+                // single file.
+                var fileSystemData = new CachedFileSystemData(projectFile.Location);
+                var sourceFile = AddExternalPsiSourceFile(builder, projectFile.Location, projectFile.LanguageType,
+                    fileSystemData, isUserEditable);
                 myModuleFactory.PsiModule.Add(projectFile.Location, sourceFile, null);
             }
         }
@@ -318,7 +321,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
                             var isUserEditable = IsUserEditable(itemChange.OldLocation, out var isKnownExternalFile);
                             if (isKnownExternalFile)
-                                AddOrUpdateExternalPsiSourceFile(builder, itemChange.OldLocation, projectFile.LanguageType, isUserEditable);
+                            {
+                                AddOrUpdateExternalPsiSourceFile(builder, itemChange.OldLocation,
+                                    projectFile.LanguageType, isUserEditable);
+                            }
                         }
                     }
                 });
@@ -353,18 +359,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             myLogger.Verbose("Adding/updating PSI source files for {0} {1} external files", files.Count, kind);
 
             foreach (var file in files)
-                AddOrUpdateExternalPsiSourceFile(builder, file.Path, file.ProjectFileType, file.IsUserEditable);
+            {
+                AddOrUpdateExternalPsiSourceFile(builder, file.Path, file.ProjectFileType, file.IsUserEditable,
+                    file.FileSystemData);
+            }
         }
 
-        private void AddOrUpdateExternalPsiSourceFile(PsiModuleChangeBuilder builder, VirtualFileSystemPath path,
-                                                      ProjectFileType projectFileType, bool isUserEditable)
+        // Note that it is better to pass null for fileSystemData than to create your own instance. If we're updating,
+        // we'll refresh in place. If we're adding a new file, we'll create fileSystemData if it's missing
+        private void AddOrUpdateExternalPsiSourceFile(PsiModuleChangeBuilder builder,
+                                                      VirtualFileSystemPath path,
+                                                      ProjectFileType projectFileType,
+                                                      bool isUserEditable,
+                                                      CachedFileSystemData? fileSystemData = null)
         {
-            if (!UpdateExternalPsiSourceFile(builder, path))
-                AddExternalPsiSourceFile(builder, path, projectFileType, isUserEditable);
+            if (!UpdateExternalPsiSourceFile(builder, path, fileSystemData))
+            {
+                fileSystemData ??= new CachedFileSystemData(path);
+                AddExternalPsiSourceFile(builder, path, projectFileType, fileSystemData, isUserEditable);
+            }
         }
 
-        private IPsiSourceFile AddExternalPsiSourceFile(PsiModuleChangeBuilder builder, VirtualFileSystemPath path,
-                                                        ProjectFileType projectFileType, bool isUserEditable)
+        private IPsiSourceFile AddExternalPsiSourceFile(PsiModuleChangeBuilder builder,
+                                                        VirtualFileSystemPath path,
+                                                        ProjectFileType projectFileType,
+                                                        CachedFileSystemData fileSystemData,
+                                                        bool isUserEditable)
         {
             // Daemon processes usually check IsGeneratedFile or IsNonUserFile before running. We treat assets as
             // generated, and asmdef files as not generated (yes they're generated by the UI, but we also expect the
@@ -383,20 +403,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 : new UnityExternalFileProperties(true, false);
 
             var sourceFile = myPsiSourceFileFactory.CreateExternalPsiSourceFile(myModuleFactory.PsiModule, path,
-                projectFileType, properties);
+                projectFileType, properties, fileSystemData);
             builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Added);
 
             return sourceFile;
         }
 
-        private bool UpdateExternalPsiSourceFile(PsiModuleChangeBuilder builder, VirtualFileSystemPath path)
+        private bool UpdateExternalPsiSourceFile(PsiModuleChangeBuilder builder,
+                                                 VirtualFileSystemPath path,
+                                                 CachedFileSystemData? fileSystemData = null)
         {
             var sourceFile = GetExternalPsiSourceFile(path);
             if (sourceFile != null)
             {
-                // Make sure we update the cached file system data, or all of the ICache implementations will think the
-                // file is already up to date
-                (sourceFile as PsiSourceFileFromPath)?.GetCachedFileSystemData().Refresh(path);
+                if (sourceFile is IPsiSourceFileWithLocation sourceFileWithLocation)
+                {
+                    // Make sure we update the cached file system data, or all of the ICache implementations will think
+                    // the file is already up to date. Refreshing the existing file system data will hit the disk, so
+                    // avoid it if the data is already available. If the data is not available, pass null, and we'll
+                    // refresh the existing data in place without another allocation
+                    var existingFileSystemData = sourceFileWithLocation.GetCachedFileSystemData();
+                    if (fileSystemData != null)
+                    {
+                        existingFileSystemData.FileAttributes = fileSystemData.FileAttributes;
+                        existingFileSystemData.FileExists = fileSystemData.FileExists;
+                        existingFileSystemData.FileLength = fileSystemData.FileLength;
+                        existingFileSystemData.LastWriteTimeUtc = fileSystemData.LastWriteTimeUtc;
+                    }
+                    else
+                        existingFileSystemData.Load(path);
+                }
+
                 builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Modified);
                 return true;
             }
@@ -424,37 +461,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     fileType = UnityExternalFilesFileSizeLogContributor.FileType.Scene;
 
                 if (fileType.HasValue)
-                    myUsageStatistics.AddStatistic(fileType.Value, externalFile.Length, externalFile.IsUserEditable);
+                {
+                    myUsageStatistics.AddStatistic(fileType.Value, externalFile.FileSystemData.FileLength,
+                        externalFile.IsUserEditable);
+                }
             }
 
             foreach (var externalFile in externalFiles.MetaFiles)
             {
                 myUsageStatistics.AddStatistic(UnityExternalFilesFileSizeLogContributor.FileType.Meta,
-                    externalFile.Length, externalFile.IsUserEditable);
+                    externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
 
             foreach (var externalFile in externalFiles.AsmDefFiles)
             {
                 myUsageStatistics.AddStatistic(UnityExternalFilesFileSizeLogContributor.FileType.AsmDef,
-                    externalFile.Length, externalFile.IsUserEditable);
+                    externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
 
             foreach (var externalFile in externalFiles.AsmRefFiles)
             {
                 myUsageStatistics.AddStatistic(UnityExternalFilesFileSizeLogContributor.FileType.AsmRef,
-                    externalFile.Length, externalFile.IsUserEditable);
+                    externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
 
             foreach (var externalFile in externalFiles.KnownBinaryAssetFiles)
             {
                 myUsageStatistics.AddStatistic(UnityExternalFilesFileSizeLogContributor.FileType.KnownBinary,
-                    externalFile.Length, externalFile.IsUserEditable);
+                    externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
 
             foreach (var externalFile in externalFiles.ExcludedByNameAssetFiles)
             {
                 myUsageStatistics.AddStatistic(UnityExternalFilesFileSizeLogContributor.FileType.ExcludedByName,
-                    externalFile.Length, externalFile.IsUserEditable);
+                    externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
         }
 
@@ -484,7 +524,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
             // If a .asset file is over a certain size, sniff the header to see if it's binary or YAML. Otherwise, we
             // treat the files as text
-            var fileLength = (ulong) path.GetFileLength();
+            var fileLength = path.GetFileLength();
             return fileLength > AssetFileCheckSizeThreshold && path.IsAsset() && !path.SniffYamlHeader();
         }
 
@@ -626,7 +666,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         public struct ExternalFile
         {
             public readonly VirtualFileSystemPath Path;
-            public readonly ulong Length;
+            public readonly CachedFileSystemData FileSystemData;
             public readonly ProjectFileType ProjectFileType;
             public readonly bool IsUserEditable;
 
@@ -634,7 +674,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                                 bool isUserEditable)
             {
                 Path = directoryEntry.GetAbsolutePath();
-                Length = directoryEntry.Length;
+                FileSystemData = new CachedFileSystemData(directoryEntry);
                 ProjectFileType = projectFileType.NotNull("ProjectFileType != null");
                 IsUserEditable = isUserEditable;
             }
@@ -726,7 +766,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             }
 
             private static ulong GetTotalFileSize(IEnumerable<ExternalFile> files) =>
-                files.Aggregate(0UL, (s, f) => s + f.Length);
+                files.Aggregate(0UL, (s, f) => s + (ulong) f.FileSystemData.FileLength);
         }
     }
 }
