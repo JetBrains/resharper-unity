@@ -8,4 +8,10 @@ data class LogPanelItem(val time : Long,
                         val mode : LogEventMode,
                         val message : String,
                         val stackTrace : String,
-                        val count: Int)
+                        val count: Int) {
+
+    val shortPresentation: String
+        get() {
+            return message.lineSequence().firstOrNull { it.isNotEmpty() } ?: ""
+        }
+}
