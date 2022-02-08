@@ -14,7 +14,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Added
 
-- Add support for `.asmref` files ([#2252](https://github.com/JetBrains/resharper-unity/pull/2252))
+- Add support for `.asmref` files ([#1406](https://github.com/JetBrains/resharper-unity/issues/1406), [#2252](https://github.com/JetBrains/resharper-unity/pull/2252))
+- Add inspection for correct method signature for `MenuItem` attribute ([RIDER-69350](https://youtrack.jetbrains.com/issue/RIDER-69350), [#2266](https://github.com/JetBrains/resharper-unity/pull/2266))
 - Rider: Add new run configuration to run Unity tests in batch mode ([RIDER-70675](https://youtrack.jetbrains.com/issue/RIDER-70675), [#2231](https://github.com/JetBrains/resharper-unity/pull/2231))
 - Rider: Add notification if a newer version of the Rider package is available in Unity ([RIDER-70591](https://youtrack.jetbrains.com/issue/RIDER-70591), [#2244](https://github.com/JetBrains/resharper-unity/pull/2244))
 
@@ -25,6 +26,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Fixed
 
+- Rider: Fix massive performance issue when opening very large projects on certain file systems ([RIDER-53358](https://youtrack.jetbrains.com/issue/RIDER-53358), [#2271](https://github.com/JetBrains/resharper-unity/pull/2271))
 - Rider: Fix incorrectly showing both Unity and Unity DLL project action groups ([#2219](https://github.com/JetBrains/resharper-unity/pull/2219))
 - Rider: Fix incorrectly showing "switch to full UI" action when already in full UI ([RIDER-71185](https://youtrack.jetbrains.com/issue/RIDER-71185), [#2220](https://github.com/JetBrains/resharper-unity/pull/2220))
 - Rider: Fix debugging unit test when debugger is already attached to the editor ([RIDER-70660](https://youtrack.jetbrains.com/issue/RIDER-70660), [#2232](https://github.com/JetBrains/resharper-unity/pull/2232))
@@ -32,6 +34,11 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix exception when showing Quick Doc tooltip ([DEXP-619767](https://youtrack.jetbrains.com/issue/DEXP-619767), [#2240](https://github.com/JetBrains/resharper-unity/pull/2240))
 - Rider: Fix performance issue while typing ([RIDER-71326](https://youtrack.jetbrains.com/issue/RIDER-71326))
 - Rider: Fix location of locally installed documentation on Linux ([#2251](https://github.com/JetBrains/resharper-unity/pull/2251))
+- Rider: Fix Attach to Editor run config failing when used again, after first automatically starting Unity ([#2253](https://github.com/JetBrains/resharper-unity/pull/2253))
+- Rider: Fix Rider unable to open newly created files from Unity ([RIDER-73932](https://youtrack.jetbrains.com/issue/RIDER-73932), [#2261](https://github.com/JetBrains/resharper-unity/pull/2261))
+- Rider: Fix loss of connection to Unity editor after refreshing assets ([RIDER-73901](https://youtrack.jetbrains.com/issue/RIDER-73901), [#2262](https://github.com/JetBrains/resharper-unity/pull/2262)) 
+- Rider: Fix display of unprintable characters in console output when debugging batchmode tests ([RIDER-74056](https://youtrack.jetbrains.com/issue/RIDER-74056), [#2265](https://github.com/JetBrains/resharper-unity/pull/2265))
+- Rider: Fix performance issue displaying long log issues from Unity ([RIDER-70574](https://youtrack.jetbrains.com/issue/RIDER-70574), [#2270](https://github.com/JetBrains/resharper-unity/pull/2270))
 
 
 
