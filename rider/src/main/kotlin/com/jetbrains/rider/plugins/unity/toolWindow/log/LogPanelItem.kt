@@ -12,6 +12,6 @@ data class LogPanelItem(val time : Long,
 
     val shortPresentation: String
         get() {
-            return message.lines().firstOrNull { it.isNotEmpty() } ?: ""
+            return message.lineSequence().firstOrNull { it.isNotEmpty() } ?: ""
         }
 }
