@@ -5,6 +5,8 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
 using JetBrains.Util;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
     [SolutionComponent]
@@ -25,14 +27,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
         public IExternalPsiSourceFile CreateExternalPsiSourceFile(UnityExternalFilesPsiModule psiModule,
                                                                   VirtualFileSystemPath path,
-                                                                  IPsiSourceFileProperties properties)
+                                                                  ProjectFileType projectFileType,
+                                                                  IPsiSourceFileProperties properties,
+                                                                  CachedFileSystemData fileSystemData)
         {
-            var file = new UnityExternalPsiSourceFile(myProjectFileExtensions, myProjectFileTypeCoordinator, psiModule,
-                path, sf => psiModule.ContainsPath(sf.Location), _ => properties, myDocumentManager,
-                UniversalModuleReferenceContext.Instance);
-            // Prime the file system cache
-            file.GetCachedFileSystemData();
-            return file;
+            return new UnityExternalPsiSourceFile(path, psiModule, projectFileType,
+                file1 => psiModule.ContainsPath(file1.Location), _ => properties,
+                myProjectFileExtensions, myProjectFileTypeCoordinator, myDocumentManager,
+                UniversalModuleReferenceContext.Instance, fileSystemData);
         }
     }
 }

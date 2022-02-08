@@ -10,6 +10,8 @@ using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 {
     [SolutionComponent]
@@ -21,40 +23,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                                        ChangeManager changeManager, UnityExternalFilesModuleFactory factory)
         {
             var module = factory.PsiModule;
-            if (module != null)
+            assetIndexingSupport.IsEnabled.Change.Advise_NoAcknowledgement(lifetime, (handler) =>
             {
-                assetIndexingSupport.IsEnabled.Change.Advise_NoAcknowledgement(lifetime, (handler) =>
+                if (handler.HasNew && handler.HasOld && handler.New == handler.Old)
+                    return;
+
+                locks.ExecuteOrQueueReadLockEx(lifetime, "Unity asset indexing cache state change", () =>
                 {
-                    if (handler.HasNew && handler.HasOld && handler.New == handler.Old)
-                        return;
-
-                    locks.ExecuteOrQueueReadLockEx(lifetime, "Unity asset indexing cache state change", () =>
+                    var psiSourceFiles = module.SourceFiles.ToList();
+                    if (psiSourceFiles.Any())
                     {
-                        var psiSourceFiles = module.SourceFiles.ToList();
-                        if (psiSourceFiles.Any())
+                        locks.ExecuteWithWriteLock(() =>
                         {
-                            locks.ExecuteWithWriteLock(() =>
+                            deferredCacheController.Invalidate<UnityAssetsCache>();
+
+                            // TODO: Why is this being run through ChangeManager?
+                            changeManager.ExecuteAfterChange(() =>
                             {
-                                deferredCacheController.Invalidate<UnityAssetsCache>();
-
-                                // TODO: Why is this being run through ChangeManager?
-                                changeManager.ExecuteAfterChange(() =>
+                                var changeBuilder = new PsiModuleChangeBuilder();
+                                foreach (var sourceFile in psiSourceFiles)
                                 {
-                                    var changeBuilder = new PsiModuleChangeBuilder();
-                                    foreach (var sourceFile in psiSourceFiles)
-                                    {
-                                        if (sourceFile.IsValid())
-                                            changeBuilder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Modified);
-                                    }
+                                    if (sourceFile.IsValid())
+                                        changeBuilder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Modified);
+                                }
 
-                                    changeManager.OnProviderChanged(solution, changeBuilder.Result,
-                                        SimpleTaskExecutor.Instance);
-                                });
+                                changeManager.OnProviderChanged(solution, changeBuilder.Result,
+                                    SimpleTaskExecutor.Instance);
                             });
-                        }
-                    });
+                        });
+                    }
                 });
-            }
+            });
         }
     }
 }

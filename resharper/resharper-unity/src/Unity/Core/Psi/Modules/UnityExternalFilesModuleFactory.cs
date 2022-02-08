@@ -1,10 +1,11 @@
-using JetBrains.Annotations;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util.DataStructures;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
@@ -28,6 +29,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
         public HybridCollection<IPsiModule> Modules { get; }
 
-        [CanBeNull] public UnityExternalFilesPsiModule PsiModule { get; }
+        public UnityExternalFilesPsiModule PsiModule { get; }
     }
 }

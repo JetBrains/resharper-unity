@@ -22,8 +22,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         // name for compatibility with existing projects
         private const string HeuristicDisabledPersistentPropertyKey = "ShouldApplyYamlHugeFileHeuristic";
 
-        private const ulong AssetFileSizeThreshold = 250L * (1024 * 1024); // 250 MB
-        private const ulong TotalFileSizeThreshold = 4_000L * (1024 * 1024); // 4 GB
+        private const long AssetFileSizeThreshold = 250L * (1024 * 1024); // 250 MB
+        private const long TotalFileSizeThreshold = 4_000L * (1024 * 1024); // 4 GB
 
         private readonly Lifetime myLifetime;
         private readonly SolutionCaches mySolutionCaches;
@@ -138,23 +138,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             mySolutionCaches.PersistentProperties[HeuristicDisabledPersistentPropertyKey] = false.ToString();
         }
 
-        private static (ulong maxFileSize, ulong totalFileSize) CalculateFileSizes(
+        private static (long maxFileSize, long totalFileSize) CalculateFileSizes(
             List<UnityExternalFilesModuleProcessor.ExternalFile> externalFiles)
         {
-            var maxFileSize = 0UL;
-            var totalFileSize = 0UL;
+            var maxFileSize = 0L;
+            var totalFileSize = 0L;
 
             foreach (var externalFile in externalFiles)
             {
                 // Don't count large binary asset files. We wouldn't index them anyway
-                if (externalFile.Length > AssetFileSizeThreshold && externalFile.Path.IsAsset() &&
+                if (externalFile.FileSystemData.FileLength > AssetFileSizeThreshold && externalFile.Path.IsAsset() &&
                     !externalFile.Path.SniffYamlHeader())
                 {
                     continue;
                 }
 
-                totalFileSize += externalFile.Length;
-                maxFileSize = Math.Max(maxFileSize, externalFile.Length);
+                totalFileSize += externalFile.FileSystemData.FileLength;
+                maxFileSize = Math.Max(maxFileSize, externalFile.FileSystemData.FileLength);
             }
 
             return (maxFileSize, totalFileSize);

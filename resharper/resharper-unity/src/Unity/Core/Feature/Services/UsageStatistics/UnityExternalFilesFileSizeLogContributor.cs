@@ -73,12 +73,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
             myStatistics.Clear();
         }
 
-        public void AddStatistic(FileType fileType, ulong fileLength, bool isUserEditable)
+        public void AddStatistic(FileType fileType, long fileLength, bool isUserEditable)
         {
             myStatistics.Add(new Data(fileType, fileLength, isUserEditable));
         }
 
-        private List<ulong> GetStatistics(FileType type, bool isUserEditable)
+        private List<long> GetStatistics(FileType type, bool isUserEditable)
         {
             return myStatistics.Where(s => s.FileType == type && s.IsUserEditable == isUserEditable)
                 .Select(s => s.Length).ToList();
@@ -100,10 +100,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
         private struct Data
         {
             public readonly FileType FileType;
-            public readonly ulong Length;
+            public readonly long Length;
             public readonly bool IsUserEditable;
 
-            public Data(FileType fileType, ulong length, bool isUserEditable)
+            public Data(FileType fileType, long length, bool isUserEditable)
             {
                 FileType = fileType;
                 Length = length;
