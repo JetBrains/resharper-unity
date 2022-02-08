@@ -1,6 +1,5 @@
 using System;
 using JetBrains.Annotations;
-using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
@@ -77,17 +76,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
         public static bool IsAnim(this IPsiSourceFile sourceFile) =>
             SourceFileNameEndsWith(sourceFile, AnimFileExtensionWithDot);
-
-        public static bool IsMetaOrProjectSettings(ISolution solution, VirtualFileSystemPath location)
-        {
-            var components = location.TryMakeRelativeTo(solution.SolutionDirectory).Components.ToArray();
-
-            if (location.ExtensionNoDot.Equals("meta", StringComparison.InvariantCultureIgnoreCase) || components.Length == 2 &&
-                components[0].Equals("ProjectSettings", StringComparison.InvariantCultureIgnoreCase))
-                return true;
-
-            return false;
-        }
 
         public static bool IsIndexedExternalFile(this IPath path) =>
             path.IsYamlDataFile() || path.IsMeta() || path.IsAsmDef() || path.IsAsmRef();
