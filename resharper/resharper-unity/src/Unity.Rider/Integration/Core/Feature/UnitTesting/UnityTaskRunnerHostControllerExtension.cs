@@ -82,12 +82,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
             var unityEditorProcessId = myUnityController.TryGetUnityProcessId();
             if (unityEditorProcessId.HasValue)
                 return;
-
+            
             var message = string.Format(StartUnityEditorQuestionMessage,
                                              myAvailableProviders[run.HostController.HostId],
                                              myUnityController.GetPresentableUnityVersion());
-            if (!MessageBox.ShowYesNo(message, PluginName))
+            // Don't show message to user if CT mode on
+            if (!(run.Launch.Session.ContinuousTestingIsOn.Value || MessageBox.ShowYesNo(message, PluginName)))
+            {
+                run.Launch.Abort();
                 throw new Exception(string.Format(NotAvailableUnityEditorMessage, myAvailableProviders[run.HostController.HostId]));
+            }
 
             var startUnityTask = StartUnity(lifetime);
 
@@ -116,7 +120,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
         {
             var innerLifeDef = lifetime.CreateNested();
             myBackgroundProgressIndicatorManager.CreateIndicator(innerLifeDef.Lifetime, false, false, "Start Unity Editor");
-            task.ContinueWith(x =>   innerLifeDef.Terminate(), myLifetime, TaskContinuationOptions.None, myShellLocks.Tasks.Scheduler);
+            task.ContinueWith(_ =>   innerLifeDef.Terminate(), myLifetime, TaskContinuationOptions.None, myShellLocks.Tasks.Scheduler);
         }
 
         private void WrapStartUnityTask(Func<Task> run)
