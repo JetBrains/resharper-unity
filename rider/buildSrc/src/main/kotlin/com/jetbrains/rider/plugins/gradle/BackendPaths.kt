@@ -3,7 +3,9 @@ package com.jetbrains.rider.plugins.gradle
 import com.jetbrains.rider.plugins.gradle.buildServer.buildServer
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
+import org.jetbrains.intellij.IntelliJPluginConstants
 import org.jetbrains.intellij.IntelliJPluginExtension
+import org.jetbrains.intellij.tasks.SetupDependenciesTask
 import java.io.File
 
 class BackendPaths(private val project: Project,
@@ -43,17 +45,14 @@ class BackendPaths(private val project: Project,
                 val intellij = project.extensions.findByType(IntelliJPluginExtension::class.java)!!
 
                 var root = File(repositoryRoot, "rider/build/riderRD-$productVersion-SNAPSHOT")
-                val ideaDependencyCachePath = intellij.ideaDependencyCachePath.orNull
-                if (ideaDependencyCachePath != null) {
-                    root = File(ideaDependencyCachePath)
-                }
+                intellij.ideaDependencyCachePath.orNull?.let { root = File(it) }
                 if (!root.isDirectory) {
-                    // If this assert fires, then you've likely called getRiderSdkPath during configuration
-                    // Try to wrap this call in a closure, so that it's evaluated at execution time, once the
-                    // intellij dependencies have been downloaded
-                    val ideaDependency = intellij.ideaDependency.orNull
-                    assert(ideaDependency != null)
-                    root = File(ideaDependency?.classes?.absolutePath ?: error("ideaDependency is null"))
+                    (project.tasks.getByName(IntelliJPluginConstants.SETUP_DEPENDENCIES_TASK_NAME) as? SetupDependenciesTask)?.let { task ->
+                        // If this assert fires, then you've likely called getRiderSdkPath during configuration
+                        // Try to wrap this call in a closure, so that it's evaluated at execution time, once the
+                        // intellij dependencies have been downloaded
+                        task.idea.orNull?.classes?.absolutePath.let { root = File(it ?: error("Cannot find IntelliJ dependencies path")) }
+                    }
                 }
                 riderSdkPath = root
                 logger.info("Rider SDK bundle found: ${root.canonicalPath}")
