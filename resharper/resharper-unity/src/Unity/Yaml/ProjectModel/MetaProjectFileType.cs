@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
         [UsedImplicitly] public new static MetaProjectFileType? Instance { get; private set; }
 
         public MetaProjectFileType()
-            : base(Name, "Unity Yaml", new[] { UnityFileExtensions.MetaFileExtensionWithDot })
+            : base(Name, "Unity Meta File", new[] { UnityFileExtensions.MetaFileExtensionWithDot })
         {
         }
     }
