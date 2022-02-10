@@ -83,12 +83,22 @@
       </parameters>
       <returns type="UnityEngine.Material" array="False" />
     </message>
-    <message name="OnPostprocessAllAssets" static="True" description="This is called after importing of any number of assets is complete (when the Assets progress bar has reached the end)." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessAllAssets.html">
+    <message name="OnPostprocessAllAssets" static="True" maximumVersion="2021.1" description="This is called after importing of any number of assets is complete (when the Assets progress bar has reached the end)." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessAllAssets.html">
       <parameters>
         <parameter type="System.String" array="True" name="importedAssets" />
         <parameter type="System.String" array="True" name="deletedAssets" />
         <parameter type="System.String" array="True" name="movedAssets" />
         <parameter type="System.String" array="True" name="movedFromAssetPaths" />
+      </parameters>
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnPostprocessAllAssets" static="True" minimumVersion="2021.2" description="This is called after importing of any number of assets is complete (when the Assets progress bar has reached the end)." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessAllAssets.html">
+      <parameters>
+        <parameter type="System.String" array="True" name="importedAssets" />
+        <parameter type="System.String" array="True" name="deletedAssets" />
+        <parameter type="System.String" array="True" name="movedAssets" />
+        <parameter type="System.String" array="True" name="movedFromAssetPaths" />
+        <parameter type="System.Boolean" array="False" name="didDomainReload" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -729,7 +739,7 @@
     <message name="OnTransformChildrenChanged" static="False" description="This function is called when the list of children of the transform of the GameObject has changed." path="Documentation/en/ScriptReference/MonoBehaviour.OnTransformChildrenChanged.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnTransformParentChanged" static="False" description="This function is called when the parent property of the transform of the GameObject has changed." path="Documentation/en/ScriptReference/MonoBehaviour.OnTransformParentChanged.html">
+    <message name="OnTransformParentChanged" static="False" description="This function is called when a direct or indirect parent of the transform of the GameObject has changed." path="Documentation/en/ScriptReference/MonoBehaviour.OnTransformParentChanged.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnTriggerEnter" static="False" coroutine="True" description="When a GameObject collides with another GameObject, Unity calls OnTriggerEnter." path="Documentation/en/ScriptReference/MonoBehaviour.OnTriggerEnter.html">
