@@ -1,21 +1,21 @@
 before change
-Inline 251 InlineLensListRenderer
+Inline 251 InlineCodeVisionListRenderer
 Right
     Visible
         Text RdTextRange(startOffset=241, endOffset=250) 1+ methods
     Hidden
-Block 152 BlockLensListRenderer
+Block 152 BlockCodeVisionListRenderer
 Top
     Visible
         Text RdTextRange(startOffset=152, endOffset=159) 1 asset usage
     Hidden
 after change
-Inline 251 InlineLensListRenderer
+Inline 251 InlineCodeVisionListRenderer
 Right
     Visible
         Text RdTextRange(startOffset=241, endOffset=250) 1+ methods
     Hidden
-Block 152 BlockLensListRenderer
+Block 152 BlockCodeVisionListRenderer
 Top
     Visible
         Text RdTextRange(startOffset=152, endOffset=159) 1 asset usage
