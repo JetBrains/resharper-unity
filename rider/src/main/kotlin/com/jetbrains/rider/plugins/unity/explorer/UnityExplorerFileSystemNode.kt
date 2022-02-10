@@ -123,10 +123,11 @@ open class UnityExplorerFileSystemNode(project: Project,
 
     protected fun addProjects(presentation: PresentationData) {
         val projectNames = entities   // One node for each project that this directory is part of
-                .mapNotNull { containingProjectNode(it) }
-                .map(::stripDefaultProjectPrefix)
-                .filter { it.isNotEmpty() }
-                .sortedWith(String.CASE_INSENSITIVE_ORDER)
+            .mapNotNull { containingProjectNode(it) }
+            .map(::stripDefaultProjectPrefix)
+            .filter { it.isNotEmpty() }
+            .sortedWith(String.CASE_INSENSITIVE_ORDER)
+            .distinct()
         if (projectNames.any()) {
             var description = projectNames.take(3).joinToString(", ")
             if (projectNames.count() > 3) {
@@ -144,7 +145,7 @@ open class UnityExplorerFileSystemNode(project: Project,
         // Assembly-CSharp => ""
         // Assembly-CSharp-Editor => Editor
         // Assembly-CSharp.Player => Player
-        return it.name.removePrefix(UnityExplorer.DefaultProjectPrefix).removePrefix("-").removePrefix(".")
+        return it.name.replace(UnityExplorer.DefaultProjectPrefixRegex, "")
     }
 
     private fun containingProjectNode(entity: ProjectModelEntity): ProjectModelEntity? {

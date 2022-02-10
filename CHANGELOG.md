@@ -26,7 +26,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Fixed
 
-- Rider: Fix massive performance issue when opening very large projects on certain file systems ([RIDER-53358](https://youtrack.jetbrains.com/issue/RIDER-53358), [#2271](https://github.com/JetBrains/resharper-unity/pull/2271))
+- Fix massive performance issue when opening very large projects on certain file systems ([RIDER-53358](https://youtrack.jetbrains.com/issue/RIDER-53358), [#2271](https://github.com/JetBrains/resharper-unity/pull/2271))
+- Fix excessive memory traffic when opening very large projects ([#2271](https://github.com/JetBrains/resharper-unity/pull/2271))
 - Rider: Fix incorrectly showing both Unity and Unity DLL project action groups ([#2219](https://github.com/JetBrains/resharper-unity/pull/2219))
 - Rider: Fix incorrectly showing "switch to full UI" action when already in full UI ([RIDER-71185](https://youtrack.jetbrains.com/issue/RIDER-71185), [#2220](https://github.com/JetBrains/resharper-unity/pull/2220))
 - Rider: Fix debugging unit test when debugger is already attached to the editor ([RIDER-70660](https://youtrack.jetbrains.com/issue/RIDER-70660), [#2232](https://github.com/JetBrains/resharper-unity/pull/2232))
@@ -39,6 +40,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix loss of connection to Unity editor after refreshing assets ([RIDER-73901](https://youtrack.jetbrains.com/issue/RIDER-73901), [#2262](https://github.com/JetBrains/resharper-unity/pull/2262)) 
 - Rider: Fix display of unprintable characters in console output when debugging batchmode tests ([RIDER-74056](https://youtrack.jetbrains.com/issue/RIDER-74056), [#2265](https://github.com/JetBrains/resharper-unity/pull/2265))
 - Rider: Fix performance issue displaying long log issues from Unity ([RIDER-70574](https://youtrack.jetbrains.com/issue/RIDER-70574), [#2270](https://github.com/JetBrains/resharper-unity/pull/2270))
+- Rider: Fix showing duplicate project names in Unity Explorer under certain circumstances ([RIDER-67457](https://youtrack.jetbrains.com/issue/RIDER-67457), [#2273](https://github.com/JetBrains/resharper-unity/pull/2273))
 - Rider: Fix root folder of an external package ignoring namespace provider setting ([RIDER-65100](https://youtrack.jetbrains.com/issue/RIDER-65100), [#2274)(https://github.com/JetBrains/resharper-unity/pull/2274))
 
 
