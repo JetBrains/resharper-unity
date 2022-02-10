@@ -20,9 +20,9 @@ plugins {
     id("com.ullink.nuget") version "2.23"
     id("com.ullink.nunit") version "2.4"
     id("me.filippov.gradle.jvm.wrapper") version "0.10.0"
-    id("org.jetbrains.changelog") version "1.2.1"
+    id("org.jetbrains.changelog") version "1.3.1"
     id("org.jetbrains.intellij") // version in rider/buildSrc/build.gradle.kts
-    id("org.jetbrains.grammarkit") version "2021.1.3"
+    id("org.jetbrains.grammarkit") version "2021.2.1"
     kotlin("jvm") version "1.6.10"
 }
 
@@ -155,8 +155,10 @@ intellij {
 }
 
 configure<ChangelogPluginExtension> {
-    path.set("../CHANGELOG.md")
-    headerParserRegex.set("\\d+\\.\\d+(\\.\\d+)?.*".toRegex())
+    val regex = """^((0|[1-9]\d*)\.(0|[1-9]\d*)(\.\d+)?).*$""".toRegex()
+    version.set(regex.matchEntire(project.version.toString())?.groups?.get(1)?.value)
+    path.set("${project.projectDir}/../CHANGELOG.md")
+    headerParserRegex.set(regex)
 }
 
 logger.lifecycle("Version=$version")
