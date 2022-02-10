@@ -1,5 +1,5 @@
 ﻿<!--This file is auto-generated-->
-<api minimumVersion="5.0" maximumVersion="2021.2">
+<api minimumVersion="5.0" maximumVersion="2022.1">
   <type kind="class" name="AssetModificationProcessor" ns="UnityEditor" path="Documentation/en/ScriptReference/AssetModificationProcessor.html">
     <message name="CanOpenForEdit" static="True" minimumVersion="2020.2" description="This is called by Unity when inspecting assets to determine if they can potentially be opened for editing." path="Documentation/en/ScriptReference/AssetModificationProcessor.CanOpenForEdit.html">
       <parameters>
@@ -496,7 +496,7 @@
     </message>
   </type>
   <type kind="class" name="MonoBehaviour" ns="UnityEngine" path="Documentation/en/ScriptReference/MonoBehaviour.html">
-    <message name="Awake" static="False" description="Awake is called when the script instance is being loaded." path="Documentation/en/ScriptReference/MonoBehaviour.Awake.html">
+    <message name="Awake" static="False" description="Awake is called when an enabled script instance is being loaded." path="Documentation/en/ScriptReference/MonoBehaviour.Awake.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="FixedUpdate" static="False" description="Frame-rate independent MonoBehaviour.FixedUpdate message for physics calculations." path="Documentation/en/ScriptReference/MonoBehaviour.FixedUpdate.html">
