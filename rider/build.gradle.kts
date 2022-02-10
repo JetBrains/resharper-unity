@@ -429,15 +429,6 @@ tasks {
         }
         buildFile.set(backend.resharperHostPluginSolution)
     }
-    val buildUnityEditorPlugin by registering(DotNetBuildTask::class) {
-        group = backendGroup
-        description = "Builds the Unity editor plugin"
-        dependsOn(prepareNuGetConfig, generateModels)
-        onlyIf {
-            skipDotnet.not()
-        }
-        buildFile.set(backend.unityPluginSolution)
-    }
 
     val packReSharperPlugin by registering(com.ullink.NuGetPack::class) {
         group = backendGroup
