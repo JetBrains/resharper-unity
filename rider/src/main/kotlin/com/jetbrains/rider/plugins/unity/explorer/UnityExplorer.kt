@@ -26,6 +26,8 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
         const val ShowTildeFoldersOption = "show-tilde-folders"
         const val DefaultProjectPrefix = "Assembly-CSharp"
 
+        val DefaultProjectPrefixRegex = ("$DefaultProjectPrefix[.-]?").toRegex()
+
         val Icon = UnityIcons.ToolWindows.UnityExplorer
         val IgnoredExtensions = hashSetOf("meta", "tmp")
 
