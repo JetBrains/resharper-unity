@@ -13,4 +13,10 @@ class UnitySolutionExplorerCustomization(project: Project) : SolutionExplorerCus
             return false
         return super.supportReferenceModifications(projectEntity)
     }
+
+    override fun supportSolutionModifications(): Boolean {
+        if (UnityUIManager.getInstance(project).hasMinimizedUi.hasTrueValue() && project.isUnityGeneratedProject())
+            return false
+        return super.supportSolutionModifications()
+    }
 }
