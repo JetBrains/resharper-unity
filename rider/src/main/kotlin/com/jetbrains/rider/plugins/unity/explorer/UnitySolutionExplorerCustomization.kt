@@ -19,4 +19,10 @@ class UnitySolutionExplorerCustomization(project: Project) : SolutionExplorerCus
             return false
         return super.supportSolutionModifications()
     }
+
+    override fun supportNugetModifications(): Boolean {
+        if (UnityUIManager.getInstance(project).hasMinimizedUi.hasTrueValue() && project.isUnityGeneratedProject())
+            return false
+        return super.supportNugetModifications()
+    }
 }
