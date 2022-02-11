@@ -72,9 +72,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
                 }
             }
 
-            if (!project.IsOneOfPredefinedUnityProjects())
+            if (!project.IsOneOfPredefinedUnityProjects(true))
             {
-                // For a project with UNITY_EDITOR define we have to allow Editor Templates 
+                // For a project with UNITY_EDITOR define we have to allow Editor Templates
                 if (project != null && project.ProjectProperties.ActiveConfigurations.Configurations
                     .OfType<IManagedProjectConfiguration>()
                     .Select(configuration => configuration.DefineConstants)
