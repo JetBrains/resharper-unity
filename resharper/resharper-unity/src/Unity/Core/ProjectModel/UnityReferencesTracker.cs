@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Application.changes;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
@@ -11,6 +10,8 @@ using JetBrains.ProjectModel.Assemblies.Impl;
 using JetBrains.ProjectModel.Tasks;
 using JetBrains.Util;
 using JetBrains.Util.Reflection;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
 {
@@ -35,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
         // UnityEngine.ShaderInternalsModule.dll
         // Unity 2020.2 similarly splits UnityEditor.dll, primarily to allow packages to override implementations, such
         // as UIElements.
-        private static readonly JetHashSet<string> ourUnityReferenceNames = new JetHashSet<string>
+        private static readonly JetHashSet<string> ourUnityReferenceNames = new()
         {
             "UnityEngine",
             "UnityEngine.CoreModule",
@@ -55,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
         private readonly ICollection<IUnityReferenceChangeHandler> myHandlers;
         private readonly Dictionary<IProject, Lifetime> myAllProjectLifetimes;
         private readonly HashSet<IProject> myUnityProjects;
-        
+
         private bool myHasUnityReference;
 
         static UnityReferencesTracker()
@@ -137,14 +138,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             }
         }
 
-        object IChangeProvider.Execute(IChangeMap changeMap)
+        object? IChangeProvider.Execute(IChangeMap changeMap)
         {
             var projectModelChange = changeMap.GetChange<ProjectModelChange>(mySolution);
             if (projectModelChange == null)
                 return null;
 
             var changes = ReferencedAssembliesService.TryGetAssemblyReferenceChanges(projectModelChange,
-                ourUnityReferenceNameInfos, myLogger.Trace());
+                ourUnityReferenceNameInfos, LogEx.WhenTrace(myLogger));
 
             var newUnityProjects = new List<KeyValuePair<IProject, Lifetime>>();
             foreach (var change in changes)
@@ -177,7 +178,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             return null;
         }
 
-        public bool IsUnityProject([CanBeNull] IProject project)
+        public bool IsUnityProject(IProject? project)
         {
             if (project == null || !project.IsValid())
                 return false;
@@ -188,10 +189,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             return myUnityProjects.Contains(project);
         }
 
-        private static bool HasUnityReferenceOrFlavour([NotNull] IProject project)
-        {
-            return project.HasUnityFlavour() || ReferencesUnity(project);
-        }
+        private static bool HasUnityReferenceOrFlavour(IProject project) =>
+            project.HasUnityFlavour() || ReferencesUnity(project);
 
         private static bool ReferencesUnity(IProject project)
         {
