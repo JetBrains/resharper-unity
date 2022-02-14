@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.intellij.plugins", "gradle-intellij-plugin", "1.3.1")
+    implementation("org.jetbrains.intellij.plugins", "gradle-intellij-plugin", "1.4.0")
 }
 
 plugins {
