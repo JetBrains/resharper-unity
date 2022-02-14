@@ -20,9 +20,9 @@ plugins {
     id("com.ullink.nuget") version "2.23"
     id("com.ullink.nunit") version "2.4"
     id("me.filippov.gradle.jvm.wrapper") version "0.10.0"
-    id("org.jetbrains.changelog") version "1.2.1"
+    id("org.jetbrains.changelog") version "1.3.1"
     id("org.jetbrains.intellij") // version in rider/buildSrc/build.gradle.kts
-    id("org.jetbrains.grammarkit") version "2021.1.3"
+    id("org.jetbrains.grammarkit") version "2021.2.1"
     kotlin("jvm") version "1.6.10"
 }
 
@@ -155,8 +155,10 @@ intellij {
 }
 
 configure<ChangelogPluginExtension> {
-    path.set("../CHANGELOG.md")
-    headerParserRegex.set("\\d+\\.\\d+(\\.\\d+)?.*".toRegex())
+    val regex = """^((0|[1-9]\d*)\.(0|[1-9]\d*)(\.\d+)?).*$""".toRegex()
+    version.set(regex.matchEntire(project.version.toString())?.groups?.get(1)?.value)
+    path.set("${project.projectDir}/../CHANGELOG.md")
+    headerParserRegex.set(regex)
 }
 
 logger.lifecycle("Version=$version")
@@ -195,7 +197,7 @@ tasks {
     }
 
     named<Wrapper>("wrapper") {
-        gradleVersion = "7.2"
+        gradleVersion = "7.4"
         distributionType = Wrapper.DistributionType.BIN
     }
 
@@ -427,15 +429,6 @@ tasks {
         }
         buildFile.set(backend.resharperHostPluginSolution)
     }
-    val buildUnityEditorPlugin by registering(DotNetBuildTask::class) {
-        group = backendGroup
-        description = "Builds the Unity editor plugin"
-        dependsOn(prepareNuGetConfig, generateModels)
-        onlyIf {
-            skipDotnet.not()
-        }
-        buildFile.set(backend.unityPluginSolution)
-    }
 
     val packReSharperPlugin by registering(com.ullink.NuGetPack::class) {
         group = backendGroup
@@ -571,30 +564,9 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         }
     }
 
-    // TODO: Remove this!
-    // Workaround for a bug in the SDK which isn't preserving the permissions for lib/ReSharperHost/[macosx|linux]-x64/dotnet/dotnet
-    val fixSdkPermissions by registering {
-        doLast {
-            if (!isWindows) {
-                logger.lifecycle("==============================================================================")
-                logger.lifecycle("Temporary fix for file permissions. Resetting executable permission for:")
-                logger.lifecycle(backend.getDotNetSdkPath().toString() + "/../ReSharperHost/linux-x64/dotnet/dotnet")
-                logger.lifecycle(backend.getDotNetSdkPath().toString() + "/../ReSharperHost/macosx-x64/dotnet/dotnet")
-                logger.lifecycle("==============================================================================")
-
-                project.exec {
-                    commandLine("chmod", "+x", backend.getDotNetSdkPath().toString() + "/../ReSharperHost/linux-x64/dotnet/dotnet")
-                }
-                project.exec {
-                    commandLine("chmod", "+x", backend.getDotNetSdkPath().toString() + "/../ReSharperHost/macos-x64/dotnet/dotnet")
-                }
-            }
-        }
-    }
-
     withType<PrepareSandboxTask> {
         // Default dependsOn includes the standard Java build/jar task
-        dependsOn(buildReSharperHostPlugin, fixSdkPermissions)
+        dependsOn(buildReSharperHostPlugin)
 
         // Have dependent tasks use upToDateWhen { project.buildServer.automatedBuild etc. }
         //inputs.files(buildRiderPlugin.outputs)
