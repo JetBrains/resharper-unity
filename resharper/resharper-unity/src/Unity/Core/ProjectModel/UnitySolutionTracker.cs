@@ -7,6 +7,8 @@ using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
 using JetBrains.Util;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
 {
     [SolutionComponent]
@@ -14,18 +16,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
     {
         private readonly ISolution mySolution;
 
-        public readonly ViewableProperty<bool> IsUnityProjectFolder = new ViewableProperty<bool>();
-        public readonly ViewableProperty<bool> IsUnityProject = new ViewableProperty<bool>();
-        public readonly ViewableProperty<bool> IsUnityGeneratedProject = new ViewableProperty<bool>();
-        
-        // If you only want to be notified that we're a Unity solution, advise this.
+        public readonly ViewableProperty<bool> IsUnityProjectFolder = new();
+        public readonly ViewableProperty<bool> IsUnityProject = new();
+        public readonly ViewableProperty<bool> IsUnityGeneratedProject = new();
+
         // If all you're interested in is being notified that we're a Unity solution, advise this. If you need to know
         // we're a Unity solution *and*/or know about Unity projects (and get a per-project lifetime), implement
         // IUnityReferenceChangeHandler
-        public readonly ViewableProperty<bool> HasUnityReference = new ViewableProperty<bool>(false);
+        public readonly ViewableProperty<bool> HasUnityReference = new(false);
 
-        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker,
-            Lifetime lifetime, bool inTests = false)
+        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
+                                    bool inTests = false)
         {
             mySolution = solution;
             if (inTests)
@@ -36,20 +37,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
                 HasUnityReference.Value = false;
                 return;
             }
-            
+
             SetValues();
 
-            fileSystemTracker.AdviseDirectoryChanges(lifetime, mySolution.SolutionDirectory.Combine(ProjectExtensions.AssetsFolder), false,
-                OnChangeAction);
+            fileSystemTracker.AdviseDirectoryChanges(lifetime,
+                mySolution.SolutionDirectory.Combine(ProjectExtensions.AssetsFolder), false, OnChangeAction);
             // track not only folder itself, but also files inside
-            fileSystemTracker.AdviseDirectoryChanges(lifetime, mySolution.SolutionDirectory.Combine(ProjectExtensions.ProjectSettingsFolder), true,
+            fileSystemTracker.AdviseDirectoryChanges(lifetime,
+                mySolution.SolutionDirectory.Combine(ProjectExtensions.ProjectSettingsFolder), true,
                 OnChangeActionProjectSettingsFolder);
         }
 
         private void SetValues()
         {
+            // Note that HasLibraryFolder is not part of HasUnityFileStructure because it's not pushed to VCS. If we try
+            // to open a clean checkout of a Unity solution (perhaps just as a directory, not a solution), then
+            // IsUnityProjectFolder will be true, but everything else will be false. Once we have a solution file, that
+            // means Unity has opened the project, generated a solution file and we'll also have a Library folder
             IsUnityProjectFolder.SetValue(HasUnityFileStructure(mySolution.SolutionDirectory));
-            IsUnityProject.SetValue(IsUnityProjectFolder.Value && mySolution.IsValid() && mySolution.SolutionFilePath.ExistsFile && HasLibraryFolder(mySolution.SolutionDirectory));
+            IsUnityProject.SetValue(IsUnityProjectFolder.Value && mySolution.IsValid() &&
+                                    mySolution.SolutionFilePath.ExistsFile &&
+                                    HasLibraryFolder(mySolution.SolutionDirectory));
             IsUnityGeneratedProject.SetValue(IsUnityProject.Value && SolutionNameMatchesUnityProjectName());
         }
 
@@ -93,11 +101,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             var projectSettingsFolder = solutionDir.CombineWithShortName(ProjectExtensions.ProjectSettingsFolder);
             var projectVersionTxtFile = projectSettingsFolder.CombineWithShortName("ProjectVersion.txt");
             return assetsFolder.IsAbsolute && assetsFolder.ExistsDirectory
-                                           && projectSettingsFolder.IsAbsolute && projectSettingsFolder.ExistsDirectory
-                                           && (projectVersionTxtFile.IsAbsolute && projectVersionTxtFile.ExistsFile
-                                               || projectSettingsFolder.GetChildFiles("*.asset").Any());
+                && projectSettingsFolder.IsAbsolute && projectSettingsFolder.ExistsDirectory
+                && (projectVersionTxtFile.IsAbsolute && projectVersionTxtFile.ExistsFile || projectSettingsFolder.GetChildFiles("*.asset").Any());
         }
-        
+
         private static bool HasLibraryFolder(VirtualFileSystemPath solutionDir)
         {
             var folder = solutionDir.CombineWithShortName(ProjectExtensions.LibraryFolder);
