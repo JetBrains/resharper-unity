@@ -804,7 +804,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
         private JetSemanticVersion GetMinimumVersion(string id)
         {
-            if (myGlobalManifest?.Packages.TryGetValue(id, out var editorPackageDetails) == true
+            // Note: do not inline this into the TryGetValue call, because net5's C# compiler complains, and that's what
+            // we use for CI. Presumably this because it would not be initialised if myGlobalManifest is null. net6's
+            // compiler doesn't complain.
+            // error CS0165: Use of unassigned local variable 'editorPackageDetails'
+            EditorPackageDetails? editorPackageDetails = null;
+            if (myGlobalManifest?.Packages.TryGetValue(id, out editorPackageDetails) == true
                 && JetSemanticVersion.TryParse(editorPackageDetails?.MinimumVersion, out var version))
             {
                 return version;
