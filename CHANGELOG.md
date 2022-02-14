@@ -42,6 +42,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix display of unprintable characters in console output when debugging batchmode tests ([RIDER-74056](https://youtrack.jetbrains.com/issue/RIDER-74056), [#2265](https://github.com/JetBrains/resharper-unity/pull/2265))
 - Rider: Fix performance issue displaying long log issues from Unity ([RIDER-70574](https://youtrack.jetbrains.com/issue/RIDER-70574), [#2270](https://github.com/JetBrains/resharper-unity/pull/2270))
 - Rider: Fix showing duplicate project names in Unity Explorer under certain circumstances ([RIDER-67457](https://youtrack.jetbrains.com/issue/RIDER-67457), [#2273](https://github.com/JetBrains/resharper-unity/pull/2273))
+- Rider: Fix root folder of an external package ignoring namespace provider setting ([RIDER-65100](https://youtrack.jetbrains.com/issue/RIDER-65100), [#2274)(https://github.com/JetBrains/resharper-unity/pull/2274))
 
 
 

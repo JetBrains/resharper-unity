@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties;
@@ -9,12 +8,21 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Util
 {
     [SolutionComponent]
     public class ExternalPackageCustomNamespaceProvider : ICustomDefaultNamespaceProvider
     {
-        private static readonly Key<string> ourCalculatedDefaultNamespaceKey = new Key<string>("Unity::ExternalPackage::DefaultNamespace");
+        private static readonly Key<DefaultNamespace?> ourCalculatedDefaultNamespaceKey = new("Unity::ExternalPackage::DefaultNamespace");
+
+        private readonly NamespaceFolderProperty myNamespaceFolderProperty;
+
+        public ExternalPackageCustomNamespaceProvider(NamespaceFolderProperty namespaceFolderProperty)
+        {
+            myNamespaceFolderProperty = namespaceFolderProperty;
+        }
 
         public ExpectedNamespaceAndNamespaceChecker CalculateCustomNamespace(IProjectItem projectItem, PsiLanguageType language)
         {
@@ -22,9 +30,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Util
             if (!ShouldProvideCustomNamespace(project, projectItem, language))
                 return new ExpectedNamespaceAndNamespaceChecker(null);
 
-            var namespaceFolderProperty = project.GetComponent<NamespaceFolderProperty>();
-            return new ExpectedNamespaceAndNamespaceChecker(CalculateNamespace(projectItem, language.LanguageService(),
-                namespaceFolderProperty));
+            return new ExpectedNamespaceAndNamespaceChecker(CalculateNamespace(projectItem,
+                language.LanguageService().NotNull("languageService != null")));
         }
 
         private static bool ShouldProvideCustomNamespace(IProject project, IProjectItem projectItem, PsiLanguageType language)
@@ -46,13 +53,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Util
             if (!defaultNamespace.IsNullOrEmpty())
                 return false;
 
-            // Is the root folder a linked folder, pointing externally to the solution?
+            // We're only interested in external packages, which we can identify by checking that the immediate child of
+            // the project is a linked item (it links to an item external to the solution)
             var rootFolder = GetRootFolder(projectItem);
             return rootFolder?.IsLinked == true;
         }
 
-        [CanBeNull]
-        private static IProjectFolder GetRootFolder(IProjectItem projectItem)
+        private static IProjectFolder? GetRootFolder(IProjectItem projectItem)
         {
             var projectFolder = projectItem.ParentFolder;
             while (projectFolder != null)
@@ -66,23 +73,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Util
             return null;
         }
 
-        [CanBeNull]
-        private static string CalculateNamespace([NotNull] IProjectItem item, LanguageService languageService,
-                                                 NamespaceFolderProperty namespaceFolderProperty)
+        private string? CalculateNamespace(IProjectItem item, LanguageService languageService)
         {
-            if (item.ParentFolder is IProject && item is IProjectFolder rootFolder)
-                return CalculateNamespaceForProjectFromRootFolder(item.GetProject(), rootFolder, languageService);
+            if (item.ParentFolder is IProject project && item is IProjectFolder rootFolder)
+                return CalculateNamespaceForProjectFromRootFolder(project, rootFolder, languageService);
 
             var parentFolder = item.ParentFolder;
             if (parentFolder == null) return null;
 
-            var parentNamespace = CalculateNamespace(parentFolder, languageService, namespaceFolderProperty);
+            var parentNamespace = CalculateNamespace(parentFolder, languageService);
             if (parentNamespace == null)
                 return null;
 
             if (item is IProjectFolder folder)
             {
-                var isNamespaceProvider = namespaceFolderProperty.GetNamespaceFolderProperty(folder);
+                var isNamespaceProvider = myNamespaceFolderProperty.GetNamespaceFolderProperty(folder);
                 if (!isNamespaceProvider)
                     return parentNamespace;
             }
@@ -101,16 +106,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Util
             return suffix;
         }
 
-        [CanBeNull]
-        private static string CalculateNamespaceForProjectFromRootFolder(
-            [CanBeNull] IProject project, IProjectFolder rootFolder, LanguageService languageService)
+        private string? CalculateNamespaceForProjectFromRootFolder(IProject project, IProjectFolder rootFolder,
+                                                                   LanguageService languageService)
         {
-            if (project == null || !rootFolder.IsLinked || rootFolder.Path == null) return null;
+            if (!rootFolder.IsLinked || rootFolder.Path == null) return null;
 
+            var isNamespaceProvider = myNamespaceFolderProperty.GetNamespaceFolderProperty(rootFolder);
+
+            // Cache the calculated namespace for the root folder, but make sure it's calculated with the same namespace
+            // provider state!
             var calculatedNamespace = project.GetData(ourCalculatedDefaultNamespaceKey);
-            if (calculatedNamespace != null)
-                return calculatedNamespace;
+            if (calculatedNamespace != null && calculatedNamespace.RootFolderIsNamespaceProvider == isNamespaceProvider)
+                return calculatedNamespace.RootFolderNamespace;
 
+            var rootFolderNamespace = string.Empty;
             var location = rootFolder.Path.ReferencedFolderPath;
             var packageJsonDirectory = FileSystemUtil.TryGetDirectoryNameOfFileAbove(location, "package.json");
             if (packageJsonDirectory != null)
@@ -127,16 +136,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Util
                 else if (path.StartsWith("Scripts"))
                     path = path.RemovePrefix("Scripts");
 
+                // The user might have excluded the root folder as a namespace provider. If so, skip and reset the flag.
+                // This means there is no way to exclude folders between the package.json location and the root folder
+                var skipFirstComponent = !isNamespaceProvider;
                 foreach (var pathComponent in path.Components)
                 {
+                    if (skipFirstComponent)
+                    {
+                        skipFirstComponent = false;
+                        continue;
+                    }
                     var name = NamespaceFolderUtil.MakeValidQualifiedName(pathComponent.ToString(), languageService);
-                    calculatedNamespace = calculatedNamespace.IsNullOrEmpty() ? name : $"{calculatedNamespace}.{name}";
+                    rootFolderNamespace = rootFolderNamespace.IsNullOrEmpty() ? name : $"{rootFolderNamespace}.{name}";
                 }
             }
 
+            calculatedNamespace = new DefaultNamespace(rootFolderNamespace, isNamespaceProvider);
             project.PutData(ourCalculatedDefaultNamespaceKey, calculatedNamespace);
+            return calculatedNamespace.RootFolderNamespace;
+        }
 
-            return calculatedNamespace;
+        private class DefaultNamespace
+        {
+            public readonly string RootFolderNamespace;
+            public readonly bool RootFolderIsNamespaceProvider;
+
+            public DefaultNamespace(string rootFolderNamespace, bool rootFolderIsNamespaceProvider)
+            {
+                RootFolderNamespace = rootFolderNamespace;
+                RootFolderIsNamespaceProvider = rootFolderIsNamespaceProvider;
+            }
         }
     }
 }
