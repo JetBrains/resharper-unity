@@ -24,6 +24,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 - Show preview for target typed new instances of `Color` ([RIDER-64151](https://youtrack.jetbrains.com/issue/RIDER-64151), [#2250](https://github.com/JetBrains/resharper-unity/pull/2250))
 - Update API information to 2022.1.0b7 ([#2276](https://github.com/JetBrains/resharper-unity/pull/2276))
+- Rider: Hide rename solution and manage NuGet packages by default ([RIDER-62297](https://youtrack.jetbrains.com/issue/RIDER-62297), [#2277](https://github.com/JetBrains/resharper-unity/pull/2277))
 - Unity editor: Expand Find Usages editor window by default ([#2239](https://github.com/JetBrains/resharper-unity/pull/2239))
 
 ### Fixed
