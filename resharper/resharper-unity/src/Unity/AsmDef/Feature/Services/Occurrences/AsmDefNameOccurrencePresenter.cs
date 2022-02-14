@@ -1,4 +1,3 @@
-using System.Drawing;
 using JetBrains.Application.UI.Controls.JetPopupMenu;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
@@ -11,6 +10,8 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.UI.Icons;
 using JetBrains.UI.RichText;
 using JetBrains.Util.Media;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Occurrences
 {
@@ -36,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Occurrences
                 descriptor.Icon = GetIcon(solution, asmDefNameOccurrence, options);
 
             var fileName = cache.GetAsmDefLocationByAssemblyName(asmDefNameOccurrence.Name);
-            if (fileName != null && !fileName.IsEmpty)
+            if (fileName.IsNotEmpty)
             {
                 var style = TextStyle.FromForeColor(JetSystemColors.GrayText);
                 descriptor.ShortcutText = new RichText($" in {fileName.Name}", style);
@@ -46,9 +47,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Occurrences
             return true;
         }
 
-        private static IconId GetIcon(ISolution solution,
-                                      AsmDefNameOccurrence asmDefNameOccurrence,
-                                      OccurrencePresentationOptions options)
+        private static IconId? GetIcon(ISolution solution,
+                                       AsmDefNameOccurrence asmDefNameOccurrence,
+                                       OccurrencePresentationOptions options)
         {
             var presentationService = asmDefNameOccurrence.SourceFile.GetPsiServices()
                 .GetComponent<PsiSourceFilePresentationService>();

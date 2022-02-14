@@ -80,10 +80,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 
         // Note that this is getting the location of a .asmdef file for a given assembly definition name. The name of
         // the file might not match the name of the assembly definition!
-        public VirtualFileSystemPath? GetAsmDefLocationByAssemblyName(string assemblyName)
+        public VirtualFileSystemPath GetAsmDefLocationByAssemblyName(string assemblyName)
         {
             Locks.AssertReadAccessAllowed();
-            return GetSourceFileForAssembly(assemblyName)?.GetLocation();
+            return GetSourceFileForAssembly(assemblyName)?.GetLocation()
+                   ?? VirtualFileSystemPath.GetEmptyPathFor(mySolution.GetInteractionContext());
         }
 
         public IEnumerable<AsmDefVersionDefine> GetVersionDefines(string assemblyName)
