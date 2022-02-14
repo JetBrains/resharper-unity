@@ -14,6 +14,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Added
 
+- Add and remove references to `.asmdef` files when project references are modified, including with Remove Unused References refactoring ([#852](https://github.com/JetBrains/resharper-unity/issues/852), [RIDER-48660](https://youtrack.jetbrains.com/issue/RIDER-48660), [#1994](https://github.com/JetBrains/resharper-unity/issues/1994), [#2279](https://github.com/JetBrains/resharper-unity/pull/2279))
 - Add support for `.asmref` files ([#1406](https://github.com/JetBrains/resharper-unity/issues/1406), [#2252](https://github.com/JetBrains/resharper-unity/pull/2252))
 - Add inspection for correct method signature for `MenuItem` attribute ([RIDER-69350](https://youtrack.jetbrains.com/issue/RIDER-69350), [#2266](https://github.com/JetBrains/resharper-unity/pull/2266))
 - Rider: Add new run configuration to run Unity tests in batch mode ([RIDER-70675](https://youtrack.jetbrains.com/issue/RIDER-70675), [#2231](https://github.com/JetBrains/resharper-unity/pull/2231))
@@ -42,7 +43,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix display of unprintable characters in console output when debugging batchmode tests ([RIDER-74056](https://youtrack.jetbrains.com/issue/RIDER-74056), [#2265](https://github.com/JetBrains/resharper-unity/pull/2265))
 - Rider: Fix performance issue displaying long log issues from Unity ([RIDER-70574](https://youtrack.jetbrains.com/issue/RIDER-70574), [#2270](https://github.com/JetBrains/resharper-unity/pull/2270))
 - Rider: Fix showing duplicate project names in Unity Explorer under certain circumstances ([RIDER-67457](https://youtrack.jetbrains.com/issue/RIDER-67457), [#2273](https://github.com/JetBrains/resharper-unity/pull/2273))
-- Rider: Fix root folder of an external package ignoring namespace provider setting ([RIDER-65100](https://youtrack.jetbrains.com/issue/RIDER-65100), [#2274)(https://github.com/JetBrains/resharper-unity/pull/2274))
+- Rider: Fix root folder of an external package ignoring namespace provider setting ([RIDER-65100](https://youtrack.jetbrains.com/issue/RIDER-65100), [#2274](https://github.com/JetBrains/resharper-unity/pull/2274))
 
 
 
