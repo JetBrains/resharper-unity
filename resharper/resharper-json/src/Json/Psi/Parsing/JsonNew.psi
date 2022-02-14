@@ -57,16 +57,16 @@ options {
 
 errorhandling jsonNewObject
 :
-  LBRACE
+  LBRACE<LBRACE, LBrace>
   LIST (jsonNewMember<MEMBER, Members>?) SEP COMMA
-  RBRACE
+  RBRACE<RBRACE, RBrace>
 ;
 
 errorhandling jsonNewArray
 :
-  LBRACKET
+  LBRACKET<LBRACKET, LBracket>
   LIST (jsonNewValue<VALUE, Values>?) SEP COMMA
-  RBRACKET
+  RBRACKET<RBRACKET, RBracket>
 ;
 
 errorhandling jsonNewMember

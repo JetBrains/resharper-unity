@@ -1,5 +1,4 @@
-using JetBrains.Annotations;
-using JetBrains.ProjectModel;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Json.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -7,26 +6,22 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Text;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Json.Psi
 {
     public class JsonNewElementFactory
     {
-        [NotNull] private readonly IPsiModule myModule;
-        [NotNull] private readonly ISolution mySolution;
-        [NotNull] private readonly PsiLanguageType myLanguage;
-        [NotNull]private readonly LanguageService myLanguageService;
+        private readonly IPsiModule myModule;
+        private readonly LanguageService myLanguageService;
 
-        public static JsonNewElementFactory GetInstance(IPsiModule psiModule)
-        {
-            return new JsonNewElementFactory(psiModule, psiModule.GetSolution(), JsonNewLanguage.Instance);
-        }
+        public static JsonNewElementFactory GetInstance(IPsiModule psiModule) => new(psiModule,
+            JsonNewLanguage.Instance.NotNull());
 
-        private JsonNewElementFactory([NotNull] IPsiModule module, [NotNull] ISolution solution, [NotNull] PsiLanguageType language)
+        private JsonNewElementFactory(IPsiModule module, PsiLanguageType language)
         {
             myModule = module;
-            mySolution = solution;
-            myLanguage = language;
-            myLanguageService = language.LanguageService();
+            myLanguageService = language.LanguageService().NotNull();
         }
 
         private JsonNewParser CreateParser(string text)
@@ -34,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Json.Psi
             var lexerFactory = myLanguageService.GetPrimaryLexerFactory();
             var lexer = lexerFactory.CreateLexer(new StringBuffer(text));
 
-            return myLanguageService.CreateParser(lexer, myModule, null) as JsonNewParser;
+            return (JsonNewParser)myLanguageService.CreateParser(lexer, myModule, null);
         }
 
         public IJsonNewLiteralExpression CreateStringLiteral(string literal)
@@ -42,7 +37,17 @@ namespace JetBrains.ReSharper.Plugins.Json.Psi
             var parser = CreateParser($"\"{literal}\"");
             var node = parser.ParseLiteral();
             if (node == null)
-                throw new ElementFactoryException(string.Format("Cannot create expression '{0}'", literal));
+                throw new ElementFactoryException($"Cannot create expression \"{literal}\"");
+            SandBox.CreateSandBoxFor(node, myModule, myLanguageService.LanguageType);
+            return node;
+        }
+
+        public IJsonNewValue CreateValue(string value)
+        {
+            var parser = CreateParser(value);
+            var node = parser.ParseValue();
+            if (node == null)
+                throw new ElementFactoryException($"Cannot create expression '{value}'");
             SandBox.CreateSandBoxFor(node, myModule, myLanguageService.LanguageType);
             return node;
         }

@@ -1,6 +1,7 @@
 using System;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Properties.Flavours;
+using JetBrains.Util;
 
 #nullable enable
 
@@ -40,8 +41,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
         {
             if (project == null || !project.IsValid())
                 return false;
-            return project.Name.EndsWith(".Player");
+            return IsPlayerProjectName(project.Name);
         }
+
+        public static bool IsPlayerProjectName(string name) =>
+            name.EndsWith(".Player", StringComparison.OrdinalIgnoreCase);
+
+        public static string StripPlayerSuffix(string name) =>
+            name.TrimFromEnd(".Player", StringComparison.OrdinalIgnoreCase);
 
         public static bool IsUnityGeneratedProject(this IProject? project)
         {
@@ -60,37 +67,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
         public static bool HasUnityFlavour(this IProject? project) =>
             project != null && project.HasFlavour<UnityProjectFlavor>();
 
-        public static bool IsOneOfPredefinedUnityProjects(this IProject? project, bool includePlayerProjects = false)
+        public static bool IsOneOfPredefinedUnityProjects(this IProject? project, bool includePlayerProjects = false) =>
+            project != null && IsOneOfPredefinedUnityProjects(project.Name, includePlayerProjects);
+
+        public static bool IsOneOfPredefinedUnityProjects(string projectName, bool includePlayerProjects = false)
         {
             // Editor projects obviously don't have player projects
-            return project.IsAssemblyCSharp(includePlayerProjects)
-                   || project.IsAssemblyCSharpEditor()
-                   || project.IsAssemblyCSharpFirstpass(includePlayerProjects)
-                   || project.IsAssemblyCSharpFirstpassEditor();
+            return IsAssemblyCSharp(projectName, includePlayerProjects)
+                   || IsAssemblyCSharpEditor(projectName)
+                   || IsAssemblyCSharpFirstpass(projectName, includePlayerProjects)
+                   || IsAssemblyCSharpFirstpassEditor(projectName);
         }
 
         public static bool IsMainUnityProject(this IProject? project)
         {
             // TODO: The main project might be named anything if a user puts a .asmdef in the root of the Assets folder!
-            return project.IsAssemblyCSharp(false);
+            return project != null && IsAssemblyCSharp(project.Name, false);
         }
 
-        public static bool IsAssemblyCSharp(this IProject? project, bool includePlayerProject)
+        private static bool IsAssemblyCSharp(string projectName, bool includePlayerProject)
         {
-            if (project == null) return false;
-            if (project.Name.Equals("Assembly-CSharp", StringComparison.OrdinalIgnoreCase)) return true;
-            return includePlayerProject && project.Name.Equals("Assembly-CSharp.Player", StringComparison.OrdinalIgnoreCase);
+            if (projectName.Equals("Assembly-CSharp", StringComparison.OrdinalIgnoreCase)) return true;
+            return includePlayerProject && projectName.Equals("Assembly-CSharp.Player", StringComparison.OrdinalIgnoreCase);
         }
 
-        public static bool IsAssemblyCSharpFirstpass(this IProject? project, bool includePlayerProject)
+        private static bool IsAssemblyCSharpFirstpass(string projectName, bool includePlayerProject)
         {
-            if (project == null) return false;
-            if (project.Name.Equals("Assembly-CSharp-firstpass", StringComparison.OrdinalIgnoreCase)) return true;
-            return includePlayerProject && project.Name.Equals("Assembly-CSharp-firstpass.Player", StringComparison.OrdinalIgnoreCase);
+            if (projectName.Equals("Assembly-CSharp-firstpass", StringComparison.OrdinalIgnoreCase)) return true;
+            return includePlayerProject && projectName.Equals("Assembly-CSharp-firstpass.Player", StringComparison.OrdinalIgnoreCase);
         }
 
-        public static bool IsAssemblyCSharpEditor(this IProject? project) => project is { Name: "Assembly-CSharp-Editor" };
-        public static bool IsAssemblyCSharpFirstpassEditor(this IProject? project) => project is { Name: "Assembly-CSharp-Editor-firstpass" };
+        private static bool IsAssemblyCSharpEditor(string projectName) =>
+            projectName.Equals("Assembly-CSharp-Editor", StringComparison.OrdinalIgnoreCase);
+
+        private static bool IsAssemblyCSharpFirstpassEditor(string projectName) =>
+            projectName.Equals("Assembly-CSharp-Editor-firstpass", StringComparison.OrdinalIgnoreCase);
 
         public static IProject? GetMainUnityProject(this ISolution solution)
         {
@@ -104,7 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
         /// </summary>
         /// <param name="solution"></param>
         /// <returns></returns>
-        public static IProject? GetAssemblyCSharpProject(this ISolution solution) =>
+        private static IProject? GetAssemblyCSharpProject(this ISolution solution) =>
             solution.GetProjectByName("Assembly-CSharp");
     }
 }

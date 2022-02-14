@@ -31,6 +31,16 @@ namespace JetBrains.ReSharper.Plugins.Json.Psi.Parsing
             return new JsonNewTreeBuilder(myLexer, lifetime);
         }
 
+        public IJsonNewValue ParseValue()
+        {
+            return Lifetime.Using(lifetime =>
+            {
+                var builder = CreateTreeBuilder(lifetime);
+                builder.ParseJsonValue();
+                return (IJsonNewValue) builder.GetTree();
+            });
+        }
+
         public IJsonNewLiteralExpression ParseLiteral()
         {
             return Lifetime.Using(lifetime =>
