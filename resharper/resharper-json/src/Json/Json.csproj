@@ -13,7 +13,6 @@
     <LangVersion>9</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
-    <PackageLockFilePath>$(MSBuildThisFileDirectory)../PackagesLock.targets</PackageLockFilePath>
   </PropertyGroup>
   <!-- ********** -->
   <ItemGroup Label="JsonNew">
