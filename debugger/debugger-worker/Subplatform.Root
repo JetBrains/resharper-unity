@@ -2,7 +2,6 @@
 <SubplatformInfo xmlns="urn:schemas-jetbrains-com:build-subplatform-info" CompanyNameHuman="JetBrains" IsGitSubplatform="true">
     <SubplatformInfo.SubplatformReferences>
         <SubplatformReference Name="Rider\Rider.Backend" />
-        <SubplatformReference Name="Rider\Rider.Backend" />
         <SubplatformReference Name="Plugins\_Unity.Pregenerated\BackendModel" />
     </SubplatformInfo.SubplatformReferences>
 </SubplatformInfo>
