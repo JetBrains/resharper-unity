@@ -3,7 +3,7 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 
 class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel)
-    : UnityAttachToEditorFormLayout() {
+    : com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorFormLayout() {
 
     init {
         editorInstanceJsonErrorPanel.isVisible = false
