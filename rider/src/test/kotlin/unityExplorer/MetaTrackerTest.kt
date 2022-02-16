@@ -1,4 +1,4 @@
-package unityExplorer.multiSolution
+package unityExplorer
 
 import base.addNewItem
 import base.dump
@@ -17,12 +17,10 @@ class MetaTrackerTest : BaseTestWithSolutionBase() {
     fun testAddNewItem() {
         val params = OpenSolutionParams()
         params.waitForCaches = true
-        params.minimalCountProjectsMustBeLoaded = 1
         params.forceOpenInNewFrame = true
-        withSolution("ProjectSettingsTestData", params) { _ ->
+        withSolution("EmptySolution", params) { _ ->
             withSolution("UnityProjectModelViewExtensionsTest", params) { project ->
                 testProjectModel(testGoldFile, project, false) {
-//dump("Init", project, activeSolutionDirectory) {}
                     dump("Add files and classes", project, activeSolutionDirectory) {
                         addNewItem(project, arrayOf("Assets", "AsmdefResponse", "NewDirectory1"), TemplateType.CLASS, "AsmdefClass_added.cs")
                     }
