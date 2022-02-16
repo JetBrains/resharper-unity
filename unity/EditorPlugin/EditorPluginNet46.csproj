@@ -36,10 +36,6 @@
     <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll"><Visible>false</Visible></ILRepackInputAssemblies>
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll"><Visible>false</Visible></ILRepackInputAssemblies>
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll"><Visible>false</Visible></ILRepackInputAssemblies>
-    <ILRepackInputAssemblies Include="$(OutputPath)System.Runtime.CompilerServices.Unsafe.dll"><Visible>false</Visible></ILRepackInputAssemblies>
-    <ILRepackInputAssemblies Include="$(OutputPath)System.Numerics.Vectors.dll"><Visible>false</Visible></ILRepackInputAssemblies>
-    <ILRepackInputAssemblies Include="$(OutputPath)System.Memory.dll"><Visible>false</Visible></ILRepackInputAssemblies>
-    <ILRepackInputAssemblies Include="$(OutputPath)System.Buffers.dll"><Visible>false</Visible></ILRepackInputAssemblies>
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="AssetPostprocessors\CsprojAssetPostprocessor.cs" />
