@@ -195,9 +195,9 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
         @Nls
         fun getCommandName(): String {
             return if (actions.count() == 1)
-                "Process '${actions.single().metaFile.name}'"
+                UnityPluginExplorerBundle.message("process.one.meta.file", actions.single().metaFile.name)
             else
-                "Process ${actions.count()} .meta Files"
+                UnityPluginExplorerBundle.message("process.several.meta.files", actions.count())
         }
     }
 
