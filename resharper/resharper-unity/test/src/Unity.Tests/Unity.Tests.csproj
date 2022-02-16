@@ -11,7 +11,8 @@
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Tests</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Tests</RootNamespace>
     <LangVersion>9</LangVersion>
-    <NoWarn Condition="$(InternalBuild)">CS8002</NoWarn>
+<!-- LibHarmony is not signed -->
+    <NoWarn>CS8002</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <JetTestProject>True</JetTestProject>
     <DefineConstants Condition="!$(InternalBuild)">INDEPENDENT_BUILD</DefineConstants>

@@ -58,9 +58,10 @@ val runTests = extra["RunTests"].toString().toLowerCase().toBoolean()
 val backend = BackendPaths(project, logger, repoRoot, productVersion).apply {
     extra["backend"] = this
 }
-val monorepoPreGeneratedRootDir = backend.getProductMonorepoRoot()?.resolve("Plugins/_Unity.Pregenerated")
-val monorepoPreGeneratedFrontendDir = monorepoPreGeneratedRootDir?.resolve("Frontend") ?: error("Building not in monorepo")
-val monorepoPreGeneratedBackendDir = monorepoPreGeneratedRootDir?.resolve("BackendModel") ?: error("Building not in monorepo")
+val productMonorepoDir = backend.getProductMonorepoRoot()
+val monorepoPreGeneratedRootDir by lazy { productMonorepoDir?.resolve("Plugins/_Unity.Pregenerated") ?: error("Building not in monorepo") }
+val monorepoPreGeneratedFrontendDir by lazy {  monorepoPreGeneratedRootDir.resolve("Frontend") }
+val monorepoPreGeneratedBackendDir by lazy {  monorepoPreGeneratedRootDir.resolve("BackendModel") }
 val dotnetDllFiles = files(
     "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.dll",
     "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.pdb",
@@ -270,6 +271,14 @@ tasks {
 
     fun generateLibModel(monorepo: Boolean) = registering(RdGenTask::class) {
         group = protocolGroup
+
+        if (monorepo && productMonorepoDir == null) {
+            doFirst {
+                throw GradleException("Building not in monorepo")
+            }
+            return@registering
+        }
+
         (extensions.getByName("params") as RdGenExtension).apply {
             // Always store models in their own folder, so the hash is only looking at the files we generate
 
@@ -331,6 +340,14 @@ tasks {
 
     fun generateFrontendBackendModel(monorepo: Boolean) = registering(RdGenTask::class) {
         group = protocolGroup
+
+        if (monorepo && productMonorepoDir == null) {
+            doFirst {
+                throw GradleException("Building not in monorepo")
+            }
+            return@registering
+        }
+
         if (monorepo) dependsOn(generateLibModelMonorepo)
         else dependsOn(generateLibModel)
 
@@ -383,6 +400,14 @@ tasks {
 
     fun generateBackendUnityModel(monorepo: Boolean) = registering(RdGenTask::class) {
         group = protocolGroup
+
+        if (monorepo && productMonorepoDir == null) {
+            doFirst {
+                throw GradleException("Building not in monorepo")
+            }
+            return@registering
+        }
+
         if (monorepo) dependsOn(generateLibModelMonorepo)
         else dependsOn(generateLibModel)
 
@@ -434,6 +459,14 @@ tasks {
 
     fun generateDebuggerWorkerModel(monorepo: Boolean) = registering(RdGenTask::class) {
         group = protocolGroup
+
+        if (monorepo && productMonorepoDir == null) {
+            doFirst {
+                throw GradleException("Building not in monorepo")
+            }
+            return@registering
+        }
+
         (extensions.getByName("params") as RdGenExtension).apply {
             // Always store models in their own folder, so the hash is only looking at the files we generate
 
