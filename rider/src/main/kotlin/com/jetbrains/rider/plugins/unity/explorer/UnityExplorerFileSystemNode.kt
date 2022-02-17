@@ -31,6 +31,7 @@ enum class AncestorNodeType {
     UserEditablePackage,
     ReadOnlyPackage,
     IgnoredFolder,
+    HiddenAsset,
     References,
     FileSystem;  // A folder in Packages that isn't a package. Gets no special treatment
 
@@ -72,8 +73,7 @@ open class UnityExplorerFileSystemNode(project: Project,
 
         // Mark ignored file types. This is mainly so we can highlight that hidden folders are completely ignored. We
         // have lots of non-indexed files in Assets and Packages, but they still appear in Find in Files when we check
-        // 'non-solution items'. Ignored file types are completely ignored, and don't show up at all. The default `*~`
-        // pattern matches Unity's hidden folder pattern, but can be used for e.g. `Samples~` and `Documentation~`.
+        // 'non-solution items'. Ignored file types are completely ignored, and don't show up at all.
         // Make it clear that the folder is ignored/excluded/not indexed
         val ignored = FileTypeManager.getInstance().isFileIgnored(virtualFile)
         if (ignored || descendentOf == AncestorNodeType.IgnoredFolder) {
@@ -89,9 +89,9 @@ open class UnityExplorerFileSystemNode(project: Project,
         }
 
         // Add tooltip for non-imported files and folders. Also, show the full name if we're hiding the tilde suffix.
-        if (!isHiddenAssetRoot(virtualFile)) {
+        if (isHiddenAsset(virtualFile) || descendentOf == AncestorNodeType.HiddenAsset) {
             var tooltip = if (presentation.tooltip.isNullOrEmpty()) "" else presentation.tooltip + "<br/>"
-            if (!SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
+            if (!SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles && isFolderEndingWithTilde(virtualFile)) {
                 tooltip += virtualFile.name + "<br/>"
             }
             presentation.tooltip = tooltip +
@@ -108,47 +108,45 @@ open class UnityExplorerFileSystemNode(project: Project,
     }
 
     override fun getName(): String {
-        if (isTildaEndedFolder(virtualFile) && !SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
+        if (isFolderEndingWithTilde(virtualFile) && !SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
             return super.getName().removeSuffix("~")
         }
         return super.getName()
     }
 
-    /*  Special case of {@link #isHiddenAssetRoot(VirtualFile)}
+    /*  Special case of {@link #isHiddenAsset(VirtualFile)}
         Files and folders ending with '~' are ignored by the asset importer. Files with '~' are usually backup files,
         so should be hidden. Unity uses folders that end with '~' as a way of distributing files that are not to be
         imported. This is usually `Documentation~` inside packages (https://docs.unity3d.com/Manual/cus-layout.html),
         but it can also be used for distributing code, too (e.g. `Samples~`). This code will not be treated as assets
         by Unity, but will still be added to the generated .csproj files to allow for use as e.g. command line tools
     */
-    private fun isTildaEndedFolder(file: VirtualFile)
+    private fun isFolderEndingWithTilde(file: VirtualFile)
         = descendentOf != AncestorNodeType.FileSystem && file.isDirectory && file.name.endsWith("~")
-
-    private fun isDotPrefixedFolder(file: VirtualFile)
-        = descendentOf != AncestorNodeType.FileSystem && file.isDirectory && file.name.startsWith(".")
 
     // Ignored by IDE
     private fun isIgnoredFolder(file: VirtualFile)
         = file.isDirectory && FileTypeManager.getInstance().isFileIgnored(virtualFile)
 
-    // can be folder of single file
-    private fun isHiddenAssetRoot(file: VirtualFile): Boolean {
+    // can be folder or file
+    // note that children of hidden folder are not matched by this function
+    private fun isHiddenAsset(file: VirtualFile): Boolean {
         // See https://docs.unity3d.com/Manual/SpecialFolders.html
         val extension = file.extension?.lowercase(Locale.getDefault())
         if (extension != null && UnityExplorer.IgnoredExtensions.contains(extension)) {
-            return false
+            return true
         }
 
         val name = file.nameWithoutExtension.lowercase(Locale.getDefault())
         if (name == "cvs" || file.name.startsWith(".")) {
-            return false
+            return true
         }
 
         if (file.name.endsWith("~")) {
-            return false
+            return true
         }
 
-        return true
+        return false
     }
 
     protected fun addProjects(presentation: PresentationData) {
@@ -300,7 +298,7 @@ open class UnityExplorerFileSystemNode(project: Project,
 
             // Note that its only the root node that's marked as "unloaded"/not imported. Child files and folder icons
             // are rendered as normal
-            if (isTildaEndedFolder(virtualFile) || isDotPrefixedFolder(virtualFile)) {
+            if (virtualFile.isDirectory && isHiddenAsset(virtualFile)) {
                 return UnityIcons.Explorer.UnloadedFolder
             }
         }
@@ -311,6 +309,8 @@ open class UnityExplorerFileSystemNode(project: Project,
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<NestingNode<VirtualFile>>): FileSystemNodeBase {
         val desc = if (isIgnoredFolder(virtualFile) || (!virtualFile.isDirectory && isIgnoredFolder(virtualFile.parent))) {
             AncestorNodeType.IgnoredFolder
+        } else if (isHiddenAsset(virtualFile)) {
+            AncestorNodeType.HiddenAsset
         } else {
             descendentOf
         }
@@ -327,14 +327,11 @@ open class UnityExplorerFileSystemNode(project: Project,
         }
 
         // special case, this check should go before isPartOfAssetDataBase
-        if (isTildaEndedFolder(file)) {
+        if (isFolderEndingWithTilde(file)) {
             return UnityExplorer.getInstance(myProject).showTildeFolders
         }
 
-        if (!isHiddenAssetRoot(file))
-            return false
-
-        return true
+        return !isHiddenAsset(file)
     }
 
     override fun getFileStatus(): FileStatus {
