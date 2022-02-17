@@ -88,6 +88,7 @@ open class UnityExplorerFileSystemNode(project: Project,
             addProjects(presentation)
         }
 
+        // Add tooltip for non-imported files and folders. Also, show the full name if we're hiding the tilde suffix.
         if (!isHiddenAssetRoot(virtualFile)) {
             var tooltip = if (presentation.tooltip.isNullOrEmpty()) "" else presentation.tooltip + "<br/>"
             if (!SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
