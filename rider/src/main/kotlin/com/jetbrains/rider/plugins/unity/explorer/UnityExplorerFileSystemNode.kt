@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.intellij.workspaceModel.ide.impl.virtualFile
+import com.jetbrains.rider.plugins.unity.explorer.UnityVfsUtil.Companion.isHiddenAssetRoot
 import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 import com.jetbrains.rider.projectView.calculateFileSystemIcon
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
@@ -88,7 +89,7 @@ open class UnityExplorerFileSystemNode(project: Project,
             addProjects(presentation)
         }
 
-        if (!isPartOfAssetDataBase(virtualFile)) {
+        if (!isHiddenAssetRoot(virtualFile)) {
             var tooltip = if (presentation.tooltip.isNullOrEmpty()) "" else presentation.tooltip + "<br/>"
             if (!SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
                 tooltip += virtualFile.name + "<br/>"
@@ -129,25 +130,6 @@ open class UnityExplorerFileSystemNode(project: Project,
     // Ignored by IDE
     private fun isIgnoredFolder(file: VirtualFile)
         = file.isDirectory && FileTypeManager.getInstance().isFileIgnored(virtualFile)
-
-    private fun isPartOfAssetDataBase(file: VirtualFile): Boolean {
-        // See https://docs.unity3d.com/Manual/SpecialFolders.html
-        val extension = file.extension?.lowercase(Locale.getDefault())
-        if (extension != null && UnityExplorer.IgnoredExtensions.contains(extension)) {
-            return false
-        }
-
-        val name = file.nameWithoutExtension.lowercase(Locale.getDefault())
-        if (name == "cvs" || file.name.startsWith(".")) {
-            return false
-        }
-
-        if (file.name.endsWith("~")) {
-            return false
-        }
-
-        return true
-    }
 
     protected fun addProjects(presentation: PresentationData) {
         val projectNames = entities   // One node for each project that this directory is part of
@@ -328,7 +310,7 @@ open class UnityExplorerFileSystemNode(project: Project,
             return UnityExplorer.getInstance(myProject).showTildeFolders
         }
 
-        if (!isPartOfAssetDataBase(file))
+        if (!isHiddenAssetRoot(file))
             return false
 
         return true

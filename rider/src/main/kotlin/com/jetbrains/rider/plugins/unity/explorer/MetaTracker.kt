@@ -54,7 +54,8 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
                                     val ls = event.file?.detectedLineSeparator
                                         ?: "\n" // from what I see, Unity 2020.3 always uses "\n", but lets use same as the main file.
                                     actions.add(metaFile, project) {
-                                        createMetaFile(event.parent, metaFileName, ls)
+                                        if (isApplicableForProject(event, project, true))
+                                            createMetaFile(event.parent, metaFileName, ls)
                                     }
                                 }
                                 is VFileDeleteEvent -> {
@@ -67,13 +68,22 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
                                     val metaFile = getMetaFile(event.file.path) ?: continue
                                     val ls = event.file.detectedLineSeparator ?: "\n"
                                     actions.add(metaFile, project) {
-                                        createMetaFile(event.newParent, getMetaFileName(event.newChildName), ls)
+                                        if (isApplicableForProject(event, project, true))
+                                            createMetaFile(event.newParent, getMetaFileName(event.newChildName), ls)
                                     }
                                 }
                                 is VFileMoveEvent -> {
                                     val metaFile = getMetaFile(event.oldPath) ?: continue
                                     actions.add(metaFile, project) {
-                                        VfsUtil.findFile(metaFile, true)?.move(this, event.newParent)
+                                        val oldMeta = VfsUtil.findFile(metaFile, true)
+                                        if (oldMeta != null)
+                                            oldMeta.move(this, event.newParent)
+                                        else {
+                                            if (isApplicableForProject(event, project, true)){
+                                                val ls = event.file.detectedLineSeparator ?: "\n"
+                                                createMetaFile(event.newParent, metaFile.name, ls)
+                                            }
+                                        }
                                     }
                                 }
                                 is VFilePropertyChangeEvent -> {
@@ -119,16 +129,17 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
         return "meta".equals(extension, true)
     }
 
-    private fun isApplicableForProject(event: VFileEvent, project: Project): Boolean {
+    private fun isApplicableForProject(event: VFileEvent, project: Project, checkForCreateMetaFile: Boolean = false): Boolean {
         val file = event.file ?: return false
         val assets = project.projectDir.findChild("Assets") ?: return false
-        if (VfsUtil.isAncestor(assets, file, false))
+        if (VfsUtil.isAncestor(assets, file, false) && (!checkForCreateMetaFile || UnityVfsUtil.belongsToAssetDatabase(file, assets)))
             return true
 
         val editablePackages = WorkspaceModel.getInstance(project).getPackages().filter { it.isEditable() }
         for (pack in editablePackages) {
             val packageFolder = pack.packageFolder ?: continue
-            if (VfsUtil.isAncestor(packageFolder, file, false)) return true
+            if (VfsUtil.isAncestor(packageFolder, file, false) && (!checkForCreateMetaFile || UnityVfsUtil.belongsToAssetDatabase(file, packageFolder)))
+                return true
         }
 
         return false
