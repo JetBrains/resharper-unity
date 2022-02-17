@@ -20,7 +20,6 @@ import com.jetbrains.rider.projectView.views.impl.SolutionViewSelectInTargetBase
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 import icons.UnityIcons
 import org.jdom.Element
-import org.jetbrains.annotations.NonNls
 
 class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRootNode(project)) {
 
@@ -28,14 +27,14 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
         const val ID = "UnityExplorer"
         @NlsSafe const val Title = "Unity"
         const val Weight = 1
-        @NonNls const val ShowProjectNamesOption = "show-project-names"
-        @NonNls const val ShowTildeFoldersOption = "show-tilde-folders"
-        @NonNls const val DefaultProjectPrefix = "Assembly-CSharp"
+        const val ShowProjectNamesOption = "show-project-names"
+        const val ShowTildeFoldersOption = "show-tilde-folders"
+        const val DefaultProjectPrefix = "Assembly-CSharp"
 
-        @NonNls val DefaultProjectPrefixRegex = ("$DefaultProjectPrefix[.-]?").toRegex()
+        val DefaultProjectPrefixRegex = ("$DefaultProjectPrefix[.-]?").toRegex()
 
         val Icon = UnityIcons.ToolWindows.UnityExplorer
-        @NonNls val IgnoredExtensions = hashSetOf("meta", "tmp")
+        val IgnoredExtensions = hashSetOf("meta", "tmp")
 
         fun getInstance(project: Project) = tryGetInstance(project)!!
 

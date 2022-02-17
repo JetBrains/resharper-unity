@@ -88,7 +88,7 @@ open class UnityExplorerFileSystemNode(project: Project,
             addProjects(presentation)
         }
 
-        if (!isVisibleInAssetDataBase(virtualFile)) {
+        if (!isPartOfAssetDataBase(virtualFile)) {
             var tooltip = if (presentation.tooltip.isNullOrEmpty()) "" else presentation.tooltip + "<br/>"
             if (!SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
                 tooltip += virtualFile.name + "<br/>"
@@ -126,7 +126,11 @@ open class UnityExplorerFileSystemNode(project: Project,
     private fun isDotPrefixedFolder(file: VirtualFile)
         = descendentOf != AncestorNodeType.FileSystem && file.isDirectory && file.name.startsWith(".")
 
-    private fun isVisibleInAssetDataBase(file: VirtualFile): Boolean {
+    // Ignored by IDE
+    private fun isIgnoredFolder(file: VirtualFile)
+        = file.isDirectory && FileTypeManager.getInstance().isFileIgnored(virtualFile)
+
+    private fun isPartOfAssetDataBase(file: VirtualFile): Boolean {
         // See https://docs.unity3d.com/Manual/SpecialFolders.html
         val extension = file.extension?.lowercase(Locale.getDefault())
         if (extension != null && UnityExplorer.IgnoredExtensions.contains(extension)) {
@@ -144,10 +148,6 @@ open class UnityExplorerFileSystemNode(project: Project,
 
         return true
     }
-
-    // Ignored by IDE
-    private fun isIgnoredFolder(file: VirtualFile)
-        = file.isDirectory && FileTypeManager.getInstance().isFileIgnored(virtualFile)
 
     protected fun addProjects(presentation: PresentationData) {
         val projectNames = entities   // One node for each project that this directory is part of
@@ -323,11 +323,12 @@ open class UnityExplorerFileSystemNode(project: Project,
             return true
         }
 
+        // special case, this check should go before isPartOfAssetDataBase
         if (isTildaEndingFolder(file)) {
             return UnityExplorer.getInstance(myProject).showTildeFolders
         }
 
-        if (!isVisibleInAssetDataBase(file))
+        if (!isPartOfAssetDataBase(file))
             return false
 
         return true

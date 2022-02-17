@@ -27,10 +27,8 @@ import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
-import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.name
 
-@ExperimentalPathApi
 class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
     companion object {
         private val logger = getLogger<MetaTracker>()
