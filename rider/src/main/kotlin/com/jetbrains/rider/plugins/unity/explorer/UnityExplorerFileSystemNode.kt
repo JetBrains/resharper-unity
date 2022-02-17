@@ -108,7 +108,7 @@ open class UnityExplorerFileSystemNode(project: Project,
     }
 
     override fun getName(): String {
-        if (isTildaEndingFolder(virtualFile) && !SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
+        if (isTildaEndedFolder(virtualFile) && !SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
             return super.getName().removeSuffix("~")
         }
         return super.getName()
@@ -121,7 +121,7 @@ open class UnityExplorerFileSystemNode(project: Project,
         but it can also be used for distributing code, too (e.g. `Samples~`). This code will not be treated as assets
         by Unity, but will still be added to the generated .csproj files to allow for use as e.g. command line tools
     */
-    private fun isTildaEndingFolder(file: VirtualFile)
+    private fun isTildaEndedFolder(file: VirtualFile)
         = descendentOf != AncestorNodeType.FileSystem && file.isDirectory && file.name.endsWith("~")
 
     private fun isDotPrefixedFolder(file: VirtualFile)
@@ -300,7 +300,7 @@ open class UnityExplorerFileSystemNode(project: Project,
 
             // Note that its only the root node that's marked as "unloaded"/not imported. Child files and folder icons
             // are rendered as normal
-            if (isTildaEndingFolder(virtualFile) || isDotPrefixedFolder(virtualFile)) {
+            if (isTildaEndedFolder(virtualFile) || isDotPrefixedFolder(virtualFile)) {
                 return UnityIcons.Explorer.UnloadedFolder
             }
         }
@@ -327,7 +327,7 @@ open class UnityExplorerFileSystemNode(project: Project,
         }
 
         // special case, this check should go before isPartOfAssetDataBase
-        if (isTildaEndingFolder(file)) {
+        if (isTildaEndedFolder(file)) {
             return UnityExplorer.getInstance(myProject).showTildeFolders
         }
 
