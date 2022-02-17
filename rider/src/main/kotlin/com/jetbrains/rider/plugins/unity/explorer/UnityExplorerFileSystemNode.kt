@@ -88,7 +88,7 @@ open class UnityExplorerFileSystemNode(project: Project,
             addProjects(presentation)
         }
 
-        if (!isPartOfAssetDataBase(virtualFile)) {
+        if (!isHiddenAssetRoot(virtualFile)) {
             var tooltip = if (presentation.tooltip.isNullOrEmpty()) "" else presentation.tooltip + "<br/>"
             if (!SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
                 tooltip += virtualFile.name + "<br/>"
@@ -113,7 +113,7 @@ open class UnityExplorerFileSystemNode(project: Project,
         return super.getName()
     }
 
-    /*  Special case of isVisibleInAssetDataBase
+    /*  Special case of {@link #isHiddenAssetRoot(VirtualFile)}
         Files and folders ending with '~' are ignored by the asset importer. Files with '~' are usually backup files,
         so should be hidden. Unity uses folders that end with '~' as a way of distributing files that are not to be
         imported. This is usually `Documentation~` inside packages (https://docs.unity3d.com/Manual/cus-layout.html),
@@ -130,7 +130,8 @@ open class UnityExplorerFileSystemNode(project: Project,
     private fun isIgnoredFolder(file: VirtualFile)
         = file.isDirectory && FileTypeManager.getInstance().isFileIgnored(virtualFile)
 
-    private fun isPartOfAssetDataBase(file: VirtualFile): Boolean {
+    // can be folder of single file
+    private fun isHiddenAssetRoot(file: VirtualFile): Boolean {
         // See https://docs.unity3d.com/Manual/SpecialFolders.html
         val extension = file.extension?.lowercase(Locale.getDefault())
         if (extension != null && UnityExplorer.IgnoredExtensions.contains(extension)) {
@@ -231,6 +232,7 @@ open class UnityExplorerFileSystemNode(project: Project,
         return null
     }
 
+    @Suppress("SameParameterValue")
     private fun findAncestor(root: FileSystemNodeBase?, name: String): FileSystemNodeBase? {
         return forEachAncestor(root) { this.name.equals(name, true) }
     }
@@ -328,7 +330,7 @@ open class UnityExplorerFileSystemNode(project: Project,
             return UnityExplorer.getInstance(myProject).showTildeFolders
         }
 
-        if (!isPartOfAssetDataBase(file))
+        if (!isHiddenAssetRoot(file))
             return false
 
         return true
