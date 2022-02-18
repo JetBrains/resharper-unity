@@ -48,7 +48,6 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
     }
 
     var showTildeFolders = true
-        private set
 
     var showProjectNames = true
         private set
@@ -116,8 +115,8 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
             { showProjectNames }, { showProjectNames = it }
         )).setAsSecondary(true)
         actionGroup.addAction(SolutionViewToggleAction(
-            UnityPluginActionsBundle.message("action.show.hidden.folders.text"),
-            UnityPluginActionsBundle.message("action.show.hidden.folders.description"),
+            UnityPluginActionsBundle.message("action.show.tilde.folders.text"),
+            UnityPluginActionsBundle.message("action.show.tilde.folders.description"),
             AllIcons.Actions.ListFiles,
             { showTildeFolders }, { showTildeFolders = it }
         )).setAsSecondary(true)

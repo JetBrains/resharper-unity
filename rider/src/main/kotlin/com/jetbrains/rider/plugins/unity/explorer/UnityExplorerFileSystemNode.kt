@@ -49,6 +49,29 @@ open class UnityExplorerFileSystemNode(project: Project,
                                        protected val descendentOf: AncestorNodeType)
     : FileSystemNodeBase(project, virtualFile, nestedFiles) {
 
+    companion object {
+        // can be folder or file
+        // note that children of hidden folder are not matched by this function
+        fun isHiddenAsset(file: VirtualFile): Boolean {
+            // See https://docs.unity3d.com/Manual/SpecialFolders.html
+            val extension = file.extension?.lowercase(Locale.getDefault())
+            if (extension != null && UnityExplorer.IgnoredExtensions.contains(extension)) {
+                return true
+            }
+
+            val name = file.nameWithoutExtension.lowercase(Locale.getDefault())
+            if (name == "cvs" || file.name.startsWith(".")) {
+                return true
+            }
+
+            if (file.name.endsWith("~")) {
+                return true
+            }
+
+            return false
+        }
+    }
+
     override val entities: List<ProjectModelEntity>
         get() = WorkspaceModel
             .getInstance(myProject)
@@ -127,27 +150,6 @@ open class UnityExplorerFileSystemNode(project: Project,
     // Ignored by IDE
     private fun isIgnoredFolder(file: VirtualFile)
         = file.isDirectory && FileTypeManager.getInstance().isFileIgnored(virtualFile)
-
-    // can be folder or file
-    // note that children of hidden folder are not matched by this function
-    private fun isHiddenAsset(file: VirtualFile): Boolean {
-        // See https://docs.unity3d.com/Manual/SpecialFolders.html
-        val extension = file.extension?.lowercase(Locale.getDefault())
-        if (extension != null && UnityExplorer.IgnoredExtensions.contains(extension)) {
-            return true
-        }
-
-        val name = file.nameWithoutExtension.lowercase(Locale.getDefault())
-        if (name == "cvs" || file.name.startsWith(".")) {
-            return true
-        }
-
-        if (file.name.endsWith("~")) {
-            return true
-        }
-
-        return false
-    }
 
     protected fun addProjects(presentation: PresentationData) {
         val projectNames = entities   // One node for each project that this directory is part of

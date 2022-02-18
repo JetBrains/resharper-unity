@@ -29,9 +29,9 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
                 // add file to Assets\NewDirectory1 is ambig between predefined projects and asmdef
                 // goes to Editor project
 
-                addNewItem(project, arrayOf("Assets", "AsmdefResponse", "NewDirectory1"), TemplateType.CLASS, "AsmdefClass_added.cs")
-                addNewItem(project, arrayOf("Assets", "NewDirectory1"), TemplateType.CLASS, "MainClass_added.cs")
-                addNewItem(project, arrayOf("Assets", "Scripts", "Editor", "NewDirectory1"), TemplateType.CLASS, "EditorClass_added.cs")
+                addNewItem2(project, arrayOf("Assets", "AsmdefResponse", "NewDirectory1"), TemplateType.CLASS, "AsmdefClass_added.cs")
+                addNewItem2(project, arrayOf("Assets", "NewDirectory1"), TemplateType.CLASS, "MainClass_added.cs")
+                addNewItem2(project, arrayOf("Assets", "Scripts", "Editor", "NewDirectory1"), TemplateType.CLASS, "EditorClass_added.cs")
             }
         }
     }
@@ -44,9 +44,10 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
 
                 doActionAndWait(project, {
                     renameItem(project, arrayOf("Assets", "AsmdefResponse", "NewBehaviourScript.cs"), "NewBehaviourScript_renamed.cs")
-                },true)
+                }, true)
 
-                val metaFile = project.solutionDirectory.resolve("Assets").resolve("AsmdefResponse").resolve("NewBehaviourScript_renamed.cs.meta")
+                val metaFile = project.solutionDirectory.resolve("Assets").resolve("AsmdefResponse")
+                    .resolve("NewBehaviourScript_renamed.cs.meta")
                 Assert.assertTrue(metaFile.exists(), "meta file $metaFile doesn't exist.")
                 Assert.assertEquals(metaFileContent, metaFile.readText())
             }
@@ -62,7 +63,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
 
                 doActionAndWait(project, {
                     renameItem(project, arrayOf("Assets", "Dir1"), "Dir1_renamed")
-                },true)
+                }, true)
 
                 val metaFile = project.solutionDirectory.resolve("Assets").resolve("Dir1_renamed.meta")
                 Assert.assertTrue(metaFile.exists(), "meta file $metaFile doesn't exist.")
@@ -79,7 +80,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
                 doActionAndWait(project, {
                     // folder exists in multiple projects at once
                     renameItem(project, arrayOf("Assets", "AsmdefResponse", "NewDirectory1"), "NewDirectory1_renamed")
-                },true)
+                }, true)
             }
         }
     }
@@ -92,7 +93,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
                 doActionAndWait(project, {
                     // folder exists in multiple projects at once, it not empty
                     renameItem(project, arrayOf("Assets", "AsmdefResponse", "SS"), "SS_renamed")
-                },true)
+                }, true)
             }
         }
     }
@@ -113,7 +114,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     @Test // RIDER-41182
     fun testMoveFile() {
         val originFile = project.solutionDirectory.resolve("Assets").resolve("Class1.cs")
-        val originMetaFile = File(originFile.absolutePath+".meta")
+        val originMetaFile = File(originFile.absolutePath + ".meta")
         val metaFileContent = originMetaFile.readText()
         val movedFile = project.solutionDirectory.resolve("Assets").resolve("AsmdefResponse").resolve("NewDirectory1").resolve("Class1.cs")
         Assert.assertTrue(originFile.exists(), "We expect file exists.")
@@ -129,7 +130,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         Assert.assertFalse(originFile.exists(), "We expect $originFile removed.")
         Assert.assertFalse(originMetaFile.exists(), "We expect $originMetaFile file removed.")
         Assert.assertTrue(movedFile.exists(), "$movedFile should have been moved.")
-        val movedMetaFile = File(movedFile.absolutePath+".meta")
+        val movedMetaFile = File(movedFile.absolutePath + ".meta")
         Assert.assertTrue(movedMetaFile.exists(), "meta file $movedMetaFile doesn't exist.")
         Assert.assertEquals(metaFileContent, movedMetaFile.readText())
     }
@@ -137,7 +138,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     @Test // RIDER-63575
     fun testMoveFile2() {
         val originFile = project.solutionDirectory.resolve("Assets/AsmdefResponse/SS/rrr.cs")
-        val originMetaFile = File(originFile.absolutePath+".meta")
+        val originMetaFile = File(originFile.absolutePath + ".meta")
         val metaFileContent = originMetaFile.readText()
         val movedFile = project.solutionDirectory.resolve("Assets/rrr.cs")
         Assert.assertTrue(originFile.exists(), "We expect file exists.")
@@ -153,7 +154,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         Assert.assertFalse(originFile.exists(), "We expect $originFile removed.")
         Assert.assertFalse(originMetaFile.exists(), "We expect $originMetaFile file removed.")
         Assert.assertTrue(movedFile.exists(), "$movedFile should have been moved.")
-        val movedMetaFile = File(movedFile.absolutePath+".meta")
+        val movedMetaFile = File(movedFile.absolutePath + ".meta")
         Assert.assertTrue(movedMetaFile.exists(), "meta file $movedMetaFile doesn't exist.")
         Assert.assertEquals(metaFileContent, movedMetaFile.readText())
     }
