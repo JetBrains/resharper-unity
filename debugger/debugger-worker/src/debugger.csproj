@@ -6,7 +6,7 @@
     </PropertyGroup>
     <Import Project="Sdk.props" Sdk="JetBrains.NET.Sdk" Version="0.0.4" Condition="$(InternalBuild)" />
     <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" Condition="$(ImportGuard-DeirectoryBuildProps) == ''"/>
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" Condition="$(ImportGuard-DirectoryBuildProps) == ''"/>
     <PropertyGroup>
         <TargetFramework>net472</TargetFramework>
         <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Rider.Debugger</AssemblyName>

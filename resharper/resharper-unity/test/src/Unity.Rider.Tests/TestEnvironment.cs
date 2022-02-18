@@ -26,7 +26,7 @@ using NUnit.Framework;
 // with separate "test/data" folders. E.g. "resharper-unity" and "resharper-yaml"
 #pragma warning disable 618
 #if INDEPENDENT_BUILD
-[assembly: TestDataPathBase("resharper-unity/test/data/Unity")]
+[assembly: TestDataPathBase("resharper-unity/test/data/Unity.Rider")]
 #else
 [assembly: TestDataPathBase("Plugins/ReSharperUnity/resharper/resharper-unity/test/data/Unity")]
 #endif

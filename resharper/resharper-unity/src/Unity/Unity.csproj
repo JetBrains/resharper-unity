@@ -10,8 +10,6 @@
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
-    <!-- TODO: Fix up the .psi files so we don't get the obsolete warnings -->
-    <NoWarn>0618</NoWarn>
     <NoWarn Condition="$(InternalBuild)">8002</NoWarn>
     <LangVersion>9</LangVersion>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>

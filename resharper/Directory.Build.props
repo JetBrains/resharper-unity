@@ -1,7 +1,7 @@
 <Project>
     
   <PropertyGroup>
-      <ImportGuard-DeirectoryBuildProps>True</ImportGuard-DeirectoryBuildProps>
+      <ImportGuard-DirectoryBuildProps>True</ImportGuard-DirectoryBuildProps>
   </PropertyGroup>
     
   <PropertyGroup>
@@ -35,9 +35,6 @@
          assemblies in the bin dir. For test projects, JetTestProject=True, and @(JetContent) and @(JetReference) are
          always copied. -->
     <ReSharperUnityCommonOutputPath>$(MSBuildThisFileDirectory)\build\Unity\bin\$(Configuration)</ReSharperUnityCommonOutputPath>
-      
-    <!-- Always specify embedded resources explicitly -->
-    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
   </PropertyGroup>
 
   <PropertyGroup>
