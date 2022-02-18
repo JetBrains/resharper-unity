@@ -4,8 +4,11 @@ import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.refactoring.rename.RenameHandlerRegistry
+import com.jetbrains.rd.platform.util.getComponent
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rdclient.protocol.protocolHost
 import com.jetbrains.rider.ideaInterop.vfs.VfsWriteOperationsHost
 import com.jetbrains.rider.model.RdProjectModelDumpFlags
 import com.jetbrains.rider.model.RdProjectModelDumpParams
@@ -13,6 +16,7 @@ import com.jetbrains.rider.model.projectModelTasks
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorerFileSystemNode
 import com.jetbrains.rider.projectView.ProjectVirtualFileView
+import com.jetbrains.rider.projectView.actions.newFile.RiderNewDirectoryAction
 import com.jetbrains.rider.projectView.actions.renameAction.RiderRenameItemHandler
 import com.jetbrains.rider.projectView.getOrCreateActualElement
 import com.jetbrains.rider.projectView.getProjectElementView
@@ -24,13 +28,13 @@ import com.jetbrains.rider.projectView.moveProviders.impl.DuplicateNameDialog
 import com.jetbrains.rider.projectView.nodes.getVirtualFile
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
+import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 import com.jetbrains.rider.test.framework.TestProjectModelContext
 import com.jetbrains.rider.test.framework.flushQueues
 import com.jetbrains.rider.test.framework.frameworkLogger
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.maskCacheFiles
 import com.jetbrains.rider.test.scriptingApi.*
-import com.jetbrains.rider.util.idea.getComponent
 import com.jetbrains.rider.util.idea.syncFromBackend
 import java.io.File
 import javax.swing.JTree
@@ -40,20 +44,20 @@ fun TestProjectModelContext.dump(caption: String, project: Project, tempTestDire
     doActionAndWait(project, action, true)
     val treeDump = dumpUnityExplorerTree(project, tempTestDirectory)
 
-    treeOutput.appendln("===================")
-    fileOutput.appendln("===================")
-    treeOutput.appendln(caption)
-    fileOutput.appendln(caption)
-    treeOutput.appendln()
-    fileOutput.appendln()
-    treeOutput.appendln(treeDump)
-    treeOutput.appendln()
+    treeOutput.appendLine("===================")
+    fileOutput.appendLine("===================")
+    treeOutput.appendLine(caption)
+    fileOutput.appendLine(caption)
+    treeOutput.appendLine()
+    fileOutput.appendLine()
+    treeOutput.appendLine(treeDump)
+    treeOutput.appendLine()
 
     val dumpProjectModelTask = project.solution.projectModelTasks.dumpProjectModel
     val dumpParams = RdProjectModelDumpParams(RdProjectModelDumpFlags.Structure, hideMiscFilesProjectContent)
     val projectModelDump = dumpProjectModelTask.syncFromBackend(dumpParams, project)
-    treeOutput.appendln(projectModelDump?.maskCacheFiles())
-    treeOutput.appendln()
+    treeOutput.appendLine(projectModelDump?.maskCacheFiles())
+    treeOutput.appendLine()
 
     dumpFiles(fileOutput, tempTestDirectory, false, this.profile)
 }
@@ -76,15 +80,32 @@ fun dumpExplorerTree(tree: JTree) : String {
         .replace("""(\s+)-Plugins$(\1\s+\S+$)*""".toRegex(RegexOption.MULTILINE), "") + "\n"
 }
 
-fun addNewItem(project: Project, path: Array<String>, template: TemplateType, itemName: String) {
+fun addNewItem2(project: Project, path: Array<String>, template: TemplateType, itemName: String) {
     frameworkLogger.info("Start adding new item: '$itemName'")
     val dataContext = createDataContextFor2(project, arrayOf(path))
     changeFileSystem(project) {
         val createdFile = executeNewItemAction(dataContext, template.type, template.group!!, itemName)
-        this.affectedFiles.add(createdFile!!.parentFile)
+        this.affectedFiles.add(createdFile.parentFile)
     }
     persistAllFilesOnDisk()
     frameworkLogger.info("New item '$itemName' is added")
+}
+
+fun addNewFolder2(project: Project, path: Array<String>, folderName: String) {
+    frameworkLogger.info("Start adding new item: '$folderName'")
+    val dataContext = createDataContextFor2(project, arrayOf(path))
+    addNewFolder2(project, dataContext, folderName)
+}
+
+private fun addNewFolder2(project: Project,
+                         dataContext: DataContext,
+                         folderName: String) {
+    changeFileSystem(project) {
+        val createdFile = RiderNewDirectoryAction().execute(dataContext, folderName)
+        this.affectedFiles.add(VfsUtil.virtualToIoFile(createdFile!!))
+    }
+    persistAllFilesOnDisk()
+    frameworkLogger.info("New folder '$folderName' is added")
 }
 
 fun renameItem(project: Project, path: Array<String>, newName: String) {
@@ -102,7 +123,7 @@ fun deleteElement(project: Project, path: Array<String>) {
 }
 
 fun createDataContextFor2(project: Project, paths: Array<Array<String>>): DataContext {
-    flushQueues()
+    flushQueues(project.protocolHost)
     val nodes = paths.map { findReq(it, project) }.toTypedArray()
     return createDataContextForNode(project, nodes)
 }
@@ -136,13 +157,13 @@ fun findReq(path: Array<String>, project: Project): AbstractTreeNode<*> {
 
 fun doActionAndWait(project: Project, action: () -> Unit, @Suppress("SameParameterValue") closeEditors: Boolean) {
     action()
-    flushQueues()
+    flushQueues(project.protocolHost)
     waitAllCommandsFinished()
     project.getComponent<VfsWriteOperationsHost>().waitRefreshIsFinished()
 
     if (closeEditors) {
         FileEditorManagerEx.getInstanceEx(project).closeAllFiles()
-        flushQueues()
+        flushQueues(project.protocolHost)
     }
 }
 
@@ -161,8 +182,8 @@ fun pasteItem2(project: Project, path: Array<String>, customName: String? = null
     val dataContext = createDataContextFor2(project, arrayOf(path))
     assert(RiderPasteProvider.isPasteEnabled(dataContext)) { "Can't paste elements. isPasteEnabled" }
     assert(RiderPasteProvider.isPastePossible(dataContext)) { "Can't paste elements. isPastePossible" }
-    Lifetime.using {
-        DuplicateNameDialog.withCustomName(it, customName)
+    Lifetime.using { lifetime ->
+        DuplicateNameDialog.withCustomName(lifetime, customName)
         if (orderType != null) {
             val element = dataContext.getProjectElementView()
                 ?: dataContext.getVirtualFile()?.let { ProjectVirtualFileView(project, it).getOrCreateActualElement() }
@@ -174,4 +195,26 @@ fun pasteItem2(project: Project, path: Array<String>, customName: String? = null
         }
     }
     waitForWorkspaceModelReady(project)
+}
+
+fun withUnityExplorerPane(
+    project: Project,
+    showTildeFolders:Boolean = true,
+    showAllFiles: Boolean = false,
+    action: () -> Unit) {
+    val unityExplorer = UnityExplorer.getInstance(project)
+    unityExplorer.showTildeFolders = showTildeFolders
+
+    val pane = SolutionExplorerViewPane.getInstance(project)
+    pane.myShowAllFiles = showAllFiles
+    unityExplorer.updateFromRoot()
+    try {
+        action()
+    } finally {
+        if (!project.isDisposed) {
+            pane.myShowAllFiles = false
+            unityExplorer.showTildeFolders = true
+            unityExplorer.updateFromRoot()
+        }
+    }
 }
