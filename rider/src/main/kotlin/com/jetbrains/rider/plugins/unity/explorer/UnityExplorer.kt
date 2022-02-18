@@ -114,9 +114,9 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
             AllIcons.Actions.ListFiles,
             { showProjectNames }, { showProjectNames = it }
         )).setAsSecondary(true)
-        actionGroup.addAction(SolutionViewToggleAction(
+            actionGroup.addAction(SolutionViewToggleAction(
             UnityPluginActionsBundle.message("action.show.tilde.folders.text"),
-            UnityPluginActionsBundle.message("action.show.tilde.folders.description"),
+            null,
             AllIcons.Actions.ListFiles,
             { showTildeFolders }, { showTildeFolders = it }
         )).setAsSecondary(true)
