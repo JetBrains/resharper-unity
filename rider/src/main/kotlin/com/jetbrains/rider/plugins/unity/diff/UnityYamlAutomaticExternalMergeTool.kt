@@ -10,6 +10,7 @@ import com.intellij.diff.merge.MergeResult
 import com.intellij.diff.merge.ThreesideMergeRequest
 import com.intellij.diff.merge.external.AutomaticExternalMergeTool
 import com.intellij.diff.tools.external.ExternalDiffSettings
+import com.intellij.diff.tools.external.ExternalDiffSettings.ExternalToolGroup.MERGE_TOOL
 import com.intellij.diff.tools.external.ExternalDiffToolUtil
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -35,8 +36,9 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
     override fun show(project: Project?, request: MergeRequest) {
         project ?: return
 
-        val settings = ExternalDiffSettings()
-        settings.isMergeTrustExitCode = true
+        val externalMergeTool = ExternalDiffSettings.ExternalTool()
+        externalMergeTool.isMergeTrustExitCode = true
+        externalMergeTool.groupName = MERGE_TOOL
         val appDataPath = UnityInstallationFinder.getInstance(project).getApplicationContentsPath() ?: return
         val extension = when {
             SystemInfo.isWindows -> ".exe"
@@ -48,17 +50,17 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
         val premergedRight = Paths.get(tempDir).resolve("premergedRight_" + request.hashCode())
 
         try {
-            settings.isMergeTrustExitCode = true
-            settings.mergeExePath = appDataPath.resolve("Tools/UnityYAMLMerge" + extension).toString()
+            externalMergeTool.isMergeTrustExitCode = true
+            externalMergeTool.programPath = appDataPath.resolve("Tools/UnityYAMLMerge" + extension).toString()
             val mergeParameters = project.solution.frontendBackendModel.backendSettings.mergeParameters.valueOrThrow
             if (mergeParameters.contains(" -p "))
-                settings.mergeParameters = "$mergeParameters $premergedBase $premergedRight"
+                externalMergeTool.argumentPattern = "$mergeParameters $premergedBase $premergedRight"
             else
-                settings.mergeParameters = mergeParameters
+                externalMergeTool.argumentPattern = mergeParameters
 
-            myLogger.info("PreMerge with ${settings.mergeExePath} ${settings.mergeParameters}")
+            myLogger.info("PreMerge with ${externalMergeTool.programPath} ${externalMergeTool.argumentPattern}")
 
-            if (!tryExecuteMerge(project, settings, request as ThreesideMergeRequest)) {
+            if (!tryExecuteMerge(project, externalMergeTool, request as ThreesideMergeRequest)) {
                 if (premergedBase.exists() && premergedRight.exists()) {
                     myLogger.info("PreMerge partially successful. Call ShowMergeBuiltin on pre-merged.")
                     val output: VirtualFile = (request.outputContent as FileContent).file
@@ -78,15 +80,16 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
         }
     }
 
-    private fun tryExecuteMerge(project: Project?, settings: ExternalDiffSettings, request: ThreesideMergeRequest): Boolean {
+    private fun tryExecuteMerge(project: Project?, externalMergeTool: ExternalDiffSettings.ExternalTool, request: ThreesideMergeRequest): Boolean {
         // see reference impl "com.intellij.diff.tools.external.ExternalDiffToolUtil#executeMerge"
         request.onAssigned(true)
         try {
-            if (ExternalDiffToolUtil.tryExecuteMerge(project, settings, request, null)) {
+            if (ExternalDiffToolUtil.tryExecuteMerge(project, externalMergeTool, request, null)) {
                 myLogger.info("Merge with external tool was fully successful. Apply result.")
                 request.applyResult(MergeResult.RESOLVED)
                 return true
             }
+
             return false
         } catch (e: Exception) {
             myLogger.error("UnityYamlMerge failed.", e)
