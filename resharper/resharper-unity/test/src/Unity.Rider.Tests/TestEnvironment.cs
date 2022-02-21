@@ -28,7 +28,7 @@ using NUnit.Framework;
 #if INDEPENDENT_BUILD
 [assembly: TestDataPathBase("resharper-unity/test/data/Unity.Rider")]
 #else
-[assembly: TestDataPathBase("Plugins/ReSharperUnity/resharper/resharper-unity/test/data/Unity")]
+[assembly: TestDataPathBase("Plugins/ReSharperUnity/resharper/resharper-unity/test/data/Unity.Rider")]
 #endif
 #pragma warning restore 618
 
