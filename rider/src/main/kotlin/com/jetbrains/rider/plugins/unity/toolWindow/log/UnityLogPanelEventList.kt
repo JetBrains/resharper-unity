@@ -44,8 +44,8 @@ class UnityLogPanelEventList(lifetime: Lifetime) : JBList<LogPanelItem>(emptyLis
 
     private fun updateFont() {
         val sc = EditorColorsManager.getInstance().globalScheme
-        font = if (UISettings.instance.presentationMode) {
-            Font(sc.consoleFontName, Font.PLAIN, UISettings.instance.presentationModeFontSize)
+        font = if (UISettings.getInstance().presentationMode) {
+            Font(sc.consoleFontName, Font.PLAIN, UISettings.getInstance().presentationModeFontSize)
         }
         else {
             Font(sc.consoleFontName, Font.PLAIN, sc.consoleFontSize)

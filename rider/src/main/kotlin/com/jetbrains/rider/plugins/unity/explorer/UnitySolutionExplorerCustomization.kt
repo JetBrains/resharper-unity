@@ -9,8 +9,21 @@ import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 
 class UnitySolutionExplorerCustomization(project: Project) : SolutionExplorerCustomization(project) {
     override fun supportReferenceModifications(projectEntity: ProjectModelEntity): Boolean {
-        if (UnityUIManager.getInstance(project).hasMinimizedUi.hasTrueValue() && project.isUnityGeneratedProject())
-            return false
+        if (isUnityGeneratedAndMinimizedUI()) return false
         return super.supportReferenceModifications(projectEntity)
+    }
+
+    override fun supportSolutionModifications(): Boolean {
+        if (isUnityGeneratedAndMinimizedUI()) return false
+        return super.supportSolutionModifications()
+    }
+
+    override fun supportNugetModifications(): Boolean {
+        if (isUnityGeneratedAndMinimizedUI()) return false
+        return super.supportNugetModifications()
+    }
+
+    private fun isUnityGeneratedAndMinimizedUI(): Boolean {
+        return UnityUIManager.getInstance(project).hasMinimizedUi.hasTrueValue() && project.isUnityGeneratedProject()
     }
 }

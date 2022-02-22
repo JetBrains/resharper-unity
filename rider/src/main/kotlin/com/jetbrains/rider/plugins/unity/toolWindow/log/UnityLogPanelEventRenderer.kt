@@ -56,7 +56,7 @@ class UnityLogPanelEventRenderer : ColoredListCellRenderer<LogPanelItem>(), List
     override fun customizeCellRenderer(list: JList<out LogPanelItem>, event: LogPanelItem?, index: Int, selected: Boolean, hasFocus: Boolean) {
         if (event != null) {
             icon = RowIcon(event.type.getIcon(), event.mode.getIcon())
-            val tokens = tokenizer.tokenize(event.message)
+            val tokens = tokenizer.tokenize(event.shortPresentation)
 
             for (token in tokens) {
                 if (!token.used) {

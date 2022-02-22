@@ -6,6 +6,8 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 {
     [MiscFilesProjectPsiModuleProvider]
@@ -20,35 +22,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
         public void Dispose() { }
 
-        public IEnumerable<IPsiModule> GetModules()
-        {
-            var module = myModuleFactory.PsiModule;
-            return module != null ? new[] {module} : EmptyArray<IPsiModule>.Instance;
-        }
+        public IEnumerable<IPsiModule> GetModules() => new[] { myModuleFactory.PsiModule };
 
         public IEnumerable<IPsiSourceFile> GetPsiSourceFilesFor(IProjectFile projectFile)
         {
             if (projectFile == null)
                 throw new ArgumentNullException(nameof(projectFile));
-            Assertion.Assert(projectFile.IsValid(), "projectFile.IsValid()");
+            Assertion.Assert(projectFile.IsValid());
 
-            var module = myModuleFactory.PsiModule;
-            if (module != null && module.TryGetFileByPath(projectFile.Location, out var file))
+            if (myModuleFactory.PsiModule.TryGetFileByPath(projectFile.Location, out var file))
                 return new[] {file};
 
             return EmptyList<IPsiSourceFile>.Instance;
         }
 
-        public void OnProjectFileChanged(IProjectFile projectFile, PsiModuleChange.ChangeType changeType,
+        public void OnProjectFileChanged(IProjectFile? projectFile, PsiModuleChange.ChangeType changeType,
                                          PsiModuleChangeBuilder changeBuilder, VirtualFileSystemPath oldLocation)
         {
             if (projectFile == null)
                 return;
 
             var module = myModuleFactory.PsiModule;
-            if (module == null)
-                return;
-
             switch (changeType)
             {
                 case PsiModuleChange.ChangeType.Added:

@@ -1,5 +1,4 @@
 using JetBrains.Application.InlayHints;
-using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
@@ -37,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
         {
             myPackageManager = packageManager;
             myUnityVersion = unityVersion;
-            myExternalFilesPsiModule = externalFilesPsiModuleFactory.PsiModule.NotNull("externalFilesPsiModuleFactory.PsiModule != null");
+            myExternalFilesPsiModule = externalFilesPsiModuleFactory.PsiModule;
         }
 
         public override bool ShouldRun(IFile file, ElementProblemAnalyzerData data)

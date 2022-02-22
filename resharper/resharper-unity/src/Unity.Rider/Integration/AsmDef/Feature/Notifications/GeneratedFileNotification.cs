@@ -1,5 +1,4 @@
 using System;
-using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Lifetimes;
@@ -12,8 +11,11 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Backend.Features.Notifications;
 using JetBrains.Rider.Backend.Features.ProjectModel;
 using JetBrains.Rider.Backend.Features.TextControls;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Notifications
 {
@@ -26,9 +28,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
                                          UnitySolutionTracker solutionTracker,
                                          ISolution solution,
                                          AsmDefCache asmDefCache,
-                                         [CanBeNull] RiderTextControlHost textControlHost = null,
-                                         [CanBeNull] SolutionLifecycleHost solutionLifecycleHost = null,
-                                         [CanBeNull] NotificationPanelHost notificationPanelHost = null)
+                                         RiderTextControlHost? textControlHost = null,
+                                         SolutionLifecycleHost? solutionLifecycleHost = null,
+                                         NotificationPanelHost? notificationPanelHost = null)
         {
             // TODO: Why are these [CanBeNull]?
             if (solutionLifecycleHost == null || textControlHost == null || notificationPanelHost == null)
@@ -40,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
             var fullStartupFinishedLifetimeDefinition = new LifetimeDefinition(lifetime);
             solutionLifecycleHost.BeforeFullStartupFinished.Advise(fullStartupFinishedLifetimeDefinition.Lifetime, _ =>
             {
-                textControlHost.ViewHostTextControls(lifetime, (lt, id, host) =>
+                textControlHost.ViewHostTextControls(lifetime, (lt, _, host) =>
                 {
                     var projectFile = host.ToProjectFile(solution);
                     if (projectFile == null)
@@ -49,30 +51,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
                     if (!projectFile.Location.ExtensionNoDot.Equals("csproj", StringComparison.OrdinalIgnoreCase))
                         return;
 
-                    backendUnityHost.BackendUnityModel.ViewNotNull(lt, (modelLifetime, backendUnityModel) =>
+                    // TODO: ReactiveEx.ViewNotNull isn't NRT ready
+                    backendUnityHost.BackendUnityModel!.ViewNotNull<BackendUnityModel>(lt, (modelLifetime, backendUnityModel) =>
                     {
                         var name = projectFile.Location.NameWithoutExtension;
 
-                        IPath path;
+                        IPath? path = null;
                         using (ReadLockCookie.Create())
                         {
-                            path = asmDefCache.GetAsmDefLocationByAssemblyName(name)?.TryMakeRelativeTo(solution.SolutionFilePath);
+                            var location = asmDefCache.GetAsmDefLocationByAssemblyName(name);
+                            path = location.IsEmpty ? null : location.TryMakeRelativeTo(solution.SolutionFilePath);
                         }
 
-                        var elements = new LocalList<INotificationPanelHyperlink>();
+                        var links = new LocalList<INotificationPanelHyperlink>();
                         if (path != null)
                         {
                             var strPath = path.Components.Join("/").RemoveStart("../");
-                            elements.Add(new NotificationPanelCallbackHyperlink(modelLifetime,
+                            links.Add(new NotificationPanelCallbackHyperlink(modelLifetime,
                                 "Edit corresponding .asmdef in Unity", false,
                                 () =>
                                 {
                                     frontendBackendHost.Do(t =>
                                     {
                                         t.AllowSetForegroundWindow.Start(modelLifetime, Unit.Instance)
-                                            .Result.AdviseOnce(modelLifetime, __ =>
+                                            .Result.AdviseOnce(modelLifetime, _ =>
                                             {
-                                                backendUnityHost.BackendUnityModel.Value?.ShowFileInUnity.Fire(strPath);
+                                                backendUnityModel.ShowFileInUnity.Fire(strPath);
                                             });
                                     });
                                 }));
@@ -80,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
 
                         notificationPanelHost.AddNotificationPanel(modelLifetime, host,
                             new NotificationPanel("This file is generated by Unity. Any changes made will be lost.",
-                                "UnityGeneratedFile", elements.ToArray()));
+                                "UnityGeneratedFile", links.ToArray()));
                     });
                 });
 

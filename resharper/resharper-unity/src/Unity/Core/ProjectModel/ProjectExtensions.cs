@@ -1,6 +1,9 @@
-using JetBrains.Annotations;
+using System;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Properties.Flavours;
+using JetBrains.Util;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
 {
@@ -11,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
         public const string ProjectSettingsFolder = "ProjectSettings";
         public const string LibraryFolder = "Library";
 
-        public static bool HasUnityReference([NotNull] this ISolution solution)
+        public static bool HasUnityReference(this ISolution solution)
         {
             var tracker = solution.GetComponent<UnitySolutionTracker>();
             return tracker.HasUnityReference.Value;
@@ -20,29 +23,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
         /// <summary>
         ///  Checks that specific project unity reference or specific unity guid
         /// </summary>
-        public static bool IsUnityProject([CanBeNull] this IProject project)
+        public static bool IsUnityProject(this IProject? project)
         {
             if (project == null || !project.IsValid())
                 return false;
+
             // Only VSTU adds the Unity project flavour. Unity + Rider don't, so we have to look at references
             if (HasUnityFlavour(project))
                 return true;
 
+            // Quicker than calling GetComponent
             var referenceTracker = project.GetData(UnityReferencesTracker.UnityReferencesTrackerKey);
-            if (referenceTracker == null)
-                return false;
-
-            return referenceTracker.IsUnityProject(project);
+            return referenceTracker != null && referenceTracker.IsUnityProject(project);
         }
 
-        public static bool IsPlayerProject([CanBeNull] this IProject project)
+        public static bool IsPlayerProject(this IProject? project)
         {
             if (project == null || !project.IsValid())
                 return false;
-            return project.Name.EndsWith(".Player");
+            return IsPlayerProjectName(project.Name);
         }
 
-        public static bool IsUnityGeneratedProject([CanBeNull] this IProject project)
+        public static bool IsPlayerProjectName(string name) =>
+            name.EndsWith(".Player", StringComparison.OrdinalIgnoreCase);
+
+        public static string StripPlayerSuffix(string name) =>
+            name.TrimFromEnd(".Player", StringComparison.OrdinalIgnoreCase);
+
+        public static bool IsUnityGeneratedProject(this IProject? project)
         {
             if (project == null)
                 return false;
@@ -56,35 +64,58 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             return project.HasSubItems(AssetsFolder) && IsUnityProject(project);
         }
 
-        public static bool HasUnityFlavour([CanBeNull] this IProject project)
+        public static bool HasUnityFlavour(this IProject? project) =>
+            project != null && project.HasFlavour<UnityProjectFlavor>();
+
+        public static bool IsOneOfPredefinedUnityProjects(this IProject? project, bool includePlayerProjects = false) =>
+            project != null && IsOneOfPredefinedUnityProjects(project.Name, includePlayerProjects);
+
+        public static bool IsOneOfPredefinedUnityProjects(string projectName, bool includePlayerProjects = false)
         {
-            return project != null && project.HasFlavour<UnityProjectFlavor>();
+            // Editor projects obviously don't have player projects
+            return IsAssemblyCSharp(projectName, includePlayerProjects)
+                   || IsAssemblyCSharpEditor(projectName)
+                   || IsAssemblyCSharpFirstpass(projectName, includePlayerProjects)
+                   || IsAssemblyCSharpFirstpassEditor(projectName);
         }
 
-        public static bool IsOneOfPredefinedUnityProjects([CanBeNull] this IProject project)
+        public static bool IsMainUnityProject(this IProject? project)
         {
-            return project != null && project.IsAssemblyCSharp() || project.IsAssemblyCSharpEditor() ||
-                   project.IsAssemblyCSharpFirstpass() || project.IsAssemblyCSharpFirstpassEditor();
+            // TODO: The main project might be named anything if a user puts a .asmdef in the root of the Assets folder!
+            return project != null && IsAssemblyCSharp(project.Name, false);
         }
 
-        public static bool IsAssemblyCSharp([CanBeNull] this IProject project)
+        private static bool IsAssemblyCSharp(string projectName, bool includePlayerProject)
         {
-            return project != null && project.Name == "Assembly-CSharp";
+            if (projectName.Equals("Assembly-CSharp", StringComparison.OrdinalIgnoreCase)) return true;
+            return includePlayerProject && projectName.Equals("Assembly-CSharp.Player", StringComparison.OrdinalIgnoreCase);
         }
 
-        public static bool IsAssemblyCSharpEditor([CanBeNull] this IProject project)
+        private static bool IsAssemblyCSharpFirstpass(string projectName, bool includePlayerProject)
         {
-            return project != null && project.Name == "Assembly-CSharp-Editor";
+            if (projectName.Equals("Assembly-CSharp-firstpass", StringComparison.OrdinalIgnoreCase)) return true;
+            return includePlayerProject && projectName.Equals("Assembly-CSharp-firstpass.Player", StringComparison.OrdinalIgnoreCase);
         }
 
-        public static bool IsAssemblyCSharpFirstpass([CanBeNull] this IProject project)
+        private static bool IsAssemblyCSharpEditor(string projectName) =>
+            projectName.Equals("Assembly-CSharp-Editor", StringComparison.OrdinalIgnoreCase);
+
+        private static bool IsAssemblyCSharpFirstpassEditor(string projectName) =>
+            projectName.Equals("Assembly-CSharp-Editor-firstpass", StringComparison.OrdinalIgnoreCase);
+
+        public static IProject? GetMainUnityProject(this ISolution solution)
         {
-            return project != null && project.Name == "Assembly-CSharp-firstpass";
+            // TODO: If a .asmdef file is placed in the root of Assets, no Assembly-CSharp project will be generated!
+            // If this returns null, find which project owns Assets/*.asmdef
+            return solution.GetAssemblyCSharpProject();
         }
 
-        public static bool IsAssemblyCSharpFirstpassEditor([CanBeNull] this IProject project)
-        {
-            return project != null && project.Name == "Assembly-CSharp-Editor-firstpass";
-        }
+        /// <summary>
+        /// Returns the Assembly-CSharp project. Can return null even in Unity projects!
+        /// </summary>
+        /// <param name="solution"></param>
+        /// <returns></returns>
+        private static IProject? GetAssemblyCSharpProject(this ISolution solution) =>
+            solution.GetProjectByName("Assembly-CSharp");
     }
 }

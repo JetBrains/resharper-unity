@@ -17,6 +17,7 @@ import com.intellij.util.PathUtil
 import com.intellij.util.application
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.jetbrains.rd.platform.util.getLogger
+import com.jetbrains.rider.plugins.unity.explorer.UnityExplorerFileSystemNode.Companion.isHiddenAsset
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
 import com.jetbrains.rider.plugins.unity.workspace.getPackages
 import com.jetbrains.rider.projectDir
@@ -27,10 +28,8 @@ import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
-import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.name
 
-@ExperimentalPathApi
 class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
     companion object {
         private val logger = getLogger<MetaTracker>()
@@ -56,7 +55,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
                                     val ls = event.file?.detectedLineSeparator
                                         ?: "\n" // from what I see, Unity 2020.3 always uses "\n", but lets use same as the main file.
                                     actions.add(metaFile, project) {
-                                        createMetaFile(event.parent, metaFileName, ls)
+                                        createMetaFile(event.file, event.parent, metaFileName, ls)
                                     }
                                 }
                                 is VFileDeleteEvent -> {
@@ -69,7 +68,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
                                     val metaFile = getMetaFile(event.file.path) ?: continue
                                     val ls = event.file.detectedLineSeparator ?: "\n"
                                     actions.add(metaFile, project) {
-                                        createMetaFile(event.newParent, getMetaFileName(event.newChildName), ls)
+                                        createMetaFile(event.file, event.newParent, getMetaFileName(event.newChildName), ls)
                                     }
                                 }
                                 is VFileMoveEvent -> {
@@ -145,12 +144,13 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
 
     private fun getMetaFileName(fileName: String) = "$fileName.meta"
 
-    private fun createMetaFile(parent: VirtualFile, metaFileName: String, ls:String) {
-        val file = parent.createChildData(this, metaFileName)
+    private fun createMetaFile(assetFile: VirtualFile?, parent: VirtualFile, metaFileName: String, ls: String) {
+        if (assetFile != null && isHiddenAsset(assetFile)) return // not that children of a hidden folder (like `Documentation~`), would still pass this check. I think it is fine.
+        val metaFile = parent.createChildData(this, metaFileName)
         val guid = UUID.randomUUID().toString().replace("-", "").substring(0, 32)
         val timestamp = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC).toEpochSecond() // LocalDateTime to epoch seconds
         val content = "fileFormatVersion: 2${ls}guid: ${guid}${ls}timeCreated: $timestamp"
-        VfsUtil.saveText(file, content)
+        VfsUtil.saveText(metaFile, content)
     }
 
     override fun dispose() = Unit
@@ -195,9 +195,9 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
         @Nls
         fun getCommandName(): String {
             return if (actions.count() == 1)
-                "Process '${actions.single().metaFile.name}'"
+                UnityPluginExplorerBundle.message("process.one.meta.file", actions.single().metaFile.name)
             else
-                "Process ${actions.count()} .meta Files"
+                UnityPluginExplorerBundle.message("process.several.meta.files", actions.count())
         }
     }
 

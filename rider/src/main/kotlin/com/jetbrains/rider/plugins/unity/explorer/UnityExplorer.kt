@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.icons.AllIcons
@@ -7,6 +9,9 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.JDOMExternalizerUtil
+import com.intellij.openapi.util.NlsSafe
+import com.jetbrains.rider.actions.RiderActionsBundle
+import com.jetbrains.rider.plugins.unity.actions.UnityPluginActionsBundle
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
@@ -20,11 +25,13 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
 
     companion object {
         const val ID = "UnityExplorer"
-        const val Title = "Unity"
+        @NlsSafe const val Title = "Unity"
         const val Weight = 1
         const val ShowProjectNamesOption = "show-project-names"
         const val ShowTildeFoldersOption = "show-tilde-folders"
         const val DefaultProjectPrefix = "Assembly-CSharp"
+
+        val DefaultProjectPrefixRegex = ("$DefaultProjectPrefix[.-]?").toRegex()
 
         val Icon = UnityIcons.ToolWindows.UnityExplorer
         val IgnoredExtensions = hashSetOf("meta", "tmp")
@@ -41,7 +48,6 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
     }
 
     var showTildeFolders = true
-        private set
 
     var showProjectNames = true
         private set
@@ -102,13 +108,15 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
     // Adds to the tool window toolbar
     override fun addToolbarActions(actionGroup: DefaultActionGroup) {
         actionGroup.addAction(ConfigureScratchesAction()).setAsSecondary(true)
-        actionGroup.addAction(SolutionViewToggleAction("Show Project Names",
-            "Show names of owning projects next to folders",
+        actionGroup.addAction(SolutionViewToggleAction(
+            UnityPluginActionsBundle.message("action.show.project.names.text"),
+            UnityPluginActionsBundle.message("action.show.project.names.description"),
             AllIcons.Actions.ListFiles,
             { showProjectNames }, { showProjectNames = it }
         )).setAsSecondary(true)
-        actionGroup.addAction(SolutionViewToggleAction("Show Hidden Folders",
-            "Show folders ending with '~'",
+            actionGroup.addAction(SolutionViewToggleAction(
+            UnityPluginActionsBundle.message("action.show.tilde.folders.text"),
+            null,
             AllIcons.Actions.ListFiles,
             { showTildeFolders }, { showTildeFolders = it }
         )).setAsSecondary(true)
@@ -117,9 +125,10 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
 
     // Adds to the project view pane's own toolbar
     override fun addPrimaryToolbarActions(actionGroup: DefaultActionGroup) {
-        actionGroup.addAction(SolutionViewToggleAction("Show All Files",
-            "Show all files, including .meta files",
-            AllIcons.Actions.ShowHiddens, {
+        actionGroup.addAction(SolutionViewToggleAction(
+            RiderActionsBundle.message("action.show.all.files.text"),
+            UnityPluginActionsBundle.message("action.show.all.files.description"),
+            AllIcons.Actions.ToggleVisibility, {
                 SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles
             }, {
                 SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles = it

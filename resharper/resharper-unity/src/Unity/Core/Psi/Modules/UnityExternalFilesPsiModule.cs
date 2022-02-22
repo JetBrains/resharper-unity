@@ -18,6 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
     {
         private readonly ISolution mySolution;
         private readonly string myPersistentId;
+        private readonly JetHashSet<IPsiSourceFile> mySourceFiles;
         private readonly FileSystemPathTrie<IPsiSourceFile> mySourceFileTrie;
 
         public UnityExternalFilesPsiModule(ISolution solution, string moduleName, string persistentId,
@@ -29,6 +30,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             Name = moduleName;
             TargetFrameworkId = targetFrameworkId;
 
+            // Store the files as a flat set, and as a trie. We need the trie to be able to get all of the files under
+            // a folder so that we can e.g. remove files when a package is removed/updated. However, we can't use the
+            // trie as the backing for the SourceFiles property - it is not enumerable, and will generate a new list
+            // of results on each call, and it's called frequently. When we have a very large project, this produces a
+            // huge amount of memory traffic
+            mySourceFiles = new JetHashSet<IPsiSourceFile>();
             mySourceFileTrie = new FileSystemPathTrie<IPsiSourceFile>(true);
         }
 
@@ -50,11 +57,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         public PsiLanguageType PsiLanguage => UnknownLanguage.Instance!;
         public ProjectFileType ProjectFileType => UnknownProjectFileType.Instance!;
         public IModule ContainingProjectModule => mySolution.MiscFilesProject;
-        public IEnumerable<IPsiSourceFile> SourceFiles =>
-            mySourceFileTrie.GetSubTreeData(VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext));
+        public IEnumerable<IPsiSourceFile> SourceFiles => mySourceFiles;
 
-        public bool ContainsFile(IPsiSourceFile sourceFile) =>
-            sourceFile is UnityExternalPsiSourceFile && sourceFile.IsValid();
+        public bool ContainsFile(IPsiSourceFile sourceFile)
+        {
+            // Note that UnityExternalPsiSourceFile.IsValid will call ContainsPath(sf.Location)
+            return sourceFile is UnityExternalPsiSourceFile && sourceFile.IsValid();
+        }
 
         public bool ContainsPath(VirtualFileSystemPath path) => mySourceFileTrie.Contains(path);
 
@@ -69,6 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             if (ContainsPath(path))
                 return;
 
+            mySourceFiles.Add(file);
             mySourceFileTrie.Add(path, file);
 
             // Explicitly assert if we're given a file change handler. We're expecting a lot of files in this module, it
@@ -82,6 +92,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
         public void Remove(VirtualFileSystemPath path)
         {
+            var file = mySourceFileTrie.Find(path);
+            if (file != null)
+                mySourceFiles.Remove(file);
             mySourceFileTrie.Remove(path);
         }
 
