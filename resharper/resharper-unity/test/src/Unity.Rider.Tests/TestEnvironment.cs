@@ -25,7 +25,11 @@ using NUnit.Framework;
 // "test/data" folder, so it doesn't get found. We want to keep the common "build" folder, but allow multiple "modules"
 // with separate "test/data" folders. E.g. "resharper-unity" and "resharper-yaml"
 #pragma warning disable 618
+#if INDEPENDENT_BUILD
 [assembly: TestDataPathBase("resharper-unity/test/data/Unity.Rider")]
+#else
+[assembly: TestDataPathBase("Plugins/ReSharperUnity/resharper/resharper-unity/test/data/Unity.Rider")]
+#endif
 #pragma warning restore 618
 
 

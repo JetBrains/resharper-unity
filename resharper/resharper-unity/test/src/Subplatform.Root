@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SubplatformInfo xmlns="urn:schemas-jetbrains-com:build-subplatform-info" CompanyNameHuman="JetBrains" IsGitSubplatform="true">
+    <SubplatformInfo.SubplatformReferences>
+        <SubplatformReference Name="Psi.Features\test\Framework" />
+        <SubplatformReference Name="Plugins\ReSharperUnity\resharper\resharper-unity\src" />
+        <SubplatformReference Name="Psi.Features\Cpp\Src\Core\" />
+        <SubplatformReference Name="Platform\Sdk" />
+    </SubplatformInfo.SubplatformReferences>
+</SubplatformInfo>

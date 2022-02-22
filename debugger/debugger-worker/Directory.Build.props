@@ -1,0 +1,7 @@
+<Project>
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" Condition="$(ImportGuard-DirectoryBuildProps) == ''"/>
+    <PropertyGroup>
+        <PackageLockFilePath>$(MSBuildThisFileDirectory)PackagesLock.targets</PackageLockFilePath>
+        <ImportGuard-DirectoryBuildProps>True</ImportGuard-DirectoryBuildProps>
+    </PropertyGroup>
+</Project>

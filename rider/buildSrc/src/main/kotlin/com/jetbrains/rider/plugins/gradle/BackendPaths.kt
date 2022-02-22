@@ -79,4 +79,17 @@ class BackendPaths(private val project: Project,
         assert(jarFile.isFile)
         return jarFile
     }
+
+    fun getProductMonorepoRoot(): File? {
+        var currentDir = repositoryRoot;
+
+        while (currentDir.parent != null) {
+            if (currentDir.listFiles()?.any { it.name == "Product.Root"} == true) {
+                return currentDir
+            }
+            currentDir = currentDir.parentFile
+        }
+
+        return null
+    }
 }

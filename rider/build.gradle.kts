@@ -58,6 +58,10 @@ val runTests = extra["RunTests"].toString().toLowerCase().toBoolean()
 val backend = BackendPaths(project, logger, repoRoot, productVersion).apply {
     extra["backend"] = this
 }
+val productMonorepoDir = backend.getProductMonorepoRoot()
+val monorepoPreGeneratedRootDir by lazy { productMonorepoDir?.resolve("Plugins/_Unity.Pregenerated") ?: error("Building not in monorepo") }
+val monorepoPreGeneratedFrontendDir by lazy {  monorepoPreGeneratedRootDir.resolve("Frontend") }
+val monorepoPreGeneratedBackendDir by lazy {  monorepoPreGeneratedRootDir.resolve("BackendModel") }
 val dotnetDllFiles = files(
     "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.dll",
     "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.pdb",
@@ -257,18 +261,50 @@ tasks {
         }
     }
 
-    val generateLibModel by registering(RdGenTask::class) {
+    fun getRdModelsSources(): List<File> {
+        val productsHome = backend.getProductMonorepoRoot()
+        assert(productsHome != null) { "Monorepo root not found" }
+
+        return listOf(
+            File("$productsHome/Rider/Frontend/model/src"),
+            File("$productsHome/Rider/ultimate/platform/rd-ide-model-sources"),
+            modelSrcDir)
+    }
+
+    fun generateLibModel(monorepo: Boolean) = registering(RdGenTask::class) {
         group = protocolGroup
+
+        if (monorepo && productMonorepoDir == null) {
+            doFirst {
+                throw GradleException("Building not in monorepo")
+            }
+            return@registering
+        }
+
         (extensions.getByName("params") as RdGenExtension).apply {
             // Always store models in their own folder, so the hash is only looking at the files we generate
-            val backendCsOutDir = File(repoRoot, "resharper/build/generated/Model/Lib")
+
+            // *** Out Dirs ***
+            val backendCsOutDir =
+                if (monorepo) monorepoPreGeneratedBackendDir.resolve("resharper/ModelLib")
+                else File(repoRoot, "resharper/build/generated/Model/Lib")
             val unityEditorCsOutDir = File(repoRoot, "unity/build/generated/Model/Lib")
+            val frontendKtOutLayout = "src/main/gen/kotlin/com/jetbrains/rider/plugins/unity/model/lib"
             val frontendKtOutDir =
-                File(repoRoot, "rider/src/main/gen/kotlin/com/jetbrains/rider/plugins/unity/model/lib")
+                if (monorepo) monorepoPreGeneratedFrontendDir.resolve(frontendKtOutLayout)
+                else File(repoRoot, "rider/$frontendKtOutLayout")
+
             verbose = project.gradle.startParameter.logLevel == LogLevel.INFO
                 || project.gradle.startParameter.logLevel == LogLevel.DEBUG
-            classpath({ backend.getRiderModelJar() })
-            sources("$modelSrcDir/lib")
+
+            // *** Classpath and sources ***
+            if (monorepo)
+                sources(getRdModelsSources())
+            else {
+                classpath({ backend.getRiderModelJar() })
+                sources(modelSrcDir)
+            }
+
             hashFolder = "$hashBaseDir/lib"
             packages = "model.lib"
 
@@ -279,13 +315,16 @@ tasks {
                 transform = "symmetric"
                 root = "model.lib.Library"
                 directory = backendCsOutDir.canonicalPath
+                if (monorepo) generatedFileSuffix = ".Pregenerated"
             }
             // Library is used as unity in backendUnityModel, so has reversed perspective
-            generator {
-                language = "csharp"
-                transform = "reversed"
-                root = "model.lib.Library"
-                directory = unityEditorCsOutDir.canonicalPath
+            if (!monorepo) {
+                generator {
+                    language = "csharp"
+                    transform = "reversed"
+                    root = "model.lib.Library"
+                    directory = unityEditorCsOutDir.canonicalPath
+                }
             }
             // Library is used as frontend in frontendBackendModel, so has same perspective. Generate as-is
             generator {
@@ -293,22 +332,50 @@ tasks {
                 transform = "asis"
                 root = "model.lib.Library"
                 directory = frontendKtOutDir.canonicalPath
+                if (monorepo) generatedFileSuffix = ".Pregenerated"
             }
         }
     }
 
-    val generateFrontendBackendModel by registering(RdGenTask::class) {
+    val generateLibModel by generateLibModel(false)
+    val generateLibModelMonorepo by generateLibModel(true)
+
+    fun generateFrontendBackendModel(monorepo: Boolean) = registering(RdGenTask::class) {
         group = protocolGroup
-        dependsOn(generateLibModel)
+
+        if (monorepo && productMonorepoDir == null) {
+            doFirst {
+                throw GradleException("Building not in monorepo")
+            }
+            return@registering
+        }
+
+        if (monorepo) dependsOn(generateLibModelMonorepo)
+        else dependsOn(generateLibModel)
+
         (extensions.getByName("params") as RdGenExtension).apply {
             // Always store models in their own folder, so the hash is only looking at the files we generate
-            val backendCsOutDir = File(repoRoot, "resharper/build/generated/Model/FrontendBackend")
+
+            // *** Out Dirs ***
+            val backendCsOutDir =
+                if (monorepo) monorepoPreGeneratedBackendDir.resolve("resharper/FrontendBackend")
+                else File(repoRoot, "resharper/build/generated/Model/FrontendBackend")
+            val frontendKtOutLayout = "src/main/gen/kotlin/com/jetbrains/rider/plugins/unity/model/frontendBackend"
             val frontendKtOutDir =
-                File(repoRoot, "rider/src/main/gen/kotlin/com/jetbrains/rider/plugins/unity/model/frontendBackend")
+                if (monorepo) monorepoPreGeneratedFrontendDir.resolve(frontendKtOutLayout)
+                else File(repoRoot, "rider/$frontendKtOutLayout")
+
             verbose = project.gradle.startParameter.logLevel == LogLevel.INFO
                 || project.gradle.startParameter.logLevel == LogLevel.DEBUG
-            classpath({ backend.getRiderModelJar() })
-            sources(modelSrcDir)
+
+            // *** Classpath and sources ***
+            if (monorepo)
+                sources(getRdModelsSources())
+            else {
+                classpath({ backend.getRiderModelJar() })
+                sources(modelSrcDir)
+            }
+
             hashFolder = "$hashBaseDir/frontendBackend"
             packages = "model.frontendBackend"
 
@@ -317,6 +384,7 @@ tasks {
                 transform = "asis"
                 root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
                 directory = frontendKtOutDir.absolutePath
+                if (monorepo) generatedFileSuffix = ".Pregenerated"
             }
 
             generator {
@@ -324,21 +392,49 @@ tasks {
                 transform = "reversed"
                 root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
                 directory = backendCsOutDir.absolutePath
+                if (monorepo) generatedFileSuffix = ".Pregenerated"
             }
         }
     }
 
-    val generateBackendUnityModel by registering(RdGenTask::class) {
+    val generateFrontendBackendModel by generateFrontendBackendModel(false)
+    val generateFrontendBackendModelMonorepo by generateFrontendBackendModel(true)
+
+    fun generateBackendUnityModel(monorepo: Boolean) = registering(RdGenTask::class) {
         group = protocolGroup
-        dependsOn(generateLibModel)
+
+        if (monorepo && productMonorepoDir == null) {
+            doFirst {
+                throw GradleException("Building not in monorepo")
+            }
+            return@registering
+        }
+
+        if (monorepo) dependsOn(generateLibModelMonorepo)
+        else dependsOn(generateLibModel)
+
         (extensions.getByName("params") as RdGenExtension).apply {
             // Always store models in their own folder, so the hash is only looking at the files we generate
-            val backendCsOutDir = File(repoRoot, "resharper/build/generated/Model/BackendUnity")
-            val unityEditorCsOutDir = File(repoRoot, "unity/build/generated/Model/BackendUnity")
+
+            // *** Out Dirs ***
+            val backendCsOutDir =
+                if (monorepo) monorepoPreGeneratedBackendDir.resolve("resharper/BackendUnity")
+                else File(repoRoot, "resharper/build/generated/Model/BackendUnity")
+            val unityEditorCsOutDir =
+                if (monorepo) monorepoPreGeneratedFrontendDir.resolve("unity/BackendUnity")
+                else File(repoRoot, "unity/build/generated/Model/BackendUnity")
+
             verbose = project.gradle.startParameter.logLevel == LogLevel.INFO
                 || project.gradle.startParameter.logLevel == LogLevel.DEBUG
-            classpath({ backend.getRiderModelJar() })
-            sources(modelSrcDir)
+
+            // *** Classpath and sources ***
+            if (monorepo)
+                sources(getRdModelsSources())
+            else {
+                classpath({ backend.getRiderModelJar() })
+                sources(modelSrcDir)
+            }
+
             hashFolder = "$hashBaseDir/backendUnity"
             packages = "model.backendUnity"
 
@@ -347,6 +443,7 @@ tasks {
                 transform = "asis"
                 root = "model.backendUnity.BackendUnityModel"
                 directory = backendCsOutDir.canonicalPath
+                if (monorepo) generatedFileSuffix = ".Pregenerated"
             }
 
             generator {
@@ -354,21 +451,47 @@ tasks {
                 transform = "reversed"
                 root = "model.backendUnity.BackendUnityModel"
                 directory = unityEditorCsOutDir.canonicalPath
+                if (monorepo) generatedFileSuffix = ".Pregenerated"
             }
         }
     }
 
-    val generateDebuggerWorkerModel by registering(RdGenTask::class) {
+    val generateBackendUnityModel by generateBackendUnityModel(false)
+    val generateBackendUnityModelMonorepo by generateBackendUnityModel(true)
+
+    fun generateDebuggerWorkerModel(monorepo: Boolean) = registering(RdGenTask::class) {
         group = protocolGroup
+
+        if (monorepo && productMonorepoDir == null) {
+            doFirst {
+                throw GradleException("Building not in monorepo")
+            }
+            return@registering
+        }
+
         (extensions.getByName("params") as RdGenExtension).apply {
             // Always store models in their own folder, so the hash is only looking at the files we generate
-            val backendCsOutDir = File(repoRoot, "resharper/build/generated/Model/DebuggerWorker")
+
+            // *** Out Dirs ***
+            val backendCsOutDir =
+                if (monorepo) monorepoPreGeneratedBackendDir.resolve("resharper/DebuggerWorker")
+                else File(repoRoot, "resharper/build/generated/Model/DebuggerWorker")
+            val frontendKtOutLayout = "src/main/gen/kotlin/com/jetbrains/rider/plugins/unity/model/debuggerWorker"
             val frontendKtOutDir =
-                File(repoRoot, "rider/src/main/gen/kotlin/com/jetbrains/rider/plugins/unity/model/debuggerWorker")
+                if (monorepo) monorepoPreGeneratedFrontendDir.resolve(frontendKtOutLayout)
+                else File(repoRoot, "rider/$frontendKtOutLayout")
+
             verbose = project.gradle.startParameter.logLevel == LogLevel.INFO
                 || project.gradle.startParameter.logLevel == LogLevel.DEBUG
-            classpath({ backend.getRiderModelJar() })
-            sources(modelSrcDir)
+
+            // *** Classpath and sources ***
+            if (monorepo)
+                sources(getRdModelsSources())
+            else {
+                classpath({ backend.getRiderModelJar() })
+                sources(modelSrcDir)
+            }
+
             hashFolder = "$hashBaseDir/debuggerWorker"
             packages = "model.debuggerWorker"
 
@@ -377,6 +500,7 @@ tasks {
                 transform = "asis"
                 root = "com.jetbrains.rider.model.nova.debugger.main.DebuggerRoot"
                 directory = frontendKtOutDir.absolutePath
+                if (monorepo) generatedFileSuffix = ".Pregenerated"
             }
 
             generator {
@@ -384,14 +508,25 @@ tasks {
                 transform = "reversed"
                 root = "com.jetbrains.rider.model.nova.debugger.main.DebuggerRoot"
                 directory = backendCsOutDir.absolutePath
+                if (monorepo) generatedFileSuffix = ".Pregenerated"
             }
         }
     }
+
+
+    val generateDebuggerWorkerModel by generateDebuggerWorkerModel(false)
+    val generateDebuggerWorkerModelMonorepo by generateDebuggerWorkerModel(true)
 
     val generateModels by registering {
         group = protocolGroup
         description = "Generates protocol models."
         dependsOn(generateFrontendBackendModel, generateBackendUnityModel, generateDebuggerWorkerModel)
+    }
+
+    val generateModelsMonorepo by registering {
+        group = protocolGroup
+        description = "Generates protocol models for monorepo."
+        dependsOn(generateFrontendBackendModelMonorepo, generateBackendUnityModelMonorepo, generateDebuggerWorkerModelMonorepo)
     }
 
     named<KotlinCompile>("compileKotlin") {

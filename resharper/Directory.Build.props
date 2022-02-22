@@ -1,4 +1,9 @@
 <Project>
+    
+  <PropertyGroup>
+      <ImportGuard-DirectoryBuildProps>True</ImportGuard-DirectoryBuildProps>
+  </PropertyGroup>
+    
   <PropertyGroup>
     <!-- Use a per project obj folder in a common build folder. Each project needs its own obj folder, as this contains
          e.g. nuget import files and generated files, and can't be shared across all projects.

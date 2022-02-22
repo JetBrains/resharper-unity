@@ -47,7 +47,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Json.Rider", "resharper-jso
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaml.Rider", "resharper-yaml\src\Yaml.Rider\Yaml.Rider.csproj", "{1FBDC32F-0A3A-4A3C-BEC0-9129A03B3652}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.VisualStudio", "resharper-unity\src\Unity.VisualStudio\Unity.VisualStudio.csproj", "{15A703B1-1A74-4A67-9BD3-FB64368FAA05}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.VisualStudio", "resharper-unity-visual-studio\src\Unity.VisualStudio.csproj", "{15A703B1-1A74-4A67-9BD3-FB64368FAA05}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Rider", "resharper-unity\src\Unity.Rider\Unity.Rider.csproj", "{5119DFB7-E869-419E-9BB4-12C9F51F0BC9}"
 EndProject
