@@ -56,18 +56,37 @@ class UnityLogPanelEventList(lifetime: Lifetime) : JBList<LogPanelItem>(emptyLis
     fun getNavigatableForSelected(project: Project): Navigatable? {
         val node = selectedValue ?: return null
 
-        val match: MatchResult?
-        var col = 0
-        if (node.stackTrace=="") {
+        var result: Navigatable? = null
+        if (node.stackTrace == "") {
             val regex = Regex("""(?<path>^.*(?=\())\((?<line>\d+(?=,)),(?<col>\d+(?=\)))""")
-            match = regex.find(node.message) ?: return null
-            col =  (match.groups["col"]?.value?.toInt() ?: return null)-1
+            val match = regex.find(node.message)
+            var col =0
+            if (match != null) {
+                col = match.groups["col"]?.value?.toInt()?.minus(1) ?: 0
+            }
+            result = getNavigatableForSelectedInternal(match, project, col)
         }
-        else {
+
+
+        if (result == null) {
             // Use first (at Assets/NewBehaviourScript.cs:16) in stacktrace
             val regex = Regex("""\(at (?<path>.*(?=:)):(?<line>\d+(?=\)))""")
-            match = regex.find(node.stackTrace) ?: return null
+            val match = regex.find(node.stackTrace)
+            result = getNavigatableForSelectedInternal(match, project)
         }
+
+        if (result == null) {
+            val regex = Regex("""in (?<path>.*(?=:)):(?<line>\d+)""")
+            // Use first in `Assets/NewBehaviourScript.cs:16` in message // https://fogbugz.unity3d.com/default.asp?1405031_g5l0vob5qeovfjo9
+            val match = regex.find(node.message)
+            result = getNavigatableForSelectedInternal(match, project)
+        }
+
+        return result
+    }
+
+    private fun getNavigatableForSelectedInternal(match: MatchResult?, project: Project, col: Int = 0): Navigatable? {
+        if (match == null) return null
 
         val path = match.groups["path"]?.value ?: return null
         val line = (match.groups["line"]?.value?.toInt() ?: return null) - 1
