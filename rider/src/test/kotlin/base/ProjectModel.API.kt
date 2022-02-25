@@ -12,6 +12,7 @@ import com.jetbrains.rdclient.protocol.protocolHost
 import com.jetbrains.rider.ideaInterop.vfs.VfsWriteOperationsHost
 import com.jetbrains.rider.model.RdProjectModelDumpFlags
 import com.jetbrains.rider.model.RdProjectModelDumpParams
+import com.jetbrains.rider.model.RdProjectModelSolutionDump
 import com.jetbrains.rider.model.projectModelTasks
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorerFileSystemNode
@@ -54,7 +55,7 @@ fun TestProjectModelContext.dump(caption: String, project: Project, tempTestDire
     treeOutput.appendLine()
 
     val dumpProjectModelTask = project.solution.projectModelTasks.dumpProjectModel
-    val dumpParams = RdProjectModelDumpParams(RdProjectModelDumpFlags.Structure, hideMiscFilesProjectContent)
+    val dumpParams = RdProjectModelDumpParams(RdProjectModelDumpFlags.Structure, RdProjectModelSolutionDump(hideMiscFilesProjectContent))
     val projectModelDump = dumpProjectModelTask.syncFromBackend(dumpParams, project)
     treeOutput.appendLine(projectModelDump?.maskCacheFiles())
     treeOutput.appendLine()
