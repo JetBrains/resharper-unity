@@ -10,7 +10,6 @@ import com.intellij.diff.merge.MergeResult
 import com.intellij.diff.merge.ThreesideMergeRequest
 import com.intellij.diff.merge.external.AutomaticExternalMergeTool
 import com.intellij.diff.tools.external.ExternalDiffSettings
-import com.intellij.diff.tools.external.ExternalDiffSettings.ExternalToolGroup.MERGE_TOOL
 import com.intellij.diff.tools.external.ExternalDiffToolUtil
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -36,9 +35,6 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
     override fun show(project: Project?, request: MergeRequest) {
         project ?: return
 
-        val externalMergeTool = ExternalDiffSettings.ExternalTool()
-        externalMergeTool.isMergeTrustExitCode = true
-        externalMergeTool.groupName = MERGE_TOOL
         val appDataPath = UnityInstallationFinder.getInstance(project).getApplicationContentsPath() ?: return
         val extension = when {
             SystemInfo.isWindows -> ".exe"
@@ -50,17 +46,20 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
         val premergedRight = Paths.get(tempDir).resolve("premergedRight_" + request.hashCode())
 
         try {
-            externalMergeTool.isMergeTrustExitCode = true
-            externalMergeTool.programPath = appDataPath.resolve("Tools/UnityYAMLMerge" + extension).toString()
-            val mergeParameters = project.solution.frontendBackendModel.backendSettings.mergeParameters.valueOrThrow
-            if (mergeParameters.contains(" -p "))
-                externalMergeTool.argumentPattern = "$mergeParameters $premergedBase $premergedRight"
-            else
-                externalMergeTool.argumentPattern = mergeParameters
+            val isMergeTrustExitCode = true
+            val mergeExePath = appDataPath.resolve("Tools/UnityYAMLMerge" + extension).toString()
+            val mergeParametersFromBackend = project.solution.frontendBackendModel.backendSettings.mergeParameters.valueOrThrow
+            val mergeParameters = if (mergeParametersFromBackend.contains(" -p ")) {
+                "$mergeParametersFromBackend $premergedBase $premergedRight"
+            } else {
+                mergeParametersFromBackend
+            }
 
-            myLogger.info("PreMerge with ${externalMergeTool.programPath} ${externalMergeTool.argumentPattern}")
-
-            if (!tryExecuteMerge(project, externalMergeTool, request as ThreesideMergeRequest)) {
+            myLogger.info("PreMerge with $mergeExePath $mergeParameters")
+            val externalTool = ExternalDiffSettings.ExternalTool(mergeExePath, mergeParameters,
+                isMergeTrustExitCode = isMergeTrustExitCode, groupName = ExternalDiffSettings.ExternalToolGroup.MERGE_TOOL
+            )
+            if (!tryExecuteMerge(project, externalTool, request as ThreesideMergeRequest)) {
                 if (premergedBase.exists() && premergedRight.exists()) {
                     myLogger.info("PreMerge partially successful. Call ShowMergeBuiltin on pre-merged.")
                     val output: VirtualFile = (request.outputContent as FileContent).file
