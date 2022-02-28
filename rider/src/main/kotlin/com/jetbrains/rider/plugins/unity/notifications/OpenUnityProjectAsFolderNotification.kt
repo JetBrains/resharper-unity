@@ -58,7 +58,6 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                         && !project.solution.frontendBackendModel.unityEditorConnected.valueOrDefault(false)
                         && !hasUnloadedProjects(project)
                     ) {
-
                         if (!UnityInstallationFinder.getInstance(project).requiresRiderPackage())
                             content = "Make sure Rider $marketingVersion is set as the External Editor in Unity preferences."
                         val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
@@ -73,9 +72,9 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                 val adviceText = "Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
                 val mainText =
                     if (solutionDescription.projectFilePaths.isEmpty())
-                        "This looks like a Unity project. C# and Unity specific features are not available when the project is opened as a folder."
+                        "C# and Unity specific features are not available when the project is opened as a folder."
                     else
-                        "This looks like a Unity project. C# and Unity specific features are not available when only a single project is opened."
+                        "C# and Unity specific features are not available when only a single project is opened."
 
                 // todo: hasPackage is unreliable, when PackageManager is still in progress
                 // Revisit this after PackageManager is moved to backend
@@ -92,7 +91,7 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
             </ul>
             """ } else { "$mainText $adviceText" }
 
-                val notification = Notification(notificationGroupId.displayId, title, contentWoSolution, NotificationType.WARNING)
+                val notification = Notification(notificationGroupId.displayId, "This looks like a Unity project", contentWoSolution, NotificationType.WARNING)
                 notification.setListener { _, hyperlinkEvent ->
 
                     if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED) return@setListener
