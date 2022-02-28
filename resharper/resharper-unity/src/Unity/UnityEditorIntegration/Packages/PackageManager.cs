@@ -101,7 +101,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
             Updating = new Property<bool?>(lifetime, "PackageManger::Update");
 
-            unitySolutionTracker.IsUnityProject.AdviseUntil(lifetime, value =>
+            // use IsUnityProjectFolder, otherwise frontend would not have packages information, when folder is opened
+            // and incorrect notification text might be displayed
+            unitySolutionTracker.IsUnityProjectFolder.AdviseUntil(lifetime, value =>
             {
                 if (!value) return false;
 
