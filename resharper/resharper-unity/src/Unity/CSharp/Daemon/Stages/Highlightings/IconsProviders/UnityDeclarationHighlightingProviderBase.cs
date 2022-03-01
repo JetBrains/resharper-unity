@@ -32,6 +32,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             string tooltip, IReadOnlyCallGraphContext context)
         {
             consumer.AddImplicitConfigurableHighlighting(element);
+            
+            if (!IconProviderUtil.ShouldShowGutterMarkIcon(SettingsStore.BoundSettingsStore))
+                return;
+            
             consumer.AddHotHighlighting(ContextProvider, element, SettingsStore.BoundSettingsStore, text, tooltip, context, GetActions(element));
         }
 
