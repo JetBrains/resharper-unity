@@ -14,6 +14,8 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
 {
     [QuickFix]
@@ -26,10 +28,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
             myLiteralExpression = warning.LiteralExpression;
         }
 
-        protected override ITreeNode TryGetContextTreeNode() => myLiteralExpression;
+       protected override ITreeNode TryGetContextTreeNode() => myLiteralExpression;
         public override string Text => "To GUID reference";
 
-        protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+        protected override Action<ITextControl>? ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
             // We should never get null, we check the reference resolves before adding the highlight
             var reference = myLiteralExpression.FindReference<AsmDefNameReference>();
@@ -45,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
                     using (WriteLockCookie.Create())
                     {
                         var factory = JsonNewElementFactory.GetInstance(myLiteralExpression.GetPsiModule());
-                        var newLiteralExpression = factory.CreateStringLiteral($"guid:{guid:N}");
+                        var newLiteralExpression = factory.CreateStringLiteral(AsmDefUtils.FormatGuidReference(guid.Value));
                         ModificationUtil.ReplaceChild(myLiteralExpression, newLiteralExpression);
                     }
                 }

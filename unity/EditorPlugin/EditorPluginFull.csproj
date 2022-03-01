@@ -11,7 +11,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.Ref.2017.3.0f3" Version="2020.6.10" />
-    <PackageReference Include="JetBrains.Build.ILRepack" Version="0.0.3" />
+    <PackageReference Include="JetBrains.Build.ILRepack" Version="0.0.5" />
     <PackageReference Include="JetBrains.NETFramework.ReferenceAssemblies.net35" Version="1.0.1" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>

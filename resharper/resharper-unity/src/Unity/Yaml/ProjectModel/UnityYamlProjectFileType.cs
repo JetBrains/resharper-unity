@@ -3,6 +3,8 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.FileTypes;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 
+#nullable enable
+
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
 {
     [ProjectFileTypeDefinition(Name)]
@@ -10,11 +12,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
     {
         public new const string Name = "UnityYaml";
 
-        [CanBeNull, UsedImplicitly]
-        public new static UnityYamlProjectFileType Instance { get; private set; }
+        [UsedImplicitly] public new static UnityYamlProjectFileType? Instance { get; private set; }
 
         public UnityYamlProjectFileType()
-            : base(Name, "Unity Yaml", UnityFileExtensions.AllYamlFileExtensionsWithDot)
+            : base(Name, "Unity Yaml", UnityFileExtensions.YamlDataFileExtensionsWithDot)
         {
         }
     }

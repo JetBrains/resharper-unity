@@ -58,7 +58,6 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                         && !project.solution.frontendBackendModel.unityEditorConnected.valueOrDefault(false)
                         && !hasUnloadedProjects(project)
                     ) {
-
                         if (!UnityInstallationFinder.getInstance(project).requiresRiderPackage())
                             content = "Make sure Rider $marketingVersion is set as the External Editor in Unity preferences."
                         val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
@@ -70,23 +69,29 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                 }
             }
             else if (solutionDescription is RdVirtualSolution) { // opened as folder
-                val adviceText = " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
+                val adviceText = "Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
+                val mainText =
+                    if (solutionDescription.projectFilePaths.isEmpty())
+                        "C# and Unity specific features are not available when the project is opened as a folder."
+                    else
+                        "C# and Unity specific features are not available when only a single project is opened."
+
+                // todo: hasPackage is unreliable, when PackageManager is still in progress
+                // Revisit this after PackageManager is moved to backend
+                // MTE: There is an inherent race condition here. Packages can be updated at any time, so we can't
+                // be sure that PackageManager is fully loaded at this time.
                 val contentWoSolution =
-                    // todo: hasPackage is unreliable, when PackageManager is still in progress
-                    // Revisit this after PackageManager is moved to backend
-                    // MTE: There is an inherent race condition here. Packages can be updated at any time, so we can't
-                    // be sure that PackageManager is fully loaded at this time.
                     if (UnityInstallationFinder.getInstance(project).requiresRiderPackage()
-                        && !WorkspaceModel.getInstance(project).hasPackage("com.unity.ide.rider")) {
-                        content
-                    }
-                    else if (solutionDescription.projectFilePaths.isEmpty()) {
-                        "This looks like a Unity project. C# and Unity specific features are not available when the project is opened as a folder." +
-                            adviceText
-                    } else
-                        "This looks like a Unity project. C# and Unity specific features are not available when only a single project is opened." +
-                            adviceText
-                val notification = Notification(notificationGroupId.displayId, title, contentWoSolution, NotificationType.WARNING)
+                        && !WorkspaceModel.getInstance(project).hasPackage("com.unity.ide.rider")
+                    ) {
+                        """$mainText       
+            <ul style="margin-left:10px">
+              <li>$adviceText</li>
+              <li>$content</li>
+            </ul>
+            """ } else { "$mainText $adviceText" }
+
+                val notification = Notification(notificationGroupId.displayId, "This looks like a Unity project", contentWoSolution, NotificationType.WARNING)
                 notification.setListener { _, hyperlinkEvent ->
 
                     if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED) return@setListener

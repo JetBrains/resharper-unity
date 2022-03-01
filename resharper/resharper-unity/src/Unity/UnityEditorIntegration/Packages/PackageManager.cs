@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using JetBrains.Annotations;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Collections;
@@ -17,6 +16,8 @@ using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.Threading;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 {
@@ -69,8 +70,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         private readonly VirtualFileSystemPath myManifestPath;
         private readonly VirtualFileSystemPath myLocalPackageCacheFolder;
 
-        [CanBeNull] private VirtualFileSystemPath myLastReadGlobalManifestPath;
-        [CanBeNull] private EditorManifestJson myGlobalManifest;
+        private VirtualFileSystemPath? myLastReadGlobalManifestPath;
+        private EditorManifestJson? myGlobalManifest;
 
         public PackageManager(Lifetime lifetime, ISolution solution, ILogger logger,
                               UnitySolutionTracker unitySolutionTracker,
@@ -100,7 +101,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
             Updating = new Property<bool?>(lifetime, "PackageManger::Update");
 
-            unitySolutionTracker.IsUnityProject.AdviseUntil(lifetime, value =>
+            // use IsUnityProjectFolder, otherwise frontend would not have packages information, when folder is opened
+            // and incorrect notification text might be displayed
+            unitySolutionTracker.IsUnityProjectFolder.AdviseUntil(lifetime, value =>
             {
                 if (!value) return false;
 
@@ -117,20 +120,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
         public Property<bool?> Updating { get; }
 
-        public ViewableProperty<bool> IsInitialUpdateFinished { get; } = new ViewableProperty<bool>(false);
+        public ViewableProperty<bool> IsInitialUpdateFinished { get; } = new(false);
 
         // DictionaryEvents uses locks internally, so this is thread safe. It gets updated from the guarded reentrancy
         // context, so all callbacks also happen within the guarded reentrancy context
         public IReadonlyCollectionEvents<KeyValuePair<string, PackageData>> Packages => myPackagesById;
 
-        [CanBeNull]
-        public PackageData GetPackageById(string id)
-        {
-            return myPackagesById.TryGetValue(id, out var packageData) ? packageData : null;
-        }
+        public PackageData? GetPackageById(string id) =>
+            myPackagesById.TryGetValue(id, out var packageData) ? packageData : null;
 
-        [CanBeNull]
-        public PackageData GetOwningPackage(VirtualFileSystemPath path)
+        public PackageData? GetOwningPackage(VirtualFileSystemPath path)
         {
             foreach (var packageData in myPackagesById.Values)
             {
@@ -261,18 +260,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 lifetimeDefinition.Terminate();
         }
 
-        [CanBeNull]
-        private List<PackageData> GetPackages()
+        private List<PackageData>? GetPackages()
         {
-            return myLogger.Verbose().DoCalculation("GetPackages", null,
+            return LogEx.WhenVerbose(myLogger).DoCalculation("GetPackages", null,
                 () => GetPackagesFromPackagesLockJson() ?? GetPackagesFromManifestJson(),
                 p => p != null ? $"{p.Count} packages" : "Null list of packages. Something went wrong");
         }
 
         // Introduced officially in 2019.4, but available behind a switch in manifest.json in 2019.3
         // https://forum.unity.com/threads/add-an-option-to-auto-update-packages.730628/#post-4931882
-        [CanBeNull]
-        private List<PackageData> GetPackagesFromPackagesLockJson()
+        private List<PackageData>? GetPackagesFromPackagesLockJson()
         {
             if (!myPackagesLockPath.ExistsFile)
             {
@@ -304,8 +301,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             });
         }
 
-        [CanBeNull]
-        private List<PackageData> GetPackagesFromManifestJson()
+        private List<PackageData>? GetPackagesFromManifestJson()
         {
             if (!myManifestPath.ExistsFile)
             {
@@ -425,7 +421,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             }
         }
 
-        [NotNull]
         private EditorManifestJson SafelyReadGlobalManifestFile(VirtualFileSystemPath globalManifestPath)
         {
             try
@@ -440,13 +435,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             }
         }
 
-        [NotNull]
         private PackageData GetPackageData(string id, PackagesLockDependency details,
                                            VirtualFileSystemPath builtInPackagesFolder)
         {
             try
             {
-                PackageData packageData = null;
+                PackageData? packageData = null;
                 switch (details.Source)
                 {
                     case "embedded":
@@ -480,7 +474,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
         private PackageData GetPackageData(string id, string version, string registry,
                                            VirtualFileSystemPath builtInPackagesFolder,
-                                           [CanBeNull] ManifestLockDetails lockDetails)
+                                           ManifestLockDetails? lockDetails)
         {
             // Order is important here. A package can be listed in manifest.json, but if it also exists in Packages,
             // that embedded copy takes precedence. We look for an embedded folder with the same name, but it can be
@@ -504,8 +498,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             }
         }
 
-        [CanBeNull]
-        private PackageData GetEmbeddedPackage(string id, string filePath)
+        private PackageData? GetEmbeddedPackage(string id, string filePath)
         {
             // Embedded packages live in the Packages folder. When reading from manifest.json, filePath is the same as
             // ID. When reading from packages-lock.json, we already know it's an embedded folder, and use the version,
@@ -514,8 +507,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             return GetPackageDataFromFolder(id, packageFolder, PackageSource.Embedded);
         }
 
-        [CanBeNull]
-        private PackageData GetRegistryPackage(string id, string version, string registryUrl)
+        private PackageData? GetRegistryPackage(string id, string version, string registryUrl)
         {
             // When parsing manifest.json, version might be a version, or it might even be a URL for a git package
             var cacheFolder = RelativePath.TryParse($"{id}@{version}");
@@ -539,8 +531,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             return GetPackageDataFromFolder(id, packageFolder, PackageSource.Registry);
         }
 
-        [CanBeNull]
-        private PackageData GetBuiltInPackage(string id, string version, VirtualFileSystemPath builtInPackagesFolder)
+        private PackageData? GetBuiltInPackage(string id, string version, VirtualFileSystemPath builtInPackagesFolder)
         {
             // Starting with Unity 2020.3, modules are copied into the local package cache, and compiled from there.
             // This behaviour has been backported to 2019.4 LTS. Make sure we use the cached files, or breakpoints won't
@@ -569,9 +560,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 : null;
         }
 
-        [CanBeNull]
-        private PackageData GetGitPackage(string id, string version, [CanBeNull] string hash,
-                                          [CanBeNull] string revision = null)
+        private PackageData? GetGitPackage(string id, string version, string? hash,
+                                           string? revision = null)
         {
             // For older Unity versions, manifest.json will have a hash for any git based package. For newer Unity
             // versions, this is stored in packages-lock.json. If the lock file is disabled, then we don't get a hash
@@ -615,8 +605,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                     url.AbsolutePath.EndsWith(".git", StringComparison.InvariantCultureIgnoreCase));
         }
 
-        [CanBeNull]
-        private PackageData GetLocalPackage(string id, string version)
+        private PackageData? GetLocalPackage(string id, string version)
         {
             // If the version doesn't start with "file:" we know it's not a local package
             if (!version.StartsWith("file:"))
@@ -639,8 +628,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             }
         }
 
-        [CanBeNull]
-        private PackageData GetLocalTarballPackage(string id, string version)
+        private PackageData? GetLocalTarballPackage(string id, string version)
         {
             if (!version.StartsWith("file:"))
                 return null;
@@ -678,12 +666,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             }
         }
 
-        [CanBeNull]
-        private PackageData GetPackageDataFromFolder([CanBeNull] string id,
-                                                     [NotNull] VirtualFileSystemPath packageFolder,
-                                                     PackageSource packageSource,
-                                                     [CanBeNull] GitDetails gitDetails = null,
-                                                     [CanBeNull] VirtualFileSystemPath tarballLocation = null)
+        private PackageData? GetPackageDataFromFolder(string? id,
+                                                      VirtualFileSystemPath packageFolder,
+                                                      PackageSource packageSource,
+                                                      GitDetails? gitDetails = null,
+                                                      VirtualFileSystemPath? tarballLocation = null)
         {
             if (packageFolder.ExistsDirectory)
             {
@@ -712,21 +699,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         private static string GetMd5OfString(string value)
         {
             // Use input string to calculate MD5 hash
-            using (var md5 = MD5.Create())
-            {
-                var inputBytes = Encoding.UTF8.GetBytes(value);
-                var hashBytes = md5.ComputeHash(inputBytes);
+            using var md5 = MD5.Create();
 
-                // Convert the byte array to hexadecimal string
-                var sb = new StringBuilder();
-                foreach (var t in hashBytes)
-                    sb.Append(t.ToString("X2"));
+            var inputBytes = Encoding.UTF8.GetBytes(value);
+            var hashBytes = md5.ComputeHash(inputBytes);
 
-                return sb.ToString().PadLeft(32, '0');
-            }
+            // Convert the byte array to hexadecimal string
+            var sb = new StringBuilder();
+            foreach (var t in hashBytes)
+                sb.Append(t.ToString("X2"));
+
+            return sb.ToString().PadLeft(32, '0');
         }
 
-        private List<PackageData> GetPackagesFromDependencies([NotNull] string registry,
+        private List<PackageData> GetPackagesFromDependencies(string registry,
                                                               Dictionary<string, PackageData> resolvedPackages,
                                                               List<PackageData> packagesToProcess)
         {
@@ -751,13 +737,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 }
             }
 
-            ICollection<VirtualFileSystemPath> cachedPackages = null;
+            ICollection<VirtualFileSystemPath>? cachedPackages = null;
             var newPackages = new List<PackageData>();
             foreach (var (id, version) in dependencies)
             {
                 if (version > GetResolvedVersion(id, resolvedPackages))
                 {
-                    if (cachedPackages == null) cachedPackages = myLocalPackageCacheFolder.GetChildDirectories();
+                    cachedPackages ??= myLocalPackageCacheFolder.GetChildDirectories();
 
                     // We know this is a registry package, so try to get it from the local cache. It might be missing:
                     // 1) the cache hasn't been built yet
@@ -770,7 +756,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                     // 1) Check for the exact version in the local cache
                     // 2) Check for any version in the local cache
                     // 3) Check for the exact version in the global cache
-                    PackageData packageData = null;
+                    PackageData? packageData = null;
                     var exact = $"{id}@{version}";
                     var prefix = $"{id}@";
                     foreach (var packageFolder in cachedPackages)
@@ -820,7 +806,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
         private JetSemanticVersion GetMinimumVersion(string id)
         {
-            EditorPackageDetails editorPackageDetails = null;
+            // Note: do not inline this into the TryGetValue call, because net5's C# compiler complains, and that's what
+            // we use for CI. Presumably this because it would not be initialised if myGlobalManifest is null. net6's
+            // compiler doesn't complain.
+            // error CS0165: Use of unassigned local variable 'editorPackageDetails'
+            EditorPackageDetails? editorPackageDetails = null;
             if (myGlobalManifest?.Packages.TryGetValue(id, out editorPackageDetails) == true
                 && JetSemanticVersion.TryParse(editorPackageDetails?.MinimumVersion, out var version))
             {
@@ -841,9 +831,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             return JetSemanticVersion.Empty;
         }
 
-        private static JetSemanticVersion Max(JetSemanticVersion v1, JetSemanticVersion v2)
-        {
-            return v1 > v2 ? v1 : v2;
-        }
+        private static JetSemanticVersion Max(JetSemanticVersion v1, JetSemanticVersion v2) => v1 > v2 ? v1 : v2;
     }
 }

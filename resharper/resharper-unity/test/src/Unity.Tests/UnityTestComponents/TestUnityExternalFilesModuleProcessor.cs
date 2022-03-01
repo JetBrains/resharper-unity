@@ -20,12 +20,13 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
                                                      PackageManager packageManager,
                                                      IShellLocks locks,
                                                      IFileSystemTracker fileSystemTracker,
+                                                     IProjectFileExtensions projectFileExtensions,
                                                      UnityExternalPsiSourceFileFactory psiSourceFileFactory,
                                                      UnityExternalFilesModuleFactory moduleFactory,
                                                      UnityExternalFilesIndexDisablingStrategy indexDisablingStrategy,
                                                      UnityExternalFilesFileSizeLogContributor usageStatistics)
             : base(lifetime, logger, solution, changeManager, psiModules, packageManager, locks, fileSystemTracker,
-                psiSourceFileFactory, moduleFactory, indexDisablingStrategy, usageStatistics)
+                projectFileExtensions, psiSourceFileFactory, moduleFactory, indexDisablingStrategy, usageStatistics)
         {
         }
 

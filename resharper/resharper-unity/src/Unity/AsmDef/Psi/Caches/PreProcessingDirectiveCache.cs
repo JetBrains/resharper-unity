@@ -98,10 +98,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         private List<PreProcessingDirective> GetBaseDefines()
         {
             var directives = new List<PreProcessingDirective>();
-            var mainProject = mySolution.GetProjectsByName("Assembly-CSharp").FirstOrDefault();
+            var mainProject = mySolution.GetMainUnityProject();
             if (mainProject == null)
             {
-                myLogger.Warn("Cannot find Assembly-CSharp project!");
+                myLogger.Warn("Cannot find main Unity project! (No Assembly-CSharp.csproj?)");
                 return directives;
             }
 
@@ -172,8 +172,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
 
             projectModelChange.VisitItemDeltasRecursively(change =>
             {
-                if (change.IsPropertiesChanged && change.ProjectItem is IProject project && project.IsAssemblyCSharp())
-                    Invalidate("Properties change for Assembly-CSharp");
+                if (change.IsPropertiesChanged && change.ProjectItem is IProject project && project.IsMainUnityProject())
+                    Invalidate("Properties change for main Unity project");
             });
         }
 
@@ -183,15 +183,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
                 Invalidate("Packages updated");
         }
 
-        private void OnAsmDefCacheUpdated(bool _)
-        {
-            Invalidate("AsmDefCache updated");
-        }
+        private void OnAsmDefCacheUpdated(bool _) => Invalidate("AsmDefCache updated");
 
-        private void OnApplicationVersionChanged(Version _)
-        {
-            Invalidate("Application version changed");
-        }
+        private void OnApplicationVersionChanged(Version _) => Invalidate("Application version changed");
 
         private void Invalidate(string reason)
         {

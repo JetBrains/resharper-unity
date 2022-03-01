@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
@@ -29,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
                                              UnityExternalFilesModuleFactory externalFilesPsiModuleFactory)
         {
             myPreProcessingDirectiveCache = preProcessingDirectiveCache;
-            myExternalFilesPsiModule = externalFilesPsiModuleFactory.PsiModule.NotNull("externalFilesPsiModuleFactory.PsiModule != null");
+            myExternalFilesPsiModule = externalFilesPsiModuleFactory.PsiModule;
         }
 
         public override bool ShouldRun(IFile file, ElementProblemAnalyzerData data) =>
