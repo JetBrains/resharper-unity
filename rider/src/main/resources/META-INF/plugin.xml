@@ -161,6 +161,8 @@
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnityCheckinState"/>
 
     <rider.runWidgetSuspenderExtension implementation="com.jetbrains.rider.plugins.unity.ui.UnityRunWidgetSuspenderExtension"/>
+
+    <rider.action.technical.support.info.provider implementation="com.jetbrains.rider.plugins.unity.actions.UnityVersionRiderTechnicalSupportInfoProvider" />
   </extensions>
 
   <project-components>
