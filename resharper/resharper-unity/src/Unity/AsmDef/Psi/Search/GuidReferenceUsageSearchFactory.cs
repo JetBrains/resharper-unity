@@ -143,7 +143,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Search
             }
 
             protected override bool PreFilterReference(IReference reference) => reference is AsmDefNameReference &&
-                reference.GetName().StartsWith("guid:", StringComparison.InvariantCultureIgnoreCase);
+                AsmDefUtils.IsGuidReference(reference.GetName());
 
             protected override bool SubTreeContainsText(ITreeNode node)
             {
