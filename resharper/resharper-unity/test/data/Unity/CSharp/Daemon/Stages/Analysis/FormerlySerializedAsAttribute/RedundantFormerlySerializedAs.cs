@@ -11,4 +11,8 @@ public class Test01
 public class Test02 : MonoBehaviour
 {
     [FormerlySerializedAs("myValue"), FormerlySerializedAs("foo")] public int myValue;
+
+    // Both attributes are NOT redundant. They apply to the backing field and do not match the generated field's name
+    [field: FormerlySerializedAs("foo"), FormerlySerializedAs("Value2")]
+    public string Value2 { get; set; }
 }
