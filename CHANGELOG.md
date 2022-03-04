@@ -24,13 +24,17 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 - Show preview for target typed new instances of `Color` ([RIDER-64151](https://youtrack.jetbrains.com/issue/RIDER-64151), [#2250](https://github.com/JetBrains/resharper-unity/pull/2250))
 - Update API information to 2022.1.0b7 ([#2276](https://github.com/JetBrains/resharper-unity/pull/2276))
+- Rider: Treat animation files as YAML ([#2283](https://github.com/JetBrains/resharper-unity/pull/2283))
 - Rider: Hide rename solution and manage NuGet packages by default ([RIDER-62297](https://youtrack.jetbrains.com/issue/RIDER-62297), [#2277](https://github.com/JetBrains/resharper-unity/pull/2277))
+- Rider: Updates to handling of hidden assets in Unity Explorer ([#2280](https://github.com/JetBrains/resharper-unity/pull/2280))
+- Rider: Improve notification when opening a Unity project as a folder ([#2286](https://github.com/JetBrains/resharper-unity/pull/2286))
 - Unity editor: Expand Find Usages editor window by default ([#2239](https://github.com/JetBrains/resharper-unity/pull/2239))
 
 ### Fixed
 
 - Fix massive performance issue when opening very large projects on certain file systems ([RIDER-53358](https://youtrack.jetbrains.com/issue/RIDER-53358), [#2271](https://github.com/JetBrains/resharper-unity/pull/2271))
 - Fix excessive memory traffic when opening very large projects ([#2271](https://github.com/JetBrains/resharper-unity/pull/2271))
+- Fix incorrect redundant attribute warning for `FormerlySerializedAs` attribute on property backing field ([#2285](https://github.com/JetBrains/resharper-unity/issues/2285), [#2289](https://github.com/JetBrains/resharper-unity/pull/2289))
 - Rider: Fix incorrectly showing both Unity and Unity DLL project action groups ([#2219](https://github.com/JetBrains/resharper-unity/pull/2219))
 - Rider: Fix incorrectly showing "switch to full UI" action when already in full UI ([RIDER-71185](https://youtrack.jetbrains.com/issue/RIDER-71185), [#2220](https://github.com/JetBrains/resharper-unity/pull/2220))
 - Rider: Fix debugging unit test when debugger is already attached to the editor ([RIDER-70660](https://youtrack.jetbrains.com/issue/RIDER-70660), [#2232](https://github.com/JetBrains/resharper-unity/pull/2232))
