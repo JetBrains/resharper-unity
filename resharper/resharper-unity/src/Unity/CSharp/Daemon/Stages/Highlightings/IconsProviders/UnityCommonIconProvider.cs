@@ -60,6 +60,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 if (declaration is ICSharpDeclaration cSharpDeclaration)
                 {
                     consumer.AddImplicitConfigurableHighlighting(cSharpDeclaration);
+                    
+                    if (!IconProviderUtil.ShouldShowGutterMarkIcon(SettingsStore.BoundSettingsStore))
+                        continue;
+
                     consumer.AddHotHighlighting(PerformanceContextProvider, cSharpDeclaration,
                         SettingsStore.BoundSettingsStore, text, tooltip, context, GetEventFunctionActions(cSharpDeclaration, context));
                 }
@@ -73,6 +77,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             // gutter mark
             var actions = GetActions(cSharpDeclaration, context);
 
+            if (!IconProviderUtil.ShouldShowGutterMarkIcon(SettingsStore.BoundSettingsStore))
+                return;
+            
             consumer.AddHotHighlighting(PerformanceContextProvider, cSharpDeclaration,
                 SettingsStore.BoundSettingsStore, text, tooltip, context, actions, true);
         }

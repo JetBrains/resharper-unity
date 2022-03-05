@@ -60,6 +60,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
                 if (!declaredElement.IsValid())
                     return;
 
+                // Document constant is required for non-empty IFinderSearchRoot
+                rules.AddRule("Document", DocumentModelDataConstants.DOCUMENT, highlighting.Range.Document);
+
                 rules.AddRule("DocumentEditorContext", DocumentModelDataConstants.EDITOR_CONTEXT, new DocumentEditorContext(highlighting.Range));
                 rules.AddRule("PopupWindowSourceOverride", UIDataConstants.PopupWindowContextSource,
                     new PopupWindowContextSource(lt => new RiderEditorOffsetPopupWindowContext(highlighting.Range.StartOffset.Offset)));

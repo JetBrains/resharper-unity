@@ -24,10 +24,10 @@ abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
         prepareAssemblies(activeSolutionDirectory)
     }
 
-    protected fun doTest(line : Int, column : Int, groups: List<String>?) {
+    protected fun doTest(line : Int, column : Int, groups: List<String>?, fileName : String = "NewBehaviourScript.cs") {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
-        doTest(line, column)
+        doTest(line, column, fileName)
     }
 
     protected fun doTest(line : Int, column : Int, fileName : String = "NewBehaviourScript.cs") {

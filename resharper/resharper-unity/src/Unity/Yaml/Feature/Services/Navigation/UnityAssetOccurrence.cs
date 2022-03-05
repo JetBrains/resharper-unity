@@ -7,6 +7,7 @@ using JetBrains.IDE;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Psi;
@@ -87,6 +88,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         
         private string GetAttachedGameObjectName(AssetHierarchyProcessor processor)
         {
+            if (SourceFile.IsController())
+                return "AnimatorStateMachine";
+            
             var consumer = new UnityScenePathGameObjectConsumer();
             processor.ProcessSceneHierarchyFromComponentToRoot(OwningElementLocation, consumer, true, true);
 

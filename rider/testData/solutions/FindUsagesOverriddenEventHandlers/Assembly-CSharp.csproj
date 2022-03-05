@@ -47,9 +47,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets/Behaviour.cs"/>
-    <Compile Include="Assets/AnimationController.cs"/>
-    <Compile Include="Assets/TestScript1.cs"/>
+    <Compile Include="Assets/BaseScript.cs"/>
+    <Compile Include="Assets/DerivedScript.cs"/>
+    <Compile Include="Assets/EventContainer.cs"/>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using System;
+using System.Linq;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
@@ -29,6 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         private readonly UnityEventsElementContainer myUnityEventsElementContainer;
         private readonly AssetInspectorValuesContainer myAssetInspectorValuesContainer;
         private readonly IDeclaredElementsSet myElements;
+        private readonly ReferenceSearcherParameters myReferenceSearcherParameters;
         private readonly AnimationEventUsagesContainer myAnimationEventUsagesContainer;
 
         public UnityAssetReferenceSearcher(DeferredCacheController deferredCacheController,
@@ -48,6 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             myAnimationEventUsagesContainer = animationEventUsagesContainer;
             myAssetInspectorValuesContainer = assetInspectorValuesContainer;
             myElements = elements;
+            myReferenceSearcherParameters = referenceSearcherParameters;
         }
 
         public bool ProcessProjectItem<TResult>(IPsiSourceFile sourceFile, IFindResultConsumer<TResult> consumer)
@@ -57,10 +60,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 if (!myDeferredCacheController.CompletedOnce.Value)
                     return false;
 
+                var set = (myReferenceSearcherParameters.OriginalElements ?? myElements.ToList()).ToHashSet();
                 foreach (var element in myElements)
                 {
                     if (element is IMethod || element is IProperty)
                     {
+                        if (!set.Contains(element))
+                            continue;
+                        
                         var animationEventUsages = myAnimationEventUsagesContainer.GetEventUsagesFor(sourceFile, element);
                         foreach (var usage in animationEventUsages)
                         {

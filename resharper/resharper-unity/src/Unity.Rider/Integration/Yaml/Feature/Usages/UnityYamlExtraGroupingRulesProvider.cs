@@ -189,7 +189,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
         {
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
-                if (occurrence is UnityAssetOccurrence assetOccurrence)
+                if (occurrence is UnityAssetOccurrence assetOccurrence &&
+                    !assetOccurrence.SourceFile.IsAsset() &&
+                    !assetOccurrence.SourceFile.IsAnim() &&
+                    !assetOccurrence.SourceFile.IsController())
                 {
                     var hierarchyContainer = assetOccurrence.GetSolution()?.GetComponent<AssetDocumentHierarchyElementContainer>();
                     var element = hierarchyContainer?.GetHierarchyElement(assetOccurrence.OwningElementLocation, true);

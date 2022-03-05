@@ -18,4 +18,18 @@ open class AnimatorFindUsagesTest : FindUsagesAssetTestBase() {
         groups?.forEach { group -> setGroupingEnabled(group, true) }
         doTest(5, 17, "Behaviour.cs")
     }
+
+    @Test(dataProvider = "findUsagesGrouping")
+    fun animationFindUsagesForCommonBehaviorMethod(caseName: String, groups: List<String>?) {
+        disableAllGroups()
+        groups?.forEach { group -> setGroupingEnabled(group, true) }
+        doTest(8, 29, "TestScript1.cs")
+    }
+
+    @Test(dataProvider = "findUsagesGrouping")
+    fun animationFindUsagesForCommonBehaviorFieldValue(caseName: String, groups: List<String>?) {
+        disableAllGroups()
+        groups?.forEach { group -> setGroupingEnabled(group, true) }
+        doTest(8, 16, "AnimationController.cs")
+    }
 }
