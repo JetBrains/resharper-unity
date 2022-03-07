@@ -35,6 +35,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Fix massive performance issue when opening very large projects on certain file systems ([RIDER-53358](https://youtrack.jetbrains.com/issue/RIDER-53358), [#2271](https://github.com/JetBrains/resharper-unity/pull/2271))
 - Fix excessive memory traffic when opening very large projects ([#2271](https://github.com/JetBrains/resharper-unity/pull/2271))
 - Fix incorrect redundant attribute warning for `FormerlySerializedAs` attribute on property backing field ([#2285](https://github.com/JetBrains/resharper-unity/issues/2285), [#2289](https://github.com/JetBrains/resharper-unity/pull/2289))
+- Fix incorrect name shown for method usages by an animation controller ([RIDER-71268](https://youtrack.jetbrains.com/issue/RIDER-71268), [#2267](https://github.com/JetBrains/resharper-unity/pull/2267))
+- Fix incorrect usages shown when referencing an overridden virtual method from a Unity event ([RIDER-71269](https://youtrack.jetbrains.com/issue/RIDER-71269), [#2267](https://github.com/JetBrains/resharper-unity/pull/2267))
 - Rider: Fix incorrectly showing both Unity and Unity DLL project action groups ([#2219](https://github.com/JetBrains/resharper-unity/pull/2219))
 - Rider: Fix incorrectly showing "switch to full UI" action when already in full UI ([RIDER-71185](https://youtrack.jetbrains.com/issue/RIDER-71185), [#2220](https://github.com/JetBrains/resharper-unity/pull/2220))
 - Rider: Fix debugging unit test when debugger is already attached to the editor ([RIDER-70660](https://youtrack.jetbrains.com/issue/RIDER-70660), [#2232](https://github.com/JetBrains/resharper-unity/pull/2232))
@@ -49,6 +51,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix performance issue displaying long log issues from Unity ([RIDER-70574](https://youtrack.jetbrains.com/issue/RIDER-70574), [#2270](https://github.com/JetBrains/resharper-unity/pull/2270))
 - Rider: Fix showing duplicate project names in Unity Explorer under certain circumstances ([RIDER-67457](https://youtrack.jetbrains.com/issue/RIDER-67457), [#2273](https://github.com/JetBrains/resharper-unity/pull/2273))
 - Rider: Fix root folder of an external package ignoring namespace provider setting ([RIDER-65100](https://youtrack.jetbrains.com/issue/RIDER-65100), [#2274](https://github.com/JetBrains/resharper-unity/pull/2274))
+- Rider: Fix incorrectly showing gutter icons for implicit usages when setting is "never" ([RIDER-75000](https://youtrack.jetbrains.com/issue/RIDER-75000), [#2267](https://github.com/JetBrains/resharper-unity/pull/2267))
 
 
 
