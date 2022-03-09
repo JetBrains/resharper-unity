@@ -32,6 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         private readonly IDeclaredElementsSet myElements;
         private readonly ReferenceSearcherParameters myReferenceSearcherParameters;
         private readonly AnimationEventUsagesContainer myAnimationEventUsagesContainer;
+        private readonly HashSet<IDeclaredElement> myOriginalElements;
 
         public UnityAssetReferenceSearcher(DeferredCacheController deferredCacheController,
                                            AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer,
@@ -51,6 +52,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             myAssetInspectorValuesContainer = assetInspectorValuesContainer;
             myElements = elements;
             myReferenceSearcherParameters = referenceSearcherParameters;
+
+            var originalElements = myReferenceSearcherParameters.OriginalElements ?? myElements.ToList();
+            myOriginalElements = new HashSet<IDeclaredElement>();
+
+            foreach (var originalElement in originalElements)
+            {
+                myOriginalElements.Add(originalElement);
+                if (originalElement is IProperty property)
+                {
+                    if (property.Getter != null)
+                        myOriginalElements.Add(property.Getter);
+                    
+                    if (property.Setter != null)
+                        myOriginalElements.Add(property.Setter);
+                }
+            }
         }
 
         public bool ProcessProjectItem<TResult>(IPsiSourceFile sourceFile, IFindResultConsumer<TResult> consumer)
@@ -60,12 +77,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 if (!myDeferredCacheController.CompletedOnce.Value)
                     return false;
 
-                var set = (myReferenceSearcherParameters.OriginalElements ?? myElements.ToList()).ToHashSet();
                 foreach (var element in myElements)
                 {
                     if (element is IMethod || element is IProperty)
                     {
-                        if (!set.Contains(element))
+                        if (!myOriginalElements.Contains(element))
                             continue;
                         
                         var animationEventUsages = myAnimationEventUsagesContainer.GetEventUsagesFor(sourceFile, element);
