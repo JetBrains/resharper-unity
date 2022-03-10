@@ -1,5 +1,4 @@
-﻿using System;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
@@ -33,8 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
                 return resolveResultWithInfo;
 
             var name = GetName();
-            if (name.StartsWith("guid:", StringComparison.InvariantCultureIgnoreCase) &&
-                Guid.TryParse(name[5..], out var guid))
+            if (AsmDefUtils.TryParseGuidReference(name, out var guid))
             {
                 var metaFileCache = myOwner.GetSolution().GetComponent<MetaFileGuidCache>();
                 var asmDefCache = myOwner.GetSolution().GetComponent<AsmDefCache>();
@@ -86,8 +84,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
 
         public override IReference BindTo(IDeclaredElement element)
         {
-            // Don't rename a guid: reference
-            if (myOwner.GetUnquotedText().StartsWith("guid:", StringComparison.InvariantCultureIgnoreCase))
+            // Don't rename a GUID: reference
+            if (AsmDefUtils.IsGuidReference(myOwner.GetUnquotedText()))
                 return this;
 
             var factory = JsonNewElementFactory.GetInstance(myOwner.GetPsiModule());

@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                                                                   CachedFileSystemData fileSystemData)
         {
             return new UnityExternalPsiSourceFile(path, psiModule, projectFileType,
-                file1 => psiModule.ContainsPath(file1.Location), _ => properties,
+                psiModule.ContainsFile, _ => properties,
                 myProjectFileExtensions, myProjectFileTypeCoordinator, myDocumentManager,
                 UniversalModuleReferenceContext.Instance, fileSystemData);
         }

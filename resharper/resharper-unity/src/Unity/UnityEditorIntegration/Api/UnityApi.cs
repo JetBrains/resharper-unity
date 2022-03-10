@@ -1,6 +1,8 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
@@ -45,14 +47,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             myKnownTypesCache = knownTypesCache;
         }
 
-        public bool IsUnityType([CanBeNull] ITypeElement type)
-        {
-            if (type == null)
-                return false;
-            return myUnityTypeCache.IsUnityType(type);
-        }
+        public bool IsUnityType([NotNullWhen(true)] ITypeElement? type) => type != null && myUnityTypeCache.IsUnityType(type);
 
-        public bool IsComponentSystemType([CanBeNull] ITypeElement typeElement)
+        public bool IsComponentSystemType([NotNullWhen(true)] ITypeElement? typeElement)
         {
             // This covers ComponentSystem, JobComponentSystem and SystemBase
             return typeElement.DerivesFrom(KnownTypes.ComponentSystemBase);
@@ -61,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         // A serialised field cannot be abstract or generic, but a type declaration that will be serialised can be. This
         // method differentiates between a type declaration and a type usage. Consider renaming if we ever need to
         // expose stricter checking publicly
-        public bool IsSerializableTypeDeclaration([CanBeNull] ITypeElement type)
+        public bool IsSerializableTypeDeclaration([NotNullWhen(true)] ITypeElement? type)
         {
             // We only support type declarations in a project. We shouldn't get any other type
             if (type?.Module is IProjectPsiModule projectPsiModule)
@@ -74,17 +71,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         }
 
         // NOTE: This method assumes that the type is not a descendant of UnityEngine.Object!
-        private bool IsSerializableType([CanBeNull] ITypeElement type, [NotNull] IProject project, bool isTypeUsage,
-            bool hasSerializeReference = false)
+        private bool IsSerializableType([NotNullWhen(true)] ITypeElement? type, IProject project, bool isTypeUsage,
+                                        bool hasSerializeReference = false)
         {
-            if (!(type is IStruct || type is IClass))
+            if (type is not (IStruct or IClass))
                 return false;
 
             if (isTypeUsage)
             {
                 // Type usage (e.g. field declaration) is stricter. Means it must be a concrete type with no type
                 // parameters, unless the type usage is for [SerializeReference], which allows abstract types
-                if (type is IModifiersOwner modifiersOwner && modifiersOwner.IsAbstract && !hasSerializeReference)
+                if (type is IModifiersOwner { IsAbstract: true } && !hasSerializeReference)
                     return false;
 
                 // Unity 2020.1 allows fields to have generic types. It's currently undocumented, but there are no
@@ -115,17 +112,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 return type.HasAttributeInstance(PredefinedType.SERIALIZABLE_ATTRIBUTE_CLASS, true);
         }
 
-        public bool IsEventFunction([CanBeNull] IMethod method)
-        {
-            return method != null && GetUnityEventFunction(method) != null;
-        }
+        public bool IsEventFunction([NotNullWhen(true)] IMethod? method) => method != null && GetUnityEventFunction(method) != null;
 
-        public bool IsSerialisedField([CanBeNull] IField field)
+        public bool IsSerialisedField([NotNullWhen(true)] IField? field)
         {
             if (field == null || field.IsStatic || field.IsConstant || field.IsReadonly)
                 return false;
 
-            var containingType = field.GetContainingType();
+            var containingType = field.ContainingType;
             if (!IsUnityType(containingType) && !IsSerializableTypeDeclaration(containingType))
                 return false;
 
@@ -152,22 +146,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                     IsSerialisedFieldContainerType(field.Type, project, hasSerializeReference));
         }
 
-        private bool IsSimpleSerialisedFieldType([CanBeNull] IType type, [NotNull] IProject project, bool hasSerializeReference)
+        private bool IsSimpleSerialisedFieldType([NotNullWhen(true)] IType? type, IProject project,
+                                                 bool hasSerializeReference)
         {
             // We include type parameter types (T) in this test, which Unity obviously won't. We treat them as
             // serialised fields rather than show false positive redundant attribute warnings, etc. Adding the test
             // here allows us to support T[] and List<T>
             return type != null && (type.IsSimplePredefined()
                                     || type.IsEnumType()
-                                    || IsUnityBuiltinType(type as IDeclaredType)
+                                    || IsUnityBuiltinType(type)
                                     || type.GetTypeElement().DerivesFrom(KnownTypes.Object)
                                     || IsSerializableType(type.GetTypeElement(), project, true, hasSerializeReference)
                                     || type.IsTypeParameterType());
         }
 
-        private bool IsSerialisedFieldContainerType([CanBeNull] IType type, [NotNull] IProject project, bool hasSerializeReference)
+        private bool IsSerialisedFieldContainerType([NotNullWhen(true)] IType? type, IProject project,
+                                                    bool hasSerializeReference)
         {
-            if (type is IArrayType arrayType && arrayType.Rank == 1 &&
+            if (type is IArrayType { Rank: 1 } arrayType &&
                 IsSimpleSerialisedFieldType(arrayType.ElementType, project, hasSerializeReference))
             {
                 return true;
@@ -195,7 +191,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         // See https://github.com/Unity-Technologies/UnityCsReference/blob/02f8e8ca594f156dd6b2088ad89451143ca1b87e/Editor/Mono/Inspector/UnityEventDrawer.cs#L397
         //
         // Unity Editor will only list public methods, but will invoke any method, even if it's private.
-        public bool IsPotentialEventHandler([CanBeNull] IMethod method, bool isFindUsages = true)
+        public bool IsPotentialEventHandler([NotNullWhen(true)] IMethod? method, bool isFindUsages = true)
         {
             if (method == null || !method.ReturnType.IsVoid())
                 return false;
@@ -204,14 +200,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             if (method.GetAccessRights() != AccessRights.PUBLIC && !isFindUsages|| method.IsStatic)
                 return false;
 
-            return IsUnityType(method.GetContainingType()) &&
+            return IsUnityType(method.ContainingType) &&
                    !method.HasAttributeInstance(PredefinedType.OBSOLETE_ATTRIBUTE_CLASS, true);
         }
 
-        public bool IsPotentialEventHandler([CanBeNull] IProperty property, bool isFindUsages = true)
-        {
-            return IsPotentialEventHandler(property?.Setter, isFindUsages);
-        }
+        public bool IsPotentialEventHandler([NotNullWhen(true)] IProperty? property, bool isFindUsages = true) =>
+            IsPotentialEventHandler(property?.Setter, isFindUsages);
 
         public IEnumerable<UnityEventFunction> GetEventFunctions(ITypeElement type, Version unityVersion)
         {
@@ -224,29 +218,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             }
         }
 
-        public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method)
-        {
-            return GetUnityEventFunction(method, out _);
-        }
+        public UnityEventFunction? GetUnityEventFunction(IMethod method) => GetUnityEventFunction(method, out _);
 
-        public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method, out MethodSignatureMatch match)
+        public UnityEventFunction? GetUnityEventFunction(IMethod method, out MethodSignatureMatch match)
         {
             Assertion.Assert(method.IsValid(), "DeclaredElement is not valid");
             match = MethodSignatureMatch.NoMatch;
 
-            if (!(method.Module is IProjectPsiModule projectPsiModule))
+            if (method.Module is not IProjectPsiModule projectPsiModule)
                 return null;
 
             var unityVersion = GetNormalisedActualVersion(projectPsiModule.Project);
             return GetUnityEventFunction(method, unityVersion, out match);
         }
 
-        public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method, Version unityVersion,
-                                                        out MethodSignatureMatch match)
+        public UnityEventFunction? GetUnityEventFunction(IMethod method, Version unityVersion,
+                                                         out MethodSignatureMatch match)
         {
             match = MethodSignatureMatch.NoMatch;
 
-            var containingType = method.GetContainingType();
+            var containingType = method.ContainingType;
             if (containingType == null) return null;
 
             foreach (var type in UnityTypeUtils.GetBaseUnityTypes(containingType, unityVersion, myUnityTypesProvider, myKnownTypesCache))
@@ -262,14 +253,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             return null;
         }
 
-        public Version GetNormalisedActualVersion(IProject project)
-        {
-            return myUnityTypesProvider.Types.NormaliseSupportedVersion(myUnityVersion.GetActualVersion(project));
-        }
+        public Version GetNormalisedActualVersion(IProject project) =>
+            myUnityTypesProvider.Types.NormaliseSupportedVersion(myUnityVersion.GetActualVersion(project));
 
         private static bool IsUnityBuiltinType(IType type)
         {
-            return type is IDeclaredType declaredType && ourUnityBuiltinSerializedFieldTypes.Contains(declaredType.GetClrName());
+            return type is IDeclaredType declaredType &&
+                   ourUnityBuiltinSerializedFieldTypes.Contains(declaredType.GetClrName());
         }
     }
 }

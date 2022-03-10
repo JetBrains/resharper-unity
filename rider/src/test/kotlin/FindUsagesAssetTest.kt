@@ -165,4 +165,17 @@ open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
     fun findPropertyHandler2(caseName: String, groups: List<String>?) {
         doTest(33, 16, groups)
     }
+
+//    TODO: uncomment when local tests would fine
+//    @Test(dataProvider = "findUsagesGrouping")
+//    @TestEnvironment(solution = "FindUsagesOverriddenEventHandlers")
+//    fun findAssetUsagesForOverriddenEventHandler(caseName: String, groups: List<String>?) {
+//        doTest(7, 27, groups, "BaseScript.cs")
+//    }
+//
+//    @Test(dataProvider = "findUsagesGrouping")
+//    @TestEnvironment(solution = "FindUsagesOverriddenEventHandlers")
+//    fun findAssetUsagesForOverriddenEventHandler2(caseName: String, groups: List<String>?) {
+//        doTest(7, 27, groups, "DerivedScript.cs")
+//    }
 }

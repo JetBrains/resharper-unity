@@ -1,75 +1,100 @@
+#nullable enable
+
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
-
-#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Json.Psi.Tree.Impl
 {
     internal partial class JsonNewArray
     {
-        public void AddArrayElementBefore(IJsonNewValue value, IJsonNewValue? anchor)
+        public IJsonNewValue AddArrayElementBefore(IJsonNewValue value, IJsonNewValue? anchor)
         {
             if (anchor == null)
             {
                 var lastItem = Values.LastOrDefault();
                 if (lastItem != null)
-                {
-                    AddArrayElementAfter(value, lastItem);
-                    return;
-                }
+                    return AddArrayElementAfter(value, lastItem);
 
+                // This is the only array element. Don't worry about whitespace
                 using (WriteLockCookie.Create(parent.IsPhysical()))
                 {
                     if (RBracket != null)
-                        ModificationUtil.AddChildBefore(RBracket, value);
+                        value = ModificationUtil.AddChildBefore(RBracket, value);
                     else if (LBracket != null)
-                        ModificationUtil.AddChildAfter(LBracket, value);
+                        value = ModificationUtil.AddChildAfter(LBracket, value);
+                    value.AssertIsValid();
+                    return value;
                 }
             }
-            else
+
+            Assertion.Assert(Values.Contains(anchor));
+
+            // Copy the leading whitespace from the anchor, since we don't currently support formatting
+            var whitespaceStart = anchor.GetPreviousNonWhitespaceToken()?.GetNextToken();
+            var whitespaceEnd = anchor.GetPreviousToken();
+
+            using (WriteLockCookie.Create(parent.IsPhysical()))
             {
-                Assertion.Assert(Values.Contains(anchor));
-                using (WriteLockCookie.Create(parent.IsPhysical()))
+                var comma = JsonNewTokenNodeTypes.COMMA.CreateLeafElement();
+                LowLevelModificationUtil.AddChildBefore(anchor, comma);
+                value = ModificationUtil.AddChildBefore(comma, value);
+
+                if (whitespaceStart != null && whitespaceStart.IsWhitespaceToken() &&
+                    whitespaceEnd != null && whitespaceEnd.IsWhitespaceToken())
                 {
-                    var comma = JsonNewTokenNodeTypes.COMMA.CreateLeafElement();
-                    LowLevelModificationUtil.AddChildBefore(anchor, comma);
-                    ModificationUtil.AddChildBefore(comma, value);
+                    ModificationUtil.AddChildRangeBefore(anchor, new TreeRange(whitespaceStart, whitespaceEnd));
                 }
+
+                value.AssertIsValid();
+                return value;
             }
         }
 
-        public void AddArrayElementAfter(IJsonNewValue value, IJsonNewValue? anchor)
+        public IJsonNewValue AddArrayElementAfter(IJsonNewValue value, IJsonNewValue? anchor)
         {
             if (anchor == null)
             {
                 var firstItem = ValuesEnumerable.FirstOrDefault();
                 if (firstItem != null)
-                {
-                    AddArrayElementBefore(value, firstItem);
-                    return;
-                }
+                    return AddArrayElementBefore(value, firstItem);
 
+                // This is the only array element. Don't worry about whitespace
                 using (WriteLockCookie.Create(parent.IsPhysical()))
                 {
                     if (RBracket != null)
                         ModificationUtil.AddChildBefore(RBracket, value);
                     else if (LBracket != null)
                         ModificationUtil.AddChildAfter(LBracket, value);
+                    value.AssertIsValid();
+                    return value;
                 }
             }
-            else
+
+            Assertion.Assert(Values.Contains(anchor));
+
+            // Copy the leading whitespace from the anchor, since we don't currently support formatting
+            var whitespaceStart = anchor.GetPreviousNonWhitespaceToken()?.GetNextToken();
+            var whitespaceEnd = anchor.GetPreviousToken();
+
+            using (WriteLockCookie.Create(parent.IsPhysical()))
             {
-                Assertion.Assert(Values.Contains(anchor));
-                using (WriteLockCookie.Create(parent.IsPhysical()))
+                var comma = JsonNewTokenNodeTypes.COMMA.CreateLeafElement();
+                LowLevelModificationUtil.AddChildAfter(anchor, comma);
+                value = ModificationUtil.AddChildAfter(comma, value);
+
+                if (whitespaceStart != null && whitespaceStart.IsWhitespaceToken() &&
+                    whitespaceEnd != null && whitespaceEnd.IsWhitespaceToken())
                 {
-                    var comma = JsonNewTokenNodeTypes.COMMA.CreateLeafElement();
-                    LowLevelModificationUtil.AddChildAfter(anchor, comma);
-                    ModificationUtil.AddChildAfter(comma, value);
+                    ModificationUtil.AddChildRangeAfter(comma, new TreeRange(whitespaceStart, whitespaceEnd));
                 }
+
+                value.AssertIsValid();
+                return value;
             }
         }
 

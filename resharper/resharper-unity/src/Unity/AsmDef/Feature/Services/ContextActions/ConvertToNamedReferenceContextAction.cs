@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.ContextActio
 
         protected override bool IsAvailable(IJsonNewLiteralExpression literalExpression)
         {
-            if (!literalExpression.GetUnquotedText().StartsWith("guid:", StringComparison.InvariantCultureIgnoreCase))
+            if (!AsmDefUtils.IsGuidReference(literalExpression.GetUnquotedText()))
                 return false;
 
             var reference = literalExpression.FindReference<AsmDefNameReference>();

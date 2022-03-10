@@ -37,5 +37,6 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
         public bool IgnorePrecompiledAssemblies => DebuggerSessionOptionsImplementation.IgnorePrecompiledAssemblies;
         public bool ForceLoadMethodByToken => DebuggerSessionOptionsImplementation.ForceLoadMethodByToken;
         public HotReloadInfo HotReload => DebuggerSessionOptionsImplementation.HotReload;
+        public bool DisableRuntimeLoadTimeout => DebuggerSessionOptionsImplementation.DisableRuntimeLoadTimeout;
     }
 }
