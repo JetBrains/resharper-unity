@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class Test
 {
-    [|SerializeField|(0)] private readonly int |myValue1|(1) = 42;
+    // ReSharper disable once ConvertToConstant.Local
+    [|SerializeField|(0)] private readonly int myValue1 = 42;
 
     public void Thing()
     {
@@ -22,6 +23,3 @@ Remove redundant attribute
 Remove redundant code in file
 --Remove redundant code in project
 --Remove redundant code in solution
-1: Convert to constant
-QUICKFIXES:
-To const
