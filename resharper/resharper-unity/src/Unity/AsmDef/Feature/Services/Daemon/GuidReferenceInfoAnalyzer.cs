@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
                                     IHighlightingConsumer consumer)
         {
             if ((element.IsReferencesArrayEntry() || element.IsReferencePropertyValue())
-                && element.GetUnquotedText().StartsWith("guid:", StringComparison.InvariantCultureIgnoreCase))
+                && AsmDefUtils.IsGuidReference(element.GetUnquotedText()))
             {
                 var reference = element.FindReference<AsmDefNameReference>();
                 var declaredElement = reference?.Resolve().DeclaredElement;

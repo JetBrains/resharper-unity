@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using System;
+using System.Linq;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
@@ -29,7 +30,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         private readonly UnityEventsElementContainer myUnityEventsElementContainer;
         private readonly AssetInspectorValuesContainer myAssetInspectorValuesContainer;
         private readonly IDeclaredElementsSet myElements;
+        private readonly ReferenceSearcherParameters myReferenceSearcherParameters;
         private readonly AnimationEventUsagesContainer myAnimationEventUsagesContainer;
+        private readonly HashSet<IDeclaredElement> myOriginalElements;
 
         public UnityAssetReferenceSearcher(DeferredCacheController deferredCacheController,
                                            AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer,
@@ -48,6 +51,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             myAnimationEventUsagesContainer = animationEventUsagesContainer;
             myAssetInspectorValuesContainer = assetInspectorValuesContainer;
             myElements = elements;
+            myReferenceSearcherParameters = referenceSearcherParameters;
+
+            var originalElements = myReferenceSearcherParameters.OriginalElements ?? myElements.ToList();
+            myOriginalElements = new HashSet<IDeclaredElement>();
+
+            foreach (var originalElement in originalElements)
+            {
+                myOriginalElements.Add(originalElement);
+                if (originalElement is IProperty property)
+                {
+                    if (property.Getter != null)
+                        myOriginalElements.Add(property.Getter);
+                    
+                    if (property.Setter != null)
+                        myOriginalElements.Add(property.Setter);
+                }
+            }
         }
 
         public bool ProcessProjectItem<TResult>(IPsiSourceFile sourceFile, IFindResultConsumer<TResult> consumer)
@@ -61,6 +81,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 {
                     if (element is IMethod || element is IProperty)
                     {
+                        if (!myOriginalElements.Contains(element))
+                            continue;
+                        
                         var animationEventUsages = myAnimationEventUsagesContainer.GetEventUsagesFor(sourceFile, element);
                         foreach (var usage in animationEventUsages)
                         {

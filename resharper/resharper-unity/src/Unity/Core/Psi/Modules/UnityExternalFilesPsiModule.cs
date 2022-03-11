@@ -61,8 +61,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
         public bool ContainsFile(IPsiSourceFile sourceFile)
         {
-            // Note that UnityExternalPsiSourceFile.IsValid will call ContainsPath(sf.Location)
-            return sourceFile is UnityExternalPsiSourceFile && sourceFile.IsValid();
+            // This method is called by sourceFile.IsValid, which will be called A LOT for very large projects. Make
+            // sure to keep it quick and allocation free. And don't call sourceFile.IsValid
+            return sourceFile is UnityExternalPsiSourceFile && mySourceFiles.Contains(sourceFile);
         }
 
         public bool ContainsPath(VirtualFileSystemPath path) => mySourceFileTrie.Contains(path);

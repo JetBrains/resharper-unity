@@ -1,0 +1,12 @@
+Search target
+    TestScript1.Setup(int b):void
+Found usages  (2 usages found)
+    <Assembly-CSharp>  (1 usage found)
+        Assets  (1 usage found)
+            TestScript1.cs  (1 usage found)
+                TestScript1  (1 usage found)
+                    Setup(int)  (1 usage found)
+                        [239, Assets/TestScript1.cs] (11: 9)  Setup(b);
+    Assets  (1 usage found)
+        Anime.controller  (1 usage found)
+            m_MethodName: Setup

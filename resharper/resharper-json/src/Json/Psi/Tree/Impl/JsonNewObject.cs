@@ -1,10 +1,12 @@
+#nullable enable
+
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Json.Psi.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
+using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
-
-#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Json.Psi.Tree.Impl
 {
@@ -18,16 +20,22 @@ namespace JetBrains.ReSharper.Plugins.Json.Psi.Tree.Impl
                 if (lastItem != null)
                     return AddMemberAfter(key, value, lastItem);
 
+                // This is the only member. Don't worry about whitespace
                 using (WriteLockCookie.Create(parent.IsPhysical()))
                 {
                     var member = CreateMember(key, value);
                     if (RBrace != null)
-                        ModificationUtil.AddChildBefore(RBrace, member);
-                    else if (LBrace != null)
-                        ModificationUtil.AddChildAfter(LBrace, member);
+                        member = ModificationUtil.AddChildBefore(RBrace, member);
+                    if (LBrace != null)
+                        member = ModificationUtil.AddChildAfter(LBrace, member);
+                    member.AssertIsValid();
                     return member;
                 }
             }
+
+            // Copy the leading whitespace from the anchor, since we don't currently support formatting
+            var whitespaceStart = anchor.GetPreviousNonWhitespaceToken()?.GetNextToken();
+            var whitespaceEnd = anchor.GetPreviousToken();
 
             Assertion.Assert(Members.Contains(anchor));
             using (WriteLockCookie.Create(parent.IsPhysical()))
@@ -35,7 +43,15 @@ namespace JetBrains.ReSharper.Plugins.Json.Psi.Tree.Impl
                 var member = CreateMember(key, value);
                 var comma = JsonNewTokenNodeTypes.COMMA.CreateLeafElement();
                 LowLevelModificationUtil.AddChildBefore(anchor, comma);
-                ModificationUtil.AddChildBefore(comma, member);
+                member = ModificationUtil.AddChildBefore(comma, member);
+
+                if (whitespaceStart != null && whitespaceStart.IsWhitespaceToken() &&
+                    whitespaceEnd != null && whitespaceEnd.IsWhitespaceToken())
+                {
+                    ModificationUtil.AddChildRangeBefore(anchor, new TreeRange(whitespaceStart, whitespaceEnd));
+                }
+
+                member.AssertIsValid();
                 return member;
             }
         }
@@ -48,24 +64,39 @@ namespace JetBrains.ReSharper.Plugins.Json.Psi.Tree.Impl
                 if (firstItem != null)
                     return AddMemberBefore(key, value, firstItem);
 
+                // This is the only member. Don't worry about whitespace
                 using (WriteLockCookie.Create(parent.IsPhysical()))
                 {
                     var member = CreateMember(key, value);
                     if (RBrace != null)
-                        ModificationUtil.AddChildBefore(RBrace, member);
+                        member = ModificationUtil.AddChildBefore(RBrace, member);
                     else if (LBrace != null)
-                        ModificationUtil.AddChildAfter(LBrace, member);
+                        member = ModificationUtil.AddChildAfter(LBrace, member);
+                    member.AssertIsValid();
                     return member;
                 }
             }
 
             Assertion.Assert(Members.Contains(anchor));
+
+            // Copy the leading whitespace from the anchor, since we don't currently support formatting
+            var whitespaceStart = anchor.GetPreviousNonWhitespaceToken()?.GetNextToken();
+            var whitespaceEnd = anchor.GetPreviousToken();
+
             using (WriteLockCookie.Create(parent.IsPhysical()))
             {
                 var member = CreateMember(key, value);
                 var comma = JsonNewTokenNodeTypes.COMMA.CreateLeafElement();
                 LowLevelModificationUtil.AddChildAfter(anchor, comma);
-                ModificationUtil.AddChildAfter(comma, member);
+                member = ModificationUtil.AddChildAfter(comma, member);
+
+                if (whitespaceStart != null && whitespaceStart.IsWhitespaceToken() &&
+                    whitespaceEnd != null && whitespaceEnd.IsWhitespaceToken())
+                {
+                    ModificationUtil.AddChildRangeAfter(comma, new TreeRange(whitespaceStart, whitespaceEnd));
+                }
+
+                member.AssertIsValid();
                 return member;
             }
         }

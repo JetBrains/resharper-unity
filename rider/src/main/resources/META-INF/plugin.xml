@@ -87,7 +87,7 @@
     <spellchecker.support language="JSON" order="first" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmref.spellchecker.AsmRefSpellcheckerStrategy" />
 
     <!-- YAML asset support -->
-    <fileType name="UnityYaml" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlFileType" language="UnityYaml" extensions="meta;unity;prefab;asset"/>
+    <fileType name="UnityYaml" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlFileType" language="UnityYaml" extensions="meta;unity;prefab;asset;controller;anim"/>
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlIconProvider" />
     <lang.altEnter language="UnityYaml" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperBulbMenuModelFactory" />
     <lang.parserDefinition language="UnityYaml" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlParserDefinition" />
@@ -161,6 +161,8 @@
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnityCheckinState"/>
 
     <rider.runWidgetSuspenderExtension implementation="com.jetbrains.rider.plugins.unity.ui.UnityRunWidgetSuspenderExtension"/>
+
+    <rider.action.technical.support.info.provider implementation="com.jetbrains.rider.plugins.unity.actions.UnityVersionRiderTechnicalSupportInfoProvider" />
   </extensions>
 
   <project-components>

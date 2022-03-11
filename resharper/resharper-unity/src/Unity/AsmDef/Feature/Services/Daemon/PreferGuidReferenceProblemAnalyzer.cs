@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
         {
             // Unity prefers GUID references when creating a new file, to guard against accidentally changing the name
             if ((element.IsReferencesArrayEntry() || element.IsReferencePropertyValue())
-                && !element.GetUnquotedText().StartsWith("guid:", StringComparison.InvariantCultureIgnoreCase))
+                && !AsmDefUtils.IsGuidReference(element.GetUnquotedText()))
             {
                 var reference = element.FindReference<AsmDefNameReference>();
                 if (reference != null && reference.Resolve().Info.ResolveErrorType == ResolveErrorType.OK)

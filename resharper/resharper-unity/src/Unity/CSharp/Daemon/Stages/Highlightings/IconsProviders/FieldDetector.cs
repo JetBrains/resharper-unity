@@ -72,6 +72,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             IReadOnlyCallGraphContext context)
         {
             consumer.AddImplicitConfigurableHighlighting(element);
+            
+            if (!IconProviderUtil.ShouldShowGutterMarkIcon(SettingsStore.BoundSettingsStore))
+                return;
+            
             consumer.AddHighlighting(new UnityGutterMarkInfo(element, tooltip));
         }
 

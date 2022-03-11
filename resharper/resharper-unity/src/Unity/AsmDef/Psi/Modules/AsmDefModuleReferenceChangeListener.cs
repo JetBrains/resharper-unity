@@ -466,11 +466,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                 var text = literal.GetUnquotedText();
                 if (text.Equals(asmDefName, StringComparison.OrdinalIgnoreCase))
                     results.Add(literal);
-                else if (asmDefGuid != null && text.Equals(asmDefGuid))
+                else if (asmDefGuid != null && text.Equals(asmDefGuid, StringComparison.OrdinalIgnoreCase))
                     results.Add(literal);
 
                 count++;
-                if (text.StartsWith("guid:", StringComparison.OrdinalIgnoreCase))
+                if (AsmDefUtils.IsGuidReference(text))
                     guidCount++;
             }
 
