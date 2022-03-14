@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Diagnostics;
@@ -48,7 +49,20 @@ namespace JetBrains.Rider.Unity.Editor
       
       try
       {
-        GetOrCreateSyncIfNeededMethod().Invoke(null, new object[] { checkProjectFiles });
+        var method = GetOrCreateSyncIfNeededMethod();
+        if (method == null)
+          return false;
+        
+        var stopWatch = new Stopwatch();
+        stopWatch.Start();
+        method.Invoke(null, new object[] { checkProjectFiles });
+        stopWatch.Stop();
+        var ts = stopWatch.Elapsed;
+        
+        if (ts > TimeSpan.FromSeconds(10))
+          ourLogger.Error($"SyncIfNeeded call took {ts.TotalSeconds} seconds.");
+        else
+          ourLogger.Verbose($"SyncIfNeeded call took {ts.TotalSeconds} seconds.");
       }
       catch (Exception e)
       {
