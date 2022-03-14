@@ -8,7 +8,8 @@ namespace JetBrains.Rider.Unity.Editor
   public static class RiderPackageInterop
   {
     private static readonly ILog ourLogger = Log.GetLog("RiderPackageInterop");
-    
+    private static MethodInfo ourSyncIfNeededMethod;
+
     public static Assembly GetAssembly()
     {
       var assemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -30,8 +31,8 @@ namespace JetBrains.Rider.Unity.Editor
       if (!TrySyncIfNeeded(true))
         UnityUtils.SyncSolution();
     }
-    
-    public static bool IsUnityCompatibleWithRiderPackage()
+
+    private static bool IsUnityCompatibleWithRiderPackage()
     {
 #if UNITY_2019_2
       return true;
@@ -47,27 +48,7 @@ namespace JetBrains.Rider.Unity.Editor
       
       try
       {
-        var riderPackageAssembly = GetAssembly();
-        if (riderPackageAssembly == null)
-        {
-          ourLogger.Error("EditorPlugin assembly is null.");
-          return false;
-        }
-        var riderScriptEditorType = riderPackageAssembly.GetType("Packages.Rider.Editor.RiderScriptEditor");
-        if (riderScriptEditorType == null)
-        {
-          ourLogger.Warn("riderScriptEditorType is null.");  
-          return false;
-        }
-        
-        var syncIfNeededMethod = riderScriptEditorType.GetMethod("SyncIfNeeded", BindingFlags.Static | BindingFlags.Public); // Rider package prior to 3.0.13 doesn't have it
-        if (syncIfNeededMethod == null)
-        {
-          ourLogger.Info("syncIfNeededMethod is null.");
-          return false;
-        }
-
-        syncIfNeededMethod.Invoke(null, new object[] { checkProjectFiles });
+        GetOrCreateSyncIfNeededMethod().Invoke(null, new object[] { checkProjectFiles });
       }
       catch (Exception e)
       {
@@ -76,6 +57,30 @@ namespace JetBrains.Rider.Unity.Editor
       }
 
       return true;
+    }
+
+    private static MethodInfo GetOrCreateSyncIfNeededMethod()
+    {
+      if (ourSyncIfNeededMethod != null)
+        return ourSyncIfNeededMethod;
+      
+      var riderPackageAssembly = GetAssembly();
+      if (riderPackageAssembly == null)
+      {
+        ourLogger.Error("EditorPlugin assembly is null.");
+        return null;
+      }
+      var riderScriptEditorType = riderPackageAssembly.GetType("Packages.Rider.Editor.RiderScriptEditor");
+      if (riderScriptEditorType == null)
+      {
+        ourLogger.Warn("riderScriptEditorType is null.");  
+        return null;
+      }
+        
+      ourSyncIfNeededMethod = riderScriptEditorType.GetMethod("SyncIfNeeded", BindingFlags.Static | BindingFlags.Public);
+      if (ourSyncIfNeededMethod == null) 
+        ourLogger.Info("syncIfNeededMethod is null.");
+      return ourSyncIfNeededMethod;
     }
   }
 }
