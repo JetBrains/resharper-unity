@@ -27,15 +27,8 @@ namespace JetBrains.Rider.Unity.Editor
     /// </summary>
     public static void SyncSolution()
     {
-      TrySetCheckProjectFiles(true);
-      try
-      {
+      if (!TrySyncIfNeeded(true))
         UnityUtils.SyncSolution();
-      }
-      finally
-      {
-        TrySetCheckProjectFiles(false);
-      }
     }
     
     public static bool IsUnityCompatibleWithRiderPackage()
@@ -47,10 +40,10 @@ namespace JetBrains.Rider.Unity.Editor
 #endif
     }
 
-    private static void TrySetCheckProjectFiles(bool checkProjectFiles)
+    private static bool TrySyncIfNeeded(bool checkProjectFiles)
     {
       if (!IsUnityCompatibleWithRiderPackage())
-        return;
+        return false;
       
       try
       {
@@ -58,39 +51,31 @@ namespace JetBrains.Rider.Unity.Editor
         if (riderPackageAssembly == null)
         {
           ourLogger.Error("EditorPlugin assembly is null.");
-          return;
+          return false;
         }
-        var editorPluginCookieType = riderPackageAssembly.GetType("Packages.Rider.Editor.ProjectGeneration.EditorPluginCookie");
-        if (editorPluginCookieType == null)
+        var riderScriptEditorType = riderPackageAssembly.GetType("Packages.Rider.Editor.RiderScriptEditor");
+        if (riderScriptEditorType == null)
         {
-          ourLogger.Warn("editorPluginCookieType is null."); // Rider package prior to 3.0.13 doesn't have it 
-          return;
+          ourLogger.Warn("riderScriptEditorType is null.");  
+          return false;
         }
-        var baseType = editorPluginCookieType.BaseType;
-        if (baseType == null)
+        
+        var syncIfNeededMethod = riderScriptEditorType.GetMethod("SyncIfNeeded", BindingFlags.Static | BindingFlags.Public); // Rider package prior to 3.0.13 doesn't have it
+        if (syncIfNeededMethod == null)
         {
-          ourLogger.Error("editorPluginCookieType.BaseType is null.");
-          return;
+          ourLogger.Info("syncIfNeededMethod is null.");
+          return false;
         }
-        var instance = baseType.GetProperty("instance");
-        if (instance == null)
-        {
-          ourLogger.Error("instance of EditorPluginCookieType is null.");
-          return;
-        }
-        var instanceVal = instance.GetValue(null, new object[] { });
-        var checkProjectFilesField = editorPluginCookieType.GetField("checkProjectFiles");
-        if (checkProjectFilesField == null)
-        {
-          ourLogger.Error("checkProjectFilesField is null.");
-          return;
-        }
-        checkProjectFilesField.SetValue(instanceVal, checkProjectFiles);
+
+        syncIfNeededMethod.Invoke(null, new object[] { checkProjectFiles });
       }
       catch (Exception e)
       {
         ourLogger.Error(e);
+        return false;
       }
+
+      return true;
     }
   }
 }
