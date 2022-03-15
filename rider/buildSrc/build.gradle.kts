@@ -4,6 +4,7 @@
 // the buildSrc project become dependencies for the root project, too
 
 repositories {
+    mavenCentral()
     maven { setUrl("https://cache-redirector.jetbrains.com/maven-central") }
     maven { setUrl("https://cache-redirector.jetbrains.com/plugins.gradle.org") }
 }
