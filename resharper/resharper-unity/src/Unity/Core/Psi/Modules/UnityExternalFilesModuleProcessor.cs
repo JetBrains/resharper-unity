@@ -46,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         private readonly UnityExternalPsiSourceFileFactory myPsiSourceFileFactory;
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
         private readonly UnityExternalFilesIndexDisablingStrategy myIndexDisablingStrategy;
-        private readonly UnityExternalFilesFileSizeLogContributor myUsageStatistics;
+        private readonly UnityAssetInfoCollector myUsageStatistics;
         private readonly Dictionary<VirtualFileSystemPath, LifetimeDefinition> myRootPathLifetimes;
         private readonly VirtualFileSystemPath mySolutionDirectory;
 
@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                                                  UnityExternalPsiSourceFileFactory psiSourceFileFactory,
                                                  UnityExternalFilesModuleFactory moduleFactory,
                                                  UnityExternalFilesIndexDisablingStrategy indexDisablingStrategy,
-                                                 UnityExternalFilesFileSizeLogContributor usageStatistics)
+                                                 UnityAssetInfoCollector usageStatistics)
         {
             myLifetime = lifetime;
             myLogger = logger;
@@ -115,11 +115,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             myLogger.DoActivity("ProcessExternalFiles", null,
                 () => AddExternalFiles(externalFiles));
 
-            UpdateStatistics(externalFiles);
-            externalFiles.Dump();
+            try
+            {
+                UpdateStatistics(externalFiles);
+                externalFiles.Dump();
+            }
+            catch (Exception e)
+            {
+                myLogger.Error(e);
+            }
 
             SubscribeToPackageUpdates();
             SubscribeToProjectModelUpdates();
+            
+            myUsageStatistics.FinishInitialUpdate();
         }
 
         public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
@@ -452,13 +461,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         {
             foreach (var externalFile in externalFiles.AssetFiles)
             {
-                UnityExternalFilesFileSizeLogContributor.FileType? fileType = null;
+                UnityAssetInfoCollector.FileType? fileType = null;
                 if (externalFile.Path.IsAsset())
-                    fileType = UnityExternalFilesFileSizeLogContributor.FileType.Asset;
+                    fileType = UnityAssetInfoCollector.FileType.Asset;
                 else if (externalFile.Path.IsPrefab())
-                    fileType = UnityExternalFilesFileSizeLogContributor.FileType.Prefab;
+                    fileType = UnityAssetInfoCollector.FileType.Prefab;
                 else if (externalFile.Path.IsScene())
-                    fileType = UnityExternalFilesFileSizeLogContributor.FileType.Scene;
+                    fileType = UnityAssetInfoCollector.FileType.Scene;
 
                 if (fileType.HasValue)
                 {
@@ -469,31 +478,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
             foreach (var externalFile in externalFiles.MetaFiles)
             {
-                myUsageStatistics.AddStatistic(UnityExternalFilesFileSizeLogContributor.FileType.Meta,
+                myUsageStatistics.AddStatistic(UnityAssetInfoCollector.FileType.Meta,
                     externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
 
             foreach (var externalFile in externalFiles.AsmDefFiles)
             {
-                myUsageStatistics.AddStatistic(UnityExternalFilesFileSizeLogContributor.FileType.AsmDef,
+                myUsageStatistics.AddStatistic(UnityAssetInfoCollector.FileType.AsmDef,
                     externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
 
             foreach (var externalFile in externalFiles.AsmRefFiles)
             {
-                myUsageStatistics.AddStatistic(UnityExternalFilesFileSizeLogContributor.FileType.AsmRef,
+                myUsageStatistics.AddStatistic(UnityAssetInfoCollector.FileType.AsmRef,
                     externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
 
             foreach (var externalFile in externalFiles.KnownBinaryAssetFiles)
             {
-                myUsageStatistics.AddStatistic(UnityExternalFilesFileSizeLogContributor.FileType.KnownBinary,
+                myUsageStatistics.AddStatistic(UnityAssetInfoCollector.FileType.KnownBinary,
                     externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
 
             foreach (var externalFile in externalFiles.ExcludedByNameAssetFiles)
             {
-                myUsageStatistics.AddStatistic(UnityExternalFilesFileSizeLogContributor.FileType.ExcludedByName,
+                myUsageStatistics.AddStatistic(UnityAssetInfoCollector.FileType.ExcludedByName,
                     externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
         }
