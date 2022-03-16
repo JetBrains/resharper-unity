@@ -323,7 +323,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                             if (isKnownExternalFile)
                             {
                                 AddOrUpdateExternalPsiSourceFile(builder, itemChange.OldLocation,
-                                    projectFile.LanguageType, isUserEditable);
+                                    myProjectFileExtensions.GetFileType(projectFile.Location), isUserEditable);
                             }
                         }
                     }
