@@ -109,6 +109,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
                         hashSet.Add(myMetaFileAverage.Metric(StatisticsUtil.GetNextPowerOfTwo(metaSize), false));
                         hashSet.Add(myMetaFileAverage.Metric(StatisticsUtil.GetNextPowerOfTwo(readonlyMetaSize), true));
                         hashSet.Add(myFilesAverage.Metric(StatisticsUtil.GetNextPowerOfTwo(totalSize / 1024 / 1024)));
+                        
                         hashSet.Add(myMetaCount.Metric(StatisticsUtil.GetNextPowerOfTwo(metaCount)));
                         hashSet.Add(myAssetCount.Metric(StatisticsUtil.GetNextPowerOfTwo(assetCount)));
 

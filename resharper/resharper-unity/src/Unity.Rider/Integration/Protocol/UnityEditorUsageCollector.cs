@@ -5,6 +5,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.FeaturesStatistics;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Services.FeatureStatistics;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.UsageStatistics.FUS.EventLog;
 using JetBrains.UsageStatistics.FUS.EventLog.Events;
 using JetBrains.UsageStatistics.FUS.EventLog.Fus;
@@ -22,8 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
         
         private EventLogGroup myGroup;
         
-        private readonly EventId1<ScriptingRuntime> myScriptingRuntimeEvent;
-        private readonly EventId2<string, bool> myUnityVersionEvent;
+        private readonly EventId3<string, bool, ScriptingRuntime> myConnectedUnityEvent;
 
         private IViewableProperty<bool> IsReady { get; } = new ViewableProperty<bool>(false);
 
@@ -31,12 +31,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
         {
             myGroup = new EventLogGroup("dotnet.unity.unityeditor", "Connected Unity Editor Information", 1, featureUsageLogger);
             
-            myScriptingRuntimeEvent = myGroup.RegisterEvent("scriptingRuntime", "Unity Scripting Runtime",
-                EventFields.Enum<ScriptingRuntime>("scriptingRuntime", "Scripting Runtime"));
-            
-            myUnityVersionEvent = myGroup.RegisterEvent("unityVersion", "Project Unity Version", 
-                EventFields.StringValidatedByRegexp("unityVersion", "Unity Version", UnityProjectInformationUsageCollector.VersionRegex),
-                EventFields.Boolean("isCustomUnityVersion", "Custom Unity Build")); 
+            myConnectedUnityEvent = myGroup.RegisterEvent("version", "Project Unity Version", 
+                EventFields.StringValidatedByRegexp("version", "Unity Version", UnityVersion.VersionRegex),
+                EventFields.Boolean("isCustom", "Custom Unity Build"),
+                EventFields.Enum<ScriptingRuntime>("scriptingRuntime", "Scripting Runtime")); 
         }
         
         public override EventLogGroup GetGroup()
@@ -72,8 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                 if (v)
                 {
                     var hashSet = new HashSet<MetricEvent>();
-                    hashSet.Add(myUnityVersionEvent.Metric(myUnityVersion, myUnityVersionCustom));
-                    hashSet.Add(myScriptingRuntimeEvent.Metric(myScriptingRuntime));
+                    hashSet.Add(myConnectedUnityEvent.Metric(myUnityVersion, myUnityVersionCustom, myScriptingRuntime));
                     tcs.TrySetResult(hashSet);
                     return true;
                 }
