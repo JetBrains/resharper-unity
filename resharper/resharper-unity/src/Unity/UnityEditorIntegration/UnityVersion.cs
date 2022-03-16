@@ -56,16 +56,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
         private void SetActualVersionForSolution(Lifetime lt)
         {
-            var projectVersionTxtPath =
-                mySolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
+            var projectVersionTxtPath = GetProjectVersionPath(mySolution);
             myFileSystemTracker.AdviseFileChanges(lt,
                 projectVersionTxtPath,
                 _ =>
                 {
-                    myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
+                    myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(mySolution);
                     UpdateActualVersionForSolution();
                 });
-            myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
+            myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(mySolution);
 
             var editorInstanceJsonPath = mySolutionDirectory.Combine("Library/EditorInstance.json");
             myFileSystemTracker.AdviseFileChanges(lt,
@@ -135,16 +134,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             return val != null ? Parse(val) : null;
         }
 
-        [CanBeNull]
-        private Version TryGetVersionFromProjectVersion(VirtualFileSystemPath projectVersionTxtPath)
+
+        private static VirtualFileSystemPath GetProjectVersionPath(ISolution solution)
         {
-            // Get the version from ProjectSettings/ProjectVersion.txt
+            var projectVersionTxtPath = solution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
+            return projectVersionTxtPath;
+        }
+        
+        [CanBeNull]
+        public static string GetProjectSettingsUnityVersion(ISolution solution)
+        {
+            var projectVersionTxtPath = GetProjectVersionPath(solution);
             if (!projectVersionTxtPath.ExistsFile)
                 return null;
+            
             var text = projectVersionTxtPath.ReadAllText2().Text;
             var match = Regex.Match(text, @"^m_EditorVersion:\s+(?<version>.*)\s*$", RegexOptions.Multiline);
             var groups = match.Groups;
-            return match.Success ? Parse(groups["version"].Value) : null;
+            if (match.Success)
+                return groups["version"].Value;
+
+            return null;
+        }
+        
+        [CanBeNull]
+        private Version TryGetVersionFromProjectVersion(ISolution solution)
+        {
+            var version = GetProjectSettingsUnityVersion(solution);
+            if (version == null)
+                return null;
+            
+            return Parse(version);
         }
 
         private static Version GetVersionForTests(ISolution solution)
