@@ -27,6 +27,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
     [SolutionComponent]
     public class UnityVersion
     {
+        public const string VersionRegex = @"(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)(?<type>[a-z])(?<revision>\d+)";
+
         private readonly UnityProjectFileCacheProvider myUnityProjectFileCache;
         private readonly ISolution mySolution;
         private readonly IFileSystemTracker myFileSystemTracker;
@@ -213,8 +215,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             if (string.IsNullOrEmpty(input))
                 return null;
 
-            const string pattern = @"(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)(?<type>[a-z])(?<revision>\d+)";
-            var match = Regex.Match(input, pattern);
+            var match = Regex.Match(input, VersionRegex);
             var groups = match.Groups;
             Version version = null;
             if (match.Success)

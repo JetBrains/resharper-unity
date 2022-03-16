@@ -32,7 +32,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
         private EventLogGroup myGroup;
         private readonly EventId1<UnityProjectKind> myProjectKindEvent;
         private readonly EventId2<string, bool> myUnityVersionEvent;
-        public const string VersionRegex = @"(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)(?<type>[a-z])(?<revision>\d+)";
 
         public UnityProjectInformationUsageCollector(ISolution solution, UnitySolutionTracker unitySolutionTracker, FeaturesStartupMonitor monitor, FeatureUsageLogger featureUsageLogger)
         {
@@ -43,9 +42,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
             myProjectKindEvent = myGroup.RegisterEvent("projectKind", "Project Kind", 
                 EventFields.Enum<UnityProjectKind>("type", "Type"));
             
-            myUnityVersionEvent = myGroup.RegisterEvent("unityVersion", "Project Unity Version", 
-                EventFields.StringValidatedByRegexp("unityVersion", "Unity Version", VersionRegex),
-                EventFields.Boolean("isCustomUnityVersion", "Custom Unity Build")); 
+            myUnityVersionEvent = myGroup.RegisterEvent("version", "Project Unity Version", 
+                EventFields.StringValidatedByRegexp("version", "Unity Version", UnityVersion.VersionRegex),
+                EventFields.Boolean("isCustom", "Custom Unity Build")); 
 
         }
         
@@ -58,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
         {
             const string unknownVersion = "0.0.0f0";
             versionInfo = versionInfo ?? unknownVersion;
-            var match = Regex.Match(versionInfo, VersionRegex);
+            var match = Regex.Match(versionInfo, UnityVersion.VersionRegex);
             if (match.Success)
             {
                 var matchedSubstring = match.Value;

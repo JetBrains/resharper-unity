@@ -236,8 +236,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
                     if (preference == null)
                         return;
 
-                    myUsageStatistics.TrackActivity("UnityUnitTestPreference", preference.ToString());
-
                     // If we select Both, then start with Edit mode tests
                     var mode = preference == UnitTestLaunchPreference.PlayMode ? TestMode.Play : TestMode.Edit;
                     var launch = new UnitTestLaunch(run.Launch.Session.Id, filters, mode, unityClientControllerInfo);
