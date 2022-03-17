@@ -607,7 +607,7 @@ namespace JetBrains.Rider.Unity.Editor
               }
 
               ourLogger.Verbose("Refresh: SyncSolution Started");
-              UnityUtils.SyncSolution();
+              RiderPackageInterop.SyncSolution();
             }
             catch (Exception e)
             {
