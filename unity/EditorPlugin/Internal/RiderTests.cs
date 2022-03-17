@@ -7,7 +7,7 @@ namespace JetBrains.Rider.Unity.Editor.Internal
   public static class RiderTests
   {
     [UsedImplicitly]
-    public static void  EnableLogsSyncSolution()
+    public static void EnableLogsSyncSolution()
     {
       PluginSettings.SelectedLoggingLevel = LoggingLevel.TRACE;
       UnityUtils.SyncSolution();
