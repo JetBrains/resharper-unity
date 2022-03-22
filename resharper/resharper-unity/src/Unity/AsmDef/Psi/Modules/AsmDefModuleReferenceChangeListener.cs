@@ -1,3 +1,7 @@
+
+
+#nullable enable
+
 using System;
 using System.Linq;
 using JetBrains.Application.changes;
@@ -16,11 +20,8 @@ using JetBrains.ReSharper.Psi.Transactions;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
-
+using Microsoft.CodeAnalysis;
 using ProjectExtensions = JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.ProjectExtensions;
-
-#nullable enable
-
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
 {
     // Listen for a module reference being added or removed, and update the source module's .asmdef file, if possible.
@@ -287,7 +288,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                     // Unsupported scenario. Custom assemblies should live in Assets and requires regenerating the
                     // project file
                     myLogger.Warn(
-                        "Unsupported reference modification. Added assembly reference will be lost when Unity regenerates project files");
+                        "Unsupported reference modification. Added assembly reference {0} to predefined project {1} will be lost when Unity regenerates project files",
+                        addedAssemblyName, ownerProject.Name);
 
                     // TODO: Notify the user
                     return;
@@ -306,7 +308,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                     // TODO: All of the above ^^
 
                     myLogger.Warn(
-                        "Unsupported reference modification. Added assembly reference will be lost when Unity regenerates project files");
+                        "Unsupported reference modification. Added assembly reference {0} to asmdef based project {1} will be lost when Unity regenerates project files",
+                        addedAssemblyName, ownerProject.Name);
                     break;
             }
         }
@@ -336,7 +339,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                 // Unsupported scenario. The user is trying to modify a generated project by adding a reference to a
                 // custom project.
                 myLogger.Warn(
-                    "Unsupported reference modification. Added assembly reference will be lost when Unity regenerates project files");
+                    "Unsupported reference modification. Removed assembly reference {0} from project {1} will be lost when Unity regenerates project files",
+                    removedProjectName, ownerProject.Name);
 
                 // TODO: Notify user that modifying a generated project will lose changes
                 return;
@@ -358,7 +362,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
 
                case (ProjectKind.Predefined, ProjectKind.AsmDef):
                    myLogger.Info(
-                       "Removing asmdef reference from predefined project. Check 'autoReferenced' value in asmdef");
+                       "Removing asmdef reference {0} from predefined project {1}. Check 'autoReferenced' value in asmdef",
+                       removedProjectName, ownerProject.Name);
 
                    // TODO: Should set "autoReferenced" to false in the removed asmdef project. Should this prompt?
                    break;
@@ -376,7 +381,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
 
             var guid = myMetaFileGuidCache.GetAssetGuid(removedAsmDefLocation);
             if (guid == null)
-                myLogger.Warn("Cannot find asset for added asmdef {0}! Can only add as name", removedAsmDefLocation);
+                myLogger.Warn("Cannot find asset GUID for removed asmdef {0}!", removedAsmDefLocation);
             var removedAsmDefGuid = guid == null ? null : AsmDefUtils.FormatGuidReference(guid.Value);
 
             // "references" might be missing if we've already removed all references and Unity isn't running to refresh
@@ -384,7 +389,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
             var referencesProperty = rootObject.GetFirstPropertyValue<IJsonNewArray>("references");
             if (referencesProperty == null)
             {
-                myLogger.Verbose("Cannot find 'references' property. Nothing to remove");
+                myLogger.Verbose("Cannot find 'references' property in {0}. Nothing to remove", ownerAsmDefLocation);
                 return;
             }
 
@@ -504,7 +509,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
 
                 if (change.IsAdded)
                     AddedReferences.Add(change.ProjectToModuleReference);
-                else if (change.IsRemoved) RemovedReferences.Add(change.ProjectToModuleReference);
+
+                // TODO: Safely handle a removed reference
+                // False positives when adding a reference are safe - we won't get a notification unless the reference
+                // actually has been added, in which case it's always safe to modify the .asmdef file.
+                // Removing references is different, and is not safe. If we get a notification for anything other than
+                // explicitly removing a reference, we'll incorrectly modify the .asmdef file. And we can get into this
+                // scenario easily:
+                // 1) A referenced project is unloaded. As far as the project model is concerned, this is the same as
+                //    removing a reference, even though it still exists in the project file. We would need to check that
+                //    the project being referenced has been unloaded instead of removed, and I don't know if there's an
+                //    API for that.
+                // 2) If a .asmdef file is disabled, e.g. by adding an unmet constraint in defineConstraints, then Unity
+                //    will generate an "empty" project file - no C# files, minimal references and various other files
+                //    (.txt, .asmdef, .shader, ...). If the modification happens when the project is open, reloading
+                //    project file will trigger reference remove notifications, which are valid, because the references
+                //    no longer exist in the project file. We could check to see if the referencing project has any C#
+                //    files. If yes, then the .asmdef file is valid and it (should be) a genuine reference removal. If
+                //    no, then it's an "empty" project and we should not edit the .asmdef file.
+                //    (We could also change the project generation to not generate the "empty" project. It's only
+                //    generated so that .shader files work. We could add any .shader file to the external files project.
+                //    But we'd still have to support the current version, so we'd still have to handle "empty" projects)
+                // It's too late in the 221 cycle to fix this, so let's disable removing references from .asmdef for now
+                //
+                // else if (change.IsRemoved)
+                    // RemovedReferences.Add(change.ProjectToModuleReference);
             }
 
             public void RemoveProblematicChangeEvents()
