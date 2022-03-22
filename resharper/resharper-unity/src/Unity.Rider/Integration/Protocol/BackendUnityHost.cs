@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
     [SolutionComponent]
     public class BackendUnityHost : IBackendUnityHost
     {
-        private readonly JetBrains.Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
+        private readonly UnityEditorUsageCollector myUnityEditorUsageCollector;
 
         private UnityEditorState myEditorState;
 
@@ -44,9 +44,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                                 IThreading threading,
                                 IIsApplicationActiveState isApplicationActiveState,
                                 PackageManager packageManager,
-                                JetBrains.Application.ActivityTrackingNew.UsageStatistics usageStatistics)
+                                UnityEditorUsageCollector unityEditorUsageCollector)
         {
-            myUsageStatistics = usageStatistics;
+            myUnityEditorUsageCollector = unityEditorUsageCollector;
 
             myEditorState = UnityEditorState.Disconnected;
 
@@ -112,7 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                                  PackageManager packageManager)
         {
             AdvisePackages(backendUnityModel, modelLifetime, packageManager);
-            TrackActivity(backendUnityModel, modelLifetime);
+            ReportUnityEditorInformationToFus(backendUnityModel, modelLifetime);
         }
 
         private void AdvisePackages(BackendUnityModel backendUnityModel, Lifetime modelLifetime,
@@ -127,22 +127,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
             });
         }
 
-        private void TrackActivity(BackendUnityModel backendUnityModel, Lifetime modelLifetime)
+        private void ReportUnityEditorInformationToFus(BackendUnityModel backendUnityModel, Lifetime modelLifetime)
         {
-            backendUnityModel.UnityApplicationData.AdviseOnce(modelLifetime, data =>
-            {
-                // ApplicationVersion may look like `2017.2.1f1-CustomPostfix`
-                var parsedVersion = UnityVersion.Parse(data.ApplicationVersion)
-                    .NotNull("UnityVersion.Parse(data.ApplicationVersion) != null");
-                var unityVersion = UnityVersion.VersionToString(parsedVersion);
-                if (data.ApplicationVersion.StartsWith(unityVersion) && unityVersion != data.ApplicationVersion)
-                    myUsageStatistics.TrackActivity("UnityVersion", unityVersion + "-custom"); // impersonate, but still track that it is custom build
-                else
-                    myUsageStatistics.TrackActivity("UnityVersion", unityVersion);
-            });
             backendUnityModel.UnityProjectSettings.ScriptingRuntime.AdviseOnce(modelLifetime, runtime =>
             {
-                myUsageStatistics.TrackActivity("ScriptingRuntime", runtime.ToString());
+                // eventual consistency
+                Assertion.Assert(backendUnityModel.UnityApplicationData.HasValue());
+                myUnityEditorUsageCollector.SetInformation(backendUnityModel.UnityApplicationData.Value.ApplicationVersion, runtime);
             });
         }
 
