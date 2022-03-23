@@ -18,7 +18,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Added
 
-- Add and remove references to `.asmdef` files when project references are modified, including with Remove Unused References refactoring ([#852](https://github.com/JetBrains/resharper-unity/issues/852), [RIDER-48660](https://youtrack.jetbrains.com/issue/RIDER-48660), [#1994](https://github.com/JetBrains/resharper-unity/issues/1994), [#2279](https://github.com/JetBrains/resharper-unity/pull/2279))
+- Add references to `.asmdef` files when adding a project reference via Alt+Enter quick fix ([#852](https://github.com/JetBrains/resharper-unity/issues/852), [RIDER-48660](https://youtrack.jetbrains.com/issue/RIDER-48660), [#1994](https://github.com/JetBrains/resharper-unity/issues/1994), [#2279](https://github.com/JetBrains/resharper-unity/pull/2279))
 - Add support for `.asmref` files ([#1406](https://github.com/JetBrains/resharper-unity/issues/1406), [#2252](https://github.com/JetBrains/resharper-unity/pull/2252))
 - Add inspection for correct method signature for `MenuItem` attribute ([RIDER-69350](https://youtrack.jetbrains.com/issue/RIDER-69350), [#2266](https://github.com/JetBrains/resharper-unity/pull/2266))
 - Rider: Add new run configuration to run Unity tests in batch mode ([RIDER-70675](https://youtrack.jetbrains.com/issue/RIDER-70675), [#2231](https://github.com/JetBrains/resharper-unity/pull/2231))
@@ -26,6 +26,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Changed
 
+- Change unknown assembly reference in `.asmdef` file from an error to a warning ([#2297](https://github.com/JetBrains/resharper-unity/pull/2297))
 - Show preview for target typed new instances of `Color` ([RIDER-64151](https://youtrack.jetbrains.com/issue/RIDER-64151), [#2250](https://github.com/JetBrains/resharper-unity/pull/2250))
 - Update API information to 2022.1.0b7 ([#2276](https://github.com/JetBrains/resharper-unity/pull/2276))
 - Rider: Treat animation files as YAML ([#2283](https://github.com/JetBrains/resharper-unity/pull/2283))
