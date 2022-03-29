@@ -74,9 +74,9 @@ private class MetaFilesCheckHandler(
                 if (emptyFolders.any()){
                     logger.info("check.redundant.meta.files")
                     val groupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity commit failure")
-                    val title = UnityUIBundle.message("redundant.meta.files")
+                    val title = UnityUIBundle.message("commit.failed.with.error")
                     val message =
-                        UnityUIBundle.message("notification.content.empty.folders.are.not.under.git.index.prevent.committing.its.metafile",
+                        UnityUIBundle.message("notification.content.empty.folders.so.meta.files.should.not.be.committed",
                             emptyFolders.take(3).joinToString(separator = ", ") {
                                 project.solutionDirectory.toPath().relativize(it.virtualFile!!.toNioPath()).pathString
                             } + if (emptyFolders.count() > 3) ", …" else {
