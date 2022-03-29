@@ -13,6 +13,7 @@ import com.intellij.util.PairConsumer
 import com.jetbrains.rd.framework.impl.RpcTimeouts
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import com.jetbrains.rider.projectView.solution
 import java.util.concurrent.CancellationException
 
@@ -37,7 +38,7 @@ private class UnresolvedMergeCheckHandler(
             return null
 
         return BooleanCommitOption(
-            panel, "Check unsaved Unity scenes", false,
+            panel, UnityUIBundle.message("commitOption.check.unsaved.unity.scenes"), false,
             settings::checkUnsavedScenes
         )
     }
@@ -68,10 +69,10 @@ private class UnresolvedMergeCheckHandler(
     private fun askUser(): ReturnResult {
         val dialogResult = Messages.showOkCancelDialog(
             project,
-            "Unsaved changes in Unity scenes will not be included in the commit",
-            "Unsaved Unity Scenes",
-            "Commit Anyway",
-            "Cancel",
+            UnityUIBundle.message("dialog.unsaved.message.changes.in.unity.scenes.will.not.be.included.in.commit"),
+            UnityUIBundle.message("dialog.unsaved.title.unity.scenes"),
+            UnityUIBundle.message("dialog.unsaved.button.commit.anyway"),
+            UnityUIBundle.message("dialog.unsaved.button.cancel"),
             Messages.getWarningIcon()
         )
 
