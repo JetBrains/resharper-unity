@@ -52,11 +52,11 @@ class UnityStatusBarIcon(project: Project): StatusBarWidget, StatusBarWidget.Ico
     @Suppress("DialogTitleCapitalization")
     override fun getTooltipText(): String {
         return when (host.model.unityEditorState.valueOrDefault(UnityEditorState.Disconnected)) {
-            UnityEditorState.Disconnected -> "No Unity Editor connection<br/>Load the project in the Unity Editor to enable advanced functionality"
-            UnityEditorState.Idle -> "Connected to Unity Editor"
-            UnityEditorState.Play -> "Connected to Unity Editor"
-            UnityEditorState.Pause -> "Connected to Unity Editor"
-            UnityEditorState.Refresh -> "Refreshing assets in Unity Editor"
+            UnityEditorState.Disconnected -> UnityUIBundle.message("tooltip.no.unity.editor.connection")
+            UnityEditorState.Idle -> UnityUIBundle.message("tooltip.connected.to.unity.editor")
+            UnityEditorState.Play -> UnityUIBundle.message("tooltip.connected.to.unity.editor")
+            UnityEditorState.Pause -> UnityUIBundle.message("tooltip.connected.to.unity.editor")
+            UnityEditorState.Refresh -> UnityUIBundle.message("tooltip.refreshing.assets.in.unity.editor")
         }
     }
 

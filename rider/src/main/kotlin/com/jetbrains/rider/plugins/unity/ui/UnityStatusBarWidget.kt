@@ -12,7 +12,7 @@ class UnityStatusBarWidget: StatusBarWidgetFactory {
     override fun getId() = UnityStatusBarIcon.StatusBarIconId
     override fun isAvailable(project: Project) = UnityProjectDiscoverer.getInstance(project).isUnityProject
     override fun canBeEnabledOn(statusBar: StatusBar) = true
-    override fun getDisplayName() = "Unity Editor connection"
+    override fun getDisplayName() = UnityUIBundle.message("unity.status.bar.widget.display.name")
     override fun disposeWidget(widget: StatusBarWidget) {}
     override fun createWidget(project: Project) = UnityStatusBarIcon(project)
 }

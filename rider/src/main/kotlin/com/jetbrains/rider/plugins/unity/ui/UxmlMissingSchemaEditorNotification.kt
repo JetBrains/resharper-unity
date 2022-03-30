@@ -67,8 +67,8 @@ class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNo
                     return null
                 }
                 val panel = EditorNotificationPanel()
-                panel.text("UXML support requires Unity 2019.1 or above")
-                panel.createActionLabel("Don't show again") {
+                panel.text(UnityUIBundle.message("uxml.support.requires.unity.or.above"))
+                panel.createActionLabel(UnityUIBundle.message("don.t.show.again")) {
                     // Project level — do not show again for this project
                     PropertiesComponent.getInstance(project).setValue(DO_NOT_SHOW_VERSION_KEY, true)
                     EditorNotifications.getInstance(project).updateAllNotifications()
@@ -79,18 +79,18 @@ class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNo
             val schemasFolder = Paths.get(project.projectDir.canonicalPath!!, "UIElementsSchema")
             if (!schemasFolder.exists() || !schemasFolder.isDirectory()) {
                 val panel = EditorNotificationPanel()
-                panel.text("Generate UIElements schema to get validation and code completion.")
+                panel.text(UnityUIBundle.message("label.generate.uielements.schema.to.get.validation.code.completion"))
 
                 if (project.isConnectedToEditor()) {
                     var link: HyperlinkLabel? = null
-                    link = panel.createActionLabel("Generate schema") {
+                    link = panel.createActionLabel(UnityUIBundle.message("link.label.generate.schema")) {
                         generateSchema(project, panel, link)
                     }
                 }
                 else {
                     var link: HyperlinkLabel? = null
-                    link = panel.createActionLabel("Start Unity and generate schema") {
-                        panel.text("Starting Unity. Please wait.")
+                    link = panel.createActionLabel(UnityUIBundle.message("link.label.start.unity.generate.schema")) {
+                        panel.text(UnityUIBundle.message("label.starting.unity.please.wait"))
 
                         val lifetimeDefinition = project.defineNestedLifetime()
                         project.solution.frontendBackendModel.unityEditorConnected.whenTrue(lifetimeDefinition.lifetime) {
@@ -111,7 +111,7 @@ class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNo
     }
 
     private fun generateSchema(project: Project, panel: EditorNotificationPanel, link: HyperlinkLabel?) {
-        panel.text("Generating. Please wait.")
+        panel.text(UnityUIBundle.message("label.generating.please.wait"))
         link?.isVisible = false
 
         project.solution.frontendBackendModel.generateUIElementsSchema.start(project.lifetime, Unit).result.adviseOnce(project.lifetime) {
@@ -128,8 +128,8 @@ class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNo
             } else {
                 // This is either an exception in UxmlSchemaGenerator, an exception in the protocol, or we're unable to
                 // find the UxmlSchemaGenerator class via reflection.
-                panel.text("Unable to generate schema. Please check the Unity Console for errors.")
-                link?.setHyperlinkText("Try again")
+                panel.text(UnityUIBundle.message("label.unable.to.generate.schema.please.check.unity.console.for.errors"))
+                link?.setHyperlinkText(UnityUIBundle.message("link.label.try.again"))
                 link?.isVisible = true
 
                 UnityToolWindowFactory.show(project)

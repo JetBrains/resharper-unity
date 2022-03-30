@@ -25,7 +25,9 @@ import com.jetbrains.rider.cpp.fileType.CppFileType
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextDataBase
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
+import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import icons.UnityIcons
+import org.jetbrains.annotations.Nls
 import java.awt.BorderLayout
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
@@ -42,6 +44,7 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
     private val currentContextMode : IProperty<ShaderContextData?> = Property(null)
 
     companion object {
+        @Nls
         private fun getContextPresentation(data : ShaderContextData) = "${data.name}:${data.startLine}"
     }
 
@@ -75,11 +78,11 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
 
             currentContextMode.advise(project.lifetime) {
                 if (it == null) {
-                    label.text = "Auto"
-                    label.toolTipText = "Default file and symbol context"
+                    label.text = UnityUIBundle.message("auto")
+                    label.toolTipText = UnityUIBundle.message("default.file.and.symbol.context")
                 } else {
                     label.text = getContextPresentation(it)
-                    label.toolTipText = "File and symbol context derived from include at ${getContextPresentation(it)}"
+                    label.toolTipText = UnityUIBundle.message("file.and.symbol.context.derived.from.include.at.context", getContextPresentation(it))
                 }
             }
         }

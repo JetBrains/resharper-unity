@@ -4,11 +4,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnitTestLaunchPreference
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import com.jetbrains.rider.projectView.solution
 
-class UseUnityEditLauncherAction : DumbAwareAction(EditModeDescription, "Run with Unity Editor in Edit Mode", null) {
+class UseUnityEditLauncherAction : DumbAwareAction(EditModeText,
+    UnityUIBundle.message("action.run.with.unity.editor.in.edit.mode.description"), null) {
     companion object {
-        const val EditModeDescription = "Unity - Edit Mode"
+        val EditModeText = UnityUIBundle.message("action.run.with.unity.editor.in.edit.mode.text")
     }
 
     override fun actionPerformed(e: AnActionEvent) {
