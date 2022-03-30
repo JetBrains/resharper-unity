@@ -38,7 +38,7 @@ class UnitTestLauncherState(val project: Project) : PersistentStateComponent<Ele
         }
     }
 
-    override fun getState(): Element? {
+    override fun getState(): Element {
         val element = Element("state")
         val value = getLauncherId(project.solution.frontendBackendModel.unitTestPreference.value)
         element.setAttribute(currentTestLauncher, value)

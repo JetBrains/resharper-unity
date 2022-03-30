@@ -13,18 +13,18 @@ import javax.swing.JComponent
 class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
 
     private fun getLauncherDescription(currentPreference: UnitTestLaunchPreference?): String {
-        val preferenceNotNull = currentPreference ?: return UseNunitLauncherAction.NUnitDescription
+        val preferenceNotNull = currentPreference ?: return UseNUnitLauncherAction.UseNUnitLauncherActionText
 
         return when (preferenceNotNull) {
-            UnitTestLaunchPreference.EditMode -> UseUnityEditLauncherAction.EditModeDescription
-            UnitTestLaunchPreference.NUnit -> UseNunitLauncherAction.NUnitDescription
+            UnitTestLaunchPreference.EditMode -> UseUnityEditLauncherAction.EditModeText
+            UnitTestLaunchPreference.NUnit -> UseNUnitLauncherAction.UseNUnitLauncherActionText
             UnitTestLaunchPreference.PlayMode -> UseUnityPlayLauncherAction.PlayModeDescription
-            UnitTestLaunchPreference.Both -> UseUnityBothLauncherAction.BothModeDescription
+            UnitTestLaunchPreference.Both -> UseUnityBothLauncherAction.BothModeText
         }
     }
 
     override fun createPopupActionGroup(p0: JComponent?): DefaultActionGroup {
-        return object : DefaultActionGroup(UseUnityEditLauncherAction(), UseUnityPlayLauncherAction(), UseUnityBothLauncherAction(), UseNunitLauncherAction()) {
+        return object : DefaultActionGroup(UseUnityEditLauncherAction(), UseUnityPlayLauncherAction(), UseUnityBothLauncherAction(), UseNUnitLauncherAction()) {
             override fun update(e: AnActionEvent) {
                 val project = e.project ?: return
 

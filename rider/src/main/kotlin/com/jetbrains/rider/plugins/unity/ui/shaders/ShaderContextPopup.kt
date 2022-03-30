@@ -15,6 +15,7 @@ import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
+import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import icons.UnityIcons
 import java.awt.BorderLayout
 import javax.swing.JComponent
@@ -24,7 +25,8 @@ import javax.swing.JPanel
 
 
 class ShaderContextPopup(private val group: ActionGroup, private val dataContext: DataContext, currentContextMode: IProperty<ShaderContextData?>) :
-    PopupFactoryImpl.ActionGroupPopup("Include context from:", group, dataContext, false, false,
+    PopupFactoryImpl.ActionGroupPopup(
+        UnityUIBundle.message("popup.title.include.context.from"), group, dataContext, false, false,
         false, true, null, 10, Condition {
         if (it is ShaderAutoContextSwitchAction && currentContextMode.value == null)
             return@Condition true
