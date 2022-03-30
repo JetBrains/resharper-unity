@@ -29,7 +29,7 @@ class NonUserEditableEditorNotification : EditorNotifications.Provider<EditorNot
 
         if (project.isUnityProject() && isNonEditableUnityFile(file)) {
             val panel = EditorNotificationPanel()
-            panel.text = "This file is internal to Unity and should not be edited manually."
+            panel.text = UnityUIBundle.message("label.this.file.internal.to.unity.should.not.be.edited.manually")
             if (!file.extension.equals("meta", true)) {
                 UIUtil.invokeLaterIfNeeded {
                     addShowInUnityAction(project.lifetime, panel, file, project)
@@ -45,7 +45,7 @@ class NonUserEditableEditorNotification : EditorNotifications.Provider<EditorNot
 
         val model = project.solution.frontendBackendModel
 
-        val link = panel.createActionLabel("Show in Unity") {
+        val link = panel.createActionLabel(UnityUIBundle.message("action.text.show.in.unity")) {
             ShowFileInUnityAction.execute(project, file)
         }
 
