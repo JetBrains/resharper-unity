@@ -25,14 +25,14 @@ class UnsavedSceneCheckinHandlerFactory : CheckinHandlerFactory() {
         UnresolvedMergeCheckHandler(panel)
 }
 
-private val logger = Logger.getInstance(UnsavedSceneCheckinHandlerFactory::class.java)
+private val logger = Logger.getInstance(MetaFilesCheckinHandlerFactory::class.java)
 
 private class UnresolvedMergeCheckHandler(
     private val panel: CheckinProjectPanel
 ) : CheckinHandler() {
 
     private val project = panel.project
-    private val settings = UnityCheckinState.getService(project)
+    private val settings = UnsavedSceneCheckinState.getService(project)
     override fun getBeforeCheckinConfigurationPanel(): RefreshableOnComponent? {
         if (!project.isUnityProject())
             return null
