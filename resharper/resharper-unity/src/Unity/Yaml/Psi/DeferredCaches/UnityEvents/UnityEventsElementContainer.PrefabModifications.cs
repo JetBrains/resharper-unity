@@ -125,7 +125,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 foreach (var ((location, unityEventName), modifiedEvents) in importedUnityEventData.UnityEventToModifiedIndex)
                 {
                     var script = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(location, true) as IScriptComponentHierarchy;
-                    Assertion.Assert(script != null, "script != null");
+                    // missed script
+                    if (script == null)
+                        continue;
+                    
                     var scriptType = AssetUtils.GetTypeElementFromScriptAssetGuid(mySolution, script.ScriptReference.ExternalAssetGuid);
                     var field = scriptType?.GetMembers().FirstOrDefault(t => t is IField f && AssetUtils.GetAllNamesFor(f).Contains(unityEventName)) as IField;
                     if (field == null)
