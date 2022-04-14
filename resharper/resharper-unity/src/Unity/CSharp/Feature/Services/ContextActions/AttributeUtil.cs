@@ -173,7 +173,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                     hotspotsRegistry.Register(range,
                         new NameSuggestionsExpression(new[]
                         {
-                            literalExpression.ConstantValue.GetPresentation(attribute.Language, DeclaredElementPresenterTextStyles.Empty).Text
+                            literalExpression.ConstantValue.GetPresentation(attribute.Language, TypePresentationStyle.Default).Text
                         }));
                 }
             }
@@ -187,7 +187,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                     hotspotsRegistry.Register(range,
                         new NameSuggestionsExpression(new[]
                         {
-                            literalExpression.ConstantValue.GetPresentation(attribute.Language, DeclaredElementPresenterTextStyles.Empty).Text
+                            literalExpression.ConstantValue.GetPresentation(attribute.Language, TypePresentationStyle.Default).Text
                         }));
                 }
             }
