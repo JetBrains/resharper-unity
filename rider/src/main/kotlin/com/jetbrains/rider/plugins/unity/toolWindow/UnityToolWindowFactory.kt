@@ -10,7 +10,7 @@ import com.intellij.ui.content.ContentManagerListener
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelView
-import icons.UnityIcons
+import UnityIcons
 
 // todo: it lacks init {}, so it's not a component and doesn't need to be initialized automatically
 //there's an API for registering tool windows in the IJ Platform

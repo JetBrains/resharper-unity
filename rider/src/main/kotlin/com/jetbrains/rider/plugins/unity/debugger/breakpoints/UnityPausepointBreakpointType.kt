@@ -11,7 +11,7 @@ import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.intellij.xdebugger.impl.breakpoints.XBreakpointUtil
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointType
-import icons.UnityIcons
+import UnityIcons
 import java.util.*
 import javax.swing.Icon
 

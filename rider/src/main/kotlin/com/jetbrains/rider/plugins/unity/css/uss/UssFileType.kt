@@ -1,7 +1,7 @@
 package com.jetbrains.rider.plugins.unity.css.uss
 
 import com.intellij.openapi.fileTypes.LanguageFileType
-import icons.UnityIcons
+import UnityIcons
 
 object UssFileType: LanguageFileType(UssLanguage) {
     override fun getIcon() = UnityIcons.FileTypes.Uss

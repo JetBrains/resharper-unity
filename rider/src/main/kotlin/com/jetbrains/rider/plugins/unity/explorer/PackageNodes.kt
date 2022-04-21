@@ -16,7 +16,7 @@ import com.jetbrains.rider.plugins.unity.workspace.getPackages
 import com.jetbrains.rider.plugins.unity.workspace.tryGetPackage
 import com.jetbrains.rider.projectView.views.*
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
-import icons.UnityIcons
+import UnityIcons
 
 class PackagesRootNode(project: Project, packagesFolder: VirtualFile)
     : UnityExplorerFileSystemNode(project, packagesFolder, emptyList(), AncestorNodeType.FileSystem) {

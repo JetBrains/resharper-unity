@@ -25,7 +25,7 @@ import com.jetbrains.rider.cpp.fileType.CppFileType
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextDataBase
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
-import icons.UnityIcons
+import UnityIcons
 import java.awt.BorderLayout
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener

@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType
 import com.jetbrains.rider.run.configurations.RiderNewRunConfigurationTreeGroupingProvider
-import icons.UnityIcons
+import UnityIcons
 
 class UnityNewRunConfigurationTreeGroupingProvider: RiderNewRunConfigurationTreeGroupingProvider {
     override fun getGroups(project: Project): List<RiderNewRunConfigurationTreeGroupingProvider.Group> {

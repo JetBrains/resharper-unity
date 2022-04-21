@@ -2,7 +2,7 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.openapi.project.Project
-import icons.UnityIcons
+import UnityIcons
 
 
 open class UnityAttachToEditorFactory(type: ConfigurationType) : UnityConfigurationFactoryBase(type) {

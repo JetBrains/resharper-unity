@@ -2,11 +2,11 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.configurations.ConfigurationTypeBase
 import com.intellij.openapi.project.DumbAware
-import icons.UnityIcons
+import UnityIcons
 
 class UnityDebugConfigurationType : ConfigurationTypeBase(id,
-    "Attach to Unity Editor", "Attach to Unity process and debug",
-    UnityIcons.RunConfigurations.AttachToUnityParentConfiguration), DumbAware {
+                                                          "Attach to Unity Editor", "Attach to Unity process and debug",
+                                                          UnityIcons.RunConfigurations.AttachToUnityParentConfiguration), DumbAware {
 
     val attachToEditorFactory = UnityAttachToEditorFactory(this)
     val attachToEditorAndPlayFactory = UnityAttachToEditorAndPlayFactory(this)

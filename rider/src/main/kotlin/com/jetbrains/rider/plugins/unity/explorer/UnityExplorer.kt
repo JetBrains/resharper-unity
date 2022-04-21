@@ -18,7 +18,7 @@ import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
 import com.jetbrains.rider.projectView.views.actions.SolutionViewToggleAction
 import com.jetbrains.rider.projectView.views.impl.SolutionViewSelectInTargetBase
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
-import icons.UnityIcons
+import UnityIcons
 import org.jdom.Element
 
 class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRootNode(project)) {
