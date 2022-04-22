@@ -15,7 +15,7 @@ import com.jetbrains.rider.projectView.views.addAdditionalText
 import com.jetbrains.rider.projectView.views.presentSyncNode
 import com.jetbrains.rider.projectView.workspace.findProjects
 import com.jetbrains.rider.projectView.workspace.getSolutionEntity
-import UnityIcons
+import icons.UnityIcons
 
 @Suppress("UnstableApiUsage")
 class AssetsRootNode(project: Project, virtualFile: VirtualFile)

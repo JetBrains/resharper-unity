@@ -10,7 +10,7 @@ import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.plugins.unity.model.UnityEditorState
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
-import UnityIcons
+import icons.UnityIcons
 import java.awt.event.MouseEvent
 import javax.swing.Icon
 

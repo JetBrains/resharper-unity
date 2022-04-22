@@ -2,7 +2,7 @@ package com.jetbrains.rider.plugins.unity.toolWindow.log
 
 import com.jetbrains.rider.plugins.unity.model.LogEventMode
 import com.jetbrains.rider.plugins.unity.model.LogEventType
-import UnityIcons
+import icons.UnityIcons
 
 fun LogEventType.getIcon() = when (this) {
     LogEventType.Error -> UnityIcons.Ide.Error

@@ -21,7 +21,7 @@ import com.jetbrains.rider.projectView.workspace.containingProjectEntity
 import com.jetbrains.rider.projectView.workspace.getProjectModelEntities
 import com.jetbrains.rider.projectView.workspace.impl.WorkspaceEntityErrorsSupport
 import com.jetbrains.rider.projectView.workspace.isProject
-import UnityIcons
+import icons.UnityIcons
 import java.awt.Color
 import java.util.*
 import javax.swing.Icon

@@ -1,7 +1,7 @@
 package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab
 
 import com.jetbrains.rider.ideaInterop.fileTypes.RiderLanguageFileTypeBase
-import UnityIcons
+import icons.UnityIcons
 
 object ShaderLabFileType : RiderLanguageFileTypeBase(ShaderLabLanguage) {
     override fun getDefaultExtension() = "shader"

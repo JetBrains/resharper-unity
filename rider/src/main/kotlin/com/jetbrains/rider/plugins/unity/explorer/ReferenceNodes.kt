@@ -9,7 +9,7 @@ import com.intellij.workspaceModel.ide.impl.virtualFile
 import com.jetbrains.rd.util.getOrCreate
 import com.jetbrains.rider.model.RdCustomLocation
 import com.jetbrains.rider.projectView.workspace.*
-import UnityIcons
+import icons.UnityIcons
 
 class ReferenceRootNode(project: Project) : AbstractTreeNode<Any>(project, key) {
 

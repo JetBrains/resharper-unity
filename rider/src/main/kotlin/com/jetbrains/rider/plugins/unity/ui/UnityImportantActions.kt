@@ -5,9 +5,10 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.DumbAware
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.actions.isUnityProject
 import com.jetbrains.rider.plugins.unity.actions.isUnityProjectFolder
 import com.jetbrains.rider.projectView.solution
-import UnityIcons
+import icons.UnityIcons
 
 class UnityImportantActions : DefaultActionGroup(), DumbAware {
     override fun update(e: AnActionEvent) {

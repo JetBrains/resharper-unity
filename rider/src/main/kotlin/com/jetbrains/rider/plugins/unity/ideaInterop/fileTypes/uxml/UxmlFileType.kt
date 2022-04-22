@@ -1,7 +1,7 @@
 package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml
 
 import com.intellij.ide.highlighter.XmlLikeFileType
-import UnityIcons
+import icons.UnityIcons
 
 object UxmlFileType : XmlLikeFileType(UxmlLanguage) {
     override fun getIcon() = UnityIcons.FileTypes.Uxml

@@ -1,7 +1,7 @@
 package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmref
 
 import com.intellij.json.JsonFileType
-import UnityIcons
+import icons.UnityIcons
 
 object AsmRefFileType : JsonFileType() {
     override fun getDefaultExtension() = "asmref"

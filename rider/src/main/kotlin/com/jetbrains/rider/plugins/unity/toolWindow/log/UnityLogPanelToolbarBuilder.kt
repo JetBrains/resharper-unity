@@ -6,7 +6,7 @@ import com.jetbrains.rider.plugins.unity.model.LogEventMode
 import com.jetbrains.rider.plugins.unity.model.LogEventType
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
 import com.jetbrains.rider.ui.RiderAction
-import UnityIcons
+import icons.UnityIcons
 import java.awt.BorderLayout
 import javax.swing.JPanel
 
@@ -72,7 +72,7 @@ object UnityLogPanelToolbarBuilder {
             }
         }
 
-        fun createBeforeInit() = object : ToggleAction("Messages Before Last Domain Reload", "", UnityIcons.LogView.FilterBeforeRefresh) {
+        fun createBeforeInit() = object : ToggleAction("Messages Before Last Domain Reload", "",  UnityIcons.LogView.FilterBeforeRefresh) {
             override fun isSelected(e: AnActionEvent) = model.timeFilters.getShouldBeShownBeforeInit()
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.timeFilters.setShowBeforeLastBuild(value)

@@ -4,7 +4,7 @@ import com.intellij.execution.process.ProcessInfo
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.UserDataHolder
 import com.intellij.xdebugger.attach.XAttachProcessPresentationGroup
-import UnityIcons
+import icons.UnityIcons
 import javax.swing.Icon
 
 @Suppress("UnstableApiUsage")
