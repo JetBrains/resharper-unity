@@ -28,8 +28,8 @@
     <Compile Remove="AfterUnity56\**" />
     <None Remove="AfterUnity56\**" />
     <EmbeddedResource Remove="AfterUnity56\**" />
-    <None Remove="PackageReference.JetBrains.RdFramework.Props" />
   </ItemGroup>
   <Import Project="ILRepack.targets" />
   <Import Project="Model.targets" />
+  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="!$(InternalBuild)"/>
 </Project>
