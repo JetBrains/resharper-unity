@@ -25,9 +25,6 @@
   <ItemGroup>
     <Compile Remove="AfterUnity56\UnitTesting\CompiledAssembliesTracker.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Remove="PackageReference.JetBrains.RdFramework.Props" />
-  </ItemGroup>
   <Import Project="ILRepack.targets" />
   <Import Project="Model.targets" />
 </Project>

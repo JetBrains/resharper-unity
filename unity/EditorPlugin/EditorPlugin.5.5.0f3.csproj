@@ -12,7 +12,6 @@
     <Compile Remove="AfterUnity56\**" />
     <None Remove="AfterUnity56\**" />
     <EmbeddedResource Remove="AfterUnity56\**" />
-    <None Remove="PackageReference.JetBrains.RdFramework.Props" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.NETFramework.ReferenceAssemblies.net35" Version="1.0.1" PrivateAssets="All" />
@@ -20,4 +19,5 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
   <Import Project="Model.targets" />
+  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="!$(InternalBuild)"/>
 </Project>
