@@ -1,4 +1,6 @@
-﻿using JetBrains.Metadata.Reader.API;
+﻿#nullable enable
+
+using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
@@ -81,10 +83,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static readonly IClrTypeName GizmoType = new ClrTypeName("UnityEditor.GizmoType");
         public static readonly IClrTypeName InitializeOnLoadAttribute = new ClrTypeName("UnityEditor.InitializeOnLoadAttribute");
         public static readonly IClrTypeName InitializeOnLoadMethodAttribute = new ClrTypeName("UnityEditor.InitializeOnLoadMethodAttribute");
+        public static readonly IClrTypeName MenuCommand = new ClrTypeName("UnityEditor.MenuCommand");
+        public static readonly IClrTypeName MenuItemAttribute = new ClrTypeName("UnityEditor.MenuItem");
         public static readonly IClrTypeName PreferenceItem = new ClrTypeName("UnityEditor.PreferenceItem");
         public static readonly IClrTypeName PropertyDrawer = new ClrTypeName("UnityEditor.PropertyDrawer");
         public static readonly IClrTypeName RequiredSignatureAttribute = new ClrTypeName("UnityEditor.RequiredSignatureAttribute");
-        public static readonly IClrTypeName MenuItemAttribute = new ClrTypeName("UnityEditor.MenuItem");
 
         // UnityEditor.Callbacks
         public static readonly IClrTypeName DidReloadScripts = new ClrTypeName("UnityEditor.Callbacks.DidReloadScripts");

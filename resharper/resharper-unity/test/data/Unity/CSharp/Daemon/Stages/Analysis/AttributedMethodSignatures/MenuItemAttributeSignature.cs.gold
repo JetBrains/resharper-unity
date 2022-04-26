@@ -1,9 +1,14 @@
 ﻿using UnityEditor;
 
-public class Class1
+public class ValidSignatures
 {
     [MenuItem("MyMenu/Log Selected Transform Name")]
     static void LogSelectedTransformName()
+    {
+    }
+
+    [MenuItem("MyMenu/Log Selected Transform Name")]
+    static void OptionalMenuCommandArgument(MenuCommand command)
     {
     }
 
@@ -12,37 +17,82 @@ public class Class1
     {
         return Selection.activeTransform != null;
     }
+
+    [MenuItem("MyMenu/Log Selected Transform Name", validate = true)]
+    static bool ValidateLogSelectedTransformName(MenuCommand command)
+    {
+        return Selection.activeTransform != null;
+    }
+
+    [MenuItem("MyMenu/Log Selected Transform Name", priority = 100, validate = true)]
+    static bool ValidateLogSelectedTransformName()
+    {
+        return Selection.activeTransform != null;
+    }
+
+    [MenuItem("MyMenu/Log Selected Transform Name", priority = 100, validate = true)]
+    static bool ValidateLogSelectedTransformName(MenuCommand command)
+    {
+        return Selection.activeTransform != null;
+    }
 }
 
-public class Class2
+public class MissingStatic
 {
     [MenuItem("MyMenu/Log Selected Transform Name")]
     void |LogSelectedTransformName|(0)()
     {
     }
 
+    [MenuItem("MyMenu/Log Selected Transform Name")]
+    void |LogSelectedTransformName2|(1)(MenuCommand command)
+    {
+    }
+
     [MenuItem("MyMenu/Log Selected Transform Name", true)]
-    bool |ValidateLogSelectedTransformName|(1)()
+    bool |ValidateLogSelectedTransformName|(2)()
+    {
+        return Selection.activeTransform != null;
+    }
+
+    [MenuItem("MyMenu/Log Selected Transform Name", validate = true)]
+    bool |ValidateLogSelectedTransformName2|(3)()
     {
         return Selection.activeTransform != null;
     }
 }
 
-public class Class3
+public class IncorrectReturnType
 {
     [MenuItem("MyMenu/Log Selected Transform Name")]
-    bool |LogSelectedTransformName|(2)()
+    bool |LogSelectedTransformName|(4)()
+    {
+    }
+
+    [MenuItem("MyMenu/Log Selected Transform Name")]
+    bool |LogSelectedTransformName2|(5)(MenuCommand menuCommand)
     {
     }
 
     [MenuItem("MyMenu/Log Selected Transform Name", false)]
-    bool |ValidateLogSelectedTransformName|(3)()
+    bool |ValidateLogSelectedTransformName|(6)()
+    {
+        return Selection.activeTransform != null;
+    }
+
+    [MenuItem("MyMenu/Log Selected Transform Name", validate = false)]
+    bool |ValidateLogSelectedTransformName2|(7)()
     {
         return Selection.activeTransform != null;
     }
 }
+
 ---------------------------------------------------------
-(0): ReSharper Warning: Missing static modifier
-(1): ReSharper Warning: Missing static modifier
-(2): ReSharper Warning: Incorrect method signature. Expected 'static void LogSelectedTransformName()'
-(3): ReSharper Warning: Incorrect method signature. Expected 'static void ValidateLogSelectedTransformName()'
+(0): ReSharper Warning: Incorrect method signature
+(1): ReSharper Warning: Incorrect method signature
+(2): ReSharper Warning: Incorrect method signature
+(3): ReSharper Warning: Incorrect method signature
+(4): ReSharper Warning: Incorrect method signature
+(5): ReSharper Warning: Incorrect method signature
+(6): ReSharper Warning: Incorrect method signature
+(7): ReSharper Warning: Incorrect method signature

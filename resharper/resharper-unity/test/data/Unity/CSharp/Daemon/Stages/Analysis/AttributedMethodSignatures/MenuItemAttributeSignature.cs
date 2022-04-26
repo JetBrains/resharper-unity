@@ -1,9 +1,14 @@
 using UnityEditor;
 
-public class Class1
+public class ValidSignatures
 {
     [MenuItem("MyMenu/Log Selected Transform Name")]
     static void LogSelectedTransformName()
+    {
+    }
+
+    [MenuItem("MyMenu/Log Selected Transform Name")]
+    static void OptionalMenuCommandArgument(MenuCommand command)
     {
     }
 
@@ -12,12 +17,35 @@ public class Class1
     {
         return Selection.activeTransform != null;
     }
+
+    [MenuItem("MyMenu/Log Selected Transform Name", validate = true)]
+    static bool ValidateLogSelectedTransformName(MenuCommand command)
+    {
+        return Selection.activeTransform != null;
+    }
+
+    [MenuItem("MyMenu/Log Selected Transform Name", priority = 100, validate = true)]
+    static bool ValidateLogSelectedTransformName()
+    {
+        return Selection.activeTransform != null;
+    }
+
+    [MenuItem("MyMenu/Log Selected Transform Name", priority = 100, validate = true)]
+    static bool ValidateLogSelectedTransformName(MenuCommand command)
+    {
+        return Selection.activeTransform != null;
+    }
 }
 
-public class Class2
+public class MissingStatic
 {
     [MenuItem("MyMenu/Log Selected Transform Name")]
     void LogSelectedTransformName()
+    {
+    }
+
+    [MenuItem("MyMenu/Log Selected Transform Name")]
+    void LogSelectedTransformName2(MenuCommand command)
     {
     }
 
@@ -26,17 +54,34 @@ public class Class2
     {
         return Selection.activeTransform != null;
     }
+
+    [MenuItem("MyMenu/Log Selected Transform Name", validate = true)]
+    bool ValidateLogSelectedTransformName2()
+    {
+        return Selection.activeTransform != null;
+    }
 }
 
-public class Class3
+public class IncorrectReturnType
 {
     [MenuItem("MyMenu/Log Selected Transform Name")]
     bool LogSelectedTransformName()
     {
     }
 
+    [MenuItem("MyMenu/Log Selected Transform Name")]
+    bool LogSelectedTransformName2(MenuCommand menuCommand)
+    {
+    }
+
     [MenuItem("MyMenu/Log Selected Transform Name", false)]
     bool ValidateLogSelectedTransformName()
+    {
+        return Selection.activeTransform != null;
+    }
+
+    [MenuItem("MyMenu/Log Selected Transform Name", validate = false)]
+    bool ValidateLogSelectedTransformName2()
     {
         return Selection.activeTransform != null;
     }

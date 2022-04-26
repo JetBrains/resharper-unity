@@ -8,8 +8,8 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util.dataStructures;
 using MethodSignature = JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api.MethodSignature;
 
@@ -164,9 +164,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             return null;
         }
 
-        private static MethodSignature[]? GetNonCacheableSignatures(IAttribute attribute,
-                                                                    IClrTypeName attributeClrName,
-                                                                    PredefinedType predefinedType)
+        private MethodSignature[]? GetNonCacheableSignatures(IAttribute attribute,
+                                                             IClrTypeName attributeClrName,
+                                                             PredefinedType predefinedType)
         {
             if (Equals(attributeClrName, KnownTypes.MenuItemAttribute))
                 return GetMenuItemMethodSignature(attribute, predefinedType);
@@ -176,23 +176,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         private static MethodSignature GetStaticVoidMethodSignature(PredefinedType predefinedType) =>
             new(predefinedType.Void, true);
 
-        private static MethodSignature[]? GetMenuItemMethodSignature(IAttribute attribute,
-                                                                     PredefinedType predefinedType)
+        private MethodSignature[] GetMenuItemMethodSignature(IAttribute attribute, PredefinedType predefinedType)
         {
-            if (attribute.Arguments.Count <= 1) // MenuItem("text")
-                return new[] { new MethodSignature(predefinedType.Void, true) };
-            var secondParameter = attribute.Arguments[1].FirstChild?.FirstChild;
-            if (secondParameter != null)
+            IExpression? validateArgExpression = null;
+            if (attribute.Arguments.Count > 1)
             {
-                // MenuItem("text", true)
-                if (secondParameter.NodeType.Equals(CSharpTokenType.TRUE_KEYWORD))
-                    return new[] { new MethodSignature(predefinedType.Bool, true) };
-                // MenuItem("text", false)
-                if (secondParameter.NodeType.Equals(CSharpTokenType.FALSE_KEYWORD))
-                    return new[] { new MethodSignature(predefinedType.Void, true) };
+                // [MenuItem("Something", true|false)]
+                validateArgExpression = attribute.Arguments[1].Expression;
+            }
+            else
+            {
+                // [MenuItem("Something", validate = true|false)]
+                foreach (var assignment in attribute.PropertyAssignments)
+                {
+                    if (assignment.PropertyNameIdentifier?.Name == "validate")
+                    {
+                        validateArgExpression = assignment.Source;
+                        break;
+                    }
+                }
             }
 
-            return null;
+            var returnType = predefinedType.Void;
+            if (validateArgExpression != null && validateArgExpression.IsConstantValue() &&
+                validateArgExpression.ConstantValue.IsBoolean(out var validate) && validate)
+            {
+                returnType = predefinedType.Bool;
+            }
+
+            var menuCommandType = myKnownTypesCache.GetByClrTypeName(KnownTypes.MenuCommand, predefinedType.Module);
+            return new[]
+            {
+                new MethodSignature(returnType, true),
+                new MethodSignature(returnType, true, new[] { menuCommandType }, new[] { "menuCommand" })
+            };
         }
 
         private static MethodSignature[] GetOnOpenAssetMethodSignature(PredefinedType predefinedType)
