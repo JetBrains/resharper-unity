@@ -95,6 +95,14 @@
     </attribute>
   </member>
 
+  <!-- N:UnityEditor.Overlays -->
+  <member name="T:UnityEditor.Overlays.OverlayAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEditor.Overlays.Overlay</argument>
+    </attribute>
+  </member>
+
   <!-- N:UnityEditor.Rendering -->
   <member name="T:UnityEditor.Rendering.ScriptableRenderPipelineExtensionAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
@@ -106,5 +114,13 @@
   </member>
   <member name="T:UnityEditor.ShortcutManagement.ClutchShortcutAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+
+  <!-- N:UnityEditor.Toolbars -->
+  <member name="T:UnityEditor.Toolbars.EditorToolbarElementAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.UIElements.VisualElement</argument>
+    </attribute>
   </member>
 </assembly>
