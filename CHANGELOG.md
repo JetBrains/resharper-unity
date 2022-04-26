@@ -10,9 +10,20 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ## 2022.1.1
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net221-rtm-2022.1.0...net221-rtm-2022.1.1)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/52?closed=1)
+
+### Added
+
+- Add "means implicit use" external annotations for `OverlayAttribute` and `EditorToolbarElementAttribute` ([RIDER-76826](https://youtrack.jetbrains.com/issue/RIDER-76826), [#2312](https://github.com/JetBrains/resharper-unity/pull/2312))
+
+### Changed
+
+- Treat types that implement `ISystem` as ECS systems ([#2301](https://github.com/JetBrains/resharper-unity/issues/2301), [#2312](https://github.com/JetBrains/resharper-unity/pull/2312))
 
 ### Fixed
 
+- Fix incorrect method signature warning for semi-documented `OnPostprocessAllAssets` event function overload ([RIDER-76682](https://youtrack.jetbrains.com/issue/RIDER-76682), [#2312](https://github.com/JetBrains/resharper-unity/pull/2312))
+- Fix method signature warnings for `[MenuItem]` with the optional `MenuCommand` parameter, and when the `validate` argument is set via named property instead of positional argument ([RIDER-76680](https://youtrack.jetbrains.com/issue/RIDER-76680), [RIDER-76681](https://youtrack.jetbrains.com/issue/RIDER-76681), [#2312](https://github.com/JetBrains/resharper-unity/pull/2312))
 - Fix exception when asset reference a missing script ([DEXP-661796](https://youtrack.jetbrains.com/issue/DEXP-661796))
 
 

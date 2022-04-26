@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.Metadata.Reader.API;
@@ -52,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             switch (element)
             {
                 case IClass cls when unityApi.IsUnityType(cls) ||
-                                     unityApi.IsComponentSystemType(cls) ||
+                                     UnityApi.IsDotsSystemType(cls) ||
                                      IsUxmlFactory(cls):
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
@@ -110,9 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
         private bool IsUxmlFactory(IClass cls)
         {
             var baseClass = cls.GetBaseClassType();
-            if (baseClass == null)
-                return false;
-            return myUxmlFactoryBaseClasses.Contains(baseClass.GetClrName());
+            return baseClass != null && myUxmlFactoryBaseClasses.Contains(baseClass.GetClrName());
         }
 
         private static bool IsAnimationEvent(ISolution solution, IDeclaredElement property)
@@ -155,7 +155,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             return false;
         }
 
-        private bool HasOptionalParameter(UnityEventFunction function)
+        private static bool HasOptionalParameter(UnityEventFunction function)
         {
             foreach (var parameter in function.Parameters)
             {
@@ -166,12 +166,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             return false;
         }
 
-        private bool IsEventHandler(UnityApi unityApi, [CanBeNull] IMethod method)
+        private static bool IsEventHandler(UnityApi unityApi, IMethod? method)
         {
             if (method == null)
                 return false;
 
-            var type = method.GetContainingType();
+            var type = method.ContainingType;
             if (!unityApi.IsUnityType(type))
                 return false;
 

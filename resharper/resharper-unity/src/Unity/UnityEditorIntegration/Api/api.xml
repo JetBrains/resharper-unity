@@ -83,7 +83,7 @@
       </parameters>
       <returns type="UnityEngine.Material" array="False" />
     </message>
-    <message name="OnPostprocessAllAssets" static="True" maximumVersion="2021.1" description="This is called after importing of any number of assets is complete (when the Assets progress bar has reached the end)." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessAllAssets.html">
+    <message name="OnPostprocessAllAssets" static="True" description="This is called after importing of any number of assets is complete (when the Assets progress bar has reached the end)." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessAllAssets.html">
       <parameters>
         <parameter type="System.String" array="True" name="importedAssets" />
         <parameter type="System.String" array="True" name="deletedAssets" />
