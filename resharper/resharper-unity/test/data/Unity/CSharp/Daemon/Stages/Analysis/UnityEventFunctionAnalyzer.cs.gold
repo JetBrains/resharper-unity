@@ -143,7 +143,7 @@ This callback is used by UnityVS to take over project generation from Unity
 (26): ReSharper Unity Implicitly Used Identifier: 
 (27): Unity Gutter Icon: Unity event function
 (28): ReSharper Unity Implicitly Used Identifier: 
-(29): Unity Gutter Icon: Scriptable Object
+(29): Unity Gutter Icon: Unity scriptable object
 (30): ReSharper Unity Implicitly Used Identifier: 
 (31): Unity Gutter Icon: Unity script
 (32): ReSharper Unity Implicitly Used Identifier: 

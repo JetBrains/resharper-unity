@@ -1,10 +1,12 @@
 ﻿#nullable enable
 
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 {
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public static class KnownTypes
     {
         // System
@@ -101,7 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 
         // ECS/DOTS
         public static readonly IClrTypeName ComponentSystemBase = new ClrTypeName("Unity.Entities.ComponentSystemBase");
-        public static readonly IClrTypeName JobComponentSystem = new ClrTypeName("Unity.Entities.JobComponentSystem");
+        public static readonly IClrTypeName ISystem = new ClrTypeName("Unity.Entities.ISystem");
 
         // Burst
         public static readonly IClrTypeName BurstCompiler = new ClrTypeName("Unity.Burst.BurstCompiler");
@@ -112,13 +114,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static readonly IClrTypeName SharedStatic = new ClrTypeName("Unity.Burst.SharedStatic`1");
 
         // Jobs
-        public static readonly IClrTypeName Job = new ClrTypeName("Unity.Jobs.IJob");
-        public static readonly IClrTypeName JobFor = new ClrTypeName("Unity.Jobs.IJobFor");
-        public static readonly IClrTypeName JobParallelFor = new ClrTypeName("Unity.Jobs.IJobParallelFor");
-        public static readonly IClrTypeName AnimationJob = new ClrTypeName("UnityEngine.Animations.IAnimationJob");
-        public static readonly IClrTypeName JobParallelForTransform = new ClrTypeName("UnityEngine.Jobs.IJobParallelForTransform");
-        public static readonly IClrTypeName JobParticleSystem = new ClrTypeName("UnityEngine.ParticleSystemJobs.IJobParticleSystem");
-        public static readonly IClrTypeName JobParticleSystemParallelFor = new ClrTypeName("UnityEngine.ParticleSystemJobs.IJobParticleSystemParallelFor");
-        public static readonly IClrTypeName JobParticleSystemParallelForBatch = new ClrTypeName("UnityEngine.ParticleSystemJobs.IJobParticleSystemParallelForBatch");
+        // public static readonly IClrTypeName Job = new ClrTypeName("Unity.Jobs.IJob");
+        // public static readonly IClrTypeName JobFor = new ClrTypeName("Unity.Jobs.IJobFor");
+        // public static readonly IClrTypeName JobParallelFor = new ClrTypeName("Unity.Jobs.IJobParallelFor");
+        // public static readonly IClrTypeName AnimationJob = new ClrTypeName("UnityEngine.Animations.IAnimationJob");
+        // public static readonly IClrTypeName JobParallelForTransform = new ClrTypeName("UnityEngine.Jobs.IJobParallelForTransform");
+        // public static readonly IClrTypeName JobParticleSystem = new ClrTypeName("UnityEngine.ParticleSystemJobs.IJobParticleSystem");
+        // public static readonly IClrTypeName JobParticleSystemParallelFor = new ClrTypeName("UnityEngine.ParticleSystemJobs.IJobParticleSystemParallelFor");
+        // public static readonly IClrTypeName JobParticleSystemParallelForBatch = new ClrTypeName("UnityEngine.ParticleSystemJobs.IJobParticleSystemParallelForBatch");
     }
 }
