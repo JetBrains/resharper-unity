@@ -62,6 +62,7 @@ val productMonorepoDir = backend.getProductMonorepoRoot()
 val monorepoPreGeneratedRootDir by lazy { productMonorepoDir?.resolve("Plugins/_Unity.Pregenerated") ?: error("Building not in monorepo") }
 val monorepoPreGeneratedFrontendDir by lazy {  monorepoPreGeneratedRootDir.resolve("Frontend") }
 val monorepoPreGeneratedBackendDir by lazy {  monorepoPreGeneratedRootDir.resolve("BackendModel") }
+val monorepoPreGeneratedUnityDir by lazy {  monorepoPreGeneratedRootDir.resolve("UnityModel") }
 val dotnetDllFiles = files(
     "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.dll",
     "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.pdb",
@@ -289,7 +290,7 @@ tasks {
                 if (monorepo) monorepoPreGeneratedBackendDir.resolve("resharper/ModelLib")
                 else File(repoRoot, "resharper/build/generated/Model/Lib")
             val unityEditorCsOutDir = 
-                if (monorepo) monorepoPreGeneratedBackendDir.resolve("unity/ModelLib")
+                if (monorepo) monorepoPreGeneratedUnityDir.resolve("unity/ModelLib")
                 else File(repoRoot, "unity/build/generated/Model/Lib")
             val frontendKtOutLayout = "src/main/gen/kotlin/com/jetbrains/rider/plugins/unity/model/lib"
             val frontendKtOutDir =
@@ -422,7 +423,7 @@ tasks {
                 if (monorepo) monorepoPreGeneratedBackendDir.resolve("resharper/BackendUnity")
                 else File(repoRoot, "resharper/build/generated/Model/BackendUnity")
             val unityEditorCsOutDir =
-                if (monorepo) monorepoPreGeneratedBackendDir.resolve("unity/BackendUnity")
+                if (monorepo) monorepoPreGeneratedUnityDir.resolve("unity/BackendUnity")
                 else File(repoRoot, "unity/build/generated/Model/BackendUnity")
 
             verbose = project.gradle.startParameter.logLevel == LogLevel.INFO
