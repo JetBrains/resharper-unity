@@ -288,7 +288,9 @@ tasks {
             val backendCsOutDir =
                 if (monorepo) monorepoPreGeneratedBackendDir.resolve("resharper/ModelLib")
                 else File(repoRoot, "resharper/build/generated/Model/Lib")
-            val unityEditorCsOutDir = File(repoRoot, "unity/build/generated/Model/Lib")
+            val unityEditorCsOutDir = 
+                if (monorepo) monorepoPreGeneratedBackendDir.resolve("unity/ModelLib")
+                else File(repoRoot, "unity/build/generated/Model/Lib")
             val frontendKtOutLayout = "src/main/gen/kotlin/com/jetbrains/rider/plugins/unity/model/lib"
             val frontendKtOutDir =
                 if (monorepo) monorepoPreGeneratedFrontendDir.resolve(frontendKtOutLayout)
@@ -318,14 +320,13 @@ tasks {
                 if (monorepo) generatedFileSuffix = ".Pregenerated"
             }
             // Library is used as unity in backendUnityModel, so has reversed perspective
-            if (!monorepo) {
-                generator {
-                    language = "csharp"
-                    transform = "reversed"
-                    root = "model.lib.Library"
-                    directory = unityEditorCsOutDir.canonicalPath
-                }
-            }
+            generator {
+                language = "csharp"
+                transform = "reversed"
+                root = "model.lib.Library"
+                directory = unityEditorCsOutDir.canonicalPath
+                if (monorepo) generatedFileSuffix = ".Pregenerated"
+            }   
             // Library is used as frontend in frontendBackendModel, so has same perspective. Generate as-is
             generator {
                 language = "kotlin"
@@ -421,7 +422,7 @@ tasks {
                 if (monorepo) monorepoPreGeneratedBackendDir.resolve("resharper/BackendUnity")
                 else File(repoRoot, "resharper/build/generated/Model/BackendUnity")
             val unityEditorCsOutDir =
-                if (monorepo) monorepoPreGeneratedFrontendDir.resolve("unity/BackendUnity")
+                if (monorepo) monorepoPreGeneratedBackendDir.resolve("unity/BackendUnity")
                 else File(repoRoot, "unity/build/generated/Model/BackendUnity")
 
             verbose = project.gradle.startParameter.logLevel == LogLevel.INFO
