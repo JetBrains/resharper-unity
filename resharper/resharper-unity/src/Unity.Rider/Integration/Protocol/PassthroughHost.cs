@@ -116,6 +116,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 
             frontendBackendModel.HasUnsavedScenes.Set((l, u) =>
                 backendUnityModelProperty.Maybe.ValueOrDefault?.HasUnsavedScenes.Start(l, u).ToRdTask(l));
+                            
+            frontendBackendModel.StartProfiling.Set((l, u) =>
+                backendUnityModelProperty.Maybe.ValueOrDefault?.StartProfiling.Start(l, u).ToRdTask(l));
         }
 
         private void AdviseUnityToFrontendModel(Lifetime lifetime, BackendUnityModel backendUnityModel)

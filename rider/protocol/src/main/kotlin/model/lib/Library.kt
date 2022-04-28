@@ -86,4 +86,9 @@ object Library : Root() {
         property("lastPlayTime", long)
         property("lastInitTime", long)
     }
+
+    val ProfilingData = structdef {
+        field("enterPlayMode", bool)
+        field("monoProfilerPath", string)
+    }
 }

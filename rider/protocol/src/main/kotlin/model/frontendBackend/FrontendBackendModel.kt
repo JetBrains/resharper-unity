@@ -7,6 +7,7 @@ import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
 import com.jetbrains.rider.model.nova.ide.SolutionModel.RdDocumentId
 import model.lib.Library
+import model.lib.Library.ProfilingData
 
 // frontend <-> backend model, from point of view of frontend, meaning:
 // Sink is a one-way signal the frontend subscribes to
@@ -151,5 +152,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
         // Actions called from Unity to the backend
         callback("openFileLineCol", RdOpenFileArgs, bool).documentation = "Called from Unity to quickly open a file in an existing Rider instance"
+
+        // profiler
+        call ("startProfiling", ProfilingData, void).documentation = "Start profiling and enter PlayMode, depending on the param"
     }
 }

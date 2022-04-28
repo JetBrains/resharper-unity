@@ -11,11 +11,15 @@ import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAc
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.SystemInfo
+import com.intellij.util.Restarter
 import com.intellij.util.xmlb.annotations.Transient
+import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rider.debugger.DotNetDebugRunner
 import com.jetbrains.rider.plugins.unity.isUnityClassLibraryProject
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
+import com.jetbrains.rider.plugins.unity.model.ProfilingData
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
@@ -29,6 +33,7 @@ import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.configurations.unity.UnityAttachConfigurationExtension
 import org.jdom.Element
+import java.io.File
 
 class UnityAttachToEditorRunConfiguration(project: Project, factory: ConfigurationFactory, val play: Boolean = false)
     : DotNetRemoteConfiguration(project, factory, "Attach To Unity Editor"),
@@ -71,8 +76,32 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                 }
 
                 val processId = project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.unityProcessId ?: pid
-                return ext.executor(UnityAttachConfigurationParametersImpl(processId,
-                    finder.getApplicationExecutablePath(), args, finder.getApplicationVersion()), environment)
+                //ext.addLister()
+                val res = ext.executor(UnityAttachConfigurationParametersImpl(processId,
+                                                                              finder.getApplicationExecutablePath(), args,
+                                                                              finder.getApplicationVersion()), environment)
+
+                // todo: run after execute
+                if (executorId == "dotTrace Profiler" && project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.unityProcessId != null) {
+                    val riderPath = Restarter.getIdeStarter()?.toFile()
+                    if (riderPath == null) throw Error("riderPath is empty.")
+                    val folderName = when {
+                        SystemInfo.isWindows -> "windows-x64"
+                        SystemInfo.isMac -> "macos-x64"
+                        SystemInfo.isUnix -> "linux-x64"
+                        else -> throw Error("Unknown OS.")
+                    }
+                    val relPath = "../../plugins/dotCommon/DotFiles/$folderName/mono-profiler-jb.dll"
+                    var profilerDllPath = riderPath.resolve(relPath)
+                    // for linux/mac: linux-x64/macos-x64"
+                    if (!profilerDllPath.exists())
+                        profilerDllPath = File(
+                            "D:\\Users\\Ivan.Shakhov\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\221.5080.236\\plugins\\dotCommon\\DotFiles\\windows-x64\\mono-profiler-jb.dll");
+                    project.solution.frontendBackendModel.startProfiling.start(project.lifetime,
+                                                                               ProfilingData(play, profilerDllPath.absolutePath))
+                }
+
+                return res
             }
         }
 

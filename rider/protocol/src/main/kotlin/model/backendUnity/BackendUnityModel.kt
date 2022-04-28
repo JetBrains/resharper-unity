@@ -4,6 +4,7 @@ import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
 import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 import model.lib.Library
+import model.lib.Library.ProfilingData
 
 // backend <-> Unity Editor model, from point of view of backend, meaning:
 // Sink is a one-way signal the backend subscribes to (editor fires)
@@ -174,5 +175,8 @@ object BackendUnityModel: Root() {
         call("runUnitTestLaunch", void, bool).documentation = "Start the unit test session. Results are fired via UnitTestLaunch.TestResult"
 
         call ("hasUnsavedScenes", void, bool)
+
+        // profiler
+        call ("startProfiling", ProfilingData, void).documentation = "Start profiling and enter PlayMode, depending on the param"
     }
 }
