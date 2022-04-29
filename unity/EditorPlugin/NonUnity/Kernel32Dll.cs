@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor.Utils
 {
@@ -29,12 +30,20 @@ namespace JetBrains.Rider.Unity.Editor.Utils
 
         public static void StartProfiling(string fullPath)
         {
-
-
             ourNativeLibraryHandle = UnsafeNativeMethods.LoadLibrary(fullPath);
             var function = LoadFunction<StartProfilingDelegate>("StartProfiling");
 
             function();
         }
+        
+        // for dotnet-products
+        // C:/Work/dotnet-products/Plugins/ReSharperUnity/unity/build/EditorPluginNet46/bin/Debug/net472/JetBrains.Rider.Unity.Editor.Plugin.Net46.dll
+        // C:/Work/dotnet-products/Bin.RiderBackend/plugins/dotTrace/DotFiles/windows-x64/mono-profiler-jb.dll
+        // [DllImport("../../../../../../../../Bin.RiderBackend/plugins/dotTrace/DotFiles/windows-x64/mono-profiler-jb.dll")]
+        // for real product
+        //[DllImport("../../../../../../../../Bin.RiderBackend/plugins/dotTrace/DotFiles/windows-x64/mono-profiler-jb.dll")]
+        [DllImport("mono-profiler-jb.dll")]
+        public static extern void StartProfiling();
+
     }
 }
