@@ -81,7 +81,6 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                                                                               finder.getApplicationExecutablePath(), args,
                                                                               finder.getApplicationVersion()), environment) { runProfile, handler ->
                     run {
-                        // todo: check which Unity versions are supported
                         if (executorId == "dotTrace Profiler" && project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.unityProcessId != null) {
                             val riderPath = Restarter.getIdeStarter()?.toFile()
                             if (riderPath == null) throw Error("riderPath is empty.")
