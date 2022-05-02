@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using UnityEditor;
+using JetBrains.Diagnostics;
+using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor.Utils
 {
@@ -30,7 +31,9 @@ namespace JetBrains.Rider.Unity.Editor.Utils
         private delegate void StartProfilingDelegate();
 
         public static void StartProfiling(string fullPath)
-        {
+        { 
+            if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE) 
+                Debug.Log($"StartProfiling: {fullPath}");
             // for Windows we can invoke StartProfiling without coping the assembly
             if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
             {

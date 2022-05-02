@@ -409,13 +409,22 @@ namespace JetBrains.Rider.Unity.Editor
         {
             MainThreadDispatcher.Instance.Queue(() =>
             {
-                Kernel32Dll.StartProfiling(data.MonoProfilerPath);
-                
-                var current = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
-                if (current != data.EnterPlayMode)
+                try
                 {
-                    ourLogger.Verbose("StartProfiling. Request to change play mode from model: {0}", data.EnterPlayMode);
-                    EditorApplication.isPlaying = data.EnterPlayMode;
+                    Kernel32Dll.StartProfiling(data.MonoProfilerPath);
+                
+                    var current = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
+                    if (current != data.EnterPlayMode)
+                    {
+                        ourLogger.Verbose("StartProfiling. Request to change play mode from model: {0}", data.EnterPlayMode);
+                        EditorApplication.isPlaying = data.EnterPlayMode;
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE) 
+                        Debug.LogError(e);
+                    throw;
                 }
             });
 
