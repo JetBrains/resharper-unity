@@ -4,7 +4,7 @@
         <Visible>False</Visible>
     </Compile>
   </ItemGroup>
-  <ItemGroup Label="ModelInternal"> <!--InternalBuild-->
+  <ItemGroup Label="ModelInternal" Condition="$(InternalBuild)">
     <Compile Include="..\..\..\_Unity.Pregenerated\UnityModel\unity\**\*" LinkBase="Model">
       <Visible>False</Visible>
     </Compile>
