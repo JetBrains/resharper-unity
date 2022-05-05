@@ -1,2 +1,4 @@
 [*.cs]
+[*.targets]
+[*.props]
 indent_size = 2
