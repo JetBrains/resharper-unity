@@ -39,7 +39,7 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
         executeIntegrationTestMethod("DumpExternalEditor")
     }
 
-    @Test(enabled = false)
+    @Test
     fun checkExternalEditorWithUnityModelRefresh() = checkExternalEditor(true) { executeScript("DumpExternalEditor.cs") }
 
     private fun checkExternalEditor(resetEditorPrefs: Boolean, execute: () -> Unit) {

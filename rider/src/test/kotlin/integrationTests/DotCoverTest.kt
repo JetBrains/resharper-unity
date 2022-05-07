@@ -12,6 +12,9 @@ class DotCoverTest : IntegrationTestWithEditorBase() {
     override val withCoverage: Boolean
         get() = true
 
+//    override val batchMode: Boolean
+//        get() = false
+
     override fun preprocessTempDirectory(tempDir: File) {
         super.preprocessTempDirectory(tempDir)
 
@@ -22,7 +25,7 @@ class DotCoverTest : IntegrationTestWithEditorBase() {
         }
     }
 
-    @Test(enabled = false) // Disabled until merge changes in "Start Unity with Coverage" action
+    @Test(enabled = true) // Disabled until merge changes in "Start Unity with Coverage" action
     fun checkCoverAllTestsFromSolution() {
         buildSolutionWithReSharperBuild()
         withDcFacade(project) { ut, dc ->

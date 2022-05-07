@@ -11,7 +11,7 @@ import org.testng.annotations.Test
 class PlayModeTest : IntegrationTestWithEditorBase() {
     override fun getSolutionDirectoryName() = "SimpleUnityProjectWithoutPlugin"
 
-    @Test(enabled = false)
+    @Test
     fun checkPlayingPauseModesAndSteps() {
         play()
         pause()
@@ -20,7 +20,7 @@ class PlayModeTest : IntegrationTestWithEditorBase() {
         stopPlaying()
     }
 
-    @Test(enabled = false)
+    @Test
     fun checkAttachDebuggerToUnityEditor() {
         attachDebuggerToUnityEditor({},
             {
@@ -32,7 +32,7 @@ class PlayModeTest : IntegrationTestWithEditorBase() {
             })
     }
 
-    @Test(enabled = false)
+    @Test
     fun checkAttachDebuggerToUnityEditorAndPlay() {
         attachDebuggerToUnityEditorAndPlay({},
             {
@@ -44,7 +44,7 @@ class PlayModeTest : IntegrationTestWithEditorBase() {
             })
     }
 
-    @Test(enabled = false)
+    @Test
     fun checkPlayModeLogs() {
         replaceFileContent(project, "NewBehaviourScript.cs")
         rebuildSolutionWithReSharperBuild()

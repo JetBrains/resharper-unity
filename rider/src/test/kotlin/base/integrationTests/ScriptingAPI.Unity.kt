@@ -11,6 +11,8 @@ import com.intellij.util.text.VersionComparatorUtil
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
+import com.jetbrains.dotCover.actions.frontendDataContext.RiderDotCoverDataKeys
+import com.jetbrains.dotCover.actions.unity.RiderDotCoverStartUnityAction
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
@@ -145,8 +147,8 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
         else -> throw Exception("Not implemented")
     }
     val cwd = File(System.getProperty("user.dir"))
-    val riderPath = cwd.parentFile.resolve("unity/build/EditorPluginNet46/bin").listFiles()
-        .filter { a-> (a.name=="Debug"|| a.name=="Release") && a.isDirectory }.single().toPath().resolve(relPath)
+    val riderPath = cwd.parentFile.resolve("unity/build/EditorPluginNet46/bin").listFiles()!!
+        .single { a -> (a.name == "Debug" || a.name == "Release") && a.isDirectory }.toPath().resolve(relPath)
         .toString()
     args.addAll(arrayOf("-riderPath", riderPath))
 
@@ -161,26 +163,14 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
     frameworkLogger.info("Starting unity process${if (withCoverage) " with Coverage" else ""}")
     val processHandle = when {
         withCoverage -> {
-//            val unityProjectDefaultArgsString = getUnityWithProjectArgs(project)
-//                .drop(1)
-//                .toMutableList()
-//                .apply { addAll(args) }
-//                .let {
-//                    when {
-//                        SystemInfo.isWindows -> it.joinToString(" ")
-//                        else -> ParametersList.join(it)
-//                    }
-//                }
-//            val unityInstallationFinder = UnityInstallationFinder.getInstance(project)
-//            val unityConfigurationParameters = RdDotCoverUnityConfigurationParameters(
-//                unityInstallationFinder.getApplicationExecutablePath().toString(),
-//                unityProjectDefaultArgsString,
-//                unityInstallationFinder.getApplicationVersion()
-//            )
-//
-//            project.solution.dotCoverModel.fire(unityConfigurationParameters)
-//            getUnityProcessHandle(project)
-            throw NotImplementedError()
+            executeAction(RiderDotCoverStartUnityAction(), {
+                when (it) {
+                    "project" -> project
+                    RiderDotCoverDataKeys.UNITY_EXTRA_ARGS.name -> args.drop(3)
+                    else -> null
+                }
+            })
+            getUnityProcessHandle(project)
         }
         else -> StartUnityAction.startUnity(args)?.toHandle()
     }
@@ -192,7 +182,7 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
 
 fun getUnityProcessHandle(project: Project): ProcessHandle {
     val unityApplicationData = project.solution.frontendBackendModel.unityApplicationData
-    waitAndPump(unityDefaultTimeout, { unityApplicationData.valueOrNull?.unityProcessId != null }) { "Can't get unity process id" }
+    waitAndPump(Duration.ofSeconds(240), { unityApplicationData.valueOrNull?.unityProcessId != null }) { "Can't get unity process id" }
     return ProcessHandle.of(unityApplicationData.valueOrNull?.unityProcessId!!.toLong()).get()
 }
 
@@ -354,6 +344,7 @@ fun IntegrationTestWithFrontendBackendModel.waitForEditorLogsAfterAction(vararg 
     val setOfMessages = expectedMessages.toHashSet()
     val editorLogEntries = mutableListOf<LogEvent>()
     frontendBackendModel.consoleLogging.onConsoleLogEvent.adviseNotNull(logLifetime) {
+        frameworkLogger.info("Logs from Unity Editor: ${it.message}")
         if (setOfMessages.remove(it.message)) {
             editorLogEntries.add(it)
         }

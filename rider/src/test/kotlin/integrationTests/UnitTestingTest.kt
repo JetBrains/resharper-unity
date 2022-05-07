@@ -25,10 +25,10 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
     @Test
     fun checkRunAllTestsFromSolution() = testWithAllTestsInSolution(5)
 
-    @Test(description = "RIDER-46658", enabled = false)
+    @Test(description = "RIDER-46658")
     fun checkTestFixtureAndValueSourceTests() = testWithAllTestsInSolution(14, 16)
 
-    @Test(description = "RIDER-49891", enabled = false)
+    @Test(description = "RIDER-49891")
     fun checkStandaloneNUnitLauncher() {
         preferStandaloneNUnitLauncherInTests()
         testWithAllTestsInSolution(5)
