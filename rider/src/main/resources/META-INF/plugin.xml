@@ -212,7 +212,7 @@
             icon="UnityIcons.Actions.OpenPlayerLog" />
 
     <group id="UnityToolbarActions">
-      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildButton" anchor="after" />
+      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
 
       <separator/>
 
