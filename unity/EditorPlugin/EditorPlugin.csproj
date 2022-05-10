@@ -32,5 +32,4 @@
   <Import Project="ILRepack.targets" />
   <Import Project="Model.targets" />
   <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="!$(InternalBuild)" />
-  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="!$(InternalBuild)"/>
 </Project>
