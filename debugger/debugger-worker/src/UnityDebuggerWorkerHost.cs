@@ -7,7 +7,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
     [DebuggerGlobalComponent]
     public class UnityDebuggerWorkerHost : IStartable
     {
-        public UnityDebuggerWorkerHost(DebuggerWorker debuggerWorker)
+        public UnityDebuggerWorkerHost(RiderDebuggerWorker debuggerWorker)
         {
             // Get/create the model. This registers serialisers for all types in the model, including the start info
             // derived types used in the root protocol, not in our extension
