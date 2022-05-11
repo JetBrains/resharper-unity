@@ -89,6 +89,6 @@ object Library : Root() {
 
     val ProfilingData = structdef {
         field("enterPlayMode", bool)
-        field("monoProfilerPath", string)
+        field("unityProfilerApiPath", string)
     }
 }

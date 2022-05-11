@@ -154,6 +154,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         callback("openFileLineCol", RdOpenFileArgs, bool).documentation = "Called from Unity to quickly open a file in an existing Rider instance"
 
         // profiler
-        call ("startProfiling", ProfilingData, void).documentation = "Start profiling and enter PlayMode, depending on the param"
+        call ("startProfiling", bool, void).documentation = "Start profiling and enter PlayMode, depending on the param"
     }
 }

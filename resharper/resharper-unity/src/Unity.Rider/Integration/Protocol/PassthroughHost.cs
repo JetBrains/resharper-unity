@@ -1,8 +1,7 @@
 using System;
-using JetBrains.Application.Threading;
+using System.Linq;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
-using JetBrains.IDE;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
@@ -20,25 +19,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
     [SolutionComponent]
     public class PassthroughHost
     {
-        private readonly ISolution mySolution;
-        private readonly IThreading myThreading;
-        private readonly IEditorManager myEditorManager;
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly FrontendBackendHost myFrontendBackendHost;
         private readonly ILogger myLogger;
 
         public PassthroughHost(Lifetime lifetime,
-                               ISolution solution,
-                               IThreading threading,
-                               IEditorManager editorManager,
                                UnitySolutionTracker unitySolutionTracker,
                                BackendUnityHost backendUnityHost,
                                FrontendBackendHost frontendBackendHost,
                                ILogger logger)
         {
-            mySolution = solution;
-            myThreading = threading;
-            myEditorManager = editorManager;
             myBackendUnityHost = backendUnityHost;
             myFrontendBackendHost = frontendBackendHost;
             myLogger = logger;
@@ -117,8 +107,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
             frontendBackendModel.HasUnsavedScenes.Set((l, u) =>
                 backendUnityModelProperty.Maybe.ValueOrDefault?.HasUnsavedScenes.Start(l, u).ToRdTask(l));
                             
-            frontendBackendModel.StartProfiling.Set((l, u) =>
-                backendUnityModelProperty.Maybe.ValueOrDefault?.StartProfiling.Start(l, u).ToRdTask(l));
+            frontendBackendModel.StartProfiling.Set((l, play) =>
+                backendUnityModelProperty.Maybe.ValueOrDefault?.StartProfiling.Start(l, new ProfilingData(play, GetProfilerApiPath())).ToRdTask(l));
+        }
+
+        private string GetProfilerApiPath()
+        {
+            var etwAssemblyShorName = "JetBrains.Etw";
+            var etwAssemblyLocation = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name.Equals(etwAssemblyShorName))?.Location;
+            if (etwAssemblyLocation == null)
+            {
+                myLogger.Error($"{etwAssemblyShorName} was not found.");
+                return null;
+            }
+            var unityProfilerApiPath = FileSystemPath.Parse(etwAssemblyLocation).Parent
+                .Combine("JetBrains.Etw.UnityProfilerApi.dll");
+            if (!unityProfilerApiPath.ExistsFile)
+            {
+                myLogger.Error($"{unityProfilerApiPath} doesn't exist.");
+                return null;
+            }
+            return unityProfilerApiPath.FullPath;
         }
 
         private void AdviseUnityToFrontendModel(Lifetime lifetime, BackendUnityModel backendUnityModel)

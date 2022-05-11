@@ -81,25 +81,8 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                                                                               finder.getApplicationExecutablePath(), args,
                                                                               finder.getApplicationVersion()), environment) { runProfile, handler ->
                     run {
-                        if (executorId == "dotTrace Profiler" && project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.unityProcessId != null) {
-                            val riderPath = Restarter.getIdeStarter()?.toFile()
-                            if (riderPath == null) throw Error("riderPath is empty.")
-                            val folderName = when {
-                                SystemInfo.isWindows -> "windows-x64/mono-profiler-jb.dll"
-                                SystemInfo.isMac -> "macos-x64/libmono-profiler-jb.dylib"
-                                SystemInfo.isUnix -> "linux-x64/libmono-profiler-jb.so"
-                                else -> throw Error("Unknown OS.")
-                            }
-                            val relPath = "plugins/dotCommon/DotFiles/$folderName"
-                            var profilerDllPath = riderPath.parentFile.parentFile.resolve(relPath)
-                            // for linux/mac: linux-x64/macos-x64"
-                            if (!profilerDllPath.exists()) // for locally compiled rider
-                                profilerDllPath = File(PathManager.getBinPath()).parentFile.parentFile.parentFile.resolve("Bin.RiderBackend/plugins/dotTrace/DotFiles/windows-x64/mono-profiler-jb.dll")
-                            if (!profilerDllPath.exists())
-                                throw Error("${profilerDllPath.name} was not found.")
-
-                            project.solution.frontendBackendModel.startProfiling.start(project.lifetime,
-                                                                                       ProfilingData(play, profilerDllPath.absolutePath))
+                        if (executorId == "dotTrace Profiler") {
+                            project.solution.frontendBackendModel.startProfiling.start(project.lifetime, play)
                         }
                     }
                 }
