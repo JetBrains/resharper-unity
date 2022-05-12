@@ -59,7 +59,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
         private readonly ILogger myLogger;
         private readonly Lifetime myLifetime;
         private readonly PackageValidator myPackageValidator;
-        private readonly JetBrains.Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
 
         private readonly object myCurrentLaunchesTaskAccess = new();
         private Task myCurrentLaunchesTask = Task.CompletedTask;
@@ -75,8 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
                                          FrontendBackendHost frontendBackendHost,
                                          ILogger logger,
                                          Lifetime lifetime,
-                                         PackageValidator packageValidator,
-                                         JetBrains.Application.ActivityTrackingNew.UsageStatistics usageStatistics)
+                                         PackageValidator packageValidator)
         {
             mySolution = solution;
             myUnitTestResultManager = unitTestResultManager;
@@ -88,7 +86,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
             myLogger = logger;
             myLifetime = lifetime;
             myPackageValidator = packageValidator;
-            myUsageStatistics = usageStatistics;
 
             myUnityProcessId = new Property<int?>(lifetime, "RunViaUnityEditorStrategy.UnityProcessId");
 
@@ -310,7 +307,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
                             defaultMessage = $"{defaultMessage} {playMessage}";
                     }
 
-                    tcs.TrySetException(new Exception(defaultMessage));
+                    tcs.TrySetException(new Exception(defaultMessage, res.Error));
                 }
             });
         }
