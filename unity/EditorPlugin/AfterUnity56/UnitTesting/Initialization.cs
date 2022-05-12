@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Rd.Tasks;
@@ -31,6 +32,8 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       model.RunUnitTestLaunch.Set(rdVoid =>
       {
         if (!model.UnitTestLaunch.HasValue()) return false;
+        if (EditorApplication.isPlaying)
+            throw new InvalidOperationException("Running tests during the Play mode is not possible.");
         var testLauncher = new UnityEditorTestLauncher(model.UnitTestLaunch.Value, connectionLifetime);
         return testLauncher.TryLaunchUnitTests();
       });
