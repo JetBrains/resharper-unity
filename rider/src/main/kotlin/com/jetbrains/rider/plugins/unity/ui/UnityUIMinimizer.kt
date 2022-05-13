@@ -5,7 +5,6 @@ import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.util.application
-import com.jetbrains.rider.build.actions.ActiveConfigurationAndPlatformAction
 import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 
 class UnityUIMinimizer : StartupActivity {
@@ -24,8 +23,6 @@ class UnityUIMinimizer : StartupActivity {
                 val nuget = toolWindowManager.getToolWindow("NuGet")
                     ?: return@doWhenFocusSettlesDown
                 nuget.isShowStripeButton = false
-
-                ActiveConfigurationAndPlatformAction.hiddenForProjects.add(project)
             }
         }
 
@@ -42,8 +39,6 @@ class UnityUIMinimizer : StartupActivity {
                 val toolWindow = toolWindowManager.getToolWindow("NuGet")
                     ?: return@doWhenFocusSettlesDown
                 toolWindow.isShowStripeButton = true
-
-                ActiveConfigurationAndPlatformAction.hiddenForProjects.remove(project)
             }
         }
     }

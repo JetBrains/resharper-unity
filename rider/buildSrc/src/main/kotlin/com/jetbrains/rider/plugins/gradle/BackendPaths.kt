@@ -84,7 +84,7 @@ class BackendPaths(private val project: Project,
         var currentDir = repositoryRoot;
 
         while (currentDir.parent != null) {
-            if (currentDir.listFiles()?.any { it.name == "Product.Root"} == true) {
+            if (currentDir.listFiles()?.any { it.name == ".vcs" } == true) {
                 return currentDir
             }
             currentDir = currentDir.parentFile

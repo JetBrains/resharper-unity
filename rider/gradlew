@@ -114,6 +114,8 @@ case "$( uname )" in                #(
   NONSTOP* )        nonstop=true ;;
 esac
 
+arch_arm=$([ $(uname -m) = "arm64" ] || [ $(uname -m) = "aarch64" ] && echo true || echo false)
+
 CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
 
@@ -128,6 +130,10 @@ elif [ "$cygwin" = "true" ] || [ "$msys" = "true" ]; then
     JVM_TEMP_FILE=$BUILD_DIR/jvm-windows-x64.zip
     JVM_URL=https://corretto.aws/downloads/resources/11.0.10.9.1/amazon-corretto-11.0.10.9.1-windows-x64-jdk.zip
     JVM_TARGET_DIR=$BUILD_DIR/amazon-corretto-11.0.10.9.1-windows-x64-jdk-066b63
+elif [ "$arch_arm" = "true" ]; then
+    JVM_TEMP_FILE=$BUILD_DIR/jvm-linux-aarch64.tar.gz
+    JVM_URL=https://d3pxv6yz143wms.cloudfront.net/11.0.4.11.1/amazon-corretto-11.0.4.11.1-linux-aarch64.tar.gz
+    JVM_TARGET_DIR=$BUILD_DIR/gradle-jvm/amazon-corretto-11.0.4.11.1-linux-aarch64-e42910
 else
     JVM_TEMP_FILE=$BUILD_DIR/jvm-linux-x64.tar.gz
     JVM_URL=https://corretto.aws/downloads/resources/11.0.10.9.1/amazon-corretto-11.0.10.9.1-linux-x64.tar.gz

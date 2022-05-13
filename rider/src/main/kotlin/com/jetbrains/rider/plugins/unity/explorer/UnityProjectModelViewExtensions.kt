@@ -56,6 +56,9 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
 
         assert(items.all { it.isProjectFolder() }) { "Only ProjectFolders are expected." }
 
+        if (isHiddenFolder(targetLocation))
+            return null
+
         // one of the predefined projects
         if (items.count() > 1) {
             // predefined projects in the following order
@@ -80,6 +83,14 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
             return candidates.single()
 
         return recursiveSearch(targetLocation.parent)
+    }
+
+    // RIDER-74815 Avoid adding Unity Hidden Assets to csproj
+    private fun isHiddenFolder(targetLocation: VirtualFile):Boolean{
+        val name = targetLocation.name
+        if (name.endsWith("~") || name.startsWith("."))
+            return true
+        return false
     }
 
     // filter out duplicate items in Player projects

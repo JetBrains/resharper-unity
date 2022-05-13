@@ -39,7 +39,6 @@ class UnityExplorerTest : BaseTestWithSolutionBase() {
     }
 
     @Test
-    // todo: RIDER-74815
     fun testUnityExplorer01() {
         val params = OpenSolutionParams()
         withSolution("SimpleUnityProject", params) { project ->

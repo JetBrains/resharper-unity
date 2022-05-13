@@ -23,16 +23,16 @@ class UnityIcons {
 
     class Common {
         companion object {
-            val UnityEditMode = IconLoader.getIcon("/Icons/common/unityEditMode.svg", UnityIcons::class.java)
-            val UnityPlayMode = IconLoader.getIcon("/Icons/common/unityPlayMode.svg", UnityIcons::class.java)
-            val UnityToolWindow = IconLoader.getIcon("/Icons/common/unityToolWindow.svg", UnityIcons::class.java)
+            val UnityEditMode = IconLoader.getIcon("/unityIcons/common/unityEditMode.svg", UnityIcons::class.java)
+            val UnityPlayMode = IconLoader.getIcon("/unityIcons/common/unityPlayMode.svg", UnityIcons::class.java)
+            val UnityToolWindow = IconLoader.getIcon("/unityIcons/common/unityToolWindow.svg", UnityIcons::class.java)
         }
     }
 
     class LogView {
         companion object {
-            val FilterBeforePlay = IconLoader.getIcon("/Icons/logView/filterBeforePlay.svg", UnityIcons::class.java)
-            val FilterBeforeRefresh = IconLoader.getIcon("/Icons/logView/filterBeforeRefresh.svg", UnityIcons::class.java)
+            val FilterBeforePlay = IconLoader.getIcon("/unityIcons/logView/filterBeforePlay.svg", UnityIcons::class.java)
+            val FilterBeforeRefresh = IconLoader.getIcon("/unityIcons/logView/filterBeforeRefresh.svg", UnityIcons::class.java)
         }
     }
 
@@ -53,40 +53,40 @@ class UnityIcons {
             val Anim = IconLoader.getIcon("/resharper/UnityFileType/FileAnimationClip.svg", UnityIcons::class.java)
 
             // These are front end only file types
-            val Uss = IconLoader.getIcon("/Icons/fileTypes/uss.svg", UnityIcons::class.java)
-            val Uxml = IconLoader.getIcon("/Icons/fileTypes/uxml.svg", UnityIcons::class.java)
+            val Uss = IconLoader.getIcon("/unityIcons/fileTypes/uss.svg", UnityIcons::class.java)
+            val Uxml = IconLoader.getIcon("/unityIcons/fileTypes/uxml.svg", UnityIcons::class.java)
         }
     }
 
     class Status{
         companion object {
-            val UnityStatus = IconLoader.getIcon("/Icons/status/unityStatus.svg", UnityIcons::class.java)
-            val UnityStatusPlay = IconLoader.getIcon("/Icons/status/unityStatusPlay.svg", UnityIcons::class.java)
-            val UnityStatusPause = IconLoader.getIcon("/Icons/status/unityStatusPause.svg", UnityIcons::class.java)
+            val UnityStatus = IconLoader.getIcon("/unityIcons/status/unityStatus.svg", UnityIcons::class.java)
+            val UnityStatusPlay = IconLoader.getIcon("/unityIcons/status/unityStatusPlay.svg", UnityIcons::class.java)
+            val UnityStatusPause = IconLoader.getIcon("/unityIcons/status/unityStatusPause.svg", UnityIcons::class.java)
 
             val UnityStatusProgress = AnimatedIcon(150,
-                IconLoader.getIcon("/Icons/status/unityStatusProgress6.svg", UnityIcons::class.java),
-                IconLoader.getIcon("/Icons/status/unityStatusProgress5.svg", UnityIcons::class.java),
-                IconLoader.getIcon("/Icons/status/unityStatusProgress4.svg", UnityIcons::class.java),
-                IconLoader.getIcon("/Icons/status/unityStatusProgress3.svg", UnityIcons::class.java),
-                IconLoader.getIcon("/Icons/status/unityStatusProgress2.svg", UnityIcons::class.java),
-                IconLoader.getIcon("/Icons/status/unityStatusProgress1.svg", UnityIcons::class.java))
+                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress6.svg", UnityIcons::class.java),
+                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress5.svg", UnityIcons::class.java),
+                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress4.svg", UnityIcons::class.java),
+                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress3.svg", UnityIcons::class.java),
+                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress2.svg", UnityIcons::class.java),
+                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress1.svg", UnityIcons::class.java))
 
             val UnityStatusPlayProgress = AnimatedIcon(150,
-                IconLoader.getIcon("/Icons/status/unityStatusPlayProgress6.svg", UnityIcons::class.java),
-                IconLoader.getIcon("/Icons/status/unityStatusPlayProgress5.svg", UnityIcons::class.java),
-                IconLoader.getIcon("/Icons/status/unityStatusPlayProgress4.svg", UnityIcons::class.java),
-                IconLoader.getIcon("/Icons/status/unityStatusPlayProgress3.svg", UnityIcons::class.java),
-                IconLoader.getIcon("/Icons/status/unityStatusPlayProgress2.svg", UnityIcons::class.java),
-                IconLoader.getIcon("/Icons/status/unityStatusPlayProgress1.svg", UnityIcons::class.java))
+                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress6.svg", UnityIcons::class.java),
+                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress5.svg", UnityIcons::class.java),
+                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress4.svg", UnityIcons::class.java),
+                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress3.svg", UnityIcons::class.java),
+                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress2.svg", UnityIcons::class.java),
+                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress1.svg", UnityIcons::class.java))
 
             val UnityStatusPauseProgress = AnimatedIcon(150,
-                IconLoader.getIcon("/Icons/status/unityStatusPauseProgress6.svg", UnityIcons::class.java),
-                IconLoader.getIcon("/Icons/status/unityStatusPauseProgress5.svg", UnityIcons::class.java),
-                IconLoader.getIcon("/Icons/status/unityStatusPauseProgress4.svg", UnityIcons::class.java),
-                IconLoader.getIcon("/Icons/status/unityStatusPauseProgress3.svg", UnityIcons::class.java),
-                IconLoader.getIcon("/Icons/status/unityStatusPauseProgress2.svg", UnityIcons::class.java),
-                IconLoader.getIcon("/Icons/status/unityStatusPauseProgress1.svg", UnityIcons::class.java))
+                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress6.svg", UnityIcons::class.java),
+                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress5.svg", UnityIcons::class.java),
+                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress4.svg", UnityIcons::class.java),
+                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress3.svg", UnityIcons::class.java),
+                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress2.svg", UnityIcons::class.java),
+                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress1.svg", UnityIcons::class.java))
         }
     }
 
@@ -95,14 +95,14 @@ class UnityIcons {
         // Pausepoints are by definition "no suspend". Where the default breakpoint icon set includes a "no_suspend"
         // variant, the same file name is used. Otherwise, the default name is drawn as "no_suspend".
         companion object {
-            val Db_dep_line_pausepoint = IconLoader.getIcon("/Icons/debugger/db_dep_line_pausepoint.svg", UnityIcons::class.java)
-            val Db_disabled_pausepoint = IconLoader.getIcon("/Icons/debugger/db_disabled_pausepoint.svg", UnityIcons::class.java)
-            val Db_invalid_pausepoint = IconLoader.getIcon("/Icons/debugger/db_invalid_pausepoint.svg", UnityIcons::class.java)
-            val Db_muted_pausepoint = IconLoader.getIcon("/Icons/debugger/db_muted_pausepoint.svg", UnityIcons::class.java)
-            val Db_muted_disabled_pausepoint = IconLoader.getIcon("/Icons/debugger/db_muted_disabled_pausepoint.svg", UnityIcons::class.java)
-            val Db_no_suspend_pausepoint = IconLoader.getIcon("/Icons/debugger/db_no_suspend_pausepoint.svg", UnityIcons::class.java)
+            val Db_dep_line_pausepoint = IconLoader.getIcon("/unityIcons/debugger/db_dep_line_pausepoint.svg", UnityIcons::class.java)
+            val Db_disabled_pausepoint = IconLoader.getIcon("/unityIcons/debugger/db_disabled_pausepoint.svg", UnityIcons::class.java)
+            val Db_invalid_pausepoint = IconLoader.getIcon("/unityIcons/debugger/db_invalid_pausepoint.svg", UnityIcons::class.java)
+            val Db_muted_pausepoint = IconLoader.getIcon("/unityIcons/debugger/db_muted_pausepoint.svg", UnityIcons::class.java)
+            val Db_muted_disabled_pausepoint = IconLoader.getIcon("/unityIcons/debugger/db_muted_disabled_pausepoint.svg", UnityIcons::class.java)
+            val Db_no_suspend_pausepoint = IconLoader.getIcon("/unityIcons/debugger/db_no_suspend_pausepoint.svg", UnityIcons::class.java)
             val Db_set_pausepoint = Db_no_suspend_pausepoint
-            val Db_verified_no_suspend_pausepoint = IconLoader.getIcon("/Icons/debugger/db_verified_no_suspend_pausepoint.svg", UnityIcons::class.java)
+            val Db_verified_no_suspend_pausepoint = IconLoader.getIcon("/unityIcons/debugger/db_verified_no_suspend_pausepoint.svg", UnityIcons::class.java)
             val Db_verified_pausepoint = Db_verified_no_suspend_pausepoint
         }
     }
@@ -110,32 +110,32 @@ class UnityIcons {
     class Explorer {
         companion object {
 
-            val AssetsRoot = IconLoader.getIcon("/Icons/Explorer/UnityAssets.svg", UnityIcons::class.java)
+            val AssetsRoot = IconLoader.getIcon("/unityIcons/Explorer/UnityAssets.svg", UnityIcons::class.java)
             val PackagesRoot = IconLoader.getIcon("/resharper/UnityObjectType/UnityPackages.svg", UnityIcons::class.java)
             val ReferencesRoot: Icon = ReSharperIcons.Common.CompositeElement
-            val ReadOnlyPackagesRoot = IconLoader.getIcon("/Icons/Explorer/FolderReadOnly.svg", UnityIcons::class.java)
-            val DependenciesRoot = IconLoader.getIcon("/Icons/Explorer/FolderDependencies.svg", UnityIcons::class.java)
-            val BuiltInPackagesRoot = IconLoader.getIcon("/Icons/Explorer/FolderModules.svg", UnityIcons::class.java)
+            val ReadOnlyPackagesRoot = IconLoader.getIcon("/unityIcons/Explorer/FolderReadOnly.svg", UnityIcons::class.java)
+            val DependenciesRoot = IconLoader.getIcon("/unityIcons/Explorer/FolderDependencies.svg", UnityIcons::class.java)
+            val BuiltInPackagesRoot = IconLoader.getIcon("/unityIcons/Explorer/FolderModules.svg", UnityIcons::class.java)
 
-            val BuiltInPackage = IconLoader.getIcon("/Icons/Explorer/UnityModule.svg", UnityIcons::class.java)
+            val BuiltInPackage = IconLoader.getIcon("/unityIcons/Explorer/UnityModule.svg", UnityIcons::class.java)
             val ReferencedPackage = IconLoader.getIcon("/resharper/UnityFileType/FolderPackageReferenced.svg", UnityIcons::class.java)
-            val EmbeddedPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageEmbedded.svg", UnityIcons::class.java)
-            val LocalPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageLocal.svg", UnityIcons::class.java)
+            val EmbeddedPackage = IconLoader.getIcon("/unityIcons/Explorer/FolderPackageEmbedded.svg", UnityIcons::class.java)
+            val LocalPackage = IconLoader.getIcon("/unityIcons/Explorer/FolderPackageLocal.svg", UnityIcons::class.java)
             val LocalTarballPackage = LocalPackage
-            val GitPackage = IconLoader.getIcon("/Icons/Explorer/FolderGit.svg", UnityIcons::class.java)
-            val UnknownPackage = IconLoader.getIcon("/Icons/Explorer/UnityPackageUnresolved.svg", UnityIcons::class.java)
-            val PackageDependency = IconLoader.getIcon("/Icons/Explorer/UnityPackageDependency.svg", UnityIcons::class.java)
+            val GitPackage = IconLoader.getIcon("/unityIcons/Explorer/FolderGit.svg", UnityIcons::class.java)
+            val UnknownPackage = IconLoader.getIcon("/unityIcons/Explorer/UnityPackageUnresolved.svg", UnityIcons::class.java)
+            val PackageDependency = IconLoader.getIcon("/unityIcons/Explorer/UnityPackageDependency.svg", UnityIcons::class.java)
             val Reference: Icon = ReSharperIcons.ProjectModel.Assembly
 
-            val AsmdefFolder = IconLoader.getIcon("/Icons/Explorer/FolderAssetsAlt.svg", UnityIcons::class.java)
-            val AssetsFolder = IconLoader.getIcon("/Icons/Explorer/FolderAssets.svg", UnityIcons::class.java)
-            val EditorDefaultResourcesFolder = IconLoader.getIcon("/Icons/Explorer/FolderEditorResources.svg", UnityIcons::class.java)
-            val EditorFolder = IconLoader.getIcon("/Icons/Explorer/FolderEditor.svg", UnityIcons::class.java)
-            val GizmosFolder = IconLoader.getIcon("/Icons/Explorer/FolderGizmos.svg", UnityIcons::class.java)
-            val PluginsFolder = IconLoader.getIcon("/Icons/Explorer/FolderPlugins.svg", UnityIcons::class.java)
-            val ResourcesFolder = IconLoader.getIcon("/Icons/Explorer/FolderResources.svg", UnityIcons::class.java)
-            val StreamingAssetsFolder = IconLoader.getIcon("/Icons/Explorer/FolderStreamingAssets.svg", UnityIcons::class.java)
-            val UnloadedFolder = IconLoader.getIcon("/Icons/Explorer/FolderUnloaded.svg", UnityIcons::class.java)
+            val AsmdefFolder = IconLoader.getIcon("/unityIcons/Explorer/FolderAssetsAlt.svg", UnityIcons::class.java)
+            val AssetsFolder = IconLoader.getIcon("/unityIcons/Explorer/FolderAssets.svg", UnityIcons::class.java)
+            val EditorDefaultResourcesFolder = IconLoader.getIcon("/unityIcons/Explorer/FolderEditorResources.svg", UnityIcons::class.java)
+            val EditorFolder = IconLoader.getIcon("/unityIcons/Explorer/FolderEditor.svg", UnityIcons::class.java)
+            val GizmosFolder = IconLoader.getIcon("/unityIcons/Explorer/FolderGizmos.svg", UnityIcons::class.java)
+            val PluginsFolder = IconLoader.getIcon("/unityIcons/Explorer/FolderPlugins.svg", UnityIcons::class.java)
+            val ResourcesFolder = IconLoader.getIcon("/unityIcons/Explorer/FolderResources.svg", UnityIcons::class.java)
+            val StreamingAssetsFolder = IconLoader.getIcon("/unityIcons/Explorer/FolderStreamingAssets.svg", UnityIcons::class.java)
+            val UnloadedFolder = IconLoader.getIcon("/unityIcons/Explorer/FolderUnloaded.svg", UnityIcons::class.java)
         }
     }
 
@@ -144,18 +144,18 @@ class UnityIcons {
             val UnityActionsGroup = Icons.UnityLogo
             @JvmField val StartUnity = Icons.UnityLogo
 
-            @JvmField val Execute = IconLoader.getIcon("/Icons/actions/execute.svg", UnityIcons::class.java)
-            @JvmField val Pause = IconLoader.getIcon("/Icons/actions/pause.svg", UnityIcons::class.java)
-            @JvmField val Step = IconLoader.getIcon("/Icons/actions/step.svg", UnityIcons::class.java)
+            @JvmField val Execute = IconLoader.getIcon("/unityIcons/actions/execute.svg", UnityIcons::class.java)
+            @JvmField val Pause = IconLoader.getIcon("/unityIcons/actions/pause.svg", UnityIcons::class.java)
+            @JvmField val Step = IconLoader.getIcon("/unityIcons/actions/step.svg", UnityIcons::class.java)
             val FilterEditModeMessages = Common.UnityEditMode
             val FilterPlayModeMessages = Common.UnityPlayMode
 
             @JvmField val OpenEditorLog = FilterEditModeMessages
             @JvmField val OpenPlayerLog = FilterPlayModeMessages
 
-            @JvmField val AttachToUnity = IconLoader.getIcon("/Icons/actions/attachToUnityProcess.svg", UnityIcons::class.java)
+            @JvmField val AttachToUnity = IconLoader.getIcon("/unityIcons/actions/attachToUnityProcess.svg", UnityIcons::class.java)
 
-            @JvmField val RefreshInUnity = IconLoader.getIcon("/Icons/actions/refreshInUnity.svg", UnityIcons::class.java)
+            @JvmField val RefreshInUnity = IconLoader.getIcon("/unityIcons/actions/refreshInUnity.svg", UnityIcons::class.java)
         }
     }
 
@@ -170,9 +170,9 @@ class UnityIcons {
 
     class Ide {
         companion object {
-            val Warning = IconLoader.getIcon("/Icons/ide/warning.svg", UnityIcons::class.java)
-            val Info = IconLoader.getIcon("/Icons/ide/info.svg", UnityIcons::class.java)
-            val Error = IconLoader.getIcon("/Icons/ide/error.svg", UnityIcons::class.java)
+            val Warning = IconLoader.getIcon("/unityIcons/ide/warning.svg", UnityIcons::class.java)
+            val Info = IconLoader.getIcon("/unityIcons/ide/info.svg", UnityIcons::class.java)
+            val Error = IconLoader.getIcon("/unityIcons/ide/error.svg", UnityIcons::class.java)
         }
     }
 

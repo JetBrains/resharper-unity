@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             if (!propertyDeclaration.IsFromUnityProject())
                 return false;
 
-            if (AutomaticToBackingFieldAction.IsAvailable(propertyDeclaration))
+            if (AutoPropertyToBackingFieldActionBase.IsAvailable(propertyDeclaration))
             {
                 var unityApi = propertyDeclaration.GetSolution().GetComponent<UnityApi>();
                 var containingType = propertyDeclaration.DeclaredElement?.GetContainingType();
@@ -75,10 +75,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             if (propertyDeclaration == null)
                 return null;
 
-            var fieldDeclaration = AutomaticToBackingFieldAction.Execute(propertyDeclaration);
+            var fieldDeclaration = AutoPropertyToBackingFieldAction.Execute(propertyDeclaration);
             fieldDeclaration.SetReadonly(false);
             AttributeUtil.AddAttributeToSingleDeclaration(fieldDeclaration, KnownTypes.SerializeField, propertyDeclaration.GetPsiModule(), elementFactory);
-            return AutomaticToBackingFieldAction.PostExecute(propertyDeclaration, fieldDeclaration, solution);
+            return AutoPropertyToBackingFieldAction.CreateHotspotsForFieldUsage(propertyDeclaration, fieldDeclaration, solution);
         }
     }
 }
