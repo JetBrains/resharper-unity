@@ -204,6 +204,9 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         if (logModel.selectedItem != null) {
             eventList.setSelectedValue(logModel.selectedItem, true)
         }
+        else if (logModel.autoscroll.value){
+            eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
+        }
     }
 
     init {
