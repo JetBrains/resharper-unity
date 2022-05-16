@@ -350,4 +350,10 @@ open class UnityExplorerFileSystemNode(project: Project,
             super.getFileStatusColor(status)
         }
     }
+
+    override fun getTestPresentation(): String {
+        if (this.presentation.tooltip != null)
+            return "${super.getTestPresentation()}, tooltip=${this.presentation.tooltip}"
+        return super.getTestPresentation()
+    }
 }
