@@ -58,38 +58,6 @@ class UnityIcons {
         }
     }
 
-    class Status{
-        companion object {
-            val UnityStatus = IconLoader.getIcon("/unityIcons/status/unityStatus.svg", UnityIcons::class.java)
-            val UnityStatusPlay = IconLoader.getIcon("/unityIcons/status/unityStatusPlay.svg", UnityIcons::class.java)
-            val UnityStatusPause = IconLoader.getIcon("/unityIcons/status/unityStatusPause.svg", UnityIcons::class.java)
-
-            val UnityStatusProgress = AnimatedIcon(150,
-                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress6.svg", UnityIcons::class.java),
-                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress5.svg", UnityIcons::class.java),
-                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress4.svg", UnityIcons::class.java),
-                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress3.svg", UnityIcons::class.java),
-                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress2.svg", UnityIcons::class.java),
-                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress1.svg", UnityIcons::class.java))
-
-            val UnityStatusPlayProgress = AnimatedIcon(150,
-                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress6.svg", UnityIcons::class.java),
-                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress5.svg", UnityIcons::class.java),
-                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress4.svg", UnityIcons::class.java),
-                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress3.svg", UnityIcons::class.java),
-                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress2.svg", UnityIcons::class.java),
-                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress1.svg", UnityIcons::class.java))
-
-            val UnityStatusPauseProgress = AnimatedIcon(150,
-                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress6.svg", UnityIcons::class.java),
-                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress5.svg", UnityIcons::class.java),
-                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress4.svg", UnityIcons::class.java),
-                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress3.svg", UnityIcons::class.java),
-                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress2.svg", UnityIcons::class.java),
-                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress1.svg", UnityIcons::class.java))
-        }
-    }
-
     class Debugger {
         // Field and file names deliberately match the AllIcons.Debugger icons.
         // Pausepoints are by definition "no suspend". Where the default breakpoint icon set includes a "no_suspend"
