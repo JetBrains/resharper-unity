@@ -209,7 +209,7 @@
             text="Open Unity Player Log"
             icon="UnityIcons.Actions.OpenPlayerLog" />
 
-    <group id="UnityToolbarActions">
+    <group id="UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
       <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
       <add-to-group group-id="RightToolbarSideGroup" relative-to-action="BuildSolutionAction" anchor="after" />
 
@@ -234,6 +234,9 @@
               icon="UnityIcons.Actions.Step" />
 
       <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions" text="Important Unity Related Actions">
+        <action id="UnityProtocolStatusAction"
+                class="com.jetbrains.rider.plugins.unity.ui.UnityProtocolConnectionAction"
+                text="Unity Editor Connection Status" />
         <action id="StartUnityAction"
                 class="com.jetbrains.rider.plugins.unity.actions.StartUnityAction"
                 text="Start Unity"
