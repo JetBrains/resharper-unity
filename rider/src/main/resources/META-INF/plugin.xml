@@ -208,6 +208,11 @@
             class="com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction"
             text="Open Unity Player Log"
             icon="UnityIcons.Actions.OpenPlayerLog" />
+    <action id="TriggerRefreshInUnity"
+            class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction"
+            text="Refresh Unity Assets"
+            description="Trigger refresh assets in Unity Editor"
+            icon="UnityIcons.Actions.RefreshInUnity" />
 
     <group id="UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
       <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
