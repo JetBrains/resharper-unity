@@ -2,18 +2,17 @@ package com.jetbrains.rider.plugins.unity.ui
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.jetbrains.rd.util.reactive.Property
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.project.DumbAware
 import com.jetbrains.rider.plugins.unity.isUnityGeneratedProject
 
-class SwitchUIMode : AnAction() {
+class UnityPlayButtonsAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         val uiManager = UnityUIManager.getInstance(project)
 
-        if(uiManager.hasMinimizedUi.hasTrueValue())
-            UnityUIMinimizer.recoverFullUI(project)
-        else
-            UnityUIMinimizer.ensureMinimizedUI(project)
+        val currentValue = uiManager.hasHiddenPlayButtons.hasTrueValue()
+        uiManager.hasHiddenPlayButtons.value = !currentValue
     }
 
     override fun update(e: AnActionEvent) {
@@ -23,18 +22,15 @@ class SwitchUIMode : AnAction() {
             return
         }
 
-        // Only enable UI switching for generated Unity projects. Sidecar projects
-        // (class library in the main Unity folder) are fairly advanced anyway, so
-        // leave things enabled. It also means these projects can access nuget
         if(!project.isUnityGeneratedProject()) {
             e.presentation.isEnabled = false
             return
         }
 
-        if(UnityUIManager.getInstance(project).hasMinimizedUi.hasTrueValue())
-            e.presentation.text = "Switch to Full UI"
+        if(UnityUIManager.getInstance(project).hasHiddenPlayButtons.hasTrueValue())
+            e.presentation.text = "Show Unity Play/Pause Actions"
         else
-            e.presentation.text = "Switch to Minimized UI"
+            e.presentation.text = "Hide Unity Play/Pause Actions"
 
         super.update(e)
     }
