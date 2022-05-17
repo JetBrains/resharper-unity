@@ -160,8 +160,6 @@
     <checkinHandlerFactory implementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnsavedSceneCheckinHandlerFactory"/>
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnityCheckinState"/>
 
-    <rider.runWidgetSuspenderExtension implementation="com.jetbrains.rider.plugins.unity.ui.UnityRunWidgetSuspenderExtension"/>
-
     <rider.action.technical.support.info.provider implementation="com.jetbrains.rider.plugins.unity.actions.UnityVersionRiderTechnicalSupportInfoProvider" />
   </extensions>
 
@@ -213,39 +211,12 @@
 
     <group id="UnityToolbarActions">
       <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
+      <add-to-group group-id="RightToolbarSideGroup" relative-to-action="BuildSolutionAction" anchor="after" />
 
       <separator/>
-
-      <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions" text="Important Unity Related Actions">
-        <action id="StartUnityAction"
-                class="com.jetbrains.rider.plugins.unity.actions.StartUnityAction"
-                text="Start Unity"
-                description="Start Unity with current project"
-                icon="UnityIcons.Actions.StartUnity" />
-        <reference ref="AttachToUnityProcessAction" />
-        <reference ref="ShowUnitySettingsInRider" />
-
-        <separator/>
-
-        <action id="SwitchUIModeAction"
-                class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode"
-                text="Toggle UI Mode"
-                description="Show or hide unnecessary UI tool windows" />
-        <action id="ShowUnityLogInRiderAction"
-                class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction"
-                text="Show Unity Log Window" />
-      </group>
-
-      <group id="UnityDllShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityDllImportantActions" text="Important Unity Related Actions">
-        <reference ref="AttachToUnityProcessAction" />
-        <reference ref="ShowUnitySettingsInRider" />
-      </group>
-
-      <action id="TriggerRefreshInUnity"
-              class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction"
-              text="Refresh Unity Assets"
-              description="Trigger refresh assets in Unity Editor"
-              icon="UnityIcons.Actions.RefreshInUnity" />
+      <action id="UnityToolbarLabel"
+              class="com.jetbrains.rider.plugins.unity.actions.UnityToolbarLabel"
+              text="Unity:"/>
       <action id="TriggerPlayInUnity"
               class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction"
               text="Play/Edit"
@@ -261,7 +232,34 @@
               text="Step"
               description="Step a single frame in Unity Editor"
               icon="UnityIcons.Actions.Step" />
-      <separator/>
+
+      <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions" text="Important Unity Related Actions">
+        <action id="StartUnityAction"
+                class="com.jetbrains.rider.plugins.unity.actions.StartUnityAction"
+                text="Start Unity"
+                description="Start Unity with current project"
+                icon="UnityIcons.Actions.StartUnity" />
+        <reference ref="AttachToUnityProcessAction" />
+        <reference ref="ShowUnitySettingsInRider" />
+        <action id="ShowUnityLogInRiderAction"
+                class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction"
+                text="Unity Log Window&#8230;" />
+        <separator/>
+
+        <action id="SwitchUIModeAction"
+                class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode"
+                text="Toggle UI Mode"
+                description="Show or hide unnecessary UI tool windows" />
+        <action id="HideUnityPlayActions"
+                class="com.jetbrains.rider.plugins.unity.ui.UnityPlayButtonsAction"
+                text="Toggle Play/Pause Actions"
+                description="Show or hide Unity Play/Pause actions" />
+      </group>
+
+      <group id="UnityDllShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityDllImportantActions" text="Important Unity Related Actions">
+        <reference ref="AttachToUnityProcessAction" />
+        <reference ref="ShowUnitySettingsInRider" />
+      </group>
     </group>
 
     <group id="Rider.UnitTesting.TopToolbar.MiscOptions.Unity">
