@@ -6,10 +6,12 @@
 repositories {
     maven { setUrl("https://cache-redirector.jetbrains.com/maven-central") }
     maven { setUrl("https://cache-redirector.jetbrains.com/plugins.gradle.org") }
+    // This is for snapshot version of 'org.jetbrains.intellij' plugin
+    maven { setUrl("https://oss.sonatype.org/content/repositories/snapshots/") }
 }
 
 dependencies {
-    implementation("org.jetbrains.intellij.plugins", "gradle-intellij-plugin", "1.5.2")
+    implementation("org.jetbrains.intellij", "org.jetbrains.intellij.gradle.plugin", "1.6.0-SNAPSHOT")
 }
 
 plugins {
