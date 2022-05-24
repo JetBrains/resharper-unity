@@ -21,6 +21,15 @@ class UnityIcons {
         }
     }
 
+    class Toolbar {
+        companion object {
+            val Toolbar = IconLoader.getIcon("/resharper/Toolbar/UnityToolbar.svg", UnityIcons::class.java)
+            val ToolbarConnected = IconLoader.getIcon("/resharper/Toolbar/UnityToolbarConnected.svg", UnityIcons::class.java)
+            val ToolbarDisconnected = IconLoader.getIcon("/resharper/Toolbar/UnityToolbarDisconnected.svg", UnityIcons::class.java)
+        }
+    }
+
+
     class Common {
         companion object {
             val UnityEditMode = IconLoader.getIcon("/unityIcons/common/unityEditMode.svg", UnityIcons::class.java)
