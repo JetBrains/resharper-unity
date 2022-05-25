@@ -4,7 +4,7 @@ Rename folder
 -Project
  -Assets
   References
-  -AsmdefResponse
+  -AsmdefResponse, tooltip=Contains files from multiple projects:<br/>AsmdefResponse<br/>AsmdefResponse.Player<br/>AsmdefResponse2<br/>AsmdefResponse2.Player
    -NewDirectory1
     zero
    -SS

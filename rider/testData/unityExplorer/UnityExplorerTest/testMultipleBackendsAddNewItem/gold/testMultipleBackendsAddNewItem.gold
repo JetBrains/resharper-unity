@@ -4,49 +4,49 @@ Add files and classes
 -Project
  -Assets
   References
-  -AsmdefResponse
+  -AsmdefResponse, tooltip=Contains files from multiple projects:<br/>AsmdefResponse<br/>AsmdefResponse.Player<br/>AsmdefResponse2<br/>AsmdefResponse2.Player
    -NewDirectory1
     AsmdefClass_added.cs
-    AsmdefClass_added.cs.meta
+    AsmdefClass_added.cs.meta, tooltip=This file is not imported into the asset database
     zero
-    zero.meta
+    zero.meta, tooltip=This file is not imported into the asset database
    -SS
     AsmdefResponse2.asmdef
-    AsmdefResponse2.asmdef.meta
+    AsmdefResponse2.asmdef.meta, tooltip=This file is not imported into the asset database
     rrr.cs
-    rrr.cs.meta
+    rrr.cs.meta, tooltip=This file is not imported into the asset database
    AsmdefResponse.asmdef
-   AsmdefResponse.asmdef.meta
+   AsmdefResponse.asmdef.meta, tooltip=This file is not imported into the asset database
    NewBehaviourScript.cs
-   NewBehaviourScript.cs.meta
-   NewDirectory1.meta
-   SS.meta
+   NewBehaviourScript.cs.meta, tooltip=This file is not imported into the asset database
+   NewDirectory1.meta, tooltip=This file is not imported into the asset database
+   SS.meta, tooltip=This file is not imported into the asset database
   -Dir1
    ClassInDir1.cs
-   ClassInDir1.cs.meta
+   ClassInDir1.cs.meta, tooltip=This file is not imported into the asset database
   -NewDirectory1
    zero
-   zero.meta
+   zero.meta, tooltip=This file is not imported into the asset database
   -Scripts
    -Editor
     -NewDirectory1
      zero
-     zero.meta
-    NewDirectory1.meta
+     zero.meta, tooltip=This file is not imported into the asset database
+    NewDirectory1.meta, tooltip=This file is not imported into the asset database
     XMLUtilities.cs
-    XMLUtilities.cs.meta
+    XMLUtilities.cs.meta, tooltip=This file is not imported into the asset database
    -NewDirectory1
     zero
-    zero.meta
-   Editor.meta
-   NewDirectory1.meta
-  AsmdefResponse.meta
+    zero.meta, tooltip=This file is not imported into the asset database
+   Editor.meta, tooltip=This file is not imported into the asset database
+   NewDirectory1.meta, tooltip=This file is not imported into the asset database
+  AsmdefResponse.meta, tooltip=This file is not imported into the asset database
   Class1.cs
-  Class1.cs.meta
-  Dir1.meta
-  NewDirectory1.meta
-  Scenes.meta
-  Scripts.meta
+  Class1.cs.meta, tooltip=This file is not imported into the asset database
+  Dir1.meta, tooltip=This file is not imported into the asset database
+  NewDirectory1.meta, tooltip=This file is not imported into the asset database
+  Scenes.meta, tooltip=This file is not imported into the asset database
+  Scripts.meta, tooltip=This file is not imported into the asset database
 
 
 
