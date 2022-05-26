@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using JetBrains.Collections.Viewable;
+using JetBrains.Core;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -113,7 +114,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
             });
             
             frontendBackendModel.StartProfiling.Set((l, play) =>
-                backendUnityModelProperty.Maybe.ValueOrDefault?.StartProfiling.Start(l, new ProfilingData(play, GetProfilerApiPath())).ToRdTask(l));
+            {
+                var backendUnityModel = backendUnityModelProperty.Maybe.ValueOrDefault;
+                return backendUnityModel == null
+                    ? Rd.Tasks.RdTask<Unit>.Cancelled()
+                    : backendUnityModel.StartProfiling.Start(l, new ProfilingData(play, GetProfilerApiPath())).ToRdTask(l);
+            });
         }
 
         private string GetProfilerApiPath()
@@ -133,12 +139,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                 return null;
             }
             return unityProfilerApiPath.FullPath;
-            {
-                var backendUnityModel = backendUnityModelProperty.Maybe.ValueOrDefault;
-                return backendUnityModel == null
-                    ? Rd.Tasks.RdTask<bool>.Cancelled()
-                    : backendUnityModel.HasUnsavedScenes.Start(l, u).ToRdTask(l);
-            });
         }
 
         private void AdviseUnityToFrontendModel(Lifetime lifetime, BackendUnityModel backendUnityModel)
