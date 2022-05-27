@@ -2,9 +2,11 @@
 using System.Linq;
 using JetBrains.Diagnostics;
 using JetBrains.Rd.Base;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
+using JetBrains.Lifetimes;
 #endif
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Packages
@@ -15,40 +17,47 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Packages
         private static string packageId = "com.unity.ide.rider";
         private static readonly ILog ourLogger = Log.GetLog("Packages.Initialization");
         private static SearchRequest ourRequest;
+        private static BackendUnityModel ourModel;
+        private static LifetimeDefinition ourDefinition;
 #endif
         public static void OnModelInitializationHandler(UnityModelAndLifetime modelAndLifetime)
         {
 #if UNITY_2019_2
             ourRequest = Client.Search(packageId);
-            modelAndLifetime.Lifetime.OnTermination(() => { ourRequest = null; });
-            EditorApplication.update += () => Progress(modelAndLifetime);
+            ourModel = modelAndLifetime.Model;
+            ourLogger.Verbose($"Client.Search({packageId})");
+            ourDefinition = modelAndLifetime.Lifetime.CreateNested();
+            ourLogger.Verbose($"EditorApplication.update += WaitForResult");
+            EditorApplication.update += WaitForResult;
 #endif
         }
+
 #if UNITY_2019_2
-        static void Progress(UnityModelAndLifetime modelAndLifetime)
+        private static void WaitForResult()
         {
-            if (ourRequest == null)
+            ourLogger.Trace($"request: {ourRequest.Status}");
+            if (ourDefinition.Lifetime.IsNotAlive)
             {
-                EditorApplication.update -= () => Progress(modelAndLifetime);
+                ourLogger.Verbose($"EditorApplication.update -= WaitForResult");
+                EditorApplication.update -= WaitForResult;
                 return;
             }
-
-            if (!ourRequest.IsCompleted) return;
+            
             if (ourRequest.Status == StatusCode.Success)
             {
                 var latestCompatible = ourRequest.Result.FirstOrDefault()?.versions.latestCompatible;
                 if (latestCompatible != null)
                 {
                     ourLogger.Info("Found: " + latestCompatible);
-                    modelAndLifetime.Model.RiderPackagePotentialUpdateVersion.Set(latestCompatible);
+                    ourModel.RiderPackagePotentialUpdateVersion.Set(latestCompatible);
+                    ourDefinition.Terminate();
                 }
             }
             else if (ourRequest.Status >= StatusCode.Failure)
             {
                 ourLogger.Error(ourRequest.Error.message);
+                ourDefinition.Terminate();
             }
-
-            EditorApplication.update -= () => Progress(modelAndLifetime);
         }
 #endif
     }
