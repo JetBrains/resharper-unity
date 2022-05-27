@@ -8,7 +8,7 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.util.application
 import com.intellij.workspaceModel.ide.getInstance
 import com.intellij.workspaceModel.ide.impl.toVirtualFileUrl
-import com.intellij.workspaceModel.storage.WorkspaceEntityStorageBuilder
+import com.intellij.workspaceModel.storage.MutableEntityStorage
 import com.intellij.workspaceModel.storage.bridgeEntities.addContentRootEntityWithCustomEntitySource
 import com.intellij.workspaceModel.storage.url.VirtualFileUrlManager
 import com.jetbrains.rd.platform.util.idea.LifetimedService
@@ -28,7 +28,7 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
         private val logger = Logger.getInstance(UnityWorkspacePackageUpdater::class.java)
     }
 
-    private var initialBuilder: WorkspaceEntityStorageBuilder? = WorkspaceEntityStorageBuilder.create()
+    private var initialBuilder: MutableEntityStorage? = MutableEntityStorage.create()
 
     init {
         application.invokeLater {
@@ -50,7 +50,7 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
         }
     }
 
-    private fun addPackage(unityPackage: UnityPackage, builder: WorkspaceEntityStorageBuilder) {
+    private fun addPackage(unityPackage: UnityPackage, builder: MutableEntityStorage) {
         logger.trace("Adding Unity package: ${unityPackage.id}")
 
         val packageFolder = unityPackage.packageFolderPath?.let { VfsUtil.findFile(Paths.get(it), true) }
@@ -63,16 +63,17 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
                 RiderUnityPackageEntitySource)
         } else null
 
-        val entity = builder.addEntity(ModifiableUnityPackageEntity::class.java, RiderUnityPackageEntitySource) {
+        val entity = UnityPackageEntity(unityPackage, RiderUnityPackageEntitySource) {
             this.descriptor = unityPackage
             this.contentRootEntity = contentRootEntity
         }
+        builder.addEntity(entity)
 
         val mapping = builder.getMutableExternalMapping<String>(UNITY_PACKAGE_ID_MAPPING)
-        mapping.addMapping(entity, entity.id)
+        mapping.addMapping(entity, entity.packageId)
     }
 
-    private fun removePackage(unityPackage: UnityPackage, builder: WorkspaceEntityStorageBuilder) {
+    private fun removePackage(unityPackage: UnityPackage, builder: MutableEntityStorage) {
         logger.trace("Removing Unity package: ${unityPackage.id}")
 
         val mapping = builder.getExternalMapping<String>(UNITY_PACKAGE_ID_MAPPING)
@@ -81,7 +82,7 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
         }
     }
 
-    private fun updateWorkspaceModel(action: (WorkspaceEntityStorageBuilder) -> Unit) {
+    private fun updateWorkspaceModel(action: (MutableEntityStorage) -> Unit) {
         application.runWriteAction {
             val initialBuilder = initialBuilder
             if (initialBuilder != null) {
