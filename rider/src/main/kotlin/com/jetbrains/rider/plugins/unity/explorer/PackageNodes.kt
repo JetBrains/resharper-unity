@@ -360,8 +360,8 @@ private fun getPackageTooltip(displayName: String, packageEntity: UnityPackageEn
     if (packageEntity.version.isNotEmpty()) {
         tooltip += " ${packageEntity.version}"
     }
-    if (displayName != packageEntity.id) {
-        tooltip += "<br/>${packageEntity.id}"
+    if (displayName != packageEntity.packageId) {
+        tooltip += "<br/>${packageEntity.packageId}"
     }
     val description = packageEntity.description
     if (description?.isNotEmpty() == true) {
