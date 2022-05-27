@@ -35,7 +35,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static bool IsUnityCompatibleWithRiderPackage()
     {
-#if UNITY_2019_2
+#if UNITY_2019_2_OR_NEWER
       return true;
 #else
       return false;

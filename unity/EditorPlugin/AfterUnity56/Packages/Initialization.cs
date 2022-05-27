@@ -1,4 +1,4 @@
-#if UNITY_2019_2
+#if UNITY_2019_2_OR_NEWER
 using System.Linq;
 using JetBrains.Diagnostics;
 using JetBrains.Rd.Base;
@@ -13,50 +13,57 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Packages
 {
     public static class Initialization
     {
-#if UNITY_2019_2
+#if UNITY_2019_2_OR_NEWER
         private static string packageId = "com.unity.ide.rider";
         private static readonly ILog ourLogger = Log.GetLog("Packages.Initialization");
-        private static SearchRequest ourRequest;
-        private static BackendUnityModel ourModel;
-        private static LifetimeDefinition ourDefinition;
 #endif
         public static void OnModelInitializationHandler(UnityModelAndLifetime modelAndLifetime)
         {
-#if UNITY_2019_2
-            ourRequest = Client.Search(packageId);
-            ourModel = modelAndLifetime.Model;
+#if UNITY_2019_2_OR_NEWER
+            var request = Client.Search(packageId);
+            var model = modelAndLifetime.Model;
             ourLogger.Verbose($"Client.Search({packageId})");
-            ourDefinition = modelAndLifetime.Lifetime.CreateNested();
-            ourLogger.Verbose($"EditorApplication.update += WaitForResult");
-            EditorApplication.update += WaitForResult;
+            var definition = modelAndLifetime.Lifetime.CreateNested();
+
+            void Action()
+            {
+                WaitForResult(definition, model, request);
+            }
+
+            definition.Lifetime.Bracket(() =>
+            {
+                ourLogger.Verbose($"EditorApplication.update += WaitForResult");
+                EditorApplication.update += Action;
+            }, () =>
+            {
+                ourLogger.Verbose($"EditorApplication.update -= WaitForResult");
+                EditorApplication.update -= Action;
+            });
 #endif
         }
 
-#if UNITY_2019_2
-        private static void WaitForResult()
+#if UNITY_2019_2_OR_NEWER
+        private static void WaitForResult(LifetimeDefinition definition, BackendUnityModel model, SearchRequest request)
         {
-            ourLogger.Trace($"request: {ourRequest.Status}");
-            if (ourDefinition.Lifetime.IsNotAlive)
-            {
-                ourLogger.Verbose($"EditorApplication.update -= WaitForResult");
-                EditorApplication.update -= WaitForResult;
+            if (definition.Lifetime.IsNotAlive)
                 return;
-            }
             
-            if (ourRequest.Status == StatusCode.Success)
+            ourLogger.Trace($"request: {request.Status}");
+
+            if (request.Status == StatusCode.Success)
             {
-                var latestCompatible = ourRequest.Result.FirstOrDefault()?.versions.latestCompatible;
+                var latestCompatible = request.Result.FirstOrDefault()?.versions.latestCompatible;
                 if (latestCompatible != null)
                 {
                     ourLogger.Info("Found: " + latestCompatible);
-                    ourModel.RiderPackagePotentialUpdateVersion.Set(latestCompatible);
-                    ourDefinition.Terminate();
+                    model.RiderPackagePotentialUpdateVersion.Set(latestCompatible);
+                    definition.Terminate();
                 }
             }
-            else if (ourRequest.Status >= StatusCode.Failure)
+            else if (request.Status >= StatusCode.Failure)
             {
-                ourLogger.Error(ourRequest.Error.message);
-                ourDefinition.Terminate();
+                ourLogger.Error(request.Error.message);
+                definition.Terminate();
             }
         }
 #endif
