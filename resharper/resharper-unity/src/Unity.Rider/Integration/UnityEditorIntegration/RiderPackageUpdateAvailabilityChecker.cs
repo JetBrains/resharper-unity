@@ -21,18 +21,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
     [SolutionComponent]
     public class RiderPackageUpdateAvailabilityChecker
     {
-        struct NotificationShown
-        {
-            private readonly VirtualFileSystemPath myPath;
-            private readonly Version myVersion;
-
-            public NotificationShown(VirtualFileSystemPath path, Version version)
-            {
-                myPath = path;
-                myVersion = version;
-            }
-        }
-        
         private readonly ILogger myLogger;
         private readonly ISolution mySolution;
         private readonly IShellLocks myShellLocks;
@@ -41,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private readonly ISettingsStore mySettingsStore;
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly UserNotifications myUserNotifications;
-        private readonly JetHashSet<NotificationShown> myNotificationShown;
+        private readonly JetHashSet<Version> myNotificationShown;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
         private string packageId = "com.unity.ide.rider";
         private Version leastRiderPackageVersion = new Version(3, 0, 9);
@@ -68,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             mySettingsStore = settingsStore;
             myBackendUnityHost = backendUnityHost;
             myUserNotifications = userNotifications;
-            myNotificationShown = new JetHashSet<NotificationShown>();
+            myNotificationShown = new JetHashSet<Version>();
             myBoundSettingsStore = applicationWideContextBoundSettingStore.BoundSettingsStore;
             unitySolutionTracker.IsUnityGeneratedProject.WhenTrue(lifetime, lt =>
             {
@@ -113,7 +101,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             {
                 myUnityVersion.ActualVersionForSolution.AdviseNotNull(lt, unityVersion =>
                 {
-                    if (myNotificationShown.Contains(new NotificationShown(mySolution.SolutionFilePath, packageVersion))) return;
+                    if (myNotificationShown.Contains(packageVersion)) return;
 
                     // Version before 2019.2 doesn't have Rider package
                     // 2019.2.0 - 2019.2.5 : version 1.2.1 is the last one
@@ -124,7 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
                     if (package == null)
                     {
-                        myNotificationShown.Add(new NotificationShown(mySolution.SolutionFilePath, packageVersion));
+                        myNotificationShown.Add(packageVersion);
                         myLogger.Info($"{packageId} is missing.");
                         myShellLocks.ExecuteOrQueueEx(lt,
                             "RiderPackageUpdateAvailabilityChecker.ShowNotificationIfNeeded",
@@ -139,7 +127,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                              new Version(package.PackageDetails.Version) < packageVersion)
                     {
                         var notificationLifetime = lt.CreateNested();
-                        myNotificationShown.Add(new NotificationShown(mySolution.SolutionFilePath, packageVersion));
+                        myNotificationShown.Add(packageVersion);
                         myLogger.Info($"{packageId} {package.PackageDetails.Version} is older then expected.");
 
                         myShellLocks.ExecuteOrQueueEx(lt,
