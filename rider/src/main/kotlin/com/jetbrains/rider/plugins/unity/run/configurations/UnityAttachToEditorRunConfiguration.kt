@@ -8,19 +8,17 @@ import com.intellij.execution.process.ProcessInfo
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAction
-import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.SystemInfo
-import com.intellij.util.Restarter
 import com.intellij.util.xmlb.annotations.Transient
 import com.jetbrains.rd.platform.util.lifetime
+import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.DotNetDebugRunner
 import com.jetbrains.rider.plugins.unity.isUnityClassLibraryProject
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
-import com.jetbrains.rider.plugins.unity.model.ProfilingData
+import com.jetbrains.rider.plugins.unity.model.UnityEditorState
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
@@ -34,7 +32,6 @@ import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.configurations.unity.UnityAttachConfigurationExtension
 import org.jdom.Element
-import java.io.File
 
 class UnityAttachToEditorRunConfiguration(project: Project, factory: ConfigurationFactory, val play: Boolean = false)
     : DotNetRemoteConfiguration(project, factory, "Attach To Unity Editor"),
@@ -76,7 +73,11 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                     addPlayModeArguments(args)
                 }
 
-                val processId = project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.unityProcessId ?: pid
+                // when the process is disconnected, we would not be able to call startProfiling anyway
+                val processId = if (project.solution.frontendBackendModel.unityEditorState.valueOrDefault(UnityEditorState.Disconnected) != UnityEditorState.Disconnected)
+                    project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.unityProcessId ?: pid
+                else null
+
                 val res = ext.executor(UnityAttachConfigurationParametersImpl(processId,
                                                                               finder.getApplicationExecutablePath(), args,
                                                                               finder.getApplicationVersion()), environment) { runProfile, handler ->
