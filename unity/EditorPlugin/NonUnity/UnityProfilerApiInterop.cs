@@ -1,13 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using JetBrains.Diagnostics;
 using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor.Utils
 {
-    public static class Kernel32Dll
+    public static class UnityProfilerApiInterop
     {
         public static void StartProfiling(string dllFile)
         {

@@ -411,7 +411,7 @@ namespace JetBrains.Rider.Unity.Editor
             {
                 try
                 {
-                    Kernel32Dll.StartProfiling(data.UnityProfilerApiPath);
+                    UnityProfilerApiInterop.StartProfiling(data.UnityProfilerApiPath);
                 
                     var current = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
                     if (current != data.EnterPlayMode)
