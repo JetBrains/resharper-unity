@@ -1,54 +1,70 @@
-#if UNITY_2019_2
+#if UNITY_2019_2_OR_NEWER
 using System.Linq;
 using JetBrains.Diagnostics;
 using JetBrains.Rd.Base;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
+using JetBrains.Lifetimes;
 #endif
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Packages
 {
     public static class Initialization
     {
-#if UNITY_2019_2
+#if UNITY_2019_2_OR_NEWER
         private static string packageId = "com.unity.ide.rider";
         private static readonly ILog ourLogger = Log.GetLog("Packages.Initialization");
-        private static SearchRequest ourRequest;
 #endif
         public static void OnModelInitializationHandler(UnityModelAndLifetime modelAndLifetime)
         {
-#if UNITY_2019_2
-            ourRequest = Client.Search(packageId);
-            modelAndLifetime.Lifetime.OnTermination(() => { ourRequest = null; });
-            EditorApplication.update += () => Progress(modelAndLifetime);
-#endif
-        }
-#if UNITY_2019_2
-        static void Progress(UnityModelAndLifetime modelAndLifetime)
-        {
-            if (ourRequest == null)
+#if UNITY_2019_2_OR_NEWER
+            var request = Client.Search(packageId);
+            var model = modelAndLifetime.Model;
+            ourLogger.Verbose($"Client.Search({packageId})");
+            var definition = modelAndLifetime.Lifetime.CreateNested();
+
+            void Action()
             {
-                EditorApplication.update -= () => Progress(modelAndLifetime);
-                return;
+                WaitForResult(definition, model, request);
             }
 
-            if (!ourRequest.IsCompleted) return;
-            if (ourRequest.Status == StatusCode.Success)
+            definition.Lifetime.Bracket(() =>
             {
-                var latestCompatible = ourRequest.Result.FirstOrDefault()?.versions.latestCompatible;
+                ourLogger.Verbose($"EditorApplication.update += WaitForResult");
+                EditorApplication.update += Action;
+            }, () =>
+            {
+                ourLogger.Verbose($"EditorApplication.update -= WaitForResult");
+                EditorApplication.update -= Action;
+            });
+#endif
+        }
+
+#if UNITY_2019_2_OR_NEWER
+        private static void WaitForResult(LifetimeDefinition definition, BackendUnityModel model, SearchRequest request)
+        {
+            if (definition.Lifetime.IsNotAlive)
+                return;
+            
+            ourLogger.Trace($"request: {request.Status}");
+
+            if (request.Status == StatusCode.Success)
+            {
+                var latestCompatible = request.Result.FirstOrDefault()?.versions.latestCompatible;
                 if (latestCompatible != null)
                 {
                     ourLogger.Info("Found: " + latestCompatible);
-                    modelAndLifetime.Model.RiderPackagePotentialUpdateVersion.Set(latestCompatible);
+                    model.RiderPackagePotentialUpdateVersion.Set(latestCompatible);
+                    definition.Terminate();
                 }
             }
-            else if (ourRequest.Status >= StatusCode.Failure)
+            else if (request.Status >= StatusCode.Failure)
             {
-                ourLogger.Error(ourRequest.Error.message);
+                ourLogger.Error(request.Error.message);
+                definition.Terminate();
             }
-
-            EditorApplication.update -= () => Progress(modelAndLifetime);
         }
 #endif
     }

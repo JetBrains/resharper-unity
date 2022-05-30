@@ -5,7 +5,7 @@
     <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>UNITY_2019_2;RIDER_EDITOR_PLUGIN</DefineConstants>
+    <DefineConstants>UNITY_2019_2_OR_NEWER;RIDER_EDITOR_PLUGIN</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
     <LangVersion>9</LangVersion>
