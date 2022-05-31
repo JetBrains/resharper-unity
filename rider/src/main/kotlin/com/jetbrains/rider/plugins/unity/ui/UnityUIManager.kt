@@ -10,23 +10,39 @@ class UnityUIManager : PersistentStateComponent<Element> {
 
     companion object {
         const val hasMinimizedUiAttribute = "hasMinimizedUI"
+        const val hasPlayButtonsAttribute = "hasHiddenPlayButtons"
         fun getInstance(project: Project): UnityUIManager =  project.service()
     }
 
     val hasMinimizedUi: Property<Boolean?> = Property(null) //null means undefined, default value
+    val hasHiddenPlayButtons: Property<Boolean?> = Property(null) //null means undefined, default value
 
     override fun getState(): Element {
         val element = Element("state")
         val hasMinimizedUi = hasMinimizedUi.value
         if (hasMinimizedUi != null)
             element.setAttribute(hasMinimizedUiAttribute, hasMinimizedUi.toString())
+
+        val hasPlayButtons = hasHiddenPlayButtons.value
+        if (hasPlayButtons != null)
+            element.setAttribute(hasPlayButtonsAttribute, hasPlayButtons.toString())
+
         return element
     }
 
     override fun loadState(element: Element) {
-        val attributeValue = element.getAttributeValue(hasMinimizedUiAttribute, "") ?: return
-        if (attributeValue.isNotEmpty()) {
+        val attributeValue = element.getAttributeValue(hasMinimizedUiAttribute, "")
+        if (attributeValue != null && attributeValue.isNotEmpty()) {
             hasMinimizedUi.value = attributeValue.toBoolean()
         }
+
+        val attributePlayButtonsValue = element.getAttributeValue(hasPlayButtonsAttribute, "")
+        if (attributePlayButtonsValue != null && attributeValue.isNotEmpty()) {
+            hasHiddenPlayButtons.value = attributeValue.toBoolean()
+        }
     }
+}
+
+fun Property<Boolean?>.hasTrueValue() : Boolean {
+    return this.value != null && this.value!!
 }
