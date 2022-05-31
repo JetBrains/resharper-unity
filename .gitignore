@@ -35,7 +35,7 @@ rider/.idea/**/compiler.xml
 
 rider/dependencies
 
-rider/src/main/gen/
+rider/src/main/rdgen/
 
 
 # C# solutions (Rider excludes)
