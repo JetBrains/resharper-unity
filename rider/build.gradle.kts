@@ -117,18 +117,19 @@ java {
 sourceSets {
     main {
         java {
-            srcDir("src/main/gen/kotlin")
+            srcDir("src/main/gen")
+            srcDir("src/main/rdgen/kotlin")
         }
         resources {
-            srcDir("src/main/gen/resources")
+            srcDir("src/main/rdgen/resources")
         }
     }
 }
 
 idea {
     module {
-        generatedSourceDirs.add(file("src/main/gen/kotlin"))
-        resourceDirs.add(file("src/main/gen/resources"))
+        generatedSourceDirs.add(file("src/main/rdgen/kotlin"))
+        resourceDirs.add(file("src/main/rdgen/resources"))
     }
 }
 
@@ -244,7 +245,7 @@ tasks {
         dependsOn(validatePluginXml)
         copy {
             from("../common/dictionaries/unity.dic")
-            into("src/main/gen/resources/com/jetbrains/rider/plugins/unity/spellchecker/")
+            into("src/main/rdgen/resources/com/jetbrains/rider/plugins/unity/spellchecker/")
         }
     }
 
@@ -292,7 +293,7 @@ tasks {
             val unityEditorCsOutDir = 
                 if (monorepo) monorepoPreGeneratedUnityDir.resolve("unity/ModelLib")
                 else File(repoRoot, "unity/build/generated/Model/Lib")
-            val frontendKtOutLayout = "src/main/gen/kotlin/com/jetbrains/rider/plugins/unity/model/lib"
+            val frontendKtOutLayout = "src/main/rdgen/kotlin/com/jetbrains/rider/plugins/unity/model/lib"
             val frontendKtOutDir =
                 if (monorepo) monorepoPreGeneratedFrontendDir.resolve(frontendKtOutLayout)
                 else File(repoRoot, "rider/$frontendKtOutLayout")
@@ -362,7 +363,7 @@ tasks {
             val backendCsOutDir =
                 if (monorepo) monorepoPreGeneratedBackendDir.resolve("resharper/FrontendBackend")
                 else File(repoRoot, "resharper/build/generated/Model/FrontendBackend")
-            val frontendKtOutLayout = "src/main/gen/kotlin/com/jetbrains/rider/plugins/unity/model/frontendBackend"
+            val frontendKtOutLayout = "src/main/rdgen/kotlin/com/jetbrains/rider/plugins/unity/model/frontendBackend"
             val frontendKtOutDir =
                 if (monorepo) monorepoPreGeneratedFrontendDir.resolve(frontendKtOutLayout)
                 else File(repoRoot, "rider/$frontendKtOutLayout")
@@ -478,7 +479,7 @@ tasks {
             val backendCsOutDir =
                 if (monorepo) monorepoPreGeneratedBackendDir.resolve("resharper/DebuggerWorker")
                 else File(repoRoot, "resharper/build/generated/Model/DebuggerWorker")
-            val frontendKtOutLayout = "src/main/gen/kotlin/com/jetbrains/rider/plugins/unity/model/debuggerWorker"
+            val frontendKtOutLayout = "src/main/rdgen/kotlin/com/jetbrains/rider/plugins/unity/model/debuggerWorker"
             val frontendKtOutDir =
                 if (monorepo) monorepoPreGeneratedFrontendDir.resolve(frontendKtOutLayout)
                 else File(repoRoot, "rider/$frontendKtOutLayout")
@@ -534,6 +535,7 @@ tasks {
     named<KotlinCompile>("compileKotlin") {
         dependsOn(generateModels)
         kotlinOptions {
+            freeCompilerArgs = listOf("-Xjvm-default=all")
             jvmTarget = "11"
             allWarningsAsErrors = warningsAsErrors
         }
