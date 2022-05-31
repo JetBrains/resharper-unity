@@ -15,6 +15,7 @@ import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import com.jetbrains.rider.projectView.solution
+import java.util.concurrent.CancellationException
 
 /**
  * Checks if there are unsaved scenes in Unity.
@@ -51,7 +52,11 @@ private class UnresolvedMergeCheckHandler(
             try {
                 providerResult = project.solution.frontendBackendModel.hasUnsavedScenes
                     .sync(Unit, RpcTimeouts(200L, 200L))
-            } catch (t: Throwable) {
+            }
+            catch (t: CancellationException){
+                logger.info("Unable to fetch hasUnsavedScenes", t)
+            }
+            catch (t: Throwable) {
                 logger.warn("Unable to fetch hasUnsavedScenes", t)
             }
 

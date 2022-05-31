@@ -268,7 +268,7 @@ tasks {
 
         return listOf(
             File("$productsHome/Rider/Frontend/model/src"),
-            File("$productsHome/Rider/ultimate/platform/rd-ide-model-sources"),
+            File("$productsHome/Rider/ultimate/remote-dev/rd-ide-model-sources"),
             modelSrcDir)
     }
 

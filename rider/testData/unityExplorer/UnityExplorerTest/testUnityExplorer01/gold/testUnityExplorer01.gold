@@ -33,8 +33,8 @@ Show tilde folders
 -Project
  -Assets
   References
-  -NewFolder1~
-   Class1.cs
+  -NewFolder1~, tooltip=NewFolder1~<br/>This folder is not imported into the asset database
+   Class1.cs, tooltip=This file is not imported into the asset database
   -Scenes
    SampleScene.unity
   NewBehaviourScript.cs
@@ -66,18 +66,18 @@ Show All Files
 -Project
  -Assets
   References
-  .NewFolder1
-  -NewFolder1~
-   Class1.cs
-   Class1.cs.meta
-   Class2.cs
-   Class2.cs.meta
+  .NewFolder1, tooltip=This folder is not imported into the asset database
+  -NewFolder1~, tooltip=This folder is not imported into the asset database
+   Class1.cs, tooltip=This file is not imported into the asset database
+   Class1.cs.meta, tooltip=This file is not imported into the asset database
+   Class2.cs, tooltip=This file is not imported into the asset database
+   Class2.cs.meta, tooltip=This file is not imported into the asset database
   -Scenes
    SampleScene.unity
-   SampleScene.unity.meta
+   SampleScene.unity.meta, tooltip=This file is not imported into the asset database
   NewBehaviourScript.cs
-  NewBehaviourScript.cs.meta
-  Scenes.meta
+  NewBehaviourScript.cs.meta, tooltip=This file is not imported into the asset database
+  Scenes.meta, tooltip=This file is not imported into the asset database
 
 
 

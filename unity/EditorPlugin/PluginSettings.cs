@@ -157,7 +157,7 @@ namespace JetBrains.Rider.Unity.Editor
     /// <remarks>
     /// Contains all 3 toggles: Enable/Disable; Debug On/Off; Writing Launch File On/Off
     /// </remarks>
-#if !UNITY_2019_2 // this is not loaded, for Rider package, so remove it to avoid compilation warning
+#if !UNITY_2019_2_OR_NEWER // this is not loaded, for Rider package, so remove it to avoid compilation warning
     [PreferenceItem("Rider")]
 #endif
     private static void RiderPreferencesItem()

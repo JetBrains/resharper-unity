@@ -115,7 +115,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
             });
 
             frontendBackendModel.HasUnsavedScenes.Set((l, u) =>
-                backendUnityModelProperty.Maybe.ValueOrDefault?.HasUnsavedScenes.Start(l, u).ToRdTask(l));
+            {
+                var backendUnityModel = backendUnityModelProperty.Maybe.ValueOrDefault;
+                return backendUnityModel == null
+                    ? Rd.Tasks.RdTask<bool>.Cancelled()
+                    : backendUnityModel.HasUnsavedScenes.Start(l, u).ToRdTask(l);
+            });
         }
 
         private void AdviseUnityToFrontendModel(Lifetime lifetime, BackendUnityModel backendUnityModel)
