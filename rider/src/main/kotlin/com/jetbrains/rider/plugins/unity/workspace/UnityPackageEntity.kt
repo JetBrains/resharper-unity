@@ -3,36 +3,38 @@
 package com.jetbrains.rider.plugins.unity.workspace
 
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.workspaceModel.deft.api.annotations.Ignore
 import com.intellij.workspaceModel.ide.impl.virtualFile
-import com.intellij.workspaceModel.storage.WorkspaceEntityStorage
-import com.intellij.workspaceModel.storage.bridgeEntities.ContentRootEntity
-import com.intellij.workspaceModel.storage.impl.EntityDataDelegation
-import com.intellij.workspaceModel.storage.impl.ModifiableWorkspaceEntityBase
-import com.intellij.workspaceModel.storage.impl.WorkspaceEntityBase
-import com.intellij.workspaceModel.storage.impl.WorkspaceEntityData
-import com.intellij.workspaceModel.storage.impl.references.*
-import com.intellij.workspaceModel.storage.url.VirtualFileUrl
+import com.intellij.workspaceModel.storage.*
+import com.intellij.workspaceModel.storage.bridgeEntities.api.ContentRootEntity
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
+import org.jetbrains.deft.ObjBuilder
+import org.jetbrains.deft.Type
+import com.intellij.workspaceModel.storage.EntitySource
+import com.intellij.workspaceModel.storage.GeneratedCodeApiVersion
+import com.intellij.workspaceModel.storage.ModifiableWorkspaceEntity
+import com.intellij.workspaceModel.storage.MutableEntityStorage
+import com.intellij.workspaceModel.storage.impl.ExtRefKey
+import com.intellij.workspaceModel.storage.impl.ModifiableWorkspaceEntityBase
+import com.intellij.workspaceModel.storage.impl.updateOneToOneParentOfChild
+import com.intellij.workspaceModel.storage.referrersx
 
-class UnityPackageEntity(private val descriptor: UnityPackage) : WorkspaceEntityBase() {
 
-    companion object {
-        private val contentRootDelegate = OneToOneParent.Nullable<UnityPackageEntity, ContentRootEntity>(
-            ContentRootEntity::class.java,
-            isParentInChildNullable = true)
-    }
+interface UnityPackageEntity : WorkspaceEntity {
 
-    val id: String get() = descriptor.id
-    val version: String get() = descriptor.version
-    val source: UnityPackageSource get() = descriptor.source
-    val displayName: String get() = descriptor.displayName
-    val description: String? get() = descriptor.description
-    val dependencies: Map<String, String> get() = descriptor.dependencies.associate { it.id to it.version }
-    val tarballLocation: String? get() = descriptor.tarballLocation
-    val gitUrl: String? get() = descriptor.gitDetails?.url
-    val gitHash: String? get() = descriptor.gitDetails?.hash
-    val gitRevision: String?  get() = descriptor.gitDetails?.revision
+    val descriptor: UnityPackage
+
+    @Ignore val packageId: String get() = descriptor.id
+    @Ignore val version: String get() = descriptor.version
+    @Ignore val source: UnityPackageSource get() = descriptor.source
+    @Ignore val displayName: String get() = descriptor.displayName
+    @Ignore val description: String? get() = descriptor.description
+    @Ignore val dependencies: Map<String, String> get() = descriptor.dependencies.associate { it.id to it.version }
+    @Ignore val tarballLocation: String? get() = descriptor.tarballLocation
+    @Ignore val gitUrl: String? get() = descriptor.gitDetails?.url
+    @Ignore val gitHash: String? get() = descriptor.gitDetails?.hash
+    @Ignore val gitRevision: String?  get() = descriptor.gitDetails?.revision
 
     fun isEditable(): Boolean {
         return descriptor.source in arrayOf(UnityPackageSource.Embedded, UnityPackageSource.Local)
@@ -42,57 +44,60 @@ class UnityPackageEntity(private val descriptor: UnityPackage) : WorkspaceEntity
         return !isEditable() && descriptor.source != UnityPackageSource.Unknown
     }
 
-    val contentRootEntity: ContentRootEntity? by contentRootDelegate
-    val packageFolder: VirtualFile? get() = contentRootEntity?.url?.virtualFile
+    val contentRootEntity: ContentRootEntity?
+    @Ignore val packageFolder: VirtualFile? get() = contentRootEntity?.url?.virtualFile
 
-    override fun toString(): String {
-        return "${descriptor.id} ${descriptor.javaClass.simpleName} InternalId=${super.toString()}"
+    //region generated code
+    //@formatter:off
+    @GeneratedCodeApiVersion(0)
+    interface Builder: UnityPackageEntity, ModifiableWorkspaceEntity<UnityPackageEntity>, ObjBuilder<UnityPackageEntity> {
+        override var descriptor: UnityPackage
+        override var entitySource: EntitySource
+        override var contentRootEntity: ContentRootEntity?
     }
+    
+    companion object: Type<UnityPackageEntity, Builder>() {
+        operator fun invoke(descriptor: UnityPackage, entitySource: EntitySource, init: (Builder.() -> Unit)? = null): UnityPackageEntity {
+            val builder = builder()
+            builder.descriptor = descriptor
+            builder.entitySource = entitySource
+            init?.invoke(builder)
+            return builder
+        }
+    }
+    //@formatter:on
+    //endregion
+
 }
-
-class ModifiableUnityPackageEntity : ModifiableWorkspaceEntityBase<UnityPackageEntity>() {
-    var descriptor: UnityPackage by EntityDataDelegation()
-
-    var contentRootEntity: ContentRootEntity? by MutableOneToOneParent.Nullable(
-        UnityPackageEntity::class.java,
-        ContentRootEntity::class.java,
-        isParentInChildNullable = true
-    )
-}
-
-@Suppress("unused")
-class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
-
-    lateinit var descriptor: UnityPackage
-
-    var url: VirtualFileUrl? = null
-
-    override fun createEntity(snapshot: WorkspaceEntityStorage): UnityPackageEntity {
-        return UnityPackageEntity(descriptor).also {
-            addMetaData(it, snapshot)
+//region generated code
+fun MutableEntityStorage.modifyEntity(entity: UnityPackageEntity, modification: UnityPackageEntity.Builder.() -> Unit) = modifyEntity(UnityPackageEntity.Builder::class.java, entity, modification)
+var ContentRootEntity.Builder.unityPackageEntity: UnityPackageEntity?
+    get() {
+        return referrersx(UnityPackageEntity::contentRootEntity).singleOrNull()
+    }
+    set(value) {
+        val diff = (this as ModifiableWorkspaceEntityBase<*>).diff
+        if (diff != null) {
+            if (value != null) {
+                if ((value as UnityPackageEntityImpl.Builder).diff == null) {
+                    value._contentRootEntity = this
+                    diff.addEntity(value)
+                }
+            }
+            diff.updateOneToOneParentOfChild(UnityPackageEntityImpl.CONTENTROOTENTITY_CONNECTION_ID, this, value)
+        }
+        else {
+            val key = ExtRefKey("UnityPackageEntity", "contentRootEntity", false, UnityPackageEntityImpl.CONTENTROOTENTITY_CONNECTION_ID)
+            this.extReferences[key] = value
+            
+            if (value != null) {
+                (value as UnityPackageEntityImpl.Builder)._contentRootEntity = this
+            }
         }
     }
 
-    override fun equals(other: Any?): Boolean {
-        return equalsIgnoringEntitySource(other)
-            && entitySource == (other as UnityPackageEntityData).entitySource
-    }
+//endregion
 
-    override fun equalsIgnoringEntitySource(other: Any?): Boolean {
-        if (other == null) return false
-        if (this === other) return true
-        if (this::class != other::class) return false
-
-        val projectModelEntityData = other as UnityPackageEntityData
-        return descriptor == projectModelEntityData.descriptor
-            && url == projectModelEntityData.url
-    }
-
-    override fun hashCode(): Int {
-        var hash = 7
-        hash = 31 * hash + entitySource.hashCode()
-        hash = 31 * hash + descriptor.hashCode()
-        hash = 31 * hash + (url?.hashCode() ?: 0)
-        return hash
-    }
-}
+@Suppress("unused")
+private val ContentRootEntity.unityPackageEntity: UnityPackageEntity?
+    get() = referrersx(UnityPackageEntity::contentRootEntity).singleOrNull()
