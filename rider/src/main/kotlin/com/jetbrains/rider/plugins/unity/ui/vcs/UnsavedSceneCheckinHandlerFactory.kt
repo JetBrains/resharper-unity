@@ -25,7 +25,7 @@ class UnsavedSceneCheckinHandlerFactory : CheckinHandlerFactory() {
         UnresolvedMergeCheckHandler(panel)
 }
 
-private val logger = Logger.getInstance(MetaFilesCheckinHandlerFactory::class.java)
+private val logger = Logger.getInstance(UnsavedSceneCheckinHandlerFactory::class.java)
 
 private class UnresolvedMergeCheckHandler(
     private val panel: CheckinProjectPanel
