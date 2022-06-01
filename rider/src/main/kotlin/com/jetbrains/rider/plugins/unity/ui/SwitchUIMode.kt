@@ -39,7 +39,3 @@ class SwitchUIMode : AnAction() {
         super.update(e)
     }
 }
-
-fun Property<Boolean?>.hasTrueValue() : Boolean {
-    return this.value != null && this.value!!
-}

@@ -5,7 +5,7 @@ package com.jetbrains.rider.plugins.unity.workspace
 import com.intellij.openapi.project.Project
 import com.intellij.util.application
 import com.intellij.workspaceModel.ide.getInstance
-import com.intellij.workspaceModel.storage.WorkspaceEntityStorageBuilder
+import com.intellij.workspaceModel.storage.MutableEntityStorage
 import com.intellij.workspaceModel.storage.bridgeEntities.addContentRootEntityWithCustomEntitySource
 import com.intellij.workspaceModel.storage.impl.url.toVirtualFileUrl
 import com.intellij.workspaceModel.storage.url.VirtualFileUrl
@@ -33,7 +33,7 @@ class UnityWorkspaceModelUpdater(private val project: Project) {
         application.assertIsDispatchThread()
         if (!project.isUnityProject()) return
 
-        val builder = WorkspaceEntityStorageBuilder.create()
+        val builder = MutableEntityStorage.create()
 
         val virtualFileUrlManager = VirtualFileUrlManager.getInstance(project)
         val packagesModuleEntity = builder.getOrCreateRiderModuleEntity()
