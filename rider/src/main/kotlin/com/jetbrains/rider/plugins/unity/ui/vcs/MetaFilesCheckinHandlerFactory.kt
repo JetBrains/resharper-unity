@@ -13,6 +13,7 @@ import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory
 import com.intellij.openapi.vcs.ui.RefreshableOnComponent
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.PairConsumer
+import com.intellij.vcsUtil.VcsUtil
 import com.jetbrains.rider.plugins.unity.explorer.MetaTracker
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
@@ -70,7 +71,12 @@ private class MetaFilesCheckHandler(
                             MetaTracker.getMetaFile(change.virtualFile?.path) == it.virtualFile?.toNioPath()
                         }
                 }
-                if (addedMetaFilesWithoutMainFile.any()) return askUser(addedMetaFilesWithoutMainFile)
+                val addedMetaWOMainFile = addedMetaFilesWithoutMainFile.filter {
+                        val virtualFile = it.virtualFile ?: return@filter false
+                        val file = virtualFile.path.substring(0, virtualFile.path.length - 5) // trim ".meta"
+                        return@filter VcsUtil.isFileUnderVcs(project, file)
+                }
+                if (addedMetaWOMainFile.any()) return askUser()
             }
 
         }
@@ -78,23 +84,17 @@ private class MetaFilesCheckHandler(
         return ReturnResult.COMMIT
     }
 
-    private fun askUser(changes: List<Change>): ReturnResult {
-        val dialogResult = Messages.showDialog(project,
-            "Attempt to commit meta without asset",
-            "Attempt to commit meta without asset",
-            arrayOf(UnityUIBundle.message("dialog.unsaved.button.commit.anyway"),
-                "Uncheck problematic meta files",
-                UnityUIBundle.message("dialog.unsaved.button.cancel")),
-            0,
-            Messages.getWarningIcon(),
-            null
+    private fun askUser(): ReturnResult {
+        val dialogResult = Messages.showOkCancelDialog(
+            project,
+            "Proceed?",
+            "Attempt to commit meta file without corresponding asset",
+            UnityUIBundle.message("dialog.unsaved.button.commit.anyway"),
+            UnityUIBundle.message("dialog.unsaved.button.cancel"),
+            Messages.getWarningIcon()
         )
+
         if (dialogResult == Messages.OK) return ReturnResult.COMMIT
-        if (dialogResult == 1) {
-            changes.forEach{
-                // uncheck those changes in the panel
-            }
-        }
         return ReturnResult.CANCEL
     }
 
