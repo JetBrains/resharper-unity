@@ -4,7 +4,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vcs.CheckinProjectPanel
 import com.intellij.openapi.vcs.FileStatus
-import com.intellij.openapi.vcs.changes.Change
+import com.intellij.openapi.vcs.VcsException
 import com.intellij.openapi.vcs.changes.CommitContext
 import com.intellij.openapi.vcs.changes.CommitExecutor
 import com.intellij.openapi.vcs.changes.ui.BooleanCommitOption
@@ -13,8 +13,6 @@ import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory
 import com.intellij.openapi.vcs.ui.RefreshableOnComponent
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.PairConsumer
-import com.intellij.vcsUtil.VcsUtil
-import com.jetbrains.rider.plugins.unity.explorer.MetaTracker
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 
@@ -48,7 +46,7 @@ private class MetaFilesCheckHandler(
             return null
 
         return BooleanCommitOption(
-            panel, UnityUIBundle.message("commitOption.check.meta.files"), false,
+            panel, UnityUIBundle.message("prevent.attempt.to.commit.an.empty.folder.meta.file"), false,
             settings::checkMetaFiles
         )
     }
@@ -60,35 +58,28 @@ private class MetaFilesCheckHandler(
         if (settings.checkMetaFiles && project.isUnityProject()) {
             val changes = panel.selectedChanges
             if (changes.any()) {
-                logger.info(UnityUIBundle.message("commitOption.check.meta.files"))
-                // attempt to add metafile without main file
-                val addedMetaFilesWithoutMainFile = changes.filter {
-                    it.virtualFile != null
-                    it.fileStatus == FileStatus.ADDED
-                        && isMetaFile(it.virtualFile)
-                        && !changes.any {change->
-                            change.fileStatus == FileStatus.ADDED &&
-                            MetaTracker.getMetaFile(change.virtualFile?.path) == it.virtualFile?.toNioPath()
-                        }
+                logger.info(UnityUIBundle.message("prevent.attempt.to.commit.an.empty.folder.meta.file"))
+                val emptyFolders = changes.filter {
+                    val virtualFile = it.virtualFile ?: return@filter false
+                    if (!(it.fileStatus == FileStatus.ADDED
+                        && isMetaFile(it.virtualFile))) return@filter false
+                    val folder = virtualFile.parent.findChild(virtualFile.nameWithoutExtension) ?: return@filter false
+                    if (!folder.isDirectory) return@filter false
+                    return@filter !folder.children.any()
                 }
-                val addedMetaWOMainFile = addedMetaFilesWithoutMainFile.filter {
-                        val virtualFile = it.virtualFile ?: return@filter false
-                        val file = virtualFile.path.substring(0, virtualFile.path.length - 5) // trim ".meta"
-                        return@filter VcsUtil.isFileUnderVcs(project, file)
-                }
-                if (addedMetaWOMainFile.any()) return askUser()
+
+                if (emptyFolders.any())
+                    return askUser()
             }
-
         }
-
         return ReturnResult.COMMIT
     }
 
     private fun askUser(): ReturnResult {
         val dialogResult = Messages.showOkCancelDialog(
             project,
-            "Proceed?",
-            "Attempt to commit meta file without corresponding asset",
+            UnityUIBundle.message("proceedQuestion"),
+            UnityUIBundle.message("attempt.to.commit.meta.file.for.empty.folder"),
             UnityUIBundle.message("dialog.unsaved.button.commit.anyway"),
             UnityUIBundle.message("dialog.unsaved.button.cancel"),
             Messages.getWarningIcon()
