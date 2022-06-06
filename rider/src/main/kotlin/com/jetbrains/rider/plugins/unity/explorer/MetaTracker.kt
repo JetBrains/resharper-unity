@@ -33,13 +33,6 @@ import kotlin.io.path.name
 class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
     companion object {
         private val logger = getLogger<MetaTracker>()
-        fun getMetaFileName(fileName: String) = "$fileName.meta"
-        fun getMetaFile(path: String?): Path? {
-            path ?: return null
-            val file = Paths.get(path)
-            val metaFileName = getMetaFileName(file.name)
-            return file.parent.resolve(metaFileName)
-        }
     }
 
     override fun after(events: MutableList<out VFileEvent>) {
@@ -66,30 +59,29 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
                                     }
                                 }
                                 is VFileDeleteEvent -> {
-                                    val metaFile = Companion.getMetaFile(event.path) ?: continue
+                                    val metaFile = getMetaFile(event.path) ?: continue
                                     actions.add(metaFile, project) {
                                         VfsUtil.findFile(metaFile, true)?.delete(this)
                                     }
                                 }
                                 is VFileCopyEvent -> {
-                                    val metaFile = Companion.getMetaFile(event.file.path) ?: continue
+                                    val metaFile = getMetaFile(event.file.path) ?: continue
                                     val ls = event.file.detectedLineSeparator ?: "\n"
                                     actions.add(metaFile, project) {
-                                        createMetaFile(event.file, event.newParent,
-                                            Companion.getMetaFileName(event.newChildName), ls)
+                                        createMetaFile(event.file, event.newParent, getMetaFileName(event.newChildName), ls)
                                     }
                                 }
                                 is VFileMoveEvent -> {
-                                    val metaFile = Companion.getMetaFile(event.oldPath) ?: continue
+                                    val metaFile = getMetaFile(event.oldPath) ?: continue
                                     actions.add(metaFile, project) {
                                         VfsUtil.findFile(metaFile, true)?.move(this, event.newParent)
                                     }
                                 }
                                 is VFilePropertyChangeEvent -> {
                                     if (!event.isRename) continue
-                                    val metaFile = Companion.getMetaFile(event.oldPath) ?: continue
+                                    val metaFile = getMetaFile(event.oldPath) ?: continue
                                     actions.add(metaFile, project) {
-                                        val target = Companion.getMetaFileName(event.newValue as String)
+                                        val target = getMetaFileName(event.newValue as String)
                                         val origin = VfsUtil.findFile(metaFile, true)
                                         val conflictingMeta = origin?.parent?.findChild(target)
                                         if (conflictingMeta != null) {
@@ -142,6 +134,15 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
 
         return false
     }
+
+    private fun getMetaFile(path: String?): Path? {
+        path ?: return null
+        val file = Paths.get(path)
+        val metaFileName = getMetaFileName(file.name)
+        return file.parent.resolve(metaFileName)
+    }
+
+    private fun getMetaFileName(fileName: String) = "$fileName.meta"
 
     private fun createMetaFile(assetFile: VirtualFile?, parent: VirtualFile, metaFileName: String, ls: String) {
         if (assetFile != null && isHiddenAsset(assetFile)) return // not that children of a hidden folder (like `Documentation~`), would still pass this check. I think it is fine.
