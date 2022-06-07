@@ -1,7 +1,10 @@
 package com.jetbrains.rider.plugins.unity.ui.vcs
 
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationGroupManager
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vcs.CheckinProjectPanel
 import com.intellij.openapi.vcs.FileStatus
 import com.intellij.openapi.vcs.changes.CommitContext
@@ -14,6 +17,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.PairConsumer
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
+import com.jetbrains.rider.projectDir
 
 /**
  * Detect Empty Folder .meta when making a commit
@@ -45,7 +49,7 @@ private class MetaFilesCheckHandler(
             return null
 
         return BooleanCommitOption(
-            panel, UnityUIBundle.message("prevent.attempt.to.commit.an.empty.folder.meta.file"), false,
+            panel, UnityUIBundle.message("attempt.to.commit.an.empty.folder.meta.file"), false,
             settings::checkMetaFiles
         )
     }
@@ -57,7 +61,6 @@ private class MetaFilesCheckHandler(
         if (settings.checkMetaFiles && project.isUnityProject()) {
             val changes = panel.selectedChanges
             if (changes.any()) {
-                logger.info(UnityUIBundle.message("prevent.attempt.to.commit.an.empty.folder.meta.file"))
                 val emptyFolders = changes.filter {
                     val virtualFile = it.virtualFile ?: return@filter false
                     if (!(it.fileStatus == FileStatus.ADDED
@@ -67,25 +70,20 @@ private class MetaFilesCheckHandler(
                     return@filter !folder.children.any()
                 }
 
-                if (emptyFolders.any())
-                    return askUser()
+                if (emptyFolders.any()){
+                    logger.info("attempt.to.commit.an.empty.folder.meta.file")
+                    val groupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity commit failure")
+                    val title = UnityUIBundle.message("attempt.to.commit.an.empty.folder.meta.file")
+                    val message = UnityUIBundle.message("notification.content.empty.folders.are.not.under.git.index.prevent.committing.its.metafile",
+                        project.projectDir.toNioPath().relativize(emptyFolders.first().virtualFile!!.toNioPath()))
+                    val notification = Notification(groupId.displayId, title, message, NotificationType.ERROR)
+                    Notifications.Bus.notify(notification, project)
+
+                    return ReturnResult.CLOSE_WINDOW
+                }
             }
         }
         return ReturnResult.COMMIT
-    }
-
-    private fun askUser(): ReturnResult {
-        val dialogResult = Messages.showOkCancelDialog(
-            project,
-            UnityUIBundle.message("proceedQuestion"),
-            UnityUIBundle.message("attempt.to.commit.meta.file.for.empty.folder"),
-            UnityUIBundle.message("dialog.unsaved.button.commit.anyway"),
-            UnityUIBundle.message("dialog.unsaved.button.cancel"),
-            Messages.getWarningIcon()
-        )
-
-        if (dialogResult == Messages.OK) return ReturnResult.COMMIT
-        return ReturnResult.CANCEL
     }
 
     private fun isMetaFile(file: VirtualFile?): Boolean {
