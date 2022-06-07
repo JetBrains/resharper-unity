@@ -324,6 +324,7 @@
     <notificationGroup id="Unity Asset Mode" displayType="BALLOON"/>
     <notificationGroup id="Unity project open" displayType="STICKY_BALLOON"/>
     <notificationGroup id="Unity connection is out of sync" displayType="BALLOON"/>
+    <notificationGroup id="Unity commit failure" displayType="BALLOON"/>
     <statistics.projectUsagesCollector implementation="com.jetbrains.rider.plugins.unity.fus.UnityProjectUsageCollector" />
   </extensions>
 
