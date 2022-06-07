@@ -9,7 +9,7 @@ import com.intellij.util.getAttributeBooleanValue
 import com.jetbrains.rider.util.idea.getService
 import org.jdom.Element
 
-@State(name = "UnityUnsavedSceneCheckinStateConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
+@State(name = "MetaFilesCheckinStateConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
 class MetaFilesCheckinState(val project: Project) : PersistentStateComponent<Element> {
 
     companion object {
