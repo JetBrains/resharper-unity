@@ -158,8 +158,6 @@
 
     <checkinHandlerFactory implementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnsavedSceneCheckinHandlerFactory"/>
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnsavedSceneCheckinState"/>
-    <checkinHandlerFactory implementation="com.jetbrains.rider.plugins.unity.ui.vcs.MetaFilesCheckinHandlerFactory"/>
-    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.vcs.MetaFilesCheckinState"/>
 
     <rider.action.technical.support.info.provider implementation="com.jetbrains.rider.plugins.unity.actions.UnityVersionRiderTechnicalSupportInfoProvider" />
   </extensions>
