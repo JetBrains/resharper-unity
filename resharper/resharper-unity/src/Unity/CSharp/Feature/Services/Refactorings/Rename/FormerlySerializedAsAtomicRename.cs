@@ -169,7 +169,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
             return elementFactory.CreateAttribute(attributeTypeElement, new[]
                 {
-                    new AttributeValue(new ConstantValue(OldName, module))
+                    new AttributeValue(ConstantValue.String(OldName, module))
                 },
                 EmptyArray<Pair<string, AttributeValue>>.Instance);
         }
