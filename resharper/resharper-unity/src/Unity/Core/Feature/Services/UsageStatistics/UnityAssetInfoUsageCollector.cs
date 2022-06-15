@@ -62,8 +62,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
             return myGroup;
         }
 
+        // cache answer
+        private ISet<MetricEvent> myEvents = null;
         public override Task<ISet<MetricEvent>> GetMetricsAsync(Lifetime lifetime)
         {
+            if (myEvents != null)
+                return Task.FromResult(myEvents);
+            
             var tcs = lifetime.CreateTaskCompletionSource<ISet<MetricEvent>>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             IsReady.AdviseUntil(lifetime, v =>
@@ -104,7 +109,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
                             }
                         }
 
-                        myStatistics = null;
 
                         hashSet.Add(myMetaFileAverage.Metric(StatisticsUtil.GetNextPowerOfTwo(metaSize), false));
                         hashSet.Add(myMetaFileAverage.Metric(StatisticsUtil.GetNextPowerOfTwo(readonlyMetaSize), true));
@@ -112,6 +116,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
                         
                         hashSet.Add(myMetaCount.Metric(StatisticsUtil.GetNextPowerOfTwo(metaCount)));
                         hashSet.Add(myAssetCount.Metric(StatisticsUtil.GetNextPowerOfTwo(assetCount)));
+
+                        myEvents = hashSet;
+                        myStatistics = null;
 
                         tcs.TrySetResult(hashSet);
                     });
