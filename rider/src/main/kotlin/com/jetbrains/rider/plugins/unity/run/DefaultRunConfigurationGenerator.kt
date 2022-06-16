@@ -78,9 +78,7 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
             }
 
             // create it, if it doesn't exist, to advertise the feature
-            project.solution.frontendBackendModel.unityProjectSettings.buildLocation.adviseNotNull(
-                projectComponentLifetime
-            ) {
+            project.solution.frontendBackendModel.unityProjectSettings.buildLocation.adviseNotNull(lt) {
                 createOrUpdateUnityExeRunConfiguration(
                     RUN_DEBUG_STANDALONE_CONFIGURATION_NAME,
                     it,
