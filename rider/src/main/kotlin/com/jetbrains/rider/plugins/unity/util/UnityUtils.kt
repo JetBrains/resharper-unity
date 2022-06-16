@@ -16,10 +16,9 @@ fun addPlayModeArguments(args : MutableList<String>) {
     args.add("JetBrains.Rider.Unity.Editor.StartUpMethodExecutor.EnterPlayMode")
 }
 
-fun getUnityArgs(project: Project):MutableList<String>
-{
+fun getUnityArgs(project: Project):MutableList<String> {
     val executable = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath().toString()
-    return mutableListOf<String>(executable)
+    return mutableListOf(executable)
 }
 
 fun MutableList<String>.withRiderPath() : MutableList<String> {
