@@ -31,7 +31,7 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
     }
 
     init {
-        project.solution.frontendBackendModel.hasUnityReference.whenTrue(projectComponentLifetime) {
+        project.solution.frontendBackendModel.hasUnityReference.whenTrue(projectComponentLifetime) { lt ->
             val runManager = RunManager.getInstance(project)
             // Clean up the renamed "attach and play" configuration from 2018.2 EAP1-3
             // (Was changed from a separate configuration type to just another factory under "Attach to Unity")
@@ -58,7 +58,7 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
                 runManager.addConfiguration(runConfiguration)
             }
 
-            project.solution.frontendBackendModel.unityApplicationData.adviseNotNull(projectComponentLifetime) {
+            project.solution.frontendBackendModel.unityApplicationData.adviseNotNull(lt) {
                 val exePath = UnityInstallationFinder.getOsSpecificPath(Paths.get(it.applicationPath))
                 if (exePath.toFile().isFile) {
                     val config = runManager.allSettings.firstOrNull { s -> s.type is UnityExeConfigurationType
