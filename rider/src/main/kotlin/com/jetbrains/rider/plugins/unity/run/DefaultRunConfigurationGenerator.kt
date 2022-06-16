@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.run
 import com.intellij.execution.RunManager
 import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.execution.configurations.UnknownConfigurationType
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.adviseNotNull
@@ -29,6 +30,8 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
         const val RUN_DEBUG_STANDALONE_CONFIGURATION_NAME = "Standalone Player"
         const val RUN_DEBUG_BATCH_MODE_UNITTESTS_CONFIGURATION_NAME = "UnitTests (batch mode)"
     }
+
+    private val logger = Logger.getInstance(DefaultRunConfigurationGenerator::class.java)
 
     init {
         project.solution.frontendBackendModel.hasUnityReference.whenTrue(projectComponentLifetime) { lt ->
@@ -61,47 +64,30 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
             project.solution.frontendBackendModel.unityApplicationData.adviseNotNull(lt) {
                 val exePath = UnityInstallationFinder.getOsSpecificPath(Paths.get(it.applicationPath))
                 if (exePath.toFile().isFile) {
-                    val config = runManager.allSettings.firstOrNull { s -> s.type is UnityExeConfigurationType
-                        && s.factory is UnityExeConfigurationFactory && s.name == RUN_DEBUG_BATCH_MODE_UNITTESTS_CONFIGURATION_NAME}
-
-                    // if config doesn't exist - create, otherwise only update path to Unity
-                    if (config == null) {
-                        val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityExeConfigurationType::class.java)
-                        val runConfiguration = runManager.createConfiguration(
-                            RUN_DEBUG_BATCH_MODE_UNITTESTS_CONFIGURATION_NAME,
-                            configurationType.factory
-                        )
-                        val unityExeConfiguration = runConfiguration.configuration as UnityExeConfiguration
-                        unityExeConfiguration.parameters.exePath = exePath.toFile().canonicalPath
-                        unityExeConfiguration.parameters.workingDirectory = project.solutionDirectory.canonicalPath
-                        unityExeConfiguration.parameters.programParameters =
-                            mutableListOf<String>().withRunTests().withBatchMode()
-                                .withProjectPath(project)
-                                .withTestResults(project)
-                                .withTestPlatform()
-                                .withDebugCodeOptimization()
-                                .toProgramParameters()
-                        runConfiguration.storeInLocalWorkspace()
-                        runManager.addConfiguration(runConfiguration)
-                    }
-                    else{
-                        (config.configuration as UnityExeConfiguration).parameters.exePath = exePath.toFile().absolutePath
-                    }
-                }
+                    createOrUpdateUnityExeRunConfiguration(
+                        RUN_DEBUG_BATCH_MODE_UNITTESTS_CONFIGURATION_NAME,
+                        exePath.toFile().canonicalPath,
+                        project.solutionDirectory.canonicalPath,
+                        mutableListOf<String>().withRunTests().withBatchMode()
+                            .withProjectPath(project).withTestResults(project)
+                            .withTestPlatform().withDebugCodeOptimization().toProgramParameters(),
+                        runManager
+                    )
+                } else
+                    logger.warn("Unexpected: $exePath is not a file.")
             }
 
             // create it, if it doesn't exist, to advertise the feature
-            project.solution.frontendBackendModel.unityProjectSettings.buildLocation.adviseNotNull(projectComponentLifetime) {
-                if (!runManager.allSettings.any { s -> s.type is UnityExeConfigurationType
-                        && s.factory is UnityExeConfigurationFactory && s.name == RUN_DEBUG_STANDALONE_CONFIGURATION_NAME }) {
-                    val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityExeConfigurationType::class.java)
-                    val runConfiguration = runManager.createConfiguration(RUN_DEBUG_STANDALONE_CONFIGURATION_NAME, configurationType.factory)
-                    val unityExeConfiguration = runConfiguration.configuration as UnityExeConfiguration
-                    unityExeConfiguration.parameters.exePath = it
-                    unityExeConfiguration.parameters.workingDirectory = File(it).parent!!
-                    runConfiguration.storeInLocalWorkspace()
-                    runManager.addConfiguration(runConfiguration)
-                }
+            project.solution.frontendBackendModel.unityProjectSettings.buildLocation.adviseNotNull(
+                projectComponentLifetime
+            ) {
+                createOrUpdateUnityExeRunConfiguration(
+                    RUN_DEBUG_STANDALONE_CONFIGURATION_NAME,
+                    it,
+                    File(it).parent!!,
+                    mutableListOf<String>().toProgramParameters(),
+                    runManager
+                )
             }
 
             // make Attach Unity Editor configuration selected if nothing is selected
@@ -111,6 +97,34 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
                     runManager.selectedConfiguration = runConfiguration
                 }
             }
+        }
+    }
+
+    private fun createOrUpdateUnityExeRunConfiguration(
+        name: String,
+        exePath: String,
+        workingDirectory: String,
+        programParameters: String,
+        runManager: RunManager
+    ) {
+        val configs = runManager.allSettings.filter { s ->
+            s.type is UnityExeConfigurationType
+                && s.factory is UnityExeConfigurationFactory && s.name == name
+        }
+
+        if (configs.any()) {
+            configs.forEach { config ->
+                (config.configuration as UnityExeConfiguration).parameters.exePath = exePath
+            }
+        } else {
+            val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityExeConfigurationType::class.java)
+            val runConfiguration = runManager.createConfiguration(name, configurationType.factory)
+            val unityExeConfiguration = runConfiguration.configuration as UnityExeConfiguration
+            unityExeConfiguration.parameters.exePath = exePath
+            unityExeConfiguration.parameters.workingDirectory = workingDirectory
+            unityExeConfiguration.parameters.programParameters = programParameters
+            runConfiguration.storeInLocalWorkspace()
+            runManager.addConfiguration(runConfiguration)
         }
     }
 }
