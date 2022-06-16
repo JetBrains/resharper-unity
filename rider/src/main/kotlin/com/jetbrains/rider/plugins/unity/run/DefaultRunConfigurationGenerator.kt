@@ -29,6 +29,7 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
         const val ATTACH_AND_PLAY_CONFIGURATION_NAME = "Attach to Unity Editor & Play"
         const val RUN_DEBUG_STANDALONE_CONFIGURATION_NAME = "Standalone Player"
         const val RUN_DEBUG_BATCH_MODE_UNITTESTS_CONFIGURATION_NAME = "UnitTests (batch mode)"
+        const val RUN_DEBUG_START_UNITY_CONFIGURATION_NAME = "Start Unity"
     }
 
     private val logger = Logger.getInstance(DefaultRunConfigurationGenerator::class.java)
@@ -65,18 +66,24 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
                 val exePath = UnityInstallationFinder.getOsSpecificPath(Paths.get(it.applicationPath))
                 if (exePath.toFile().isFile) {
                     createOrUpdateUnityExeRunConfiguration(
+                        RUN_DEBUG_START_UNITY_CONFIGURATION_NAME,
+                        exePath.toFile().canonicalPath,
+                        project.solutionDirectory.canonicalPath,
+                        mutableListOf<String>().withProjectPath(project).withDebugCodeOptimization().toProgramParameters(),
+                        runManager)
+
+                    createOrUpdateUnityExeRunConfiguration(
                         RUN_DEBUG_BATCH_MODE_UNITTESTS_CONFIGURATION_NAME,
                         exePath.toFile().canonicalPath,
                         project.solutionDirectory.canonicalPath,
                         mutableListOf<String>().withRunTests().withBatchMode()
                             .withProjectPath(project).withTestResults(project)
                             .withTestPlatform().withDebugCodeOptimization().toProgramParameters(),
-                        runManager
-                    )
+                        runManager)
                 } else
-                    logger.warn("Unexpected: $exePath is not a file.")
+                    logger.trace("exePath: $exePath is not a file.")
             }
-            
+
             project.solution.frontendBackendModel.unityProjectSettings.buildLocation.adviseNotNull(lt) {
                 createOrUpdateUnityExeRunConfiguration(
                     RUN_DEBUG_STANDALONE_CONFIGURATION_NAME,
