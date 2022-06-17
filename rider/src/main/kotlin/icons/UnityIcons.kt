@@ -21,6 +21,15 @@ class UnityIcons {
         }
     }
 
+    class Toolbar {
+        companion object {
+            val Toolbar = IconLoader.getIcon("/resharper/Toolbar/UnityToolbar.svg", UnityIcons::class.java)
+            val ToolbarConnected = IconLoader.getIcon("/resharper/Toolbar/UnityToolbarConnected.svg", UnityIcons::class.java)
+            val ToolbarDisconnected = IconLoader.getIcon("/resharper/Toolbar/UnityToolbarDisconnected.svg", UnityIcons::class.java)
+        }
+    }
+
+
     class Common {
         companion object {
             val UnityEditMode = IconLoader.getIcon("/unityIcons/common/unityEditMode.svg", UnityIcons::class.java)
@@ -55,38 +64,6 @@ class UnityIcons {
             // These are front end only file types
             val Uss = IconLoader.getIcon("/unityIcons/fileTypes/uss.svg", UnityIcons::class.java)
             val Uxml = IconLoader.getIcon("/unityIcons/fileTypes/uxml.svg", UnityIcons::class.java)
-        }
-    }
-
-    class Status{
-        companion object {
-            val UnityStatus = IconLoader.getIcon("/unityIcons/status/unityStatus.svg", UnityIcons::class.java)
-            val UnityStatusPlay = IconLoader.getIcon("/unityIcons/status/unityStatusPlay.svg", UnityIcons::class.java)
-            val UnityStatusPause = IconLoader.getIcon("/unityIcons/status/unityStatusPause.svg", UnityIcons::class.java)
-
-            val UnityStatusProgress = AnimatedIcon(150,
-                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress6.svg", UnityIcons::class.java),
-                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress5.svg", UnityIcons::class.java),
-                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress4.svg", UnityIcons::class.java),
-                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress3.svg", UnityIcons::class.java),
-                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress2.svg", UnityIcons::class.java),
-                                                   IconLoader.getIcon("/unityIcons/status/unityStatusProgress1.svg", UnityIcons::class.java))
-
-            val UnityStatusPlayProgress = AnimatedIcon(150,
-                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress6.svg", UnityIcons::class.java),
-                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress5.svg", UnityIcons::class.java),
-                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress4.svg", UnityIcons::class.java),
-                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress3.svg", UnityIcons::class.java),
-                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress2.svg", UnityIcons::class.java),
-                                                       IconLoader.getIcon("/unityIcons/status/unityStatusPlayProgress1.svg", UnityIcons::class.java))
-
-            val UnityStatusPauseProgress = AnimatedIcon(150,
-                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress6.svg", UnityIcons::class.java),
-                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress5.svg", UnityIcons::class.java),
-                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress4.svg", UnityIcons::class.java),
-                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress3.svg", UnityIcons::class.java),
-                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress2.svg", UnityIcons::class.java),
-                                                        IconLoader.getIcon("/unityIcons/status/unityStatusPauseProgress1.svg", UnityIcons::class.java))
         }
     }
 

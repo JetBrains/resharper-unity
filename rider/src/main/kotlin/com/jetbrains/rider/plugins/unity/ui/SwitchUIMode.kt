@@ -32,14 +32,10 @@ class SwitchUIMode : AnAction() {
         }
 
         if(UnityUIManager.getInstance(project).hasMinimizedUi.hasTrueValue())
-            e.presentation.text = "Switch to Full UI"
+            e.presentation.text = UnityUIBundle.message("action.switch.to.full.ui.text")
         else
-            e.presentation.text = "Switch to Minimized UI"
+            e.presentation.text = UnityUIBundle.message("action.switch.to.minimized.ui.text")
 
         super.update(e)
     }
-}
-
-fun Property<Boolean?>.hasTrueValue() : Boolean {
-    return this.value != null && this.value!!
 }

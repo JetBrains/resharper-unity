@@ -12,10 +12,13 @@ import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.Transient
+import com.jetbrains.rd.platform.util.lifetime
+import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.DotNetDebugRunner
 import com.jetbrains.rider.plugins.unity.isUnityClassLibraryProject
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
+import com.jetbrains.rider.plugins.unity.model.UnityEditorState
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
@@ -70,9 +73,22 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                     addPlayModeArguments(args)
                 }
 
-                val processId = project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.unityProcessId ?: pid
-                return ext.executor(UnityAttachConfigurationParametersImpl(processId,
-                    finder.getApplicationExecutablePath(), args, finder.getApplicationVersion()), environment)
+                // when the process is disconnected, we would not be able to call startProfiling anyway
+                val processId = if (project.solution.frontendBackendModel.unityEditorState.valueOrDefault(UnityEditorState.Disconnected) != UnityEditorState.Disconnected)
+                    project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.unityProcessId ?: pid
+                else null
+
+                val res = ext.executor(UnityAttachConfigurationParametersImpl(processId,
+                                                                              finder.getApplicationExecutablePath(), args,
+                                                                              finder.getApplicationVersion()), environment) { runProfile, handler ->
+                    run {
+                        if (executorId == "dotTrace Profiler") {
+                            project.solution.frontendBackendModel.startProfiling.start(project.lifetime, play)
+                        }
+                    }
+                }
+
+                return res
             }
         }
 

@@ -8,6 +8,7 @@ import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ContextInfo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
+import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 
 class ShaderContextSwitchAction(val project: Project, val id: RdDocumentId, val host: FrontendBackendHost,
                                 val data: ShaderContextData, private val currentContext:  IProperty<ShaderContextData?>) : AnAction(data.name) {
@@ -19,7 +20,9 @@ class ShaderContextSwitchAction(val project: Project, val id: RdDocumentId, val 
 }
 
 class ShaderAutoContextSwitchAction(val project: Project, val id: RdDocumentId, val host: FrontendBackendHost,
-                                    private val currentContext:  IProperty<ShaderContextData?>)  : AnAction("Auto") {
+                                    private val currentContext:  IProperty<ShaderContextData?>)  : AnAction(
+    UnityUIBundle.message("auto")
+) {
 
     override fun actionPerformed(p0: AnActionEvent) {
         currentContext.value = null
