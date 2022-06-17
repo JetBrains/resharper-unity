@@ -15,10 +15,9 @@ import com.intellij.workspaceModel.storage.EntitySource
 import com.intellij.workspaceModel.storage.GeneratedCodeApiVersion
 import com.intellij.workspaceModel.storage.ModifiableWorkspaceEntity
 import com.intellij.workspaceModel.storage.MutableEntityStorage
-import com.intellij.workspaceModel.storage.impl.ExtRefKey
-import com.intellij.workspaceModel.storage.impl.ModifiableWorkspaceEntityBase
-import com.intellij.workspaceModel.storage.impl.updateOneToOneParentOfChild
 import com.intellij.workspaceModel.storage.referrersx
+import com.intellij.workspaceModel.storage.ModifiableReferableWorkspaceEntity
+import com.intellij.workspaceModel.storage.WorkspaceEntity
 
 
 interface UnityPackageEntity : WorkspaceEntity {
@@ -49,7 +48,7 @@ interface UnityPackageEntity : WorkspaceEntity {
 
     //region generated code
     //@formatter:off
-    @GeneratedCodeApiVersion(0)
+    @GeneratedCodeApiVersion(1)
     interface Builder: UnityPackageEntity, ModifiableWorkspaceEntity<UnityPackageEntity>, ObjBuilder<UnityPackageEntity> {
         override var descriptor: UnityPackage
         override var entitySource: EntitySource
@@ -76,24 +75,7 @@ var ContentRootEntity.Builder.unityPackageEntity: UnityPackageEntity?
         return referrersx(UnityPackageEntity::contentRootEntity).singleOrNull()
     }
     set(value) {
-        val diff = (this as ModifiableWorkspaceEntityBase<*>).diff
-        if (diff != null) {
-            if (value != null) {
-                if ((value as UnityPackageEntityImpl.Builder).diff == null) {
-                    value._contentRootEntity = this
-                    diff.addEntity(value)
-                }
-            }
-            diff.updateOneToOneParentOfChild(UnityPackageEntityImpl.CONTENTROOTENTITY_CONNECTION_ID, this, value)
-        }
-        else {
-            val key = ExtRefKey("UnityPackageEntity", "contentRootEntity", false, UnityPackageEntityImpl.CONTENTROOTENTITY_CONNECTION_ID)
-            this.extReferences[key] = value
-            
-            if (value != null) {
-                (value as UnityPackageEntityImpl.Builder)._contentRootEntity = this
-            }
-        }
+        (this as ModifiableReferableWorkspaceEntity).linkExternalEntity(UnityPackageEntity::class, if (value is List<*>) value as List<WorkspaceEntity?> else listOf(value) as List<WorkspaceEntity?> )
     }
 
 //endregion

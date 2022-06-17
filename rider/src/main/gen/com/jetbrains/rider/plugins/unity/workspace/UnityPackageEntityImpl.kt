@@ -9,12 +9,13 @@ import com.intellij.workspaceModel.storage.EntitySource
 import com.intellij.workspaceModel.storage.EntityStorage
 import com.intellij.workspaceModel.storage.GeneratedCodeApiVersion
 import com.intellij.workspaceModel.storage.GeneratedCodeImplVersion
+import com.intellij.workspaceModel.storage.ModifiableReferableWorkspaceEntity
 import com.intellij.workspaceModel.storage.ModifiableWorkspaceEntity
 import com.intellij.workspaceModel.storage.MutableEntityStorage
 import com.intellij.workspaceModel.storage.WorkspaceEntity
 import com.intellij.workspaceModel.storage.bridgeEntities.api.ContentRootEntity
 import com.intellij.workspaceModel.storage.impl.ConnectionId
-import com.intellij.workspaceModel.storage.impl.ExtRefKey
+import com.intellij.workspaceModel.storage.impl.EntityLink
 import com.intellij.workspaceModel.storage.impl.ModifiableWorkspaceEntityBase
 import com.intellij.workspaceModel.storage.impl.WorkspaceEntityBase
 import com.intellij.workspaceModel.storage.impl.WorkspaceEntityData
@@ -26,12 +27,17 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSourc
 import org.jetbrains.deft.ObjBuilder
 import org.jetbrains.deft.Type
 
-@GeneratedCodeApiVersion(0)
-@GeneratedCodeImplVersion(0)
+@GeneratedCodeApiVersion(1)
+@GeneratedCodeImplVersion(1)
 open class UnityPackageEntityImpl: UnityPackageEntity, WorkspaceEntityBase() {
     
     companion object {
         internal val CONTENTROOTENTITY_CONNECTION_ID: ConnectionId = ConnectionId.create(ContentRootEntity::class.java, UnityPackageEntity::class.java, ConnectionId.ConnectionType.ONE_TO_ONE, true)
+        
+        val connections = listOf<ConnectionId>(
+            CONTENTROOTENTITY_CONNECTION_ID,
+        )
+
     }
         
     @JvmField var _descriptor: UnityPackage? = null
@@ -40,6 +46,10 @@ open class UnityPackageEntityImpl: UnityPackageEntity, WorkspaceEntityBase() {
                         
     override val contentRootEntity: ContentRootEntity?
         get() = snapshot.extractOneToOneParent(CONTENTROOTENTITY_CONNECTION_ID, this)
+    
+    override fun connectionIdList(): List<ConnectionId> {
+        return connections
+    }
 
     class Builder(val result: UnityPackageEntityData?): ModifiableWorkspaceEntityBase<UnityPackageEntity>(), UnityPackageEntity.Builder {
         constructor(): this(UnityPackageEntityData())
@@ -60,65 +70,8 @@ open class UnityPackageEntityImpl: UnityPackageEntity, WorkspaceEntityBase() {
             addToBuilder()
             this.id = getEntityData().createEntityId()
             
-            // Process entities from extension fields
-            val keysToRemove = ArrayList<ExtRefKey>()
-            for ((key, entity) in extReferences) {
-                if (!key.isChild()) {
-                    continue
-                }
-                if (entity is List<*>) {
-                    for (item in entity) {
-                        if (item is ModifiableWorkspaceEntityBase<*>) {
-                            builder.addEntity(item)
-                        }
-                    }
-                    entity as List<WorkspaceEntity>
-                    val (withBuilder_entity, woBuilder_entity) = entity.partition { it is ModifiableWorkspaceEntityBase<*> && it.diff != null }
-                    applyRef(key.getConnectionId(), withBuilder_entity)
-                    keysToRemove.add(key)
-                }
-                else {
-                    entity as WorkspaceEntity
-                    builder.addEntity(entity)
-                    applyRef(key.getConnectionId(), entity)
-                    keysToRemove.add(key)
-                }
-            }
-            for (key in keysToRemove) {
-                extReferences.remove(key)
-            }
-            
-            // Adding parents and references to the parent
-            val __contentRootEntity = _contentRootEntity
-            if (__contentRootEntity != null && (__contentRootEntity is ModifiableWorkspaceEntityBase<*>) && __contentRootEntity.diff == null) {
-                builder.addEntity(__contentRootEntity)
-            }
-            if (__contentRootEntity != null && (__contentRootEntity is ModifiableWorkspaceEntityBase<*>) && __contentRootEntity.diff != null) {
-                // Set field to null (in referenced entity)
-                __contentRootEntity.extReferences.remove(ExtRefKey("UnityPackageEntity", "contentRootEntity", true, CONTENTROOTENTITY_CONNECTION_ID))
-            }
-            if (__contentRootEntity != null) {
-                applyParentRef(CONTENTROOTENTITY_CONNECTION_ID, __contentRootEntity)
-                this._contentRootEntity = null
-            }
-            val parentKeysToRemove = ArrayList<ExtRefKey>()
-            for ((key, entity) in extReferences) {
-                if (key.isChild()) {
-                    continue
-                }
-                if (entity is List<*>) {
-                    error("Cannot have parent lists")
-                }
-                else {
-                    entity as WorkspaceEntity
-                    builder.addEntity(entity)
-                    applyParentRef(key.getConnectionId(), entity)
-                    parentKeysToRemove.add(key)
-                }
-            }
-            for (key in parentKeysToRemove) {
-                extReferences.remove(key)
-            }
+            // Process linked entities that are connected without a builder
+            processLinkedEntities(builder)
             checkInitialization() // TODO uncomment and check failed tests
         }
     
@@ -130,6 +83,10 @@ open class UnityPackageEntityImpl: UnityPackageEntity, WorkspaceEntityBase() {
             if (!getEntityData().isEntitySourceInitialized()) {
                 error("Field UnityPackageEntity#entitySource should be initialized")
             }
+        }
+        
+        override fun connectionIdList(): List<ConnectionId> {
+            return connections
         }
     
         
@@ -151,23 +108,21 @@ open class UnityPackageEntityImpl: UnityPackageEntity, WorkspaceEntityBase() {
                 
             }
             
-        var _contentRootEntity: ContentRootEntity? = null
         override var contentRootEntity: ContentRootEntity?
             get() {
                 val _diff = diff
                 return if (_diff != null) {
-                    _diff.extractOneToOneParent(CONTENTROOTENTITY_CONNECTION_ID, this) ?: _contentRootEntity
+                    _diff.extractOneToOneParent(CONTENTROOTENTITY_CONNECTION_ID, this) ?: this.entityLinks[CONTENTROOTENTITY_CONNECTION_ID]?.entity as? ContentRootEntity
                 } else {
-                    _contentRootEntity
+                    this.entityLinks[CONTENTROOTENTITY_CONNECTION_ID]?.entity as? ContentRootEntity
                 }
             }
             set(value) {
                 checkModificationAllowed()
                 val _diff = diff
                 if (_diff != null && value is ModifiableWorkspaceEntityBase<*> && value.diff == null) {
-                    // Back reference for an optional of ext field
                     if (value is ModifiableWorkspaceEntityBase<*>) {
-                        value.extReferences[ExtRefKey("UnityPackageEntity", "contentRootEntity", false, CONTENTROOTENTITY_CONNECTION_ID)] = this
+                        value.entityLinks[CONTENTROOTENTITY_CONNECTION_ID] = EntityLink(false, this)
                     }
                     // else you're attaching a new entity to an existing entity that is not modifiable
                     _diff.addEntity(value)
@@ -176,13 +131,12 @@ open class UnityPackageEntityImpl: UnityPackageEntity, WorkspaceEntityBase() {
                     _diff.updateOneToOneParentOfChild(CONTENTROOTENTITY_CONNECTION_ID, this, value)
                 }
                 else {
-                    // Back reference for an optional of ext field
                     if (value is ModifiableWorkspaceEntityBase<*>) {
-                        value.extReferences[ExtRefKey("UnityPackageEntity", "contentRootEntity", false, CONTENTROOTENTITY_CONNECTION_ID)] = this
+                        value.entityLinks[CONTENTROOTENTITY_CONNECTION_ID] = EntityLink(false, this)
                     }
                     // else you're attaching a new entity to an existing entity that is not modifiable
                     
-                    this._contentRootEntity = value
+                    this.entityLinks[CONTENTROOTENTITY_CONNECTION_ID] = EntityLink(false, value)
                 }
                 changedProperty.add("contentRootEntity")
             }
@@ -205,6 +159,7 @@ class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
           modifiable.id = createEntityId()
           modifiable.entitySource = this.entitySource
         }
+        modifiable.changedProperty.clear()
         return modifiable
     }
 
