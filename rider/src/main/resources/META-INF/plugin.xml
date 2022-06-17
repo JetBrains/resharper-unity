@@ -264,6 +264,7 @@
       </group>
 
       <group id="UnityDllShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityDllImportantActions" text="Important Unity Related Actions">
+        <reference ref="StartUnityAction" />
         <reference ref="AttachToUnityProcessAction" />
         <reference ref="ShowUnitySettingsInRider" />
       </group>
