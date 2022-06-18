@@ -10,7 +10,7 @@ class UnityUIManager : PersistentStateComponent<Element> {
 
     companion object {
         const val hasMinimizedUiAttribute = "hasMinimizedUI"
-        const val hasPlayButtonsAttribute = "hasHiddenPlayButtons"
+        const val hasHiddenPlayButtonsAttribute = "hasHiddenPlayButtons"
         fun getInstance(project: Project): UnityUIManager =  project.service()
     }
 
@@ -23,9 +23,9 @@ class UnityUIManager : PersistentStateComponent<Element> {
         if (hasMinimizedUi != null)
             element.setAttribute(hasMinimizedUiAttribute, hasMinimizedUi.toString())
 
-        val hasPlayButtons = hasHiddenPlayButtons.value
-        if (hasPlayButtons != null)
-            element.setAttribute(hasPlayButtonsAttribute, hasPlayButtons.toString())
+        val hasHiddenPlayButtons = hasHiddenPlayButtons.value
+        if (hasHiddenPlayButtons != null)
+            element.setAttribute(hasHiddenPlayButtonsAttribute, hasHiddenPlayButtons.toString())
 
         return element
     }
@@ -36,9 +36,9 @@ class UnityUIManager : PersistentStateComponent<Element> {
             hasMinimizedUi.value = attributeValue.toBoolean()
         }
 
-        val attributePlayButtonsValue = element.getAttributeValue(hasPlayButtonsAttribute, "")
-        if (attributePlayButtonsValue != null && attributeValue.isNotEmpty()) {
-            hasHiddenPlayButtons.value = attributeValue.toBoolean()
+        val attributePlayButtonsValue = element.getAttributeValue(hasHiddenPlayButtonsAttribute, "")
+        if (attributePlayButtonsValue != null && attributePlayButtonsValue.isNotEmpty()) {
+            hasHiddenPlayButtons.value = attributePlayButtonsValue.toBoolean()
         }
     }
 }
