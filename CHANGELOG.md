@@ -14,6 +14,13 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
+## 2022.1.2
+* Released: [2022-06-03](https://blog.jetbrains.com/dotnet/2022/06/03/resharper-rider-2022-1-2/)
+* Build: 2022.1.2.227
+* [No code changes](https://github.com/JetBrains/resharper-unity/compare/net221-rtm-2022.1.1...net221-rtm-2022.1.2)
+
+
+
 ## 2022.1.1
 * Released: [2022-04-29](https://blog.jetbrains.com/dotnet/2022/04/29/resharper-rider-2022-1-1-bug-fixes/)
 * Build: 2022.1.1.214
