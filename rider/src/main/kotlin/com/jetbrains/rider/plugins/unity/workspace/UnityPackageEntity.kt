@@ -75,7 +75,7 @@ var ContentRootEntity.Builder.unityPackageEntity: UnityPackageEntity?
         return referrersx(UnityPackageEntity::contentRootEntity).singleOrNull()
     }
     set(value) {
-        (this as ModifiableReferableWorkspaceEntity).linkExternalEntity(UnityPackageEntity::class, if (value is List<*>) value as List<WorkspaceEntity?> else listOf(value) as List<WorkspaceEntity?> )
+        (this as ModifiableReferableWorkspaceEntity).linkExternalEntity(UnityPackageEntity::class, false, if (value is List<*>) value as List<WorkspaceEntity?> else listOf(value) as List<WorkspaceEntity?> )
     }
 
 //endregion

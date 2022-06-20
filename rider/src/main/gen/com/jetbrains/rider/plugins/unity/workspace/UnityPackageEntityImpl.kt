@@ -112,9 +112,9 @@ open class UnityPackageEntityImpl: UnityPackageEntity, WorkspaceEntityBase() {
             get() {
                 val _diff = diff
                 return if (_diff != null) {
-                    _diff.extractOneToOneParent(CONTENTROOTENTITY_CONNECTION_ID, this) ?: this.entityLinks[CONTENTROOTENTITY_CONNECTION_ID]?.entity as? ContentRootEntity
+                    _diff.extractOneToOneParent(CONTENTROOTENTITY_CONNECTION_ID, this) ?: this.entityLinks[EntityLink(false, CONTENTROOTENTITY_CONNECTION_ID)] as? ContentRootEntity
                 } else {
-                    this.entityLinks[CONTENTROOTENTITY_CONNECTION_ID]?.entity as? ContentRootEntity
+                    this.entityLinks[EntityLink(false, CONTENTROOTENTITY_CONNECTION_ID)] as? ContentRootEntity
                 }
             }
             set(value) {
@@ -122,7 +122,7 @@ open class UnityPackageEntityImpl: UnityPackageEntity, WorkspaceEntityBase() {
                 val _diff = diff
                 if (_diff != null && value is ModifiableWorkspaceEntityBase<*> && value.diff == null) {
                     if (value is ModifiableWorkspaceEntityBase<*>) {
-                        value.entityLinks[CONTENTROOTENTITY_CONNECTION_ID] = EntityLink(false, this)
+                        value.entityLinks[EntityLink(false, CONTENTROOTENTITY_CONNECTION_ID)] = this
                     }
                     // else you're attaching a new entity to an existing entity that is not modifiable
                     _diff.addEntity(value)
@@ -132,11 +132,11 @@ open class UnityPackageEntityImpl: UnityPackageEntity, WorkspaceEntityBase() {
                 }
                 else {
                     if (value is ModifiableWorkspaceEntityBase<*>) {
-                        value.entityLinks[CONTENTROOTENTITY_CONNECTION_ID] = EntityLink(false, this)
+                        value.entityLinks[EntityLink(false, CONTENTROOTENTITY_CONNECTION_ID)] = this
                     }
                     // else you're attaching a new entity to an existing entity that is not modifiable
                     
-                    this.entityLinks[CONTENTROOTENTITY_CONNECTION_ID] = EntityLink(false, value)
+                    this.entityLinks[EntityLink(false, CONTENTROOTENTITY_CONNECTION_ID)] = value
                 }
                 changedProperty.add("contentRootEntity")
             }
