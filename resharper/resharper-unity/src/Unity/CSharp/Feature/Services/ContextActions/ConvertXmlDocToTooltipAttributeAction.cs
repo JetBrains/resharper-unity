@@ -130,7 +130,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
             {
                 var module = myFieldDeclaration.GetPsiModule();
-                var values = new[] { new AttributeValue(new ConstantValue(mySummary, module)) };
+                var values = new[] { new AttributeValue(ConstantValue.String(mySummary, module)) };
                 AttributeUtil.AddAttributeToEntireDeclaration(myFieldDeclaration, KnownTypes.TooltipAttribute,
                     values, null, module, myElementFactory);
 

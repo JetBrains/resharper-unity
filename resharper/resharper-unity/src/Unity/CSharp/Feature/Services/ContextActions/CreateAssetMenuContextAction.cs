@@ -87,9 +87,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 var fixedArguments = EmptyArray<AttributeValue>.Instance;
                 var namedArguments = new[]
                 {
-                    new Pair<string, AttributeValue>("menuName", new AttributeValue(new ConstantValue($"Create {myClassLikeDeclaration.DeclaredName}", myModule))),
-                    new Pair<string, AttributeValue>("fileName", new AttributeValue(new ConstantValue(myClassLikeDeclaration.DeclaredName, myModule))),
-                    new Pair<string, AttributeValue>("order", new AttributeValue(new ConstantValue(0, myModule))),
+                    new Pair<string, AttributeValue>("menuName", new AttributeValue(ConstantValue.String($"Create {myClassLikeDeclaration.DeclaredName}", myModule))),
+                    new Pair<string, AttributeValue>("fileName", new AttributeValue(ConstantValue.String(myClassLikeDeclaration.DeclaredName, myModule))),
+                    new Pair<string, AttributeValue>("order", new AttributeValue(ConstantValue.Int(0, myModule))),
                 };
 
                 var attribute = AttributeUtil.AddAttributeToSingleDeclaration(myClassLikeDeclaration,
