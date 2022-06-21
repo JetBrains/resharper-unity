@@ -35,7 +35,8 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
         fun getInstance(project: Project): UnityProjectDiscoverer = project.service()
 
         fun hasUnityFileStructure(project: Project): Boolean {
-            return hasUnityFileStructure(project.projectDir)
+            // projectDir will fail with the default project
+            return !project.isDefault && hasUnityFileStructure(project.projectDir)
         }
 
         fun hasUnityFileStructure(projectDir: VirtualFile): Boolean {
