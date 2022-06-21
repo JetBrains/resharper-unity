@@ -96,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
                 root = potentialRoot;
             
             var englishRoot = root.Combine("en");
-            if (root.IsAbsolute && !englishRoot.ExistsDirectory && root.ExistsDirectory)
+            if (root.IsNotEmpty && !englishRoot.ExistsDirectory && root.ExistsDirectory)
                 return root.GetChildDirectories().FirstOrDefault(englishRoot).ToNativeFileSystemPath();
             return englishRoot.ToNativeFileSystemPath();
         }
