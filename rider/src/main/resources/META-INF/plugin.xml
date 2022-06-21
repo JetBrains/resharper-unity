@@ -188,9 +188,16 @@
     <action id="AttachToUnityProcessAction"
             class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction"
             text="Attach to Unity Process&#8230;"
-            description="Attach debugger to Unity Editor process"
+            description="Attach debugger to Unity process"
             icon="UnityIcons.Actions.AttachToUnity">
       <add-to-group group-id="XDebugger.AttachGroup" anchor="after" relative-to-action="com.jetbrains.rider.debugger.actions.RiderAttachToRemoteProcessAction" />
+    </action>
+
+    <action id="AttachToUnityEditorAction"
+            class="com.jetbrains.rider.plugins.unity.actions.AttachUnityEditorAction"
+            text="Attach to Unity Editor"
+            description="Attach debugger to Unity Editor process"
+            icon="UnityIcons.Actions.AttachToUnity">
     </action>
 
     <action id="ShowUnitySettingsInRider"
@@ -246,6 +253,7 @@
                 text="Start Unity"
                 description="Start Unity with current project"
                 icon="UnityIcons.Actions.StartUnity" />
+        <reference ref="AttachToUnityEditorAction" />
         <reference ref="AttachToUnityProcessAction" />
         <reference ref="ShowUnitySettingsInRider" />
         <action id="ShowUnityLogInRiderAction"
