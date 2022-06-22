@@ -100,7 +100,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
                 case IProperty property when IsEventHandler(unityApi, property.Setter) ||
                                              IsImplicitlyUsedInterfaceProperty(property) ||
-                                             IsAnimationEvent(solution, property):
+                                             IsAnimationEvent(solution, property) ||
+                                             unityApi.IsSerialisedAutoProperty(property):
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
             }

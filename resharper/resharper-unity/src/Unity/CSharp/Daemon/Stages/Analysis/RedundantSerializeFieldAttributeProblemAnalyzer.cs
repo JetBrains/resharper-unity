@@ -1,8 +1,11 @@
-﻿using JetBrains.ReSharper.Feature.Services.Daemon;
+﻿#nullable enable
+
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
@@ -23,15 +26,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (!Equals(attributeTypeElement.GetClrName(), KnownTypes.SerializeField))
                 return;
 
-            var fields = attribute.GetFieldsByAttribute();
-            foreach (var field in fields)
+            foreach (var declaration in AttributesOwnerDeclarationNavigator.GetByAttribute(attribute))
             {
-                if (!Api.IsSerialisedField(field))
+                if (!IsSerialisedField(declaration) && !IsSerialisedAutoProperty(declaration, attribute))
                 {
                     consumer.AddHighlighting(new RedundantSerializeFieldAttributeWarning(attribute));
                     return;
                 }
             }
         }
+
+        private bool IsSerialisedField(IDeclaration declaration) =>
+            declaration.DeclaredElement is IField field && Api.IsSerialisedField(field);
+
+        private bool IsSerialisedAutoProperty(IDeclaration declaration, IAttribute attribute) =>
+            declaration.DeclaredElement is IProperty property && Api.IsSerialisedAutoProperty(property, attribute);
     }
 }

@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System;
+using System.Linq;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
@@ -31,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (!Equals(attributeTypeElement.GetClrName(), KnownTypes.FormerlySerializedAsAttribute))
                 return;
 
-            var fields = attribute.GetFieldsByAttribute();
+            var fields = AttributesOwnerDeclarationNavigator.GetByAttribute(attribute).OfType<IField>().ToList();
             if (fields.Count == 0)
             {
                 // The attribute is either on an invalid target (which is already an error), or it's got the field:
