@@ -37,7 +37,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         {
             var api = myAttribute.GetSolution().GetComponent<UnityApi>();
             var typeDeclaration = myAttribute.GetContainingTypeDeclaration();
-            var field = myAttribute.GetFieldsByAttribute().FirstOrDefault();
+            var field = AttributesOwnerDeclarationNavigator.GetByAttribute(myAttribute).OfType<IField>()
+                .FirstOrDefault();
 
             if (field == null)
                 return EmptyList<IntentionAction>.Enumerable;
