@@ -12,6 +12,28 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net221...net222)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/53?closed=1)
 
+### Changed
+
+- Remove obsolete warnings for usage of string in a Burst context ([RIDER-77365](https://youtrack.jetbrains.com/issue/RIDER-77365), [RIDER-75815](https://youtrack.jetbrains.com/issue/RIDER-75815))
+- Rider: Profiling Unity no longer requires restarting the editor. Profiler can detach, too
+- Rider: Support new toolbar and run configurations widget in Unity projects
+- Rider: Move Unity editor connection status indicator from status bar to new toolbar icon
+- Rider: Hide play/pause buttons by default in new toolbar. Can be shown from toolbar drop down
+- Rider: Prevent running tests while editor is in play mode ([RIDER-75293](https://youtrack.jetbrains.com/issue/RIDER-75293), [#2317](https://github.com/JetBrains/resharper-unity/pull/2317))
+
+### Fixed
+
+- Fix exception when showing online help for a non-Unity project with Unity references ([DEXP-674432](https://youtrack.jetbrains.com/issue/DEXP-674432))
+- Fix exception while searching for asset usages when prefab modification has missing references ([DEXP-661796](https://youtrack.jetbrains.com/issue/DEXP-661796))
+- Fix exception while referencing an asset that has been excluded for e.g. being too large ([RIDER-77992](https://youtrack.jetbrains.com/issue/RIDER-77992))
+- Fix exception if stats are reported multiple times ([DEXP-674807](https://youtrack.jetbrains.com/issue/DEXP-674807))
+- Rider: Fix navigation from log view when exception is thrown in static constructor ([RIDER-74936](https://youtrack.jetbrains.com/issue/RIDER-74936), [#2282](https://github.com/JetBrains/resharper-unity/pull/2282))
+- Rider: Fix autoscroll button in Unity log view tool window ([RIDER-75609](https://youtrack.jetbrains.com/issue/RIDER-75609))
+- Rider: Fix incorrectly adding files to `.csproj` when created inside a hidden folder ([RIDER-74815](https://youtrack.jetbrains.com/issue/RIDER-74815))
+- Rider: Fix not showing notification of old Rider package
+- Rider: Fix exception when checking for unsaved scenes at commit time without a connection to the Unity editor ([DEXP-672567](https://youtrack.jetbrains.com/issue/DEXP-672567))
+- Rider: Fix unnecessarily reading `EditorInstance.json` when multiple Unity projects are open ([#2329](https://github.com/JetBrains/resharper-unity/pull/2329))
+
 
 
 ## 2022.1.2
