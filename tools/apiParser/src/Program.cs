@@ -271,6 +271,26 @@ namespace ApiParser
                     eventFunction.AddParameter("content", ApiType.String);
                     type.MergeEventFunction(eventFunction, apiVersion);
                 }
+
+                // OnPostprocessAllAssets got a new parameter in 2021.2. Only the new parameter has an official doc page
+                // but that page says:
+                // Note: A version of this callback without the didDomainReload parameter is also available
+                // (OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths))
+                if (apiVersion >= new Version(2021, 2))
+                {
+                    // This function will match the pre 2021.2 functions and extend it's max applicable version
+                    description =
+                        "This is called after importing of any number of assets is complete (when the Assets progress bar has reached the end).";
+                    var functions = type.FindEventFunctions("OnPostprocessAllAssets");
+                    eventFunction = new UnityApiEventFunction("OnPostprocessAllAssets",
+                        true, false, ApiType.Void, apiVersion, description,
+                        "Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessAllAssets.html");
+                    eventFunction.AddParameter("importedAssets", ApiType.StringArray);
+                    eventFunction.AddParameter("deletedAssets", ApiType.StringArray);
+                    eventFunction.AddParameter("movedAssets", ApiType.StringArray);
+                    eventFunction.AddParameter("movedFromAssetPaths", ApiType.StringArray);
+                    type.MergeEventFunction(eventFunction, apiVersion);
+                }
             }
 
             // From AssetModificationProcessorInternal

@@ -12,9 +12,46 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net221...net222)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/53?closed=1)
 
+
+
+## 2022.1.2
+* Released: [2022-06-03](https://blog.jetbrains.com/dotnet/2022/06/03/resharper-rider-2022-1-2/)
+* Build: 2022.1.2.227
+* [No code changes](https://github.com/JetBrains/resharper-unity/compare/net221-rtm-2022.1.1...net221-rtm-2022.1.2)
+
+
+
+## 2022.1.1
+* Released: [2022-04-29](https://blog.jetbrains.com/dotnet/2022/04/29/resharper-rider-2022-1-1-bug-fixes/)
+* Build: 2022.1.1.214
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net221-rtm-2022.1.0...net221-rtm-2022.1.1)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/52?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net221-rtm-2022.1.1)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2022.1.1.214)
+
+### Added
+
+- Add "means implicit use" external annotations for `OverlayAttribute` and `EditorToolbarElementAttribute` ([RIDER-76826](https://youtrack.jetbrains.com/issue/RIDER-76826), [#2312](https://github.com/JetBrains/resharper-unity/pull/2312))
+
+### Changed
+
+- Treat types that implement `ISystem` as ECS systems ([#2301](https://github.com/JetBrains/resharper-unity/issues/2301), [#2312](https://github.com/JetBrains/resharper-unity/pull/2312))
+
+### Fixed
+
+- Fix incorrect method signature warning for semi-documented `OnPostprocessAllAssets` event function overload ([RIDER-76682](https://youtrack.jetbrains.com/issue/RIDER-76682), [#2312](https://github.com/JetBrains/resharper-unity/pull/2312))
+- Fix method signature warnings for `[MenuItem]` with the optional `MenuCommand` parameter, and when the `validate` argument is set via named property instead of positional argument ([RIDER-76680](https://youtrack.jetbrains.com/issue/RIDER-76680), [RIDER-76681](https://youtrack.jetbrains.com/issue/RIDER-76681), [#2312](https://github.com/JetBrains/resharper-unity/pull/2312))
+- Fix exception when asset reference a missing script ([DEXP-661796](https://youtrack.jetbrains.com/issue/DEXP-661796))
+
+
+
 ## 2022.1.0
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net213...net221)
+* Released: [2022-04-19](https://blog.jetbrains.com/dotnet/2022/04/19/rider-2022-1/)
+* Build: 2022.1.0.194
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net213...net221-rtm-2022.1.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/50?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net221-rtm-2022.1.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2022.1.0.194)
 
 ### Added
 
@@ -41,6 +78,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Fix incorrect redundant attribute warning for `FormerlySerializedAs` attribute on property backing field ([#2285](https://github.com/JetBrains/resharper-unity/issues/2285), [#2289](https://github.com/JetBrains/resharper-unity/pull/2289))
 - Fix incorrect name shown for method usages by an animation controller ([RIDER-71268](https://youtrack.jetbrains.com/issue/RIDER-71268), [#2267](https://github.com/JetBrains/resharper-unity/pull/2267))
 - Fix incorrect usages shown when referencing an overridden virtual method from a Unity event ([RIDER-71269](https://youtrack.jetbrains.com/issue/RIDER-71269), [#2267](https://github.com/JetBrains/resharper-unity/pull/2267))
+- Rider: Fix showing dialog asking to run Unity when continuous testing is enabled ([#2293](https://github.com/JetBrains/resharper-unity/pull/2293))
+- Rider: Fix showing run Unity dialog multiple times when running tests in multiple projects ([#2293](https://github.com/JetBrains/resharper-unity/pull/2293))
 - Rider: Fix incorrectly showing both Unity and Unity DLL project action groups ([#2219](https://github.com/JetBrains/resharper-unity/pull/2219))
 - Rider: Fix incorrectly showing "switch to full UI" action when already in full UI ([RIDER-71185](https://youtrack.jetbrains.com/issue/RIDER-71185), [#2220](https://github.com/JetBrains/resharper-unity/pull/2220))
 - Rider: Fix debugging unit test when debugger is already attached to the editor ([RIDER-70660](https://youtrack.jetbrains.com/issue/RIDER-70660), [#2232](https://github.com/JetBrains/resharper-unity/pull/2232))

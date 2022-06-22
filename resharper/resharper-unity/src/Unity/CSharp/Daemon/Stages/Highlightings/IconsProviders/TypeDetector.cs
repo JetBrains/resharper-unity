@@ -46,19 +46,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 }
                 else if (typeElement.DerivesFrom(KnownTypes.Editor) || typeElement.DerivesFrom(KnownTypes.EditorWindow))
                 {
-                    AddEditorHighlighting(consumer, element, "Editor", "Custom Unity Editor", context);
+                    AddEditorHighlighting(consumer, element, "Editor", "Custom Unity editor", context);
                 }
                 else if (typeElement.DerivesFromScriptableObject())
                 {
-                    AddMonoBehaviourHighlighting(consumer, element, "Scriptable object", "Scriptable Object", context);
+                    AddMonoBehaviourHighlighting(consumer, element, "Scriptable object", "Unity scriptable object", context);
                 }
                 else if (myUnityApi.IsUnityType(typeElement))
                 {
                     AddUnityTypeHighlighting(consumer, element, "Unity type", "Custom Unity type", context);
                 }
-                else if (myUnityApi.IsComponentSystemType(typeElement))
+                else if (UnityApi.IsDotsSystemType(typeElement))
                 {
-                    AddUnityECSHighlighting(consumer, element, "Unity ECS", "Unity entity component system object",
+                    AddUnityECSHighlighting(consumer, element, "ECS system", "Unity entities system",
                         context);
                 }
 

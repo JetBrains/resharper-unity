@@ -1,14 +1,15 @@
-﻿using System.Collections.Concurrent;
+﻿#nullable enable
+
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util.dataStructures;
 using MethodSignature = JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api.MethodSignature;
 
@@ -90,10 +91,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             }
         }
 
-        [CanBeNull]
-        private MethodSignature[] GetExpectedMethodSignatures(ITypeElement attributeTypeElement,
-            IAttribute attribute,
-            PredefinedType predefinedType)
+        private MethodSignature[]? GetExpectedMethodSignatures(ITypeElement attributeTypeElement,
+                                                               IAttribute attribute,
+                                                               PredefinedType predefinedType)
         {
             var attributeClrName = attributeTypeElement.GetClrName();
             if (myMethodSignatures.TryGetValue(attributeClrName, out var signatures))
@@ -117,8 +117,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             return signatures;
         }
 
-        [CanBeNull]
-        private MethodSignature[] GetSignaturesFromRequiredSignatureAttribute(ITypeElement attributeTypeElement)
+        private MethodSignature[]? GetSignaturesFromRequiredSignatureAttribute(ITypeElement attributeTypeElement)
         {
             var signatures = new FrugalLocalList<MethodSignature>();
             foreach (var method in attributeTypeElement.Methods)
@@ -141,9 +140,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             return signatures.IsEmpty ? null : signatures.ToArray();
         }
 
-        [CanBeNull]
-        private MethodSignature[] GetSignaturesFromKnownAttributes(IClrTypeName attributeClrName,
-            PredefinedType predefinedType)
+        private MethodSignature[]? GetSignaturesFromKnownAttributes(IClrTypeName attributeClrName,
+                                                                    PredefinedType predefinedType)
         {
             if (ourKnownAttributes.Contains(attributeClrName))
             {
@@ -156,9 +154,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             return null;
         }
 
-        [CanBeNull]
-        private MethodSignature[] GetSpecialCaseSignatures(
-            IClrTypeName attributeClrName, PredefinedType predefinedType)
+        private MethodSignature[]? GetSpecialCaseSignatures(IClrTypeName attributeClrName,
+                                                            PredefinedType predefinedType)
         {
             if (Equals(attributeClrName, KnownTypes.OnOpenAssetAttribute))
                 return GetOnOpenAssetMethodSignature(predefinedType);
@@ -166,38 +163,53 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 return GetPostProcessBuildMethodSignature(predefinedType);
             return null;
         }
-        
-        [CanBeNull]
-        private MethodSignature[] GetNonCacheableSignatures(IAttribute attribute,
-            IClrTypeName attributeClrName, PredefinedType predefinedType)
+
+        private MethodSignature[]? GetNonCacheableSignatures(IAttribute attribute,
+                                                             IClrTypeName attributeClrName,
+                                                             PredefinedType predefinedType)
         {
             if (Equals(attributeClrName, KnownTypes.MenuItemAttribute))
                 return GetMenuItemMethodSignature(attribute, predefinedType);
             return null;
         }
 
+        private static MethodSignature GetStaticVoidMethodSignature(PredefinedType predefinedType) =>
+            new(predefinedType.Void, true);
+
         private MethodSignature[] GetMenuItemMethodSignature(IAttribute attribute, PredefinedType predefinedType)
         {
-            if (attribute.Arguments.Count <= 1) // MenuItem("text") 
-                return new[] { new MethodSignature(predefinedType.Void, true) };
-            var secondParameter = attribute.Arguments[1].FirstChild?.FirstChild;
-            if (secondParameter != null)
+            IExpression? validateArgExpression = null;
+            if (attribute.Arguments.Count > 1)
             {
-                // MenuItem("text", true)
-                if (secondParameter.NodeType.Equals(CSharpTokenType.TRUE_KEYWORD))
-                    return new[] { new MethodSignature(predefinedType.Bool, true) };
-                // MenuItem("text", false)
-                if (secondParameter.NodeType.Equals(CSharpTokenType.FALSE_KEYWORD))
-                    return new[] { new MethodSignature(predefinedType.Void, true) };
+                // [MenuItem("Something", true|false)]
+                validateArgExpression = attribute.Arguments[1].Expression;
             }
-                
-            return null;
-        }
+            else
+            {
+                // [MenuItem("Something", validate = true|false)]
+                foreach (var assignment in attribute.PropertyAssignments)
+                {
+                    if (assignment.PropertyNameIdentifier?.Name == "validate")
+                    {
+                        validateArgExpression = assignment.Source;
+                        break;
+                    }
+                }
+            }
 
-        [NotNull]
-        private static MethodSignature GetStaticVoidMethodSignature(PredefinedType predefinedType)
-        {
-            return new MethodSignature(predefinedType.Void, true);
+            var returnType = predefinedType.Void;
+            if (validateArgExpression != null && validateArgExpression.IsConstantValue() &&
+                validateArgExpression.ConstantValue.IsBoolean(out var validate) && validate)
+            {
+                returnType = predefinedType.Bool;
+            }
+
+            var menuCommandType = myKnownTypesCache.GetByClrTypeName(KnownTypes.MenuCommand, predefinedType.Module);
+            return new[]
+            {
+                new MethodSignature(returnType, true),
+                new MethodSignature(returnType, true, new[] { menuCommandType }, new[] { "menuCommand" })
+            };
         }
 
         private static MethodSignature[] GetOnOpenAssetMethodSignature(PredefinedType predefinedType)

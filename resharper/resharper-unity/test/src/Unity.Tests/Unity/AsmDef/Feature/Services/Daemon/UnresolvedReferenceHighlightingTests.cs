@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Daemon
 {
     [TestUnity]
     [TestFileExtension(".asmdef")]
-    public class UnresolvedReferenceHighlightingTests : JsonNewHighlightingTestBase<UnresolvedProjectReferenceError>
+    public class UnresolvedReferenceHighlightingTests : JsonNewHighlightingTestBase<UnresolvedProjectReferenceWarning>
     {
         protected override PsiLanguageType CompilerIdsLanguage => JsonNewLanguage.Instance;
         protected override string RelativeTestDataPath => @"AsmDef\Daemon\Stages\Resolve\UnresolvedProject";

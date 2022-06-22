@@ -47,13 +47,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             myKnownTypesCache = knownTypesCache;
         }
 
-        public bool IsUnityType([NotNullWhen(true)] ITypeElement? type) => type != null && myUnityTypeCache.IsUnityType(type);
+        public bool IsUnityType([NotNullWhen(true)] ITypeElement? type) =>
+            type != null && myUnityTypeCache.IsUnityType(type);
 
-        public bool IsComponentSystemType([NotNullWhen(true)] ITypeElement? typeElement)
-        {
-            // This covers ComponentSystem, JobComponentSystem and SystemBase
-            return typeElement.DerivesFrom(KnownTypes.ComponentSystemBase);
-        }
+        public static bool IsDotsSystemType([NotNullWhen(true)] ITypeElement? typeElement) =>
+            typeElement.DerivesFrom(KnownTypes.ComponentSystemBase) || typeElement.DerivesFrom(KnownTypes.ISystem);
 
         // A serialised field cannot be abstract or generic, but a type declaration that will be serialised can be. This
         // method differentiates between a type declaration and a type usage. Consider renaming if we ever need to
