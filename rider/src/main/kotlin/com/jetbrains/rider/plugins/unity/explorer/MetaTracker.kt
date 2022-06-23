@@ -36,6 +36,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
     }
 
     override fun after(events: MutableList<out VFileEvent>) {
+        if (!isValidCommand()) return
         val projectManager = serviceIfCreated<ProjectManager>() ?: return
         val openedUnityProjects = projectManager.openProjects.filter { !it.isDisposed && it.isUnityProjectFolder() && !isUndoRedoInProgress(it)}.toList()
         val actions = MetaActionList()
@@ -103,6 +104,14 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
 
         if (actions.isEmpty()) return
         actions.execute()
+    }
+
+    private fun isValidCommand():Boolean {
+        val currentCommandName = CommandProcessor.getInstance().currentCommandName
+        val res = currentCommandName == "Apply Patch"
+        if (res)
+            logger.trace("Avoid MetaTracker functionallity for the $currentCommandName. See RIDER-77123.")
+        return !res
     }
 
     private fun isValidEvent(event: VFileEvent):Boolean{
