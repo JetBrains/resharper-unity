@@ -126,6 +126,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
                     if (path != null)
                         return path;
             }
+
+            ourLogger.Verbose(
+                "UnityVersion.GetActualAppPathForSolution is empty path. May happen for a regular project with a reference to UnityEditor.dll outside of Unity installation.");
             return VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext);
         }
 

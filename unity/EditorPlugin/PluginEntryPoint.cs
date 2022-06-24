@@ -379,6 +379,7 @@ namespace JetBrains.Rider.Unity.Editor
           AdviseExitUnity(model);
           GetBuildLocation(model);
           AdviseRunMethod(model);
+          AdviseStartProfiling(model);
           GetInitTime(model);
 
           ourLogger.Verbose("UnityModel initialized.");
@@ -400,6 +401,35 @@ namespace JetBrains.Rider.Unity.Editor
         ourLogger.Error("Init Rider Plugin " + ex);
         return -1;
       }
+    }
+    
+    private static void AdviseStartProfiling(BackendUnityModel model)
+    {
+        model.StartProfiling.Set((lifetime, data) =>
+        {
+            MainThreadDispatcher.Instance.Queue(() =>
+            {
+                try
+                {
+                    UnityProfilerApiInterop.StartProfiling(data.UnityProfilerApiPath);
+                
+                    var current = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
+                    if (current != data.EnterPlayMode)
+                    {
+                        ourLogger.Verbose("StartProfiling. Request to change play mode from model: {0}", data.EnterPlayMode);
+                        EditorApplication.isPlaying = data.EnterPlayMode;
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE) 
+                        Debug.LogError(e);
+                    throw;
+                }
+            });
+
+            return Unit.Instance;
+        });
     }
 
     private static void GetInitTime(BackendUnityModel model)
