@@ -17,7 +17,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.PairConsumer
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
-import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solutionDirectory
 import kotlin.io.path.pathString
 
