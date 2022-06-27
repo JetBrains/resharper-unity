@@ -85,13 +85,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
         private FileSystemPath GetDocumentationRoot()
         {
             var appPath = mySolutionsManager.Solution?.GetComponent<UnityVersion>().GetActualAppPathForSolution();
+            if (appPath == null || appPath.IsEmpty) return FileSystemPath.Empty;
             var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(appPath);
             var root = contentsPath.Combine("Documentation");
 
             // I see /home/ivan-shakhov/Unity/Hub/Editor/2021.2.4f1/Editor/Data/Documentation/Documentation/en path on my machine
             // most likely Linux only peculiarity
             var potentialRoot = root.Combine("Documentation");
-            if (potentialRoot.ExistsDirectory)
+            if (potentialRoot.IsAbsolute && potentialRoot.ExistsDirectory)
                 root = potentialRoot;
             
             var englishRoot = root.Combine("en");

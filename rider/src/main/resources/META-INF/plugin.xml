@@ -157,7 +157,7 @@
     <diff.merge.external.AutomaticExternalMergeTool implementation="com.jetbrains.rider.plugins.unity.diff.UnityYamlAutomaticExternalMergeTool"/>
 
     <checkinHandlerFactory implementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnsavedSceneCheckinHandlerFactory"/>
-    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnityCheckinState"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnsavedSceneCheckinState"/>
 
     <rider.action.technical.support.info.provider implementation="com.jetbrains.rider.plugins.unity.actions.UnityVersionRiderTechnicalSupportInfoProvider" />
   </extensions>
@@ -331,6 +331,7 @@
     <notificationGroup id="Unity Asset Mode" displayType="BALLOON"/>
     <notificationGroup id="Unity project open" displayType="STICKY_BALLOON"/>
     <notificationGroup id="Unity connection is out of sync" displayType="BALLOON"/>
+    <notificationGroup id="Unity commit failure" displayType="BALLOON"/>
     <statistics.projectUsagesCollector implementation="com.jetbrains.rider.plugins.unity.fus.UnityProjectUsageCollector" />
   </extensions>
 

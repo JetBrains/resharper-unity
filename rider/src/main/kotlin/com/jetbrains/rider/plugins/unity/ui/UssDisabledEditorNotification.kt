@@ -10,7 +10,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotifications
 import com.jetbrains.rider.plugins.unity.isUnityProject
-import com.jetbrains.rider.plugins.unity.util.isUssFile
 
 class UssDisabledEditorNotification: EditorNotifications.Provider<EditorNotificationPanel>() {
 
@@ -29,8 +28,8 @@ class UssDisabledEditorNotification: EditorNotifications.Provider<EditorNotifica
             }
 
             val panel = EditorNotificationPanel()
-            panel.text("USS support requires the CSS plugin to be enabled")
-            panel.createActionLabel("Enable CSS plugin") {
+            panel.text(UnityUIBundle.message("uss.disabled.editor.notification.panel.text"))
+            panel.createActionLabel(UnityUIBundle.message("uss.disabled.editor.notification.enable.css.plugin")) {
                 // TODO: Maybe in 2020.2 we can do this dynamically without restart?
                 // That would require enabling the CSS plugin dynamically, and then enabling our PluginCssPart.xml part
                 // dynamically, too
@@ -38,7 +37,7 @@ class UssDisabledEditorNotification: EditorNotifications.Provider<EditorNotifica
                 PluginManagerMain.notifyPluginsUpdated(project)
                 EditorNotifications.getInstance(project).updateAllNotifications()
             }
-            panel.createActionLabel("Don't show again") {
+            panel.createActionLabel(UnityUIBundle.message("don.t.show.again")) {
                 // Project level - do not show again for this project
                 PropertiesComponent.getInstance(project).setValue(DO_NOT_SHOW_AGAIN_KEY, true)
                 EditorNotifications.getInstance(project).updateAllNotifications()

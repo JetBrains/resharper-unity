@@ -4,11 +4,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnitTestLaunchPreference
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import com.jetbrains.rider.projectView.solution
 
-class UseUnityPlayLauncherAction : DumbAwareAction(PlayModeDescription, "Run with Unity Editor in Play Mode", null) {
+class UseUnityPlayLauncherAction : DumbAwareAction(PlayModeDescription,
+    UnityUIBundle.message("action.run.with.unity.editor.in.play.mode.description"), null) {
     companion object {
-        const val PlayModeDescription = "Unity - Play Mode"
+        val PlayModeDescription = UnityUIBundle.message("action.run.with.unity.editor.in.play.mode.text")
     }
 
     override fun actionPerformed(e: AnActionEvent) {
