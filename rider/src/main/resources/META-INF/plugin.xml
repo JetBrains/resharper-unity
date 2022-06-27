@@ -253,14 +253,14 @@
                 text="Unity Log Window&#8230;" />
         <separator/>
 
-        <action id="SwitchUIModeAction"
-                class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode"
-                text="Toggle UI Mode"
-                description="Show or hide unnecessary UI tool windows" />
         <action id="HideUnityPlayActions"
                 class="com.jetbrains.rider.plugins.unity.ui.UnityPlayButtonsAction"
-                text="Toggle Play/Pause Actions"
+                text="Show Unity Play/Pause Actions"
                 description="Show or hide Unity Play/Pause actions" />
+        <action id="SwitchUIModeAction"
+                class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode"
+                text="Show Non-Unity Applicable UI"
+                description="Show or hide UI that is not applicable to Unity projects" />
       </group>
 
       <group id="UnityDllShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityDllImportantActions" text="Important Unity Related Actions">
