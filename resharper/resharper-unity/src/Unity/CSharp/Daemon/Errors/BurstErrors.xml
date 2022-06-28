@@ -48,13 +48,6 @@
         </Description>
       </Tag>
 
-      <Tag externalName="BurstManagedStringWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Loading a managed string is not supported</Title>
-        <Description>
-          Loading a managed string is not supported
-        </Description>
-      </Tag>
-
       <Tag externalName="BurstWriteStaticFieldWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title>Writing to a static field is not supported</Title>
         <Description>
@@ -152,13 +145,6 @@
     <Message value="Burst: Creating a managed type '{0}' is not supported">
       <Argument>TypeQualification</Argument>
     </Message>
-    <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" />
-  </Warning>
-
-  <Warning name="BurstManagedString" configurableSeverity="Unity.BurstManagedString">
-    <Parameter type="ITreeNode" name="node" />
-    <Message value="Burst: Loading a managed string is not supported"/>
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
