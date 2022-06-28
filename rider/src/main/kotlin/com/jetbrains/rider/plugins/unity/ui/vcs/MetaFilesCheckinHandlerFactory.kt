@@ -50,7 +50,7 @@ private class MetaFilesCheckHandler(
             return null
 
         return BooleanCommitOption(
-            panel, UnityUIBundle.message("attempt.to.commit.an.empty.folder.meta.files"), false,
+            panel, UnityUIBundle.message("check.redundant.meta.files"), false,
             settings::checkMetaFiles
         )
     }
@@ -72,13 +72,16 @@ private class MetaFilesCheckHandler(
                 }
 
                 if (emptyFolders.any()){
-                    logger.info("attempt.to.commit.an.empty.folder.meta.files")
+                    logger.info("check.redundant.meta.files")
                     val groupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity commit failure")
-                    val title = UnityUIBundle.message("attempt.to.commit.an.empty.folder.meta.files")
-                    val message = UnityUIBundle.message("notification.content.empty.folders.are.not.under.git.index.prevent.committing.its.metafile",
-                        emptyFolders.joinToString(separator = ", ") {
-                            project.solutionDirectory.toPath().relativize(it.virtualFile!!.toNioPath()).pathString
-                        })
+                    val title = UnityUIBundle.message("redundant.meta.files")
+                    val message =
+                        UnityUIBundle.message("notification.content.empty.folders.are.not.under.git.index.prevent.committing.its.metafile",
+                            emptyFolders.take(3).joinToString(separator = ", ") {
+                                project.solutionDirectory.toPath().relativize(it.virtualFile!!.toNioPath()).pathString
+                            } + if (emptyFolders.count() > 3) ", …" else {
+                                ""
+                            })
                     val notification = Notification(groupId.displayId, title, message, NotificationType.ERROR)
                     Notifications.Bus.notify(notification, project)
 
