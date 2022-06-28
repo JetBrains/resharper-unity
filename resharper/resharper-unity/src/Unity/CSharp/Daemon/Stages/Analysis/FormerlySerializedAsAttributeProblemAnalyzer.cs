@@ -32,7 +32,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (!Equals(attributeTypeElement.GetClrName(), KnownTypes.FormerlySerializedAsAttribute))
                 return;
 
-            var fields = AttributesOwnerDeclarationNavigator.GetByAttribute(attribute).OfType<IField>().ToList();
+            // Only interested in fields and constants. It might be applied to a property with the field: target, but
+            // we can't validate that, so we don't look for it
+            var fields = AttributesOwnerDeclarationNavigator.GetByAttribute(attribute)
+                .Where(d => d is IFieldDeclaration or IConstantDeclaration).ToList();
             if (fields.Count == 0)
             {
                 // The attribute is either on an invalid target (which is already an error), or it's got the field:
@@ -54,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             }
 
             var field = fields[0];
-            if (!Api.IsSerialisedField(field))
+            if (!Api.IsSerialisedField(field.DeclaredElement as IField))
             {
                 consumer.AddHighlighting(new RedundantFormerlySerializedAsAttributeWarning(attribute));
                 return;
@@ -63,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var attributeInstance = attribute.GetAttributeInstance();
             var nameParameter = attributeInstance.PositionParameter(0);
             if (nameParameter.IsConstant && nameParameter.ConstantValue.IsString(out var value) &&
-                string.Equals(value, field.ShortName, StringComparison.Ordinal))
+                string.Equals(value, field.DeclaredName, StringComparison.Ordinal))
             {
                 consumer.AddHighlighting(new RedundantFormerlySerializedAsAttributeWarning(attribute));
             }
