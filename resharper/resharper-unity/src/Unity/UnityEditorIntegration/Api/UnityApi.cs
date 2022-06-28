@@ -205,10 +205,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             return false;
         }
 
-        public bool IsSerialisedAutoProperty(IProperty property, IAttribute attribute)
+        public bool IsSerialisedAutoProperty(IProperty? property, IAttribute attribute)
         {
-            if (attribute.Target != AttributeTarget.Field || !property.IsAuto || !property.IsWritable ||
-                attribute.Name == null)
+            if (property is not { IsAuto: true, IsWritable: true, IsStatic: false }
+                || attribute.Target != AttributeTarget.Field || attribute.Name == null)
             {
                 return false;
             }
