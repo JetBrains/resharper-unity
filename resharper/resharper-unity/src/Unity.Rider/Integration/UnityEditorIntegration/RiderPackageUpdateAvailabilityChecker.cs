@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private readonly JetHashSet<Version> myNotificationShown;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
         private string packageId = "com.unity.ide.rider";
-        private Version leastRiderPackageVersion = new Version(3, 0, 9);
+        private Version leastRiderPackageVersion = new Version(3, 0, 15);
 
         public RiderPackageUpdateAvailabilityChecker(
             Lifetime lifetime,
@@ -135,7 +135,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                             () => myUserNotifications.CreateNotification(notificationLifetime.Lifetime,
                                 NotificationSeverity.INFO,
                                 "Update available - JetBrains Rider package.",
-                                "Check for JetBrains Rider package updates in Unity Package Manager.",
+                                $"Check for JetBrains Rider package {packageVersion} in Unity Package Manager.",
                                 additionalCommands: new[]
                                 {
                                     new UserNotificationCommand("Never show for this solution", () =>
