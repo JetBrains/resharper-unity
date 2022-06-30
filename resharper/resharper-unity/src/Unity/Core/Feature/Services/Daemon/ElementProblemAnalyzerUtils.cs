@@ -1,11 +1,12 @@
+#nullable enable
+
 using System;
 using System.Linq.Expressions;
-using JetBrains.Application.InlayHints;
+
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
-
-#nullable enable
+using JetBrains.TextControl.DocumentMarkup.IntraTextAdornments;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Daemon
 {

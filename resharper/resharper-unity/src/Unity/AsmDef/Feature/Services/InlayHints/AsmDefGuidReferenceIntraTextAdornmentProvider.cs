@@ -1,6 +1,7 @@
 using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
 using JetBrains.TextControl.DocumentMarkup;
+using JetBrains.TextControl.DocumentMarkup.IntraTextAdornments;
 
 #nullable enable
 
