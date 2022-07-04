@@ -190,7 +190,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             if (sourceFile == null || guid == null)
                 return null;
 
-            var element = myAssetDocumentsHierarchy[sourceFile].GetElement(sourceFile, Id) as AssetDocumentHierarchyElement;
+            // we could have reference to asset which is ignored by asset heuristic, e.g too large
+            if (!myAssetDocumentsHierarchy.TryGetValue(sourceFile, out var hierarchy))
+                return null;
+            
+            var element = hierarchy.GetElement(sourceFile, Id) as AssetDocumentHierarchyElement;
             if (element == null)
                 return null;
 

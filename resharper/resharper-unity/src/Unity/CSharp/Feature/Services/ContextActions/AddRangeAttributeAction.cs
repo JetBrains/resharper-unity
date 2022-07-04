@@ -33,8 +33,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         {
             return new[]
             {
-                new AttributeValue(new ConstantValue(0, module)),
-                new AttributeValue(new ConstantValue(1, module))
+                new AttributeValue(ConstantValue.Int(0, module)),
+                new AttributeValue(ConstantValue.Int(1, module))
             };
         }
     }

@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         {
             return new[]
             {
-                new AttributeValue(new ConstantValue(selectedFieldDeclaration.DeclaredName, module))
+                new AttributeValue(ConstantValue.String(selectedFieldDeclaration.DeclaredName, module))
             };
         }
     }

@@ -8,6 +8,7 @@ import com.jetbrains.rider.plugins.gradle.tasks.GenerateNuGetConfig
 import com.ullink.gradle.nunit.NUnit
 import groovy.xml.XmlParser
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.ChangelogPluginExtension
 import org.jetbrains.intellij.tasks.IntelliJInstrumentCodeTask
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
@@ -161,10 +162,16 @@ intellij {
 }
 
 configure<ChangelogPluginExtension> {
-    val regex = """^((0|[1-9]\d*)\.(0|[1-9]\d*)(\.\d+)?).*$""".toRegex()
+    val regex = """^((0|[1-9]\d*)\.(0|[1-9]\d*)(\.\d+)?).*$|^Unreleased.*$""".toRegex()
     version.set(regex.matchEntire(project.version.toString())?.groups?.get(1)?.value)
     path.set("${project.projectDir}/../CHANGELOG.md")
     headerParserRegex.set(regex)
+}
+
+fun getChangelogItem(): Changelog.Item {
+    return changelog.getOrNull(pluginVersion)
+        ?: if (changelog.has(changelog.unreleasedTerm.get())) changelog.getUnreleased() else null
+        ?: changelog.getLatest()
 }
 
 logger.lifecycle("Version=$version")
@@ -213,7 +220,7 @@ tasks {
         <body>
         <p><b>New in $pluginVersion</b></p>
         <p>
-        ${changelog.get(pluginVersion).toHTML()}
+        ${getChangelogItem().toHTML()}
         </p>
         <p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/net221/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
         </body>""".trimIndent()
@@ -575,7 +582,7 @@ tasks {
         description = "Packs resulting DLLs into a NuGet package which is an R# extension."
         dependsOn(buildReSharperHostPlugin)
 
-        val changelogNotes = changelog.get(pluginVersion).withFilter { line ->
+        val changelogNotes = getChangelogItem().withFilter { line ->
             !line.startsWith("- Rider:") && !line.startsWith("- Unity editor:")
         }.toPlainText().trim().let {
             // There's a bug in the changelog plugin that adds extra newlines on Windows, possibly
