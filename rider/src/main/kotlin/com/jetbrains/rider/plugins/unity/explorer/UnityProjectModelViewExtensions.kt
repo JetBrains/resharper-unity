@@ -116,4 +116,9 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
 
         return res
     }
+
+    override fun shouldShowSolutionConfigurationsGotIt(): Boolean {
+        if (project.isUnityProject()) return false
+        return true
+    }
 }
