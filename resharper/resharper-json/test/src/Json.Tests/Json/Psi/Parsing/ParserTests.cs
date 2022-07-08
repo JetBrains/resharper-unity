@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
-using JetBrains.ReSharper.Plugins.Json.Psi;
+﻿using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.TestFramework;
+using JetBrains.TestFramework;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Json.Psi.Parsing
 {
     [TestFileExtension(".json")]
+    [TestTraceCategories("JetBrains.Application")]
     public class ParserTests : ParserTestBase<JsonNewLanguage>
     {
         protected override string RelativeTestDataPath => @"Json\Psi\Parsing";
@@ -26,10 +27,5 @@ namespace JetBrains.ReSharper.Plugins.Tests.Json.Psi.Parsing
         [TestCase("object5")]
         [TestCase("object6")]
         public void TestParser(string name) => DoOneTest(name);
-
-        protected override IList<string> TraceCategories()
-        {
-            return new List<string>() {"JetBrains.Application"};
-        }
     }
 }
