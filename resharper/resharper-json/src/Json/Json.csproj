@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <InternalBuild Condition="Exists('ManagedProject.Generated.Targets')">True</InternalBuild>
@@ -5,13 +6,11 @@
   </PropertyGroup>
   <Import Project="Sdk.props" Sdk="JetBrains.NET.Sdk" Version="0.0.4" Condition="$(InternalBuild)" />
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
-
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Json</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Json</RootNamespace>
     <LangVersion>9</LangVersion>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
   <!-- ********** -->
@@ -34,7 +33,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -42,7 +40,6 @@
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="!$(InternalBuild)" />
   <Import Project="ManagedProject.Generated.Targets" Condition="$(InternalBuild)" />
-
   <Import Project="Sdk.targets" Sdk="JetBrains.NET.Sdk" Version="0.0.4" Condition="$(InternalBuild)" />
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
 </Project>
