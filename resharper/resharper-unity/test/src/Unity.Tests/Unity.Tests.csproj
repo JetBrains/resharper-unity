@@ -11,9 +11,8 @@
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Tests</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Tests</RootNamespace>
     <LangVersion>9</LangVersion>
-<!-- LibHarmony is not signed -->
+    <!-- LibHarmony is not signed -->
     <NoWarn>CS8002</NoWarn>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <JetTestProject>True</JetTestProject>
     <DefineConstants Condition="!$(InternalBuild)">INDEPENDENT_BUILD</DefineConstants>
     <!-- Force 32 bit x86 for Windows as we need to load a specific build of the Cpp assembly, and we have X86 defined
@@ -32,7 +31,6 @@
     <PackageReference Include="Lib.Harmony" />
     <ProjectReference Include="..\..\..\src\Unity\Unity.csproj" />
     <ProjectReference Include="..\..\..\src\Unity.Shaders\Unity.Shaders.csproj" />
-
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
