@@ -25,7 +25,7 @@ using Vestris.ResourceLib;
 namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 {
     [SolutionComponent]
-    public class UnityVersion
+    public class UnityVersion : IUnityReferenceChangeHandler
     {
         public const string VersionRegex = @"(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)(?<type>[a-z])(?<revision>\d+)";
 
@@ -37,7 +37,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         private Version myVersionFromEditorInstanceJson;
         private static readonly ILogger ourLogger = Logger.GetLogger<UnityVersion>();
 
-        public readonly ViewableProperty<Version> ActualVersionForSolution = new ViewableProperty<Version>(new Version(0,0));
+        public readonly ViewableProperty<Version> ActualVersionForSolution = new(new Version(0,0));
+
+        private readonly ViewableProperty<VirtualFileSystemPath> myActualAppPathForSolution = new();
 
         public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache,
             ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
@@ -120,12 +122,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             if (mySolution.IsVirtualSolution())
                 return VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext);
 
-            foreach (var project in GetTopLevelProjectWithReadLock(mySolution))
-            {
-                var path = myUnityProjectFileCache.GetAppPath(project);
-                    if (path != null)
-                        return path;
-            }
+            if (myActualAppPathForSolution.HasValue())
+                return myActualAppPathForSolution.Value;
 
             ourLogger.Verbose(
                 "UnityVersion.GetActualAppPathForSolution is empty path. May happen for a regular project with a reference to UnityEditor.dll outside of Unity installation.");
@@ -273,14 +271,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             return version >= new Version(2019,2);
         }
 
-        private static ConcurrentDictionary<VirtualFileSystemPath, Version> myUnityPathToVersion = new ConcurrentDictionary<VirtualFileSystemPath, Version>();
+        private static readonly ConcurrentDictionary<VirtualFileSystemPath, Version> myUnityPathToVersion = new();
 
         public static Version GetVersionByAppPath(VirtualFileSystemPath appPath)
         {
             if (appPath == null || appPath.Exists == FileSystemPath.Existence.Missing)
                 return null;
 
-            return myUnityPathToVersion.GetOrAdd(appPath, p => GetVersionByAppPathInternal(p));
+            return myUnityPathToVersion.GetOrAdd(appPath, GetVersionByAppPathInternal);
         }
 
         private static Version GetVersionByAppPathInternal(VirtualFileSystemPath appPath)
@@ -334,9 +332,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             return version;
         }
 
-        public void UpdateActualVersionForSolution()
+        private void UpdateActualVersionForSolution()
         {
             ActualVersionForSolution.SetValue(GetActualVersionForSolution());
+        }
+
+        public void OnHasUnityReference()
+        {
+            // do nothing
+        }
+
+        public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
+        {
+            myActualAppPathForSolution.SetValue(myUnityProjectFileCache.GetAppPath(project));
         }
     }
 }
