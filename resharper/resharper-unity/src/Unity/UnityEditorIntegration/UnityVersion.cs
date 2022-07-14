@@ -122,7 +122,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             if (mySolution.IsVirtualSolution())
                 return VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext);
 
-            if (myActualAppPathForSolution.HasValue())
+            if (myActualAppPathForSolution.HasValue() && !myActualAppPathForSolution.Value.IsNullOrEmpty())
                 return myActualAppPathForSolution.Value;
 
             ourLogger.Verbose(
