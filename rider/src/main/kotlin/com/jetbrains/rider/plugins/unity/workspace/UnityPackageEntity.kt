@@ -3,7 +3,6 @@
 package com.jetbrains.rider.plugins.unity.workspace
 
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.workspaceModel.deft.api.annotations.Ignore
 import com.intellij.workspaceModel.ide.impl.virtualFile
 import com.intellij.workspaceModel.storage.*
 import com.intellij.workspaceModel.storage.bridgeEntities.api.ContentRootEntity
@@ -24,16 +23,16 @@ interface UnityPackageEntity : WorkspaceEntity {
 
     val descriptor: UnityPackage
 
-    @Ignore val packageId: String get() = descriptor.id
-    @Ignore val version: String get() = descriptor.version
-    @Ignore val source: UnityPackageSource get() = descriptor.source
-    @Ignore val displayName: String get() = descriptor.displayName
-    @Ignore val description: String? get() = descriptor.description
-    @Ignore val dependencies: Map<String, String> get() = descriptor.dependencies.associate { it.id to it.version }
-    @Ignore val tarballLocation: String? get() = descriptor.tarballLocation
-    @Ignore val gitUrl: String? get() = descriptor.gitDetails?.url
-    @Ignore val gitHash: String? get() = descriptor.gitDetails?.hash
-    @Ignore val gitRevision: String?  get() = descriptor.gitDetails?.revision
+    val packageId: String get() = descriptor.id
+    val version: String get() = descriptor.version
+    val source: UnityPackageSource get() = descriptor.source
+    val displayName: String get() = descriptor.displayName
+    val description: String? get() = descriptor.description
+    val dependencies: Map<String, String> get() = descriptor.dependencies.associate { it.id to it.version }
+    val tarballLocation: String? get() = descriptor.tarballLocation
+    val gitUrl: String? get() = descriptor.gitDetails?.url
+    val gitHash: String? get() = descriptor.gitDetails?.hash
+    val gitRevision: String?  get() = descriptor.gitDetails?.revision
 
     fun isEditable(): Boolean {
         return descriptor.source in arrayOf(UnityPackageSource.Embedded, UnityPackageSource.Local)
@@ -44,7 +43,7 @@ interface UnityPackageEntity : WorkspaceEntity {
     }
 
     val contentRootEntity: ContentRootEntity?
-    @Ignore val packageFolder: VirtualFile? get() = contentRootEntity?.url?.virtualFile
+    val packageFolder: VirtualFile? get() = contentRootEntity?.url?.virtualFile
 
     //region generated code
     //@formatter:off

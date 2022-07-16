@@ -76,9 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
             // The ctorArguments lambda result is not cached, so let's allocate everything up front
             var args = new[]
             {
-                new AttributeValue(
-                    new ConstantValue("Coroutine will not continue if return value is ignored",
-                        predefinedType.String))
+                new AttributeValue(ConstantValue.String("Coroutine will not continue if return value is ignored", method.Module))
             };
             collection = new[]
             {
@@ -110,7 +108,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
 
                 // The ctorArguments lambda result is not cached, so let's allocate everything up front
                 var flagsType = myKnownTypesCache.GetByClrTypeName(ourImplicitUseTargetFlags, element.Module);
-                var args = new[] {new AttributeValue(new ConstantValue(3, flagsType))};
+                var args = new[]
+                {
+                    new AttributeValue(ConstantValue.Enum(ConstantValue.Int(3, element.Module), flagsType))
+                };
                 collection = new[]
                 {
                     new SpecialAttributeInstance(ourUsedImplicitlyAttributeFullName, GetModule(element), () => args)
@@ -214,8 +215,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
         {
             var args = new[]
             {
-                new AttributeValue(new ConstantValue(from, predefinedType.Long)),
-                new AttributeValue(new ConstantValue(to, predefinedType.Long))
+                new AttributeValue(ConstantValue.Long(from, element.Module)),
+                new AttributeValue(ConstantValue.Long(to, element.Module))
             };
 
             // We need a project for the resolve context. It's not actually used, but we still need it. The requested

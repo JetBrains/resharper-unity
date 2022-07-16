@@ -11,12 +11,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent]
     public class BurstStringFormatAnalyzer : IBurstProblemSubAnalyzer<IInvocationExpression>
     {
-        private readonly BurstStringLiteralOwnerAnalyzer myLiteralOwnerAnalyzer;
-        public BurstStringFormatAnalyzer(BurstStringLiteralOwnerAnalyzer literalOwnerAnalyzer)
-        {
-            myLiteralOwnerAnalyzer = literalOwnerAnalyzer;
-        }
-        
         public BurstProblemSubAnalyzerStatus CheckAndAnalyze(IInvocationExpression invocationExpression,
             IHighlightingConsumer consumer)
         {
@@ -27,12 +21,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
             if (!IsStringFormat(invokedMethod))
                 return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
-
-            var isWarningPlaced = myLiteralOwnerAnalyzer.CheckAndAnalyze(invocationExpression,
-                new BurstManagedStringWarning(invocationExpression), consumer);
-
-            if (isWarningPlaced)
-                return BurstProblemSubAnalyzerStatus.WARNING_PLACED_STOP;
 
             var argumentList = invocationExpression.ArgumentList.Arguments;
 

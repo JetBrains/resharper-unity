@@ -9,9 +9,9 @@ using JetBrains.ReSharper.Psi.Resolve;
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
     [Language(typeof(JsonNewLanguage))]
-    public class UnresolvedReferenceErrorHandler : IResolveProblemHighlighter
+    public class UnresolvedReferenceHandler : IResolveProblemHighlighter
     {
-        public IHighlighting Run(IReference reference) => new UnresolvedProjectReferenceError(reference);
+        public IHighlighting Run(IReference reference) => new UnresolvedProjectReferenceWarning(reference);
 
         public IEnumerable<ResolveErrorType> ErrorTypes =>
             new[] { AsmDefResolveErrorType.UNRESOLVED_REFERENCED_ASMDEF_ERROR };

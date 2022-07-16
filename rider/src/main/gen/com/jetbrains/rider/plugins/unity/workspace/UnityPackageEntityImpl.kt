@@ -1,7 +1,6 @@
 package com.jetbrains.rider.plugins.unity.workspace
 
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.workspaceModel.deft.api.annotations.Ignore
 import com.intellij.workspaceModel.ide.impl.virtualFile
 import com.intellij.workspaceModel.storage.*
 import com.intellij.workspaceModel.storage.EntityInformation

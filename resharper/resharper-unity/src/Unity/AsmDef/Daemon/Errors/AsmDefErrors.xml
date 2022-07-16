@@ -10,6 +10,7 @@
 
   <StaticSeverityGroups>
     <Group name="AsmDef Errors" key="AsmDefErrors" />
+    <Group name="AsmDef Warnings" key="AsmDefWarnings" />
   </StaticSeverityGroups>
 
   <SeverityConfiguration>
@@ -74,12 +75,12 @@
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
 
-  <Error name="UnresolvedProjectReference" staticGroup="AsmDefErrors">
+  <Warning name="UnresolvedProjectReference" staticGroup="AsmDefWarnings">
     <Parameter type="IReference" name="reference" />
-    <Message value="Unknown project reference '{0}'">
+    <Message value="Missing assembly reference '{0}'. Assembly will not be referenced during compilation">
       <Argument>Reference.GetName()</Argument>
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
-    <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR" />
-  </Error>
+    <Behavour attributeID="DEADCODE" overlapResolvePolicy="DEADCODE" />
+  </Warning>
 </Errors>

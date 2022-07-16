@@ -23,6 +23,11 @@ class UnitySolutionExplorerCustomization(project: Project) : SolutionExplorerCus
         return super.supportNugetModifications()
     }
 
+    override fun supportIncludeExcludeModifications(): Boolean {
+        if (isUnityGeneratedAndMinimizedUI()) return false
+        return super.supportIncludeExcludeModifications()
+    }
+
     private fun isUnityGeneratedAndMinimizedUI(): Boolean {
         return UnityUIManager.getInstance(project).hasMinimizedUi.hasTrueValue() && project.isUnityGeneratedProject()
     }
