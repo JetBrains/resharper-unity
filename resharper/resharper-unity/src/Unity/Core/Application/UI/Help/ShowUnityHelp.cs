@@ -14,11 +14,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
     {
         private readonly OpensUri myUriOpener;
         private readonly SolutionsManager mySolutionsManager;
+        private readonly ILogger myLogger;
 
-        public ShowUnityHelp(OpensUri uriOpener, SolutionsManager solutionsManager)
+        public ShowUnityHelp(OpensUri uriOpener, SolutionsManager solutionsManager, ILogger logger)
         {
             myUriOpener = uriOpener;
             mySolutionsManager = solutionsManager;
+            myLogger = logger;
         }
 
         public bool ShowHelp(string keyword, HelpSystem.HelpKind kind, string preferredProduct = "")
@@ -62,10 +64,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
         [NotNull]
         public Uri GetUri([NotNull] string keyword)
         {
+            // VS specifies keyword as SerializeField.#ctor
+            // Rider specifies keyword as SerializeField.-ctor
+            // result for offline doc should be SerializeField-ctor/SerializeField, depending on presence of specific doc on the disk
+            // result for online doc should contain dot, otherwise nothing is found
+
             var documentationRoot = GetDocumentationRoot();
-            return GetFileUri(documentationRoot, $"ScriptReference/{keyword}.html")
-                   ?? GetFileUri(documentationRoot, $"ScriptReference/{keyword.Replace('.', '-')}.html")
-                   ?? new Uri($"https://docs.unity3d.com{GetVersionSpecificPieceOfUrl()}/ScriptReference/30_search.html?q={keyword}");
+            keyword = keyword.Replace(".#", "-").Replace(".-", "-");
+            var res = GetFileUri(documentationRoot, $"ScriptReference/{keyword}.html") // ctor or type
+                   ?? GetFileUri(documentationRoot, $"ScriptReference/{keyword.ReplaceLast('.', '-')}.html") // property
+                   ?? GetFileUri(documentationRoot, $"ScriptReference/{keyword.Replace(".-ctor", "")}.html") // ctor in Rider doesn't exist, so goto type doc
+                   ?? new Uri($"https://docs.unity3d.com{GetVersionSpecificPieceOfUrl()}/ScriptReference/30_search.html?q={keyword}"); // fallback to online doc
+
+            myLogger.Trace($"GetUri {keyword} {res}");
+            return res;
         }
 
         private string GetVersionSpecificPieceOfUrl()
