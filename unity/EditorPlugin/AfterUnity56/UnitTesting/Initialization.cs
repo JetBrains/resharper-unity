@@ -4,6 +4,11 @@ using JetBrains.Diagnostics;
 using JetBrains.Rd.Tasks;
 using UnityEditor;
 using UnityEngine.SceneManagement;
+#if UNITY_2019_2_OR_NEWER
+using System.IO;
+using System.Linq;
+using UnityEngine;
+#endif
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {
@@ -51,7 +56,38 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
                 if (SceneManager.GetSceneAt(i).isDirty)
                     return true;
             }
+#if UNITY_2019_2_OR_NEWER
+            //Example of ScriptableObject which has its state, independent from the scenes
+            // Add this script to Assets
+            // Create an instance by `Assets > Create > ScriptableObjects > SpawnManagerScriptableObject`
+            // Change SerializableFields in the UnityEditor
+            /* 
+             [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/SpawnManagerScriptableObject", order = 1)]
+public class SpawnManagerScriptableObject : ScriptableObject
+{
+    public string prefabName;
+
+    public int numberOfPrefabsToCreate;
+    public Vector3[] spawnPoints;
+}
+             */
+            var hasDirtyUserAssets = Resources.FindObjectsOfTypeAll<UnityEngine.Object>()
+                .Any(a =>
+                {
+                    if (!EditorUtility.IsDirty(a))
+                        return false;
+                    var assetPath = AssetDatabase.GetAssetPath(a);
+
+                    if (string.IsNullOrEmpty(assetPath))
+                        return false;
+                    
+                    return File.Exists(Path.GetFullPath(assetPath));
+                });
+
+            return hasDirtyUserAssets;
+#else
             return false;
+#endif
         } );
     }
   }
