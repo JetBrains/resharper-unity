@@ -105,12 +105,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                     : backendUnityModel.RunMethodInUnity.Start(l, data).ToRdTask(l);
             });
 
-            frontendBackendModel.HasUnsavedScenes.Set((l, u) =>
+            frontendBackendModel.HasUnsavedState.Set((l, u) =>
             {
                 var backendUnityModel = backendUnityModelProperty.Maybe.ValueOrDefault;
                 return backendUnityModel == null
                     ? Rd.Tasks.RdTask<bool>.Cancelled()
-                    : backendUnityModel.HasUnsavedScenes.Start(l, u).ToRdTask(l);
+                    : backendUnityModel.HasUnsavedState.Start(l, u).ToRdTask(l);
             });
             
             frontendBackendModel.StartProfiling.Set((l, play) =>

@@ -32,14 +32,14 @@ private class UnresolvedMergeCheckHandler(
 ) : CheckinHandler() {
 
     private val project = panel.project
-    private val settings = UnsavedSceneCheckinState.getService(project)
+    private val settings = UnsavedCheckinState.getService(project)
     override fun getBeforeCheckinConfigurationPanel(): RefreshableOnComponent? {
         if (!project.isUnityProject())
             return null
 
         return BooleanCommitOption(
-            panel, UnityUIBundle.message("commitOption.check.unsaved.unity.scenes"), false,
-            settings::checkUnsavedScenes
+            panel, UnityUIBundle.message("commitOption.check.unsaved.unity.state"), false,
+            settings::checkUnsavedState
         )
     }
 
@@ -47,10 +47,10 @@ private class UnresolvedMergeCheckHandler(
         executor: CommitExecutor?,
         additionalDataConsumer: PairConsumer<Any, Any>
     ): ReturnResult {
-        if (settings.checkUnsavedScenes && project.isUnityProject()) {
+        if (settings.checkUnsavedState && project.isUnityProject()) {
             var providerResult = false
             try {
-                providerResult = project.solution.frontendBackendModel.hasUnsavedScenes
+                providerResult = project.solution.frontendBackendModel.hasUnsavedState
                     .sync(Unit, RpcTimeouts(200L, 200L))
             }
             catch (t: CancellationException){
@@ -69,8 +69,8 @@ private class UnresolvedMergeCheckHandler(
     private fun askUser(): ReturnResult {
         val dialogResult = Messages.showOkCancelDialog(
             project,
-            UnityUIBundle.message("dialog.unsaved.message.changes.in.unity.scenes.will.not.be.included.in.commit"),
-            UnityUIBundle.message("dialog.unsaved.title.unity.scenes"),
+            UnityUIBundle.message("dialog.unsaved.message.changes.in.unity.state.will.not.be.included.in.commit"),
+            UnityUIBundle.message("dialog.unsaved.title.unity.state"),
             UnityUIBundle.message("dialog.unsaved.button.commit.anyway"),
             UnityUIBundle.message("dialog.unsaved.button.cancel"),
             Messages.getWarningIcon()

@@ -48,7 +48,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 
     private static void GetUnsavedChangesInScenes(UnityModelAndLifetime modelAndLifetime)
     {
-        modelAndLifetime.Model.HasUnsavedScenes.Set(rdVoid => 
+        modelAndLifetime.Model.HasUnsavedState.Set(rdVoid => 
         {
             var count = SceneManager.sceneCount;
             for (var i = 0; i < count; i++)
