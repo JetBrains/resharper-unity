@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
@@ -94,7 +95,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 #else
             try
             {
-                var methodInfo = typeof(EditorUtility).GetMethod("IsDirty", new[] { typeof(int)});
+                var methodInfo = typeof(EditorUtility).GetMethod("IsDirty",BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic, null, new[] { typeof(int)}, null);
                 if (methodInfo == null)
                 {
                     ourLogger.Error("IsDirty method not found of type='{0}'", typeof(EditorUtility));
