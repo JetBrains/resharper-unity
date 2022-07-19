@@ -148,7 +148,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         call("runMethodInUnity", Library.RunMethodData, Library.RunMethodResult)
         property("isDeferredCachesCompletedOnce", bool)
 
-        call ("hasUnsavedScenes", void, bool)
+        call ("hasUnsavedState", void, bool)
 
         // Actions called from Unity to the backend
         callback("openFileLineCol", RdOpenFileArgs, bool).documentation = "Called from Unity to quickly open a file in an existing Rider instance"

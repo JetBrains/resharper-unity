@@ -157,7 +157,7 @@
     <diff.merge.external.AutomaticExternalMergeTool implementation="com.jetbrains.rider.plugins.unity.diff.UnityYamlAutomaticExternalMergeTool"/>
 
     <checkinHandlerFactory implementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnsavedSceneCheckinHandlerFactory"/>
-    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnsavedSceneCheckinState"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.vcs.UnsavedCheckinState"/>
 
     <checkinHandlerFactory implementation="com.jetbrains.rider.plugins.unity.ui.vcs.MetaFilesCheckinHandlerFactory"/>
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.vcs.MetaFilesCheckinState"/>

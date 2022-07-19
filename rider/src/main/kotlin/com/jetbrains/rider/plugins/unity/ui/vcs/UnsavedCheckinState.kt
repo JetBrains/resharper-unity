@@ -10,23 +10,23 @@ import com.jetbrains.rider.util.idea.getService
 import org.jdom.Element
 
 @State(name = "UnityCheckinConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
-class UnsavedSceneCheckinState(val project: Project) : PersistentStateComponent<Element> {
+class UnsavedCheckinState(val project: Project) : PersistentStateComponent<Element> {
 
     companion object {
-        fun getService(project: Project) = project.getService<UnsavedSceneCheckinState>()
+        fun getService(project: Project) = project.getService<UnsavedCheckinState>()
         const val attributeName = "checkUnsavedScenes"
     }
 
-    var checkUnsavedScenes: Boolean = true
+    var checkUnsavedState: Boolean = true
 
     override fun getState(): Element {
         val element = Element("state")
-        element.setAttribute(attributeName, checkUnsavedScenes.toString())
+        element.setAttribute(attributeName, checkUnsavedState.toString())
         return element
     }
 
     override fun loadState(element: Element)  {
         val attributeValue = element.getAttributeBooleanValue(attributeName)
-        checkUnsavedScenes = attributeValue
+        checkUnsavedState = attributeValue
     }
 }
