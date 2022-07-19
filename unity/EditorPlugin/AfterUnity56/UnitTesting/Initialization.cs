@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
@@ -74,11 +73,11 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
                 var hasDirtyUserAssets = Resources.FindObjectsOfTypeAll<Object>()
                     .Any(a =>
                     {
-                        if (!IsDirty(a))
-                            return false;
                         var assetPath = AssetDatabase.GetAssetPath(a);
-
                         if (string.IsNullOrEmpty(assetPath))
+                            return false;
+                        
+                        if (!IsDirty(a))
                             return false;
 
                         return File.Exists(Path.GetFullPath(assetPath));
@@ -93,15 +92,15 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 #if UNITY_2019_2_OR_NEWER
             return EditorUtility.IsDirty(unityObject);
 #else
-            var methodInfo = typeof(EditorUtility).GetMethod("IsDirty", BindingFlags.Public | BindingFlags.Static);
-            if (methodInfo == null)
-            {
-                ourLogger.Error("IsDirty method not found of type='{0}'", typeof(EditorUtility));
-                return false;
-            }
-
             try
             {
+                var methodInfo = typeof(EditorUtility).GetMethod("IsDirty", new[] { typeof(int)});
+                if (methodInfo == null)
+                {
+                    ourLogger.Error("IsDirty method not found of type='{0}'", typeof(EditorUtility));
+                    return false;
+                }
+
                 return (bool)methodInfo.Invoke(null, new object[]{unityObject.GetInstanceID()});
             }
             catch (Exception e)
