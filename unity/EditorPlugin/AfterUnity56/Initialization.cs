@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting;
 using UnityEngine;
 
@@ -15,7 +16,9 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
     public static class Initialization
     {
         private static readonly ILog ourLogger = Log.GetLog("Initialization");
-
+#if !UNITY_2019_2_OR_NEWER
+        private static MethodInfo ourIsDirtyMethodInfo;
+#endif
         public static void OnModelInitializationHandler(UnityModelAndLifetime modelAndLifetime)
         {
             ourLogger.Verbose("AdviseUnitTestLaunch");
@@ -95,17 +98,17 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
 #else
             try
             {
-                var methodInfo = typeof(EditorUtility).GetMethod("IsDirty",
-                    System.Reflection.BindingFlags.Static 
-                    | System.Reflection.BindingFlags.Public 
-                    | System.Reflection.BindingFlags.NonPublic, null, new[] { typeof(int)}, null);
-                if (methodInfo == null)
+                ourIsDirtyMethodInfo = typeof(EditorUtility).GetMethod("IsDirty",
+                    BindingFlags.Static 
+                    | BindingFlags.Public 
+                    | BindingFlags.NonPublic, null, new[] { typeof(int)}, null);
+                if (ourIsDirtyMethodInfo == null)
                 {
                     ourLogger.Error("IsDirty method not found of type='{0}'", typeof(EditorUtility));
                     return false;
                 }
 
-                return (bool)methodInfo.Invoke(null, new object[]{unityObject.GetInstanceID()});
+                return (bool)ourIsDirtyMethodInfo.Invoke(null, new object[]{unityObject.GetInstanceID()});
             }
             catch (Exception e)
             {
