@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.intellij", "org.jetbrains.intellij.gradle.plugin", "1.6.0")
+    implementation("org.jetbrains.intellij", "org.jetbrains.intellij.gradle.plugin", "1.7.0")
 }
 
 plugins {
