@@ -42,10 +42,10 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
                 return testLauncher.TryLaunchUnitTests();
             });
 
-            GetUnsavedChangesInScenes(modelAndLifetime);
+            HasUnsavedChanges(modelAndLifetime);
         }
 
-        private static void GetUnsavedChangesInScenes(UnityModelAndLifetime modelAndLifetime)
+        private static void HasUnsavedChanges(UnityModelAndLifetime modelAndLifetime)
         {
             modelAndLifetime.Model.HasUnsavedState.Set(rdVoid =>
             {
