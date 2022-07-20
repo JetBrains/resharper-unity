@@ -344,7 +344,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
         public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
         {
-            myActualAppPathForSolution.SetValue(myUnityProjectFileCache.GetAppPath(project));
+            var path = myUnityProjectFileCache.GetAppPath(project);
+            if (path != null)
+                myActualAppPathForSolution.SetValue(path);
         }
     }
 }
