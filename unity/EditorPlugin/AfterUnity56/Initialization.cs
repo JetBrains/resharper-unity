@@ -7,13 +7,14 @@ using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 using System.IO;
 using System.Linq;
+using JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting;
 using UnityEngine;
 
-namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
+namespace JetBrains.Rider.Unity.Editor.AfterUnity56
 {
     public static class Initialization
     {
-        private static readonly ILog ourLogger = Log.GetLog("UnitTesting.Initialization");
+        private static readonly ILog ourLogger = Log.GetLog("Initialization");
 
         public static void OnModelInitializationHandler(UnityModelAndLifetime modelAndLifetime)
         {
