@@ -77,14 +77,13 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
                 var hasDirtyUserAssets = Resources.FindObjectsOfTypeAll<ScriptableObject>()
                     .Any(a =>
                     {
-                        var assetPath = AssetDatabase.GetAssetPath(a);
-                        if (string.IsNullOrEmpty(assetPath))
+                        if (a.hideFlags < HideFlags.DontSaveInEditor) // this is faster than checking the File.Exists(Path.GetFullPath(assetPath))
                             return false;
-                        
+
                         if (!IsDirty(a))
                             return false;
 
-                        return File.Exists(Path.GetFullPath(assetPath));
+                        return true;
                     });
 
                 return hasDirtyUserAssets;
