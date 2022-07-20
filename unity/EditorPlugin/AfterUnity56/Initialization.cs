@@ -71,7 +71,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
         public Vector3[] spawnPoints;
     }
                  */
-                var hasDirtyUserAssets = Resources.FindObjectsOfTypeAll<Object>()
+                var hasDirtyUserAssets = Resources.FindObjectsOfTypeAll<ScriptableObject>()
                     .Any(a =>
                     {
                         var assetPath = AssetDatabase.GetAssetPath(a);
