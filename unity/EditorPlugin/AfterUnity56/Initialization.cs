@@ -7,7 +7,9 @@ using UnityEditor;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 using System.Linq;
+#if !UNITY_2019_2_OR_NEWER
 using System.Reflection;
+#endif
 using JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting;
 using UnityEngine;
 
