@@ -1,11 +1,11 @@
 using System;
+using System.IO;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Rd.Tasks;
 using UnityEditor;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting;
@@ -77,13 +77,21 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
                 var hasDirtyUserAssets = Resources.FindObjectsOfTypeAll<ScriptableObject>()
                     .Any(a =>
                     {
-                        if (a.hideFlags < HideFlags.DontSaveInEditor) // this is faster than checking the File.Exists(Path.GetFullPath(assetPath))
+                        if (a.hideFlags.HasFlag(HideFlags.DontSaveInEditor))
                             return false;
 
                         if (!IsDirty(a))
                             return false;
+                        
+                        // I don't expect too many of those unsaved user Assets with attached ScriptableObject,
+                        // so it feels safer to check them for having a real file on the disk
+                        // to avoid false positives
 
-                        return true;
+                        var assetPath = AssetDatabase.GetAssetPath(a);
+                        if (string.IsNullOrEmpty(assetPath))
+                            return false;
+
+                        return File.Exists(Path.GetFullPath(assetPath));
                     });
 
                 return hasDirtyUserAssets;
