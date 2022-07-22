@@ -104,6 +104,13 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
 
         private static bool IsPrefabDirty()
         {
+            /* For testing:
+             1. create a prefab
+             2. open it for editing
+             3. uncheck "Auto Save"
+             4. make any change to the prefab
+            */
+            
             // from 2018.3
             // return UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage().scene.isDirty;
             
