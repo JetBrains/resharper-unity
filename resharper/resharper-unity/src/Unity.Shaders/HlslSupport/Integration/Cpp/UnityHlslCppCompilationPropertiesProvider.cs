@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 
                 properties.ForcedIncludes.Add(globalCache.Solution.SolutionDirectory.Combine(Utils.ShaderConfigFile).FullPath);
 
-                properties.PredefinedMacros.Add( CppCliBridge.Instance.ParsePredefinedMacro("SHADER_API_D3D11"));
+                properties.PredefinedMacros.Add(CppPPDefineSymbolUtil.ParsePredefinedMacro("SHADER_API_D3D11"));
                 properties.IncludePaths.Add(globalCache.Solution.SolutionDirectory);
 
                 return properties;
