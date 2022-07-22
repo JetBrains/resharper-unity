@@ -7,9 +7,7 @@ using UnityEditor;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 using System.Linq;
-#if !UNITY_2019_2_OR_NEWER
 using System.Reflection;
-#endif
 using JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting;
 using UnityEngine;
 
@@ -96,8 +94,69 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
                         return File.Exists(Path.GetFullPath(assetPath));
                     });
 
-                return hasDirtyUserAssets;
+                if (hasDirtyUserAssets)
+                    return true;
+
+
+                return IsPrefabDirty();
             });
+        }
+
+        private static bool IsPrefabDirty()
+        {
+            // from 2018.3
+            // return UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage().scene.isDirty;
+            
+            // from 2021.2
+            // return UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage().scene.isDirty;
+
+            try
+            {
+                var T = Type.GetType("UnityEditor.SceneManagement.PrefabStageUtility,UnityEditor")
+                        ?? Type.GetType("UnityEditor.Experimental.SceneManagement.PrefabStageUtility,UnityEditor");
+                if (T == null)
+                {
+                    ourLogger.Error(
+                        "Types \"UnityEditor.SceneManagement.PrefabStageUtility,UnityEditor\" and \"UnityEditor.Experimental.SceneManagement.PrefabStageUtility,UnityEditor\" were not found.");
+                    return false;
+                }
+
+                var getCurrentPrefabStageMethodInfo =
+                    T.GetMethod("GetCurrentPrefabStage", BindingFlags.Public | BindingFlags.Static);
+                if (getCurrentPrefabStageMethodInfo == null)
+                {
+                    ourLogger.Error("getCurrentPrefabStageMethodInfo method not found of type='{0}'", T);
+                    return false;
+                }
+
+                var currentPrefabStage = getCurrentPrefabStageMethodInfo.Invoke(null, null);
+                if (currentPrefabStage == null) // there is no active prefab editing
+                    return false;
+                
+                var sceneProperty = currentPrefabStage.GetType().GetProperty("scene");
+                if (sceneProperty == null)
+                {
+                    ourLogger.Error("'scene' prop not found in type '{0}'.", currentPrefabStage.GetType());
+                    return false;
+                }
+
+                var sceneObject = sceneProperty.GetValue(currentPrefabStage, new object[]{});
+                var isDirtyProperty = sceneObject.GetType().GetProperty("isDirty");
+                if (isDirtyProperty == null)
+                {
+                    ourLogger.Error("isDirty prop not found in type '{0}'.", sceneProperty.GetType());
+                    return false;
+                }
+
+                var isDirty = (bool)isDirtyProperty.GetValue(sceneObject, new object[]{});
+                return isDirty;
+            }
+            catch (Exception e)
+            {
+                ourLogger.Error(e);
+            }
+
+            return false;
         }
 
         private static bool IsDirty(Object unityObject)
