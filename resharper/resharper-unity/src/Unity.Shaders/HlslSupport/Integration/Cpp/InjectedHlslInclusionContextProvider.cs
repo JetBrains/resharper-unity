@@ -65,15 +65,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             var shaderCache = cache.Solution.GetComponent<InjectedHlslFileLocationTracker>();
             var (includes, defines) = shaderCache.GetProgramInfo(rootFile);
 
-            inclusionContext.ProcessDefine( CppCliBridge.Instance.ParsePredefinedMacro("SHADER_API_D3D11"));
-            inclusionContext.ProcessDefine( CppCliBridge.Instance.ParsePredefinedMacro("__RESHARPER__"));
-            inclusionContext.ProcessDefine( CppCliBridge.Instance.ParsePredefinedMacro("INTERNAL_DATA= "));
-            inclusionContext.ProcessDefine( CppCliBridge.Instance.ParsePredefinedMacro("WorldReflectionVector(data,normal)=data.worldRefl"));
-            inclusionContext.ProcessDefine( CppCliBridge.Instance.ParsePredefinedMacro("WorldNormalVector(data,normal)=normal"));
+            inclusionContext.ProcessDefine(CppPPDefineSymbolUtil.ParsePredefinedMacro("SHADER_API_D3D11"));
+            inclusionContext.ProcessDefine(CppPPDefineSymbolUtil.ParsePredefinedMacro("__RESHARPER__"));
+            inclusionContext.ProcessDefine(CppPPDefineSymbolUtil.ParsePredefinedMacro("INTERNAL_DATA= "));
+            inclusionContext.ProcessDefine(CppPPDefineSymbolUtil.ParsePredefinedMacro("WorldReflectionVector(data,normal)=data.worldRefl"));
+            inclusionContext.ProcessDefine(CppPPDefineSymbolUtil.ParsePredefinedMacro("WorldNormalVector(data,normal)=normal"));
 
             foreach (var define in defines)
             {
-                inclusionContext.ProcessDefine( CppCliBridge.Instance.ParsePredefinedMacro($"{define.Key}={define.Value}"));
+                inclusionContext.ProcessDefine(CppPPDefineSymbolUtil.ParsePredefinedMacro($"{define.Key}={define.Value}"));
             }
             
             // TODO 1) is cache ready? what will happen under document transaction? check for bad moment?
