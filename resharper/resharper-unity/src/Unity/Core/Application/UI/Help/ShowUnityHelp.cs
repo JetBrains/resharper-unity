@@ -83,7 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
         private string GetVersionSpecificPieceOfUrl()
         {
             var version = mySolutionsManager.Solution?.GetComponent<UnityVersion>().ActualVersionForSolution.Value;
-            if (version == null)
+            if (version == null || version.Major == 0)
                 return string.Empty;
             
             // Version before 2017.1 has different format of version:
