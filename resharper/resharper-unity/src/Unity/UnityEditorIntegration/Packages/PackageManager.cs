@@ -72,6 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
         private VirtualFileSystemPath? myLastReadGlobalManifestPath;
         private EditorManifestJson? myGlobalManifest;
+        private readonly FileSystemPathTrie<PackageData> myFileSystemPathTrie;
 
         public PackageManager(Lifetime lifetime, ISolution solution, ILogger logger,
                               UnitySolutionTracker unitySolutionTracker,
@@ -115,6 +116,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
                 // We're all set up, terminate the advise
                 return true;
+            });
+            myFileSystemPathTrie = new FileSystemPathTrie<PackageData>(false);
+
+            Packages.AddRemove.Advise(lifetime, args =>
+            {
+                var packageData = args.Value.Value;
+                if (args.IsAdding)
+                    myFileSystemPathTrie.Add(packageData.PackageFolder, packageData);
+                    
+                if (args.IsRemoving)
+                    myFileSystemPathTrie.Remove(packageData.PackageFolder);
             });
         }
 
@@ -832,5 +844,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         }
 
         private static JetSemanticVersion Max(JetSemanticVersion v1, JetSemanticVersion v2) => v1 > v2 ? v1 : v2;
+
+        public PackageData? GetPackageByAssetPath(VirtualFileSystemPath possibleResource)
+        {
+            return myFileSystemPathTrie.FindLongestPrefix(possibleResource);
+        }
     }
 }
