@@ -87,6 +87,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
             return IsRelatedMethod(reference, IsAnimatorPlay);
         }
 
+        public static bool IsResourcesLoadMethod(this IInvocationExpressionReference reference)
+        {
+            return IsRelatedMethod(reference, IsResourcesLoad);
+        }
+
         private static bool IsRelatedMethod(IInvocationExpressionReference reference, Func<IMethod, bool> checker)
         {
             var result = reference.Resolve();
@@ -129,6 +134,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
             return method != null &&
                    method.ShortName.StartsWith("Play") &&
                    method.GetContainingType()?.GetClrName().Equals(KnownTypes.Animator) == true;
+        }
+
+        private static bool IsResourcesLoad(IMethod method)
+        {
+            return method != null &&
+                   method.ShortName.StartsWith("Load") &&
+                   method.GetContainingType()?.GetClrName().Equals(KnownTypes.Resources) == true;
         }
     }
 }
