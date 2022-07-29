@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
     [Language(typeof(ShaderLabLanguage))]
     public class InjectedHlslInclusionContextProvider : IInclusionContextProvider
     {
-        public CppInclusionContextResult CreateInclusionContextResult(ICppGlobalSymbolCache cache, CppFileLocation rootFile,
+        public CppInclusionContextResult CreateInclusionContextResult(CppGlobalSymbolCache cache, CppFileLocation rootFile,
             FileProcessingOptions options, long cacheVersion, Lifetime lifetime)
         {
             var locationTracker = cache.Solution.GetComponent<InjectedHlslFileLocationTracker>();
@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
         
         
         public static CppInclusionContextResult CreateInclusionContextResult(
-            ICppGlobalSymbolCache cache,
+            CppGlobalSymbolCache cache,
             CppFileLocation rootFile,
             FileProcessingOptions options,
             CppCompilationProperties compilationProperties,
