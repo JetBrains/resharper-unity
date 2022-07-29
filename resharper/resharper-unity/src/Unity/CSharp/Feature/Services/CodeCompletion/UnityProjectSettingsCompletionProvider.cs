@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.DocumentModel;
@@ -15,7 +14,6 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.CSharp.Util.Literals;
 using JetBrains.ReSharper.Psi.Resources;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
@@ -37,13 +35,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             IEnumerable<string> completionItems = null;
 
             // scene completion
-            if (IsSpecificArgumentInSpecificMethod(context, out var argumentLiteral, IsLoadSceneMethod, IsCorrespondingArgument("sceneName")))
+            if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out var argumentLiteral, IsLoadSceneMethod, UnityCompletionUtils.IsCorrespondingArgument("sceneName")))
             {
                 var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllPossibleSceneNames();
 
             } // animator state completion
-            else if (IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, IsPlayAnimationMethod, IsCorrespondingArgument("stateName")))
+            else if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, IsPlayAnimationMethod, UnityCompletionUtils.IsCorrespondingArgument("stateName")))
             {
                 var container = context.NodeInFile.GetSolution().GetComponent<AnimatorScriptUsagesElementContainer>();
                 completionItems = container.GetStateNames();
@@ -53,20 +51,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllTags();
             } // tag completion, CompareTag("...")
-            else if (IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsCompareTagMethod, IsCorrespondingArgument("tag")))
+            else if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsCompareTagMethod, UnityCompletionUtils.IsCorrespondingArgument("tag")))
             {
                 var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllTags();
             } // layer completion
-            else if (IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsLayerMaskNameToLayerMethod,
-                IsCorrespondingArgument("layerName")) || IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsLayerMaskGetMaskMethod,
+            else if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsLayerMaskNameToLayerMethod, UnityCompletionUtils.IsCorrespondingArgument("layerName")) || 
+                     UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsLayerMaskGetMaskMethod,
                            (_, __) => true))
             {
                 var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllLayers();
             }  // input completion
-            else if (IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsInputButtonMethod, IsCorrespondingArgument("buttonName")) ||
-                     IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsInputAxisMethod, IsCorrespondingArgument("axisName")))
+            else if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsInputButtonMethod, UnityCompletionUtils.IsCorrespondingArgument("buttonName")) ||
+                     UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsInputAxisMethod, UnityCompletionUtils.IsCorrespondingArgument("axisName")))
             {
                 var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllInput();
@@ -92,50 +90,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             }
 
             return any;
-        }
-
-        private bool IsSpecificArgumentInSpecificMethod(CSharpCodeCompletionContext context, out ICSharpLiteralExpression stringLiteral,
-            Func<IInvocationExpression, bool> methodChecker, Func<IArgumentList, ICSharpArgument, bool> argumentChecker)
-        {
-            stringLiteral = null;
-            var nodeInFile = context.NodeInFile as ITokenNode;
-            if (nodeInFile == null)
-                return false;
-
-            var possibleInvocationExpression = nodeInFile.Parent;
-            if (possibleInvocationExpression is ICSharpLiteralExpression literalExpression)
-            {
-                if (!literalExpression.Literal.IsAnyStringLiteral())
-                    return false;
-
-                var argument = CSharpArgumentNavigator.GetByValue(literalExpression);
-                var argumentList = ArgumentListNavigator.GetByArgument(argument);
-                if (argument == null || argumentList == null)
-                    return false;
-
-                if (argumentChecker(argumentList, argument))
-                {
-                    stringLiteral = literalExpression;
-                    possibleInvocationExpression = InvocationExpressionNavigator.GetByArgument(argument);
-                }
-            }
-
-            if (possibleInvocationExpression is IInvocationExpression invocationExpression)
-            {
-                if (methodChecker(invocationExpression))
-                {
-                    return true;
-                }
-            }
-
-            stringLiteral = null;
-            return false;
-        }
-
-        private Func<IArgumentList, ICSharpArgument, bool> IsCorrespondingArgument(string argumentName)
-        {
-            return (argumentList, argument) => argument.IsNamedArgument && argument.NameIdentifier.Name.Equals(argumentName) ||
-                   !argument.IsNamedArgument && argumentList.Arguments[0] == argument;
         }
 
         private bool IsLoadSceneMethod(IInvocationExpression invocationExpression)
