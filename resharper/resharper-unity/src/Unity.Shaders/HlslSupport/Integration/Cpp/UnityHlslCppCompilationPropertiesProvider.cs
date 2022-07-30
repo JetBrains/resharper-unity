@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
         }
         
         public CppCompilationProperties GetCompilationProperties(IProject project, IProjectFile projectFile, CppFileLocation rootFile,
-            ICppGlobalSymbolCache globalCache)
+            CppGlobalSymbolCache globalCache)
         {
             if (project.IsUnityProject() && CppProjectFileType.ALL_HLSL_EXTENSIONS.Contains(rootFile.Location.ExtensionWithDot))
             {
