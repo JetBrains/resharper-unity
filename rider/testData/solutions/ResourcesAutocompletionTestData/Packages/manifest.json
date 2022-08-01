@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "com.jetbrains.unity_resources_package_from_disk": "file:../LoadFromDiskPackages/unity_resources_package_from_disk",
+    "com.jetbrains.unity_resources_package_from_git": "ssh://git@git.jetbrains.team/george-l-sandbox/unity-resources-package.git",
+    "com.unity.ide.rider": "3.0.15"
+  }
+}
