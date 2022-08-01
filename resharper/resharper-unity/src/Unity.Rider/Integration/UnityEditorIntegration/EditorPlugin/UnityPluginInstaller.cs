@@ -75,6 +75,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             
             myBoundSettingsStore = settingsStore.BoundSettingsStore;
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
+            
+            if(!myPluginPathsProvider.ShouldRunInstallation())
+                return;
 
             frontendBackendHost.Do(frontendBackendModel =>
             {
