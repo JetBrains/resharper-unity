@@ -1,0 +1,52 @@
+name: Tests
+
+# This project uses unity-ci project (unity-ci.com) to help getting activation file and run tests automatically on push.
+# unity-ci project has great documentation on how to create workflow to run tests https://unity-ci.com/docs/github/test-runner
+
+# NOTE: You need create a new github repository secret UNITY_LICENSE for this to work.
+# For further details on how to add secrets, please see github docs https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository
+
+on:
+  # Currently tests can only be ran against main branch because of how
+  # Test project is set up. See Samples\ExampleUnityProject\Packages\manifest.json
+  # Package is always cloned from the main branch for tests
+  push:
+    branches:
+      - main
+
+env:
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+
+jobs:
+  Tests:
+    name: Run in ${{ matrix.testMode }} on v. ${{ matrix.unityVersion }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        projectPath: [ Samples/ExampleUnityProject ]
+        unityVersion: [ 2019.4.1f1 ]
+        testMode: [ playmode ] # editmode
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+      - uses: actions/cache@v1.1.0
+        with:
+          path: ${{ matrix.projectPath }}/Library
+          key: Library-${{ matrix.projectPath }}
+          restore-keys: |
+            Library-
+      - uses: webbertakken/unity-test-runner@v1.6
+        name: Run tests
+        id: tests
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: ${{ matrix.testMode }}
+          artifactsPath: ${{ matrix.testMode }}-artifacts
+      - uses: actions/upload-artifact@v1
+        name: Upload test results
+        with:
+          name: Test results for ${{ matrix.testMode }}
+          path: ${{ steps.tests.outputs.artifactsPath }}
