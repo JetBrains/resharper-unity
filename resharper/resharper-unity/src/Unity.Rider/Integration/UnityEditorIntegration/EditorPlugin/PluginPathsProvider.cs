@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.Reflection;
 using JetBrains.Application.Environment;
 using JetBrains.ProjectModel;
 using JetBrains.Util;
@@ -28,6 +29,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             var installDirectory = myResolver.GetDeployedPackageDirectory(package);
             var editorPluginPathDir = installDirectory.Parent.Combine(@"EditorPlugin");
             return editorPluginPathDir.ToVirtualFileSystemPath();
+        }
+
+        public bool ShouldRunInstallation()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var package = myApplicationPackages.FindPackageWithAssembly(assembly, OnError.LogException);
+            var installDirectory = myResolver.GetDeployedPackageDirectory(package);
+            var editorPluginPathDir = installDirectory.Parent;
+         
+            //Check if installer is running from UBER-repo - in that case we are avoiding installation    
+            return !File.Exists(Path.Combine(editorPluginPathDir.FullPath, "Product.Root"));
         }
     }
 }
