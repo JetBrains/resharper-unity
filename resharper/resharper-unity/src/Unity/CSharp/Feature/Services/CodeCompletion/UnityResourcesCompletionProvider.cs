@@ -18,6 +18,7 @@ using JetBrains.ReSharper.Psi.Resx.Utils;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
 using JetBrains.UI.Icons;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompletion
 {
@@ -32,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         protected override bool AddLookupItems(CSharpCodeCompletionContext context, IItemsCollector collector)
         {
             if (!UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out var argumentLiteral,
-                    IsResourcesLoadMethod,
+                    ExpressionReferenceUtils.IsResourcesLoadMethod,
                     UnityCompletionUtils.IsCorrespondingArgument("path")))
                 return false;
 
@@ -44,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var any = false;
             foreach (var assetsFolderResource in resourceLoadCache.CachedResources)
             {
-                var completionRelativePath = assetsFolderResource.RelativePath.ConvertToString()?.Replace("\\", "/");
+                var completionRelativePath = assetsFolderResource.RelativePath.NormalizeSeparators(FileSystemPathEx.SeparatorStyle.Unix);
                 var locationDescription = "Assets/";
 
                 if (assetsFolderResource.ResourceLocationType is ResourceLocationType.PackageEditor
@@ -68,11 +69,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             }
 
             return any;
-        }
-
-        private bool IsResourcesLoadMethod(IInvocationExpression invocationExpression)
-        {
-            return invocationExpression.InvocationExpressionReference.IsResourcesLoadMethod();
         }
 
         private sealed class ResourcesCompletionItem : TextLookupItemBase
