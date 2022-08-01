@@ -61,6 +61,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
             return IsSpecificMethod(expr, KnownTypes.LayerMask, "NameToLayer");
         }
 
+        public static bool IsResourcesLoadMethod(this IInvocationExpression invocationExpression)
+        {
+            return invocationExpression.InvocationExpressionReference.IsResourcesLoadMethod();
+        }
+
         private static bool IsSpecificMethod(IInvocationExpression invocationExpression, IClrTypeName typeName, params string[] methodNames)
         {
             var declaredElement = invocationExpression.Reference.Resolve().DeclaredElement as IMethod;
