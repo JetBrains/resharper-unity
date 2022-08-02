@@ -31,15 +31,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             return editorPluginPathDir.ToVirtualFileSystemPath();
         }
 
+
         public bool ShouldRunInstallation()
         {
             var assembly = Assembly.GetExecutingAssembly();
             var package = myApplicationPackages.FindPackageWithAssembly(assembly, OnError.LogException);
             var installDirectory = myResolver.GetDeployedPackageDirectory(package);
-            var editorPluginPathDir = installDirectory.Parent;
+            var root = installDirectory.Parent;
          
-            //Check if installer is running from UBER-repo - in that case we are avoiding installation    
-            return !File.Exists(Path.Combine(editorPluginPathDir.FullPath, "Product.Root"));
+            // Avoid EditorPlugin installation when we run from the dotnet-products repository.
+            // This way EditorPlugin may be compiled, it is optional
+            return root.Combine("Product.Root").ExistsFile;
         }
     }
 }
