@@ -80,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 LookupUtil.AddInformationText(DisplayName, extension);
             }
 
-            public override IconId Image => UnityObjectTypeThemedIcons.UnityPackages.Id;
+            public override IconId Image => UnityFileTypeThemedIcons.FileUnityAsset.Id;
 
             public override MatchingResult Match(PrefixMatcher prefixMatcher)
             {
