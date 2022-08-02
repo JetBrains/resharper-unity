@@ -8,13 +8,11 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.Match;
 using JetBrains.ReSharper.Feature.Services.CSharp.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Feature.Services.Lookup;
 using JetBrains.ReSharper.Features.Intellisense.CodeCompletion.CSharp.Rules;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
-using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Resources;
-using JetBrains.ReSharper.Psi.Resx.Utils;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
 using JetBrains.UI.Icons;
@@ -82,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 LookupUtil.AddInformationText(DisplayName, extension);
             }
 
-            public override IconId Image => PsiSymbolsThemedIcons.Const.Id;
+            public override IconId Image => UnityObjectTypeThemedIcons.UnityPackages.Id;
 
             public override MatchingResult Match(PrefixMatcher prefixMatcher)
             {
