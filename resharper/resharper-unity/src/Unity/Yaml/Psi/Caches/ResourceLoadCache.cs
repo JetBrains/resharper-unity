@@ -15,49 +15,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
     [PsiComponent]
     public class ResourceLoadCache : SimpleICache<ResourcesCacheItem>
     {
-        public readonly struct ResourceCacheInfo
-        {
-            public readonly ResourceLocationType ResourceLocationType;
-            public readonly RelativePath RelativePath;
-            [CanBeNull] public readonly VirtualFileSystemPath VirtualFileSystemPath;
-            public readonly string Extension;
-
-            public ResourceCacheInfo(ResourceLocationType resourceLocationType,
-                RelativePath relativePath,
-                VirtualFileSystemPath virtualFileSystemPath,
-                string extension)
-            {
-                ResourceLocationType = resourceLocationType;
-                RelativePath = relativePath;
-                VirtualFileSystemPath = virtualFileSystemPath;
-                Extension = extension;
-            }
-
-            public bool Equals(ResourceCacheInfo other)
-            {
-                return ResourceLocationType == other.ResourceLocationType && Equals(RelativePath, other.RelativePath) &&
-                       Equals(VirtualFileSystemPath, other.VirtualFileSystemPath) && Extension == other.Extension;
-            }
-
-            public override bool Equals(object obj)
-            {
-                return obj is ResourceCacheInfo other && Equals(other);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    var hashCode = (int)ResourceLocationType;
-                    hashCode = (hashCode * 397) ^ (RelativePath != null ? RelativePath.GetHashCode() : 0);
-                    hashCode = (hashCode * 397) ^
-                               (VirtualFileSystemPath != null ? VirtualFileSystemPath.GetHashCode() : 0);
-                    hashCode = (hashCode * 397) ^ (Extension != null ? Extension.GetHashCode() : 0);
-                    return hashCode;
-                }
-            }
-        }
-
         private const string ResourcesFolderName = "Resources";
         private const string EditorFolderName = "Editor";
 
@@ -221,6 +178,49 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                         cacheItem.RelativePath,
                         cacheItem.PathInsideResourcesFolder,
                         cacheItem.ExtensionWithDot));
+            }
+        }
+        
+        public readonly struct ResourceCacheInfo
+        {
+            public readonly ResourceLocationType ResourceLocationType;
+            public readonly RelativePath RelativePath;
+            [CanBeNull] public readonly VirtualFileSystemPath VirtualFileSystemPath;
+            public readonly string Extension;
+
+            public ResourceCacheInfo(ResourceLocationType resourceLocationType,
+                RelativePath relativePath,
+                VirtualFileSystemPath virtualFileSystemPath,
+                string extension)
+            {
+                ResourceLocationType = resourceLocationType;
+                RelativePath = relativePath;
+                VirtualFileSystemPath = virtualFileSystemPath;
+                Extension = extension;
+            }
+
+            public bool Equals(ResourceCacheInfo other)
+            {
+                return ResourceLocationType == other.ResourceLocationType && Equals(RelativePath, other.RelativePath) &&
+                       Equals(VirtualFileSystemPath, other.VirtualFileSystemPath) && Extension == other.Extension;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is ResourceCacheInfo other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    var hashCode = (int)ResourceLocationType;
+                    hashCode = (hashCode * 397) ^ (RelativePath != null ? RelativePath.GetHashCode() : 0);
+                    hashCode = (hashCode * 397) ^
+                               (VirtualFileSystemPath != null ? VirtualFileSystemPath.GetHashCode() : 0);
+                    hashCode = (hashCode * 397) ^ (Extension != null ? Extension.GetHashCode() : 0);
+                    return hashCode;
+                }
             }
         }
     }
