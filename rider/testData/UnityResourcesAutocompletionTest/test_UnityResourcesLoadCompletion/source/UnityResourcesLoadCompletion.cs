@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class UnityResourcesCompletionTest : MonoBehaviour
+public class UnityResourcesLoadCompletion : MonoBehaviour
 {
     void Start()
     {
