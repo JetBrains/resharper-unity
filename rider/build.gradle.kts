@@ -17,7 +17,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("idea")
-    id("com.jetbrains.rdgen") version "2022.3.0"
+    // Version is configured in gradle.properties
+    id("com.jetbrains.rdgen")
     id("com.ullink.nuget") version "2.23"
     id("com.ullink.nunit") version "2.4"
     id("me.filippov.gradle.jvm.wrapper") version "0.10.0"

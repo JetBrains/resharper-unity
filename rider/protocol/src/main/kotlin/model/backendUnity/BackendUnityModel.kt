@@ -174,7 +174,7 @@ object BackendUnityModel: Root() {
         property("unitTestLaunch", UnitTestLaunch).documentation = "Set the details of the current unit test session"
         call("runUnitTestLaunch", void, bool).documentation = "Start the unit test session. Results are fired via UnitTestLaunch.TestResult"
 
-        call ("hasUnsavedScenes", void, bool)
+        call ("hasUnsavedState", void, bool)
 
         // profiler
         call ("startProfiling", ProfilingData, void).documentation = "Start profiling and enter PlayMode, depending on the param"
