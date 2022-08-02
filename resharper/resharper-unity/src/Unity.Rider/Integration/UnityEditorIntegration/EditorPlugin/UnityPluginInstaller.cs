@@ -77,7 +77,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
             
             if(!myPluginPathsProvider.ShouldRunInstallation())
+            {
+                myLogger.Verbose("myPluginPathsProvider.ShouldRunInstallation returned false.");
                 return;
+            }
 
             frontendBackendHost.Do(frontendBackendModel =>
             {
