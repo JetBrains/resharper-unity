@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             var root = installDirectory.Parent;
          
             // Avoid EditorPlugin installation when we run from the dotnet-products repository.
-            // This way EditorPlugin may be compiled, it is optional
+            // For the dotnet-products repository EditorPlugin may not be compiled, it is optional
             return root.Combine("Product.Root").ExistsFile;
         }
     }
