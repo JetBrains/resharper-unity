@@ -95,7 +95,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         {
             //Assets/Resources/Folder/img.png
             //Assets/Resources/Folder/Resources/img.png -> img.png 
-            relativeSourceFilePath.Components.IndexOf(ResourcesFolderName);
             var parent = relativeSourceFilePath.Parent;
 
             int sanityCheck = 10000;
