@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         private const string EditorFolderName = "Editor";
 
         private readonly ISolution mySolution;
-        private readonly string mySolutionRootDir;
+        private readonly string myDriveRootDirForSolution;
 
 
         public ResourceLoadCache(Lifetime lifetime,
@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             : base(lifetime, locks, persistentIndexManager, ResourcesCacheItem.Marshaller)
         {
             mySolution = solution;
-            mySolutionRootDir = mySolution.SolutionDirectory.GetRootDir();
+            myDriveRootDirForSolution = mySolution.SolutionDirectory.GetRootDir();
         }
 
         public HashSet<ResourceCacheInfo> CachedResources { get; } = new();
@@ -53,13 +53,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             if (extensionNoDot.IsNullOrEmpty()) //files without extension or any folder - should be skipped 
                 return null;
 
-            var sourceFileRootDir = sourceFileLocation.GetRootDir();
+            var driveRootDirForSourceFile = sourceFileLocation.GetRootDir();
 
-            var isOnTheSameDiskAsSolution = sourceFileRootDir == mySolutionRootDir;
+            var isOnTheSameDiskAsSolution = driveRootDirForSourceFile == myDriveRootDirForSolution;
 
             var relativeSourceFilePath = isOnTheSameDiskAsSolution
                 ? sourceFileLocation.MakeRelativeTo(mySolution.SolutionDirectory).ChangeExtension("")
-                : sourceFileLocation.MakeRelativeTo(VirtualFileSystemPath.Parse(sourceFileRootDir, InteractionContext.SolutionContext)).ChangeExtension("");
+                : sourceFileLocation.MakeRelativeTo(VirtualFileSystemPath.Parse(driveRootDirForSourceFile, InteractionContext.SolutionContext)).ChangeExtension("");
 
             Assertion.Assert(relativeSourceFilePath != null, nameof(relativeSourceFilePath) + " != null");
 

@@ -109,7 +109,7 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution()
     }
 
     @BeforeMethod
-    fun InitializeEnvironement() {
+    fun initializeEnvironment() {
         TestModeFlags.set(CompletionAutoPopupHandler.ourTestingAutopopup, true)
 
         CodeInsightSettings.getInstance().COMPLETION_CASE_SENSITIVE = CodeInsightSettings.NONE
@@ -123,7 +123,7 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution()
 
     // debug only
     @AfterMethod
-    fun SaveDocuments() {
+    fun saveDocuments() {
         persistAllFilesOnDisk()
     }
 }
