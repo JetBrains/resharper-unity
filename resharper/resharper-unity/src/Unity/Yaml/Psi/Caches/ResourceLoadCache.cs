@@ -95,7 +95,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         {
             //Assets/Resources/Folder/img.png
             //Assets/Resources/Folder/Resources/img.png -> img.png 
-            var index = relativeSourceFilePath.Components.IndexOf(ResourcesFolderName);
+            relativeSourceFilePath.Components.IndexOf(ResourcesFolderName);
             var parent = relativeSourceFilePath.Parent;
 
             int sanityCheck = 10000;
@@ -134,7 +134,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public override void Merge(IPsiSourceFile sourceFile, object builtPart)
         {
             RemoveFromLocalCache(sourceFile);
-            AddToLocalCache(sourceFile, builtPart as ResourcesCacheItem);
+            AddToLocalCache(builtPart as ResourcesCacheItem);
             base.Merge(sourceFile, builtPart);
         }
 
@@ -152,11 +152,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         private void PopulateLocalCache()
         {
-            foreach (var (psiSourceFile, cacheItem) in Map)
-                AddToLocalCache(psiSourceFile, cacheItem);
+            foreach (var (_, cacheItem) in Map)
+                AddToLocalCache(cacheItem);
         }
 
-        private void AddToLocalCache(IPsiSourceFile sourceFile, [CanBeNull] ResourcesCacheItem cacheItem)
+        private void AddToLocalCache([CanBeNull] ResourcesCacheItem cacheItem)
         {
             if (cacheItem == null) return;
             CachedResources.Add(
