@@ -11,6 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
     {
         private readonly ApplicationPackages myApplicationPackages;
         private readonly IDeployedPackagesExpandLocationResolver myResolver;
+        private readonly FileSystemPath myRootDir;
         
         public static readonly string BasicPluginDllFile = "JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll";
         public static readonly string Unity56PluginDllFile = "JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.dll";
@@ -20,28 +21,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         {
             myApplicationPackages = applicationPackages;
             myResolver = resolver;
+            myRootDir = GetRootDir();
         }
         
         public VirtualFileSystemPath GetEditorPluginPathDir()
         {
-            var assembly = Assembly.GetExecutingAssembly();
-            var package = myApplicationPackages.FindPackageWithAssembly(assembly, OnError.LogException);
-            var installDirectory = myResolver.GetDeployedPackageDirectory(package);
-            var editorPluginPathDir = installDirectory.Parent.Combine(@"EditorPlugin");
+            var editorPluginPathDir = myRootDir.Combine(@"EditorPlugin");
             return editorPluginPathDir.ToVirtualFileSystemPath();
         }
 
 
         public bool ShouldRunInstallation()
         {
+            // Avoid EditorPlugin installation when we run from the dotnet-products repository.
+            // For the dotnet-products repository EditorPlugin may not be compiled, it is optional
+            return myRootDir.Combine("Product.Root").ExistsFile;
+        }
+
+        private FileSystemPath GetRootDir()
+        {
             var assembly = Assembly.GetExecutingAssembly();
             var package = myApplicationPackages.FindPackageWithAssembly(assembly, OnError.LogException);
             var installDirectory = myResolver.GetDeployedPackageDirectory(package);
             var root = installDirectory.Parent;
-         
-            // Avoid EditorPlugin installation when we run from the dotnet-products repository.
-            // For the dotnet-products repository EditorPlugin may not be compiled, it is optional
-            return root.Combine("Product.Root").ExistsFile;
+            return root;
         }
     }
 }
