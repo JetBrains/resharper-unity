@@ -18,7 +18,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         private const string ResourcesFolderName = "Resources";
         private const string EditorFolderName = "Editor";
 
-        private readonly ILogger myLogger;
         private readonly ISolution mySolution;
         private readonly string mySolutionRootDir;
 
@@ -26,12 +25,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public ResourceLoadCache(Lifetime lifetime,
             [NotNull] IShellLocks locks,
             [NotNull] IPersistentIndexManager persistentIndexManager,
-            ISolution solution,
-            ILogger logger)
+            ISolution solution)
             : base(lifetime, locks, persistentIndexManager, ResourcesCacheItem.Marshaller)
         {
             mySolution = solution;
-            myLogger = logger;
             mySolutionRootDir = mySolution.SolutionDirectory.GetRootDir();
         }
 
