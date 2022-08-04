@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using JetBrains.Application.Components;
+using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
-using JetBrains.Core;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.Rd.Tasks;
 using JetBrains.RdBackend.Common.Features;
-using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitTesting;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.UnitTestFramework.Execution;
 using JetBrains.Rider.Backend.Features.Unity;
+using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
 
@@ -29,6 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
         private static readonly string ourUnityTimeoutMessage = $"Unity hasn't connected. Timeout {ourUnityConnectionTimeout.TotalMilliseconds} ms is over.";
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly UnityVersion myUnityVersion;
+        private readonly IThreading myThreading;
+        private readonly ILogger myLogger;
         private readonly ISolution mySolution;
         private readonly Lifetime myLifetime;
         private readonly FrontendBackendModel myFrontendBackendModel;
@@ -38,81 +39,79 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
         public UnityController(Lifetime lifetime,
                                ISolution solution,
                                BackendUnityHost backendUnityHost,
-                               UnityVersion unityVersion)
+                               UnityVersion unityVersion,
+                               IThreading threading,
+                               ILogger logger)
         {
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
             myBackendUnityHost = backendUnityHost;
             myUnityVersion = unityVersion;
+            myThreading = threading;
+            myLogger = logger;
             mySolution = solution;
             myLifetime = lifetime;
             myFrontendBackendModel = solution.GetProtocolSolution().GetFrontendBackendModel();
         }
+        
+        public bool IsUnityEditorUnitTestRunStrategy(IUnitTestRunStrategy strategy) 
+            => strategy is RunViaUnityEditorStrategy;
 
-        public Task<ExitUnityResult> ExitUnityAsync(Lifetime lifetime, bool force)
+        public Version GetUnityVersion() => myUnityVersion.ActualVersionForSolution.Value;
+
+        public string GetPresentableUnityVersion() 
+            => myFrontendBackendModel.UnityApplicationData.Value?.ApplicationVersion ?? string.Empty;
+
+        public bool TryGetUnityProcessId(out int processId)
         {
-            var lifetimeDef = Lifetime.DefineIntersection(myLifetime, lifetime);
-            if (myBackendUnityHost.BackendUnityModel.Value == null) // no connection
-                return Task.FromResult(force ? KillProcess() : new ExitUnityResult(false, "No connection to Unity Editor.", null));
-
-            var protocolTaskSource = new TaskCompletionSource<bool>();
-            mySolution.Locks.Tasks.StartNew(lifetimeDef.Lifetime, Scheduling.MainGuard, () => myBackendUnityHost.BackendUnityModel.Value.ExitUnity.Start(lifetimeDef.Lifetime, Unit.Instance)
-                .AsTask());
-            var protocolTask = protocolTaskSource.Task;
-
-            var waitTask = Task.WhenAny(protocolTask, Task.Delay(TimeSpan.FromSeconds(0.5), lifetimeDef.Lifetime)); // continue on timeout
-            return waitTask.ContinueWith(_ =>
+            processId = 0;
+            var applicationData = myBackendUnityHost.BackendUnityModel.Value?.UnityApplicationData.Value;
+            if (applicationData is {UnityProcessId: { }})
             {
-                lifetimeDef.Terminate();
-                if (protocolTask.Status != TaskStatus.RanToCompletion && force)
-                    return WaitModelUpdate();
-
-                return Task.FromResult(new ExitUnityResult(false, "Attempt to close Unity Editor failed.", null));
-            }, TaskContinuationOptions.AttachedToParent).Unwrap();
-        }
-
-        private Task<ExitUnityResult> WaitModelUpdate()
-        {
-            var successExitResult = new ExitUnityResult(true, null, null);
-            if (!myBackendUnityHost.BackendUnityModel.HasValue())
-                return Task.FromResult(successExitResult);
-
-            var taskSource = new TaskCompletionSource<ExitUnityResult>();
-            var waitLifetimeDef = myLifetime.CreateNested();
-            waitLifetimeDef.SynchronizeWith(taskSource);
-
-            // Wait RdModel Update
-            myBackendUnityHost.BackendUnityModel.ViewNull(waitLifetimeDef.Lifetime, _ => taskSource.SetResult(successExitResult));
-            return taskSource.Task;
-        }
-
-        public int? TryGetUnityProcessId()
-        {
-            var model = myBackendUnityHost.BackendUnityModel.Value;
-            if (model != null)
-            {
-                if (model.UnityApplicationData.HasValue())
-                {
-                    return model.UnityApplicationData.Value.UnityProcessId;
-                }
+                processId = applicationData.UnityProcessId.Value;
+                return true;
             }
+            
             // no protocol connection - try to fallback to EditorInstance.json
             var processIdString = EditorInstanceJson.TryGetValue(EditorInstanceJsonPath, "process_id");
             if (processIdString == null)
-                return null;
+                return false;
 
             // Check exists of process if it was killed by manual and EditorInstance.json wasn't deleted
-            var pid = Convert.ToInt32(processIdString);
-
-            // TODO: Be careful removing this redundant cast
-            // It caused a build failure on TC, presumably due to different compiler versions or SDKs? However, it
-            // builds fine locally, with .NET 5.0.301 ¯\_(ツ)_/¯
-            // ReSharper disable once RedundantCast
-            return PlatformUtil.ProcessExists(pid) ? pid : (int?) null;
+            processId = Convert.ToInt32(processIdString);
+            return PlatformUtil.ProcessExists(processId);
         }
 
-        public Task<int> WaitConnectedUnityProcessId(Lifetime lifetime)
+        public Task<int> StartAndWaitConnectedUnity(Lifetime lifetime)
+        {
+            if (!TryGetUnityCommandline(out var unityPath, out var unityArgs))
+                throw new InvalidOperationException("Cannot get command line to start Unity Editor.");
+            
+            var process = Process.Start(new ProcessStartInfo(unityPath, string.Join(" ", unityArgs)));
+            if (process.HasExited)
+                throw new InvalidOperationException("Unity Editor hasn't started.");
+            
+            return WaitConnectedUnityProcessId(lifetime);
+        }
+        
+        public Task StartProfiler(Lifetime lifetime, 
+                                  FileSystemPath unityProfilerApiPath = null, 
+                                  bool reloadUserAssemblies = true)
+        {
+            var unityModel = myBackendUnityHost.BackendUnityModel.Value;
+            if (unityModel == null)
+                return null;
+            
+            var data = new ProfilingData(
+                myFrontendBackendModel.UnitTestPreference.Value is UnitTestLaunchPreference.PlayMode, 
+                unityProfilerApiPath?.ToString() ?? GetProfilerApiPath(), 
+                reloadUserAssemblies);
+            
+            return myThreading.Tasks.StartNew(lifetime, Scheduling.MainDispatcher, () => unityModel.StartProfiling.Sync(data));
+        }
+
+        private Task<int> WaitConnectedUnityProcessId(Lifetime lifetime)
         {
             var source = new TaskCompletionSource<int>();
             var lifetimeDef = Lifetime.DefineIntersection(myLifetime, lifetime);
@@ -145,67 +144,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
             return source.Task;
         }
 
-        [CanBeNull]
-        public string[] GetUnityCommandline()
+        private bool TryGetUnityCommandline(out string path, out string[] args)
         {
+            path = string.Empty;
+            args = EmptyArray<string>.Instance;
+            
             var unityPathData = myFrontendBackendModel.UnityApplicationData;
             if (!unityPathData.HasValue())
-                return null;
+                return false;
+            
             var unityPath = unityPathData.Value?.ApplicationPath;
             if (unityPath != null && PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
                 unityPath = VirtualFileSystemPath.Parse(unityPath, InteractionContext.SolutionContext).Combine("Contents/MacOS/Unity").FullPath;
+            
+            if (unityPath == null)
+                return false;
 
-            return unityPath == null
-                ? null
-                : new[] { unityPath, "-projectPath", CommandLineUtil.QuoteIfNeeded(mySolution.SolutionDirectory.FullPath) };
+            path = unityPath;
+            args = new[] {"-projectPath", CommandLineUtil.QuoteIfNeeded(mySolution.SolutionDirectory.FullPath)};
+            return true;
         }
-
-        public bool IsUnityGeneratedProject(IProject project)
+        
+        private string GetProfilerApiPath()
         {
-            return project.IsUnityGeneratedProject();
-        }
-
-        public bool IsUnityEditorUnitTestRunStrategy(IUnitTestRunStrategy strategy) => strategy is RunViaUnityEditorStrategy;
-
-        public Version GetUnityVersion() => myUnityVersion.ActualVersionForSolution.Value;
-
-        public string GetPresentableUnityVersion()
-        {
-            var unityPathData = myFrontendBackendModel.UnityApplicationData;
-            return unityPathData.HasValue() ? unityPathData.Value.ApplicationVersion : null;
-        }
-
-        private ExitUnityResult KillProcess()
-        {
-            ExitUnityResult result = null;
-            try
+            var etwAssemblyShorName = "JetBrains.Etw";
+            var etwAssemblyLocation = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name.Equals(etwAssemblyShorName))?.Location;
+            if (etwAssemblyLocation == null)
             {
-                var possibleProcessId = TryGetUnityProcessId();
-                if (possibleProcessId > 0)
-                {
-                    Process process = null;
-                    try
-                    {
-                        process = Process.GetProcessById((int) possibleProcessId);
-                    }
-                    catch (Exception)
-                    {
-                        // process may not be running
-                    }
-
-                    if (process != null)
-                    {
-                        process.Kill();
-                        result = new ExitUnityResult(true, null, null);
-                    }
-                }
+                myLogger.Error($"{etwAssemblyShorName} was not found.");
+                return null;
             }
-            catch (Exception e)
+            var unityProfilerApiPath = FileSystemPath.Parse(etwAssemblyLocation).Parent
+                .Combine("JetBrains.Etw.UnityProfilerApi.dll");
+            if (!unityProfilerApiPath.ExistsFile)
             {
-                result = new ExitUnityResult(false, "Exception on attempt to kill Unity Editor process", e);
+                myLogger.Error($"{unityProfilerApiPath} doesn't exist.");
+                return null;
             }
-
-            return result;
+            return unityProfilerApiPath.FullPath;
         }
     }
 }
