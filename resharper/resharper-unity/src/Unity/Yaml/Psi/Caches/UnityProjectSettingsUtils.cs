@@ -40,6 +40,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         {
             return file.GetUnityObjectPropertyValue<T>("EditorBuildSettings", "m_Scenes");
         }
+        
+        [CanBeNull]
+        public static T GetValue<T>([CanBeNull] IYamlFile file, [NotNull] string objectType, [NotNull] string key)
+            where T : class, INode
+        {
+            return file.GetUnityObjectPropertyValue<T>(objectType, key);
+        }
 
         public static string GetUnityScenePathRepresentation(string scenePath)
         {
@@ -55,6 +62,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public static IPsiSourceFile GetEditorBuildSettings([CanBeNull]UnityExternalFilesPsiModule psiModule)
         {
             return psiModule?.SourceFiles.FirstOrDefault(t => t.Name.Equals("EditorBuildSettings.asset"));
+        }
+        
+        public static IPsiSourceFile GetEditorSettings([CanBeNull]UnityExternalFilesPsiModule psiModule)
+        {
+            return psiModule?.SourceFiles.FirstOrDefault(t => t.Name.Equals("EditorSettings.asset"));
         }
     }
 }
