@@ -41,11 +41,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
             Sidecar,
             Other
         }
+
+        private enum Status
+        {
+            FailToRead,
+            NotPresent,
+            Present
+        }
+        
+        [Flags]
+        public enum EnterPlayModeOptions
+        {
+            None = 0,
+            DisableDomainReload = 1 << 0,
+            DisableSceneReload = 1 << 1,
+            DisableSceneBackupUnlessDirty = 1 << 2
+        }
         
         private EventLogGroup myGroup;
         private readonly EventId1<UnityProjectKind> myProjectKindEvent;
         private readonly EventId2<string, bool> myUnityVersionEvent;
-        private readonly EventId3<int, bool, int> myEnterPlayModeOptionsEvent;
+        private readonly EventId3<Status, bool, bool> myEnterPlayModeOptionsEvent;
         private readonly UnityExternalFilesPsiModule myUnityModule;
 
         public UnityProjectInformationUsageCollector(ISolution solution, UnitySolutionTracker unitySolutionTracker, FeaturesStartupMonitor monitor, FeatureUsageLogger featureUsageLogger, ILogger logger, IShellLocks shellLocks)
@@ -56,17 +72,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
             myLogger = logger;
             myShellLocks = shellLocks;
             myUnityModule = UnityProjectSettingsUtils.GetUnityModule(solution);
-            myGroup = new EventLogGroup("dotnet.unity.projects", "Unity Project Information", 1, featureUsageLogger);
+            myGroup = new EventLogGroup("dotnet.unity.projects", "Unity Project Information", 2, featureUsageLogger);
             myProjectKindEvent = myGroup.RegisterEvent("projectKind", "Project Kind", 
                 EventFields.Enum<UnityProjectKind>("type", "Type"));
             
             myUnityVersionEvent = myGroup.RegisterEvent("version", "Project Unity Version", 
                 EventFields.StringValidatedByRegexp("version", "Unity Version", UnityVersion.VersionRegex),
                 EventFields.Boolean("isCustom", "Custom Unity Build")); 
-            myEnterPlayModeOptionsEvent = myGroup.RegisterEvent("EnterPlayModeOptions", "Enter Play Mode Options",
-                EventFields.Int("Exists", "EnterPlayModeOptionsEnabled exists in the project. 1 - exists, 0 - doesn't, -1 - fail to parse"),
-                EventFields.Boolean("EnterPlayModeOptionsEnabled", "Enter Play Mode Option"),
-                EventFields.Int("EnterPlayModeOptions", "EnterPlayModeOptions flags"));
+            myEnterPlayModeOptionsEvent = myGroup.RegisterEvent("enterPlayModeOptions", "Enter Play Mode Options",
+                EventFields.Enum<Status>("exists", "EnterPlayModeOptionsEnabled exists in the project."),
+                EventFields.Boolean("enterPlayModeOptionsEnabled", "Enter Play Mode Option"),
+                EventFields.Boolean("disableDomainReload", "DisableDomainReload flag"));
         }
         
         public override EventLogGroup GetGroup()
@@ -94,14 +110,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
         {
             return await lifetime.StartMainReadAsync(async () =>
             {
-                while (true)
-                {
-                    // https://github.com/JetBrains/rd/pull/330/files
-                    // todo: switch to NextTrueValueAsync after the fix lands
-                    var res = await myMonitor.FullStartupFinished.NextValueAsync(lifetime); 
-                    if (res) 
-                        break;
-                }
+                // https://github.com/JetBrains/rd/pull/330/files
+                // todo: switch to NextTrueValueAsync after the fix lands
+                await NextValueAsync2(myMonitor.FullStartupFinished, lifetime, b => b);
 
                 return await mySolution.GetPsiServices().Files.CommitWithRetryBackgroundRead(lifetime, () =>
                 {
@@ -117,8 +128,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
                 });
             });
         }
+        
+        public static Task<T> NextValueAsync2<T>(ISource<T> source, Lifetime lifetime, Func<T, bool> condition)
+        {
+            var tcs = new TaskCompletionSource<T>();
+            var definition = lifetime.CreateNested();
+            definition.SynchronizeWith(tcs);
 
-        private (int exists, bool isEnabled, int options) GetEnterPlayModeOptions()
+            source.Advise(definition.Lifetime, v =>
+            {
+                if (condition(v)) 
+                    tcs.TrySetResult(v);
+            });
+      
+            return tcs.Task;
+        }
+
+        private (Status exists, bool isEnabled, bool options) GetEnterPlayModeOptions()
         {
             try
             {
@@ -131,20 +157,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
                     "m_EnterPlayModeOptionsEnabled");
                 var optionsNode = UnityProjectSettingsUtils.GetValue<INode>(yamlFile, "EditorSettings", "m_EnterPlayModeOptions");
                 if (node == null)
-                    return (0, false, 0);
+                    return (Status.NotPresent, false, false);
                 if (optionsNode == null)
                 {
                     myLogger.Warn("m_EnterPlayModeOptionsEnabled exists, but m_EnterPlayModeOptions doesn't.");
-                    return (-1, false, 0);
+                    return (Status.FailToRead, false, false);
                 }
-                return (1, Convert.ToBoolean(Convert.ToInt32(node.GetText())), 
-                    Convert.ToInt32(optionsNode.GetText()));
+
+                var options = Convert.ToInt32(optionsNode.GetText());
+                var disableDomainReload = ((EnterPlayModeOptions)options).HasFlag(EnterPlayModeOptions.DisableDomainReload);
+                return (Status.Present, Convert.ToBoolean(Convert.ToInt32(node.GetText())), disableDomainReload);
             }
             catch (Exception e)
             { 
                 myLogger.Warn(e);
             }
-            return (-1, false, 0);
+            return (Status.FailToRead, false, false);
         }
 
         private UnityProjectKind GetProjectType()
