@@ -97,15 +97,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             //Assets/Resources/Folder/Resources/img.png -> img.png 
             var parent = relativeSourceFilePath.Parent;
 
-            int sanityCheck = 10000;
-            while (!parent.IsEmpty && --sanityCheck > 0)
+            while (!parent.IsEmpty)
             {
                 if (parent.Name == ResourcesFolderName)
                     return relativeSourceFilePath.MakeRelativeTo(parent);
                 parent = parent.Parent;
             }
-
-            Assertion.Assert(sanityCheck > 0, "Possible infinite loop");            
 
             return RelativePath.Empty;
         }
@@ -115,16 +112,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             var distance = 1;
             var parent = relativeSourceFilePath.Parent;
 
-            int sanityCheck = 10000;
-            while (!parent.IsEmpty && --sanityCheck > 0)
+            while (!parent.IsEmpty)
             {
                 if (parent.Name == folderName)
                     return distance;
                 parent = parent.Parent;
                 ++distance;
             }
-
-            Assertion.Assert(sanityCheck > 0, "Possible infinite loop");
 
             return -1;
         }
@@ -181,7 +175,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         {
             public readonly ResourceLocationType ResourceLocationType;
             public readonly RelativePath RelativePath;
-            [CanBeNull] public readonly VirtualFileSystemPath VirtualFileSystemPath;
+            public readonly VirtualFileSystemPath VirtualFileSystemPath;
             public readonly string Extension;
 
             public ResourceCacheInfo(ResourceLocationType resourceLocationType,

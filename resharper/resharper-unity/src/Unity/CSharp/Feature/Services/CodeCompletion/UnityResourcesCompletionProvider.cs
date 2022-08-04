@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
         protected override bool AddLookupItems(CSharpCodeCompletionContext context, IItemsCollector collector)
         {
-            if (!UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out var argumentLiteral,
+            if (!UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out _,
                     ExpressionReferenceUtils.IsResourcesLoadMethod,
                     UnityCompletionUtils.IsCorrespondingArgument("path")))
                 return false;
@@ -43,7 +43,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var any = false;
             foreach (var assetsFolderResource in resourceLoadCache.CachedResources)
             {
-                var completionRelativePath = assetsFolderResource.RelativePath.NormalizeSeparators(FileSystemPathEx.SeparatorStyle.Unix);
                 var locationDescription = "Assets/";
 
                 if (assetsFolderResource.ResourceLocationType is ResourceLocationType.PackageEditor
@@ -55,6 +54,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
                     locationDescription = packageData.PackageDetails.DisplayName;
                 }
+                
+                var completionRelativePath = assetsFolderResource.RelativePath.NormalizeSeparators(FileSystemPathEx.SeparatorStyle.Unix);
 
                 var item = new ResourcesCompletionItem(completionRelativePath,
                     locationDescription,

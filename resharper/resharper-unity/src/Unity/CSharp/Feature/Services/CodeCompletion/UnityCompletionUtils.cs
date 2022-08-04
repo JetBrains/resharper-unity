@@ -46,10 +46,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return false;
         }
 
-        public static Func<IArgumentList, ICSharpArgument, bool> IsCorrespondingArgument(string argumentName)
+        public static Func<IArgumentList, ICSharpArgument, bool> IsCorrespondingArgument(string argumentName, int argumentIndex = 0)
         {
-            return (argumentList, argument) => argument.IsNamedArgument && argument.NameIdentifier.Name.Equals(argumentName) ||
-                                               !argument.IsNamedArgument && argumentList.Arguments[0] == argument;
+            return (argumentList, argument) =>
+            {
+                if(argument.IsNamedArgument && argument.NameIdentifier != null && argument.NameIdentifier.Name.Equals(argumentName))
+                    return true;
+
+                if (argumentList.Arguments.Count > argumentIndex && argumentList.Arguments[argumentIndex] == argument)
+                    return true;
+
+                return false;
+            };
         }
     }
 }
