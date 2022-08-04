@@ -15,6 +15,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi.Files;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.UsageStatistics.FUS.EventLog;
 using JetBrains.UsageStatistics.FUS.EventLog.Events;
 using JetBrains.UsageStatistics.FUS.EventLog.Fus;
@@ -114,8 +115,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
         {
             var editorSettings = UnityProjectSettingsUtils.GetEditorSettings(myUnityModule);
             Assertion.Assert(editorSettings != null);
-            // todo: fails with "This operation requires a reader lock."
-            var yamlFile = editorSettings.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
+            IYamlFile yamlFile;
+            using (ReadLockCookie.Create())
+            {
+                yamlFile = editorSettings.GetDominantPsiFile<YamlLanguage>() as IYamlFile;    
+            }
             Assertion.Assert(yamlFile != null);
             var node = UnityProjectSettingsUtils.GetValue<INode>(yamlFile, "EditorSettings",
                 "m_EnterPlayModeOptionsEnabled");
