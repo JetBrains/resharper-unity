@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
@@ -8,6 +7,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util.Extension;
+using ProjectExtensions = JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.ProjectExtensions;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
@@ -61,12 +61,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         public static IPsiSourceFile GetEditorBuildSettings([CanBeNull]UnityExternalFilesPsiModule psiModule)
         {
-            return psiModule?.SourceFiles.FirstOrDefault(t => t.Name.Equals("EditorBuildSettings.asset"));
+            return GetProjectSettingsPsiSourceFile(psiModule, "EditorBuildSettings.asset");
         }
-        
-        public static IPsiSourceFile GetEditorSettings([CanBeNull]UnityExternalFilesPsiModule psiModule)
+
+        public static IPsiSourceFile GetEditorSettings(UnityExternalFilesPsiModule psiModule)
         {
-            return psiModule?.SourceFiles.FirstOrDefault(t => t.Name.Equals("EditorSettings.asset"));
+            return GetProjectSettingsPsiSourceFile(psiModule, "EditorSettings.asset");
+        }
+
+        private static IPsiSourceFile GetProjectSettingsPsiSourceFile(UnityExternalFilesPsiModule psiModule,
+            string fileName)
+        {
+            if (psiModule == null)
+                return null;
+            var solutionDir = psiModule.GetSolution().SolutionDirectory;
+            return psiModule.TryGetFileByPath(
+                solutionDir.Combine(ProjectExtensions.ProjectSettingsFolder).Combine(fileName),
+                out var file)
+                ? file
+                : null;
         }
     }
 }

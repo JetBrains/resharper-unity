@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
@@ -14,6 +15,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.UsageStatistics.FUS.EventLog;
@@ -30,6 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
         private readonly UnitySolutionTracker myUnitySolutionTracker;
         private readonly FeaturesStartupMonitor myMonitor;
         private readonly ILogger myLogger;
+        private readonly IShellLocks myShellLocks;
 
         private enum UnityProjectKind
         {
@@ -42,15 +45,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
         private EventLogGroup myGroup;
         private readonly EventId1<UnityProjectKind> myProjectKindEvent;
         private readonly EventId2<string, bool> myUnityVersionEvent;
-        private readonly EventId3<bool, bool, int> myEnterPlayModeOptionsEvent;
+        private readonly EventId3<int, bool, int> myEnterPlayModeOptionsEvent;
         private readonly UnityExternalFilesPsiModule myUnityModule;
 
-        public UnityProjectInformationUsageCollector(ISolution solution, UnitySolutionTracker unitySolutionTracker, FeaturesStartupMonitor monitor, FeatureUsageLogger featureUsageLogger, ILogger logger)
+        public UnityProjectInformationUsageCollector(ISolution solution, UnitySolutionTracker unitySolutionTracker, FeaturesStartupMonitor monitor, FeatureUsageLogger featureUsageLogger, ILogger logger, IShellLocks shellLocks)
         {
             mySolution = solution;
             myUnitySolutionTracker = unitySolutionTracker;
             myMonitor = monitor;
             myLogger = logger;
+            myShellLocks = shellLocks;
             myUnityModule = UnityProjectSettingsUtils.GetUnityModule(solution);
             myGroup = new EventLogGroup("dotnet.unity.projects", "Unity Project Information", 1, featureUsageLogger);
             myProjectKindEvent = myGroup.RegisterEvent("projectKind", "Project Kind", 
@@ -60,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
                 EventFields.StringValidatedByRegexp("version", "Unity Version", UnityVersion.VersionRegex),
                 EventFields.Boolean("isCustom", "Custom Unity Build")); 
             myEnterPlayModeOptionsEvent = myGroup.RegisterEvent("EnterPlayModeOptions", "Enter Play Mode Options",
-                EventFields.Boolean("Exists", "EnterPlayModeOptionsEnabled exists in the project"),
+                EventFields.Int("Exists", "EnterPlayModeOptionsEnabled exists in the project. 1 - exists, 0 - doesn't, -1 - fail to parse"),
                 EventFields.Boolean("EnterPlayModeOptionsEnabled", "Enter Play Mode Option"),
                 EventFields.Int("EnterPlayModeOptions", "EnterPlayModeOptions flags"));
         }
@@ -86,13 +90,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
             }
         }
 
-        public override Task<ISet<MetricEvent>> GetMetricsAsync(Lifetime lifetime)
+        public override async Task<ISet<MetricEvent>> GetMetricsAsync(Lifetime lifetime)
         {
-            var tcs = lifetime.CreateTaskCompletionSource<ISet<MetricEvent>>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            myMonitor.FullStartupFinished.AdviseUntil(lifetime, v =>
+            return await lifetime.StartMainReadAsync(async () =>
             {
-                if (v)
+                while (true)
+                {
+                    // https://github.com/JetBrains/rd/pull/330/files
+                    // todo: switch to NextTrueValueAsync after the fix lands
+                    var res = await myMonitor.FullStartupFinished.NextValueAsync(lifetime); 
+                    if (res) 
+                        break;
+                }
+
+                return await mySolution.GetPsiServices().Files.CommitWithRetryBackgroundRead(lifetime, () =>
                 {
                     var (verifiedVersion, isCustom) = GetUnityVersion(UnityVersion.GetProjectSettingsUnityVersion(mySolution));
                     
@@ -101,38 +112,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
                     hashSet.Add(myUnityVersionEvent.Metric(verifiedVersion, isCustom));
                     var (exists, isEnabled, options) = GetEnterPlayModeOptions();
                     hashSet.Add(myEnterPlayModeOptionsEvent.Metric(exists, isEnabled, options));
-
-                    tcs.TrySetResult(hashSet);
-                    return true;
-                }
-
-                return false;
+                    
+                    return hashSet;
+                });
             });
-            return tcs.Task;
         }
 
-        private (bool exists, bool isEnabled, int options) GetEnterPlayModeOptions()
+        private (int exists, bool isEnabled, int options) GetEnterPlayModeOptions()
         {
-            var editorSettings = UnityProjectSettingsUtils.GetEditorSettings(myUnityModule);
-            Assertion.Assert(editorSettings != null);
-            IYamlFile yamlFile;
-            using (ReadLockCookie.Create())
+            try
             {
-                yamlFile = editorSettings.GetDominantPsiFile<YamlLanguage>() as IYamlFile;    
+                var editorSettings = UnityProjectSettingsUtils.GetEditorSettings(myUnityModule);
+                Assertion.Assert(editorSettings != null);
+                myShellLocks.AssertReadAccessAllowed();
+                var yamlFile = editorSettings.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
+                Assertion.Assert(yamlFile != null);
+                var node = UnityProjectSettingsUtils.GetValue<INode>(yamlFile, "EditorSettings",
+                    "m_EnterPlayModeOptionsEnabled");
+                var optionsNode = UnityProjectSettingsUtils.GetValue<INode>(yamlFile, "EditorSettings", "m_EnterPlayModeOptions");
+                if (node == null)
+                    return (0, false, 0);
+                if (optionsNode == null)
+                {
+                    myLogger.Warn("m_EnterPlayModeOptionsEnabled exists, but m_EnterPlayModeOptions doesn't.");
+                    return (-1, false, 0);
+                }
+                return (1, Convert.ToBoolean(Convert.ToInt32(node.GetText())), 
+                    Convert.ToInt32(optionsNode.GetText()));
             }
-            Assertion.Assert(yamlFile != null);
-            var node = UnityProjectSettingsUtils.GetValue<INode>(yamlFile, "EditorSettings",
-                "m_EnterPlayModeOptionsEnabled");
-            var optionsNode = UnityProjectSettingsUtils.GetValue<INode>(yamlFile, "EditorSettings", "m_EnterPlayModeOptions");
-            if (node == null)
-                return (false, false, 0);
-            if (optionsNode == null)
-            {
-                myLogger.Error("m_EnterPlayModeOptions was not found, but m_EnterPlayModeOptionsEnabled was present.");
-                return (false, false, 0);
+            catch (Exception e)
+            { 
+                myLogger.Warn(e);
             }
-            return (true, Convert.ToBoolean(Convert.ToInt32(node.GetText())), 
-               Convert.ToInt32(optionsNode.GetText()));
+            return (-1, false, 0);
         }
 
         private UnityProjectKind GetProjectType()
