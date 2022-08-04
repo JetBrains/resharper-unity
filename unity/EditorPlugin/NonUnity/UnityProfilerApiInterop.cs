@@ -8,7 +8,7 @@ namespace JetBrains.Rider.Unity.Editor.Utils
 {
     public static class UnityProfilerApiInterop
     {
-        public static void StartProfiling(string dllFile)
+        public static void StartProfiling(string dllFile, bool needReloadScripts)
         {
             if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
                 Debug.Log($"StartProfiling: {dllFile}");
@@ -30,6 +30,18 @@ namespace JetBrains.Rider.Unity.Editor.Utils
                 throw new ApplicationException("Unable to get the method");
 
             method.Invoke(instance, null); // call StartProfiling
+            
+            if (needReloadScripts)
+                ReloadScripts();
+        }
+
+        private static void ReloadScripts()
+        {
+#if UNITY_2019_3_OR_NEWER
+            EditorUtility.RequestScriptReload(); // EditorPlugin would get loaded
+#else 
+            UnityEditorInternal.InternalEditorUtility.RequestScriptReload();
+#endif
         }
     }
 }
