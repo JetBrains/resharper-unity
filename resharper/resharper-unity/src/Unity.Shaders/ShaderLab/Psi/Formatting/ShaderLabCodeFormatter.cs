@@ -64,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
       settings.Settings.SetValue((key => key.WRAP_LINES), false);
       
       DoDeclarativeFormat(settings, myShaderLabFormattingInfo, null, new[] { task }, parameters,
-        _ => false, null, FormatChildren, false);
+        null, FormatChildren, false);
 
       return FormatterImplHelper.PointerToRange(pointer, firstElement, lastElement);
       
