@@ -59,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             return solution.GetComponent<UnityExternalFilesModuleFactory>().PsiModule;
         }
 
-        public static IPsiSourceFile GetEditorBuildSettings([CanBeNull]UnityExternalFilesPsiModule psiModule)
+        public static IPsiSourceFile GetEditorBuildSettings(UnityExternalFilesPsiModule psiModule)
         {
             return GetProjectSettingsPsiSourceFile(psiModule, "EditorBuildSettings.asset");
         }
@@ -72,8 +72,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         private static IPsiSourceFile GetProjectSettingsPsiSourceFile(UnityExternalFilesPsiModule psiModule,
             string fileName)
         {
-            if (psiModule == null)
-                return null;
             var solutionDir = psiModule.GetSolution().SolutionDirectory;
             return psiModule.TryGetFileByPath(
                 solutionDir.Combine(ProjectExtensions.ProjectSettingsFolder).Combine(fileName),
