@@ -274,10 +274,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
 
                     // set results for explicit tests
                     foreach (var element in run.Elements.OfType<INUnitTestElement>().Where(a =>
-                        a.RunState == RunState.Explicit && !run.Launch.Criterion.Explicit.Contains(a)))
+                        a.RunState == RunState.Explicit && !run.Launch.Criterion.Explicit.Contains(a.Id)))
                     {
                         myUnitTestResultManager.TestFinishing(element, run.Launch.Session,
-                            "Test should be run explicitly", UnitTestStatus.Ignored);
+                            UnitTestStatus.Ignored, "Test should be run explicitly");
                     }
                 });
             }, cancellationToken);
@@ -452,8 +452,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
                             taskResult = UnitTestStatus.Success;
 
                         myUnitTestResultManager.TestOutput(unitTestElement, run.Launch.Session, result.Output, TestOutputType.STDOUT);
-                        myUnitTestResultManager.TestDuration(unitTestElement, run.Launch.Session, TimeSpan.FromMilliseconds(result.Duration));
-                        myUnitTestResultManager.TestFinishing(unitTestElement, run.Launch.Session, message, taskResult);
+                        myUnitTestResultManager.TestFinishing(unitTestElement, run.Launch.Session, taskResult, message, TimeSpan.FromMilliseconds(result.Duration));
                         break;
                     default:
                         throw new ArgumentOutOfRangeException($"Unknown test result from the protocol: {result.Status}");
@@ -494,7 +493,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
 
             var testNames = elements
                 .OfType<INUnitTestElement>()
-                .Where(a => a.RunState != RunState.Explicit || run.Launch.Criterion.Explicit.Contains(a))
+                .Where(a => a.RunState != RunState.Explicit || run.Launch.Criterion.Explicit.Contains(a.Id))
                 .Select(p => p.NaturalId.TestId).ToList();
 
             filters.Add(new TestFilter(((UnityRuntimeEnvironment) run.RuntimeEnvironment).Project.Name, testNames, groups, categories));
