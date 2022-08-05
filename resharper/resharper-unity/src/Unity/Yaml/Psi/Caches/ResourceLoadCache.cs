@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             var sourceFileLocation = sourceFile.GetLocation();
 
             sourceFileLocation = sourceFileLocation.ChangeExtension(""); //eliminate .meta
-            var extensionNoDot = sourceFileLocation.ExtensionNoDot;
+            var extensionNoDot = sourceFileLocation.ExtensionNoDot; //get real file extension (png)- used on the completion popup
 
             if (extensionNoDot.IsNullOrEmpty()) //files without extension or any folder - should be skipped 
                 return null;
@@ -58,17 +58,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
             var isOnTheSameDiskAsSolution = driveRootDirForSourceFile == myDriveRootDirForSolution;
 
+            //TODO check on *nix os
             var relativeSourceFilePath = isOnTheSameDiskAsSolution
                 ? sourceFileLocation.MakeRelativeTo(mySolution.SolutionDirectory).ChangeExtension("")
                 : sourceFileLocation.MakeRelativeTo(VirtualFileSystemPath.Parse(driveRootDirForSourceFile, InteractionContext.SolutionContext)).ChangeExtension("");
 
             Assertion.Assert(relativeSourceFilePath != null, nameof(relativeSourceFilePath) + " != null");
 
-            var unityResourceFilePath = GetPathInsideResourcesFolder(relativeSourceFilePath);
+            var unityResourceFilePath = GetPathInsideResourcesFolder(relativeSourceFilePath);//this path will be used in the completion
             if (unityResourceFilePath.IsEmpty) return null;
 
-            var inAssetsFolder = relativeSourceFilePath.StartsWith("Assets");
+            var inAssetsFolder = relativeSourceFilePath.StartsWith("Assets"); // true - for unity project files, false - possible package resource 
 
+            //determine if editor or runtime resource
             var distanceToResourcesFolder = GetDistanceToParentFolder(relativeSourceFilePath, ResourcesFolderName);
             var distanceToEditorFolder = GetDistanceToParentFolder(relativeSourceFilePath, EditorFolderName);
 
