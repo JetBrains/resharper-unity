@@ -1,5 +1,6 @@
 using System;
 using JetBrains.ReSharper.Feature.Services.CSharp.CodeCompletion.Infrastructure;
+using JetBrains.ReSharper.Features.WinForms.Designer.Protocol.Model;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util.Literals;
 using JetBrains.ReSharper.Psi.Tree;
@@ -46,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return false;
         }
 
-        public static Func<IArgumentList, ICSharpArgument, bool> IsCorrespondingArgument(string argumentName, int argumentIndex = 0)
+        internal static Func<IArgumentList, ICSharpArgument, bool> IsCorrespondingArgument(string argumentName, int argumentIndex = 0)
         {
             return (argumentList, argument) =>
             {
@@ -55,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
                 if (argumentList.Arguments.Count > argumentIndex && argumentList.Arguments[argumentIndex] == argument)
                     return true;
-
+                
                 return false;
             };
         }
