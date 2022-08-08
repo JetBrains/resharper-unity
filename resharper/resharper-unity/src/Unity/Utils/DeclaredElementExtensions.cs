@@ -4,6 +4,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Impl.Reflection2;
 using JetBrains.ReSharper.Psi.Modules;
 
@@ -13,7 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
     {
         public static bool IsFromUnityProject([NotNull] this IDeclaredElement element)
         {
-            return element.GetSourceFiles().Any(sf => sf.GetProject().IsUnityProject());
+            // GetSourceFiles may be heavy for C++ IDeclaredElement
+            return element.PresentationLanguage.Is<CSharpLanguage>() && element.GetSourceFiles().Any(sf => sf.GetProject().IsUnityProject());
         }
 
         public static bool IsBuiltInUnityClass(this IDeclaredElement element)
