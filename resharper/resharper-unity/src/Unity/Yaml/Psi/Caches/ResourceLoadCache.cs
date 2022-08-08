@@ -20,8 +20,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         private const string EditorFolderName = "Editor";
 
         private readonly ISolution mySolution;
-        private readonly string myDriveRootDirForSolution;
-
 
         public ResourceLoadCache(Lifetime lifetime,
             [NotNull] IShellLocks locks,
@@ -30,7 +28,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             : base(lifetime, locks, persistentIndexManager, ResourcesCacheItem.Marshaller)
         {
             mySolution = solution;
-            myDriveRootDirForSolution = mySolution.SolutionDirectory.GetRootDir();
         }
 
         public HashSet<ResourceCacheInfo> CachedResources { get; } = new();
