@@ -58,6 +58,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 GetPathInsideResourcesFolder(relativeToSolution); //this path will be used in the completion
             if (unityResourceFilePath.IsEmpty) return null;
 
+            unityResourceFilePath = unityResourceFilePath.ChangeExtension("");
+
             // relativeToSolution.IsAbsolute - for packages located outside of the project and loaded from the disk
             // StartsWith("Assets") - only for the assets inside Unity projects - packages excluded
             // ! StartsWith("Assets") - for packages only
