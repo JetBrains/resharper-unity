@@ -181,6 +181,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                         cacheItem.ExtensionWithDot));
             }
         }
+        
+        public bool HasResource(string literal)
+        {
+            return CachedResources.Any(item =>
+                item.RelativePath.NormalizeSeparators(FileSystemPathEx.SeparatorStyle.Unix)
+                == literal);
+        }
 
         public readonly struct ResourceCacheInfo
         {
