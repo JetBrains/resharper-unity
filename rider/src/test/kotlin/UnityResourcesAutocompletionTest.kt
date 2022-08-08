@@ -1,25 +1,28 @@
 import base.integrationTests.prepareAssemblies
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
+import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.testFramework.TestModeFlags
+import com.jetbrains.rd.platform.util.lifetime
+import com.jetbrains.rd.util.reactive.valueOrDefault
+import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.enums.CoreVersion
 import com.jetbrains.rider.test.enums.ToolsetVersion
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
-import com.jetbrains.rider.test.scriptingApi.assertLookupContains
-import com.jetbrains.rider.test.scriptingApi.assertLookupNotContains
-import com.jetbrains.rider.test.scriptingApi.typeWithLatency
-import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
+import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File
+import java.time.Duration
 
 @TestEnvironment(toolset = ToolsetVersion.TOOLSET_17_CORE, coreVersion = CoreVersion.DOT_NET_6)
-class UnityResourcesAutocompletionTest : BaseTestWithSolution()
-{
+class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String = "ResourcesAutocompletionTestData"
 
     override val traceCategories: List<String>
@@ -41,70 +44,76 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution()
 
     @Test
     fun test_UnityResourcesLoadCompletion() {
-        withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadCompletion.cs") {
-            typeWithLatency("\"")
-            assertLookupNotContains("\"EscapeFromRider\"")
-            assertLookupNotContains("\"ImpossibleResourceName\"")
-            assertLookupContains(
-                "\"resources_package_from_git_Runtime_Resources_Asset__RUNTIME\"",
-                "\"resources_package_from_git_Editor_Resources_Asset__EDITOR\"",
-                "\"resources_package_from_disk_Editor_Resources_Asset__EDITOR\"",
-                "\"resources_package_from_disk_Runtime_Resources_Asset__RUNTIME\"",
-                "\"resources_package_from_packages_folder_Runtime_Resources_Asset__RUNTIME\"",
-                "\"resources_package_from_packages_folder_Editor_Resources_Asset__EDITOR\"",
-                "\"Assets_Editor_Resources_Asset__EDITOR\"",
-                "\"Assets_Editor_Resources_Asset__EDITOR 1\"",
-                "\"Assets_Resources_Asset__RUNTIME\"",
-                "\"Assets_Resources_Items_Resources_Asset__RUNTIME\"",
-                "\"Editor/Assets_Resources_Editor_Asset__RUNTIME\"",
-                "\"Editor/Resource/Assets_Resources_Editor_Resources_Asset__RUNTIME\"",
-                checkFocus = false)
+        waitForUnityPackagesCache {
+            withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadCompletion.cs") {
+                typeWithLatency("\"")
+                assertLookupNotContains("\"EscapeFromRider\"")
+                assertLookupNotContains("\"ImpossibleResourceName\"")
+                assertLookupContains(
+                    "\"resources_package_from_git_Runtime_Resources_Asset__RUNTIME\"",
+                    "\"resources_package_from_git_Editor_Resources_Asset__EDITOR\"",
+                    "\"resources_package_from_disk_Editor_Resources_Asset__EDITOR\"",
+                    "\"resources_package_from_disk_Runtime_Resources_Asset__RUNTIME\"",
+                    "\"resources_package_from_packages_folder_Runtime_Resources_Asset__RUNTIME\"",
+                    "\"resources_package_from_packages_folder_Editor_Resources_Asset__EDITOR\"",
+                    "\"Assets_Editor_Resources_Asset__EDITOR\"",
+                    "\"Assets_Editor_Resources_Asset__EDITOR 1\"",
+                    "\"Assets_Resources_Asset__RUNTIME\"",
+                    "\"Assets_Resources_Items_Resources_Asset__RUNTIME\"",
+                    "\"Editor/Assets_Resources_Editor_Asset__RUNTIME\"",
+                    "\"Editor/Resource/Assets_Resources_Editor_Resources_Asset__RUNTIME\"",
+                    checkFocus = false)
+            }
         }
     }
 
     @Test
     fun test_UnityResourcesLoadAllCompletion() {
-        withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadAllCompletion.cs") {
-            typeWithLatency("\"")
-            assertLookupNotContains("\"EscapeFromRider\"")
-            assertLookupNotContains("\"ImpossibleResourceName\"")
-            assertLookupContains(
-                "\"resources_package_from_git_Runtime_Resources_Asset__RUNTIME\"",
-                "\"resources_package_from_git_Editor_Resources_Asset__EDITOR\"",
-                "\"resources_package_from_disk_Editor_Resources_Asset__EDITOR\"",
-                "\"resources_package_from_disk_Runtime_Resources_Asset__RUNTIME\"",
-                "\"resources_package_from_packages_folder_Runtime_Resources_Asset__RUNTIME\"",
-                "\"resources_package_from_packages_folder_Editor_Resources_Asset__EDITOR\"",
-                "\"Assets_Editor_Resources_Asset__EDITOR\"",
-                "\"Assets_Editor_Resources_Asset__EDITOR 1\"",
-                "\"Assets_Resources_Asset__RUNTIME\"",
-                "\"Assets_Resources_Items_Resources_Asset__RUNTIME\"",
-                "\"Editor/Assets_Resources_Editor_Asset__RUNTIME\"",
-                "\"Editor/Resource/Assets_Resources_Editor_Resources_Asset__RUNTIME\"",
-                checkFocus = false)
+        waitForUnityPackagesCache() {
+            withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadAllCompletion.cs") {
+                typeWithLatency("\"")
+                assertLookupNotContains("\"EscapeFromRider\"")
+                assertLookupNotContains("\"ImpossibleResourceName\"")
+                assertLookupContains(
+                    "\"resources_package_from_git_Runtime_Resources_Asset__RUNTIME\"",
+                    "\"resources_package_from_git_Editor_Resources_Asset__EDITOR\"",
+                    "\"resources_package_from_disk_Editor_Resources_Asset__EDITOR\"",
+                    "\"resources_package_from_disk_Runtime_Resources_Asset__RUNTIME\"",
+                    "\"resources_package_from_packages_folder_Runtime_Resources_Asset__RUNTIME\"",
+                    "\"resources_package_from_packages_folder_Editor_Resources_Asset__EDITOR\"",
+                    "\"Assets_Editor_Resources_Asset__EDITOR\"",
+                    "\"Assets_Editor_Resources_Asset__EDITOR 1\"",
+                    "\"Assets_Resources_Asset__RUNTIME\"",
+                    "\"Assets_Resources_Items_Resources_Asset__RUNTIME\"",
+                    "\"Editor/Assets_Resources_Editor_Asset__RUNTIME\"",
+                    "\"Editor/Resource/Assets_Resources_Editor_Resources_Asset__RUNTIME\"",
+                    checkFocus = false)
+            }
         }
     }
 
     @Test
     fun test_UnityResourcesLoadAsyncCompletion() {
-        withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadAsyncCompletion.cs") {
-            typeWithLatency("\"")
-            assertLookupNotContains("\"EscapeFromRider\"")
-            assertLookupNotContains("\"ImpossibleResourceName\"")
-            assertLookupContains(
-                "\"resources_package_from_git_Runtime_Resources_Asset__RUNTIME\"",
-                "\"resources_package_from_git_Editor_Resources_Asset__EDITOR\"",
-                "\"resources_package_from_disk_Editor_Resources_Asset__EDITOR\"",
-                "\"resources_package_from_disk_Runtime_Resources_Asset__RUNTIME\"",
-                "\"resources_package_from_packages_folder_Runtime_Resources_Asset__RUNTIME\"",
-                "\"resources_package_from_packages_folder_Editor_Resources_Asset__EDITOR\"",
-                "\"Assets_Editor_Resources_Asset__EDITOR\"",
-                "\"Assets_Editor_Resources_Asset__EDITOR 1\"",
-                "\"Assets_Resources_Asset__RUNTIME\"",
-                "\"Assets_Resources_Items_Resources_Asset__RUNTIME\"",
-                "\"Editor/Assets_Resources_Editor_Asset__RUNTIME\"",
-                "\"Editor/Resource/Assets_Resources_Editor_Resources_Asset__RUNTIME\"",
-                checkFocus = false)
+        waitForUnityPackagesCache {
+            withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadAsyncCompletion.cs") {
+                typeWithLatency("\"")
+                assertLookupNotContains("\"EscapeFromRider\"")
+                assertLookupNotContains("\"ImpossibleResourceName\"")
+                assertLookupContains(
+                    "\"resources_package_from_git_Runtime_Resources_Asset__RUNTIME\"",
+                    "\"resources_package_from_git_Editor_Resources_Asset__EDITOR\"",
+                    "\"resources_package_from_disk_Editor_Resources_Asset__EDITOR\"",
+                    "\"resources_package_from_disk_Runtime_Resources_Asset__RUNTIME\"",
+                    "\"resources_package_from_packages_folder_Runtime_Resources_Asset__RUNTIME\"",
+                    "\"resources_package_from_packages_folder_Editor_Resources_Asset__EDITOR\"",
+                    "\"Assets_Editor_Resources_Asset__EDITOR\"",
+                    "\"Assets_Editor_Resources_Asset__EDITOR 1\"",
+                    "\"Assets_Resources_Asset__RUNTIME\"",
+                    "\"Assets_Resources_Items_Resources_Asset__RUNTIME\"",
+                    "\"Editor/Assets_Resources_Editor_Asset__RUNTIME\"",
+                    "\"Editor/Resource/Assets_Resources_Editor_Resources_Asset__RUNTIME\"",
+                    checkFocus = false)
+            }
         }
     }
 
@@ -125,5 +134,11 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution()
     @AfterMethod
     fun saveDocuments() {
         persistAllFilesOnDisk()
+    }
+
+    private fun BaseTestWithSolution.waitForUnityPackagesCache (action: BaseTestWithSolution.() -> Unit): Unit {
+        waitAndPump(project.lifetime, { project.solution.frontendBackendModel.isUnityPackageManagerInitiallyIndexFinished.valueOrDefault(false) },
+                    Duration.ofSeconds(10), { "Deferred caches are not completed" })
+        action()
     }
 }

@@ -71,6 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                                            PackageManager packageManager)
         {
             packageManager.Updating.FlowInto(lifetime, frontendBackendModel.PackagesUpdating);
+            packageManager.IsInitialUpdateFinished.FlowInto(lifetime, frontendBackendModel.IsUnityPackageManagerInitiallyIndexFinished);
 
             // Called in the Guarded reentrancy context
             packageManager.Packages.AddRemove.Advise(lifetime, args =>
