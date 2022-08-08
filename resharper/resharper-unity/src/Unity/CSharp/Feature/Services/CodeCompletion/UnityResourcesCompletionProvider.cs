@@ -40,8 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var packageManager = context.NodeInFile.GetSolution().GetComponent<PackageManager>();
 
 
-            var any = false;
-            foreach (var assetsFolderResource in resourceLoadCache.CachedResources)
+            bool CollectAutocompletion(ResourceLoadCache.ResourceCacheInfo assetsFolderResource)
             {
                 var locationDescription = "Assets/";
 
@@ -50,12 +49,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 {
                     var packageData = packageManager.GetPackageByAssetPath(assetsFolderResource.VirtualFileSystemPath);
                     if (packageData == null)
-                        continue;
+                        return  false;
 
                     locationDescription = packageData.PackageDetails.DisplayName;
                 }
-                
-                var completionRelativePath = assetsFolderResource.RelativePath.NormalizeSeparators(FileSystemPathEx.SeparatorStyle.Unix);
+
+                var completionRelativePath =
+                    assetsFolderResource.RelativePath.NormalizeSeparators(FileSystemPathEx.SeparatorStyle.Unix);
 
                 var item = new ResourcesCompletionItem(completionRelativePath,
                     locationDescription,
@@ -64,10 +64,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
                 item.InitializeRanges(context.CompletionRanges, context.BasicContext);
                 collector.Add(item);
-                any = true;
+                
+                return true;
             }
 
-            return any;
+
+            return resourceLoadCache.CollectItems(CollectAutocompletion);
         }
 
         private sealed class ResourcesCompletionItem : TextLookupItemBase

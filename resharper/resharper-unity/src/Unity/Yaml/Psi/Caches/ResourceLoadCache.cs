@@ -30,8 +30,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             mySolution = solution;
         }
 
-        public HashSet<ResourceCacheInfo> CachedResources { get; } = new();
-
+        private readonly object myCachedResourcesLock = new();
+        private readonly HashSet<ResourceCacheInfo> myCachedResources = new();
 
         protected override bool IsApplicable(IPsiSourceFile sourceFile)
         {
@@ -163,30 +163,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         private void AddToLocalCache([CanBeNull] ResourcesCacheItem cacheItem)
         {
             if (cacheItem == null) return;
-            CachedResources.Add(
-                new ResourceCacheInfo(cacheItem.LocationType,
-                    cacheItem.RelativePath,
-                    cacheItem.PathInsideResourcesFolder,
-                    cacheItem.ExtensionWithDot));
-        }
-
-        private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
-        {
-            if (Map.TryGetValue(sourceFile, out var cacheItem))
+            lock (myCachedResourcesLock)
             {
-                CachedResources.Remove(
+                myCachedResources.Add(
                     new ResourceCacheInfo(cacheItem.LocationType,
                         cacheItem.RelativePath,
                         cacheItem.PathInsideResourcesFolder,
                         cacheItem.ExtensionWithDot));
             }
         }
-        
+
+        private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
+        {
+            if (Map.TryGetValue(sourceFile, out var cacheItem))
+            {
+                lock (myCachedResourcesLock)
+                {
+                    myCachedResources.Remove(
+                        new ResourceCacheInfo(cacheItem.LocationType,
+                            cacheItem.RelativePath,
+                            cacheItem.PathInsideResourcesFolder,
+                            cacheItem.ExtensionWithDot));
+                }
+            }
+        }
+
         public bool HasResource(string literal)
         {
-            return CachedResources.Any(item =>
-                item.RelativePath.NormalizeSeparators(FileSystemPathEx.SeparatorStyle.Unix)
-                == literal);
+            lock (myCachedResourcesLock)
+            {
+                return myCachedResources.Any(item =>
+                    item.RelativePath.NormalizeSeparators(FileSystemPathEx.SeparatorStyle.Unix)
+                    == literal);
+            }
         }
 
         public readonly struct ResourceCacheInfo
@@ -230,6 +239,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                     return hashCode;
                 }
             }
+        }
+
+        public bool CollectItems(Func<ResourceCacheInfo, bool> collectAutocompletion)
+        {
+            var any = false;
+
+            lock (myCachedResourcesLock)
+            {
+                foreach (var assetsFolderResource in myCachedResources)
+                {
+                    any |= collectAutocompletion(assetsFolderResource);
+                }
+            }
+
+            return any;
         }
     }
 }
