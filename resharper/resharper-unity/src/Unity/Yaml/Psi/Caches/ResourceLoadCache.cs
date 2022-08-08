@@ -49,30 +49,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             var sourceFileLocation = sourceFile.GetLocation();
 
             sourceFileLocation = sourceFileLocation.ChangeExtension(""); //eliminate .meta
-            var extensionNoDot = sourceFileLocation.ExtensionNoDot; //get real file extension (png)- used on the completion popup
+            var extensionNoDot =
+                sourceFileLocation.ExtensionNoDot; //get real file extension (png) - used on the completion popup
 
             if (extensionNoDot.IsNullOrEmpty()) //files without extension or any folder - should be skipped 
                 return null;
 
-            var driveRootDirForSourceFile = sourceFileLocation.GetRootDir();
+            var relativeToSolution = sourceFileLocation.TryMakeRelativeTo(mySolution.SolutionDirectory);
 
-            var isOnTheSameDiskAsSolution = driveRootDirForSourceFile == myDriveRootDirForSolution;
-
-            //TODO check on *nix os
-            var relativeSourceFilePath = isOnTheSameDiskAsSolution
-                ? sourceFileLocation.MakeRelativeTo(mySolution.SolutionDirectory).ChangeExtension("")
-                : sourceFileLocation.MakeRelativeTo(VirtualFileSystemPath.Parse(driveRootDirForSourceFile, InteractionContext.SolutionContext)).ChangeExtension("");
-
-            Assertion.Assert(relativeSourceFilePath != null, nameof(relativeSourceFilePath) + " != null");
-
-            var unityResourceFilePath = GetPathInsideResourcesFolder(relativeSourceFilePath);//this path will be used in the completion
+            var unityResourceFilePath =
+                GetPathInsideResourcesFolder(relativeToSolution); //this path will be used in the completion
             if (unityResourceFilePath.IsEmpty) return null;
 
-            var inAssetsFolder = relativeSourceFilePath.StartsWith("Assets"); // true - for unity project files, false - possible package resource 
+            // relativeToSolution.IsAbsolute - for packages located outside of the project and loaded from the disk
+            // StartsWith("Assets") - only for the assets inside Unity projects - packages excluded
+            // ! StartsWith("Assets") - for packages only
+            var inAssetsFolder = relativeToSolution.IsAbsolute
+                ? false
+                : relativeToSolution.AsRelative().StartsWith("Assets");
 
             //determine if editor or runtime resource
-            var distanceToResourcesFolder = GetDistanceToParentFolder(relativeSourceFilePath, ResourcesFolderName);
-            var distanceToEditorFolder = GetDistanceToParentFolder(relativeSourceFilePath, EditorFolderName);
+            var distanceToResourcesFolder = GetDistanceToParentFolder(relativeToSolution, ResourcesFolderName);
+            var distanceToEditorFolder = GetDistanceToParentFolder(relativeToSolution, EditorFolderName);
 
             //Resources/Editor/asset.png -> Editor/asset.png RUNTIME
             //Editor/Resources/asset.png -> asset.png EDITOR
@@ -94,23 +92,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 extensionNoDot);
         }
 
-        private static RelativePath GetPathInsideResourcesFolder(RelativePath relativeSourceFilePath)
+        private static RelativePath GetPathInsideResourcesFolder(IPath relativeSourceFilePath)
         {
             //Assets/Resources/Folder/img.png
-            //Assets/Resources/Folder/Resources/img.png -> img.png 
+            //Assets/Resources/Folder/Resources/img.png -> img.png
+
             var parent = relativeSourceFilePath.Parent;
 
             while (!parent.IsEmpty)
             {
                 if (parent.Name == ResourcesFolderName)
-                    return relativeSourceFilePath.MakeRelativeTo(parent);
+                {
+                    if (!relativeSourceFilePath.IsAbsolute)
+                        return relativeSourceFilePath.AsRelative().MakeRelativeTo(parent.AsRelative());
+
+                    //AsAbsolut for VirtualFileSystemPath - throws an exception
+                    if (relativeSourceFilePath is VirtualFileSystemPath virtualPath)
+                        return virtualPath.MakeRelativeTo(parent as VirtualFileSystemPath);
+
+                    return relativeSourceFilePath.AsAbsolute().MakeRelativeTo(parent.AsAbsolute());
+                }
+
                 parent = parent.Parent;
             }
 
             return RelativePath.Empty;
         }
 
-        private static int GetDistanceToParentFolder(RelativePath relativeSourceFilePath, string folderName)
+        private static int GetDistanceToParentFolder(IPath relativeSourceFilePath, string folderName)
         {
             var distance = 1;
             var parent = relativeSourceFilePath.Parent;
@@ -173,7 +182,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                         cacheItem.ExtensionWithDot));
             }
         }
-        
+
         public readonly struct ResourceCacheInfo
         {
             public readonly ResourceLocationType ResourceLocationType;
