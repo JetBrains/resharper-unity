@@ -40,7 +40,8 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
             "JetBrains.ReSharper.Host.Features.Documents",
             "JetBrains.ReSharper.Host.Features.TextControls",
             "JetBrains.ReSharper.Psi.Caches",
-            "JetBrains.ReSharper.Psi.Files")
+            "JetBrains.ReSharper.Psi.Files",
+            "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages")
 
     @Test
     fun test_UnityResourcesLoadCompletion() {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Util;
+using JetBrains.Util.Logging;
 using Newtonsoft.Json;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -11,6 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 {
     public class PackageData
     {
+        private static readonly ILogger ourLogger = Logger.GetLogger<PackageData>();
+        
         [NotNull] public readonly string Id;
         [CanBeNull] public readonly VirtualFileSystemPath PackageFolder;
         public readonly DateTime PackageJsonTimestamp;
@@ -42,6 +45,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         public static PackageData CreateUnknown(string id, string version,
                                                 PackageSource packageSource = PackageSource.Unknown)
         {
+            ourLogger.Error($"Creation of unknown package {nameof(id)}:{id}, {nameof(version)}:{version}, {nameof(packageSource)}:{packageSource}");
+            
             return new PackageData(id, null, DateTime.MinValue,
                 new PackageDetails(id, $"{id}@{version}", version,
                     $"Cannot resolve package '{id}' with version '{version}'",
