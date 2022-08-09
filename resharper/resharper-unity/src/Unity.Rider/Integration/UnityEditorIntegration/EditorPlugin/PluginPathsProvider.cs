@@ -19,6 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
         public PluginPathsProvider(ApplicationPackages applicationPackages, IDeployedPackagesExpandLocationResolver resolver)
         {
+            // System.Diagnostics.Debugger.Launch();
+
             myApplicationPackages = applicationPackages;
             myResolver = resolver;
             myRootDir = GetRootDir();
@@ -35,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         {
             // Avoid EditorPlugin installation when we run from the dotnet-products repository.
             // For the dotnet-products repository EditorPlugin may not be compiled, it is optional
-            return myRootDir.Combine("Product.Root").ExistsFile;
+            return !myRootDir.Combine("Product.Root").ExistsFile;
         }
 
         private FileSystemPath GetRootDir()
