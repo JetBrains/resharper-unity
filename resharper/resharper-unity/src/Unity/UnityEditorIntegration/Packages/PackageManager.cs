@@ -122,6 +122,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             Packages.AddRemove.Advise(lifetime, args =>
             {
                 var packageData = args.Value.Value;
+                
+                if(packageData.PackageFolder.IsNullOrEmpty())
+                    return;
+                
                 if (args.IsAdding)
                     myFileSystemPathTrie.Add(packageData.PackageFolder, packageData);
                     
