@@ -40,6 +40,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
             return IsSpecificMethod(expr, KnownTypes.Component, "CompareTag")
                    || IsSpecificMethod(expr, KnownTypes.GameObject, "CompareTag");
         }
+        
+        public static bool IsFindObjectByTagMethod(this IInvocationExpression expr)
+        {
+            return IsSpecificMethod(expr, KnownTypes.GameObject, "FindWithTag")
+                   || IsSpecificMethod(expr, KnownTypes.GameObject, "FindGameObjectWithTag")
+                   || IsSpecificMethod(expr, KnownTypes.GameObject, "FindGameObjectsWithTag");
+        }
 
         public static bool IsInputAxisMethod(this IInvocationExpression invocationExpression)
         {

@@ -82,33 +82,6 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         }
     }
 
-    val basicTags = arrayOf(
-        "\"Finish\"",
-        "\"Player\"",
-        "\"Respawn\"",
-        "\"Untagged\"",
-        "\"EditorOnly\"",
-        "\"MainCamera\"",
-        "\"GameController\"")
-
-    @Test
-    fun testTag_PrimitiveCompletion() {
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "TagCompletionTest1.cs") {
-            typeWithLatency("\"")
-            assertLookupContains(*basicTags, checkFocus = false)
-        }
-
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "TagCompletionTest2.cs") {
-            typeWithLatency("\"")
-            assertLookupContains(*basicTags, checkFocus = false)
-        }
-
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "TagCompletionTest3.cs") {
-            typeWithLatency("\"")
-            assertLookupContains(*basicTags, checkFocus = false)
-        }
-    }
-
     val basicLayers = arrayOf(
         "\"Water\"",
         "\"Default\"",

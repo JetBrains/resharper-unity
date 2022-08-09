@@ -45,16 +45,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             {
                 var container = context.NodeInFile.GetSolution().GetComponent<AnimatorScriptUsagesElementContainer>();
                 completionItems = container.GetStateNames();
-            } // tag completion, tag == "..."
-            else if (IsTagEquality(context, out argumentLiteral))
-            {
-                var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
-                completionItems = cache.GetAllTags();
-            } // tag completion, CompareTag("...")
-            else if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsCompareTagMethod, UnityCompletionUtils.IsCorrespondingArgument("tag")))
-            {
-                var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
-                completionItems = cache.GetAllTags();
             } // layer completion
             else if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsLayerMaskNameToLayerMethod, UnityCompletionUtils.IsCorrespondingArgument("layerName")) || 
                      UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsLayerMaskGetMaskMethod,
@@ -101,30 +91,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         private static bool IsPlayAnimationMethod([NotNull] IInvocationExpression invocationExpression)
         {
             return invocationExpression.InvocationExpressionReference.IsAnimatorPlayMethod();
-        }
-
-        private bool IsTagEquality(CSharpCodeCompletionContext context, out ICSharpLiteralExpression stringLiteral)
-        {
-            stringLiteral = null;
-            var nodeInFile = context.NodeInFile;
-            var eqExpression = nodeInFile.NextSibling as IEqualityExpression ??
-                               nodeInFile.PrevSibling as IEqualityExpression;
-
-            var possibleLiteral = context.NodeInFile.Parent;
-            if (possibleLiteral is ICSharpLiteralExpression literalExpression)
-            {
-                stringLiteral = literalExpression;
-                eqExpression = possibleLiteral.Parent as IEqualityExpression;
-            }
-
-            if (eqExpression != null)
-            {
-                return (eqExpression.LeftOperand as IReferenceExpression).IsTagProperty() ||
-                       (eqExpression.RightOperand as IReferenceExpression).IsTagProperty();
-            }
-
-            stringLiteral = null;
-            return false;
         }
 
         private sealed class StringLiteralItem : TextLookupItemBase
