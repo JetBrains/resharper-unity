@@ -19,8 +19,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
         public PluginPathsProvider(ApplicationPackages applicationPackages, IDeployedPackagesExpandLocationResolver resolver)
         {
-            // System.Diagnostics.Debugger.Launch();
-
             myApplicationPackages = applicationPackages;
             myResolver = resolver;
             myRootDir = GetRootDir();

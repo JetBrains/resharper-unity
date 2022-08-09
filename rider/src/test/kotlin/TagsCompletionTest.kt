@@ -81,7 +81,7 @@ class TagsCompletionTest : BaseTestWithSolution() {
 
 
     @BeforeMethod
-    fun InitializeEnvironement() {
+    fun initializeEnvironment() {
         TestModeFlags.set(CompletionAutoPopupHandler.ourTestingAutopopup, true)
 
         CodeInsightSettings.getInstance().COMPLETION_CASE_SENSITIVE = CodeInsightSettings.NONE
@@ -95,7 +95,7 @@ class TagsCompletionTest : BaseTestWithSolution() {
 
     // debug only
     @AfterMethod
-    fun SaveDocuments() {
+    fun saveDocuments() {
         persistAllFilesOnDisk()
     }
 }
