@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
             {
                 if (v)
                 {
-                    var (verifiedVersion, isCustom) = GetUnityVersion(UnityVersion.GetProjectSettingsUnityVersion(mySolution));
+                    var (verifiedVersion, isCustom) = GetUnityVersion(UnityVersion.GetProjectSettingsUnityVersion(mySolution.SolutionDirectory));
                     
                     var hashSet = new HashSet<MetricEvent>();
                     hashSet.Add(myProjectKindEvent.Metric(GetProjectType()));
