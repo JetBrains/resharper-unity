@@ -51,18 +51,14 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
                 assertLookupNotContains("\"EscapeFromRider\"")
                 assertLookupNotContains("\"ImpossibleResourceName\"")
                 assertLookupContains(
-                    "\"resources_package_from_git_Runtime_Resources_Asset__RUNTIME\"",
-                    "\"resources_package_from_git_Editor_Resources_Asset__EDITOR\"",
-                    "\"resources_package_from_disk_Editor_Resources_Asset__EDITOR\"",
-                    "\"resources_package_from_disk_Runtime_Resources_Asset__RUNTIME\"",
-                    "\"resources_package_from_packages_folder_Runtime_Resources_Asset__RUNTIME\"",
-                    "\"resources_package_from_packages_folder_Editor_Resources_Asset__EDITOR\"",
-                    "\"Assets_Editor_Resources_Asset__EDITOR\"",
-                    "\"Assets_Editor_Resources_Asset__EDITOR 1\"",
-                    "\"Assets_Resources_Asset__RUNTIME\"",
-                    "\"Assets_Resources_Items_Resources_Asset__RUNTIME\"",
-                    "\"Editor/Assets_Resources_Editor_Asset__RUNTIME\"",
-                    "\"Editor/Resource/Assets_Resources_Editor_Resources_Asset__RUNTIME\"",
+                    "\"from_git__RUNTIME\"",
+                    "\"from_git__EDITOR\"",
+                    "\"from_disk__EDITOR\"",
+                    "\"from_disk__RUNTIME\"",
+                    "\"from_pack_folder__RUNTIME\"",
+                    "\"from_pack_folder__EDITOR\"",
+                    "\"from_res__RUNTIME\"",
+                    "\"from_res__EDITOR\"",
                     checkFocus = false)
             }
         }
@@ -76,18 +72,14 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
                 assertLookupNotContains("\"EscapeFromRider\"")
                 assertLookupNotContains("\"ImpossibleResourceName\"")
                 assertLookupContains(
-                    "\"resources_package_from_git_Runtime_Resources_Asset__RUNTIME\"",
-                    "\"resources_package_from_git_Editor_Resources_Asset__EDITOR\"",
-                    "\"resources_package_from_disk_Editor_Resources_Asset__EDITOR\"",
-                    "\"resources_package_from_disk_Runtime_Resources_Asset__RUNTIME\"",
-                    "\"resources_package_from_packages_folder_Runtime_Resources_Asset__RUNTIME\"",
-                    "\"resources_package_from_packages_folder_Editor_Resources_Asset__EDITOR\"",
-                    "\"Assets_Editor_Resources_Asset__EDITOR\"",
-                    "\"Assets_Editor_Resources_Asset__EDITOR 1\"",
-                    "\"Assets_Resources_Asset__RUNTIME\"",
-                    "\"Assets_Resources_Items_Resources_Asset__RUNTIME\"",
-                    "\"Editor/Assets_Resources_Editor_Asset__RUNTIME\"",
-                    "\"Editor/Resource/Assets_Resources_Editor_Resources_Asset__RUNTIME\"",
+                    "\"from_git__RUNTIME\"",
+                    "\"from_git__EDITOR\"",
+                    "\"from_disk__EDITOR\"",
+                    "\"from_disk__RUNTIME\"",
+                    "\"from_pack_folder__RUNTIME\"",
+                    "\"from_pack_folder__EDITOR\"",
+                    "\"from_res__RUNTIME\"",
+                    "\"from_res__EDITOR\"",
                     checkFocus = false)
             }
         }
@@ -101,18 +93,14 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
                 assertLookupNotContains("\"EscapeFromRider\"")
                 assertLookupNotContains("\"ImpossibleResourceName\"")
                 assertLookupContains(
-                    "\"resources_package_from_git_Runtime_Resources_Asset__RUNTIME\"",
-                    "\"resources_package_from_git_Editor_Resources_Asset__EDITOR\"",
-                    "\"resources_package_from_disk_Editor_Resources_Asset__EDITOR\"",
-                    "\"resources_package_from_disk_Runtime_Resources_Asset__RUNTIME\"",
-                    "\"resources_package_from_packages_folder_Runtime_Resources_Asset__RUNTIME\"",
-                    "\"resources_package_from_packages_folder_Editor_Resources_Asset__EDITOR\"",
-                    "\"Assets_Editor_Resources_Asset__EDITOR\"",
-                    "\"Assets_Editor_Resources_Asset__EDITOR 1\"",
-                    "\"Assets_Resources_Asset__RUNTIME\"",
-                    "\"Assets_Resources_Items_Resources_Asset__RUNTIME\"",
-                    "\"Editor/Assets_Resources_Editor_Asset__RUNTIME\"",
-                    "\"Editor/Resource/Assets_Resources_Editor_Resources_Asset__RUNTIME\"",
+                    "\"from_git__RUNTIME\"",
+                    "\"from_git__EDITOR\"",
+                    "\"from_disk__EDITOR\"",
+                    "\"from_disk__RUNTIME\"",
+                    "\"from_pack_folder__RUNTIME\"",
+                    "\"from_pack_folder__EDITOR\"",
+                    "\"from_res__RUNTIME\"",
+                    "\"from_res__EDITOR\"",
                     checkFocus = false)
             }
         }
