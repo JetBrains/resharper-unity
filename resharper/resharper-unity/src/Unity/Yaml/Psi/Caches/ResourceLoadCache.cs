@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             if (extensionNoDot.IsNullOrEmpty()) //files without extension or any folder - should be skipped 
                 return null;
 
-            var relativeToSolution = sourceFileLocation.TryMakeRelativeTo(mySolution.SolutionDirectory);
+            var relativeToSolution = sourceFileLocation.TryMakeRelativeTo(mySolutionDirectory);
 
             var unityResourceFilePath =
                 GetPathInsideResourcesFolder(relativeToSolution); //this path will be used in the completion
