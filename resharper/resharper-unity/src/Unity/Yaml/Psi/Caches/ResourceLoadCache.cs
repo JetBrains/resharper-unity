@@ -28,10 +28,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             : base(lifetime, locks, persistentIndexManager, ResourcesCacheItem.Marshaller)
         {
             mySolution = solution;
+            
+            // SolutionDirectory isn't absolute in tests, and will throw if used with FileSystemTracker
+            mySolutionDirectory = solution.SolutionDirectory;
+            if (!mySolutionDirectory.IsAbsolute)
+                mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory().ToVirtualFileSystemPath());
         }
 
         private readonly object myCachedResourcesLock = new();
         private readonly HashSet<ResourceCacheInfo> myCachedResources = new();
+        private readonly VirtualFileSystemPath mySolutionDirectory;
 
         protected override bool IsApplicable(IPsiSourceFile sourceFile)
         {
