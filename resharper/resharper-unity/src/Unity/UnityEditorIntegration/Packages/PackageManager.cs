@@ -308,13 +308,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
             return myLogger.CatchSilent(() =>
             {
-                var json = myPackagesLockPath.ReadAllText2().Text;
-                myLogger.Info($"package json text:\n{json}");
-                var packagesLockJson = PackagesLockJson.FromJson(json);
-                foreach (var (key, value) in packagesLockJson.Dependencies)
-                {
-                    myLogger.Info($"{key}:{value.Source} data:{JsonConvert.SerializeObject(value)}");
-                }
+                var packageLockJson = myPackagesLockPath.ReadAllText2().Text;
+                myLogger.Trace($"package json text:\n{packageLockJson}");
+                var packagesLockJson = PackagesLockJson.FromJson(packageLockJson);
+             
                 var packages = new List<PackageData>();
                 foreach (var (id, details) in packagesLockJson.Dependencies)
                     packages.Add(GetPackageData(id, details, builtInPackagesFolder));
