@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         public static PackageData CreateUnknown(string id, string version,
                                                 PackageSource packageSource = PackageSource.Unknown)
         {
-            ourLogger.Error($"Creation of unknown package {nameof(id)}:{id}, {nameof(version)}:{version}, {nameof(packageSource)}:{packageSource}");
+            ourLogger.Info($"Creation of unknown package {nameof(id)}:{id}, {nameof(version)}:{version}, {nameof(packageSource)}:{packageSource}");
             
             return new PackageData(id, null, DateTime.MinValue,
                 new PackageDetails(id, $"{id}@{version}", version,
