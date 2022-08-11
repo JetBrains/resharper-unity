@@ -147,6 +147,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("riderFrontendTests", bool)
         call("runMethodInUnity", Library.RunMethodData, Library.RunMethodResult)
         property("isDeferredCachesCompletedOnce", bool)
+        property("isUnityPackageManagerInitiallyIndexFinished", bool)
 
         call ("hasUnsavedState", void, bool)
 

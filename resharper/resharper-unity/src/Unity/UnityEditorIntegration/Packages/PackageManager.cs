@@ -16,6 +16,7 @@ using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.Threading;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
+using Newtonsoft.Json;
 
 #nullable enable
 
@@ -72,6 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
         private VirtualFileSystemPath? myLastReadGlobalManifestPath;
         private EditorManifestJson? myGlobalManifest;
+        private readonly FileSystemPathTrie<PackageData> myFileSystemPathTrie;
 
         public PackageManager(Lifetime lifetime, ISolution solution, ILogger logger,
                               UnitySolutionTracker unitySolutionTracker,
@@ -115,6 +117,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
                 // We're all set up, terminate the advise
                 return true;
+            });
+            myFileSystemPathTrie = new FileSystemPathTrie<PackageData>(false);
+
+            Packages.AddRemove.Advise(lifetime, args =>
+            {
+                var packageData = args.Value.Value;
+                
+                if(packageData.PackageFolder.IsNullOrEmpty())
+                    return;
+                
+                if (args.IsAdding)
+                    myFileSystemPathTrie.Add(packageData.PackageFolder, packageData);
+                    
+                if (args.IsRemoving)
+                    myFileSystemPathTrie.Remove(packageData.PackageFolder);
             });
         }
 
@@ -291,8 +308,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
             return myLogger.CatchSilent(() =>
             {
-                var packagesLockJson = PackagesLockJson.FromJson(myPackagesLockPath.ReadAllText2().Text);
-
+                var packageLockJson = myPackagesLockPath.ReadAllText2().Text;
+                myLogger.Trace($"package json text:\n{packageLockJson}");
+                var packagesLockJson = PackagesLockJson.FromJson(packageLockJson);
+             
                 var packages = new List<PackageData>();
                 foreach (var (id, details) in packagesLockJson.Dependencies)
                     packages.Add(GetPackageData(id, details, builtInPackagesFolder));
@@ -832,5 +851,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         }
 
         private static JetSemanticVersion Max(JetSemanticVersion v1, JetSemanticVersion v2) => v1 > v2 ? v1 : v2;
+
+        public PackageData? GetPackageByAssetPath(VirtualFileSystemPath possibleResource)
+        {
+            return myFileSystemPathTrie.FindLongestPrefix(possibleResource);
+        }
     }
 }
