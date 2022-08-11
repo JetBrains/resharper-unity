@@ -17,6 +17,7 @@ import com.intellij.workspaceModel.storage.MutableEntityStorage
 import com.intellij.workspaceModel.storage.referrersx
 import com.intellij.workspaceModel.storage.ModifiableReferableWorkspaceEntity
 import com.intellij.workspaceModel.storage.WorkspaceEntity
+import org.jetbrains.deft.annotations.Child
 
 
 interface UnityPackageEntity : WorkspaceEntity {
@@ -42,19 +43,20 @@ interface UnityPackageEntity : WorkspaceEntity {
         return !isEditable() && descriptor.source != UnityPackageSource.Unknown
     }
 
+    @Child
     val contentRootEntity: ContentRootEntity?
+
     val packageFolder: VirtualFile? get() = contentRootEntity?.url?.virtualFile
 
     //region generated code
-    //@formatter:off
     @GeneratedCodeApiVersion(1)
-    interface Builder: UnityPackageEntity, ModifiableWorkspaceEntity<UnityPackageEntity>, ObjBuilder<UnityPackageEntity> {
+    interface Builder : UnityPackageEntity, ModifiableWorkspaceEntity<UnityPackageEntity>, ObjBuilder<UnityPackageEntity> {
         override var descriptor: UnityPackage
         override var entitySource: EntitySource
         override var contentRootEntity: ContentRootEntity?
     }
-    
-    companion object: Type<UnityPackageEntity, Builder>() {
+
+    companion object : Type<UnityPackageEntity, Builder>() {
         operator fun invoke(descriptor: UnityPackage, entitySource: EntitySource, init: (Builder.() -> Unit)? = null): UnityPackageEntity {
             val builder = builder()
             builder.descriptor = descriptor
@@ -63,20 +65,16 @@ interface UnityPackageEntity : WorkspaceEntity {
             return builder
         }
     }
-    //@formatter:on
     //endregion
 
 }
-//region generated code
-fun MutableEntityStorage.modifyEntity(entity: UnityPackageEntity, modification: UnityPackageEntity.Builder.() -> Unit) = modifyEntity(UnityPackageEntity.Builder::class.java, entity, modification)
-var ContentRootEntity.Builder.unityPackageEntity: UnityPackageEntity?
-    get() {
-        return referrersx(UnityPackageEntity::contentRootEntity).singleOrNull()
-    }
-    set(value) {
-        (this as ModifiableReferableWorkspaceEntity).linkExternalEntity(UnityPackageEntity::class, false, if (value is List<*>) value as List<WorkspaceEntity?> else listOf(value) as List<WorkspaceEntity?> )
-    }
 
+//region generated code
+fun MutableEntityStorage.modifyEntity(entity: UnityPackageEntity, modification: UnityPackageEntity.Builder.() -> Unit) = modifyEntity(
+    UnityPackageEntity.Builder::class.java, entity, modification)
+
+var ContentRootEntity.Builder.unityPackageEntity: UnityPackageEntity?
+    by WorkspaceEntity.extension()
 //endregion
 
 @Suppress("unused")

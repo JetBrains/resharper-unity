@@ -71,7 +71,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
     }
 
     @BeforeMethod
-    fun InitializeEnvironement() {
+    fun initializeEnvironment() {
         prepareAssemblies(project, activeSolutionDirectory)
     }
 }

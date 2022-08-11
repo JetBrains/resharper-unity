@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             myAssetSerializationMode = assetSerializationMode;
             myProjectSettingsAssetHandlers = projectSettingsAssetHandlers;
 
-            myLocalCache.Tags.AddItems("Untagged", "Respawn", "Finish", "EditorOnly", "MainCamera", "Player", "GameController");
+            myLocalCache.Tags.AddItems("Finish", "Player", "Respawn", "Untagged", "EditorOnly", "MainCamera", "GameController");
         }
 
         public bool IsAvailable() => myAssetSerializationMode.IsForceText;
