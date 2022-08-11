@@ -40,6 +40,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
             return IsSpecificMethod(expr, KnownTypes.Component, "CompareTag")
                    || IsSpecificMethod(expr, KnownTypes.GameObject, "CompareTag");
         }
+        
+        public static bool IsFindObjectByTagMethod(this IInvocationExpression expr)
+        {
+            return IsSpecificMethod(expr, KnownTypes.GameObject, "FindWithTag")
+                   || IsSpecificMethod(expr, KnownTypes.GameObject, "FindGameObjectWithTag")
+                   || IsSpecificMethod(expr, KnownTypes.GameObject, "FindGameObjectsWithTag");
+        }
 
         public static bool IsInputAxisMethod(this IInvocationExpression invocationExpression)
         {
@@ -59,6 +66,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
         public static bool IsLayerMaskNameToLayerMethod(this IInvocationExpression expr)
         {
             return IsSpecificMethod(expr, KnownTypes.LayerMask, "NameToLayer");
+        }
+
+        public static bool IsResourcesLoadMethod(this IInvocationExpression invocationExpression)
+        {
+            return invocationExpression.InvocationExpressionReference.IsResourcesLoadMethod();
         }
 
         private static bool IsSpecificMethod(IInvocationExpression invocationExpression, IClrTypeName typeName, params string[] methodNames)
@@ -85,6 +97,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
         public static bool IsAnimatorPlayMethod(this IInvocationExpressionReference reference)
         {
             return IsRelatedMethod(reference, IsAnimatorPlay);
+        }
+
+        public static bool IsResourcesLoadMethod(this IInvocationExpressionReference reference)
+        {
+            return IsRelatedMethod(reference, IsResourcesLoad);
         }
 
         private static bool IsRelatedMethod(IInvocationExpressionReference reference, Func<IMethod, bool> checker)
@@ -129,6 +146,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
             return method != null &&
                    method.ShortName.StartsWith("Play") &&
                    method.GetContainingType()?.GetClrName().Equals(KnownTypes.Animator) == true;
+        }
+
+        private static bool IsResourcesLoad(IMethod method)
+        {
+            return method != null &&
+                   method.ShortName.StartsWith("Load") &&
+                   method.GetContainingType()?.GetClrName().Equals(KnownTypes.Resources) == true;
         }
     }
 }

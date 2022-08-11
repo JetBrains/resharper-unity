@@ -60,15 +60,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
         private void SetActualVersionForSolution(Lifetime lt)
         {
-            var projectVersionTxtPath = GetProjectVersionPath(mySolution);
+            var projectVersionTxtPath = GetProjectVersionPath(mySolutionDirectory);
             myFileSystemTracker.AdviseFileChanges(lt,
                 projectVersionTxtPath,
                 _ =>
                 {
-                    myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(mySolution);
+                    myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(mySolutionDirectory);
                     UpdateActualVersionForSolution();
                 });
-            myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(mySolution);
+            myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(mySolutionDirectory);
 
             var editorInstanceJsonPath = mySolutionDirectory.Combine("Library/EditorInstance.json");
             myFileSystemTracker.AdviseFileChanges(lt,
@@ -138,16 +138,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         }
 
 
-        private static VirtualFileSystemPath GetProjectVersionPath(ISolution solution)
+        private static VirtualFileSystemPath GetProjectVersionPath(VirtualFileSystemPath solutionDirectory)
         {
-            var projectVersionTxtPath = solution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
+            var projectVersionTxtPath = solutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
             return projectVersionTxtPath;
         }
         
         [CanBeNull]
-        public static string GetProjectSettingsUnityVersion(ISolution solution)
+        public static string GetProjectSettingsUnityVersion(VirtualFileSystemPath solutionDirectory)
         {
-            var projectVersionTxtPath = GetProjectVersionPath(solution);
+            var projectVersionTxtPath = GetProjectVersionPath(solutionDirectory);
             if (!projectVersionTxtPath.ExistsFile)
                 return null;
             
@@ -161,9 +161,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         }
         
         [CanBeNull]
-        private Version TryGetVersionFromProjectVersion(ISolution solution)
+        private Version TryGetVersionFromProjectVersion(VirtualFileSystemPath solutionDirectory)
         {
-            var version = GetProjectSettingsUnityVersion(solution);
+            var version = GetProjectSettingsUnityVersion(solutionDirectory);
             if (version == null)
                 return null;
             
