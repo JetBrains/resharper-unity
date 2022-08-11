@@ -21,7 +21,7 @@ plugins {
     id("com.jetbrains.rdgen")
     id("com.ullink.nuget") version "2.23"
     id("com.ullink.nunit") version "2.4"
-    id("me.filippov.gradle.jvm.wrapper") version "0.10.0"
+    id("me.filippov.gradle.jvm.wrapper") version "0.11.0"
     id("org.jetbrains.changelog") version "1.3.1"
     id("org.jetbrains.intellij") // version in rider/buildSrc/build.gradle.kts
     id("org.jetbrains.grammarkit") version "2021.2.2"
