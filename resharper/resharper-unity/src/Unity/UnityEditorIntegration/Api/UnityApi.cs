@@ -34,7 +34,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             KnownTypes.AnimationCurve,
             KnownTypes.Gradient,
             KnownTypes.GUIStyle,
-            KnownTypes.SphericalHarmonicsL2
+            KnownTypes.SphericalHarmonicsL2,
+            KnownTypes.LazyLoadReference
         };
 
         private readonly UnityVersion myUnityVersion;
@@ -109,8 +110,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             if (Equals(name, KnownTypes.SystemVersion) || Equals(name, PredefinedType.GENERIC_DICTIONARY_FQN))
                 return false;
 
+            if (name.FullName.StartsWith("System."))
+                return false;
+
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
-                return type.HasAttributeInstance(PredefinedType.SERIALIZABLE_ATTRIBUTE_CLASS, true);
+            {
+                var hasAttributeInstance = type.HasAttributeInstance(PredefinedType.SERIALIZABLE_ATTRIBUTE_CLASS, true);
+                return hasAttributeInstance;
+            }
         }
 
         public bool IsEventFunction([NotNullWhen(true)] IMethod? method) => method != null && GetUnityEventFunction(method) != null;
@@ -127,8 +134,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             // [NonSerialized] trumps everything, even if there's a [SerializeField] as well
             if (field.HasAttributeInstance(PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS, false))
                 return false;
-
+            
             var hasSerializeReference = field.HasAttributeInstance(KnownTypes.SerializeReference, false);
+            
             if (field.GetAccessRights() != AccessRights.PUBLIC
                 && !field.HasAttributeInstance(KnownTypes.SerializeField, false)
                 && !hasSerializeReference)
@@ -136,36 +144,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 return false;
             }
 
+            return IsFieldTypeSerializable(field, hasSerializeReference);
+        }
+
+        public bool IsFieldTypeSerializable(IField field, bool hasSerializeReference = false)
+        {
             // We need the project to get the current Unity version. this is only called for type usage (e.g. field
             // type), so it's safe to assume that the field is in a source file belonging to a project
             var project = (field.Module as IProjectPsiModule)?.Project;
 
             // Rules for what field types can be serialised.
             // See https://docs.unity3d.com/ScriptReference/SerializeField.html
-            return project != null &&
-                   (IsSimpleSerialisedFieldType(field.Type, project, hasSerializeReference) ||
-                    IsSerialisedFieldContainerType(field.Type, project, hasSerializeReference));
+            return project != null && IsFieldTypeSerializable(field.Type, project, hasSerializeReference);
         }
 
-        private bool IsSimpleSerialisedFieldType([NotNullWhen(true)] IType? type, IProject project,
+        private bool IsFieldTypeSerializable([NotNullWhen(true)] IType? type, IProject project,
                                                  bool hasSerializeReference)
         {
-            // We include type parameter types (T) in this test, which Unity obviously won't. We treat them as
-            // serialised fields rather than show false positive redundant attribute warnings, etc. Adding the test
-            // here allows us to support T[] and List<T>
-            return type != null && (type.IsSimplePredefined()
-                                    || type.IsEnumType()
-                                    || IsUnityBuiltinType(type)
-                                    || type.GetTypeElement().DerivesFrom(KnownTypes.Object)
-                                    || IsSerializableType(type.GetTypeElement(), project, true, hasSerializeReference)
-                                    || type.IsTypeParameterType());
-        }
-
-        private bool IsSerialisedFieldContainerType([NotNullWhen(true)] IType? type, IProject project,
-                                                    bool hasSerializeReference)
-        {
             if (type is IArrayType { Rank: 1 } arrayType &&
-                IsSimpleSerialisedFieldType(arrayType.ElementType, project, hasSerializeReference))
+                IsSimpleFieldTypeSerializable(arrayType.ElementType, project, hasSerializeReference))
             {
                 return true;
             }
@@ -179,11 +176,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 {
                     var substitutedType = substitution.Apply(typeParameter);
                     return substitutedType.IsTypeParameterType() ||
-                           IsSimpleSerialisedFieldType(substitutedType, project, hasSerializeReference);
+                           IsSimpleFieldTypeSerializable(substitutedType, project, hasSerializeReference);
                 }
             }
 
-            return false;
+            return IsSimpleFieldTypeSerializable(type, project, hasSerializeReference);
+        }
+
+        private bool IsSimpleFieldTypeSerializable(IType? type, IProject project, bool hasSerializeReference)
+        {
+            // We include type parameter types (T) in this test, which Unity obviously won't. We treat them as
+            // serialised fields rather than show false positive redundant attribute warnings, etc. Adding the test
+            // here allows us to support T[] and List<T>
+
+            return type != null && (IsUnitySimplePredefined(type)
+                                    || type.IsEnumType()
+                                    || IsUnityBuiltinType(type)
+                                    || type.GetTypeElement().DerivesFrom(KnownTypes.Object)
+                                    || IsSerializableType(type.GetTypeElement(), project, true, hasSerializeReference)
+                                    || type.IsTypeParameterType());
+        }
+
+        private static bool IsUnitySimplePredefined(IType type)
+        {
+            return type.IsSimplePredefined() && !Equals(((IDeclaredType)type).GetClrName(), PredefinedType.DECIMAL_FQN);
         }
 
         // An auto property can have [field: SerializeField] which makes the backing field a seralised field, albeit
