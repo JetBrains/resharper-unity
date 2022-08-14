@@ -125,7 +125,7 @@ fun deleteElement(project: Project, path: Array<String>) {
 
 fun createDataContextFor2(project: Project, paths: Array<Array<String>>): DataContext {
     flushQueues(project.protocolHost)
-    val nodes = paths.map { findReq(it, project) }.toTypedArray()
+    val nodes = paths.map { findReq(it, project) }
     return createDataContextForNode(project, nodes)
 }
 
