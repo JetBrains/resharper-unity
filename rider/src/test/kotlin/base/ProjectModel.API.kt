@@ -83,7 +83,7 @@ fun dumpExplorerTree(tree: JTree) : String {
 
 fun addNewItem2(project: Project, path: Array<String>, template: TemplateType, itemName: String) {
     frameworkLogger.info("Start adding new item: '$itemName'")
-    val dataContext = createDataContextFor2(project, arrayOf(path))
+    val dataContext = createDataContextForUnityExplorer(project, arrayOf(path))
     changeFileSystem(project) {
         val createdFile = executeNewItemAction(dataContext, template.type, template.group!!, itemName)
         this.affectedFiles.add(createdFile.parentFile)
@@ -94,7 +94,7 @@ fun addNewItem2(project: Project, path: Array<String>, template: TemplateType, i
 
 fun addNewFolder2(project: Project, path: Array<String>, folderName: String) {
     frameworkLogger.info("Start adding new item: '$folderName'")
-    val dataContext = createDataContextFor2(project, arrayOf(path))
+    val dataContext = createDataContextForUnityExplorer(project, arrayOf(path))
     addNewFolder2(project, dataContext, folderName)
 }
 
@@ -110,23 +110,22 @@ private fun addNewFolder2(project: Project,
 }
 
 fun renameItem(project: Project, path: Array<String>, newName: String) {
-    val dataContext = createDataContextFor2(project, arrayOf(path))
+    val dataContext = createDataContextForUnityExplorer(project, arrayOf(path))
     val renameHandler = RenameHandlerRegistry.getInstance().getRenameHandler(dataContext) as RiderRenameItemHandler
     assert(renameHandler.isRenaming(dataContext)) { "Can't rename elements" }
     RiderRenameItemHandler.execute(dataContext, newName)
 }
 
 fun deleteElement(project: Project, path: Array<String>) {
-    val dataContext = createDataContextFor2(project, arrayOf(path))
+    val dataContext = createDataContextForUnityExplorer(project, arrayOf(path))
     assert(RiderDeleteProvider.canDeleteElement(dataContext)) { "Can't delete elements" }
     RiderDeleteProvider.deleteElement(dataContext)
     waitForProjectModelReady(project)
 }
 
-fun createDataContextFor2(project: Project, paths: Array<Array<String>>): DataContext {
-    flushQueues(project.protocolHost)
-    val nodes = paths.map { findReq(it, project) }
-    return createDataContextForNode(project, nodes)
+fun createDataContextForUnityExplorer(project: Project, paths: Array<Array<String>>): DataContext {
+    val unityExplorer = UnityExplorer.getInstance(project)
+    return createDataContextForTree(project, unityExplorer, paths)
 }
 
 fun findReq(path: Array<String>, project: Project): AbstractTreeNode<*> {
@@ -173,14 +172,14 @@ fun cutItem2(project: Project, path: Array<String>) {
 }
 
 fun cutItem2(project: Project, paths: Array<Array<String>>) {
-    val dataContext = createDataContextFor2(project, paths)
+    val dataContext = createDataContextForUnityExplorer(project, paths)
     assert(RiderCutProvider.isCutEnabled(dataContext)) { "Can't cut elements. isCutEnabled" }
     assert(RiderCutProvider.isCutVisible(dataContext)) { "Can't cut elements. isCutVisible" }
     RiderCutProvider.performCut(dataContext)
 }
 
 fun pasteItem2(project: Project, path: Array<String>, customName: String? = null, orderType : ActionOrderType? = null) {
-    val dataContext = createDataContextFor2(project, arrayOf(path))
+    val dataContext = createDataContextForUnityExplorer(project, arrayOf(path))
     assert(RiderPasteProvider.isPasteEnabled(dataContext)) { "Can't paste elements. isPasteEnabled" }
     assert(RiderPasteProvider.isPastePossible(dataContext)) { "Can't paste elements. isPastePossible" }
     Lifetime.using { lifetime ->
