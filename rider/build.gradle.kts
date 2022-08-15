@@ -544,14 +544,14 @@ tasks {
         dependsOn(generateModels)
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjvm-default=all")
-            jvmTarget = "11"
+            jvmTarget = "17"
             allWarningsAsErrors = warningsAsErrors
         }
     }
 
     named<KotlinCompile>("compileTestKotlin") {
         kotlinOptions {
-            jvmTarget = "11"
+            jvmTarget = "17"
             allWarningsAsErrors = warningsAsErrors
         }
     }
