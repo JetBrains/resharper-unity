@@ -33,7 +33,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             KnownTypes.Bounds, KnownTypes.BoundsInt,
             KnownTypes.AnimationCurve,
             KnownTypes.Gradient,
-            KnownTypes.GUIStyle
+            KnownTypes.GUIStyle,
+            KnownTypes.SphericalHarmonicsL2
         };
 
         private readonly UnityVersion myUnityVersion;
