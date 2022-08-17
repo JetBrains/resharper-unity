@@ -12,9 +12,33 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net222...net223)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/55?closed=1)
 
+
+
+## 2022.2.2
+* [No code changes](https://github.com/JetBrains/resharper-unity/compare/net222-rtm-2022.2.1...net222-rtm-2022.2.2)
+
+
+
+## 2022.2.1
+* Released: [2022-08-10](https://blog.jetbrains.com/dotnet/2022/08/10/resharper-and-rider-2022-2-1/)
+* Build: 2022.2.0.143
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net222-rtm-2022.2.0...net222-rtm-2022.2.1)
+* No milestone
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net222-rtm-2022.2.1)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2022.2.0.143)
+
+### Fixed
+* Fix slowdown/freeze in C++ projects due to an expensive check in Unity code ([RIDER-78896](https://youtrack.jetbrains.com/issue/RIDER-78896))
+
+
+
 ## 2022.2.0
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net221...net222)
+* Released: [2022-08-02](https://blog.jetbrains.com/dotnet/2022/08/02/rider-2022-2-released/)
+* Build: 2022.2.0.133
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net221...net222-rtm-2022.2.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/53?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net222-rtm-2022.2.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2022.2.0.133)
 
 ### Added
 
@@ -46,6 +70,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix exception when checking for unsaved scenes at commit time without a connection to the Unity editor ([DEXP-672567](https://youtrack.jetbrains.com/issue/DEXP-672567))
 - Rider: Fix exception in Commit preferences page when no project loaded ([DEXP-671465](https://youtrack.jetbrains.com/issue/DEXP-671465), [#2334](https://github.com/JetBrains/resharper-unity/pull/2334))
 - Rider: Fix unnecessarily reading `EditorInstance.json` when multiple Unity projects are open ([#2329](https://github.com/JetBrains/resharper-unity/pull/2329))
+- Rider: Fix missing ampersand in unit test mode dropdown ([RIDER-79865](https://youtrack.jetbrains.com/issue/RIDER-79865))
 
 
 
