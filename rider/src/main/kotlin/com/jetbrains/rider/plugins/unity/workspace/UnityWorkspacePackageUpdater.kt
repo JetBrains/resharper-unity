@@ -6,6 +6,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.util.application
+import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.intellij.workspaceModel.ide.getInstance
 import com.intellij.workspaceModel.ide.impl.toVirtualFileUrl
 import com.intellij.workspaceModel.storage.MutableEntityStorage
@@ -19,7 +20,6 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendMo
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
 import com.jetbrains.rider.projectView.workspace.getOrCreateRiderModuleEntity
-import com.jetbrains.rider.projectView.workspace.impl.WorkspaceModelEditingFacade
 import java.nio.file.Paths
 
 class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedService() {
@@ -88,8 +88,7 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
             if (initialBuilder != null) {
                 action.invoke(initialBuilder)
             } else {
-                val workspaceModel = WorkspaceModelEditingFacade.getInstance(project).getWorkspaceModelForEditing()
-                workspaceModel.updateProjectModel(action)
+                WorkspaceModel.getInstance(project).updateProjectModel(action)
             }
         }
     }
@@ -100,8 +99,9 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
         logger.trace("Sync Unity packages after startup...")
 
         application.runWriteAction {
-            val workspaceModel = WorkspaceModelEditingFacade.getInstance(project).getWorkspaceModelForEditing()
-            workspaceModel.updateProjectModel { x -> x.replaceBySource({ it is RiderUnityPackageEntitySource }, initialBuilder) }
+            WorkspaceModel.getInstance(project).updateProjectModel { x ->
+                x.replaceBySource({ it is RiderUnityPackageEntitySource }, initialBuilder)
+            }
         }
     }
 
