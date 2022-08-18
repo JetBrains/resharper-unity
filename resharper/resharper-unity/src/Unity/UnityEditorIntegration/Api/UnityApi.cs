@@ -101,18 +101,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 
             if (type is IClass @class && @class.IsStaticClass())
                 return false;
-
+            
             // System.Dictionary is special cased and excluded. We can see this in UnitySerializationLogic.cs in the
             // reference source repo. It also excludes anything with a full name beginning "System.", which includes
             // "System.Version" (which is marked [Serializable]). However, it doesn't exclude string, int, etc.
             // TODO: Rewrite this whole section to properly mimic UnitySerializationLogic.cs
             var name = type.GetClrName();
+            
             if (Equals(name, KnownTypes.SystemVersion) || Equals(name, PredefinedType.GENERIC_DICTIONARY_FQN))
                 return false;
 
             if (name.FullName.StartsWith("System."))
                 return false;
 
+            if (type.DerivesFrom(KnownTypes.CustomPass))
+                return true;
+            
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
                 var hasAttributeInstance = type.HasAttributeInstance(PredefinedType.SERIALIZABLE_ATTRIBUTE_CLASS, true);
