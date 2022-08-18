@@ -52,8 +52,7 @@ class UnityExplorerTest : BaseTestWithSolutionBase() {
                 }
                 withUnityExplorerPane(project, true) {
                     dump("Show tilde folders", project, activeSolutionDirectory) {
-                        // here is our NewFolder1~ folder, which is presented without tilde
-                        addNewItem2(project, arrayOf("Assets", "NewFolder1"), TemplateType.CLASS, "Class1.cs")
+                        addNewItem2(project, arrayOf("Assets", "NewFolder1~"), TemplateType.CLASS, "Class1.cs")
                     }
                 }
                 withUnityExplorerPane(project, showAllFiles = true) {

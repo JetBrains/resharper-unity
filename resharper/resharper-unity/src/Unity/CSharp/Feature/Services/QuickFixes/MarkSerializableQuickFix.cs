@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
@@ -8,7 +7,6 @@ using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
@@ -37,15 +35,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         {
             var api = myAttribute.GetSolution().GetComponent<UnityApi>();
             var typeDeclaration = myAttribute.GetContainingTypeDeclaration();
-            var field = myAttribute.GetFieldsByAttribute().FirstOrDefault();
+            var declaration = AttributesOwnerDeclarationNavigator.GetByAttribute(myAttribute)
+                .FirstOrDefault(d =>
+                    // We ignore constants - if we marked the type as serialisable, the constant declaration wouldn't
+                    // suddenly become serialisable
+                    d is IFieldDeclaration { IsStatic: false, IsReadonly: false } ||
+                    (d is IPropertyDeclaration { IsAuto: true, IsStatic: false, IsReadonly: false } &&
+                     myAttribute.Target == AttributeTarget.Field));
 
-            if (field == null)
+            if (declaration == null)
                 return EmptyList<IntentionAction>.Enumerable;
 
             if (ValidUtils.Valid(typeDeclaration)
                 && typeDeclaration.DeclaredName != SharedImplUtil.MISSING_DECLARATION_NAME
-                && !api.IsUnityType(typeDeclaration.DeclaredElement)
-                && CouldBeSerializedField(field))
+                && !api.IsUnityType(typeDeclaration.DeclaredElement))
             {
                 return new MakeSerializable(typeDeclaration).ToQuickFixIntentions();
             }
@@ -54,11 +57,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         }
 
         public bool IsAvailable(IUserDataHolder cache) => ValidUtils.Valid(myAttribute);
-
-        private static bool CouldBeSerializedField(IField field)
-        {
-            return !field.IsStatic && !field.IsConstant && !field.IsReadonly;
-        }
 
         private class MakeSerializable : BulbActionBase
         {

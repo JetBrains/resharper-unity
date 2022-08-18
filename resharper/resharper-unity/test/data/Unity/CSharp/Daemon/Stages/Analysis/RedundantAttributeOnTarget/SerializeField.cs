@@ -22,6 +22,18 @@ public class Foo
     [field: SerializeField]
     public string Property { get; set; }
 
+    [field: SerializeField]
+    public string Property2 { get; private set; }
+
+    [field: SerializeField]
+    public string Property3 { get; }
+
+    [field: SerializeField]
+    public string Property4 { get; init; }
+
+    [field: SerializeField]
+    public static string Property5 { get; set; }
+
     [SerializeField]
     [return: SerializeField]
     public string Method<[SerializeField] T>([SerializeField] int param1)
