@@ -430,6 +430,25 @@ namespace JetBrains.Rider.Unity.Editor
 
             return Unit.Instance;
         });
+        
+        model.StopProfiling.Set((lifetime, unit) =>
+        {
+            MainThreadDispatcher.Instance.Queue(() =>
+            {
+                try
+                {
+                    UnityProfilerApiInterop.StopProfiling();
+                }
+                catch (Exception e)
+                {
+                    if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE) 
+                        Debug.LogError(e);
+                    throw;
+                }
+            });
+
+            return Unit.Instance;
+        });
     }
 
     private static void GetInitTime(BackendUnityModel model)

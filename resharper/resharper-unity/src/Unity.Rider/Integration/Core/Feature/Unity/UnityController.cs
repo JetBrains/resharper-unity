@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using JetBrains.Application.Components;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
+using JetBrains.Application.UI.Controls;
 using JetBrains.Collections.Viewable;
+using JetBrains.Core;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
@@ -26,7 +28,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
     public class UnityController : IUnityController, IHideImplementation<DefaultUnityController>
     {
         private static readonly TimeSpan ourUnityConnectionTimeout = TimeSpan.FromMinutes(10);
+        private static readonly RpcTimeouts ourUnityStartProfilingTimeouts = RpcTimeouts.Maximal;
         private static readonly string ourUnityTimeoutMessage = $"Unity hasn't connected. Timeout {ourUnityConnectionTimeout.TotalMilliseconds} ms is over.";
+        
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly UnityVersion myUnityVersion;
         private readonly IThreading myThreading;
@@ -34,12 +38,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
         private readonly ISolution mySolution;
         private readonly Lifetime myLifetime;
         private readonly FrontendBackendModel myFrontendBackendModel;
-
-        private VirtualFileSystemPath EditorInstanceJsonPath => mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
-
+        private readonly IBackgroundProgressIndicatorManager myIndicatorManager;
+        
+        private readonly object myStartUnitySync = new();
+        private Task<int> myStartUnityTask = Task.FromResult(0);
+        
         public UnityController(Lifetime lifetime,
                                ISolution solution,
                                BackendUnityHost backendUnityHost,
+                               IBackgroundProgressIndicatorManager indicatorManager,
                                UnityVersion unityVersion,
                                IThreading threading,
                                ILogger logger)
@@ -53,6 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
             myLogger = logger;
             mySolution = solution;
             myLifetime = lifetime;
+            myIndicatorManager = indicatorManager;
             myFrontendBackendModel = solution.GetProtocolSolution().GetFrontendBackendModel();
         }
         
@@ -63,8 +71,62 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
 
         public string GetPresentableUnityVersion() 
             => myFrontendBackendModel.UnityApplicationData.Value?.ApplicationVersion ?? string.Empty;
+        
+        public Task<int> StartUnity(Lifetime lifetime, Func<bool> condition = null)
+        {
+            lock (myStartUnitySync)
+                return myStartUnityTask = myStartUnityTask
+                    .ContinueWith(_ => StartUnityInternal(lifetime, condition), myLifetime, TaskContinuationOptions.None, myThreading.Tasks.Scheduler)
+                    .Unwrap();
+        }
+        
+        public Task StartProfiler(Lifetime lifetime, 
+                                  FileSystemPath unityProfilerApiPath = null, 
+                                  bool reloadUserAssemblies = true)
+        {
+            var unityModel = myBackendUnityHost.BackendUnityModel.Value;
+            if (unityModel == null)
+                return Task.FromException(new InvalidOperationException("Unity Editor is not connected."));
 
-        public bool TryGetUnityProcessId(out int processId)
+            var isPlayMode = myFrontendBackendModel.UnitTestPreference.Value is UnitTestLaunchPreference.PlayMode;
+            var apiPath = unityProfilerApiPath?.ToString() ?? GetProfilerApiPath();
+            var data = new ProfilingData(isPlayMode, apiPath, reloadUserAssemblies);
+            
+            return myThreading.Tasks.StartNew(lifetime, Scheduling.MainDispatcher, () => unityModel.StartProfiling.Sync(data, ourUnityStartProfilingTimeouts));
+        }
+        
+        public Task StopProfiler(Lifetime lifetime)
+        {
+            var unityModel = myBackendUnityHost.BackendUnityModel.Value;
+            if (unityModel == null)
+                return Task.FromException(new InvalidOperationException("Unity Editor is not connected."));
+
+            return myThreading.Tasks.StartNew(lifetime, Scheduling.MainDispatcher, () => unityModel.StopProfiling.Sync(Unit.Instance, ourUnityStartProfilingTimeouts));
+        }
+        
+        private VirtualFileSystemPath EditorInstanceJsonPath => mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
+
+        private async Task<int> StartUnityInternal(Lifetime lifetime, Func<bool> condition = null)
+        {
+            if (TryGetUnityProcessId(out var unityPid) && 
+                Process.GetProcessById(unityPid) is { HasExited:false } process)
+                return process.Id;
+
+            if (!(condition == null || condition()))
+                return 0;
+
+            using var startUnityDefinition = lifetime.CreateNested();
+      
+            var startUnityTask = StartUnityAndWaitConnection(startUnityDefinition.Lifetime);
+      
+            await myThreading.Tasks.YieldToIfNeeded(startUnityDefinition.Lifetime, Scheduling.MainGuard);
+
+            myIndicatorManager.CreateBackgroundProgress(startUnityDefinition.Lifetime, "Start Unity Editor", startUnityDefinition.Terminate);
+
+            return await startUnityTask.ConfigureAwait(false);
+        }
+        
+        private bool TryGetUnityProcessId(out int processId)
         {
             processId = 0;
             var applicationData = myBackendUnityHost.BackendUnityModel.Value?.UnityApplicationData.Value;
@@ -84,34 +146,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
             return PlatformUtil.ProcessExists(processId);
         }
 
-        public Task<int> StartAndWaitConnectedUnity(Lifetime lifetime)
+        private Task<int> StartUnityAndWaitConnection(Lifetime lifetime)
         {
             if (!TryGetUnityCommandline(out var unityPath, out var unityArgs))
                 throw new InvalidOperationException("Cannot get command line to start Unity Editor.");
             
             var process = Process.Start(new ProcessStartInfo(unityPath, string.Join(" ", unityArgs)));
-            if (process.HasExited)
-                throw new InvalidOperationException("Unity Editor hasn't started.");
+            if (process == null)
+                throw new InvalidOperationException("Unity process hasn't started.");
             
+            if (process.HasExited)
+                throw new InvalidOperationException($"Unity process has been exited. {process.StandardError.ReadToEnd()}");
+
             return WaitConnectedUnityProcessId(lifetime);
         }
         
-        public Task StartProfiler(Lifetime lifetime, 
-                                  FileSystemPath unityProfilerApiPath = null, 
-                                  bool reloadUserAssemblies = true)
+        private string GetProfilerApiPath()
         {
-            var unityModel = myBackendUnityHost.BackendUnityModel.Value;
-            if (unityModel == null)
+            const string etwAssemblyShorName = "JetBrains.Etw";
+            var etwAssemblyLocation = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name.Equals(etwAssemblyShorName))?.Location;
+            if (etwAssemblyLocation == null)
+            {
+                myLogger.Error($"{etwAssemblyShorName} was not found.");
                 return null;
+            }
+            var unityProfilerApiPath = FileSystemPath.Parse(etwAssemblyLocation).Parent
+                .Combine("JetBrains.Etw.UnityProfilerApi.dll");
+            if (!unityProfilerApiPath.ExistsFile)
+            {
+                myLogger.Error($"{unityProfilerApiPath} doesn't exist.");
+                return null;
+            }
             
-            var data = new ProfilingData(
-                myFrontendBackendModel.UnitTestPreference.Value is UnitTestLaunchPreference.PlayMode, 
-                unityProfilerApiPath?.ToString() ?? GetProfilerApiPath(), 
-                reloadUserAssemblies);
-            
-            return myThreading.Tasks.StartNew(lifetime, Scheduling.MainDispatcher, () => unityModel.StartProfiling.Sync(data, RpcTimeouts.Maximal));
+            return unityProfilerApiPath.FullPath;
         }
-
+        
         private Task<int> WaitConnectedUnityProcessId(Lifetime lifetime)
         {
             var source = new TaskCompletionSource<int>();
@@ -144,7 +213,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
 
             return source.Task;
         }
-
+        
         private bool TryGetUnityCommandline(out string path, out string[] args)
         {
             path = string.Empty;
@@ -164,25 +233,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
             path = unityPath;
             args = new[] {"-projectPath", CommandLineUtil.QuoteIfNeeded(mySolution.SolutionDirectory.FullPath)};
             return true;
-        }
-        
-        private string GetProfilerApiPath()
-        {
-            var etwAssemblyShorName = "JetBrains.Etw";
-            var etwAssemblyLocation = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name.Equals(etwAssemblyShorName))?.Location;
-            if (etwAssemblyLocation == null)
-            {
-                myLogger.Error($"{etwAssemblyShorName} was not found.");
-                return null;
-            }
-            var unityProfilerApiPath = FileSystemPath.Parse(etwAssemblyLocation).Parent
-                .Combine("JetBrains.Etw.UnityProfilerApi.dll");
-            if (!unityProfilerApiPath.ExistsFile)
-            {
-                myLogger.Error($"{unityProfilerApiPath} doesn't exist.");
-                return null;
-            }
-            return unityProfilerApiPath.FullPath;
         }
     }
 }
