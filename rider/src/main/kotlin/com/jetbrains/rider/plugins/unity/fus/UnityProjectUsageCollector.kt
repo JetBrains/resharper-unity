@@ -32,7 +32,7 @@ class UnityProjectUsageCollector  : ProjectUsagesCollector() {
         return RIDER_UNITY_STATE_GROUP
     }
 
-    override fun getMetrics(project: Project, indicator: ProgressIndicator): CancellablePromise<out MutableSet<MetricEvent>> {
+    override fun getMetrics(project: Project, indicator: ProgressIndicator?): CancellablePromise<out MutableSet<MetricEvent>> {
         val promise = project.lifetime.createNestedAsyncPromise<MutableSet<MetricEvent>>()
 
         UIUtil.invokeLaterIfNeeded {

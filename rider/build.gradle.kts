@@ -21,7 +21,7 @@ plugins {
     id("com.jetbrains.rdgen")
     id("com.ullink.nuget") version "2.23"
     id("com.ullink.nunit") version "2.4"
-    id("me.filippov.gradle.jvm.wrapper") version "0.10.0"
+    id("me.filippov.gradle.jvm.wrapper") version "0.11.0"
     id("org.jetbrains.changelog") version "1.3.1"
     id("org.jetbrains.intellij") // version in rider/buildSrc/build.gradle.kts
     id("org.jetbrains.grammarkit") version "2021.2.2"
@@ -544,14 +544,14 @@ tasks {
         dependsOn(generateModels)
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjvm-default=all")
-            jvmTarget = "11"
+            jvmTarget = "17"
             allWarningsAsErrors = warningsAsErrors
         }
     }
 
     named<KotlinCompile>("compileTestKotlin") {
         kotlinOptions {
-            jvmTarget = "11"
+            jvmTarget = "17"
             allWarningsAsErrors = warningsAsErrors
         }
     }
@@ -753,6 +753,49 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
 
     withType<Test> {
         useTestNG()
+
+        // Should be the same as community/plugins/devkit/devkit-core/src/run/OpenedPackages.txt
+        jvmArgs("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+                "--add-opens=java.base/java.net=ALL-UNNAMED",
+                "--add-opens=java.base/java.nio=ALL-UNNAMED",
+                "--add-opens=java.base/java.nio.charset=ALL-UNNAMED",
+                "--add-opens=java.base/java.text=ALL-UNNAMED",
+                "--add-opens=java.base/java.time=ALL-UNNAMED",
+                "--add-opens=java.base/java.util=ALL-UNNAMED",
+                "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
+                "--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED",
+                "--add-opens=java.base/jdk.internal.vm=ALL-UNNAMED",
+                "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+                "--add-opens=java.base/sun.security.ssl=ALL-UNNAMED",
+                "--add-opens=java.base/sun.security.util=ALL-UNNAMED",
+                "--add-opens=java.desktop/com.apple.eawt=ALL-UNNAMED",
+                "--add-opens=java.desktop/com.apple.eawt.event=ALL-UNNAMED",
+                "--add-opens=java.desktop/com.apple.laf=ALL-UNNAMED",
+                "--add-opens=java.desktop/com.sun.java.swing.plaf.gtk=ALL-UNNAMED",
+                "--add-opens=java.desktop/java.awt=ALL-UNNAMED",
+                "--add-opens=java.desktop/java.awt.dnd.peer=ALL-UNNAMED",
+                "--add-opens=java.desktop/java.awt.event=ALL-UNNAMED",
+                "--add-opens=java.desktop/java.awt.image=ALL-UNNAMED",
+                "--add-opens=java.desktop/java.awt.peer=ALL-UNNAMED",
+                "--add-opens=java.desktop/java.awt.font=ALL-UNNAMED",
+                "--add-opens=java.desktop/javax.swing=ALL-UNNAMED",
+                "--add-opens=java.desktop/javax.swing.plaf.basic=ALL-UNNAMED",
+                "--add-opens=java.desktop/javax.swing.text.html=ALL-UNNAMED",
+                "--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED",
+                "--add-opens=java.desktop/sun.awt.datatransfer=ALL-UNNAMED",
+                "--add-opens=java.desktop/sun.awt.image=ALL-UNNAMED",
+                "--add-opens=java.desktop/sun.awt.windows=ALL-UNNAMED",
+                "--add-opens=java.desktop/sun.awt=ALL-UNNAMED",
+                "--add-opens=java.desktop/sun.font=ALL-UNNAMED",
+                "--add-opens=java.desktop/sun.java2d=ALL-UNNAMED",
+                "--add-opens=java.desktop/sun.lwawt=ALL-UNNAMED",
+                "--add-opens=java.desktop/sun.lwawt.macosx=ALL-UNNAMED",
+                "--add-opens=java.desktop/sun.swing=ALL-UNNAMED",
+                "--add-opens=jdk.attach/sun.tools.attach=ALL-UNNAMED",
+                "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
+                "--add-opens=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED",
+                "--add-opens=jdk.jdi/com.sun.tools.jdi=ALL-UNNAMED")
+
         if (project.hasProperty("integrationTests")) {
             val testsType = project.property("integrationTests").toString()
             if (testsType == "include") {

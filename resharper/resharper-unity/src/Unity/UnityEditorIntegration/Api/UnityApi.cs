@@ -9,8 +9,10 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Modules;
+using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
@@ -178,6 +180,43 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                     return substitutedType.IsTypeParameterType() ||
                            IsSimpleSerialisedFieldType(substitutedType, project, hasSerializeReference);
                 }
+            }
+
+            return false;
+        }
+
+        // An auto property can have [field: SerializeField] which makes the backing field a seralised field, albeit
+        // with a weird name. The auto property must be writable, or the backing field is generated as readonly, which
+        // isn't serialisable (so not true for getter only or init setter only properties)
+        public bool IsSerialisedAutoProperty(IProperty? property)
+        {
+            if (property is not { IsAuto: true, IsWritable: true }) return false;
+
+            foreach (var declaration in property.GetDeclarations())
+            {
+                var propertyDeclaration = (IPropertyDeclaration)declaration;
+                foreach (var attribute in propertyDeclaration.AttributesEnumerable)
+                {
+                    if (IsSerialisedAutoProperty(property, attribute))
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool IsSerialisedAutoProperty(IProperty? property, IAttribute attribute)
+        {
+            if (property is not { IsAuto: true, IsWritable: true, IsStatic: false }
+                || attribute.Target != AttributeTarget.Field || attribute.Name == null)
+            {
+                return false;
+            }
+
+            var result = attribute.Name.Reference.Resolve();
+            if (result.ResolveErrorType == ResolveErrorType.OK && result.DeclaredElement is ITypeElement typeElement)
+            {
+                return Equals(typeElement.GetClrName(), KnownTypes.SerializeField);
             }
 
             return false;
