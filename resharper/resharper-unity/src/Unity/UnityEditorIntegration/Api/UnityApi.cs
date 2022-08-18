@@ -134,7 +134,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             // [NonSerialized] trumps everything, even if there's a [SerializeField] as well
             if (field.HasAttributeInstance(PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS, false))
                 return false;
-            
+
+            // example: [SerializeField] public unsafe fixed byte MyByteBuff[3];
+            if (field.IsFixedSizeBufferField() 
+                && field.Type is IPointerType pointerType
+                && IsUnitySimplePredefined(pointerType.ElementType))
+            {
+                return true;
+            }
+
             var hasSerializeReference = field.HasAttributeInstance(KnownTypes.SerializeReference, false);
             
             if (field.GetAccessRights() != AccessRights.PUBLIC

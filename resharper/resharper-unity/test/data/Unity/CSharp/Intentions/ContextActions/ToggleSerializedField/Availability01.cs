@@ -63,5 +63,5 @@ public class Foo : MonoBehaviour
 
     private readonly ICustomInterface myCu{off}stomInterface;
     private readonly List<ICustomInterface> myCu{off}stomInterfaces;
-	private readonly string[][] my{off}NotSerialisedJaggedArray;
+    private readonly string[][] my{off}NotSerialisedJaggedArray;
 }
