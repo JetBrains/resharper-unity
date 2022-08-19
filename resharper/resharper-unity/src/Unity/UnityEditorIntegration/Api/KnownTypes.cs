@@ -124,8 +124,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         // public static readonly IClrTypeName JobParticleSystem = new ClrTypeName("UnityEngine.ParticleSystemJobs.IJobParticleSystem");
         // public static readonly IClrTypeName JobParticleSystemParallelFor = new ClrTypeName("UnityEngine.ParticleSystemJobs.IJobParticleSystemParallelFor");
         // public static readonly IClrTypeName JobParticleSystemParallelForBatch = new ClrTypeName("UnityEngine.ParticleSystemJobs.IJobParticleSystemParallelForBatch");
-        
-        //UnityEngine.Rendering.HighDefinition
-        public static readonly IClrTypeName CustomPass = new ClrTypeName("UnityEngine.Rendering.HighDefinition.CustomPass");
     }
 }

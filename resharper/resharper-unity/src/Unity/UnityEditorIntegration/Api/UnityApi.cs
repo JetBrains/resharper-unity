@@ -114,9 +114,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             if (name.FullName.StartsWith("System."))
                 return false;
 
-            if (type.DerivesFrom(KnownTypes.CustomPass))
-                return true;
-            
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
                 var hasAttributeInstance = type.HasAttributeInstance(PredefinedType.SERIALIZABLE_ATTRIBUTE_CLASS, true);
