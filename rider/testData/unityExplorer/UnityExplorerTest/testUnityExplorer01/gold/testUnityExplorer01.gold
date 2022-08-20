@@ -66,7 +66,9 @@ Show All Files
 -Project
  -Assets
   References
-  .NewFolder1, tooltip=This folder is not imported into the asset database
+  -.NewFolder1, tooltip=This folder is not imported into the asset database
+   Class1.cs, tooltip=This file is not imported into the asset database
+   Class1.cs.meta, tooltip=This file is not imported into the asset database
   -NewFolder1~, tooltip=This folder is not imported into the asset database
    Class1.cs, tooltip=This file is not imported into the asset database
    Class1.cs.meta, tooltip=This file is not imported into the asset database

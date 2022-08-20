@@ -384,6 +384,186 @@
   </member>
 
 
+  <!-- Pure methods - must use return value -->
+  <member name="M:UnityEngine.Mathf.Abs(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Abs(System.Int32)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Acos(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Approximately(System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Atan(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Atan2(System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Ceil(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.CeilToInt(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Clamp(System.Single,System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Clamp(System.Int32,System.Int32,System.Int32)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Clamp01(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.ClosestPowerOfTwo(System.Int32)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.CorrelatedColorTemperatureToRGB(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Cos(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.DeltaAngle(System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Exp(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.FloatToHalf(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Floor(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.FloorToInt(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Gamma(System.Single,System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.GammaToLinearSpace(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.HalfToFloat(System.UInt16)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.InverseLerp(System.Single,System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.IsPowerOfTwo(System.Int32)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Lerp(System.Single,System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.LerpAngle(System.Single,System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.LerpUnclamped(System.Single,System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.LinearToGammaSpace(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Log(System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Log(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Log10(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Sin(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Max(System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Max(System.Single[])">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Max(System.Int32,System.Int32)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Max(System.Int32[])">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Min(System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Min(System.Single[])">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Min(System.Int32,System.Int32)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Min(System.Int32[])">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.MoveTowards(System.Single,System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.MoveTowardsAngle(System.Single,System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.NextPowerOfTwo(System.Int32)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.PerlinNoise(System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.PingPong(System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Pow(System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Repeat(System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Round(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.RoundToInt(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Sign(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.SmoothDamp(System.Single,System.Single,System.Single@,System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.SmoothDamp(System.Single,System.Single,System.Single@,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.SmoothDamp(System.Single,System.Single,System.Single@,System.Single,System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.SmoothDampAngle(System.Single,System.Single,System.Single@,System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.SmoothDampAngle(System.Single,System.Single,System.Single@,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.SmoothDampAngle(System.Single,System.Single,System.Single@,System.Single,System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.SmoothStep(System.Single,System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Sqrt(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Mathf.Tan(System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+
+
   <!-- Attribute usage. Grouped by namespace -->
 
   <!-- N:UnityEngine -->

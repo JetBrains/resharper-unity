@@ -33,6 +33,7 @@ private class UnresolvedMergeCheckHandler(
 
     private val project = panel.project
     private val settings = UnsavedCheckinState.getService(project)
+
     override fun getBeforeCheckinConfigurationPanel(): RefreshableOnComponent? {
         if (!project.isUnityProject())
             return null
