@@ -16,6 +16,10 @@
   </PropertyGroup>
   <!-- ********** -->
   <ItemGroup Label="Cg">
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>JetBrains_ApiVerification</_Parameter1>
+      <_Parameter2>disabled</_Parameter2>
+    </AssemblyAttribute>
     <PsiLanguageNames Include="Cg">
       <Visible>False</Visible>
     </PsiLanguageNames>
