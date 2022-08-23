@@ -17,7 +17,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         public UnityProjectScopeProvider()
         {
             // These factory methods are used to create scope points when reading templates from settings
-            Creators.Add(TryToCreate<UnityFileTemplateSectionMarker>);
             Creators.Add(TryToCreate<InUnityCSharpProject>);
             Creators.Add(TryToCreate<InUnityCSharpAssetsFolder>);
             Creators.Add(TryToCreate<InUnityCSharpEditorFolder>);
