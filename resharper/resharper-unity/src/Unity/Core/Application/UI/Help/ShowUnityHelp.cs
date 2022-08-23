@@ -70,13 +70,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
             // result for online doc should contain dot, otherwise nothing is found
 
             var documentationRoot = GetDocumentationRoot();
-            keyword = keyword.Replace(".#", "-").Replace(".-", "-");
-            var res = GetFileUri(documentationRoot, $"ScriptReference/{keyword}.html") // ctor or type
-                   ?? GetFileUri(documentationRoot, $"ScriptReference/{keyword.ReplaceLast('.', '-')}.html") // property
-                   ?? GetFileUri(documentationRoot, $"ScriptReference/{keyword.Replace(".-ctor", "")}.html") // ctor in Rider doesn't exist, so goto type doc
-                   ?? new Uri($"https://docs.unity3d.com{GetVersionSpecificPieceOfUrl()}/ScriptReference/30_search.html?q={keyword}"); // fallback to online doc
+            var offlineKeyword = keyword.Replace(".#", "-").Replace(".-", "-");
+            var res = GetFileUri(documentationRoot, $"ScriptReference/{offlineKeyword}.html") // ctor or type
+                      ?? GetFileUri(documentationRoot, $"ScriptReference/{offlineKeyword.ReplaceLast('.', '-')}.html") // property
+                      ?? GetFileUri(documentationRoot, $"ScriptReference/{offlineKeyword.Replace("-ctor", "")}.html") // ctor in Rider doesn't exist, so goto type doc
+                      ?? new Uri($"https://docs.unity3d.com{GetVersionSpecificPieceOfUrl()}/ScriptReference/30_search.html?q={keyword.Replace(".#", ".").Replace(".-", ".")}"); // fallback to online doc
 
-            myLogger.Trace($"GetUri {keyword} {res}");
+            myLogger.Trace($"GetUri offlineKeyword:{offlineKeyword}, onlineKeyword:{keyword.Replace(".#", ".").Replace(".-", ".")} {res}");
             return res;
         }
 
