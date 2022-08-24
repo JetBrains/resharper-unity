@@ -178,6 +178,6 @@ object BackendUnityModel: Root() {
 
         // profiler
         call ("startProfiling", ProfilingData, void).documentation = "Start profiling and enter PlayMode, depending on the param"
-        call ("stopProfiling", void, void)
+        call ("stopProfiling", ProfilingData, void)
     }
 }

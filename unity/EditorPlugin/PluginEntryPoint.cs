@@ -431,13 +431,13 @@ namespace JetBrains.Rider.Unity.Editor
             return Unit.Instance;
         });
         
-        model.StopProfiling.Set((lifetime, unit) =>
+        model.StopProfiling.Set((_, data) =>
         {
             MainThreadDispatcher.Instance.Queue(() =>
             {
                 try
                 {
-                    UnityProfilerApiInterop.StopProfiling();
+                    UnityProfilerApiInterop.StopProfiling(data.UnityProfilerApiPath);
                 }
                 catch (Exception e)
                 {

@@ -6,35 +6,27 @@ using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor.Utils
 {
-    public class UnityProfilerApiInterop
+    public static class UnityProfilerApiInterop
     {
-        private static UnityProfilerApiInterop ourInstance;
-        
-        public static void StartProfiling(string dllFile, bool needReloadScripts)
+        public static void StartProfiling(string dllFile, bool needReloadScripts = false)
         {
+            const string method = "StartProfiling";
             if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
-                Debug.Log($"StartProfiling: {dllFile}");
-
-            if(ourInstance != null)
-                StopProfiling();
+                Debug.Log($"{method}: {dllFile}");
             
-            ourInstance = new UnityProfilerApiInterop(dllFile);
-            ourInstance.Start();
-
+            InvokeApi(dllFile, method);
+            
             if (needReloadScripts)
                 ReloadScripts();
         }
 
-        public static void StopProfiling()
+        public static void StopProfiling(string dllFile)
         {
+            const string method = "StopProfiling";
             if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
-                Debug.Log($"StopProfiling");
+                Debug.Log($"{method}: {dllFile}");
 
-            if (ourInstance == null)
-                return;
-            
-            ourInstance.Stop();
-            ourInstance = null;
+            InvokeApi(dllFile, method);
         }
 
         private static void ReloadScripts()
@@ -45,38 +37,27 @@ namespace JetBrains.Rider.Unity.Editor.Utils
             UnityEditorInternal.InternalEditorUtility.RequestScriptReload();
 #endif
         }
-
         
-        private readonly object myProfilerInstance;
-        private readonly Type myProfilerApiType;
-
-        private UnityProfilerApiInterop(string apiPath)
+        private static void InvokeApi(string apiPath, string methodName)
         {
             // C:\Work\dotnet-products\Bin.RiderBackend\JetBrains.Etw.UnityProfilerApi.dll
             var assembly = AppDomain.CurrentDomain.Load(AssemblyName.GetAssemblyName(apiPath));
 
-            myProfilerApiType = assembly.GetType("JetBrains.Etw.Api.UnityProfilerApi");
-            if (myProfilerApiType == null)
+            var profilerApiType = assembly.GetType("JetBrains.Etw.Api.UnityProfilerApi");
+            if (profilerApiType == null)
                 throw new ApplicationException("Unable to get the type");
 
             var folder = new FileInfo(apiPath).Directory;
             if (folder == null)
                 throw new ApplicationException($"Folder of {apiPath} is null");
             
-            myProfilerInstance = Activator.CreateInstance(myProfilerApiType, folder.FullName);
-        }
-
-        public void Start() => Invoke("StartProfiling");
-
-        public void Stop() => Invoke("StopProfiling");
-        
-        private void Invoke(string methodName)
-        {
-            var method = myProfilerApiType.GetMethod(methodName);
+            var instance = Activator.CreateInstance(profilerApiType, folder.FullName);
+            
+            var method = profilerApiType.GetMethod(methodName);
             if (method == null)
                 throw new ApplicationException("Unable to get the method");
             
-            method.Invoke(myProfilerInstance, null);
+            method.Invoke(instance, null);
         }
     }
 }

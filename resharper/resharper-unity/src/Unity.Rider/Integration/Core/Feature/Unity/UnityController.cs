@@ -8,7 +8,6 @@ using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Application.UI.Controls;
 using JetBrains.Collections.Viewable;
-using JetBrains.Core;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
@@ -89,7 +88,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
                 return Task.FromException(new InvalidOperationException("Unity Editor is not connected."));
 
             var isPlayMode = myFrontendBackendModel.UnitTestPreference.Value is UnitTestLaunchPreference.PlayMode;
-            var apiPath = unityProfilerApiPath?.ToString() ?? GetProfilerApiPath();
+            var apiPath = GetProfilerApiPath();
             var data = new ProfilingData(isPlayMode, apiPath, reloadUserAssemblies);
             
             return myThreading.Tasks.StartNew(lifetime, Scheduling.MainDispatcher, () => unityModel.StartProfiling.Sync(data, ourUnityStartProfilingTimeouts));
@@ -101,7 +100,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
             if (unityModel == null)
                 return Task.FromException(new InvalidOperationException("Unity Editor is not connected."));
 
-            return myThreading.Tasks.StartNew(lifetime, Scheduling.MainDispatcher, () => unityModel.StopProfiling.Sync(Unit.Instance, ourUnityStartProfilingTimeouts));
+            var isPlayMode = myFrontendBackendModel.UnitTestPreference.Value is UnitTestLaunchPreference.PlayMode;
+            var apiPath = GetProfilerApiPath();
+            var data = new ProfilingData(isPlayMode, apiPath, false);
+            
+            return myThreading.Tasks.StartNew(lifetime, Scheduling.MainDispatcher, () => unityModel.StopProfiling.Sync(data, ourUnityStartProfilingTimeouts));
         }
         
         private VirtualFileSystemPath EditorInstanceJsonPath => mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
