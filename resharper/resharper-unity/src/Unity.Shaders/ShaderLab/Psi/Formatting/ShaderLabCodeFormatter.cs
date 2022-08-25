@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
       return MinimalSeparatorType.NotRequired;
     }
 
-    public override ITreeNode CreateSpace(string indent, ITreeNode replacedSpace)
+    public override ITreeNode CreateSpace(string indent, NodeType replacedOrLeftSiblingType)
     {
       return ShaderLabTokenType.WHITESPACE.CreateLeafElement(indent);
     }
