@@ -47,12 +47,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             return solution.GetComponent<UnitySolutionTracker>().IsUnityProject.HasTrueValue();
         }
 
-        public void OnClick(CodeInsightsHighlighting highlighting, ISolution solution)
+        public void OnClick(CodeInsightHighlightInfo highlightInfo, ISolution solution)
         {
             var rules = new List<IDataRule>();
             rules.AddRule("Solution", ProjectModelDataConstants.SOLUTION, solution);
 
-            var declaredElement = highlighting.DeclaredElement;
+            var declaredElement = highlightInfo.CodeInsightsHighlighting.DeclaredElement;
             rules.AddRule("DeclaredElement", PsiDataConstants.DECLARED_ELEMENTS_FROM_ALL_CONTEXTS, new[] {  declaredElement });
 
             using (ReadLockCookie.Create())
@@ -61,11 +61,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
                     return;
 
                 // Document constant is required for non-empty IFinderSearchRoot
-                rules.AddRule("Document", DocumentModelDataConstants.DOCUMENT, highlighting.Range.Document);
+                rules.AddRule("Document", DocumentModelDataConstants.DOCUMENT, highlightInfo.CodeInsightsHighlighting.Range.Document);
 
-                rules.AddRule("DocumentEditorContext", DocumentModelDataConstants.EDITOR_CONTEXT, new DocumentEditorContext(highlighting.Range));
+                rules.AddRule("DocumentEditorContext", DocumentModelDataConstants.EDITOR_CONTEXT, new DocumentEditorContext(highlightInfo.CodeInsightsHighlighting.Range));
                 rules.AddRule("PopupWindowSourceOverride", UIDataConstants.PopupWindowContextSource,
-                    new PopupWindowContextSource(lt => new RiderEditorOffsetPopupWindowContext(highlighting.Range.StartOffset.Offset)));
+                    new PopupWindowContextSource(lt => new RiderEditorOffsetPopupWindowContext(highlightInfo.CodeInsightsHighlighting.Range.StartOffset.Offset)));
 
                 rules.AddRule("DontNavigateImmediatelyToSingleUsage", NavigationSettings.DONT_NAVIGATE_IMMEDIATELY_TO_SINGLE_USAGE, new object());
 
@@ -76,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             }
         }
 
-        public void OnExtraActionClick(CodeInsightsHighlighting highlighting, string actionId, ISolution solution)
+        public void OnExtraActionClick(CodeInsightHighlightInfo highlightInfo, string actionId, ISolution solution)
         {
         }
 
