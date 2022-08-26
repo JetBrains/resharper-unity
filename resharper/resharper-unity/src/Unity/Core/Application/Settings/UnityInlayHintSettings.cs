@@ -1,6 +1,6 @@
-using JetBrains.Application.InlayHints;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.WellKnownRootKeys;
+using JetBrains.TextControl.DocumentMarkup.IntraTextAdornments;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
 {
