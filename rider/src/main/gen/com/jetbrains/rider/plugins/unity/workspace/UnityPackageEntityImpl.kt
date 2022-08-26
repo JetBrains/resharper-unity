@@ -18,11 +18,13 @@ import com.intellij.workspaceModel.storage.bridgeEntities.api.ContentRootEntity
 import com.intellij.workspaceModel.storage.impl.ConnectionId
 import com.intellij.workspaceModel.storage.impl.EntityLink
 import com.intellij.workspaceModel.storage.impl.ModifiableWorkspaceEntityBase
+import com.intellij.workspaceModel.storage.impl.UsedClassesCollector
 import com.intellij.workspaceModel.storage.impl.WorkspaceEntityBase
 import com.intellij.workspaceModel.storage.impl.WorkspaceEntityData
 import com.intellij.workspaceModel.storage.impl.extractOneToOneChild
 import com.intellij.workspaceModel.storage.impl.updateOneToOneChildOfParent
 import com.intellij.workspaceModel.storage.referrersx
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityGitDetails
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
 import org.jetbrains.deft.ObjBuilder
@@ -82,11 +84,11 @@ open class UnityPackageEntityImpl : UnityPackageEntity, WorkspaceEntityBase() {
 
     fun checkInitialization() {
       val _diff = diff
+      if (!getEntityData().isEntitySourceInitialized()) {
+        error("Field WorkspaceEntity#entitySource should be initialized")
+      }
       if (!getEntityData().isDescriptorInitialized()) {
         error("Field UnityPackageEntity#descriptor should be initialized")
-      }
-      if (!getEntityData().isEntitySourceInitialized()) {
-        error("Field UnityPackageEntity#entitySource should be initialized")
       }
     }
 
@@ -97,21 +99,12 @@ open class UnityPackageEntityImpl : UnityPackageEntity, WorkspaceEntityBase() {
     // Relabeling code, move information from dataSource to this builder
     override fun relabel(dataSource: WorkspaceEntity, parents: Set<WorkspaceEntity>?) {
       dataSource as UnityPackageEntity
-      this.descriptor = dataSource.descriptor
       this.entitySource = dataSource.entitySource
+      this.descriptor = dataSource.descriptor
       if (parents != null) {
       }
     }
 
-
-    override var descriptor: UnityPackage
-      get() = getEntityData().descriptor
-      set(value) {
-        checkModificationAllowed()
-        getEntityData().descriptor = value
-        changedProperty.add("descriptor")
-
-      }
 
     override var entitySource: EntitySource
       get() = getEntityData().entitySource
@@ -119,6 +112,15 @@ open class UnityPackageEntityImpl : UnityPackageEntity, WorkspaceEntityBase() {
         checkModificationAllowed()
         getEntityData().entitySource = value
         changedProperty.add("entitySource")
+
+      }
+
+    override var descriptor: UnityPackage
+      get() = getEntityData().descriptor
+      set(value) {
+        checkModificationAllowed()
+        getEntityData().descriptor = value
+        changedProperty.add("descriptor")
 
       }
 
@@ -214,8 +216,8 @@ class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
 
     other as UnityPackageEntityData
 
-    if (this.descriptor != other.descriptor) return false
     if (this.entitySource != other.entitySource) return false
+    if (this.descriptor != other.descriptor) return false
     return true
   }
 
@@ -239,5 +241,13 @@ class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
     var result = javaClass.hashCode()
     result = 31 * result + descriptor.hashCode()
     return result
+  }
+
+  override fun collectClassUsagesData(collector: UsedClassesCollector) {
+    collector.add(UnityPackage::class.java)
+    collector.add(UnityGitDetails::class.java)
+    collector.add(UnityPackageSource::class.java)
+    this.descriptor?.let { collector.addDataToInspect(it) }
+    collector.sameForAllEntities = true
   }
 }
