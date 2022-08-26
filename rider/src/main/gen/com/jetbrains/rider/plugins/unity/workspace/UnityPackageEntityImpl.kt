@@ -242,4 +242,12 @@ class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
     result = 31 * result + descriptor.hashCode()
     return result
   }
+
+  override fun collectClassUsagesData(collector: UsedClassesCollector) {
+    collector.add(UnityPackage::class.java)
+    collector.add(UnityGitDetails::class.java)
+    collector.add(UnityPackageSource::class.java)
+    this.descriptor?.let { collector.addDataToInspect(it) }
+    collector.sameForAllEntities = true
+  }
 }
