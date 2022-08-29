@@ -51,8 +51,8 @@ interface UnityPackageEntity : WorkspaceEntity {
   //region generated code
   @GeneratedCodeApiVersion(1)
   interface Builder : UnityPackageEntity, ModifiableWorkspaceEntity<UnityPackageEntity>, ObjBuilder<UnityPackageEntity> {
-    override var descriptor: UnityPackage
     override var entitySource: EntitySource
+    override var descriptor: UnityPackage
     override var contentRootEntity: ContentRootEntity?
   }
 
