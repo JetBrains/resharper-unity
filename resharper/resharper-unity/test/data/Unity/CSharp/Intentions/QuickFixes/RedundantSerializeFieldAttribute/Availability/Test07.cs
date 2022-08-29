@@ -5,7 +5,7 @@ using UnityEngine;
 [Serializable]
 public struct A
 {
-    [SerializeField] public unsafe fixed byte myByteBuff1[3];
+    [Serialize{caret}Field] public unsafe fixed byte myByteBuff1[3];
     [SerializeField] private unsafe fixed byte myByteBuff2[3];
 }
 
