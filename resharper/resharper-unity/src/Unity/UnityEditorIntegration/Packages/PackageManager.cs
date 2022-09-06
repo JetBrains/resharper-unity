@@ -16,7 +16,6 @@ using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.Threading;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
-using Newtonsoft.Json;
 
 #nullable enable
 
@@ -99,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             myPackagesFolder = mySolution.SolutionDirectory.Combine("Packages");
             myPackagesLockPath = myPackagesFolder.Combine("packages-lock.json");
             myManifestPath = myPackagesFolder.Combine("manifest.json");
-            myLocalPackageCacheFolder = mySolution.SolutionDirectory.Combine("Library/PackageCache");
+            myLocalPackageCacheFolder = UnityCachesFinder.GetLocalPackageCacheFolder(mySolution.SolutionDirectory);
 
             Updating = new Property<bool?>(lifetime, "PackageManger::Update");
 
@@ -304,7 +303,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             myLogger.Verbose("Getting packages from packages-lock.json");
 
             var appPath = myUnityVersion.GetActualAppPathForSolution();
-            var builtInPackagesFolder = UnityInstallationFinder.GetBuiltInPackagesFolder(appPath);
+            var builtInPackagesFolder = UnityCachesFinder.GetBuiltInPackagesFolder(appPath);
 
             return myLogger.CatchSilent(() =>
             {
@@ -339,7 +338,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 LogWhySkippedPackagesLock(projectManifest);
 
                 var appPath = myUnityVersion.GetActualAppPathForSolution();
-                var builtInPackagesFolder = UnityInstallationFinder.GetBuiltInPackagesFolder(appPath);
+                var builtInPackagesFolder = UnityCachesFinder.GetBuiltInPackagesFolder(appPath);
 
                 // Read the editor's default manifest, which gives us the minimum versions for various packages
                 var globalManifestPath = UnityInstallationFinder.GetPackageManagerDefaultManifest(appPath);
