@@ -2,34 +2,12 @@
 
 package com.jetbrains.rider.plugins.unity.workspace
 
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.workspaceModel.ide.impl.virtualFile
 import com.intellij.workspaceModel.storage.*
-import com.intellij.workspaceModel.storage.EntityInformation
-import com.intellij.workspaceModel.storage.EntitySource
-import com.intellij.workspaceModel.storage.EntityStorage
-import com.intellij.workspaceModel.storage.GeneratedCodeApiVersion
-import com.intellij.workspaceModel.storage.GeneratedCodeImplVersion
-import com.intellij.workspaceModel.storage.ModifiableReferableWorkspaceEntity
-import com.intellij.workspaceModel.storage.ModifiableWorkspaceEntity
-import com.intellij.workspaceModel.storage.MutableEntityStorage
-import com.intellij.workspaceModel.storage.WorkspaceEntity
 import com.intellij.workspaceModel.storage.bridgeEntities.api.ContentRootEntity
-import com.intellij.workspaceModel.storage.impl.ConnectionId
-import com.intellij.workspaceModel.storage.impl.EntityLink
-import com.intellij.workspaceModel.storage.impl.ModifiableWorkspaceEntityBase
-import com.intellij.workspaceModel.storage.impl.UsedClassesCollector
-import com.intellij.workspaceModel.storage.impl.WorkspaceEntityBase
-import com.intellij.workspaceModel.storage.impl.WorkspaceEntityData
-import com.intellij.workspaceModel.storage.impl.extractOneToOneChild
-import com.intellij.workspaceModel.storage.impl.updateOneToOneChildOfParent
-import com.intellij.workspaceModel.storage.referrersx
+import com.intellij.workspaceModel.storage.impl.*
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityGitDetails
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
-import org.jetbrains.deft.ObjBuilder
-import org.jetbrains.deft.Type
-import org.jetbrains.deft.annotations.Child
 
 @GeneratedCodeApiVersion(1)
 @GeneratedCodeImplVersion(1)
@@ -83,7 +61,6 @@ open class UnityPackageEntityImpl : UnityPackageEntity, WorkspaceEntityBase() {
     }
 
     fun checkInitialization() {
-      val _diff = diff
       if (!getEntityData().isEntitySourceInitialized()) {
         error("Field WorkspaceEntity#entitySource should be initialized")
       }
