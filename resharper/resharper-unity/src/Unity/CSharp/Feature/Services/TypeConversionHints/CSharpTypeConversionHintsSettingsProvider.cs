@@ -1,9 +1,9 @@
-using JetBrains.Application.InlayHints;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CSharp.TypeConversionHints;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
+using JetBrains.TextControl.DocumentMarkup.IntraTextAdornments;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.TypeConversionHints

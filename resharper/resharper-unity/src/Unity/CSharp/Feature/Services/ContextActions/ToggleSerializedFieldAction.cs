@@ -71,7 +71,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 return false;
 
             var unityApi = myDataProvider.Solution.GetComponent<UnityApi>();
-            return unityApi.IsUnityType(fieldDeclaration.GetContainingTypeDeclaration()?.DeclaredElement);
+            
+            var isFieldInsideUnityType = unityApi.IsUnityType(fieldDeclaration.GetContainingTypeDeclaration()?.DeclaredElement);
+            if (!isFieldInsideUnityType)
+                return false;
+
+            if (fieldDeclaration.DeclaredElement == null)
+                return false;
+            
+            var unityType = unityApi.IsFieldTypeSerializable(fieldDeclaration.DeclaredElement);
+            
+            return unityType;
         }
 
         private class ToggleSerializedFieldAll : BulbActionBase

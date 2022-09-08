@@ -105,6 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                 // Note that an asmdef name will usually match the name of the project being added. The only exception
                 // is for player projects. The returned addedAsmDefName here is the asmdef name/non-player project name
                 var ownerProject = addedReference.OwnerModule;
+                if (!ownerProject.IsValid()) return; // https://youtrack.jetbrains.com/issue/DEXP-678810
                 var addedReferenceName = addedReference.Name;
                 var (_, ownerAsmDefLocation) = TryGetAsmDefLocationForProject(ownerProject.Name);
                 var (addedAsmDefName, addedAsmDefLocation) = TryGetAsmDefLocationForProject(addedReferenceName);
@@ -138,6 +139,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
             foreach (var removedReference in collector.RemovedReferences)
             {
                 var ownerProject = removedReference.OwnerModule;
+                if (!ownerProject.IsValid()) return;
                 var removedReferenceName = removedReference.Name;
                 var (_, ownerAsmDefLocation) = TryGetAsmDefLocationForProject(ownerProject.Name);
                 var (removedAsmDefName, removedAsmDefLocation) = TryGetAsmDefLocationForProject(removedReferenceName);

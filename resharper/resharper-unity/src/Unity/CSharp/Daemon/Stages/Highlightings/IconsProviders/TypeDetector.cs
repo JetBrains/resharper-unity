@@ -58,6 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 }
                 else if (UnityApi.IsDotsSystemType(typeElement))
                 {
+                    //TODO obsolete
                     AddUnityECSHighlighting(consumer, element, "ECS system", "Unity entities system",
                         context);
                 }

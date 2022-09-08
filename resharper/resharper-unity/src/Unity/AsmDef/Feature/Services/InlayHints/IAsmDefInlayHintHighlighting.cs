@@ -1,8 +1,8 @@
-using JetBrains.Application.InlayHints;
+#nullable enable
+
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.InlayHints;
-
-#nullable enable
+using JetBrains.TextControl.DocumentMarkup.IntraTextAdornments;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 {
