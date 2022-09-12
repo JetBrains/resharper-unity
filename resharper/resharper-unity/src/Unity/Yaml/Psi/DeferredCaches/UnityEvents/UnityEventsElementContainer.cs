@@ -119,21 +119,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     var name = entry.Key.GetPlainScalarText();
                     if (name == null)
                         continue;
-
-                    var rootMap = entry.Content.Value as IBlockMappingNode;
-                    var persistentCallsMap = rootMap.GetMapEntryValue<IBlockMappingNode>("m_PersistentCalls");
-                    var mCalls = persistentCallsMap.GetMapEntryValue<IBlockSequenceNode>("m_Calls");
-                    if (mCalls == null)
-                        continue;
-
-                    var eventTypeName = rootMap.GetMapEntryPlainScalarText("m_TypeName");
-                    var calls = GetCalls(currentAssetSourceFile, assetDocument, mCalls, name, eventTypeName);
-
-                    result.Add(new UnityEventData(name, location, scriptReference.Value, calls.ToArray()));
+                    
+                    BuildRootMappingNode(currentAssetSourceFile, assetDocument, entry.Content.Value, name, ref result, location, scriptReference);
                 }
             }
 
             return new UnityEventsBuildResult(modifications, result);
+        }
+
+        private void BuildRootMappingNode(IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument,
+            INode node, string name, ref LocalList<UnityEventData> result, LocalReference location,
+            ExternalReference? scriptReference)
+        {
+            if (node is IBlockSequenceNode blockSequenceNode)
+            {
+                foreach (var entry in blockSequenceNode.Entries)
+                {
+                    BuildRootMappingNode(currentAssetSourceFile, assetDocument, entry.Value, name, ref result, location,
+                        scriptReference);
+                }
+            }
+            
+            var rootMap = node as IBlockMappingNode;
+            var persistentCallsMap = rootMap.GetMapEntryValue<IBlockMappingNode>("m_PersistentCalls");
+            var mCalls = persistentCallsMap.GetMapEntryValue<IBlockSequenceNode>("m_Calls");
+            if (mCalls == null)
+                return;
+
+            var eventTypeName = rootMap.GetMapEntryPlainScalarText("m_TypeName");
+            var calls = GetCalls(currentAssetSourceFile, assetDocument, mCalls, name, eventTypeName);
+
+            result.Add(new UnityEventData(name, location, scriptReference.Value, calls.ToArray()));
         }
 
         private LocalList<AssetMethodUsages> GetCalls(IPsiSourceFile currentAssetSourceFile,
