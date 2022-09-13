@@ -15,49 +15,17 @@ import java.time.Duration
 
 class InputSystemUnityEventModeTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String {
-        return "InputSystemUnityEventModeTestData"
+        return "MarkupTestData"
     }
 
     @Test
     fun usedCodeTest() {
         val projectLifetime = project.lifetime
         val model = project.solution.frontendBackendModel
+        runSwea(project) // otherwise public methods are never marked unused
         waitAndPump(projectLifetime, { model.isDeferredCachesCompletedOnce.valueOrDefault(false) }, Duration.ofSeconds(10),
                     { "Deferred caches are not completed" })
-        runSwea(project) // otherwise public methods are never marked unused
         executeWithGold(testGoldFile) { ps ->
-            ps.println("------------ should be used -----------")
-            withOpenedEditor("Assets/Scripts/Mechanics/PlayerController.cs") {
-                ps.println(annotateDocumentWithHighlighterTags(markupContributor.markupAdapter,
-                                                               valueFilter = { it.backendAttributeIdOrThrow == "ReSharper Dead Code" }))
-            }
-            // todo: figure out something instead of isDeferredCachesCompletedOnce
-            //ps.println("------------ should be unused ---------")
-            //withOpenedEditor("Assets/Scenes/SampleScene.unity") {
-            //    this.setCaretAfterWord("m_MethodName: OnJump")
-            //    this.typeWithLatency("2")
-            //}
-            //waitAndPump(projectLifetime, { model.isDeferredCachesCompletedOnce.valueOrDefault(false)}, Duration.ofSeconds(10), { "Deferred caches are not completed" })
-            //
-            //withOpenedEditor("Assets/Scripts/Mechanics/PlayerController.cs") {
-            //    ps.println(annotateDocumentWithHighlighterTags(markupContributor.markupAdapter, valueFilter = { it.backendAttributeIdOrThrow == "ReSharper Dead Code" }))
-            //}
-        }
-    }
-
-    @Test
-    fun unusedCodeTest() {
-
-        val sourceFile = getVirtualFileFromPath("Assets/Scripts/Mechanics/PlayerController.cs", activeSolutionDirectory).toIOFile()
-        changeFileContent(project, sourceFile) { sourceFile.readText().replace("OnJump", "OnJump2") }
-
-        val projectLifetime = project.lifetime
-        val model = project.solution.frontendBackendModel
-        waitAndPump(projectLifetime, { model.isDeferredCachesCompletedOnce.valueOrDefault(false) }, Duration.ofSeconds(10),
-                    { "Deferred caches are not completed" })
-        runSwea(project) // otherwise public methods are never marked unused
-        executeWithGold(testGoldFile) { ps ->
-            ps.println("------------ should be unused -----------")
             withOpenedEditor("Assets/Scripts/Mechanics/PlayerController.cs") {
                 ps.println(annotateDocumentWithHighlighterTags(markupContributor.markupAdapter,
                                                                valueFilter = { it.backendAttributeIdOrThrow == "ReSharper Dead Code" }))

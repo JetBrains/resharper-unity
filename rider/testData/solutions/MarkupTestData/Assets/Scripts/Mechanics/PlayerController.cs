@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Platformer.Mechanics
 {
@@ -19,7 +19,7 @@ namespace Platformer.Mechanics
               Debug.Log("OnMyTestViaArray");
         }
         
-        public void <DEAD_CODE>UnusedPublicMethod</DEAD_CODE>()
+        public void UnusedPublicMethod()
         {
             Debug.Log("UnusedPublicMethod");
         }

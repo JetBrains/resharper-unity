@@ -139,9 +139,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                         scriptReference);
                 }
             }
-            
-            var rootMap = node as IBlockMappingNode;
+
+            if (node is not IBlockMappingNode rootMap)
+                return;
             var persistentCallsMap = rootMap.GetMapEntryValue<IBlockMappingNode>("m_PersistentCalls");
+            if (persistentCallsMap == null)
+            {
+                foreach (var blockMappingEntry in rootMap.Entries)
+                {
+                    BuildRootMappingNode(currentAssetSourceFile, assetDocument, blockMappingEntry.Content.Value, name, ref result,
+                        location, scriptReference);
+                }
+            }
             var mCalls = persistentCallsMap.GetMapEntryValue<IBlockSequenceNode>("m_Calls");
             if (mCalls == null)
                 return;
