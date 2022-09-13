@@ -5,7 +5,7 @@ import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.FileStatus
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.workspaceModel.ide.impl.virtualFile
+import com.intellij.workspaceModel.ide.impl.toVirtualFile
 import com.jetbrains.rd.util.getOrCreate
 import com.jetbrains.rider.model.RdCustomLocation
 import com.jetbrains.rider.projectView.workspace.*
@@ -27,7 +27,7 @@ class ReferenceRootNode(project: Project) : AbstractTreeNode<Any>(project, key) 
         val visitor = object : ProjectModelEntityVisitor() {
             override fun visitReference(entity: ProjectModelEntity): Result {
                 if (entity.isAssemblyReference()) {
-                    val virtualFile = entity.url?.virtualFile
+                    val virtualFile = entity.url?.toVirtualFile()
                     if (virtualFile != null) {
                         val itemLocation = entity.descriptor.location
                         val itemKey = if (itemLocation is RdCustomLocation) itemLocation.customLocation else itemLocation.toString()

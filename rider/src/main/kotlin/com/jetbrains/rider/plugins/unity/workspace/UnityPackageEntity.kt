@@ -3,7 +3,7 @@
 package com.jetbrains.rider.plugins.unity.workspace
 
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.workspaceModel.ide.impl.virtualFile
+import com.intellij.workspaceModel.ide.impl.toVirtualFile
 import com.intellij.workspaceModel.storage.*
 import com.intellij.workspaceModel.storage.bridgeEntities.api.ContentRootEntity
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
@@ -44,7 +44,7 @@ interface UnityPackageEntity : WorkspaceEntity {
     @Child
     val contentRootEntity: ContentRootEntity?
 
-    val packageFolder: VirtualFile? get() = contentRootEntity?.url?.virtualFile
+    val packageFolder: VirtualFile? get() = contentRootEntity?.url?.toVirtualFile()
 
     //region generated code
     @GeneratedCodeApiVersion(1)
