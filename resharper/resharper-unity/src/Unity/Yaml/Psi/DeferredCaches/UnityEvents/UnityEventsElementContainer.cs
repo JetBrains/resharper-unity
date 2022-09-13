@@ -147,10 +147,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             {
                 foreach (var blockMappingEntry in rootMap.Entries)
                 {
-                    BuildRootMappingNode(currentAssetSourceFile, assetDocument, blockMappingEntry.Content.Value, name, ref result,
-                        location, scriptReference);
+                    BuildRootMappingNode(currentAssetSourceFile, assetDocument, blockMappingEntry.Content.Value, name,
+                        ref result, location, scriptReference);
                 }
             }
+
             var mCalls = persistentCallsMap.GetMapEntryValue<IBlockSequenceNode>("m_Calls");
             if (mCalls == null)
                 return;
