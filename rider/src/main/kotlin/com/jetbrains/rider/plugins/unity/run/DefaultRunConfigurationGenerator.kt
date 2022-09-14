@@ -77,7 +77,7 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
                         exePath.toFile().canonicalPath,
                         project.solutionDirectory.canonicalPath,
                         mutableListOf<String>().withRunTests().withBatchMode()
-                            .withProjectPath(project).withTestResults(project)
+                            .withProjectPath(project).withTestResults()
                             .withTestPlatform().withDebugCodeOptimization().toProgramParameters(),
                         runManager)
                 } else

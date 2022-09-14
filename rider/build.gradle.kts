@@ -25,7 +25,7 @@ plugins {
     id("org.jetbrains.changelog") version "1.3.1"
     id("org.jetbrains.intellij") // version in rider/buildSrc/build.gradle.kts
     id("org.jetbrains.grammarkit") version "2021.2.2"
-    kotlin("jvm") version "1.7.0"
+    kotlin("jvm")
 }
 
 repositories {
@@ -159,7 +159,7 @@ intellij {
     // Sources aren't available for Rider
     downloadSources.set(false)
 
-    plugins.set(listOf("rider-plugins-appender", "CSS", "yaml", "dotCover"))
+    plugins.set(listOf("rider.intellij.plugin.appender", "com.intellij.css", "yaml", "dotCover"))
 }
 
 configure<ChangelogPluginExtension> {
