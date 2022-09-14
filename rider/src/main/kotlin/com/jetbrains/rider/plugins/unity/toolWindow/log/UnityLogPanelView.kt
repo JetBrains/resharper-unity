@@ -229,7 +229,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
                     .groupBy {
                         LogItem(it.type, it.mode, it.message, it.stackTrace)
                     }
-                    .mapValues { LogPanelItem(it.value.first().time, it.key.type, it.key.mode, it.key.message, it.key.stackTrace, it.value.sumBy { 1 }) }
+                    .mapValues { LogPanelItem(it.value.first().time, it.key.type, it.key.mode, it.key.message, it.key.stackTrace, it.value.count()) }
                     .values.toList()
                 refreshList(list)
             } else {

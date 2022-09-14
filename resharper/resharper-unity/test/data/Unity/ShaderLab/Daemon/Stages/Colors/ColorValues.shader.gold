@@ -18,21 +18,21 @@
 }
 
 ---------------------------------------------------------
-(0): : (T) '|   | 
+(0): ReSharper Parameter Name Hint: (T) '|   | 
 ARGB:  229, 76, 102, 51
 HEX:  E5, 4C, 66, 33' (E) ''
-(1): : (T) '|   | 
+(1): ReSharper Parameter Name Hint: (T) '|   | 
 ARGB:  255, 76, 102, 76
 HEX:  FF, 4C, 66, 4C' (E) ''
-(2): : (T) '|   | 
+(2): ReSharper Parameter Name Hint: (T) '|   | 
 ARGB:  127, 229, 51, 25
 HEX:  7F, E5, 33, 19' (E) ''
-(3): : (T) '|   | 
+(3): ReSharper Parameter Name Hint: (T) '|   | 
 ARGB:  255, 255, 127, 51
 HEX:  FF, FF, 7F, 33' (E) ''
-(4): : (T) '|   | 
+(4): ReSharper Parameter Name Hint: (T) '|   | 
 ARGB:  127, 102, 76, 51
 HEX:  7F, 66, 4C, 33' (E) ''
-(5): : (T) '|   | 
+(5): ReSharper Parameter Name Hint: (T) '|   | 
 ARGB:  255, 178, 204, 76
 HEX:  FF, B2, CC, 4C' (E) ''

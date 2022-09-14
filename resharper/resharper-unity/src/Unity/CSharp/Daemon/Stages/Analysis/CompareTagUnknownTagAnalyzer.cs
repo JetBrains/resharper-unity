@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         protected override void Analyze(IInvocationExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            if (element.IsCompareTagMethod())
+            if (element.IsCompareTagMethod() || element.IsFindObjectByTagMethod())
             {
                 var argument = element.ArgumentList.Arguments.FirstOrDefault();
                 var literal = (argument?.Value as ICSharpLiteralExpression)?.ConstantValue.Value as string;

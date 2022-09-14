@@ -1,6 +1,7 @@
 using System;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
+using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Features.Inspections.Bookmarks.NumberedBookmarks;
@@ -12,6 +13,7 @@ using JetBrains.Rider.Backend.Features.Notifications;
 using JetBrains.Rider.Backend.Features.ProjectModel;
 using JetBrains.Rider.Backend.Features.TextControls;
 using JetBrains.Rider.Model.Unity.BackendUnity;
+using JetBrains.TextControl.TextControlsManagement;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
 
@@ -28,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
                                          UnitySolutionTracker solutionTracker,
                                          ISolution solution,
                                          AsmDefCache asmDefCache,
-                                         RiderTextControlHost? textControlHost = null,
+                                         TextControlManager? textControlHost = null,
                                          SolutionLifecycleHost? solutionLifecycleHost = null,
                                          NotificationPanelHost? notificationPanelHost = null)
         {
@@ -42,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
             var fullStartupFinishedLifetimeDefinition = new LifetimeDefinition(lifetime);
             solutionLifecycleHost.BeforeFullStartupFinished.Advise(fullStartupFinishedLifetimeDefinition.Lifetime, _ =>
             {
-                textControlHost.ViewHostTextControls(lifetime, (lt, _, host) =>
+                textControlHost.TextControls.ForEachItem(lifetime, (lt, host) =>
                 {
                     var projectFile = host.ToProjectFile(solution);
                     if (projectFile == null)

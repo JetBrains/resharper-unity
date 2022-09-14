@@ -89,16 +89,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             return VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext);
         }
 
-        // TODO: We shouldn't have to pass in appPath here
-        // But appPath is being calculated by UnityVersion, not UnityInstallationFinder
-        [NotNull]
-        public static VirtualFileSystemPath GetBuiltInPackagesFolder([NotNull] VirtualFileSystemPath applicationPath)
-        {
-            return applicationPath.IsEmpty
-                ? applicationPath
-                : GetApplicationContentsPath(applicationPath).Combine("Resources/PackageManager/BuiltInPackages");
-        }
-
         [NotNull]
         public static VirtualFileSystemPath GetPackageManagerDefaultManifest(VirtualFileSystemPath applicationPath)
         {

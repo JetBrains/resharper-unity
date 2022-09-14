@@ -27,17 +27,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             myBulbMenu = bulbMenu;
         }
 
-        public virtual void OnClick(CodeInsightsHighlighting highlighting, ISolution solution)
+        public virtual void OnClick(CodeInsightHighlightInfo highlightInfo, ISolution solution)
         {
-            var windowContextSource = new PopupWindowContextSource(lt => new RiderEditorOffsetPopupWindowContext(highlighting.Range.StartOffset.Offset));
-            if (highlighting is UnityCodeInsightsHighlighting unityCodeInsightsHighlighting)
+            var windowContextSource = new PopupWindowContextSource(lt => new RiderEditorOffsetPopupWindowContext(highlightInfo.CodeInsightsHighlighting.Range.StartOffset.Offset));
+            if (highlightInfo.CodeInsightsHighlighting is UnityCodeInsightsHighlighting unityCodeInsightsHighlighting)
             {
                 if (unityCodeInsightsHighlighting.MenuItems.Count > 0)
                     myBulbMenu.ShowBulbMenu(unityCodeInsightsHighlighting.MenuItems, windowContextSource);
             }
         }
 
-        public void OnExtraActionClick(CodeInsightsHighlighting highlighting, string actionId, ISolution solution)
+        public void OnExtraActionClick(CodeInsightHighlightInfo highlightInfo, string actionId, ISolution solution)
         {
             if (actionId.Equals(StartUnityActionId))
             {

@@ -254,6 +254,13 @@
         </Description>
       </Tag>
 
+      <Tag externalName="UnknownResourceWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>The resource is not defined in the project</Title>
+        <Description>
+          The resource is not defined in the project. Expression will return 'null'.
+        </Description>
+      </Tag>
+
       <Tag externalName="UnknownLayerWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title>The layer is not defined in the 'Tags &amp; Layers'</Title>
         <Description>
@@ -313,6 +320,13 @@
   <Warning name="UnknownTag" configurableSeverity="Unity.UnknownTag">
     <Parameter type="ITreeNode" name="node" />
     <Message value="The tag is not defined in the 'Tags &amp; Layers'. Expression will return 'false'." />
+    <Range>Node.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="UnknownResource" configurableSeverity="Unity.UnknownResource">
+    <Parameter type="ITreeNode" name="node" />
+    <Message value="The resource is not defined in the project. Expression will return 'null'." />
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>

@@ -82,33 +82,6 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         }
     }
 
-    val basicTags = arrayOf(
-        "\"Finish\"",
-        "\"Player\"",
-        "\"Respawn\"",
-        "\"Untagged\"",
-        "\"EditorOnly\"",
-        "\"MainCamera\"",
-        "\"GameController\"")
-
-    @Test
-    fun testTag_PrimitiveCompletion() {
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "TagCompletionTest1.cs") {
-            typeWithLatency("\"")
-            assertLookupContains(*basicTags, checkFocus = false)
-        }
-
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "TagCompletionTest2.cs") {
-            typeWithLatency("\"")
-            assertLookupContains(*basicTags, checkFocus = false)
-        }
-
-        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "TagCompletionTest3.cs") {
-            typeWithLatency("\"")
-            assertLookupContains(*basicTags, checkFocus = false)
-        }
-    }
-
     val basicLayers = arrayOf(
         "\"Water\"",
         "\"Default\"",
@@ -157,7 +130,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
     }
 
     @BeforeMethod
-    fun InitializeEnvironement() {
+    fun initializeEnvironment() {
         TestModeFlags.set(CompletionAutoPopupHandler.ourTestingAutopopup, true)
 
         CodeInsightSettings.getInstance().COMPLETION_CASE_SENSITIVE = CodeInsightSettings.NONE
@@ -171,7 +144,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
 
     // debug only
     @AfterMethod
-    fun SaveDocuments() {
+    fun saveDocuments() {
         persistAllFilesOnDisk()
     }
 }

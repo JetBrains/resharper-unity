@@ -1,7 +1,9 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using JetBrains.Application.InlayHints;
+
 using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
@@ -13,13 +15,10 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.InlayHints;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options;
-using JetBrains.TextControl.DocumentMarkup;
-using JetBrains.UI.Icons;
+using JetBrains.TextControl.DocumentMarkup.IntraTextAdornments;
 using JetBrains.UI.RichText;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
-
-#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 {
@@ -30,6 +29,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
         private readonly ISolution mySolution;
         private readonly ISettingsStore mySettingsStore;
         private IList<BulbMenuItem>? myContextMenuItems;
+
+        private readonly IntraTextAdornmentData myData;
 
         public AsmDefIntraTextAdornmentModel(IAsmDefInlayHintHighlighting highlighting,
                                              Expression<Func<UnityInlayHintSettings, InlayHintsMode>> option,
@@ -43,25 +44,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 
             ContextMenuTitle = new PresentableItem(FeaturesIntellisenseThemedIcons.ParameterInfoPage.Id,
                 highlighting.ContextMenuTitle);
+            
+            myData = IntraTextAdornmentData.New.
+                WithText(myHighlighting.Text).
+                WithMode(myHighlighting.Mode).
+                WithFlags(IntraTextAdornmentFlags.HasContextMenu); // Context menu appears to be ReSharper only. Rider doesn't show any context menus for inlay hints
         }
 
         public void ExecuteNavigation(PopupWindowContextSource popupWindowContextSource)
         {
         }
-
-        public RichText Text => myHighlighting.Text;
-        public InlayHintsMode InlayHintsMode => myHighlighting.Mode;
-        public bool IsPreceding => false;
-        public int Order => 0;
-
-        // Context menu appears to be ReSharper only. Rider doesn't show any context menus for inlay hints
-        public bool HasContextMenu => true;
+        
         public IPresentableItem ContextMenuTitle { get; }
         public IEnumerable<BulbMenuItem> ContextMenuItems => myContextMenuItems ??= BuildContextMenuItems();
 
-        public bool IsNavigable => false;
         public TextRange? SelectionRange => null;
-        public IconId? IconId => null;
 
         private IList<BulbMenuItem> BuildContextMenuItems()
         {
@@ -81,5 +78,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
                     BulbMenuAnchors.SecondClassContextItems)
             };
         }
+
+        /// <inheritdoc />
+        IntraTextAdornmentData IIntraTextAdornmentDataModel.Data => myData;
     }
 }

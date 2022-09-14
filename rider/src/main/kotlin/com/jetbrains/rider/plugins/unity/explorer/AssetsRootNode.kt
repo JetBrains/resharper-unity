@@ -7,7 +7,6 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.workspaceModel.ide.WorkspaceModel
-import com.jetbrains.rider.model.RdProjectsCount
 import com.jetbrains.rider.model.RdSolutionDescriptor
 import com.jetbrains.rider.model.RdSolutionState
 import com.jetbrains.rider.projectView.ProjectModelStatuses
@@ -15,6 +14,7 @@ import com.jetbrains.rider.projectView.views.addAdditionalText
 import com.jetbrains.rider.projectView.views.presentSyncNode
 import com.jetbrains.rider.projectView.workspace.findProjects
 import com.jetbrains.rider.projectView.workspace.getSolutionEntity
+import com.jetbrains.rider.projectView.workspace.impl.WorkspaceProjectsCount
 import icons.UnityIcons
 
 @Suppress("UnstableApiUsage")
@@ -30,18 +30,19 @@ class AssetsRootNode(project: Project, virtualFile: VirtualFile)
 
         val solutionEntity = WorkspaceModel.getInstance(myProject).getSolutionEntity() ?: return
         val descriptor = solutionEntity.descriptor as? RdSolutionDescriptor ?: return
+        val projectsCount =  WorkspaceProjectsCount.getInstance(project).get(solutionEntity)
 
         if (isSolutionOrProjectsSync()) {
             presentation.presentSyncNode()
         } else {
             when (descriptor.state) {
                 RdSolutionState.Default -> {
-                    if (descriptor.projectsCount.failed + descriptor.projectsCount.unloaded > 0) {
-                        presentProjectsCount(presentation, descriptor.projectsCount, true)
+                    if (projectsCount.failed + projectsCount.unloaded > 0) {
+                        presentProjectsCount(presentation, projectsCount, true)
                     }
                 }
                 RdSolutionState.WithErrors -> presentation.addAdditionalText("load failed")
-                RdSolutionState.WithWarnings -> presentProjectsCount(presentation, descriptor.projectsCount, true)
+                RdSolutionState.WithWarnings -> presentProjectsCount(presentation, projectsCount, true)
             }
         }
     }
@@ -56,7 +57,7 @@ class AssetsRootNode(project: Project, virtualFile: VirtualFile)
         }
     }
 
-    private fun presentProjectsCount(presentation: PresentationData, count: RdProjectsCount, showZero: Boolean) {
+    private fun presentProjectsCount(presentation: PresentationData, count: WorkspaceProjectsCount.ProjectsCount, showZero: Boolean) {
         if (count.total == 0 && !showZero) return
 
         var text = "${count.total} ${StringUtil.pluralize("project", count.total)}"

@@ -26,14 +26,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
     {
         private readonly ISolution mySolution;
         private readonly IPsiFiles myPsiFiles;
-        private readonly ICppGlobalSymbolCache myCppGlobalSymbolCache;
+        private readonly CppGlobalSymbolCache myCppGlobalSymbolCache;
         private readonly DocumentHostBase myDocumentHost;
         private readonly ShaderContextCache myShaderContextCache;
         private readonly ShaderContextDataPresentationCache myShaderContextDataPresentationCache;
 
         public ShaderContextHost(Lifetime lifetime, ISolution solution, IPsiFiles psiFiles,
                                  RiderDocumentHost documentHost,
-                                 ICppGlobalSymbolCache cppGlobalSymbolCache,
+                                 CppGlobalSymbolCache cppGlobalSymbolCache,
                                  ShaderContextCache shaderContextCache,
                                  ShaderContextDataPresentationCache shaderContextDataPresentationCache, ILogger logger,
                                  [CanBeNull] FrontendBackendHost frontendBackendHost = null)

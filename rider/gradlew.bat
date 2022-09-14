@@ -38,12 +38,11 @@ set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
 @rem GRADLE JVM WRAPPER START MARKER
 
 setlocal
+set BUILD_DIR=%LOCALAPPDATA%\gradle-jvm
+set JVM_TARGET_DIR=%BUILD_DIR%\jdk-17.0.3.1_windows-x64_bin-d6ede5\
 
-set BUILD_DIR=%APP_HOME%build\
-set JVM_TARGET_DIR=%BUILD_DIR%gradle-jvm\amazon-corretto-11.0.10.9.1-windows-x64-jdk-066b63\
-
-set JVM_TEMP_FILE=jvm-windows-x64.zip
-set JVM_URL=https://corretto.aws/downloads/resources/11.0.10.9.1/amazon-corretto-11.0.10.9.1-windows-x64-jdk.zip
+set JVM_TEMP_FILE=gradle-jvm.zip
+set JVM_URL=https://download.oracle.com/java/17/archive/jdk-17.0.3.1_windows-x64_bin.zip
 
 set POWERSHELL=%SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe
 
@@ -56,13 +55,15 @@ if "%CURRENT_FLAG%" == "%JVM_URL%" goto continueWithJvm
 
 :downloadAndExtractJvm
 
-CD "%BUILD_DIR%"
+PUSHD "%BUILD_DIR%"
 if errorlevel 1 goto fail
 
-echo Downloading %JVM_URL% to %BUILD_DIR%%JVM_TEMP_FILE%
+echo Downloading %JVM_URL% to %BUILD_DIR%\%JVM_TEMP_FILE%
 if exist "%JVM_TEMP_FILE%" DEL /F "%JVM_TEMP_FILE%"
 "%POWERSHELL%" -nologo -noprofile -Command "Set-StrictMode -Version 3.0; $ErrorActionPreference = \"Stop\"; (New-Object Net.WebClient).DownloadFile('%JVM_URL%', '%JVM_TEMP_FILE%')"
 if errorlevel 1 goto fail
+
+POPD
 
 RMDIR /S /Q "%JVM_TARGET_DIR%"
 if errorlevel 1 goto fail
@@ -70,15 +71,17 @@ if errorlevel 1 goto fail
 MKDIR "%JVM_TARGET_DIR%"
 if errorlevel 1 goto fail
 
-CD "%JVM_TARGET_DIR%"
+PUSHD "%JVM_TARGET_DIR%"
 if errorlevel 1 goto fail
 
-echo Extracting %BUILD_DIR%%JVM_TEMP_FILE% to %JVM_TARGET_DIR%
-"%POWERSHELL%" -nologo -noprofile -command "Set-StrictMode -Version 3.0; $ErrorActionPreference = \"Stop\"; Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('..\\..\\%JVM_TEMP_FILE%', '.');"
+echo Extracting %BUILD_DIR%\%JVM_TEMP_FILE% to %JVM_TARGET_DIR%
+"%POWERSHELL%" -nologo -noprofile -command "Set-StrictMode -Version 3.0; $ErrorActionPreference = \"Stop\"; Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('..\\%JVM_TEMP_FILE%', '.');"
 if errorlevel 1 goto fail
 
-DEL /F "..\..\%JVM_TEMP_FILE%"
+DEL /F "..\%JVM_TEMP_FILE%"
 if errorlevel 1 goto fail
+
+POPD
 
 echo %JVM_URL%>"%JVM_TARGET_DIR%.flag"
 if errorlevel 1 goto fail

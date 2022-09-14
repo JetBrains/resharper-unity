@@ -1,5 +1,5 @@
-using System;
-using JetBrains.Application.InlayHints;
+#nullable enable
+
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
@@ -8,8 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
-
-#nullable enable
+using JetBrains.TextControl.DocumentMarkup.IntraTextAdornments;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
