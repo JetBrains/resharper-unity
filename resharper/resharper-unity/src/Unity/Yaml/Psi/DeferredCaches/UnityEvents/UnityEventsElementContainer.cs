@@ -133,10 +133,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         {
             if (node is IBlockSequenceNode blockSequenceNode)
             {
-                foreach (var entry in blockSequenceNode.Entries)
+                foreach (var entryContent in blockSequenceNode.Entries)
                 {
-                    BuildRootMappingNode(currentAssetSourceFile, assetDocument, entry.Value, name, ref result, location,
-                        scriptReference);
+                    if (ourMethodNameSearcher.Find(entryContent.GetTextAsBuffer()) >= 0)
+                        BuildRootMappingNode(currentAssetSourceFile, assetDocument, entryContent.Value, name,
+                            ref result, location,
+                            scriptReference);
                 }
             }
 
@@ -147,8 +149,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             {
                 foreach (var blockMappingEntry in rootMap.Entries)
                 {
-                    BuildRootMappingNode(currentAssetSourceFile, assetDocument, blockMappingEntry.Content.Value, name,
-                        ref result, location, scriptReference);
+                    var entryContent = blockMappingEntry.Content;
+                    if (ourMethodNameSearcher.Find(entryContent.GetTextAsBuffer()) >= 0)
+                        BuildRootMappingNode(currentAssetSourceFile, assetDocument, entryContent.Value, name,
+                            ref result, location, scriptReference);
                 }
             }
 
