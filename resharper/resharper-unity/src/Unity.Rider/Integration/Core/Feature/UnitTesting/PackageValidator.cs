@@ -1,22 +1,22 @@
 using System;
-using System.Collections.Generic;
+using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
-using JetBrains.Util;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration.Packages
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitTesting
 {
     [SolutionComponent]
     public class PackageValidator
     {
-        private readonly ISolution mySolution;
         private readonly UnityVersion myUnityVersion;
+        private readonly PackageManager myPackageManager;
         private const string HelpLink = "https://www.jetbrains.com/help/rider/Running_and_Debugging_Unity_Tests.html";
 
-        public PackageValidator(ISolution solution, UnityVersion unityVersion)
+        public PackageValidator(UnityVersion unityVersion, PackageManager packageManager)
         {
-            mySolution = solution;
             myUnityVersion = unityVersion;
+            myPackageManager = packageManager;
         }
 
         public bool HasNonCompatiblePackagesCombination(bool isCoverage, out string message)
@@ -26,48 +26,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             if (myUnityVersion.ActualVersionForSolution.Value < new Version("2019.2"))
                 return false;
 
-            var manifestJsonFile = mySolution.SolutionDirectory.Combine("Packages/manifest.json");
-            if (manifestJsonFile.ExistsFile)
+            var testFrameworkPackageId = "com.unity.test-framework";
+            var riderPackageId = "com.unity.ide.rider";
+            var testFrameworkMarketingName = "Test Framework";
+            var riderMarketingName = "JetBrains Rider Editor";
+
+            var riderPackage = myPackageManager.GetPackageById(riderPackageId);
+            var testFrameworkPackage = myPackageManager.GetPackageById(testFrameworkPackageId);
+            if (PackageIsMissing(ref message, riderPackage, riderMarketingName)) 
+                return true;
+            
+            if (PackageIsMissing(ref message, testFrameworkPackage, testFrameworkMarketingName)) 
+                return true;
+
+            if (riderPackage != null && testFrameworkPackage != null)
             {
-                var text = manifestJsonFile.ReadAllText2().Text;
-                var packages = ManifestJson.FromJson(text);
-
-                var testFrameworkPackageId = "com.unity.test-framework";
-                var riderPackageId = "com.unity.ide.rider";
-                var testFrameworkMarketingName = "Test Framework";
-                var riderMarketingName = "Rider Editor";
-
-                if (PackageIsMissing(ref message, packages, testFrameworkPackageId, testFrameworkMarketingName))
-                    return true;
-                if (PackageIsMissing(ref message, packages, riderPackageId, riderMarketingName)) return true;
-
-                var riderPackageVersion = packages[riderPackageId];
-                var testFrameworkVersion = packages[testFrameworkPackageId];
+                var riderPackageVersion = new Version(riderPackage.PackageDetails.Version);
+                var testFrameworkVersion = new Version(testFrameworkPackage.PackageDetails.Version);
                 if (IsOldPackage(ref message, riderPackageVersion, riderMarketingName, "1.1.1")) return true;
                 if (IsOldPackage(ref message, testFrameworkVersion, testFrameworkMarketingName, "1.1.1")) return true;
 
-                if (isCoverage && packages.ContainsKey(riderPackageId) && packages.ContainsKey(testFrameworkPackageId))
+                if (isCoverage)
                 {
                     // https://youtrack.jetbrains.com/issue/RIDER-35880
-                    if (riderPackageVersion != null && riderPackageVersion < new Version("1.2.0")
-                                                    && testFrameworkVersion != null &&
-                                                    testFrameworkVersion >= new Version("1.1.5"))
+                    if (riderPackageVersion < new Version("1.2.0") &&
+                             testFrameworkVersion >= new Version("1.1.5"))
                     {
                         message = $"Update {riderMarketingName} package to v.1.2.0 or later in Unity Package Manager. {HelpLink}";
                         return true;
                     }
                 }
             }
-
-            // todo: package may be installed locally, ignore this possibility for now
-            // var localPackage = mySolution.SolutionDirectory.Combine("Packages/com.unity.ide.rider/package.json");
-
+            
             return false;
         }
 
-        private static bool PackageIsMissing(ref string message, Dictionary<string, Version> packages, string packageId, string packageMarketingName)
+        private bool PackageIsMissing(ref string message, [CanBeNull] PackageData packageData, string packageMarketingName)
         {
-            if (!packages.ContainsKey(packageId))
+            if (packageData == null)
             {
                 message = $"Add {packageMarketingName} in Unity Package Manager. {HelpLink}";
                 return true;
