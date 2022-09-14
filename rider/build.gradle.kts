@@ -159,7 +159,7 @@ intellij {
     // Sources aren't available for Rider
     downloadSources.set(false)
 
-    plugins.set(listOf("rider-plugins-appender", "com.intellij.css", "yaml", "dotCover"))
+    plugins.set(listOf("rider.intellij.plugin.appender", "com.intellij.css", "yaml", "dotCover"))
 }
 
 configure<ChangelogPluginExtension> {

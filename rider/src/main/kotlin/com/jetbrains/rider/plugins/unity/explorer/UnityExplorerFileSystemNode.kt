@@ -8,7 +8,7 @@ import com.intellij.openapi.vcs.FileStatus
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.workspaceModel.ide.WorkspaceModel
-import com.intellij.workspaceModel.ide.impl.virtualFile
+import com.intellij.workspaceModel.ide.impl.toVirtualFile
 import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 import com.jetbrains.rider.projectView.calculateFileSystemIcon
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
@@ -187,7 +187,7 @@ open class UnityExplorerFileSystemNode(project: Project,
         val projectEntity = entity.containingProjectEntity() ?: return null
 
         // Show the project on the owner of the assembly definition file
-        val dir = entity.url?.virtualFile
+        val dir = entity.url?.toVirtualFile()
         if (dir != null && hasAssemblyDefinitionFile(dir)) {
             return projectEntity
         }
