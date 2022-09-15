@@ -4,7 +4,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 {
-    public class UnityCachesFinder
+    public static class UnityCachesFinder
     {
         [CanBeNull]
         public static VirtualFileSystemPath GetPackagesCacheFolder(string registry)
@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         }
 
         [NotNull]
-        private static VirtualFileSystemPath GetPackagesCacheRoot()
+        public static VirtualFileSystemPath GetPackagesCacheRoot()
         {
             var upmCachePath = Environment.GetEnvironmentVariable("UPM_CACHE_PATH");
             if (!string.IsNullOrEmpty(upmCachePath))
@@ -46,6 +46,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+        
+        [NotNull]
+        public static VirtualFileSystemPath GetLocalPackageCacheFolder(VirtualFileSystemPath solutionDirectory)
+        {
+            return solutionDirectory.Combine("Library/PackageCache");
+        }
+        
+        // TODO: We shouldn't have to pass in appPath here
+        // But appPath is being calculated by UnityVersion, not UnityInstallationFinder
+        [NotNull]
+        public static VirtualFileSystemPath GetBuiltInPackagesFolder([NotNull] VirtualFileSystemPath applicationPath)
+        {
+            return applicationPath.IsEmpty
+                ? applicationPath
+                : UnityInstallationFinder.GetApplicationContentsPath(applicationPath).Combine("Resources/PackageManager/BuiltInPackages");
         }
     }
 
