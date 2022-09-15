@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             return false;
         }
 
-        private bool PackageIsMissing(ref string message, [CanBeNull] PackageData packageData, string packageMarketingName)
+        private static bool PackageIsMissing(ref string message, [CanBeNull] PackageData packageData, string packageMarketingName)
         {
             if (packageData == null)
             {
