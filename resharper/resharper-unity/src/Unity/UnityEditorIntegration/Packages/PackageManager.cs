@@ -434,8 +434,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                     myLogger.Info(
                         "packages-lock.json is not supported by this version of Unity. Perhaps the file is from a newer version?");
                 }
-
-                myLogger.Info("packages-lock.json out of date. Most likely reason: Unity not running");
+                else
+                {
+                    myLogger.Info("packages-lock.json out of date. Most likely reason: Unity not running");    
+                }
             }
         }
 
