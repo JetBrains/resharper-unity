@@ -278,8 +278,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
         private List<PackageData>? GetPackages()
         {
-            return LogEx.WhenVerbose(myLogger).DoCalculation("GetPackages", null,
-                () => GetPackagesFromPackagesLockJson() ?? GetPackagesFromManifestJson(),
+            return myLogger.WhenVerbose().DoCalculation("GetPackages", null,
+                () =>
+                {
+                    if (!myManifestPath.ExistsFile)
+                    {
+                        // This is not really expected, unless we're on an older Unity that doesn't support package manager
+                        myLogger.Info("manifest.json does not exist");
+                        return GetPackagesFromPackagesLockJson();
+                    }
+                    
+                    var projectManifest = Logger.CatchSilent(() => ManifestJson.FromJson(myManifestPath.ReadAllText2().Text));
+
+                    if (projectManifest == null)
+                    {
+                        myLogger.Info("failed to parse manifest.json");
+                        return GetPackagesFromPackagesLockJson();
+                    }
+                    
+                    // special case, when the lock file is disabled, but maybe present on the disk
+                    if (projectManifest.EnableLockFile.HasValue && !projectManifest.EnableLockFile.Value)
+                    {
+                        myLogger.Info("packages-lock.json is disabled in the manifest.json");
+                        return GetPackagesFromManifestJson(projectManifest);
+                    }
+
+                    return GetPackagesFromPackagesLockJson() ?? GetPackagesFromManifestJson(projectManifest);
+
+                },
                 p => p != null ? $"{p.Count} packages" : "Null list of packages. Something went wrong");
         }
 
@@ -319,21 +345,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             });
         }
 
-        private List<PackageData>? GetPackagesFromManifestJson()
+        private List<PackageData>? GetPackagesFromManifestJson(ManifestJson projectManifest)
         {
-            if (!myManifestPath.ExistsFile)
-            {
-                // This is not really expected, unless we're on an older Unity that doesn't support package manager
-                myLogger.Info("manifest.json does not exist");
-                return null;
-            }
-
             myLogger.Verbose("Getting packages from manifest.json");
 
             try
             {
-                var projectManifest = ManifestJson.FromJson(myManifestPath.ReadAllText2().Text);
-
                 // Now we've deserialised manifest.json, log why we skipped packages-lock.json
                 LogWhySkippedPackagesLock(projectManifest);
 
