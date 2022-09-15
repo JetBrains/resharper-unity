@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
         private readonly FrontendBackendHost myFrontendBackendHost;
         private readonly ILogger myLogger;
         private readonly Lifetime myLifetime;
-        private readonly PackageValidator myPackageValidator;
+        private readonly PackageCompatibilityValidator myPackageCompatibilityValidator;
 
         private readonly object myCurrentLaunchesTaskAccess = new();
         private Task myCurrentLaunchesTask = Task.CompletedTask;
@@ -74,7 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
                                          FrontendBackendHost frontendBackendHost,
                                          ILogger logger,
                                          Lifetime lifetime,
-                                         PackageValidator packageValidator)
+                                         PackageCompatibilityValidator packageCompatibilityValidator)
         {
             mySolution = solution;
             myUnitTestResultManager = unitTestResultManager;
@@ -85,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
             myFrontendBackendHost = frontendBackendHost;
             myLogger = logger;
             myLifetime = lifetime;
-            myPackageValidator = packageValidator;
+            myPackageCompatibilityValidator = packageCompatibilityValidator;
 
             myUnityProcessId = new Property<int?>(lifetime, "RunViaUnityEditorStrategy.UnityProcessId");
 
@@ -298,12 +298,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
                         run.HostController.HostId != WellKnownHostProvidersIds.DebugProviderId &&
                         run.HostController.HostId != WellKnownHostProvidersIds.RunProviderId;
 
-                    if (myPackageValidator.HasNonCompatiblePackagesCombination(isCoverage, out var message))
+                    if (myPackageCompatibilityValidator.HasNonCompatiblePackagesCombination(isCoverage, out var message))
                         defaultMessage = $"{defaultMessage} {message}";
 
                     if (model.UnitTestLaunch.Value.TestMode == TestMode.Play)
                     {
-                        if (!myPackageValidator.CanRunPlayModeTests(out var playMessage))
+                        if (!myPackageCompatibilityValidator.CanRunPlayModeTests(out var playMessage))
                             defaultMessage = $"{defaultMessage} {playMessage}";
                     }
 

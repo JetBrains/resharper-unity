@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration.Packages
 {
     [SolutionComponent]
-    public class PackageValidator
+    public class PackageCompatibilityValidator
     {
         private readonly UnityVersion myUnityVersion;
         private readonly PackageManager myPackageManager;
@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private const string TestFrameworkMarketingName = "Test Framework";
         private const string RiderMarketingName = "JetBrains Rider Editor";
 
-        public PackageValidator(UnityVersion unityVersion, PackageManager packageManager)
+        public PackageCompatibilityValidator(UnityVersion unityVersion, PackageManager packageManager)
         {
             myUnityVersion = unityVersion;
             myPackageManager = packageManager;
@@ -31,43 +31,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                 return false;
 
             var riderPackage = myPackageManager.GetPackageById(RiderPackageId);
-            var testFrameworkPackage = myPackageManager.GetPackageById(TestFrameworkPackageId);
-            if (PackageIsMissing(ref message, riderPackage, RiderMarketingName)) 
-                return true;
-            
-            if (PackageIsMissing(ref message, testFrameworkPackage, TestFrameworkMarketingName)) 
-                return true;
-
-            if (riderPackage != null && testFrameworkPackage != null)
+            if (riderPackage == null)
             {
-                var riderPackageVersion = new Version(riderPackage.PackageDetails.Version);
-                var testFrameworkVersion = new Version(testFrameworkPackage.PackageDetails.Version);
-                if (IsOldPackage(ref message, riderPackageVersion, RiderMarketingName, "1.1.1")) return true;
-                if (IsOldPackage(ref message, testFrameworkVersion, TestFrameworkMarketingName, "1.1.1")) return true;
+                message = $"Add {RiderMarketingName} in Unity Package Manager.";
+                return true;
+            }
+            
+            var testFrameworkPackage = myPackageManager.GetPackageById(TestFrameworkPackageId);            
+            if (testFrameworkPackage == null)
+            {
+                message = $"Add {TestFrameworkMarketingName} in Unity Package Manager. {HelpLink}";
+                return true;
+            }
+            
+            var riderPackageVersion = new Version(riderPackage.PackageDetails.Version);
+            var testFrameworkVersion = new Version(testFrameworkPackage.PackageDetails.Version);
+            if (IsOldPackage(ref message, riderPackageVersion, RiderMarketingName, "1.1.1")) return true;
+            if (IsOldPackage(ref message, testFrameworkVersion, TestFrameworkMarketingName, "1.1.1")) return true;
 
-                if (isCoverage)
+            if (isCoverage)
+            {
+                // https://youtrack.jetbrains.com/issue/RIDER-35880
+                if (riderPackageVersion < new Version("1.2.0") &&
+                    testFrameworkVersion >= new Version("1.1.5"))
                 {
-                    // https://youtrack.jetbrains.com/issue/RIDER-35880
-                    if (riderPackageVersion < new Version("1.2.0") &&
-                             testFrameworkVersion >= new Version("1.1.5"))
-                    {
-                        message = $"Update {RiderMarketingName} package to v.1.2.0 or later in Unity Package Manager. {HelpLink}";
-                        return true;
-                    }
+                    message = $"Update {RiderMarketingName} package to v.1.2.0 or later in Unity Package Manager. {HelpLink}";
+                    return true;
                 }
             }
             
-            return false;
-        }
-
-        private static bool PackageIsMissing(ref string message, [CanBeNull] PackageData packageData, string packageMarketingName)
-        {
-            if (packageData == null)
-            {
-                message = $"Add {packageMarketingName} in Unity Package Manager. {HelpLink}";
-                return true;
-            }
-
             return false;
         }
 
