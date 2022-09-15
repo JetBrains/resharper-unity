@@ -46,8 +46,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             
             var riderPackageVersion = new Version(riderPackage.PackageDetails.Version);
             var testFrameworkVersion = new Version(testFrameworkPackage.PackageDetails.Version);
-            if (IsOldPackage(ref message, riderPackageVersion, RiderMarketingName, "1.1.1")) return true;
-            if (IsOldPackage(ref message, testFrameworkVersion, TestFrameworkMarketingName, "1.1.1")) return true;
+            if (IsOldPackage(out message, riderPackageVersion, RiderMarketingName, "1.1.1")) return true;
+            if (IsOldPackage(out message, testFrameworkVersion, TestFrameworkMarketingName, "1.1.1")) return true;
 
             if (isCoverage)
             {
@@ -63,8 +63,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             return false;
         }
 
-        private static bool IsOldPackage(ref string message, Version packageVersion, string packageMarketingName, string targetVersion)
+        private static bool IsOldPackage(out string message, Version packageVersion, string packageMarketingName, string targetVersion)
         {
+            message = string.Empty;
             if (packageVersion != null && packageVersion < new Version(targetVersion))
             {
                 message = $"Update {packageMarketingName} package to v.{targetVersion} or later in Unity Package Manager. {HelpLink}";
