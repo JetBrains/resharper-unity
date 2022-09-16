@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Files;
+using JetBrains.ReSharper.Psi.Format;
 using JetBrains.ReSharper.Psi.Impl.CodeStyle;
 using JetBrains.ReSharper.Psi.Impl.Shared.InjectedPsi;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -28,9 +29,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
 
     protected override CodeFormattingContext CreateFormatterContext(
         CodeFormatProfile profile, ITreeNode firstNode, ITreeNode lastNode,
-        AdditionalFormatterParameters parameters, ICustomFormatterInfoProvider provider, int tabWidth)
+        AdditionalFormatterParameters parameters, ICustomFormatterInfoProvider provider, int tabWidth, FormatterChangeAccumulator formatterChangeAccumulator)
     {
-      return new CodeFormattingContext(this, firstNode, lastNode, CodeFormatProfile.DEFAULT, FormatterLoggerProvider.FormatterLogger, parameters, tabWidth);
+      return new CodeFormattingContext(this, firstNode, lastNode, CodeFormatProfile.DEFAULT, FormatterLoggerProvider.FormatterLogger, parameters, tabWidth, formatterChangeAccumulator);
     }
 
     public override MinimalSeparatorType GetMinimalSeparatorByNodeTypes(TokenNodeType leftToken, TokenNodeType rightToken)
