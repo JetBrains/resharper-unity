@@ -26,10 +26,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
     
     public override string OverridenSettingPrefix => "// @formatter:";
 
-    protected override CodeFormattingContext CreateFormatterContext(CodeFormatProfile profile, ITreeNode firstNode, ITreeNode lastNode,
-      AdditionalFormatterParameters parameters, ICustomFormatterInfoProvider provider)
+    protected override CodeFormattingContext CreateFormatterContext(
+        CodeFormatProfile profile, ITreeNode firstNode, ITreeNode lastNode,
+        AdditionalFormatterParameters parameters, ICustomFormatterInfoProvider provider, int tabWidth)
     {
-      return new CodeFormattingContext(this, firstNode, lastNode, FormatterLoggerProvider.FormatterLogger, parameters);
+      return new CodeFormattingContext(this, firstNode, lastNode, CodeFormatProfile.DEFAULT, FormatterLoggerProvider.FormatterLogger, parameters, tabWidth);
     }
 
     public override MinimalSeparatorType GetMinimalSeparatorByNodeTypes(TokenNodeType leftToken, TokenNodeType rightToken)
