@@ -14,8 +14,22 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
+## 2022.2.3
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net222-rtm-2022.2.2...net222-rtm-2022.2.3)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/56?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net222-rtm-2022.2.3)
+
+### Fixed
+
+- ReSharper: Fix Extension Manager reporting Unity Support plugin as incompatible ([#2354](https://github.com/JetBrains/resharper-unity/issues/2354), [#2346](https://github.com/JetBrains/resharper-unity/pull/2346))
+
+
+
 ## 2022.2.2
+* Released: [2022-08-22](https://blog.jetbrains.com/dotnet/2022/08/22/resharper-and-rider-2022-2-2-bug-fixes/)
+* Build: 2022.2.2.155
 * [No code changes](https://github.com/JetBrains/resharper-unity/compare/net222-rtm-2022.2.1...net222-rtm-2022.2.2)
+* No ReSharper release due to API verifier issues ([#2354](https://github.com/JetBrains/resharper-unity/issues/2354))
 
 
 
