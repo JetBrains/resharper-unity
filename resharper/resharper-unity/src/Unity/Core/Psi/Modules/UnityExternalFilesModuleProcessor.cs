@@ -14,6 +14,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.InputActions.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
@@ -353,6 +354,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             AddExternalPsiSourceFiles(externalFiles.AssetFiles, builder, "asset");
             AddExternalPsiSourceFiles(externalFiles.AsmDefFiles, builder, "asmdef");
             AddExternalPsiSourceFiles(externalFiles.AsmRefFiles, builder, "asmref");
+            AddExternalPsiSourceFiles(externalFiles.InputActionsFiles, builder, "inputactions");
             FlushChanges(builder);
 
             foreach (var (path, isUserEditable) in externalFiles.Directories)
@@ -491,6 +493,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             foreach (var externalFile in externalFiles.AsmRefFiles)
             {
                 myUsageStatistics.AddStatistic(UnityAssetInfoCollector.FileType.AsmRef,
+                    externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
+            }
+            
+            foreach (var externalFile in externalFiles.InputActionsFiles)
+            {
+                myUsageStatistics.AddStatistic(UnityAssetInfoCollector.FileType.InputActions,
                     externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
 
@@ -697,6 +705,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             public readonly List<ExternalFile> AssetFiles = new();
             public readonly List<ExternalFile> AsmDefFiles = new();
             public readonly List<ExternalFile> AsmRefFiles = new();
+            public readonly List<ExternalFile> InputActionsFiles = new();
             public FrugalLocalList<ExternalFile> KnownBinaryAssetFiles;
             public FrugalLocalList<ExternalFile> ExcludedByNameAssetFiles;
             public FrugalLocalList<(VirtualFileSystemPath directory, bool isUserEditable)> Directories;
@@ -726,7 +735,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     else
                         AssetFiles.Add(new ExternalFile(directoryEntry, projectFileType, isUserEditable));
                 }
-                else if (directoryEntry.RelativePath.IsAsmDef() || directoryEntry.RelativePath.IsAsmRef())
+                else if (directoryEntry.RelativePath.IsAsmDef() || directoryEntry.RelativePath.IsAsmRef() 
+                                                                || directoryEntry.RelativePath.IsInputActions())
                 {
                     // Do not add if this file is already part of a project. This might be because it's from an editable
                     // package, or because the user has package project generation enabled.
@@ -743,11 +753,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     }
                     else
                     {
-                        var isAsmDef = directoryEntry.RelativePath.IsAsmDef();
-                        var files = isAsmDef ? AsmDefFiles : AsmRefFiles;
-                        ProjectFileType? projectFileType = isAsmDef
-                            ? AsmDefProjectFileType.Instance
-                            : AsmRefProjectFileType.Instance;
+                        List<ExternalFile> files;
+                        ProjectFileType? projectFileType;
+                        if (directoryEntry.RelativePath.IsAsmDef())
+                        {
+                            files = AsmDefFiles;
+                            projectFileType = AsmDefProjectFileType.Instance;
+                        }
+                        else if (directoryEntry.RelativePath.IsAsmRef())
+                        {
+                            files = AsmRefFiles;
+                            projectFileType = AsmRefProjectFileType.Instance;
+                        }
+                        else if (directoryEntry.RelativePath.IsInputActions())
+                        {
+                            files = InputActionsFiles;
+                            projectFileType = InputActionsProjectFileType.Instance;
+                        }
+                        else throw new InvalidOperationException();
                         files.Add(new ExternalFile(directoryEntry, projectFileType, isUserEditable));
                     }
                 }
@@ -769,6 +792,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 myLogger.Trace("Asset files: {0} ({1:n0} bytes)", AssetFiles.Count, GetTotalFileSize(AssetFiles));
                 myLogger.Trace("AsmDef files: {0} ({1:n0} bytes)", AsmDefFiles.Count, GetTotalFileSize(AsmDefFiles));
                 myLogger.Trace("AsmRef files: {0} ({1:n0} bytes)", AsmRefFiles.Count, GetTotalFileSize(AsmRefFiles));
+                myLogger.Trace("InputActions files: {0} ({1:n0} bytes)", InputActionsFiles.Count, GetTotalFileSize(InputActionsFiles));
                 myLogger.Trace("Known binary asset files: {0} ({1:n0} bytes)", KnownBinaryAssetFiles.Count, GetTotalFileSize(KnownBinaryAssetFiles.AsIReadOnlyList()));
                 myLogger.Trace("Excluded by name files: {0} ({1:n0} bytes)", ExcludedByNameAssetFiles.Count, GetTotalFileSize(ExcludedByNameAssetFiles.AsIReadOnlyList()));
                 myLogger.Trace("Directories: {0}", Directories.Count);

@@ -154,6 +154,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
             AsmDef,
             AsmRef,
             Meta,
+            InputActions,
 
             KnownBinary,
             ExcludedByName
