@@ -51,6 +51,15 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
   (\s\[ProjectName]\s(?<projectName>.*))
 )?
 """, Pattern.COMMENTS)
+
+        enum class UnityPlayerConnectionFlags(val value: Int) {
+            RequestImmediateConnect(1 shl 0),
+            SupportsProfile(1 shl 1),
+            CustomMessage(1 shl 2),
+            UseAlternateIP(1 shl 3);
+
+            fun isSet(value: Int): Boolean = this.value and value != 0
+        }
     }
 
     // Refresh once a second. If a player hasn't been seen for 3 iterations, remove it from the list
@@ -116,22 +125,26 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
         }
     }
 
-    private fun parseUnityPlayer(unityPlayerDescriptor: String, hostAddress: InetAddress): UnityProcess? {
+    private fun parseUnityPlayer(unityPlayerDescriptor: String, packetSourceAddress: InetAddress): UnityProcess? {
         try {
             val matcher = unityPlayerDescriptorRegex.matcher(unityPlayerDescriptor)
             if (matcher.find()) {
+                val ipInMessage = matcher.group("ip")
                 val id = matcher.group("id")
+                var flags = matcher.group("flags").toInt()
                 val allowDebugging = matcher.group("debug").startsWith("1")
                 val guid = matcher.group("guid").toLong()
                 val debuggerPort = matcher.group("debuggerPort")?.toIntOrNull() ?: convertPidToDebuggerPort(guid)
                 val packageName: String? = matcher.group("packageName")
                 val projectName: String? = matcher.group("projectName")
 
-                // We use hostAddress instead of ip because this is the address we actually received the multicast from.
-                // This is more accurate than what we're told, because the Unity process might be reporting the IP
-                // address of an interface that isn't reachable. For example, the iPhone player can report the local IP
-                // address of the mobile data network, which we can't reach from the current network (if we disable
-                // mobile data it works as expected)
+                // If UseAlternateIP is set that means we should use the IP in the broadcast message rather than the
+                // packet source address
+                var hostAddress = when {
+                    UnityPlayerConnectionFlags.UseAlternateIP.isSet(flags) -> InetAddress.getByName(ipInMessage)
+                    else -> packetSourceAddress
+                }
+
                 return if (isLocalAddress(hostAddress)) {
                     if (id.startsWith("UWPPlayer") && packageName != null) {
                         UnityLocalUwpPlayer(id, hostAddress.hostAddress, debuggerPort, allowDebugging, projectName, packageName)
