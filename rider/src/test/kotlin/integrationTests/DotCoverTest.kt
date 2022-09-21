@@ -26,7 +26,7 @@ class DotCoverTest : IntegrationTestWithEditorBase() {
     fun checkCoverAllTestsFromSolution() {
         buildSolutionWithReSharperBuild()
         withDcFacade(project) { ut, dc ->
-            ut.waitForDiscovering(5)
+            ut.waitForDiscovering()
             ut.coverAllTestsInSolution(5)
             dc.waitForTotal(22, goldFile = testGoldFile)
         }
