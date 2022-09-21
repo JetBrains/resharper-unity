@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using JetBrains.Serialization;
 using JetBrains.Util.PersistentMap;
 
@@ -5,8 +6,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
 {
     public class InputActionCacheItem
     {
-         public static readonly IUnsafeMarshaller<InputActionCacheItem> Marshaller =
+         private static readonly IUnsafeMarshaller<InputActionCacheItem> ourInputActionCacheItemMarshaller =
             new UniversalMarshaller<InputActionCacheItem>(Read, Write);
+         
+         public static readonly UnsafeFilteredCollectionMarshaller<InputActionCacheItem, List<InputActionCacheItem>> Marshaller =
+             new(ourInputActionCacheItemMarshaller, n => new List<InputActionCacheItem>(n), item => item != null);
+
 
         public InputActionCacheItem(string name, int declarationOffset)
         {
@@ -28,6 +33,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
         {
             writer.Write(value.Name);
             writer.Write(value.DeclarationOffset);
+        }
+        
+        public override string ToString()
+        {
+            return $"{Name}:{DeclarationOffset}";
         }
     }
 }

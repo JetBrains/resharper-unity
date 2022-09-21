@@ -9,6 +9,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
+using JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
@@ -87,7 +88,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     if (IsEventHandler(unityApi, method) ||
                         IsRequiredSignatureMethod(method) ||
                         IsAnimationEvent(solution, method) ||
-                        IsImplicitlyUsedInterfaceMethod(method))
+                        IsImplicitlyUsedInterfaceMethod(method) ||
+                        IsImplicitlyUsedByInputActions(solution, method))
                     {
                         flags = ImplicitUseKindFlags.Access;
                         return true;
@@ -108,6 +110,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
             flags = ImplicitUseKindFlags.Default; // Value not used if we return false
             return false;
+        }
+
+        private bool IsImplicitlyUsedByInputActions(ISolution solution, IMethod method)
+        {
+            var type = method.ContainingType;
+            if (!type.DerivesFromMonoBehaviour())
+                return false;
+
+            var shortName = method.ShortName;
+            if (!shortName.StartsWith("On"))
+                return false;
+
+            var inputActionsCache = solution.GetComponent<InputActionCache>();
+            return inputActionsCache.ContainsName(shortName.Substring(2));
+
         }
 
         private bool IsUxmlFactory(IClass cls)
