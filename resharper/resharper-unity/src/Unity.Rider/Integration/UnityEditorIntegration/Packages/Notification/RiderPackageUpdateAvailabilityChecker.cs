@@ -16,7 +16,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration.Packages.Notification
 {
     [SolutionComponent]
     public class RiderPackageUpdateAvailabilityChecker
@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private readonly UserNotifications myUserNotifications;
         private readonly JetHashSet<Version> myNotificationShown;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
-        private string packageId = "com.unity.ide.rider";
+        private string packageId = PackageCompatibilityValidator.RiderPackageId;
         private Version leastRiderPackageVersion = new Version(3, 0, 15);
 
         public RiderPackageUpdateAvailabilityChecker(
