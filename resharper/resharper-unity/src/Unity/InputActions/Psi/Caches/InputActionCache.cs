@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Json.Psi;
@@ -7,25 +8,22 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
-using JetBrains.SignatureVerifier;
+
+#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
 {
     [PsiComponent]
-    public class InputActionCache : SimpleICache<InputActionCacheItem>
+    public class InputActionCache : SimpleICache<List<InputActionCacheItem>>
     {
-        private readonly ILogger myLogger;
-
         public InputActionCache(Lifetime lifetime,
             IShellLocks shellLocks,
-            IPersistentIndexManager persistentIndexManager,
-            ILogger logger)
+            IPersistentIndexManager persistentIndexManager)
             : base(lifetime, shellLocks, persistentIndexManager, InputActionCacheItem.Marshaller)
         {
-            myLogger = logger;
         }
 
-        public override object Build(IPsiSourceFile sourceFile, bool isStartup)
+        public override object? Build(IPsiSourceFile sourceFile, bool isStartup)
         {
             if (!IsApplicable(sourceFile))
                 return null;
@@ -33,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
             var file = sourceFile.GetDominantPsiFile<JsonNewLanguage>() as IJsonNewFile;
             var rootObject = file?.GetRootObject();
 
-            List<InputActionItem> results = new List<InputActionItem>();
+            var results = new List<InputActionCacheItem>();
 
             if (rootObject != null)
             {
@@ -59,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
                                                     if (actionMembers.Key == "name")
                                                     {
                                                         var nameProperty = (IJsonNewLiteralExpression)actionMembers.Value;
-                                                        results.Add(new InputActionItem(nameProperty.GetStringValue(),
+                                                        results.Add(new InputActionCacheItem(nameProperty.GetStringValue(),
                                                             nameProperty.GetTreeStartOffset().Offset));
                                                     }
                                                 }
@@ -79,6 +77,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
             return base.IsApplicable(sf) && sf.IsInputActions() && sf.IsLanguageSupported<JsonNewLanguage>();
+        }
+
+        public bool ContainsName(string name)
+        {
+            return Map.SelectMany(item => item.Value)
+                .Any(inputActionCacheItem => inputActionCacheItem.Name == name);
         }
     }
 }
