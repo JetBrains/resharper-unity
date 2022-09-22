@@ -1,0 +1,33 @@
+{
+    "name": "MyInput",
+    "maps": [
+        {
+            "name": "Player",
+            "id": "b5b0d968-975e-479a-805b-6a93e0713be5",
+            "actions": [
+                {
+                    "name": "Jump1",
+                    "type": "Button",
+                    "id": "139176c4-ef28-4e9b-8b9b-b1d245b17b2a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "55d59a4b-52c4-48ad-92da-c8022f83d35d",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Jump1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ]
+}
