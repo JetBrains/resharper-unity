@@ -69,7 +69,7 @@ abstract class IntegrationTestWithEditorBase : IntegrationTestWithSolutionBase()
             FrontendTextControlHost.getInstance(project!!)
             waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile))
 
-            it.waitForDiscovering(elementsCount)
+            it.waitForDiscovering()
         }
     }
 }
