@@ -190,8 +190,6 @@
   <actions>
     <action id="AttachToUnityProcessAction"
             class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction"
-            text="Attach to Unity Process&#8230;"
-            description="Attach debugger to Unity process"
             icon="UnityIcons.Actions.AttachToUnity">
       <add-to-group group-id="XDebugger.AttachGroup" anchor="after" relative-to-action="com.jetbrains.rider.debugger.actions.RiderAttachToRemoteProcessAction" />
     </action>
@@ -383,4 +381,5 @@
 </p>
 ]]>
   </description>
+  <resource-bundle>messages.UnityPluginActionsBundle</resource-bundle>
 </idea-plugin>
