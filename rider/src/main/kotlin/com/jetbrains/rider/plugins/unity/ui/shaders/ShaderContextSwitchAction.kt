@@ -10,6 +10,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 
+//TODO #Localization RIDER-82737 Should be localized?
 class ShaderContextSwitchAction(val project: Project, val id: RdDocumentId, val host: FrontendBackendHost,
                                 val data: ShaderContextData, private val currentContext:  IProperty<ShaderContextData?>) : AnAction(data.name) {
 

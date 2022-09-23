@@ -15,6 +15,7 @@ import com.intellij.util.xmlb.annotations.Transient
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.DotNetDebugRunner
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.isUnityClassLibraryProject
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
@@ -134,7 +135,8 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
 
             val isClassLibraryProject = project.isUnityClassLibraryProject()
             if (!project.isUnityProjectFolder() && (isClassLibraryProject == null || isClassLibraryProject)) {
-                throw RuntimeConfigurationError("Unable to automatically discover correct Unity Editor to debug")
+                throw RuntimeConfigurationError(
+                    UnityBundle.message("dialog.message.unable.to.automatically.discover.correct.unity.editor.to.debug"))
             }
         }
         super.checkRunnerSettings(runner, runnerSettings, configurationPerRunnerSettings)
@@ -207,7 +209,8 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         else {
             // We're a class library project in a standalone directory. We can't guess the project name, and it's best
             // not to attach to a random editor
-            throw RuntimeConfigurationError("Unable to automatically discover correct Unity Editor to debug")
+            throw RuntimeConfigurationError(
+                UnityBundle.message("dialog.message.unable.to.automatically.discover.correct.unity.editor.to.debug"))
         }
     }
 

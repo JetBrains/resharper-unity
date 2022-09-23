@@ -6,6 +6,7 @@ import com.intellij.ui.AnActionButton
 import com.intellij.ui.PanelWithButtons
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.table.JBTable
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import java.awt.Dimension
 import javax.swing.JButton
 import javax.swing.JComponent
@@ -33,7 +34,7 @@ class ProcessesPanel : PanelWithButtons() {
     }
 
     override fun getLabelText(): String? {
-        return "Unity Editor instances"
+        return UnityBundle.message("label.unity.editor.instances")
     }
 
     override fun createMainComponent(): JComponent {
@@ -103,7 +104,7 @@ class ProcessesPanel : PanelWithButtons() {
         }
 
         return ToolbarDecorator.createDecorator(table!!)
-                .addExtraAction(object: AnActionButton("Refresh", AllIcons.Actions.Refresh){
+                .addExtraAction(object: AnActionButton(UnityBundle.message("button.refresh"), AllIcons.Actions.Refresh){
                     override fun actionPerformed(p0: AnActionEvent) {
                         vm.refreshProcessList()
                         updateSelection(table!!)

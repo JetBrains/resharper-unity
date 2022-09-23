@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
+import com.intellij.openapi.util.NlsSafe
 import java.awt.Color
 import java.util.*
 
@@ -197,6 +198,7 @@ class UnityLogTokenizer {
     }
 
     data class Token(
+        @NlsSafe
         val token: String,
         val type: UnityLogTokenType,
         var bold: Boolean = false,

@@ -20,16 +20,16 @@ class UnityPausepointPanelProvider : IDotNetLineBreakpointCustomPanelsProvider {
 
 class UnityPausepointPanel(private val project: Project) : XBreakpointCustomPropertiesPanel<XLineBreakpoint<DotNetLineBreakpointProperties>>() {
 
-    private val activatePausepointHyperlink = HyperlinkLabel(UnityPausepointConstants.convertToPausepointText)
+    private val activatePausepointHyperlink = HyperlinkLabel(UnityPausepointConstants.convertToPausepointLabelLinkText)
     private var currentListener: HyperlinkListener? = null
 
     override fun loadFrom(breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>) {
         val isPausepoint = breakpoint.type is UnityPausepointBreakpointType
         activatePausepointHyperlink.setHyperlinkText(
             if (isPausepoint)
-                UnityPausepointConstants.convertToLineBreakpointText
+                UnityPausepointConstants.convertToLineBreakpointLabelLinkText
             else
-                UnityPausepointConstants.convertToPausepointText
+                UnityPausepointConstants.convertToPausepointLabelLinkText
         )
 
         val listener = HyperlinkListener {

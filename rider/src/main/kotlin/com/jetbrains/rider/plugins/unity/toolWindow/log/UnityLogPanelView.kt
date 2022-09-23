@@ -24,6 +24,7 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.intellij.util.application
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction
 import com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction
@@ -119,7 +120,10 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
 
     val mainSplitterOrientation = RiderUnitySettings.BooleanViewProperty("mainSplitterOrientation")
 
-    private val mainSplitterToggleAction = object : DumbAwareAction("Toggle Output Position", "Toggle Output pane position (right/bottom)", AllIcons.Actions.SplitVertically) {
+    private val mainSplitterToggleAction = object : DumbAwareAction(
+        UnityBundle.message("action.toggle.output.position.text"),
+        UnityBundle.message("action.toggle.output.pane.position.right.bottom.description"),
+        AllIcons.Actions.SplitVertically) {
         override fun actionPerformed(e: AnActionEvent) {
             mainSplitterOrientation.invert()
             update(e)
@@ -172,7 +176,8 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         divider.addMouseListener(object : PopupHandler() {
             override fun invokePopup(comp: Component?, x: Int, y: Int) {
                 JPopupMenu().apply {
-                    add(JMenuItem("Toggle Output Position", getMainSplitterIcon(true)).apply {
+                    add(JMenuItem(UnityBundle.message("toggle.output.position"),
+                                  getMainSplitterIcon(true)).apply {
                         addActionListener { mainSplitterOrientation.invert() }
                     })
                 }.show(comp, x, y)

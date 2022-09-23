@@ -5,6 +5,7 @@ import com.intellij.uiDesigner.core.GridConstraints
 import com.intellij.uiDesigner.core.GridLayoutManager
 import com.intellij.uiDesigner.core.Spacer
 import com.intellij.util.ui.JBUI
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import java.awt.Dimension
 import java.awt.Insets
 import javax.swing.JComponent
@@ -26,10 +27,7 @@ open class UnityAttachToEditorFormLayout() {
 
     private fun createUIComponents() {
         commentLabel = ComponentPanelBuilder.createCommentComponent(
-            "The EditorInstance.json file is required to automatically configure the <i>Attach to Unity Editor</i> run configuration. " +
-            "This file is automatically created when the project is opened in Unity 2017.1 and above, " +
-            "or when the <a href=\"https://github.com/JetBrains/resharper-unity#unity-editor-plugin\">Unity Editor plugin</a> " +
-            "is installed in a project and loaded by Unity.", true)
+            UnityBundle.message("comment.label.text.editorinstance.json.file.required.to.automatically.configure.run.configuration"), true)
         commentLabel!!.border = JBUI.Borders.emptyLeft(18)
     }
 
@@ -58,7 +56,7 @@ open class UnityAttachToEditorFormLayout() {
                                                                       GridConstraints.SIZEPOLICY_CAN_SHRINK or GridConstraints.SIZEPOLICY_CAN_GROW,
                                                                       null, null, null, 0, false))
         editorInstanceJsonError = JLabel()
-        editorInstanceJsonError!!.text = "EditorInstance Error"
+        editorInstanceJsonError!!.text = UnityBundle.message("editorinstance.error")
         editorInstanceJsonErrorPanel!!.add(editorInstanceJsonError,
                                            GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                                                            GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null,
@@ -84,7 +82,7 @@ open class UnityAttachToEditorFormLayout() {
                                                                      GridConstraints.SIZEPOLICY_CAN_SHRINK or GridConstraints.SIZEPOLICY_CAN_GROW,
                                                                      null, null, null, 0, false))
         processIdInfo = JLabel()
-        processIdInfo!!.text = "Using process..."
+        processIdInfo!!.text = UnityBundle.message("using.process")
         editorInstanceJsonInfoPanel!!.add(processIdInfo,
                                           GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                                                           GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null,
