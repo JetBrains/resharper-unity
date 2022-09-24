@@ -11,7 +11,9 @@ import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.tree.TreeUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.run.configurations.attachToUnityProcess
+import org.jetbrains.annotations.Nls
 import java.awt.Component
 import java.awt.Dimension
 import java.awt.Graphics
@@ -37,7 +39,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     private val peerPanel: JPanel
 
     init {
-        title = "Searching..."
+        title = UnityBundle.message("dialog.title.searching")
 
         tree = Tree().apply {
             model = treeModel
@@ -84,12 +86,10 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         peerPanel = panel {
             row { scrollPane(tree) }
             row {
-                button("Add player address manually...", actionListener = { enterCustomIp() })
+                button(UnityBundle.message("button.add.player.address.manually"), actionListener = { enterCustomIp() })
             }
-            commentRow("<p>Please ensure both the <i>Development Build</i> and <i>Script Debugging</i> options are checked in Unity's <i>Build Settings</i> dialog. " +
-                "Device players must be visible to the current network and firewall rules need to allow incoming UDP messages for the current process. " +
-                "Apple USB devices require iTunes or the Apple Mobile Device service to be installed.</p> " +
-                "<p>See the <a href=\"https://jb.gg/unity-troubleshoot-debug\">troubleshooting guide</a> for more details.</p>")
+            commentRow(
+                UnityBundle.message("please.ensure.both.the.development.build.and.script.debugging.options.are.checked.in.unity.build.settings.dialog"))
         }.apply { preferredSize = Dimension(650, 450) }
 
         isOKActionEnabled = false
@@ -136,23 +136,24 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         val portField = PortField(0)
 
         val panel = panel {
-            noteRow("Enter the IP address of the Unity process")
-            row("Host:") { hostField().focused() }
-            row("Port:") { portField() }
+            noteRow(UnityBundle.message("enter.the.ip.address.of.the.unity.process"))
+            row(UnityBundle.message("host.colon")) { hostField().focused() }
+            row(UnityBundle.message("port.colon")) { portField() }
         }
 
         @Suppress("DialogTitleCapitalization") val dialog = dialog(
-                title = "Add Unity process",
-                panel = panel,
-                project = project,
-                parent = peerPanel) {
+            title = UnityBundle.message("dialog.title.add.unity.process"),
+            panel = panel,
+            project = project,
+            parent = peerPanel) {
             val hostAddress = hostField.text
             portField.commitEdit()
             val port = portField.number
             val validationResult = mutableListOf<ValidationInfo>()
 
-            if (hostAddress.isNullOrBlank()) validationResult.add(ValidationInfo("Host address must not be empty."))
-            if (port <= 0) validationResult.add(ValidationInfo("Port number must be positive."))
+            if (hostAddress.isNullOrBlank()) validationResult.add(ValidationInfo(
+                UnityBundle.message("dialog.message.host.address.must.not.be.empty")))
+            if (port <= 0) validationResult.add(ValidationInfo(UnityBundle.message("dialog.message.port.number.must.be.positive")))
 
             if (validationResult.count() == 0) {
                 // TODO: Do something better with this. Probably add a (temporary) run configuration
@@ -298,7 +299,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
             val unityProcess = node.process
             val attributes = if (!node.debuggerAttached) SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES else SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES
-
+            //TODO #Localization RIDER-82737 should be localized?
             val projectName = unityProcess.projectName ?: if (unityProcess is UnityIosUsbProcess) USB_DEVICES else UNKNOWN_PROJECTS
             val hasSeparator = !isChildProcess(node) && (isFirstItem(node) || getPreviousSiblingProjectName(node) != projectName)
 
@@ -309,21 +310,23 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
             val focused = tree.hasFocus()
             if (unityProcess is UnityEditorHelper && unityProcess.roleName.isNotEmpty()) {
+                //TODO #Localization RIDER-82737 should be localized?
                 append(itemComponent, unityProcess.roleName, attributes, selected, focused, true)
             } else {
+                //TODO #Localization RIDER-82737 should be localized?
                 append(itemComponent, unityProcess.displayName, attributes, selected, focused, true)
             }
             if (node.debuggerAttached) {
-                append(itemComponent, " (Debugger attached)", SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES, selected, focused)
+                append(itemComponent, UnityBundle.message("appended.debugger.attached"), SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES, selected, focused)
             }
             if (!unityProcess.allowDebugging) {
-                append(itemComponent, " (Script Debugging disabled)", SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES, selected, focused)
+                append(itemComponent, UnityBundle.message("appended.script.debugging.disabled"), SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES, selected, focused)
             }
             if (unityProcess is UnityRemoteConnectionDetails) {
                 append(itemComponent, " ${unityProcess.host}:${unityProcess.port}", SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
             }
             if (unityProcess is UnityLocalProcess) {
-                append(itemComponent, " (pid: ${unityProcess.pid})", SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
+                append(itemComponent, UnityBundle.message("appended.pid.0", unityProcess.pid), SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
             }
 
             SpeedSearchUtil.applySpeedSearchHighlighting(tree, itemComponent, true, selected)
@@ -368,7 +371,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
          * When the item is selected then we use default tree's selection foreground.
          * It guaranties readability of selected text in any LAF.
          */
-        private fun append(component: SimpleColoredComponent, fragment: String, attributes: SimpleTextAttributes, isSelected: Boolean, isFocused: Boolean, isMainText: Boolean = false) {
+        private fun append(component: SimpleColoredComponent, @Nls fragment: String, attributes: SimpleTextAttributes, isSelected: Boolean, isFocused: Boolean, isMainText: Boolean = false) {
             if (isSelected && isFocused) {
                 component.append(fragment, SimpleTextAttributes(attributes.style, UIUtil.getTreeSelectionForeground(true)), isMainText)
             } else {

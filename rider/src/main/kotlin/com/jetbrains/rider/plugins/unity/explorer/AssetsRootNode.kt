@@ -9,6 +9,7 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.jetbrains.rider.model.RdSolutionDescriptor
 import com.jetbrains.rider.model.RdSolutionState
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.projectView.ProjectModelStatuses
 import com.jetbrains.rider.projectView.views.addAdditionalText
 import com.jetbrains.rider.projectView.views.presentSyncNode
@@ -25,7 +26,7 @@ class AssetsRootNode(project: Project, virtualFile: VirtualFile)
 
     override fun update(presentation: PresentationData) {
         if (!virtualFile.isValid) return
-        presentation.addText("Assets", SimpleTextAttributes.REGULAR_ATTRIBUTES)
+        presentation.addText(UnityBundle.message("label.assets"), SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(UnityIcons.Explorer.AssetsRoot)
 
         val solutionEntity = WorkspaceModel.getInstance(myProject).getSolutionEntity() ?: return
@@ -41,7 +42,7 @@ class AssetsRootNode(project: Project, virtualFile: VirtualFile)
                         presentProjectsCount(presentation, projectsCount, true)
                     }
                 }
-                RdSolutionState.WithErrors -> presentation.addAdditionalText("load failed")
+                RdSolutionState.WithErrors -> presentation.addAdditionalText(UnityBundle.message("load.failed"))
                 RdSolutionState.WithWarnings -> presentProjectsCount(presentation, projectsCount, true)
             }
         }
@@ -60,10 +61,15 @@ class AssetsRootNode(project: Project, virtualFile: VirtualFile)
     private fun presentProjectsCount(presentation: PresentationData, count: WorkspaceProjectsCount.ProjectsCount, showZero: Boolean) {
         if (count.total == 0 && !showZero) return
 
-        var text = "${count.total} ${StringUtil.pluralize("project", count.total)}"
+        var text: String
         val unloadedCount = count.failed + count.unloaded
+        if (count.total == 1) {
+            text = UnityBundle.message("one.project.count", count.total)
+        } else {
+            text = UnityBundle.message("many.projects.count", count.total)
+        }
         if (unloadedCount > 0) {
-            text += ", $unloadedCount unloaded"
+            text += UnityBundle.message("unloaded.projects.count", unloadedCount)
         }
         presentation.addAdditionalText(text)
     }

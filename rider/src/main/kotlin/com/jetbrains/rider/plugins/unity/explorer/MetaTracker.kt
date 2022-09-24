@@ -17,6 +17,7 @@ import com.intellij.util.PathUtil
 import com.intellij.util.application
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.jetbrains.rd.platform.util.getLogger
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorerFileSystemNode.Companion.isHiddenAsset
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
 import com.jetbrains.rider.plugins.unity.workspace.getPackages
@@ -108,7 +109,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
 
     private fun isValidCommand():Boolean {
         val currentCommandName = CommandProcessor.getInstance().currentCommandName
-        val res = currentCommandName == "Apply Patch"
+        val res = currentCommandName == UnityBundle.message("command.name.apply.patch")
         if (res)
             logger.trace("Avoid MetaTracker functionallity for the $currentCommandName. See RIDER-77123.")
         return !res

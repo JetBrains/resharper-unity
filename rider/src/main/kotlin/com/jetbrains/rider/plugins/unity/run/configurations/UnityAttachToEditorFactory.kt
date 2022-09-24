@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.openapi.project.Project
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import icons.UnityIcons
 
 
@@ -9,7 +10,7 @@ open class UnityAttachToEditorFactory(type: ConfigurationType) : UnityConfigurat
 
     override fun createTemplateConfiguration(project: Project) = UnityAttachToEditorRunConfiguration(project, this)
     override fun isConfigurationSingletonByDefault() = true
-    override fun getName() = "Debug Unity Editor"
+    override fun getName() = UnityBundle.message("debug.unity.editor")
     override fun getIcon() = UnityIcons.RunConfigurations.AttachAndDebug
 
     // This value gets written to the config file. By default it defers to getName, which is what happened pre-2018.3.
@@ -22,7 +23,7 @@ class UnityAttachToEditorAndPlayFactory(type: ConfigurationType) : UnityConfigur
 
     override fun createTemplateConfiguration(project: Project) = UnityAttachToEditorRunConfiguration(project, this, true)
     override fun isConfigurationSingletonByDefault() = true
-    override fun getName() = "Debug Unity Editor (play mode)"
+    override fun getName() = UnityBundle.message("name.debug.unity.editor.play.mode")
     override fun getId() = "UNITY_ATTACH_AND_PLAY"
     override fun getIcon() = UnityIcons.RunConfigurations.AttachDebugAndPlay
 }

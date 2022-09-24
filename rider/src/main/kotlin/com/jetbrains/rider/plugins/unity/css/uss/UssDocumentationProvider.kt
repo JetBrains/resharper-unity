@@ -8,12 +8,15 @@ import com.intellij.psi.css.descriptor.CssValueOwnerDescriptor
 import com.intellij.psi.css.impl.util.CssDocumentationProvider
 import com.intellij.psi.css.impl.util.MdnDocumentationUtil
 import com.intellij.psi.css.impl.util.table.CssDescriptorsUtil
+import org.jetbrains.annotations.Nls
 
 class UssDocumentationProvider : DocumentationProvider {
+    @Nls
     override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String? {
         if (element?.containingFile?.language is UssLanguage) {
             val docElement = findDocumentationElement(element)
             if (docElement != null) {
+                //TODO #Localization RIDER-82737
                 return generateDoc(element.text, docElement, originalElement)
             }
         }

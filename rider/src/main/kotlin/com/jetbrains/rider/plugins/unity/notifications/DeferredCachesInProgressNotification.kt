@@ -7,6 +7,7 @@ import com.intellij.openapi.wm.ex.StatusBarEx
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.adviseNotNull
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 
@@ -19,7 +20,7 @@ class DeferredCachesInProgressNotification(project: Project): ProtocolSubscribed
                 val ideFrame = WindowManager.getInstance().getIdeFrame(project)
                 if (ideFrame != null) {
                     (ideFrame.statusBar as StatusBarEx?)!!.notifyProgressByBalloon(MessageType.WARNING,
-                        "Usages in assets are not available during initial asset indexing")
+                                                                                   UnityBundle.message("popup.content.usages.in.assets.are.not.available.during.initial.asset.indexing"))
                 }
             }
         }

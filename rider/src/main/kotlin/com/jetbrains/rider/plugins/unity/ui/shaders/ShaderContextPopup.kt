@@ -14,6 +14,7 @@ import com.intellij.ui.popup.list.PopupListElementRenderer
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.util.reactive.IProperty
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import icons.UnityIcons
@@ -38,7 +39,7 @@ class ShaderContextPopup(private val group: ActionGroup, private val dataContext
 {
     init {
         setSpeedSearchAlwaysShown()
-        title.setButtonComponent(InplaceButton(IconButton("Help", AllIcons.Actions.Help)) {
+        title.setButtonComponent(InplaceButton(IconButton(UnityBundle.message("tooltip.help"), AllIcons.Actions.Help)) {
             BrowserUtil.open("https://jb.gg/unity-shader-context")
         }, JBUI.Borders.emptyRight(2))
     }
@@ -77,6 +78,7 @@ class ShaderContextPopup(private val group: ActionGroup, private val dataContext
 
             val action = value?.action ?: return
             if (action is ShaderContextSwitchAction) {
+                //TODO #Localization RIDER-82737 Should be localized?
                 myInfoLabel!!.text = action.data.folder
                 myPosLabel!!.text = ":" + action.data.startLine
             } else {

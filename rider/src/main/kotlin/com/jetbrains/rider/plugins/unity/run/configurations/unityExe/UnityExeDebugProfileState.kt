@@ -18,6 +18,7 @@ import com.jetbrains.rider.debugger.tryWriteMessageToConsoleView
 import com.jetbrains.rider.model.debuggerWorker.OutputMessageWithSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputType
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachProfileState
 import com.jetbrains.rider.run.*
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
@@ -86,11 +87,12 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
                     }
 
                     override fun processTerminated(processEvent: ProcessEvent) {
-                        monoConnectResult.executionConsole.tryWriteMessageToConsoleView(OutputMessageWithSubject(output = "Process \"$commandLineString\" terminated with exit code ${processEvent.exitCode}.\r\n", type = OutputType.Warning, subject = OutputSubject.Default))
+                        monoConnectResult.executionConsole.tryWriteMessageToConsoleView(OutputMessageWithSubject(output = UnityBundle.message("process.0.terminated.with.exit.code.1", commandLineString, processEvent.exitCode), type = OutputType.Warning, subject = OutputSubject.Default))
                     }
 
                     override fun startNotified(processEvent: ProcessEvent) {
-                        monoConnectResult.executionConsole.tryWriteMessageToConsoleView(OutputMessageWithSubject("Process \"$commandLineString\" started.\r\n", OutputType.Info, OutputSubject.Default))
+                        monoConnectResult.executionConsole.tryWriteMessageToConsoleView(OutputMessageWithSubject(
+                            UnityBundle.message("process.0.started", commandLineString), OutputType.Info, OutputSubject.Default))
                     }
                 })
 

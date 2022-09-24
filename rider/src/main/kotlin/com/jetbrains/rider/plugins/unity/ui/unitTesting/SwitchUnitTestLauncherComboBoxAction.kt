@@ -8,10 +8,12 @@ import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnitTestLaunchPreference
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import org.jetbrains.annotations.Nls
 import javax.swing.JComponent
 
 class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
 
+    @Nls
     private fun getLauncherDescription(currentPreference: UnitTestLaunchPreference?): String {
         val preferenceNotNull = currentPreference ?: return UseNUnitLauncherAction.UseNUnitLauncherActionText
 
