@@ -84,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Psi.Modules
 
             // Avoid SolutionMiscFiles.CreateMiscFile as this will involve transactions, and loading/saving the document
             // for each file
-            DocumentHostBase.CreateMiscFile(mySolution, path);
+            DocumentHostProjectFileUtil.CreateMiscFile(mySolution, path);
         }
 
         private void RemoveExternalProjectFiles(VirtualFileSystemPath path)
