@@ -32,50 +32,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
         {
             if (!IsApplicable(sourceFile))
                 return null;
-            
+
             var file = sourceFile.GetDominantPsiFile<JsonNewLanguage>() as IJsonNewFile;
             var rootObject = file?.GetRootObject();
 
             var results = new List<InputActionCacheItem>();
 
-            if (rootObject != null)
-            {
-                foreach (var member in rootObject.MembersEnumerable)
-                {
-                    if (member.Key == "maps")
-                    {
-                        if (member.Value is IJsonNewArray val)
-                        {
-                            foreach (var jsonNewValue in val.Values)
-                            {
-                                var jsonNewObject = (IJsonNewObject)jsonNewValue;
-                                foreach (var newMember in jsonNewObject.MembersEnumerable)
-                                {
-                                    if (newMember is { Key: "actions" })
-                                    {
-                                        if (newMember.Value is IJsonNewArray actions)
-                                        {
-                                            foreach (var actionsValue in actions.Values)
-                                            {
-                                                foreach (var actionMembers in ((IJsonNewObject) actionsValue).Members)
-                                                {
-                                                    if (actionMembers.Key == "name")
-                                                    {
-                                                        var nameProperty = (IJsonNewLiteralExpression)actionMembers.Value;
-                                                        results.Add(new InputActionCacheItem(nameProperty.GetStringValue(),
-                                                            nameProperty.GetTreeStartOffset().Offset));
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            
+            if (rootObject == null) return results;
+            var maps = rootObject.MembersEnumerable.FirstOrDefault(member => member.Key == "maps")?.Value;
+            if (maps is not IJsonNewArray mapsArray) return results;
+            var members = mapsArray.Values.SelectMany(a => ((IJsonNewObject)a).MembersEnumerable);
+            var actions = members.FirstOrDefault(m => m is { Key: "actions", Value: IJsonNewArray })?.Value;
+            if (actions is not IJsonNewArray actionsArray) return results;
+            var possibleNames =
+                actionsArray.Values.SelectMany(a => ((IJsonNewObject)a).MembersEnumerable);
+            var nameObject = possibleNames.FirstOrDefault(nameMember => nameMember.Key == "name")?.Value;
+            if (nameObject is not IJsonNewLiteralExpression nameProperty) return results;
+            results.Add(new InputActionCacheItem(nameProperty.GetStringValue(),
+                nameProperty.GetTreeStartOffset().Offset));
+
             return results;
         }
 
