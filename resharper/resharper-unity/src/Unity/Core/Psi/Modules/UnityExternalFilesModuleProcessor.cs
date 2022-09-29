@@ -409,7 +409,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             // parse all YAML files, which is Bad News for massive files.
             // TODO: Mark assets as non-user files, as they should not be edited manually
             // I'm not sure what this will affect
-            var properties = path.IsAsmDef() || path.IsAsmRef()
+            var properties = path.IsAsmDef() || path.IsAsmRef() || path.IsInputActions()
                 ? new UnityExternalFileProperties(false, !isUserEditable)
                 : new UnityExternalFileProperties(true, false);
 

@@ -85,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             SourceFileNameEndsWith(sourceFile, InputActionsExtensionWithDot);
 
         public static bool IsIndexedExternalFile(this IPath path) =>
-            path.IsYamlDataFile() || path.IsMeta() || path.IsAsmDef() || path.IsAsmRef();
+            path.IsYamlDataFile() || path.IsMeta() || path.IsAsmDef() || path.IsAsmRef() || path.IsInputActions();
 
         public static bool IsYamlDataFile(this IPath path)
         {
