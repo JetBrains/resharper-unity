@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
         private readonly ShaderContextDataPresentationCache myShaderContextDataPresentationCache;
 
         public ShaderContextHost(Lifetime lifetime, ISolution solution, IPsiFiles psiFiles,
-                                 RiderDocumentHost documentHost,
+                                 DocumentHostBase documentHost,
                                  CppGlobalSymbolCache cppGlobalSymbolCache,
                                  ShaderContextCache shaderContextCache,
                                  ShaderContextDataPresentationCache shaderContextDataPresentationCache, ILogger logger,
