@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
@@ -112,8 +113,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                     var animationEventsCount = solution
                         .GetComponent<AnimationEventUsagesContainer>()
                         .GetEventUsagesCountFor(element, out var animationEventsEstimatedResult);
-                    var count = eventsCount + animationEventsCount;
-                    return count > 0 || unityEventsEstimatedResult || animationEventsEstimatedResult;
+                    var inputActionsUsagesCount = solution.GetComponent<InputActionsElementContainer>()
+                        .GetEventUsagesCountFor(element, out var inputActionsUsagesResult);
+                    var count = eventsCount + animationEventsCount + inputActionsUsagesCount;
+                    return count > 0 || unityEventsEstimatedResult || animationEventsEstimatedResult || inputActionsUsagesResult;
 
                 case IField field:
                     return unityApi.IsSerialisedField(field);

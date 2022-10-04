@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.Metadata.Reader.API;
@@ -14,6 +15,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 
@@ -122,51 +124,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             if (!shortName.StartsWith("On"))
                 return false;
 
-            var inputActionsCache = solution.GetComponent<InputActionsCache>();
-
-            // todo: check specific attached inputactions files, not all
-            // find which assets do have this type attached? 
-            // find all attached *.inputactions files
-            // inputActionsCache.ContainsNameForFile(file, shortName.Substring(2))
-//
-//             var container = solution.GetComponent<AssetScriptUsagesElementContainer>();
-//             var hierarchyElementContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
-//             var fieldContainer = solution.GetComponent<AssetInspectorValuesContainer>();
-//             foreach (var sf in container.GetPossibleFilesWithScriptUsages((IClass)typeElement))
-//             {
-//                 var usages = container.GetScriptUsagesFor(sf, typeElement);
-//                 var hierarchy = hierarchyElementContainer.GetAssetHierarchyFor(sf);
-//                 foreach (var scriptUsage in usages)
-//                 {
-//                     var element = hierarchyElementContainer.GetHierarchyElement(scriptUsage.Location, true);
-//                     if (element == null) continue;
-//
-//                     var script = element as IScriptComponentHierarchy;
-//                     if (script == null) continue;
-//
-//                     var gameObjectReference = script.OwningGameObject;
-//                     var playerInput = hierarchy.Elements().OfType<IScriptComponentHierarchy>()
-//                         .Where(t => t.OwningGameObject.Equals(gameObjectReference) && 
-//                                     t.ScriptReference.ExternalAssetGuid == Guid.Parse("62899f850307741f2a39c98a8b639597")
-//                                     ).ToArray();
-// // 79280d09be4194cb4ac4b76ec85c0c69 my inputActions
-// // 62899f850307741f2a39c98a8b639597 guid of PlayerInput
-//                     foreach (var pi in playerInput)
-//                     {
-//                         var valueUsages = fieldContainer.GetUsages(sf);
-//                         var values = valueUsages.Where(a =>
-//                             a.usage.Location.Equals(pi.Location) && a.usage.Name.Equals("m_Actions")).Select(v=>v.usage.Value)
-//                             .OfType<AssetReferenceValue>().Select(r=>r.Reference).OfType<ExternalReference>();
-//                         // GetAssetFilePathsFromGuid fsp
-//                         // JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.PrefabImportCache.DoImport
-//                     }
-//                     
-//                 }
-//             }
-            
-
-            return inputActionsCache.ContainsName(shortName.Substring(2));
-
+            // var inputActionsCache = solution.GetComponent<InputActionsCache>();
+            if (method is not IDeclaredElement declaredElement)
+                return false;
+            solution.GetComponent<InputActionsElementContainer>()
+                .GetEventUsagesCountFor(declaredElement, out var inputActionsUsagesResult);
+            return inputActionsUsagesResult;
+            // return inputActionsCache.ContainsName(shortName.Substring(2));
         }
 
         private bool IsUxmlFactory(IClass cls)
