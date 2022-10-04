@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Threading;
@@ -25,6 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
     {
         private readonly IShellLocks myShellLocks;
         private readonly ISolution mySolution;
+        // private readonly Dictionary<string, HashSet<Guid>> methodNameToGuids = new(); // inputactions
         private readonly OneToListMap<IPsiSourceFile, List<InputActionsCacheItem>> myLocalCache = new();
         private readonly Dictionary<IPsiSourceFile, List<InputActionsDeclaredElement>> myDeclaredElements = new();
 
@@ -94,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
 
         public override void MergeLoaded(object data)
         {
-            foreach (var inputActionCacheItem  in Map)
+            foreach (var inputActionCacheItem in Map)
                 AddToLocalCache(inputActionCacheItem.Key, inputActionCacheItem.Value);
             base.MergeLoaded(data);
         }
@@ -131,17 +133,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
             var list = myDeclaredElements[file];
             return list.Any(element => element.ShortName == name);
         }
-
-        public bool ContainsName(string name)
+        
+        // todo: improve. maybe cache VirtualFileSystemPath instead of IPsiSourceFile
+        public bool ContainsNameForFile(VirtualFileSystemPath file, string name)
         {
             // ConcurrentDictionary<>
             // lock
             
-            return myLocalCache.SelectMany(item => item.Value)
-                .SelectMany(a=>a)
-                .Any(inputActionCacheItem => inputActionCacheItem.Name == name);
+            var list = myDeclaredElements.Single(a => a.Key.GetLocation() == file).Value;
+            return list.Any(element => element.ShortName == name);
         }
-        
+
         // Returns a symbol table for all items. Used to resolve references and provide completion
         public ISymbolTable GetSymbolTable()
         {
