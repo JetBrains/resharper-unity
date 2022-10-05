@@ -29,9 +29,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
 
     protected override CodeFormattingContext CreateFormatterContext(
         CodeFormatProfile profile, ITreeNode firstNode, ITreeNode lastNode,
-        AdditionalFormatterParameters parameters, ICustomFormatterInfoProvider provider, int tabWidth, FormatterChangeAccumulator formatterChangeAccumulator)
+        AdditionalFormatterParameters parameters, ICustomFormatterInfoProvider provider, int tabWidth, SingleLangChangeAccu changeAccu)
     {
-      return new CodeFormattingContext(this, firstNode, lastNode, CodeFormatProfile.DEFAULT, FormatterLoggerProvider.FormatterLogger, parameters, tabWidth, formatterChangeAccumulator);
+      return new CodeFormattingContext(this, firstNode, lastNode, CodeFormatProfile.DEFAULT, FormatterLoggerProvider.FormatterLogger, parameters, tabWidth, changeAccu);
     }
 
     public override MinimalSeparatorType GetMinimalSeparatorByNodeTypes(TokenNodeType leftToken, TokenNodeType rightToken)
