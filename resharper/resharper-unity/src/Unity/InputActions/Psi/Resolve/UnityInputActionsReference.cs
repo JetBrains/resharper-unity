@@ -1,23 +1,21 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
-using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Resolve
 {
-    public class InputActionsNameReference : CheckedReferenceBase<IJsonNewLiteralExpression>, ICompletableReference,
+    public class UnityInputActionsReference : CheckedReferenceBase<IJsonNewLiteralExpression>, ICompletableReference,
         IReferenceFromStringLiteral
     {
-        public InputActionsNameReference([NotNull] IJsonNewLiteralExpression owner)
+        public UnityInputActionsReference([NotNull] IJsonNewLiteralExpression owner)
             : base(owner)
         {
         }
@@ -29,6 +27,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Resolve
                 return resolveResultWithInfo;
 
             var name = GetName();
+            
+            var container = myOwner.GetSolution().GetComponent<InputActionsElementContainer>();
+            
+            //container.GetUsagesFor()
+            //
+            //     if (elements.Count > 1)
+            //     {
+            //         return new ResolveResultWithInfo(new CandidatesResolveResult(elements.ResultingList()),
+            //             ResolveErrorType.MULTIPLE_CANDIDATES);
+            //     }
+            //
+            //     if (elements.Count == 1)
+            //         return new ResolveResultWithInfo(new SimpleResolveResult(elements[0]), ResolveErrorType.OK);
+            //
 
             return new ResolveResultWithInfo(EmptyResolveResult.Instance,
                 InputActionsResolveErrorType.UNRESOLVED_REFERENCED_INPUTACTIONS_ERROR);
@@ -36,13 +48,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Resolve
 
         public override string GetName()
         {
-            return myOwner.GetStringValue() ?? SharedImplUtil.MISSING_DECLARATION_NAME;
+            return myOwner.GetStringValue()?.Substring(2) ?? SharedImplUtil.MISSING_DECLARATION_NAME;
         }
 
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
         {
-            var inputActionsCache = myOwner.GetSolution().GetComponent<InputActionsCache>();
-            var symbolTable = inputActionsCache.GetSymbolTable();
+            var asmDefCache = myOwner.GetSolution().GetComponent<InputActionsCache>();
+            var symbolTable = asmDefCache.GetSymbolTable();
             if (useReferenceName)
             {
                 var name = GetName();
@@ -58,21 +70,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Resolve
 
         public override IReference BindTo(IDeclaredElement element)
         {
-            var factory = JsonNewElementFactory.GetInstance(myOwner.GetPsiModule());
-            var literalExpression = factory.CreateStringLiteral(element.ShortName);
-
-            using (WriteLockCookie.Create(myOwner.IsPhysical()))
-            {
-                var newExpression = ModificationUtil.ReplaceChild(myOwner, literalExpression);
-                return newExpression.FindReference<InputActionsNameReference>() ?? this;
-            }
+            throw new System.NotImplementedException();
         }
 
         public override IReference BindTo(IDeclaredElement element, ISubstitution substitution)
         {
             return BindTo(element);
         }
-
+        
         public override IAccessContext GetAccessContext()
         {
             return new DefaultAccessContext(myOwner);

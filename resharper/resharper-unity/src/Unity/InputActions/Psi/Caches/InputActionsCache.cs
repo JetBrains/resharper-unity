@@ -134,7 +134,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
             return list.Any(element => element.ShortName == name);
         }
         
-        // todo: improve. maybe cache VirtualFileSystemPath instead of IPsiSourceFile
+        // todo: improve. maybe cache Guid or VirtualFileSystemPath instead of IPsiSourceFile
         public bool ContainsNameForFile(VirtualFileSystemPath file, string name)
         {
             // ConcurrentDictionary<>
@@ -142,6 +142,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
             
             var list = myDeclaredElements.Single(a => a.Key.GetLocation() == file).Value;
             return list.Any(element => element.ShortName == name);
+        }
+        
+        public IEnumerable<InputActionsDeclaredElement> GetDeclaredElements(VirtualFileSystemPath file, string name)
+        {
+            // ConcurrentDictionary<>
+            // lock
+            
+            var list = myDeclaredElements.Single(a => a.Key.GetLocation() == file).Value;
+            return list.Where(element => element.ShortName == name);
         }
 
         // Returns a symbol table for all items. Used to resolve references and provide completion
