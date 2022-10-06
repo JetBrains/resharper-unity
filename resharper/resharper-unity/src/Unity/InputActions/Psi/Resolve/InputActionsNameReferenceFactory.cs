@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using JetBrains.ProjectModel;
+﻿using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches;
 using JetBrains.ReSharper.Psi;
@@ -9,6 +8,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Resolve
 {
+    // from inputactions to csharp
     public class InputActionsNameReferenceFactory : IReferenceFactory
     {
         private readonly IPsiSourceFile mySourceFile;
@@ -20,12 +20,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Resolve
 
         public ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
         {
-            if (ResolveUtil.CheckThatAllReferencesBelongToElement<InputActionsNameReference>(oldReferences, element))
+            if (ResolveUtil.CheckThatAllReferencesBelongToElement<UnityInputActionsReference>(oldReferences, element))
                 return oldReferences;
             
-            return IsActionName(element)
-                ? new ReferenceCollection(new InputActionsNameReference((IJsonNewLiteralExpression)element))
-                : ReferenceCollection.Empty;
+            // return IsActionName(element)
+            //     ? new ReferenceCollection(new InputActionsNameReference())
+            //     : ReferenceCollection.Empty;
+            return ReferenceCollection.Empty;
         }
 
         private bool IsActionName(ITreeNode? node)

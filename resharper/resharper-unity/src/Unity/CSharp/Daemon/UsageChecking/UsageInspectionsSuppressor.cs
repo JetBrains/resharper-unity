@@ -128,7 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             if (method is not IDeclaredElement declaredElement)
                 return false;
             solution.GetComponent<InputActionsElementContainer>()
-                .GetEventUsagesCountFor(declaredElement, out var inputActionsUsagesResult);
+                .GetUsagesCountFor(declaredElement, out var inputActionsUsagesResult);
             return inputActionsUsagesResult;
             // return inputActionsCache.ContainsName(shortName.Substring(2));
         }

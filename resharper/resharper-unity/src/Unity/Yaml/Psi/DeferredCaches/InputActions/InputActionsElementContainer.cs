@@ -5,6 +5,7 @@ using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
@@ -13,10 +14,14 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.E
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Impl;
+using JetBrains.ReSharper.Psi.Search;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
@@ -110,11 +115,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
         
         // GetGameObjectsWithInputActions()
 
-        public int GetEventUsagesCountFor(IDeclaredElement el, out bool estimated)
+        public int GetUsagesCountFor(IDeclaredElement el, out bool estimated)
         {
             estimated = false;
             if (el is not IMethod method || !method.ShortName.StartsWith("On")) return 0;
-            var methodNameForInputActions = method.ShortName.Substring(2);
+            var strippedMethodName = method.ShortName.Substring(2);
             var type = method.ContainingType;
             if (type is not IClass classType) return 0;
             if (!classType.DerivesFromMonoBehaviour())
@@ -147,7 +152,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
 
                     var results = playerInputUsages.SelectMany(a =>
                         metaFileGuidCache.GetAssetFilePathsFromGuid(a.Guid).Where(path =>
-                            inputActionsCache.ContainsNameForFile(path, methodNameForInputActions))).ToArray();
+                            inputActionsCache.ContainsNameForFile(path, strippedMethodName))).ToArray();
 
                     if (results.Length > 0)
                         estimated = true;
@@ -168,6 +173,94 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
             }
 
             return reference;
+        }
+
+
+        public IEnumerable<FindResult> GetUsagesFor(IPsiSourceFile sourceFile, IDeclaredElement el)
+        {
+            if (el is not IMethod method || !method.ShortName.StartsWith("On")) return Array.Empty<FindResult>();
+            var strippedMethodName = method.ShortName.Substring(2);
+            var type = method.ContainingType;
+            if (type is not IClass classType) return Array.Empty<FindResult>();
+            if (!classType.DerivesFromMonoBehaviour()) return Array.Empty<FindResult>();
+                
+            // todo: check specific attached inputactions files, not all
+            // find which assets do have this type attached? 
+            // find all attached *.inputactions files
+            // inputActionsCache.ContainsNameForFile(file, shortName.Substring(2))
+
+            var solution = el.GetSolution();
+            var container = solution.GetComponent<AssetScriptUsagesElementContainer>();
+            var hierarchyElementContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
+            var inputActionsCache = solution.GetComponent<InputActionsCache>();
+            var metaFileGuidCache = solution.GetComponent<MetaFileGuidCache>();
+
+            var originals = myElementsWithPlayerInputReference.Select(a => new PlayerInputUsage(GetOriginalGameObject(a.Location, hierarchyElementContainer), a.Guid)).ToArray();
+            
+            foreach (var sf in container.GetPossibleFilesWithScriptUsages(classType))
+            {
+                var usages = container.GetScriptUsagesFor(sf, classType);
+                foreach (var scriptUsage in usages)
+                {
+                    var element = hierarchyElementContainer.GetHierarchyElement(scriptUsage.Location, true);
+
+                    if (element is not IScriptComponentHierarchy script) continue;
+                    
+                    var localReference = new LocalReference(script.OwningGameObject.OwningPsiPersistentIndex, script.OwningGameObject.LocalDocumentAnchor);
+                    var playerInputUsages = originals.Where(t => t.Location.Equals(localReference)).ToArray();
+
+                    playerInputUsages.SelectMany(a =>
+                        metaFileGuidCache.GetAssetFilePathsFromGuid(a.Guid).SelectMany(path =>
+                            inputActionsCache.GetDeclaredElements(path, strippedMethodName))).ToArray();
+
+                    return Array.Empty<FindResult>();
+                }
+            }
+
+            return Array.Empty<FindResult>();
+        }
+        
+        public InputActionsDeclaredElement[] GetUsagesFor(IDeclaredElement el)
+        {
+            if (el is not IMethod method || !method.ShortName.StartsWith("On")) return Array.Empty<InputActionsDeclaredElement>();
+            var strippedMethodName = method.ShortName.Substring(2);
+            var type = method.ContainingType;
+            if (type is not IClass classType) return Array.Empty<InputActionsDeclaredElement>();
+            if (!classType.DerivesFromMonoBehaviour()) return Array.Empty<InputActionsDeclaredElement>();
+                
+            // todo: check specific attached inputactions files, not all
+            // find which assets do have this type attached? 
+            // find all attached *.inputactions files
+            // inputActionsCache.ContainsNameForFile(file, shortName.Substring(2))
+
+            var solution = el.GetSolution();
+            var container = solution.GetComponent<AssetScriptUsagesElementContainer>();
+            var hierarchyElementContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
+            var inputActionsCache = solution.GetComponent<InputActionsCache>();
+            var metaFileGuidCache = solution.GetComponent<MetaFileGuidCache>();
+
+            var originals = myElementsWithPlayerInputReference.Select(a => new PlayerInputUsage(GetOriginalGameObject(a.Location, hierarchyElementContainer), a.Guid)).ToArray();
+            
+            foreach (var sf in container.GetPossibleFilesWithScriptUsages(classType))
+            {
+                var usages = container.GetScriptUsagesFor(sf, classType);
+                foreach (var scriptUsage in usages)
+                {
+                    var element = hierarchyElementContainer.GetHierarchyElement(scriptUsage.Location, true);
+
+                    if (element is not IScriptComponentHierarchy script) continue;
+                    
+                    var localReference = new LocalReference(script.OwningGameObject.OwningPsiPersistentIndex, script.OwningGameObject.LocalDocumentAnchor);
+                    var playerInputUsages = originals.Where(t => t.Location.Equals(localReference)).ToArray();
+
+                    return playerInputUsages.SelectMany(a =>
+                        metaFileGuidCache.GetAssetFilePathsFromGuid(a.Guid).SelectMany(path =>
+                            inputActionsCache.GetDeclaredElements(path, strippedMethodName))).ToArray();
+
+                }
+            }
+
+            return Array.Empty<InputActionsDeclaredElement>();
         }
     }
 }

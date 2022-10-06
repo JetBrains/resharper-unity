@@ -32,8 +32,8 @@ namespace JetBrains.ReSharper.Plugins.Json.Feature.Finder
 
         public bool ProcessProjectItem<TResult>(IPsiSourceFile sourceFile, IFindResultConsumer<TResult> consumer)
         {
-            if (sourceFile.GetPrimaryPsiFile() is IJsonNewFile yamlFile)
-                return ProcessElement(yamlFile, consumer);
+            if (sourceFile.GetPrimaryPsiFile() is IJsonNewFile jsonNewFile)
+                return ProcessElement(jsonNewFile, consumer);
             return false;
         }
 

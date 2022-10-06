@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Feature.Services.Occurr
 
             var referenceOccurrence = occurrence as ReferenceOccurrence;
             var reference = referenceOccurrence?.PrimaryReference;
-            return reference is InputActionsNameReference ? new[] { InputActionsReference } : null;
+            return reference is UnityInputActionsReference ? new[] { InputActionsReference } : null;
         }
 
         public IEnumerable<OccurrenceKind> GetAllPossibleOccurrenceKinds() => new[] { InputActionsReference };
