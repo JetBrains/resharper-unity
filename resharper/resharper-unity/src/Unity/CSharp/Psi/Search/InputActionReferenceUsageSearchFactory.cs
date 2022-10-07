@@ -1,10 +1,18 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
@@ -78,8 +86,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
                 {
                     foreach (var usage in usages)
                     {
-                        consumer.Build(new FindResultDeclaredElement(usage));
-                        return true;
+                        consumer.Accept(new UnityInputActionToCSharpFindResult(usage));
                     }
                 }
             }
@@ -89,6 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
 
         public bool ProcessElement<TResult>(ITreeNode element, IFindResultConsumer<TResult> consumer)
         {
+            throw new Exception("Unexpected");
             // if (element is IMethodDeclaration methodDeclaration && UnityInputActionReferenceUsageSearchFactory.IsInterestingElement(methodDeclaration.DeclaredElement))
             // {
             //     var usages = myInputActionsElementContainer.GetUsagesFor(methodDeclaration.DeclaredElement);
@@ -101,7 +109,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
             //     }
             // }
             //
-            return false;
+        }
+    }
+    
+    public class UnityInputActionToCSharpFindResult : FindResultDeclaredElement
+    {
+        public UnityInputActionToCSharpFindResult(IDeclaredElement declaredElement)
+            : base(declaredElement) { }
+        
+        public override bool Equals(object obj)
+        {
+            return ReferenceEquals(this, obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+    }
+    
+    [OccurrenceProvider(Priority = 20)]
+    public class UnityInputActionsToCSharpOccurenceProvider : IOccurrenceProvider
+    {
+        public IOccurrence MakeOccurrence(FindResult findResult)
+        {
+
+            if (findResult is UnityInputActionToCSharpFindResult result)
+            {
+                return new DeclaredElementOccurrence(result.DeclaredElement, OccurrenceType.Occurrence);
+            }
+
+            return null;
         }
     }
 }
