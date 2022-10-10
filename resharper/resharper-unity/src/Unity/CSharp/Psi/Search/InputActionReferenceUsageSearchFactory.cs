@@ -1,8 +1,7 @@
-#nullable enable
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
@@ -45,13 +44,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
         public IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements,
             ReferenceSearcherParameters referenceSearcherParameters)
         {
-            if (elements.Any(e => e is not IMethod))
+            var declaredElements = elements.Where(e => e is IMethod && IsInterestingElement(e)).ToArray();
+            
+            if (!declaredElements.Any())
                 return null;
         
             var solution = elements.First().GetSolution();
             var container = solution.GetComponent<InputActionsElementContainer>();
-        
-            return new CSharpInputActionsReferenceSearcher(container, elements.Where(e => e is IMethod && IsInterestingElement(e)));
+
+            List<FindResultText> results = new List<FindResultText>();
+            foreach (var declaredElement in declaredElements)
+            {
+                var usages = container.GetUsagesFor(declaredElement);
+                if (usages.Any())
+                {
+                    foreach (var usage in usages)
+                    {
+                        results.Add(new UnityInputActionsFindResultText(usage.SourceFile, new DocumentRange(usage.SourceFile.Document, usage.NavigationOffset)));
+                    }
+                }
+            }
+            
+            return new CSharpInputActionsReferenceSearcher(results);
         }
 
         public IDomainSpecificSearcher CreateLateBoundReferenceSearcher(IDeclaredElementsSet elements,
@@ -131,46 +145,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
             return false;
             // todo: is instance method
         }
-        
-        // public IDomainSpecificSearcher? CreateReferenceSearcher(
-        //     IDeclaredElementsSet elements, ReferenceSearcherParameters referenceSearcherParameters)
-        // {
-        //     if (elements.Any(e => e is not IMethod))
-        //         return null;
-        //
-        //     var solution = elements.First().GetSolution();
-        //     var container = solution.GetComponent<InputActionsElementContainer>();
-        //
-        //     return new CSharpInputActionsReferenceSearcher(container, elements.Where(e => e is IMethod && IsInterestingElement(e)));
-        // }
-        
     }
 
     internal class CSharpInputActionsReferenceSearcher : IDomainSpecificSearcher
     {
-        private readonly InputActionsElementContainer myInputActionsElementContainer;
-        private readonly IEnumerable<IDeclaredElement> myDeclaredElements;
+        private readonly List<FindResultText> myResults;
 
-        public CSharpInputActionsReferenceSearcher(InputActionsElementContainer inputActionsElementContainer,
-            IEnumerable<IDeclaredElement> declaredElements)
+        public CSharpInputActionsReferenceSearcher(List<FindResultText> results)
         {
-            myInputActionsElementContainer = inputActionsElementContainer;
-            myDeclaredElements = declaredElements;
+            myResults = results;
         }
 
         public bool ProcessProjectItem<TResult>(IPsiSourceFile sourceFile, IFindResultConsumer<TResult> consumer)
         {
-            //return sourceFile.GetPsiFiles<CSharpLanguage>().Any(file => ProcessElement(file, consumer));
-            foreach (var declaredElement in myDeclaredElements)
+            foreach (var result in myResults)
             {
-                var usages = myInputActionsElementContainer.GetUsagesFor(declaredElement);
-                if (usages.Any())
-                {
-                    foreach (var usage in usages)
-                    {
-                        consumer.Accept(new UnityInputActionToCSharpFindResult(usage));
-                    }
-                }
+                consumer.Accept(result);
             }
 
             return false;
@@ -178,47 +168,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
 
         public bool ProcessElement<TResult>(ITreeNode element, IFindResultConsumer<TResult> consumer)
         {
-            throw new Exception("Unexpected");
-            // if (element is IMethodDeclaration methodDeclaration && UnityInputActionReferenceUsageSearchFactory.IsInterestingElement(methodDeclaration.DeclaredElement))
-            // {
-            //     var usages = myInputActionsElementContainer.GetUsagesFor(methodDeclaration.DeclaredElement);
-            //     if (usages.Any())
-            //     {
-            //         foreach (var usage in usages)
-            //         {
-            //             consumer.Build(new FindResultDeclaredElement(usage));
-            //         }
-            //     }
-            // }
-            //
+            throw new Exception("Unexpected call to ProcessElement");
         }
     }
     
-    public class UnityInputActionToCSharpFindResult : FindResultDeclaredElement
+    internal class UnityInputActionsFindResultText:FindResultText
     {
-        public UnityInputActionToCSharpFindResult(IDeclaredElement declaredElement)
-            : base(declaredElement) { }
-        
-        public override bool Equals(object obj)
+        public UnityInputActionsFindResultText(IPsiSourceFile sourceFile, DocumentRange documentRange) : base(sourceFile, documentRange)
         {
-            return ReferenceEquals(this, obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
         }
     }
-    
+
+    internal class UnityInputActionsTextOccurence : TextOccurrence
+    {
+        public UnityInputActionsTextOccurence(IPsiSourceFile sourceFile, DocumentRange documentRange, OccurrencePresentationOptions presentationOptions, OccurrenceType occurrenceType = OccurrenceType.Occurrence) : base(sourceFile, documentRange, presentationOptions, occurrenceType)
+        {
+        }
+    }
+
     [OccurrenceProvider(Priority = 20)]
-    public class UnityInputActionsToCSharpOccurenceProvider : IOccurrenceProvider
+    internal class UnityInputActionsOccurenceProvider : IOccurrenceProvider
     {
         public IOccurrence MakeOccurrence(FindResult findResult)
         {
-
-            if (findResult is UnityInputActionToCSharpFindResult result)
+            if (findResult is UnityInputActionsFindResultText unityInputActionsFindResultText)
             {
-                return new DeclaredElementOccurrence(result.DeclaredElement, OccurrenceType.Occurrence);
+                return new UnityInputActionsTextOccurence(unityInputActionsFindResultText.SourceFile,
+                    unityInputActionsFindResultText.DocumentRange, OccurrencePresentationOptions.DefaultOptions);
             }
 
             return null;
