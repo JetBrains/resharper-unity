@@ -1,8 +1,9 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Search;
@@ -12,19 +13,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
 {
     internal class CSharpInputActionsReferenceSearcher : IDomainSpecificSearcher
     {
-        private readonly List<FindResultText> myResults;
+        private readonly DeclaredElementsSet myCsharpDeclaredElements;
+        private readonly InputActionsElementContainer myContainer;
 
-        public CSharpInputActionsReferenceSearcher(List<FindResultText> results)
+        public CSharpInputActionsReferenceSearcher(DeclaredElementsSet csharpDeclaredElements, InputActionsElementContainer container)
         {
-            myResults = results;
+            myCsharpDeclaredElements = csharpDeclaredElements;
+            myContainer = container;
         }
 
-        public bool ProcessProjectItem<TResult>(IPsiSourceFile sourceFile, IFindResultConsumer<TResult> consumer)
+        public bool ProcessProjectItem<TResult>(IPsiSourceFile jsonSourceFile, IFindResultConsumer<TResult> consumer)
         {
-            if (!sourceFile.IsInputActions()) return false;
-            foreach (var result in myResults)
+            if (!jsonSourceFile.IsInputActions()) return false;
+            
+            foreach (var declaredElement in myCsharpDeclaredElements)
             {
-                consumer.Accept(result);
+                var usages = myContainer.GetUsagesFor(declaredElement);
+                foreach (var usage in usages)
+                {
+                    consumer.Accept(new UnityInputActionsFindResultText(usage.SourceFile,
+                        new DocumentRange(usage.SourceFile.Document, usage.NavigationOffset)));
+                }
             }
             
             return false;

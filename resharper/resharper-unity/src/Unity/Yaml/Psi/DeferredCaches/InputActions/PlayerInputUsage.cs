@@ -8,14 +8,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
     public class PlayerInputUsage
     {
         public PlayerInputUsage(LocalReference location,
-                              Guid guid)
+                              Guid inputActionsFileGuid)
         {
             Location = location;
-            Guid = guid;
+            InputActionsFileGuid = inputActionsFileGuid;
         }
 
         public LocalReference Location { get; } 
-        public Guid Guid { get; }
+        public Guid InputActionsFileGuid { get; }
 
         [CanBeNull]
         public static PlayerInputUsage ReadFrom([NotNull] UnsafeReader reader)
@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
         public void WriteTo([NotNull] UnsafeWriter writer)
         {
             Location.WriteTo(writer);
-            writer.Write(Guid);
+            writer.Write(InputActionsFileGuid);
         }
     }
 }

@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
         public IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements,
             ReferenceSearcherParameters referenceSearcherParameters)
         {
-            var declaredElements = elements.Where(IsInterestingElement).ToArray();
+            var declaredElements = new DeclaredElementsSet(elements.Where(IsInterestingElement));
             
             if (!declaredElements.Any())
                 return null;
@@ -49,20 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
             var solution = elements.First().GetSolution();
             var container = solution.GetComponent<InputActionsElementContainer>();
 
-            var results = new List<FindResultText>();
-            foreach (var declaredElement in declaredElements)
-            {
-                var usages = container.GetUsagesFor(declaredElement);
-                if (usages.Any())
-                {
-                    foreach (var usage in usages)
-                    {
-                        results.Add(new UnityInputActionsFindResultText(usage.SourceFile, new DocumentRange(usage.SourceFile.Document, usage.NavigationOffset)));
-                    }
-                }
-            }
-            
-            return new CSharpInputActionsReferenceSearcher(results);
+            return new CSharpInputActionsReferenceSearcher(declaredElements, container);
         }
 
         public IDomainSpecificSearcher CreateLateBoundReferenceSearcher(IDeclaredElementsSet elements,
@@ -127,7 +114,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
             return EmptySearchDomain.Instance;
         }
         
-        private static bool IsInterestingElement(IDeclaredElement element)
+        public static bool IsInterestingElement(IDeclaredElement element)
         {
             if (element is IMethod { IsStatic: false } method)
             {

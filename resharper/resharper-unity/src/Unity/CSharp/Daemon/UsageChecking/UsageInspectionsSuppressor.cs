@@ -1,7 +1,6 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.Metadata.Reader.API;
@@ -10,7 +9,6 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
-using JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
@@ -114,23 +112,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             return false;
         }
 
-        private bool IsImplicitlyUsedByInputActions(ISolution solution, IMethod method)
+        private static bool IsImplicitlyUsedByInputActions(ISolution solution, IMethod method)
         {
-            var typeElement = method.ContainingType;
-            if (!typeElement.DerivesFromMonoBehaviour())
-                return false;
-
-            var shortName = method.ShortName;
-            if (!shortName.StartsWith("On"))
-                return false;
-
-            // var inputActionsCache = solution.GetComponent<InputActionsCache>();
-            if (method is not IDeclaredElement declaredElement)
-                return false;
             solution.GetComponent<InputActionsElementContainer>()
-                .GetUsagesCountFor(declaredElement, out var inputActionsUsagesResult);
+                .GetUsagesCountFor(method, out var inputActionsUsagesResult);
             return inputActionsUsagesResult;
-            // return inputActionsCache.ContainsName(shortName.Substring(2));
         }
 
         private bool IsUxmlFactory(IClass cls)
