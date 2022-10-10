@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
 {
     // from csharp to inputactions
     [PsiSharedComponent]
-    public class UnityInputActionReferenceUsageSearchFactory : IDomainSpecificSearcherFactory
+    public class UnityInputActionsReferenceUsageSearchFactory : IDomainSpecificSearcherFactory
     {
         public bool IsCompatibleWithLanguage(PsiLanguageType languageType)
         {
@@ -133,7 +133,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
         public static bool IsInterestingElement(IDeclaredElement? element)
         {
             if (element is null) return false;
-            if (element is IMethod method)
+            if (element is IMethod { IsStatic: false } method)
             {
                 if (method.ShortName.StartsWith("On"))
                 {
@@ -143,7 +143,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
             }
 
             return false;
-            // todo: is instance method
         }
     }
 
