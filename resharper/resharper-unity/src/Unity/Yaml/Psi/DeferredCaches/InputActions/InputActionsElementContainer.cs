@@ -174,51 +174,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
 
             return reference;
         }
-
-
-        public IEnumerable<FindResult> GetUsagesFor(IPsiSourceFile sourceFile, IDeclaredElement el)
-        {
-            if (el is not IMethod method || !method.ShortName.StartsWith("On")) return Array.Empty<FindResult>();
-            var strippedMethodName = method.ShortName.Substring(2);
-            var type = method.ContainingType;
-            if (type is not IClass classType) return Array.Empty<FindResult>();
-            if (!classType.DerivesFromMonoBehaviour()) return Array.Empty<FindResult>();
-                
-            // todo: check specific attached inputactions files, not all
-            // find which assets do have this type attached? 
-            // find all attached *.inputactions files
-            // inputActionsCache.ContainsNameForFile(file, shortName.Substring(2))
-
-            var solution = el.GetSolution();
-            var container = solution.GetComponent<AssetScriptUsagesElementContainer>();
-            var hierarchyElementContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
-            var inputActionsCache = solution.GetComponent<InputActionsCache>();
-            var metaFileGuidCache = solution.GetComponent<MetaFileGuidCache>();
-
-            var originals = myElementsWithPlayerInputReference.Select(a => new PlayerInputUsage(GetOriginalGameObject(a.Location, hierarchyElementContainer), a.Guid)).ToArray();
-            
-            foreach (var sf in container.GetPossibleFilesWithScriptUsages(classType))
-            {
-                var usages = container.GetScriptUsagesFor(sf, classType);
-                foreach (var scriptUsage in usages)
-                {
-                    var element = hierarchyElementContainer.GetHierarchyElement(scriptUsage.Location, true);
-
-                    if (element is not IScriptComponentHierarchy script) continue;
-                    
-                    var localReference = new LocalReference(script.OwningGameObject.OwningPsiPersistentIndex, script.OwningGameObject.LocalDocumentAnchor);
-                    var playerInputUsages = originals.Where(t => t.Location.Equals(localReference)).ToArray();
-
-                    playerInputUsages.SelectMany(a =>
-                        metaFileGuidCache.GetAssetFilePathsFromGuid(a.Guid).SelectMany(path =>
-                            inputActionsCache.GetDeclaredElements(path, strippedMethodName))).ToArray();
-
-                    return Array.Empty<FindResult>();
-                }
-            }
-
-            return Array.Empty<FindResult>();
-        }
         
         public InputActionsDeclaredElement[] GetUsagesFor(IDeclaredElement el)
         {
