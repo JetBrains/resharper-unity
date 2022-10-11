@@ -8,8 +8,8 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
@@ -47,16 +47,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         private UnityAssetReferenceSearcher CreateSearcher(IDeclaredElementsSet elements, ReferenceSearcherParameters referenceSearcherParameters)
         {
             var solution = elements.FirstOrDefault().NotNull("elements.FirstOrDefault() != null").GetSolution();
+            var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
             var methodsContainer = solution.GetComponent<UnityEventsElementContainer>();
+            var metaFileGuidCache = solution.GetComponent<MetaFileGuidCache>();
             var scriptsUsagesContainers = solution.GetComponent<IEnumerable<IScriptUsagesElementContainer>>();
             var animationEventUsagesContainer = solution.GetComponent<AnimationEventUsagesContainer>();
             var assetValuesContainer = solution.GetComponent<AssetInspectorValuesContainer>();
             var controller = solution.GetComponent<DeferredCacheController>();
-            var inputActionsElementContainer = solution.GetComponent<InputActionsElementContainer>();
 
-            return new UnityAssetReferenceSearcher(controller, scriptsUsagesContainers,
-                methodsContainer, animationEventUsagesContainer, assetValuesContainer, elements,
-                referenceSearcherParameters, inputActionsElementContainer);
+            return new UnityAssetReferenceSearcher(controller, hierarchyContainer, scriptsUsagesContainers,
+                methodsContainer, animationEventUsagesContainer, assetValuesContainer, metaFileGuidCache, elements,
+                referenceSearcherParameters);
         }
 
         // Used to filter files before searching for references. Files must contain ANY of these search terms. An

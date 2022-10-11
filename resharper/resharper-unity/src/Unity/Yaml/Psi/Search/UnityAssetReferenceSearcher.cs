@@ -4,10 +4,11 @@ using System;
 using System.Linq;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
@@ -24,30 +25,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         private static readonly ILogger ourLogger = Logger.GetLogger(nameof(UnityAssetReferenceSearcher));
         
         private readonly DeferredCacheController myDeferredCacheController;
+        private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
         [NotNull, ItemNotNull] private readonly IEnumerable<IScriptUsagesElementContainer> myScriptsUsagesElementContainers;
         private readonly UnityEventsElementContainer myUnityEventsElementContainer;
         private readonly AssetInspectorValuesContainer myAssetInspectorValuesContainer;
-        private readonly InputActionsElementContainer myInputActionsElementContainer;
         private readonly IDeclaredElementsSet myElements;
         private readonly ReferenceSearcherParameters myReferenceSearcherParameters;
         private readonly AnimationEventUsagesContainer myAnimationEventUsagesContainer;
         private readonly HashSet<IDeclaredElement> myOriginalElements;
 
         public UnityAssetReferenceSearcher(DeferredCacheController deferredCacheController,
+                                           AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer,
                                            [NotNull, ItemNotNull] IEnumerable<IScriptUsagesElementContainer> scriptsUsagesElementContainers,
                                            UnityEventsElementContainer unityEventsElementContainer,
                                            [NotNull] AnimationEventUsagesContainer animationEventUsagesContainer,
                                            AssetInspectorValuesContainer assetInspectorValuesContainer,
+                                           MetaFileGuidCache metaFileGuidCache,
                                            IDeclaredElementsSet elements,
-                                           ReferenceSearcherParameters referenceSearcherParameters, 
-                                           InputActionsElementContainer inputActionsElementContainer)
+                                           ReferenceSearcherParameters referenceSearcherParameters)
         {
             myDeferredCacheController = deferredCacheController;
+            myAssetDocumentHierarchyElementContainer = assetDocumentHierarchyElementContainer;
             myScriptsUsagesElementContainers = scriptsUsagesElementContainers;
             myUnityEventsElementContainer = unityEventsElementContainer;
             myAnimationEventUsagesContainer = animationEventUsagesContainer;
             myAssetInspectorValuesContainer = assetInspectorValuesContainer;
-            myInputActionsElementContainer = inputActionsElementContainer;
             myElements = elements;
             myReferenceSearcherParameters = referenceSearcherParameters;
 
@@ -94,12 +96,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                         {
                             consumer.Accept(findResult);
                         }
-                        //
-                        // var inputActionsUsages = myInputActionsElementContainer.GetUsagesFor(sourceFile, element);
-                        // foreach (var findResult in inputActionsUsages)
-                        // {
-                        //     consumer.Accept(findResult);
-                        // }
                     }
 
                     if (element is ITypeElement typeElement)
