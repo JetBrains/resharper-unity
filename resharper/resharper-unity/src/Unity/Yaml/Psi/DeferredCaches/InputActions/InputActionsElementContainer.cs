@@ -81,7 +81,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
             return result;
         }
         
-        // todo: use JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions.PlayerInputUsage.PlayerInputGuid
         private static readonly StringSearcher ourPlayerInputSearcher = new(PlayerInputGuid, false);
 
         public void Drop(IPsiSourceFile currentAssetSourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement,
