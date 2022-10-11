@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Threading;
@@ -10,11 +9,7 @@ using JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
-using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Files;
-using JetBrains.ReSharper.Psi.Impl.Resolve;
-using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
 #nullable enable
@@ -121,19 +116,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
             return list.Where(element => element.ShortName == name);
         }
 
-        // Returns a symbol table for all items. Used to resolve references and provide completion
-        public ISymbolTable GetSymbolTable()
-        {
-            if (myDeclaredElements.IsEmpty())
-                return EmptySymbolTable.INSTANCE;
-            var psiServices = mySolution.GetComponent<IPsiServices>();
-            return new DeclaredElementsSymbolTable<IDeclaredElement>(psiServices, myDeclaredElements.SelectMany(a=>a.Value));
-        }
-
-        public IEnumerable<string> GetNames(IDeclaredElement element)
+        public bool ContainsName(string name)
         {
             return myLocalCache.SelectMany(item => item.Value)
-                .SelectMany(a => a).Select(a=>a.Name);
+                .SelectMany(a=>a)
+                .Any(a => a.Name == name);
         }
     }
 }

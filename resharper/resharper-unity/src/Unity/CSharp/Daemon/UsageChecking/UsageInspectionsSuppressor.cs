@@ -115,7 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
         private static bool IsImplicitlyUsedByInputActions(ISolution solution, IMethod method)
         {
             solution.GetComponent<InputActionsElementContainer>()
-                .GetUsagesCountFor(method, out var inputActionsUsagesResult);
+                .GetUsagesCountForFast(method, out var inputActionsUsagesResult);
             return inputActionsUsagesResult;
         }
 

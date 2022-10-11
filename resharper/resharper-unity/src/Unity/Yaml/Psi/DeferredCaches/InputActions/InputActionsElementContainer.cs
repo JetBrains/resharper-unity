@@ -108,8 +108,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
             myElementsWithPlayerInputReference.Clear();
         }
         
-        // GetGameObjectsWithInputActions()
+        public int GetUsagesCountForFast(IDeclaredElement el, out bool estimated)
+        {
+            estimated = false;
+            estimated = false;
+            if (!UnityInputActionsReferenceUsageSearchFactory.IsInterestingElement(el))
+                return 0;
+            
+            var solution = el.GetSolution();
+            var inputActionsCache = solution.GetComponent<InputActionsCache>();
 
+            estimated = inputActionsCache.ContainsName(el.ShortName.Substring(2));
+            
+            return 1;
+        }
+
+        // GetUsagesCountForFast is fast but inaccurate, GetUsagesCountFor is accurate, but slow
         public int GetUsagesCountFor(IDeclaredElement el, out bool estimated)
         {
             estimated = false;
@@ -117,21 +131,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
             if (usages.Length > 0)
                 estimated = true;
             return usages.Length;
-        }
-
-        private static void GetSelfAndOriginalGameObjects(LocalReference reference, AssetDocumentHierarchyElementContainer hierarchyElementContainer, ICollection<LocalReference> results)
-        {
-            var he = hierarchyElementContainer.GetHierarchyElement(reference, true);
-            if (he is ImportedGameObjectHierarchy importedGameObjectHierarchy)
-            {
-                GetSelfAndOriginalGameObjects(importedGameObjectHierarchy.OriginalGameObject.Location, hierarchyElementContainer, results);
-            }
-            else if (he is ScriptComponentHierarchy scriptComponentHierarchy)
-            {
-                GetSelfAndOriginalGameObjects(scriptComponentHierarchy.OwningGameObject, hierarchyElementContainer, results);
-            }
-
-            results.Add(reference);
         }
 
         public InputActionsDeclaredElement[] GetUsagesFor(IDeclaredElement el)
@@ -174,6 +173,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
                     metaFileGuidCache.GetAssetFilePathsFromGuid(a.InputActionsFileGuid).SelectMany(path =>
                         inputActionsCache.GetDeclaredElements(path, strippedMethodName))).ToArray();
             }).ToArray(); // OwningGameObject 37278 // ElementWithPlayerInputReference 07305
+        }
+        
+        private static void GetSelfAndOriginalGameObjects(LocalReference reference, AssetDocumentHierarchyElementContainer hierarchyElementContainer, ICollection<LocalReference> results)
+        {
+            var he = hierarchyElementContainer.GetHierarchyElement(reference, true);
+            if (he is ImportedGameObjectHierarchy importedGameObjectHierarchy)
+            {
+                GetSelfAndOriginalGameObjects(importedGameObjectHierarchy.OriginalGameObject.Location, hierarchyElementContainer, results);
+            }
+            else if (he is ScriptComponentHierarchy scriptComponentHierarchy)
+            {
+                GetSelfAndOriginalGameObjects(scriptComponentHierarchy.OwningGameObject, hierarchyElementContainer, results);
+            }
+
+            results.Add(reference);
         }
     }
 }
