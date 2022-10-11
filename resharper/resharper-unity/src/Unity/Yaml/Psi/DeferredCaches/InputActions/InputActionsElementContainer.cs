@@ -122,10 +122,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
 
         private static void GetSelfAndOriginalGameObjects(LocalReference reference, AssetDocumentHierarchyElementContainer hierarchyElementContainer, ICollection<LocalReference> results)
         {
-            var he = hierarchyElementContainer.GetHierarchyElement(reference, true); 
+            var he = hierarchyElementContainer.GetHierarchyElement(reference, true);
             if (he is ImportedGameObjectHierarchy importedGameObjectHierarchy)
             {
                 GetSelfAndOriginalGameObjects(importedGameObjectHierarchy.OriginalGameObject.Location, hierarchyElementContainer, results);
+            }
+            else if (he is ScriptComponentHierarchy scriptComponentHierarchy)
+            {
+                GetSelfAndOriginalGameObjects(scriptComponentHierarchy.OwningGameObject, hierarchyElementContainer, results);
             }
 
             results.Add(reference);
@@ -153,30 +157,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
                 return results.Select(item => new PlayerInputUsage(item, a.InputActionsFileGuid));
             }).ToArray();
 
-            // var possibleScriptLocalReference = container.GetPossibleFilesWithScriptUsages(classType).ToArray()
-            //     .SelectMany(a => container.GetScriptUsagesFor(a, classType)).ToArray()
-            //     .SelectMany(a =>
-            //     {
-            //         var results = new List<LocalReference>();
-            //         GetSelfAndOriginalGameObjects(a.Location, hierarchyElementContainer, results);
-            //         return results;
-            //     }).ToArray();
-
             var possibleScriptLocalReference = container.GetPossibleFilesWithScriptUsages(classType).ToArray()
-                .SelectMany(a => container.GetScriptUsagesFor(a, classType))
-                .Select(a=>a.Location)
-                .ToArray();
+                .SelectMany(a => container.GetScriptUsagesFor(a, classType)).ToArray()
+                .SelectMany(a =>
+                {
+                    var results = new List<LocalReference>();
+                    GetSelfAndOriginalGameObjects(a.Location, hierarchyElementContainer, results);
+                    return results;
+                }).ToArray();
 
             return possibleScriptLocalReference.SelectMany(scriptUsageLocation =>
             {
-                var element = hierarchyElementContainer.GetHierarchyElement(scriptUsageLocation, true);
-
-                if (element is not IScriptComponentHierarchy script) return Array.Empty<InputActionsDeclaredElement>();
-
-                var localReference = new LocalReference(script.OwningGameObject.OwningPsiPersistentIndex,
-                    script.OwningGameObject.LocalDocumentAnchor);
                 var playerInputUsages = possibleElementsWithPlayerInputReference
-                    .Where(t => t.Location.Equals(localReference)).ToArray();
+                    .Where(t => t.Location.Equals(scriptUsageLocation)).ToArray();
 
                 return playerInputUsages.SelectMany(a =>
                     metaFileGuidCache.GetAssetFilePathsFromGuid(a.InputActionsFileGuid).SelectMany(path =>

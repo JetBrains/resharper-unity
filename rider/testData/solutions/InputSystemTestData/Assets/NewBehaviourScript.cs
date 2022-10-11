@@ -9,6 +9,11 @@ public class NewBehaviourScript : MonoBehaviour
         Debug.Log("MyOnJump1");
     }
     
+    public void OnJump1WithPrefab()
+    {
+        Debug.Log("OnJump1WithPrefab");
+    }
+
     public void OnJump()
     {
         Debug.Log("MyOnJump");
