@@ -111,15 +111,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
         public int GetUsagesCountForFast(IDeclaredElement el, out bool estimated)
         {
             estimated = false;
-            estimated = false;
             if (!UnityInputActionsReferenceUsageSearchFactory.IsInterestingElement(el))
                 return 0;
-            
-            var solution = el.GetSolution();
-            var inputActionsCache = solution.GetComponent<InputActionsCache>();
 
-            estimated = inputActionsCache.ContainsName(el.ShortName.Substring(2));
-            
+            estimated = true;
             return 1;
         }
 

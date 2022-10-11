@@ -3,6 +3,7 @@ using System.Linq;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
+using JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions;
 using JetBrains.ReSharper.Psi;
@@ -130,11 +131,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
         {
             if (element is IMethod { IsStatic: false } method)
             {
-                if (method.ShortName.StartsWith("On"))
-                {
-                    return method.ContainingType is IClass classType && classType.DerivesFromMonoBehaviour();
-                }
-                return false;
+                var shortName = method.ShortName;
+                if (!shortName.StartsWith("On") || shortName.Length <= 2) return false;
+                
+                return element.GetSolution().GetComponent<InputActionsCache>().ContainsName(shortName[2..]) &&
+                       method.ContainingType is IClass classType && classType.DerivesFromMonoBehaviour();
             }
 
             return false;
