@@ -59,6 +59,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
         public static bool IsPrefab(this IPath path) =>
             SimplePathEndsWith(path, PrefabFileExtensionWithDot);
+        
+        public static bool IsPrefab(this IPsiSourceFile sourceFile) =>
+            SourceFileNameEndsWith(sourceFile, PrefabFileExtensionWithDot);
 
         public static bool IsScene(this IPath path) =>
             SimplePathEndsWith(path, SceneFileExtensionWithDot);

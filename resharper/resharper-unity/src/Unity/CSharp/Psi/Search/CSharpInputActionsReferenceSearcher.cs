@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;

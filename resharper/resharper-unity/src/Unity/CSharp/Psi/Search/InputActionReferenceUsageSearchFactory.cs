@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Json.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions;
 using JetBrains.ReSharper.Psi;
@@ -17,6 +17,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
     [PsiSharedComponent]
     public class UnityInputActionsReferenceUsageSearchFactory : IDomainSpecificSearcherFactory
     {
+        private readonly SearchDomainFactory mySearchDomainFactory;
+
+        public UnityInputActionsReferenceUsageSearchFactory(SearchDomainFactory searchDomainFactory)
+        {
+            mySearchDomainFactory = searchDomainFactory;
+        }
         public bool IsCompatibleWithLanguage(PsiLanguageType languageType)
         {
             return languageType.Is<JsonNewLanguage>(); //languageType.Is<CSharpLanguage>();
@@ -111,6 +117,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
 
         public ISearchDomain GetDeclaredElementSearchDomain(IDeclaredElement declaredElement)
         {
+            if (IsInterestingElement(declaredElement))
+            {
+                var moduleFactory = declaredElement.GetSolution().TryGetComponent<UnityExternalFilesModuleFactory>();
+                if (moduleFactory != null)
+                    return mySearchDomainFactory.CreateSearchDomain(moduleFactory.PsiModule);
+            }
             return EmptySearchDomain.Instance;
         }
         

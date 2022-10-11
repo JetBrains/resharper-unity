@@ -111,10 +111,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                     var animationEventsCount = solution
                         .GetComponent<AnimationEventUsagesContainer>()
                         .GetEventUsagesCountFor(element, out var animationEventsEstimatedResult);
-                    var inputActionsUsagesCount = solution.GetComponent<InputActionsElementContainer>()
-                        .GetUsagesCountFor(element, out var inputActionsUsagesResult);
-                    var count = eventsCount + animationEventsCount + inputActionsUsagesCount;
-                    return count > 0 || unityEventsEstimatedResult || animationEventsEstimatedResult || inputActionsUsagesResult;
+                    var count = eventsCount + animationEventsCount;
+                    return count > 0 || unityEventsEstimatedResult || animationEventsEstimatedResult;
 
                 case IField field:
                     return unityApi.IsSerialisedField(field);

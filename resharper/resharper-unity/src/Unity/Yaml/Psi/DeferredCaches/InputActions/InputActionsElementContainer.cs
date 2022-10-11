@@ -52,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
 
         public bool IsApplicable(IPsiSourceFile currentAssetSourceFile)
         {
-            return currentAssetSourceFile.IsScene();
+            return currentAssetSourceFile.IsScene() || currentAssetSourceFile.IsPrefab();
         }
 
         public object Build(IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)
@@ -130,15 +130,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
 
             results.Add(reference);
         }
-        
+
         public InputActionsDeclaredElement[] GetUsagesFor(IDeclaredElement el)
         {
-            if (!UnityInputActionsReferenceUsageSearchFactory.IsInterestingElement(el)) return Array.Empty<InputActionsDeclaredElement>();
+            if (!UnityInputActionsReferenceUsageSearchFactory.IsInterestingElement(el))
+                return Array.Empty<InputActionsDeclaredElement>();
             var method = (IMethod)el;
             var strippedMethodName = method.ShortName.Substring(2);
             var type = method.ContainingType;
             if (type is not IClass classType) return Array.Empty<InputActionsDeclaredElement>();
-            
+
             var solution = el.GetSolution();
             var container = solution.GetComponent<AssetScriptUsagesElementContainer>();
             var hierarchyElementContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
@@ -151,26 +152,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
                 GetSelfAndOriginalGameObjects(a.Location, hierarchyElementContainer, results);
                 return results.Select(item => new PlayerInputUsage(item, a.InputActionsFileGuid));
             }).ToArray();
-            
-            foreach (var sf in container.GetPossibleFilesWithScriptUsages(classType))
+
+            // var possibleScriptLocalReference = container.GetPossibleFilesWithScriptUsages(classType).ToArray()
+            //     .SelectMany(a => container.GetScriptUsagesFor(a, classType)).ToArray()
+            //     .SelectMany(a =>
+            //     {
+            //         var results = new List<LocalReference>();
+            //         GetSelfAndOriginalGameObjects(a.Location, hierarchyElementContainer, results);
+            //         return results;
+            //     }).ToArray();
+
+            var possibleScriptLocalReference = container.GetPossibleFilesWithScriptUsages(classType).ToArray()
+                .SelectMany(a => container.GetScriptUsagesFor(a, classType))
+                .Select(a=>a.Location)
+                .ToArray();
+
+            return possibleScriptLocalReference.SelectMany(scriptUsageLocation =>
             {
-                var usages = container.GetScriptUsagesFor(sf, classType);
-                foreach (var scriptUsage in usages)
-                {
-                    var element = hierarchyElementContainer.GetHierarchyElement(scriptUsage.Location, true);
+                var element = hierarchyElementContainer.GetHierarchyElement(scriptUsageLocation, true);
 
-                    if (element is not IScriptComponentHierarchy script) continue;
-                    
-                    var localReference = new LocalReference(script.OwningGameObject.OwningPsiPersistentIndex, script.OwningGameObject.LocalDocumentAnchor);
-                    var playerInputUsages = possibleElementsWithPlayerInputReference.Where(t => t.Location.Equals(localReference)).ToArray();
+                if (element is not IScriptComponentHierarchy script) return Array.Empty<InputActionsDeclaredElement>();
 
-                    return playerInputUsages.SelectMany(a =>
-                        metaFileGuidCache.GetAssetFilePathsFromGuid(a.InputActionsFileGuid).SelectMany(path =>
-                            inputActionsCache.GetDeclaredElements(path, strippedMethodName))).ToArray();
-                }
-            }
+                var localReference = new LocalReference(script.OwningGameObject.OwningPsiPersistentIndex,
+                    script.OwningGameObject.LocalDocumentAnchor);
+                var playerInputUsages = possibleElementsWithPlayerInputReference
+                    .Where(t => t.Location.Equals(localReference)).ToArray();
 
-            return Array.Empty<InputActionsDeclaredElement>();
+                return playerInputUsages.SelectMany(a =>
+                    metaFileGuidCache.GetAssetFilePathsFromGuid(a.InputActionsFileGuid).SelectMany(path =>
+                        inputActionsCache.GetDeclaredElements(path, strippedMethodName))).ToArray();
+            }).ToArray(); // OwningGameObject 37278 // ElementWithPlayerInputReference 07305
         }
     }
 }
