@@ -112,38 +112,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
             return base.IsApplicable(sf) && sf.IsInputActions() && sf.IsLanguageSupported<JsonNewLanguage>();
         }
         
-        private List<InputActionsDeclaredElement> Get(IPsiSourceFile sf)
-        {
-            return myDeclaredElements[sf];
-        }
-        
-        public bool ContainsOffset(IPsiSourceFile file, ITreeNode node)
-        {
-            return ContainsOffset(file, node.GetTreeStartOffset().Offset);
-        }
-        
-        public  bool ContainsOffset(IPsiSourceFile file, int offset)
-        {
-            return myDeclaredElements[file]
-                .Any(a => a.DeclarationOffset == offset);
-        }
-        
-        public bool ContainsNameForFile(IPsiSourceFile file, string name)
-        {
-            var list = myDeclaredElements[file];
-            return list.Any(element => element.ShortName == name);
-        }
-        
-        // todo: improve. maybe cache Guid or VirtualFileSystemPath instead of IPsiSourceFile
-        public bool ContainsNameForFile(VirtualFileSystemPath file, string name)
-        {
-            // ConcurrentDictionary<>
-            // lock
-            
-            var list = myDeclaredElements.Single(a => a.Key.GetLocation() == file).Value;
-            return list.Any(element => element.ShortName == name);
-        }
-        
         public IEnumerable<InputActionsDeclaredElement> GetDeclaredElements(VirtualFileSystemPath file, string name)
         {
             // ConcurrentDictionary<>
