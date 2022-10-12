@@ -133,9 +133,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
             {
                 var shortName = method.ShortName;
                 if (!shortName.StartsWith("On") || shortName.Length <= 2) return false;
-                
-                return element.GetSolution().GetComponent<InputActionsCache>().ContainsName(shortName[2..]) &&
-                       method.ContainingType is IClass classType && classType.DerivesFromMonoBehaviour();
+
+                var cache = element.GetSolution().GetComponent<InputActionsCache>();
+                return method.ContainingType is IClass classType 
+                       && classType.DerivesFromMonoBehaviour() 
+                       && cache.ContainsName(shortName[2..]);
             }
 
             return false;
