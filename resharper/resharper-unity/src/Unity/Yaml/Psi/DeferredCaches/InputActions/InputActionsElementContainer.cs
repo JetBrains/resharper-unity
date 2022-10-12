@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Threading;
-using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search;
 using JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches;
@@ -15,8 +14,6 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.E
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
-using JetBrains.ReSharper.Plugins.Yaml.Psi;
-using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
@@ -126,6 +123,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
         //     return usages.Length;
         // }
 
+        
+        // inputActionsFile-s are pre-filtered by word-index in CSharpInputActionsReferenceSearcher,
+        // it means that all inputActionsFile have the methodName in question.
         public InputActionsDeclaredElement[] GetUsagesFor(IPsiSourceFile inputActionsFile, IDeclaredElement el)
         {
             myShellLocks.AssertReadAccessAllowed();
