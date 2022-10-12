@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
 
         private readonly IShellLocks myShellLocks;
         private readonly ILogger myLogger;
-// new Dict<GUID, List<LocalReference>>
+// private readonly OneToListMap<IPsiSourceFile, PlayerInputUsage> myElementsWithPlayerInputReference = new();
         private readonly List<PlayerInputUsage> myElementsWithPlayerInputReference = new(); 
         
         public string Id => nameof(InputActionsElementContainer);
@@ -119,16 +119,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
         }
 
         // GetUsagesCountForFast is fast but inaccurate, GetUsagesCountFor is accurate, but slow
-        public int GetUsagesCountFor(IDeclaredElement el, out bool estimated)
-        {
-            estimated = false;
-            var usages = GetUsagesFor(el);
-            if (usages.Length > 0)
-                estimated = true;
-            return usages.Length;
-        }
+        // public int GetUsagesCountFor(IDeclaredElement el, out bool estimated)
+        // {
+        //     estimated = false;
+        //     var usages = GetUsagesFor(el);
+        //     if (usages.Length > 0)
+        //         estimated = true;
+        //     return usages.Length;
+        // }
 
-        public InputActionsDeclaredElement[] GetUsagesFor(IDeclaredElement el)
+        public InputActionsDeclaredElement[] GetUsagesFor(IPsiSourceFile jsonSourceFile, IDeclaredElement el)
         {
             if (!UnityInputActionsReferenceUsageSearchFactory.IsInterestingElement(el))
                 return Array.Empty<InputActionsDeclaredElement>();
@@ -143,7 +143,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
             var inputActionsCache = solution.GetComponent<InputActionsCache>();
             var metaFileGuidCache = solution.GetComponent<MetaFileGuidCache>();
 
-            var possibleElementsWithPlayerInputReference = myElementsWithPlayerInputReference.SelectMany(a =>
+            var inputActionsFileGuid = metaFileGuidCache.GetAssetGuid(jsonSourceFile);
+            var possibleElementsWithPlayerInputReference = myElementsWithPlayerInputReference
+                .Where(usage => usage.InputActionsFileGuid == inputActionsFileGuid)
+                .SelectMany(a =>
             {
                 var results = new List<LocalReference>();
                 GetSelfAndOriginalGameObjects(a.Location, hierarchyElementContainer, results);
@@ -167,7 +170,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
                 return playerInputUsages.SelectMany(a =>
                     metaFileGuidCache.GetAssetFilePathsFromGuid(a.InputActionsFileGuid).SelectMany(path =>
                         inputActionsCache.GetDeclaredElements(path, strippedMethodName))).ToArray();
-            }).ToArray(); // OwningGameObject 37278 // ElementWithPlayerInputReference 07305
+            }).ToArray();
         }
         
         private static void GetSelfAndOriginalGameObjects(LocalReference reference, AssetDocumentHierarchyElementContainer hierarchyElementContainer, ICollection<LocalReference> results)

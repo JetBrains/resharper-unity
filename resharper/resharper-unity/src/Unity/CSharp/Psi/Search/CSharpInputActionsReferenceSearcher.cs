@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
             
             foreach (var declaredElement in myCsharpDeclaredElements)
             {
-                var usages = myContainer.GetUsagesFor(declaredElement);
+                var usages = myContainer.GetUsagesFor(jsonSourceFile, declaredElement);
                 foreach (var usage in usages)
                 {
                     consumer.Accept(new UnityInputActionsFindResultText(usage.SourceFile,
