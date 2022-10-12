@@ -32,10 +32,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
         private const string PlayerInputGuid = "62899f850307741f2a39c98a8b639597";
 
         private readonly IShellLocks myShellLocks;
-        private readonly ILogger myLogger;
-// private readonly OneToListMap<IPsiSourceFile, PlayerInputUsage> myElementsWithPlayerInputReference = new();
-        private readonly List<PlayerInputUsage> myElementsWithPlayerInputReference = new(); 
-        
+        private readonly ILogger myLogger; 
+        private readonly OneToListMap<IPsiSourceFile, PlayerInputUsage> myElementsWithPlayerInputReference = new();
+
         public string Id => nameof(InputActionsElementContainer);
         public int Order => 0;
 
@@ -85,22 +84,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
 
         public void Drop(IPsiSourceFile currentAssetSourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement,
             IUnityAssetDataElement unityAssetDataElement)
-        {
-            var dataElement = unityAssetDataElement as InputActionsDataElement;
-            foreach (var usage in dataElement.Usages)
-            {
-                myElementsWithPlayerInputReference.Remove(usage);
-            }
+        { 
+            myElementsWithPlayerInputReference.RemoveKey(currentAssetSourceFile);
         }
 
         public void Merge(IPsiSourceFile currentAssetSourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement,
             IUnityAssetDataElementPointer unityAssetsCache, IUnityAssetDataElement unityAssetDataElement)
         {
             if (unityAssetDataElement is not InputActionsDataElement dataElement) return;
-            foreach (var usage in dataElement.Usages)
-            {
-                myElementsWithPlayerInputReference.Add(usage);
-            }
+            myElementsWithPlayerInputReference.AddValueRange(currentAssetSourceFile, dataElement.Usages);
         }
 
         public void Invalidate()
@@ -110,6 +102,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
         
         public int GetUsagesCountForFast(IDeclaredElement el, out bool estimated)
         {
+            myShellLocks.AssertReadAccessAllowed();
+
             estimated = false;
             if (!UnityInputActionsReferenceUsageSearchFactory.IsInterestingElement(el))
                 return 0;
@@ -121,6 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
         // GetUsagesCountForFast is fast but inaccurate, GetUsagesCountFor is accurate, but slow
         // public int GetUsagesCountFor(IDeclaredElement el, out bool estimated)
         // {
+        //     myShellLocks.AssertReadAccessAllowed();
         //     estimated = false;
         //     var usages = GetUsagesFor(el);
         //     if (usages.Length > 0)
@@ -128,8 +123,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
         //     return usages.Length;
         // }
 
-        public InputActionsDeclaredElement[] GetUsagesFor(IPsiSourceFile jsonSourceFile, IDeclaredElement el)
+        public InputActionsDeclaredElement[] GetUsagesFor(IPsiSourceFile inputActionsFile, IDeclaredElement el)
         {
+            myShellLocks.AssertReadAccessAllowed();
+
             if (!UnityInputActionsReferenceUsageSearchFactory.IsInterestingElement(el))
                 return Array.Empty<InputActionsDeclaredElement>();
             var method = (IMethod)el;
@@ -143,8 +140,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
             var inputActionsCache = solution.GetComponent<InputActionsCache>();
             var metaFileGuidCache = solution.GetComponent<MetaFileGuidCache>();
 
-            var inputActionsFileGuid = metaFileGuidCache.GetAssetGuid(jsonSourceFile);
+            var inputActionsFileGuid = metaFileGuidCache.GetAssetGuid(inputActionsFile);
             var possibleElementsWithPlayerInputReference = myElementsWithPlayerInputReference
+                .Values
                 .Where(usage => usage.InputActionsFileGuid == inputActionsFileGuid)
                 .SelectMany(a =>
             {
