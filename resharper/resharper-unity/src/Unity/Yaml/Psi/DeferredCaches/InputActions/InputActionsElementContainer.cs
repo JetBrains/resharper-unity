@@ -66,14 +66,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
 
                 if (!anchorRaw.HasValue)
                     return null;
-
-                var mActions = assetDocument.Document.GetUnityObjectPropertyValue<INode>(UnityYamlConstants.Actions);
-                var inputActionsGuid = ((IFlowMappingNode)mActions).GetMapEntryPlainScalarText("guid").NotNull("guid != null");
-
-                if (AssetUtils.GetGameObjectReference(currentAssetSourceFile, assetDocument.Buffer) is LocalReference
-                    gameObjectLocalReference)
+                
+                if (AssetUtils.GetInputActionsReference(currentAssetSourceFile, assetDocument.Buffer) is ExternalReference
+                    inputActionsReference)
                 {
-                    result.Add(new PlayerInputUsage(gameObjectLocalReference, Guid.Parse(inputActionsGuid)));
+                    var inputActionsGuid = inputActionsReference.ExternalAssetGuid;
+                    
+                    if (AssetUtils.GetGameObjectReference(currentAssetSourceFile, assetDocument.Buffer) is LocalReference
+                        gameObjectLocalReference)
+                    {
+                        result.Add(new PlayerInputUsage(gameObjectLocalReference, inputActionsGuid));
+                    }
                 }
             }
 
