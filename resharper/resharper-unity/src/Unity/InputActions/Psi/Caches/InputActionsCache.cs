@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Threading;
+using JetBrains.Collections;
 using JetBrains.Lifetimes;
-using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.DeclaredElements;
@@ -11,6 +11,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.Util;
+using JetBrains.Util.Collections;
 
 #nullable enable
 
@@ -20,18 +21,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
     public class InputActionsCache : SimpleICache<List<InputActionsCacheItem>>
     {
         private readonly IShellLocks myShellLocks;
-        private readonly ISolution mySolution;
-        // private readonly Dictionary<string, HashSet<Guid>> methodNameToGuids = new(); // inputactions
-        private readonly OneToListMap<IPsiSourceFile, List<InputActionsCacheItem>> myLocalCache = new();
-        private readonly Dictionary<IPsiSourceFile, List<InputActionsDeclaredElement>> myDeclaredElements = new();
+        private readonly OneToListMap<IPsiSourceFile, InputActionsCacheItem> myLocalCache = new();
+        private readonly CountingSet<string> myMethodNames = new();
+        private readonly OneToListMap<IPsiSourceFile, InputActionsDeclaredElement> myDeclaredElements = new();
 
         public InputActionsCache(Lifetime lifetime,
-            IShellLocks shellLocks, ISolution solution,
+            IShellLocks shellLocks,
             IPersistentIndexManager persistentIndexManager)
             : base(lifetime, shellLocks, persistentIndexManager, InputActionsCacheItem.Marshaller)
         {
             myShellLocks = shellLocks;
-            mySolution = solution;
+        }
+        
+        protected override bool IsApplicable(IPsiSourceFile sf)
+        {
+            return base.IsApplicable(sf) && sf.IsInputActions() && sf.IsLanguageSupported<JsonNewLanguage>();
         }
 
         public override object? Build(IPsiSourceFile sourceFile, bool isStartup)
@@ -50,8 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
             var members = mapsArray.Values.SelectMany(a => ((IJsonNewObject)a).MembersEnumerable);
             var actions = members.FirstOrDefault(m => m is { Key: "actions", Value: IJsonNewArray })?.Value;
             if (actions is not IJsonNewArray actionsArray) return results;
-            var possibleNames =
-                actionsArray.Values.SelectMany(a => ((IJsonNewObject)a).MembersEnumerable);
+            var possibleNames = actionsArray.Values.SelectMany(a => ((IJsonNewObject)a).MembersEnumerable);
             var nameObjects = possibleNames.Where(nameMember => nameMember.Key == "name").SelectNotNull(a=>a.Value);
             foreach (var nameObject in nameObjects)
             {
@@ -70,31 +73,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
             base.Merge(sourceFile, builtPart);
         }
 
-        private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
-        {
-            myLocalCache.RemoveKey(sourceFile);
-            myDeclaredElements.Remove(sourceFile);
-        }
-
-        private void AddToLocalCache(IPsiSourceFile sourceFile, List<InputActionsCacheItem>? item)
-        {
-            if (item == null) return;
-            myLocalCache.Add(sourceFile, item);
-            if (!myDeclaredElements.ContainsKey(sourceFile))
-                myDeclaredElements.Add(sourceFile, CreateDeclaredElements(sourceFile, item));
-        }
-
-        private List<InputActionsDeclaredElement> CreateDeclaredElements(IPsiSourceFile sourceFile, List<InputActionsCacheItem> item)
-        {
-            return item.Select(a=>new InputActionsDeclaredElement(a.Name, sourceFile, a.DeclarationOffset)).ToList();
-        }
-
         public override void MergeLoaded(object data)
         {
-            foreach (var inputActionCacheItem in Map)
-                AddToLocalCache(inputActionCacheItem.Key, inputActionCacheItem.Value);
             base.MergeLoaded(data);
+            PopulateLocalCache();
         }
+        
+        private void PopulateLocalCache()
+        {
+            foreach (var (file, cacheItems) in Map)
+                AddToLocalCache(file, cacheItems);
+        }
+
 
         public override void Drop(IPsiSourceFile sourceFile)
         {
@@ -102,25 +92,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
             base.Drop(sourceFile);
         }
 
-        protected override bool IsApplicable(IPsiSourceFile sf)
+        private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
         {
-            return base.IsApplicable(sf) && sf.IsInputActions() && sf.IsLanguageSupported<JsonNewLanguage>();
+            var items = myLocalCache[sourceFile];
+            foreach (var item in items)
+            {
+                myMethodNames.Remove(item.Name);
+            }
+            
+            myLocalCache.RemoveKey(sourceFile);
+            myDeclaredElements.RemoveKey(sourceFile);
+        }
+
+        private void AddToLocalCache(IPsiSourceFile sourceFile, List<InputActionsCacheItem>? items)
+        {
+            if (items == null) return;
+            myLocalCache.AddValueRange(sourceFile, items);
+            foreach (var item in items)
+            {
+                myMethodNames.Add(item.Name);
+            }
+            myDeclaredElements.AddValueRange(sourceFile, items.Select(a=>CreateDeclaredElements(sourceFile, a)));
         }
         
+        private InputActionsDeclaredElement CreateDeclaredElements(IPsiSourceFile sourceFile, InputActionsCacheItem item)
+        {
+            return new InputActionsDeclaredElement(item.Name, sourceFile, item.DeclarationOffset);
+        }
+
         public IEnumerable<InputActionsDeclaredElement> GetDeclaredElements(VirtualFileSystemPath file, string name)
         {
-            // ConcurrentDictionary<>
-            // lock
-            
+            myShellLocks.AssertReadAccessAllowed();
             var list = myDeclaredElements.Single(a => a.Key.GetLocation() == file).Value;
             return list.Where(element => element.ShortName == name);
         }
 
         public bool ContainsName(string name)
         {
-            return myLocalCache.SelectMany(item => item.Value)
-                .SelectMany(a=>a)
-                .Any(a => a.Name == name);
+            return myMethodNames.Contains(name);
         }
     }
 }
