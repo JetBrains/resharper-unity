@@ -78,18 +78,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
             base.MergeLoaded(data);
             PopulateLocalCache();
         }
-        
-        private void PopulateLocalCache()
-        {
-            foreach (var (file, cacheItems) in Map)
-                AddToLocalCache(file, cacheItems);
-        }
-
 
         public override void Drop(IPsiSourceFile sourceFile)
         {
             RemoveFromLocalCache(sourceFile);
             base.Drop(sourceFile);
+        }
+        
+        private void PopulateLocalCache()
+        {
+            foreach (var (file, cacheItems) in Map)
+                AddToLocalCache(file, cacheItems);
         }
 
         private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
@@ -129,6 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
 
         public bool ContainsName(string name)
         {
+            myShellLocks.AssertReadAccessAllowed();
             return myMethodNames.Contains(name);
         }
     }
