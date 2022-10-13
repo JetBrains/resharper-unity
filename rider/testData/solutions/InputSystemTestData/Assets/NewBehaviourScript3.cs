@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewBehaviourScript : MonoBehaviour
+public class NewBehaviourScript3 : MonoBehaviour
 {
-    public void OnJump1()
+    public void OnJump1WithPrefab3()
     {
-        Debug.Log("MyOnJump1");
+        Debug.Log("OnJump1WithPrefab3");
     }
 
     public void OnJump()

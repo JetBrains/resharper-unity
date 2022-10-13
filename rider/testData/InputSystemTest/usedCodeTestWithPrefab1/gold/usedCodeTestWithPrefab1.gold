@@ -2,11 +2,11 @@
 <DEAD_CODE>using System.Collections.Generic;</DEAD_CODE>
 using UnityEngine;
 
-public class NewBehaviourScript : MonoBehaviour
+public class NewBehaviourScript1 : MonoBehaviour
 {
-    public void OnJump1()
+    public void OnJump1WithPrefab()
     {
-        Debug.Log("MyOnJump1");
+        Debug.Log("OnJump1WithPrefab");
     }
 
     public void <DEAD_CODE>OnJump</DEAD_CODE>()

@@ -2,11 +2,11 @@
 <DEAD_CODE>using System.Collections.Generic;</DEAD_CODE>
 using UnityEngine;
 
-public class NewBehaviourScript : MonoBehaviour
+public class BroadcastScript1 : MonoBehaviour
 {
-    public void OnJump1()
+    public void OnBroadcastScript1()
     {
-        Debug.Log("MyOnJump1");
+        Debug.Log("OnBroadcastScript1");
     }
 
     public void <DEAD_CODE>OnJump</DEAD_CODE>()

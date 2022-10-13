@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewBehaviourScript : MonoBehaviour
+public class BroadcastScript1 : MonoBehaviour
 {
-    public void OnJump1()
+    public void OnBroadcastScript1()
     {
-        Debug.Log("MyOnJump1");
+        Debug.Log("OnBroadcastScript1");
     }
 
     public void OnJump()

@@ -42,6 +42,11 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets/NewBehaviourScript.cs" />
+     <Compile Include="Assets/NewBehaviourScript1.cs" />
+     <Compile Include="Assets/NewBehaviourScript2.cs" />
+     <Compile Include="Assets/NewBehaviourScript3.cs" />
+     <Compile Include="Assets/NewBehaviourScript4.cs" />
+     <Compile Include="Assets/BroadcastScript1.cs" />
   </ItemGroup>
    <ItemGroup>
       <Reference Include="mscorlib">
