@@ -8,9 +8,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendMo
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.framework.executeWithGold
-import com.jetbrains.rider.test.scriptingApi.markupContributor
-import com.jetbrains.rider.test.scriptingApi.runSwea
-import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
+import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
@@ -25,14 +23,69 @@ class InputSystemTest : BaseTestWithSolution() {
         prepareAssemblies(activeSolutionDirectory)
     }
 
-    private fun doUsedCodeTest(fileName:String) {
+    @Test
+    fun findUsagesTest() {
+        // PlayerInput is attached to Cube
+        // NewBehaviourScript is attached Cube
+        doFindUsagesTest("Assets/NewBehaviourScript.cs", "OnJump1")
+    }
+
+    @Test
+    fun findUsagesWithPrefab1Test() {
+        // Cube1 is a prefab
+        // PlayerInput is attached to the Cube1 prefab
+        // NewBehaviourScript1 is attached Cube1 on the scene
+        doFindUsagesTest("Assets/NewBehaviourScript1.cs", "OnJump1WithPrefab")
+    }
+
+    @Test
+    fun findUsagesWithPrefab2Test() {
+        doFindUsagesTest("Assets/NewBehaviourScript2.cs", "OnJump1WithPrefab2")
+    }
+
+    @Test
+    fun findUsagesWithPrefab3Test() {
+        doFindUsagesTest("Assets/NewBehaviourScript3.cs", "OnJump1WithPrefab3")
+    }
+
+    @Test
+    fun findUsagesWithPrefab4Test() {
+        // Cube4 is a prefab
+        // PlayerInput is attached to Cube4 on the scene
+        // NewBehaviourScript is attached Cube4 on the prefab
+        doFindUsagesTest("Assets/NewBehaviourScript4.cs", "OnJump1WithPrefab4")
+    }
+
+    @Test(enabled = false) // broadcast support is not yet implemented
+    fun findUsagesBroadcastScriptTest() {
+        doFindUsagesTest("Assets/BroadcastScript1.cs", "OnBroadcastScript1")
+    }
+
+    private fun doFindUsagesTest(relPath:String, word:String) {
+        // PlayerInput is attached to Cube
+        // NewBehaviourScript is attached Cube
+        val projectLifetime = project.lifetime
+        val model = project.solution.frontendBackendModel
+        runSwea(project) // otherwise public methods are never marked unused
+        waitAndPump(projectLifetime, { model.isDeferredCachesCompletedOnce.valueOrDefault(false) }, Duration.ofSeconds(10),
+                    { "Deferred caches are not completed" })
+        withOpenedEditor(relPath) {
+            setCaretAfterWord(word)
+            val text = requestFindUsages(activeSolutionDirectory, true)
+            executeWithGold(testGoldFile) { printStream ->
+                printStream.print(text)
+            }
+        }
+    }
+
+    private fun doUsedCodeTest(relPath:String) {
         val projectLifetime = project.lifetime
         val model = project.solution.frontendBackendModel
         runSwea(project) // otherwise public methods are never marked unused
         waitAndPump(projectLifetime, { model.isDeferredCachesCompletedOnce.valueOrDefault(false) }, Duration.ofSeconds(10),
                     { "Deferred caches are not completed" })
         executeWithGold(testGoldFile) { ps ->
-            withOpenedEditor(fileName) {
+            withOpenedEditor(relPath) {
                 ps.println(annotateDocumentWithHighlighterTags(markupContributor.markupAdapter,
                                                                valueFilter = { it.backendAttributeIdOrThrow == "ReSharper Dead Code" }))
             }

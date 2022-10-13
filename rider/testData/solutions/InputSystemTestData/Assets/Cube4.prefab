@@ -12,10 +12,9 @@ GameObject:
   - component: {fileID: 8135701367125307310}
   - component: {fileID: 8135701367125307311}
   - component: {fileID: 8135701367125307304}
-  - component: {fileID: 4611085415994531711}
-  - component: {fileID: -6114502793956707373}
+  - component: {fileID: -6772439839158488803}
   m_Layer: 0
-  m_Name: Cube3
+  m_Name: Cube4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -97,7 +96,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4611085415994531711
+--- !u!114 &-6772439839158488803
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -106,35 +105,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 8135701367125307305}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80d6d86921254b78a10ba089f45f0fb1, type: 3}
+  m_Script: {fileID: 11500000, guid: 4c95537f02074543afe6bf273c3d8eac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-6114502793956707373
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8135701367125307305}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 46e33bbab4bc433db6492514af3fac1f, type: 3}
-  m_NotificationBehavior: 0
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
