@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Diagnostics;
+using JetBrains.DocumentManagers.Transactions.ProjectHostActions.SharedProjects;
 using JetBrains.ProjectModel;
-using JetBrains.RdBackend.Common.Env;
-using JetBrains.RdBackend.Common.Features.ProjectModel.SharedProjects;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
 
