@@ -9,9 +9,14 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
+import com.intellij.ide.BrowserUtil
+import com.intellij.notification.NotificationType
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.Key
+import com.intellij.xdebugger.impl.XDebuggerManagerImpl
+import com.jetbrains.rd.framework.RdTaskResult
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.lifetime.onTermination
+import com.jetbrains.rd.util.reactive.adviseNotNullOnce
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.debugger.tryWriteMessageToConsoleView
@@ -19,10 +24,14 @@ import com.jetbrains.rider.model.debuggerWorker.OutputMessageWithSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputType
 import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachProfileState
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.*
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.util.NetUtils
+import javax.swing.event.HyperlinkEvent
 
 /**
  * [RunProfileState] to launch a Unity executable (player or editor) and attach the debugger
@@ -33,6 +42,8 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
                                 isEditor: Boolean = false)
     : UnityAttachProfileState(remoteConfiguration, executionEnvironment, "Unity Executable", isEditor) {
     private val ansiEscapeDecoder = AnsiEscapeDecoder()
+
+    private val logger = Logger.getInstance(UnityExeDebugProfileState::class.java)
 
     override val consoleKind: ConsoleKind = ConsoleKind.Normal
 
@@ -62,6 +73,35 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
         val commandLineString = runCommandLine.commandLineString
 
         val monoConnectResult = super.execute(executor, runner, workerProcessHandler)
+
+        if (exeConfiguration.name == DefaultRunConfigurationGenerator.RUN_DEBUG_STANDALONE_CONFIGURATION_NAME) {
+            // check if scripting backend is IL2CPP, only start the game and show red balloon
+            val frontendBackendModel = executionEnvironment.project.solution.frontendBackendModel
+            val res = frontendBackendModel.getScriptingBackend.start(lifetime, Unit)
+            res.result.adviseNotNullOnce(lifetime) {
+                if (it is RdTaskResult.Fault)
+                {
+                    logger.warn("getScriptingBackend failed with ${it.error}")
+                    return@adviseNotNullOnce
+                }
+                if (it.unwrap() == 1) {
+                    val message = UnityBundle.message(
+                        "debugging.il2cpp.backend.only.possible.with.attach",
+                        "https://github.com/JetBrains/resharper-unity/wiki/Troubleshooting-debugging-Unity-players#didnt-find-the-associated-module-for-the-breakpoint"
+                    )
+
+                    val debugNotification = XDebuggerManagerImpl.getNotificationGroup().createNotification(message, NotificationType.ERROR)
+                    debugNotification.setListener{ notification, hyperlinkEvent ->
+                        if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED)
+                            return@setListener
+
+                        BrowserUtil.browse(hyperlinkEvent.url)
+                        notification.hideBalloon()
+                    }
+                    debugNotification.notify(executionEnvironment.project)
+                }
+            }
+        }
 
         // Once the frontend starts the debugger worker process, we'll start the Unity exe, and terminate it when the
         // debug session ends
