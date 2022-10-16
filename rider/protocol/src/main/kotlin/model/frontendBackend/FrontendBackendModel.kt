@@ -156,5 +156,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
         // profiler
         call ("startProfiling", bool, void).documentation = "Start profiling and enter PlayMode, depending on the param"
+
+        // debug
+        call("getScriptingBackend", void, int).documentation = "Mono, IL2CPP, WinRTDotNET"
     }
 }
