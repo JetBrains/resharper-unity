@@ -1,0 +1,34 @@
+{
+    "name": "MyInputForPrefab4",
+    "maps": [
+        {
+            "name": "Player",
+            "id": "b5b0d968-975e-479a-805b-6a93e0713be5",
+            "actions": [
+                {
+                    "name": "Jump1WithPrefab4",
+                    "type": "Button",
+                    "id": "b36330bf-e638-4e6c-88f8-3b7616fc8067",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "a5e2ac60-16f7-41b2-9e22-07604f097608",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump1WithPrefab4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

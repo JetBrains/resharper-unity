@@ -13,6 +13,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 
@@ -87,7 +88,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     if (IsEventHandler(unityApi, method) ||
                         IsRequiredSignatureMethod(method) ||
                         IsAnimationEvent(solution, method) ||
-                        IsImplicitlyUsedInterfaceMethod(method))
+                        IsImplicitlyUsedInterfaceMethod(method) ||
+                        IsImplicitlyUsedByInputActions(solution, method))
                     {
                         flags = ImplicitUseKindFlags.Access;
                         return true;
@@ -108,6 +110,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
             flags = ImplicitUseKindFlags.Default; // Value not used if we return false
             return false;
+        }
+
+        private static bool IsImplicitlyUsedByInputActions(ISolution solution, IMethod method)
+        {
+            solution.GetComponent<InputActionsElementContainer>()
+                .GetUsagesCountForFast(method, out var inputActionsUsagesResult);
+            return inputActionsUsagesResult;
         }
 
         private bool IsUxmlFactory(IClass cls)

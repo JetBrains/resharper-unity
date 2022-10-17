@@ -7,7 +7,7 @@ using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.RdBackend.Common.Features.BackgroundTasks;
+using JetBrains.ProjectModel.ProjectsHost.SolutionHost.Progress;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
@@ -21,7 +21,6 @@ using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Impl.Search.Operations;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Resources.Shell;
-using JetBrains.Rider.Backend.Features.BackgroundTasks;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;
 
@@ -39,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
         private readonly AssetHierarchyProcessor myAssetHierarchyProcessor;
         private readonly AnimatorScriptUsagesElementContainer myAnimatorContainer;
         private readonly BackendUnityHost myBackendUnityHost;
-        private readonly RiderBackgroundTaskHost? myBackgroundTaskHost;
+        private readonly BackgroundProgressManager? myBackgroundProgressManager;
         private readonly FrontendBackendHost myFrontendBackendHost;
         private readonly IPersistentIndexManager myPersistentIndexManager;
         private readonly VirtualFileSystemPath mySolutionDirectoryPath;
@@ -52,14 +51,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
                                                  UnityExternalFilesModuleFactory externalFilesModuleFactory,
                                                  IPersistentIndexManager persistentIndexManager,
                                                  AnimatorScriptUsagesElementContainer animatorContainer,
-                                                 RiderBackgroundTaskHost? backgroundTaskHost = null)
+                                                 BackgroundProgressManager? backgroundProgressManager = null)
         {
             myLifetime = lifetime;
             mySolution = solution;
             myLocks = locks;
             myAssetHierarchyProcessor = assetHierarchyProcessor;
             myBackendUnityHost = backendUnityHost;
-            myBackgroundTaskHost = backgroundTaskHost;
+            myBackgroundProgressManager = backgroundProgressManager;
             myYamlSearchDomain = searchDomainFactory.CreateSearchDomain(externalFilesModuleFactory.PsiModule);
             myFrontendBackendHost = frontendBackendHost;
             myAnimatorContainer = animatorContainer;
@@ -84,15 +83,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
 
             var requestLifetimeDefinition = myLifetime.CreateNested();
             var pi = new ProgressIndicator(myLifetime);
-            if (myBackgroundTaskHost != null)
+            if (myBackgroundProgressManager != null)
             {
-                var task = RiderBackgroundTaskBuilder.Create()
+                var task = BackgroundProgressBuilder.Create()
                     .WithTitle("Finding usages in Unity for: " + declaredElement.ShortName)
                     .AsIndeterminate()
                     .AsCancelable(() => { pi.Cancel(); })
                     .Build();
 
-                myBackgroundTaskHost.AddNewTask(requestLifetimeDefinition.Lifetime, task);
+                myBackgroundProgressManager.AddNewTask(requestLifetimeDefinition.Lifetime, task);
             }
 
             myLocks.Tasks.StartNew(myLifetime, Scheduling.MainGuard, () =>

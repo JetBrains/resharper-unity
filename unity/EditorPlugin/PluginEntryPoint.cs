@@ -669,8 +669,21 @@ namespace JetBrains.Rider.Unity.Editor
           }
           else
           {
-            refreshTask.Set(Unit.Instance);
-            ourLogger.Verbose("AutoRefresh is disabled via Unity settings.");
+            if (EditorApplication.isPlaying)
+            {
+              refreshTask.Set(Unit.Instance);
+              ourLogger.Verbose("Avoid calling Refresh, when EditorApplication.isPlaying.");
+            }
+            else if (!EditorPrefsWrapper.AutoRefresh)
+            {
+              refreshTask.Set(Unit.Instance);
+              ourLogger.Verbose("AutoRefresh is disabled by Unity preferences.");
+            }
+            else
+            {
+              refreshTask.Set(Unit.Instance);
+              ourLogger.Verbose("Avoid calling Refresh, for the unknown reason.");
+            }
           }
         });
         return refreshTask;
