@@ -766,6 +766,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
                 "--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED",
                 "--add-opens=java.base/jdk.internal.vm=ALL-UNNAMED",
                 "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+                "--add-opens=java.base/sun.nio.fs=ALL-UNNAMED",
                 "--add-opens=java.base/sun.security.ssl=ALL-UNNAMED",
                 "--add-opens=java.base/sun.security.util=ALL-UNNAMED",
                 "--add-opens=java.desktop/com.apple.eawt=ALL-UNNAMED",
@@ -794,7 +795,11 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
                 "--add-opens=jdk.attach/sun.tools.attach=ALL-UNNAMED",
                 "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
                 "--add-opens=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED",
-                "--add-opens=jdk.jdi/com.sun.tools.jdi=ALL-UNNAMED")
+                "--add-opens=jdk.jdi/com.sun.tools.jdi=ALL-UNNAMED",
+                "-Didea.jna.unpacked=true",
+                "-Djna.nounpack=true",
+                "-Djna.boot.library.path=${setupDependencies.orNull?.idea?.get()?.classes}/lib/jna/${System.getProperty("os.arch")}")
+
 
         if (project.hasProperty("integrationTests")) {
             val testsType = project.property("integrationTests").toString()
