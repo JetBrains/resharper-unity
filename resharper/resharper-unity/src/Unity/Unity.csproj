@@ -102,19 +102,7 @@
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="JetBrains.Microsoft.Web.WebView2" Version="1.0.1343.25">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="JetBrains.Microsoft.Web.WebView2.windows-arm64" Version="1.0.1343.25">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="JetBrains.Microsoft.Web.WebView2.windows-x64" Version="1.0.1343.25">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="JetBrains.Microsoft.Web.WebView2.windows-x86" Version="1.0.1343.25">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    </PackageReference>    
     <Reference Include="System.Xaml" />
     <ProjectReference Include="..\..\..\resharper-json\src\Json\Json.csproj" />
     <ProjectReference Include="..\..\..\resharper-yaml\src\Yaml\Yaml.csproj" />
