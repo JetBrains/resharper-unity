@@ -28,7 +28,12 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
             model.GetCompilationResult.Set(_ => !EditorUtility.scriptCompilationFailed);
 
 #if !UNITY_5_6 // only need to ignore 5.6, because before 5.6 this whole file is not included
-            CompiledAssembliesTracker.Init(modelAndLifetime);
+            var args = Environment.GetCommandLineArgs();
+            var commandlineParser = new CommandLineParser(args);
+            // -monoProfiler jb:prof=timeline,host=127.0.0.1:37091,ctl=remote,lib=libmonobdwgc-2.0.so
+            // RIDER-82297 Cut the `CompiledAssembliesTracker` time from the main thread
+            if (commandlineParser.Options.ContainsKey("-monoProfiler") && commandlineParser.Options["-monoProfiler"].StartsWith("jb:")) 
+                CompiledAssembliesTracker.Init(modelAndLifetime);
 #endif
 
             model.UnitTestLaunch.Advise(connectionLifetime, launch =>
