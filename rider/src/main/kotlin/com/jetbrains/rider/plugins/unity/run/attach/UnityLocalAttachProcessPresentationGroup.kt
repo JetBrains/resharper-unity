@@ -19,7 +19,6 @@ object UnityLocalAttachProcessPresentationGroup : XAttachProcessPresentationGrou
         val displayNames = userData.getUserData(UnityLocalAttachProcessDebuggerProvider.PROCESS_INFO_KEY)?.get(process.pid)
         @NlsSafe
         val projectName = if (displayNames?.projectName != null) " (${displayNames.projectName})" else ""
-        //TODO #Localization RIDER-82737 Should be localized?
         val roleName = if (displayNames?.roleName != null) " ${displayNames.roleName}" else ""
         return process.executableDisplayName + roleName + projectName
     }

@@ -7,10 +7,12 @@ import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsContexts
+import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.workspaceModel.ide.WorkspaceModel
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
 import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 import com.jetbrains.rider.plugins.unity.workspace.getPackages
@@ -104,12 +106,11 @@ class PackageNode(project: Project, packageFolder: VirtualFile, private val pack
 
         val existingTooltip = presentation.tooltip ?: ""
 
-        // TODO #Localization RIDER-82737
         var tooltip = "<html>" + getPackageTooltip(name, packageEntity)
         tooltip += when (packageEntity.source) {
-            UnityPackageSource.Embedded -> if (virtualFile.name != name) "<br/><br/>Folder name: ${virtualFile.name}" else ""
-            UnityPackageSource.Local -> "<br/><br/>Folder location: ${virtualFile.path}"
-            UnityPackageSource.LocalTarball -> "<br/><br/>Tarball location: ${packageEntity.tarballLocation}"
+            UnityPackageSource.Embedded -> if (virtualFile.name != name) {UnityBundle.message("folder.name", "<br/><br/>", virtualFile.name)} else ""
+            UnityPackageSource.Local -> UnityBundle.message("folder.location", "<br/><br/>", virtualFile.path)
+            UnityPackageSource.LocalTarball -> UnityBundle.message("tarball.location", "<br/><br/>", packageEntity.tarballLocation ?: "")
             UnityPackageSource.Git -> {
                 var text = "<br/><br/>"
                 text += if (!packageEntity.gitUrl.isNullOrEmpty()) {
@@ -358,6 +359,7 @@ class UnknownPackageNode(project: Project, private val packageEntity: UnityPacka
     }
 }
 
+@NlsSafe
 private fun getPackageTooltip(displayName: String, packageEntity: UnityPackageEntity): String {
     var tooltip = displayName
     if (packageEntity.version.isNotEmpty()) {
@@ -373,9 +375,8 @@ private fun getPackageTooltip(displayName: String, packageEntity: UnityPackageEn
     return tooltip
 }
 
-//TODO #Localization RIDER-82737
 @NlsContexts.Tooltip
-private fun formatDescription(description: String): String {
+private fun formatDescription(@NlsSafe description: String): String {
     val text = description.replace("\n", "<br/>").let {
         StringUtil.shortenTextWithEllipsis(it, 600, 0, true)
     }

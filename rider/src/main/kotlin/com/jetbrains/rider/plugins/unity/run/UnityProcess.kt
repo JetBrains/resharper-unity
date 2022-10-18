@@ -1,8 +1,9 @@
 package com.jetbrains.rider.plugins.unity.run
 
+import com.intellij.openapi.util.NlsSafe
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 
-sealed class UnityProcess(val displayName: String, val allowDebugging: Boolean, val projectName: String? = null)
+sealed class UnityProcess(@NlsSafe val displayName: String, val allowDebugging: Boolean, @NlsSafe val projectName: String? = null)
 
 interface UnityRemoteConnectionDetails {
     val host: String
@@ -15,7 +16,7 @@ sealed class UnityLocalProcess(name: String, val pid: Int, projectName: String?)
 }
 
 class UnityEditor(displayName: String, pid: Int, projectName: String?): UnityLocalProcess(displayName, pid, projectName)
-class UnityEditorHelper(displayName: String, val roleName: String, pid: Int, projectName: String?): UnityLocalProcess(displayName, pid, projectName)
+class UnityEditorHelper(displayName: String, @NlsSafe val roleName: String, pid: Int, projectName: String?): UnityLocalProcess(displayName, pid, projectName)
 
 // TODO: If we know it's a local player, can we get rid of the host address and just use 127.0.0.1?
 // Could that fail with multiple local addresses? Is that even a thing?
