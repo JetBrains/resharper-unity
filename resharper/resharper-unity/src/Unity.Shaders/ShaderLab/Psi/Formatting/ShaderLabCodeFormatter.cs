@@ -28,10 +28,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
     public override string OverridenSettingPrefix => "// @formatter:";
 
     protected override CodeFormattingContext CreateFormatterContext(
-        CodeFormatProfile profile, ITreeNode firstNode, ITreeNode lastNode,
-        AdditionalFormatterParameters parameters, ICustomFormatterInfoProvider provider, int tabWidth, SingleLangChangeAccu changeAccu)
+        AdditionalFormatterParameters parameters, ICustomFormatterInfoProvider provider, int tabWidth, SingleLangChangeAccu changeAccu, FormatTask[] formatTasks)
     {
-      return new CodeFormattingContext(this, firstNode, lastNode, CodeFormatProfile.DEFAULT, FormatterLoggerProvider.FormatterLogger, parameters, tabWidth, changeAccu);
+      return new CodeFormattingContext(this, FormatterLoggerProvider.FormatterLogger, parameters, tabWidth, changeAccu, formatTasks);
     }
 
     public override MinimalSeparatorType GetMinimalSeparatorByNodeTypes(TokenNodeType leftToken, TokenNodeType rightToken)
@@ -70,24 +69,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
 
       return FormatterImplHelper.PointerToRange(pointer, firstElement, lastElement);
       
-      void FormatChildren(FormatTask formatTask, FmtSettings<ShaderLabFormatSettingsKey> formatSettings, CodeFormattingContext context)
+      void FormatChildren(FormatTask formatTask, FmtSettingsHolder<ShaderLabFormatSettingsKey> formatSettings, CodeFormattingContext context, IProgressIndicator pi)
       {
-        using (var fmtProgress = parameters.ProgressIndicator.CreateSubProgress(1))
-        {
+          using var fmtProgress = pi.CreateSubProgress(1);
+          
           Assertion.Assert(formatTask.FirstElement != null, "firstNode != null");
           var file = formatTask.FirstElement.GetContainingFile();
           if (file != null)
           {
-            if (ShaderLabDoNotFormatInjectionsCookie.IsInjectionFormatterSuppressed)
-              return;
+              if (ShaderLabDoNotFormatInjectionsCookie.IsInjectionFormatterSuppressed)
+                  return;
               
-            using (new SuspendInjectRegenerationCookie())
-            {
-              FormatterImplHelper.RunFormatterForGeneratedLanguages(file, formatTask.FirstElement, lastNode, profile,
-                it => true, PsiLanguageCategories.All, parameters.ChangeProgressIndicator(fmtProgress));
-            }
+              using (new SuspendInjectRegenerationCookie())
+              {
+                  FormatterImplHelper.RunFormatterForGeneratedLanguages(file, formatTask.FirstElement, lastNode, profile,
+                      it => true, PsiLanguageCategories.All, parameters.ChangeProgressIndicator(fmtProgress));
+              }
           }
-        }
       }
     }
 
