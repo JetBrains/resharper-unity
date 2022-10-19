@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Diagnostics;
@@ -9,7 +8,6 @@ using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
-using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Model.Unity.BackendUnity;
@@ -25,19 +23,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly FrontendBackendHost myFrontendBackendHost;
         private readonly ILogger myLogger;
-        private readonly ISolution mySolution;
 
         public PassthroughHost(Lifetime lifetime,
                                UnitySolutionTracker unitySolutionTracker,
                                BackendUnityHost backendUnityHost,
                                FrontendBackendHost frontendBackendHost,
-                               ILogger logger,
-                               ISolution solution)
+                               ILogger logger)
         {
             myBackendUnityHost = backendUnityHost;
             myFrontendBackendHost = frontendBackendHost;
             myLogger = logger;
-            mySolution = solution;
 
             if (!frontendBackendHost.IsAvailable)
                 return;
@@ -48,8 +43,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                 if (args && model != null)
                 {
                     AdviseFrontendToUnityModel(unityProjectLifetime, model);
-                    
-                    model.GetScriptingBackend.Set((_, _) => GetScriptingBackend());
 
                     // Advise the backend/Unity model as high priority so we get called back before other subscribers.
                     // This allows us to populate the protocol on reconnection before other subscribes start to advise
@@ -127,51 +120,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                     ? Rd.Tasks.RdTask<Unit>.Cancelled()
                     : backendUnityModel.StartProfiling.Start(l, new ProfilingData(play, GetProfilerApiPath(), false)).ToRdTask(l);
             });
-        }
-
-        private Rd.Tasks.RdTask<int> GetScriptingBackend()
-        {
-            // ScriptingImplementation 
-            // 0 Mono
-            // 1 IL2CPP
-            // 2 WinRTDotNET
-            
-            // read from `ProjectSettings/ProjectSettings.asset`
-            // scriptingBackend:
-            //   Standalone: 0
-
-            try
-            {
-                var solutionDir = mySolution.SolutionDirectory;
-                if (!solutionDir.IsAbsolute) return Rd.Tasks.RdTask<int>.Faulted(new InvalidOperationException("solutionDir.IsAbsolute")); // True in tests
-                var settingsPath = solutionDir.Combine("ProjectSettings/ProjectSettings.asset");
-                if (!settingsPath.ExistsFile)
-                    return Rd.Tasks.RdTask<int>.Faulted(new InvalidOperationException($"{settingsPath} ExistsFile is false."));
-                var fileIsInText = settingsPath.SniffYamlHeader();
-                if (!fileIsInText)
-                    return Rd.Tasks.RdTask<int>.Faulted(new InvalidOperationException($"{settingsPath} is not serialized to Text."));
-
-                var text = settingsPath.ReadAllText2().Text;
-                var match = Regex.Match(text, @"scriptingBackend:\s*$\s*^\s*Standalone:\s+(?<mode>\d+)\s*$", RegexOptions.Multiline);
-                if (match.Success)
-                {
-                    if (int.TryParse(match.Groups["mode"].Value, out var mode))
-                    {
-                        var task = new Rd.Tasks.RdTask<int>();
-                        task.Set(mode);
-                        return task;
-                    }
-                    myLogger.Warn($"Unable to parse scriptingBackend mode from ${settingsPath}");
-                }
-                else
-                    myLogger.Warn($"Unable to parse scriptingBackend from ${settingsPath}");
-            }
-            catch(Exception e)
-            {
-                return Rd.Tasks.RdTask<int>.Faulted(e);
-            }
-            
-            return Rd.Tasks.RdTask<int>.Faulted(new InvalidOperationException("GetScriptingBackend failed."));
         }
 
         private string GetProfilerApiPath()
