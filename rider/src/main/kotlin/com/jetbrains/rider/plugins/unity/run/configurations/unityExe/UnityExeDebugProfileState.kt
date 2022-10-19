@@ -10,7 +10,10 @@ import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.ide.BrowserUtil
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.Key
 import com.intellij.xdebugger.impl.XDebuggerManagerImpl
@@ -31,7 +34,6 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.*
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.util.NetUtils
-import javax.swing.event.HyperlinkEvent
 
 /**
  * [RunProfileState] to launch a Unity executable (player or editor) and attach the debugger
@@ -85,20 +87,16 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
                     return@adviseNotNullOnce
                 }
                 if (it.unwrap() == 1) {
-                    val message = UnityBundle.message(
-                        "debugging.il2cpp.backend.only.possible.with.attach",
-                        "https://github.com/JetBrains/resharper-unity/wiki/Troubleshooting-debugging-Unity-players#didnt-find-the-associated-module-for-the-breakpoint"
-                    )
+                    val message = UnityBundle.message("debugging.il2cpp.backend.only.possible.with.attach")
 
-                    val debugNotification = XDebuggerManagerImpl.getNotificationGroup().createNotification(message, NotificationType.ERROR)
-                    debugNotification.setListener{ notification, hyperlinkEvent ->
-                        if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED)
-                            return@setListener
-
-                        BrowserUtil.browse(hyperlinkEvent.url)
-                        notification.hideBalloon()
-                    }
-                    debugNotification.notify(executionEnvironment.project)
+                    val notification = XDebuggerManagerImpl.getNotificationGroup().createNotification(message, NotificationType.ERROR)
+                    notification.addAction(object : NotificationAction(
+                        UnityBundle.message("read.more")) {
+                        override fun actionPerformed(e: AnActionEvent, notification: Notification) {
+                            val url = "https://github.com/JetBrains/resharper-unity/wiki/Troubleshooting-debugging-Unity-players#didnt-find-the-associated-module-for-the-breakpoint"
+                            BrowserUtil.browse(url)
+                        }
+                    }).notify(executionEnvironment.project)
                 }
             }
         }
