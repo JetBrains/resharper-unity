@@ -108,9 +108,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             {
                 var modification = AssetUtils.GetPrefabModification(assetDocument.Document);
                 var parentTransform =
-                    modification?.GetMapEntryValue<INode>("m_TransformParent")
+                    modification?.GetMapEntryValue<INode>(UnityYamlConstants.TransformParentProperty)
                         ?.ToHierarchyReference(currentAssetSourceFile) as LocalReference? ?? LocalReference.Null;
-                var modifications = modification?.GetMapEntryValue<IBlockSequenceNode>("m_Modifications");
+                var modifications = modification?.GetMapEntryValue<IBlockSequenceNode>(UnityYamlConstants.ModificationsProperty);
                 var result = new List<PrefabModification>();
                 if (modifications != null)
                 {
@@ -118,16 +118,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                     {
                         var map = entry.Value as IBlockMappingNode;
 
-                        var target = map?.GetMapEntryValue<INode>("target")
+                        var target = map?.GetMapEntryValue<INode>(UnityYamlConstants.TargetProperty)
                             .ToHierarchyReference(currentAssetSourceFile);
                         if (target == null)
                             continue;
 
-                        var name = map.GetMapEntryPlainScalarText("propertyPath");
+                        var name = map.GetMapEntryPlainScalarText(UnityYamlConstants.PropertyPathProperty);
                         if (name == null)
                             continue;
 
-                        var valueNode = map.GetMapEntry("value")?.Content;
+                        var valueNode = map.GetMapEntry(UnityYamlConstants.ValueProperty)?.Content;
                         if (valueNode == null)
                             continue;
 
