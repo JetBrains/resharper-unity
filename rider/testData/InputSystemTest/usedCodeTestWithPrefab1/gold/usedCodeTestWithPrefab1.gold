@@ -1,0 +1,17 @@
+<DEAD_CODE>using System.Collections;</DEAD_CODE>
+<DEAD_CODE>using System.Collections.Generic;</DEAD_CODE>
+using UnityEngine;
+
+public class NewBehaviourScript1 : MonoBehaviour
+{
+    public void OnJump1WithPrefab()
+    {
+        Debug.Log("OnJump1WithPrefab");
+    }
+
+    public void <DEAD_CODE>OnJump</DEAD_CODE>()
+    {
+        Debug.Log("MyOnJump");
+    }
+}
+

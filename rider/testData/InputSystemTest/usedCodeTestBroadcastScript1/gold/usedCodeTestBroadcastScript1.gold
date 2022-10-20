@@ -1,0 +1,17 @@
+<DEAD_CODE>using System.Collections;</DEAD_CODE>
+<DEAD_CODE>using System.Collections.Generic;</DEAD_CODE>
+using UnityEngine;
+
+public class BroadcastScript1 : MonoBehaviour
+{
+    public void OnBroadcastScript1()
+    {
+        Debug.Log("OnBroadcastScript1");
+    }
+
+    public void <DEAD_CODE>OnJump</DEAD_CODE>()
+    {
+        Debug.Log("MyOnJump");
+    }
+}
+

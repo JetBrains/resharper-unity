@@ -13,8 +13,19 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static bool AutoRefresh
     {
-      get => EditorPrefs.GetBool("kAutoRefresh");
-      set => EditorPrefs.SetBool("kAutoRefresh", value);
+      get
+      {
+        var legacyAutoRefreshMode = EditorPrefs.GetBool("kAutoRefresh") ? AssetPipelineAutoRefreshMode.Enabled : AssetPipelineAutoRefreshMode.Disabled;
+        return EditorPrefs.GetInt("kAutoRefreshMode", (int)legacyAutoRefreshMode) >= 1;
+      }
+    }
+    
+    // copy from UnityEditor.AssetPipelineAutoRefreshMode
+    private enum AssetPipelineAutoRefreshMode
+    {
+        Disabled = 0,
+        Enabled = 1,
+        EnabledOutsidePlaymode = 2
     }
 
     // This is an internal Unity setting. Introduced in 2018.2 (moved in 2018.3). The enum is internal, so we can only
