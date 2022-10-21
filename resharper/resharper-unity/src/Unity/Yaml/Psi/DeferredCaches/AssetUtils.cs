@@ -38,6 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private static readonly StringSearcher ourAnimatorStateMachineSearcher = new StringSearcher("!u!1107", true);
         private static readonly StringSearcher ourStrippedSearcher = new StringSearcher(" stripped", true);
         private static readonly StringSearcher ourGameObjectFieldSearcher = new StringSearcher("m_GameObject:", true);
+        private static readonly StringSearcher ourActionsSearcher = new StringSearcher("m_Actions:", true);
         private static readonly StringSearcher ourGameObjectNameSearcher = new StringSearcher("m_Name:", true);
         private static readonly StringSearcher ourRootIndexSearcher = new StringSearcher("m_RootOrder:", true);
         private static readonly StringSearcher ourPrefabInstanceSearcher = new StringSearcher("m_PrefabInstance:", true);
@@ -110,6 +111,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         public static IHierarchyReference GetGameObjectReference(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourGameObjectFieldSearcher);
 
+        [CanBeNull]
+        public static IHierarchyReference GetInputActionsReference(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
+            GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourActionsSearcher);
+        
         [CanBeNull]
         public static IHierarchyReference GetTransformFather(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourFatherSearcher);

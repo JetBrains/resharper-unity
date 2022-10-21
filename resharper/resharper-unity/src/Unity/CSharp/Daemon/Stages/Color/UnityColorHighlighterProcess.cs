@@ -204,7 +204,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
             if (expression == null) return null;
 
             var constantValue = expression.ConstantValue;
-            if (constantValue.IsBadValue()) return null;
+            if (constantValue.IsErrorOrNonCompileTimeConstantValue()) return null;
 
             var conversionRule = namedArgument.GetTypeConversionRule();
             if (!expression.GetExpressionType().IsImplicitlyConvertibleTo(paramType, conversionRule))
@@ -242,7 +242,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
             if (expression == null) return null;
 
             var constantValue = expression.ConstantValue;
-            if (constantValue.IsBadValue()) return null;
+            if (constantValue.IsErrorOrNonCompileTimeConstantValue()) return null;
 
             var conversionRule = namedArgument.GetTypeConversionRule();
             if (!expression.GetExpressionType().IsImplicitlyConvertibleTo(paramType, conversionRule))

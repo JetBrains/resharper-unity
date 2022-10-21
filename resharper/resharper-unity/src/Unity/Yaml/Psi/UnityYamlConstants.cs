@@ -18,6 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         public static readonly string RootOrderProperty = "m_RootOrder";
         public static readonly string NameProperty = "m_Name";
         public static readonly string ScriptProperty = "m_Script";
+        public static readonly string Actions = "m_Actions";
         public static readonly string FatherProperty = "m_Father";
         public static readonly string CorrespondingSourceObjectProperty = "m_CorrespondingSourceObject";
         public static readonly string CorrespondingSourceObjectProperty2017 = "m_PrefabParentObject";

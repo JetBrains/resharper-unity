@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "com.unity.ide.rider": "3.0.15",
+    "com.unity.inputsystem": "1.4.2",
+    "com.unity.toolchain.linux-x86_64": "2.0.2"
+  },
+  "testables": []
+}

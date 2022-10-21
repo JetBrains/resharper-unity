@@ -1,5 +1,5 @@
 ﻿## FindReferencedCodeProvider activity:
-  Tooltip was shown: Referenced code in 'assembly definition Ref1' were not found.
+  Tooltip was shown: Referenced code in 'assembly definition Ref1' were not found
 
 ## FindUsagesAdvancedProvider activity:
   FindResults window with 2 results
@@ -18,7 +18,7 @@
 
 
 ## GoToUnityUsagesProvider activity:
-  Tooltip was shown: Usages of 'Ref1' were not found.
+  Tooltip was shown: Usages of 'Ref1' were not found
 
 ## HighlightUsagesProvider activity:
   Immediate result:
