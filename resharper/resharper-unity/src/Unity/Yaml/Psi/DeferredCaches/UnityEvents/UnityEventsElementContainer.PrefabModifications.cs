@@ -7,10 +7,12 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.E
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
 using JetBrains.Util.Extension;
+using JetBrains.Util.Maths;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 {
@@ -26,8 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         /// Possible improvment:
         /// 1. Store for each IPsiSourceFile collection of m_Target references
         /// 2. GetPossibleFilesWithUsage will resolve m_Target to real ScriptComponentHierarchy with m_Script guid
-        /// 3. GetPossibleFilesWithUsage will check that assosiated with guid type element is derived from method's type element and process only in that case
-        /// NB : resolve to real ScriptComponentHierarchy will be cached in PrefabImportCache for stripped elements or will be simply availble in current scene hierarchy
+        /// 3. GetPossibleFilesWithUsage will check that associated with guid type element is derived from method's type element and process only in that case
+        /// NB : resolve to real ScriptComponentHierarchy will be cached in PrefabImportCache for stripped elements or will be simply available in current scene hierarchy
         /// </summary>
         private readonly CountingSet<IPsiSourceFile> myFilesToCheckForUsages = new CountingSet<IPsiSourceFile>();
         
@@ -40,6 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         private ImportedUnityEventData ProcessPrefabModifications(IPsiSourceFile currentFile, AssetDocument document)
         {
             var result = new ImportedUnityEventData();
+            var assetMethodUsagesSet = new Dictionary<int, (LocalReference, AssetMethodUsagesData)>();
             if (document.HierarchyElement is IPrefabInstanceHierarchy prefabInstanceHierarchy)
             {
                 var assetMethodDataToModifiedFields = new OneToSetMap<(LocalReference, string, int), string>();
@@ -54,7 +57,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     var location = new LocalReference(currentFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), PrefabsUtil.GetImportedDocumentAnchor(prefabInstanceHierarchy.Location.LocalDocumentAnchor, externalReference.LocalDocumentAnchor));
                     var parts = modification.PropertyPath.Split('.');
                     var unityEventName = parts[0];
-                    
 
                     var dataPart = parts.FirstOrDefault(t => t.StartsWith("data"));
                     if (dataPart == null)
@@ -62,21 +64,45 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     
                     if (!int.TryParse(dataPart.RemoveStart("data[").RemoveEnd("]"), out var index))
                         continue;
-
+                    
+                    if (!assetMethodUsagesSet.TryGetValue(index, out var value))
+                    {
+                        value = new (location, new AssetMethodUsagesData());
+                        assetMethodUsagesSet.Add(index, value);
+                    }
+                    
+                    assetMethodUsagesSet[index].Item2.unityEventName = unityEventName;
                     result.UnityEventToModifiedIndex.Add((location, unityEventName), index);
+                    
                     var last = parts.Last();
                     if (last.Equals("m_MethodName") && modification.Value is AssetSimpleValue assetSimpleValue)
+                    {
                         result.AssetMethodNameInModifications.Add(assetSimpleValue.SimpleValue);
+                        assetMethodUsagesSet[index].Item2.methodName = assetSimpleValue.SimpleValue;
+                        assetMethodUsagesSet[index].Item2.textRangeOwnerPsiPersistentIndex = modification.ValueRange;
+                    }
+                    else if (last.Equals("m_Target") && modification.ObjectReference is ExternalReference er)
+                        assetMethodUsagesSet[index].Item2.targetReference = er;
+                    else if (last.Equals("m_Mode") && modification.Value is AssetSimpleValue modeSimpleValue)
+                        assetMethodUsagesSet[index].Item2.mode = GetEventHandlerArgumentMode(modeSimpleValue.SimpleValue);
+                    else if (last.Equals("m_ObjectArgumentAssemblyTypeName") && modification.Value is AssetSimpleValue objectArgumentAssemblyTypeNameSimpleValue)
+                        assetMethodUsagesSet[index].Item2.type = objectArgumentAssemblyTypeNameSimpleValue.SimpleValue?.Split(',').FirstOrDefault(); // the logic here is simpler then in UnityEventsElementContainer.cs
 
+                    assetMethodUsagesSet[index].Item2.textRangeOwner =
+                        currentFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null");
                     assetMethodDataToModifiedFields.Add((location, unityEventName, index), last);
-
                 }
                 
                 foreach (var (_, set) in assetMethodDataToModifiedFields)
                     if (!set.Contains("m_MethodName"))
                         result.HasEventModificationWithoutMethodName = true;
             }
-        
+
+            foreach (var valueTuple in assetMethodUsagesSet)
+            {
+                result.AssetMethodUsagesSet.Add(valueTuple.Value.Item1, valueTuple.Value.Item2.ToAssetMethodUsages());
+            }
+
             return result;
         }
 
@@ -122,6 +148,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         {
             if (myImportedUnityEventDatas.TryGetValue(psiSourceFile, out var importedUnityEventData))
             {
+                foreach (var assetMethodUsages in importedUnityEventData.AssetMethodUsagesSet)
+                {
+                    yield return (assetMethodUsages.Key, assetMethodUsages.Value);
+                }
+                
                 foreach (var ((location, unityEventName), modifiedEvents) in importedUnityEventData.UnityEventToModifiedIndex)
                 {
                     var script = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(location, true) as IScriptComponentHierarchy;
@@ -145,6 +176,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                             yield return (location, result);
                     }
                 }
+            }
+        }
+        private class AssetMethodUsagesData
+        {
+            public string unityEventName; 
+            public string methodName;
+            public EventHandlerArgumentMode mode = EventHandlerArgumentMode.EventDefined;
+            public string type;
+            public IHierarchyReference targetReference;
+            public TextRange textRangeOwnerPsiPersistentIndex = TextRange.InvalidRange;
+            public OWORD textRangeOwner;
+
+            public AssetMethodUsages ToAssetMethodUsages()
+            {
+                return new AssetMethodUsages(unityEventName, methodName, textRangeOwnerPsiPersistentIndex,
+                    textRangeOwner, mode, type, targetReference);
             }
         }
     }
