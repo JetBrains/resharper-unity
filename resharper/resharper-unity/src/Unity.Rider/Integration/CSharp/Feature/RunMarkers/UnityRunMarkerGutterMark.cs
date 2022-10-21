@@ -67,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Run
                     var data = new RunMethodData(
                         runMarker.Project.GetOutputFilePath(runMarker.TargetFrameworkId).NameWithoutExtension,
                         containingType.GetClrName().FullName, runMarker.Method.ShortName);
-                    model.RunMethodInUnity.Start(solution.GetLifetime(), data);
+                    model.RunMethodInUnity.Start(solution.GetSolutionLifetimes().UntilSolutionCloseLifetime, data);
                 }),
                 new RichText($"Run '{methodFqn}'"),
                 iconId,
