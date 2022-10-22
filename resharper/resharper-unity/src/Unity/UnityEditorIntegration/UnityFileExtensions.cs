@@ -21,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         public const string SceneFileExtensionWithDot = ".unity";
         public const string ControllerFileExtensionWithDot = ".controller";
         public const string AnimFileExtensionWithDot = ".anim";
+        public const string InputActionsExtensionWithDot = ".inputactions";
 
         // Data files - does not include .meta
         public static readonly string[] YamlDataFileExtensionsWithDot =
@@ -58,6 +59,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
         public static bool IsPrefab(this IPath path) =>
             SimplePathEndsWith(path, PrefabFileExtensionWithDot);
+        
+        public static bool IsPrefab(this IPsiSourceFile sourceFile) =>
+            SourceFileNameEndsWith(sourceFile, PrefabFileExtensionWithDot);
 
         public static bool IsScene(this IPath path) =>
             SimplePathEndsWith(path, SceneFileExtensionWithDot);
@@ -76,9 +80,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
         public static bool IsAnim(this IPsiSourceFile sourceFile) =>
             SourceFileNameEndsWith(sourceFile, AnimFileExtensionWithDot);
+        
+        public static bool IsInputActions(this IPath path) =>
+            SimplePathEndsWith(path, InputActionsExtensionWithDot);
+        
+        public static bool IsInputActions(this IPsiSourceFile sourceFile) =>
+            SourceFileNameEndsWith(sourceFile, InputActionsExtensionWithDot);
 
         public static bool IsIndexedExternalFile(this IPath path) =>
-            path.IsYamlDataFile() || path.IsMeta() || path.IsAsmDef() || path.IsAsmRef();
+            path.IsYamlDataFile() || path.IsMeta() || path.IsAsmDef() || path.IsAsmRef() || path.IsInputActions();
 
         public static bool IsYamlDataFile(this IPath path)
         {

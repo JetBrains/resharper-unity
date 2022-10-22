@@ -90,5 +90,6 @@ object Library : Root() {
     val ProfilingData = structdef {
         field("enterPlayMode", bool)
         field("unityProfilerApiPath", string)
+        field("needRestartScripts", bool)
     }
 }

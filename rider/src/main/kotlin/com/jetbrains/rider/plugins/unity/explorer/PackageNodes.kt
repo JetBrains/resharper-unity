@@ -6,6 +6,7 @@ import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.NlsContexts
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
@@ -103,6 +104,7 @@ class PackageNode(project: Project, packageFolder: VirtualFile, private val pack
 
         val existingTooltip = presentation.tooltip ?: ""
 
+        // TODO #Localization RIDER-82737
         var tooltip = "<html>" + getPackageTooltip(name, packageEntity)
         tooltip += when (packageEntity.source) {
             UnityPackageSource.Embedded -> if (virtualFile.name != name) "<br/><br/>Folder name: ${virtualFile.name}" else ""
@@ -316,6 +318,7 @@ class BuiltinPackageNode(project: Project, private val packageEntity: UnityPacka
             presentation.addNonIndexedMark(myProject, virtualFile)
         }
 
+        // TODO #Localization RIDER-82737
         val tooltip = getPackageTooltip(name, packageEntity)
         if (tooltip != name) {
             presentation.tooltip = tooltip
@@ -370,6 +373,8 @@ private fun getPackageTooltip(displayName: String, packageEntity: UnityPackageEn
     return tooltip
 }
 
+//TODO #Localization RIDER-82737
+@NlsContexts.Tooltip
 private fun formatDescription(description: String): String {
     val text = description.replace("\n", "<br/>").let {
         StringUtil.shortenTextWithEllipsis(it, 600, 0, true)

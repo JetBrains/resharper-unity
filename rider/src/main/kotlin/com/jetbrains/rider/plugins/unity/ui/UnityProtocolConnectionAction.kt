@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.util.NlsActions
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.UnityEditorState
 
 class UnityProtocolConnectionAction : AnAction() {
@@ -25,8 +26,8 @@ class UnityProtocolConnectionAction : AnAction() {
     @NlsActions.ActionText
     fun getTooltipText(host: FrontendBackendHost): String {
         return when (host.model.unityEditorState.valueOrDefault(UnityEditorState.Disconnected)) {
-            UnityEditorState.Disconnected -> "Not Connected to Unity Editor"
-            else -> "Connected to Unity Editor"
+            UnityEditorState.Disconnected -> UnityBundle.message("action.not.connected.to.unity.editor.text")
+            else -> UnityBundle.message("action.connected.to.unity.editor.text")
         }
     }
 }

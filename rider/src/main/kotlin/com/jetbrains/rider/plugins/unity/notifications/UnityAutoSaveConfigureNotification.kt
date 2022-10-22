@@ -21,6 +21,7 @@ import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rd.util.reactive.*
 import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 import com.jetbrains.rider.document.getFirstEditor
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.ScriptCompilationDuringPlay
 import com.jetbrains.rider.plugins.unity.model.UnityEditorState
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -87,15 +88,15 @@ class UnityAutoSaveConfigureNotification(project: Project) : ProtocolSubscribedP
             return
 
         val panel = EditorNotificationPanel(LightColors.RED)
-        panel.text = "You are modifying a script while Unity Editor is being in Play Mode. This can lead to a loss of the state in your running game."
+        panel.text = UnityBundle.message("label.you.are.modifying.script.while.unity.editor.being.in.play.mode.this.can.lead.to.loss.state.in.your.running.game")
 
         @Suppress("DialogTitleCapitalization")
-        panel.createActionLabel("Configure Unity Editor") {
+        panel.createActionLabel(UnityBundle.message("link.label.configure.unity.editor")) {
             project.solution.frontendBackendModel.showPreferences.fire()
             lifetimeDefinition.terminate()
         }
 
-        panel.createActionLabel("Do not show again") {
+        panel.createActionLabel(UnityBundle.message("link.label.do.not.show.again")) {
             propertiesComponent.setValue(settingName, true)
             lifetimeDefinition.terminate()
         }

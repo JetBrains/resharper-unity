@@ -6,9 +6,8 @@ using JetBrains.Collections.Viewable;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.RdBackend.Common.Features.BackgroundTasks;
+using JetBrains.ProjectModel.ProjectsHost.SolutionHost.Progress;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
-using JetBrains.Rider.Backend.Features.BackgroundTasks;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Caches
 {
@@ -18,20 +17,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Caches
         private readonly Lifetime myLifetime;
         private readonly DeferredHelperCache myCache;
         private readonly IShellLocks myLocks;
-        [CanBeNull] private readonly RiderBackgroundTaskHost myRiderBackgroundTaskHost;
+        [CanBeNull] private readonly BackgroundProgressManager myBackgroundProgressManager;
 
-        public RiderDeferredCacheProgressBar(Lifetime lifetime, DeferredHelperCache cache, IShellLocks locks, [CanBeNull] RiderBackgroundTaskHost riderBackgroundTaskHost = null)
+        public RiderDeferredCacheProgressBar(Lifetime lifetime, DeferredHelperCache cache, IShellLocks locks, [CanBeNull] BackgroundProgressManager backgroundProgressManager = null)
             : base(lifetime, cache)
         {
             myLifetime = lifetime;
             myCache = cache;
             myLocks = locks;
-            myRiderBackgroundTaskHost = riderBackgroundTaskHost;
+            myBackgroundProgressManager = backgroundProgressManager;
         }
 
         public override void Start(Lifetime startLifetime)
         {
-            if (myRiderBackgroundTaskHost != null)
+            if (myBackgroundProgressManager != null)
             {
                 // avoid problems with background task host after terminating lifetime on daemon thread
                 var lifetimeDef = myLifetime.CreateNested();
@@ -52,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Caches
                 });
 
                 var description = new Property<string>(startLifetime, "DeferredCacheProgressBarDescription", "Processing assets");
-                var task = RiderBackgroundTaskBuilder.Create()
+                var task = BackgroundProgressBuilder.Create()
                     .WithTitle("Calculating asset index")
                     .WithDescription(description)
                     .WithProgress(progress)
@@ -61,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Caches
                 CurrentFile.AdviseNotNull(startLifetime, v => { description.Value = $"Processing {v.DisplayName}"; });
 
                 myLocks.Tasks.StartNew(startLifetime, Scheduling.MainDispatcher,
-                    () => { myRiderBackgroundTaskHost.AddNewTask(lifetimeDef.Lifetime, task); });
+                    () => { myBackgroundProgressManager.AddNewTask(lifetimeDef.Lifetime, task); });
             }
         }
     }

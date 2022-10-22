@@ -28,12 +28,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
                 properties.LanguageKind = CppLanguageKind.HLSL;
                 var path = CgIncludeDirectoryTracker.GetCgIncludeFolderPath(myUnityVersion);
                 if (!path.IsEmpty)
-                    properties.IncludePaths.Add(path);
+                    properties.HeaderSearchPaths.IncludePaths.Add(path);
 
                 properties.ForcedIncludes.Add(globalCache.Solution.SolutionDirectory.Combine(Utils.ShaderConfigFile).FullPath);
 
                 properties.PredefinedMacros.Add(CppPPDefineSymbolUtil.ParsePredefinedMacro("SHADER_API_D3D11"));
-                properties.IncludePaths.Add(globalCache.Solution.SolutionDirectory);
+                properties.HeaderSearchPaths.IncludePaths.Add(globalCache.Solution.SolutionDirectory);
 
                 return properties;
             }

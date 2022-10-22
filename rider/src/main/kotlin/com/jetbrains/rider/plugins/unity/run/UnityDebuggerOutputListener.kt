@@ -12,6 +12,7 @@ import com.jetbrains.rider.debugger.DotNetDebugProcess
 import com.jetbrains.rider.model.debuggerWorker.OutputMessageWithSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputType
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.run.IDebuggerOutputListener
 import javax.swing.event.HyperlinkEvent
@@ -21,21 +22,21 @@ class UnityDebuggerOutputListener(val project: Project, private val host: String
 
     override fun onOutputMessageAvailable(message: OutputMessageWithSubject) {
         if (message.subject == OutputSubject.ConnectionError) {
-            var text = "Unable to connect to $targetName"
+            var text = UnityBundle.message("notification.content.unable.to.connect.to", targetName)
 
             val unityVersion: String? = UnityInstallationFinder.getInstance(project).getApplicationVersion(2)
             text += if (unityVersion != null && VersionComparatorUtil.compare(unityVersion, "2018.2") >= 0) {
                 val url = "https://docs.unity3d.com/$unityVersion/Documentation/Manual/ManagedCodeDebugging.html"
                 if (isEditor) {
-                    "\nPlease follow <a href=\"$url\">Debugging in the Editor</a> documentation.\n"
+                    UnityBundle.message("notification.content.please.follow.href.debugging.in.editor.documentation", url)
                 } else {
-                    "\nPlease follow <a href=\"$url\">Debugging in the Player</a> documentation.\n"
+                    UnityBundle.message("notification.content.please.follow.href.debugging.in.player.documentation", url)
                 }
             } else {
                 if (isEditor) {
-                    "\nPlease ensure 'Editor Attaching' is enabled in Unity's External Tools settings page.\n"
+                    UnityBundle.message("notification.content.please.ensure.editor.attaching.enabled.in.unity.s.external.tools.settings.page")
                 } else {
-                    "\nPlease ensure that the player has 'Script Debugging' enabled and that the host '$host' is reachable.\n"
+                    UnityBundle.message("notification.content.please.ensure.that.player.has.script.debugging.enabled.that.host.reachable", host)
                 }
             }
 

@@ -8,6 +8,7 @@ import com.intellij.openapi.wm.impl.status.StatusBarUtil
 import com.intellij.ui.content.ContentManagerEvent
 import com.intellij.ui.content.ContentManagerListener
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelView
 import icons.UnityIcons
@@ -64,7 +65,7 @@ class UnityToolWindowFactory(project: Project) : LifetimedProjectComponent(proje
 
         val logModel = UnityLogPanelModel(componentLifetime, project, toolWindow)
         val logView = UnityLogPanelView(componentLifetime, project, logModel, toolWindow)
-        val toolWindowContent = contentManager.factory.createContent(null, "Log", true).apply {
+        val toolWindowContent = contentManager.factory.createContent(null, UnityBundle.message("tab.title.log"), true).apply {
             StatusBarUtil.setStatusBarInfo(project, "")
             component = logView.panel
             isCloseable = false

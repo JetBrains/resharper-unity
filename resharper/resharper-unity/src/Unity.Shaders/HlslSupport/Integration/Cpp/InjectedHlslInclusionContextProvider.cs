@@ -36,9 +36,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
                 CgIncludeDirectoryTracker.GetCgIncludeFolderPath(cache.Solution.GetComponent<UnityVersion>());
             if (!cgIncludeFolder.IsEmpty)
             {
-                properties.IncludePaths.Add(cgIncludeFolder);
+                properties.HeaderSearchPaths.IncludePaths.Add(cgIncludeFolder);
             }
-            properties.IncludePaths.Add(cache.Solution.SolutionDirectory);
+            properties.HeaderSearchPaths.IncludePaths.Add(cache.Solution.SolutionDirectory);
 
             return CreateInclusionContextResult(cache, rootFile, options, properties, null, cacheVersion, lifetime);
         }

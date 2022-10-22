@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity.toolWindow.log
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.*
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.LogEventMode
 import com.jetbrains.rider.plugins.unity.model.LogEventType
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
@@ -24,10 +25,12 @@ object UnityLogPanelToolbarBuilder {
     }
 
     fun createLeftToolbar(model: UnityLogPanelModel): JPanel {
+        //TODO #Localization RIDER-82737 This pluralization will not work in other languages
         fun createType(type: LogEventType) = object : ToggleAction("Show/Hide ${type}s", "", type.getIcon()) {
             override fun isSelected(e: AnActionEvent) = model.typeFilters.getShouldBeShown(type)
             override fun setSelected(e: AnActionEvent, value: Boolean) = model.typeFilters.setShouldBeShown(type, value)
 
+            //TODO #Localization RIDER-82737 This pluralization will not work in other languages
             override fun update(e: AnActionEvent) {
                 if (isSelected(e))
                     e.presentation.text = "Hide ${type}s"
@@ -37,27 +40,27 @@ object UnityLogPanelToolbarBuilder {
             }
         }
 
-        fun createMode(mode: LogEventMode) = object : ToggleAction("Show/Hide '$mode' mode", "", mode.getIcon()) {
+        fun createMode(mode: LogEventMode) = object : ToggleAction(UnityBundle.message("action.show.hide.mode.text", mode), "", mode.getIcon()) {
             override fun isSelected(e: AnActionEvent) = model.modeFilters.getShouldBeShown(mode)
             override fun setSelected(e: AnActionEvent, value: Boolean) = model.modeFilters.setShouldBeShown(mode, value)
 
             override fun update(e: AnActionEvent) {
                 if (isSelected(e))
-                    e.presentation.text = "Hide '$mode' mode"
+                    e.presentation.text = UnityBundle.message("action.hide.mode.text", mode)
                 else
-                    e.presentation.text = "Show '$mode' mode"
+                    e.presentation.text = UnityBundle.message("action.show.mode.text", mode)
                 super.update(e)
             }
         }
 
-        fun collapseAll() = object : ToggleAction("Collapse Similar Items", "", AllIcons.Actions.Collapseall) {
+        fun collapseAll() = object : ToggleAction(UnityBundle.message("action.collapse.similar.items.text"), "", AllIcons.Actions.Collapseall) {
             override fun isSelected(e: AnActionEvent) = model.mergeSimilarItems.value
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.mergeSimilarItems.set(value)
             }
         }
 
-        fun autoscroll() = object : ToggleAction("Autoscroll", "", AllIcons.RunConfigurations.Scroll_down) {
+        fun autoscroll() = object : ToggleAction(UnityBundle.message("action.autoscroll.text"), "", AllIcons.RunConfigurations.Scroll_down) {
             override fun isSelected(e: AnActionEvent) = model.autoscroll.value
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.autoscroll.set(value)
@@ -65,14 +68,14 @@ object UnityLogPanelToolbarBuilder {
             }
         }
 
-        fun createBeforePlay() = object : ToggleAction("Messages Before Last Play in Unity", "", UnityIcons.LogView.FilterBeforePlay) {
+        fun createBeforePlay() = object : ToggleAction(UnityBundle.message("action.messages.before.last.play.in.unity.text"), "", UnityIcons.LogView.FilterBeforePlay) {
             override fun isSelected(e: AnActionEvent) = model.timeFilters.getShouldBeShownBeforePlay()
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.timeFilters.setShowBeforePlay(value)
             }
         }
 
-        fun createBeforeInit() = object : ToggleAction("Messages Before Last Domain Reload", "",  UnityIcons.LogView.FilterBeforeRefresh) {
+        fun createBeforeInit() = object : ToggleAction(UnityBundle.message("action.messages.before.last.domain.reload.text"), "", UnityIcons.LogView.FilterBeforeRefresh) {
             override fun isSelected(e: AnActionEvent) = model.timeFilters.getShouldBeShownBeforeInit()
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.timeFilters.setShowBeforeLastBuild(value)
@@ -80,20 +83,20 @@ object UnityLogPanelToolbarBuilder {
         }
 
         val actionGroup = DefaultActionGroup().apply {
-            addSeparator("Mode Filters")
+            addSeparator(UnityBundle.message("separator.mode.filters"))
             add(createMode(LogEventMode.Edit))
             add(createMode(LogEventMode.Play))
-            addSeparator("Type Filters")
+            addSeparator(UnityBundle.message("separator.type.filters"))
             add(createType(LogEventType.Error))
             add(createType(LogEventType.Warning))
             add(createType(LogEventType.Message))
-            addSeparator("Time Filters")
+            addSeparator(UnityBundle.message("separator.time.filters"))
             add(createBeforePlay())
             add(createBeforeInit())
-            addSeparator("Other")
+            addSeparator(UnityBundle.message("separator.other"))
             add(collapseAll())
             add(autoscroll())
-            add(RiderAction("Clear", AllIcons.Actions.GC) { model.events.clear() })
+            add(RiderAction(UnityBundle.message("action.clear.text"), AllIcons.Actions.GC) { model.events.clear() })
         }
 
         return create(actionGroup, BorderLayout.WEST, false)

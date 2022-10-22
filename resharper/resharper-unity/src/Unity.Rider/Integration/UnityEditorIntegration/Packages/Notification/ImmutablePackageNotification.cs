@@ -3,11 +3,11 @@
 using System;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.RdBackend.Common.Features.TextControls;
 using JetBrains.ReSharper.Features.Inspections.Bookmarks.NumberedBookmarks;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.Rider.Backend.Features.Notifications;
-using JetBrains.Rider.Backend.Features.TextControls;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration.Packages.Notification
@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         public ImmutablePackageNotification(Lifetime lifetime,
             UnitySolutionTracker solutionTracker,
             ISolution solution,
-            RiderTextControlHost riderTextControlHost,
+            ITextControlHost textControlHost,
             NotificationPanelHost notificationPanelHost,
             UnityVersion unityVersion)
         {
@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
             var localPackageCacheFolder = UnityCachesFinder.GetLocalPackageCacheFolder(solution.SolutionDirectory);
 
-            riderTextControlHost.ViewHostTextControls(lifetime, (lt, id, textControl) =>
+            textControlHost.ViewHostTextControls(lifetime, (lt, id, textControl) =>
             {
                 var projectFile = textControl.ToProjectFile(solution);
                 if (projectFile == null)

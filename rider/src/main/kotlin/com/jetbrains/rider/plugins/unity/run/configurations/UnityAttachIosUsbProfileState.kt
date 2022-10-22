@@ -7,6 +7,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.io.isDirectory
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityIosUsbStartInfo
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
@@ -26,7 +27,7 @@ class UnityAttachIosUsbProfileState(private val project: Project, private val re
         // This shouldn't be false - if we're starting debug, that means we'll have listed the USB device, and that
         // should mean we've already used the usbmuxd DLL from the support folder
         if (iosSupportPath?.isDirectory() == false) {
-            throw CantRunException("Unable to find iOSSupport folder: $iosSupportPath")
+            throw CantRunException(UnityBundle.message("dialog.message.unable.to.find.iossupport.folder", iosSupportPath))
         }
 
         return UnityIosUsbStartInfo(iosSupportPath.toString(),

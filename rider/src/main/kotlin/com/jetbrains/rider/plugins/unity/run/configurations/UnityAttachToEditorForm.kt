@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 
 class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel)
@@ -13,9 +14,9 @@ class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel)
 
         viewModel.editorInstanceJsonStatus.advise(viewModel.lifetime) {
             editorInstanceJsonError.text = when (it) {
-                EditorInstanceJsonStatus.Error -> "Error reading Library/EditorInstance.json"
-                EditorInstanceJsonStatus.Missing -> "Cannot read Library/EditorInstance.json - file is missing"
-                EditorInstanceJsonStatus.Outdated -> "Outdated process ID from Library/EditorInstance.json"
+                EditorInstanceJsonStatus.Error -> UnityBundle.message("error.text.error.reading.library.editorinstance.json")
+                EditorInstanceJsonStatus.Missing -> UnityBundle.message("error.text.cannot.read.library.editorinstance.json.file.is.missing")
+                EditorInstanceJsonStatus.Outdated -> UnityBundle.message("error.text.outdated.process.id.from.library.editorinstance.json")
                 else -> ""
             }
 
@@ -31,7 +32,7 @@ class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel)
             val value = it?.toString() ?: ""
 
             // This text is only shown when editorInstanceJsonInfoPanel is visible
-            processIdInfo.text = "Using process ID $value from Library/EditorInstance.json"
+            processIdInfo.text = UnityBundle.message("using.process.id.0.from.library.editorinstance.json", value)
 
             // This is the sound of me giving up. Changing the selection of the JTable doesn't
             // mark the SettingsEditor as modified - whoever is interested subscribes to the
