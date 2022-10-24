@@ -31,18 +31,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         /// 3. GetPossibleFilesWithUsage will check that associated with guid type element is derived from method's type element and process only in that case
         /// NB : resolve to real ScriptComponentHierarchy will be cached in PrefabImportCache for stripped elements or will be simply available in current scene hierarchy
         /// </summary>
-        private readonly CountingSet<IPsiSourceFile> myFilesToCheckForUsages = new CountingSet<IPsiSourceFile>();
+        private readonly CountingSet<IPsiSourceFile> myFilesToCheckForUsages = new();
         
         // both collection could be removed and replaced by pointer to UnityEventsDataElement with coressponding sourceFile
         // NB: LocalReference == pointer to source file too.
-        private readonly Dictionary<IPsiSourceFile, ImportedUnityEventData> myImportedUnityEventDatas = new Dictionary<IPsiSourceFile, ImportedUnityEventData>();
+        private readonly Dictionary<IPsiSourceFile, ImportedUnityEventData> myImportedUnityEventDatas = new();
         #endregion
         
         
         private ImportedUnityEventData ProcessPrefabModifications(IPsiSourceFile currentFile, AssetDocument document)
         {
             var result = new ImportedUnityEventData();
-            var assetMethodUsagesSet = new Dictionary<int, (LocalReference, AssetMethodUsagesData)>();
+            var assetMethodUsagesSet = new Dictionary<(LocalReference, string, int), AssetMethodUsagesData>();
             if (document.HierarchyElement is IPrefabInstanceHierarchy prefabInstanceHierarchy)
             {
                 var assetMethodDataToModifiedFields = new OneToSetMap<(LocalReference, string, int), string>();
@@ -65,30 +65,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     if (!int.TryParse(dataPart.RemoveStart("data[").RemoveEnd("]"), out var index))
                         continue;
                     
-                    if (!assetMethodUsagesSet.TryGetValue(index, out var value))
+                    if (!assetMethodUsagesSet.TryGetValue((location, unityEventName, index), out var value))
                     {
-                        value = new (location, new AssetMethodUsagesData());
-                        assetMethodUsagesSet.Add(index, value);
+                        value = new AssetMethodUsagesData();
+                        assetMethodUsagesSet.Add((location, unityEventName, index), value);
                     }
                     
-                    assetMethodUsagesSet[index].Item2.unityEventName = unityEventName;
+                    assetMethodUsagesSet[(location, unityEventName, index)].unityEventName = unityEventName;
                     result.UnityEventToModifiedIndex.Add((location, unityEventName), index);
                     
                     var last = parts.Last();
                     if (last.Equals("m_MethodName") && modification.Value is AssetSimpleValue assetSimpleValue)
                     {
                         result.AssetMethodNameInModifications.Add(assetSimpleValue.SimpleValue);
-                        assetMethodUsagesSet[index].Item2.methodName = assetSimpleValue.SimpleValue;
-                        assetMethodUsagesSet[index].Item2.textRangeOwnerPsiPersistentIndex = modification.ValueRange;
+                        assetMethodUsagesSet[(location, unityEventName, index)].methodName = assetSimpleValue.SimpleValue;
+                        assetMethodUsagesSet[(location, unityEventName, index)].textRangeOwnerPsiPersistentIndex = modification.ValueRange;
                     }
                     else if (last.Equals("m_Target") && modification.ObjectReference is ExternalReference er)
-                        assetMethodUsagesSet[index].Item2.targetReference = er;
+                        assetMethodUsagesSet[(location, unityEventName, index)].targetReference = er;
                     else if (last.Equals("m_Mode") && modification.Value is AssetSimpleValue modeSimpleValue)
-                        assetMethodUsagesSet[index].Item2.mode = GetEventHandlerArgumentMode(modeSimpleValue.SimpleValue);
+                        assetMethodUsagesSet[(location, unityEventName, index)].mode = GetEventHandlerArgumentMode(modeSimpleValue.SimpleValue);
                     else if (last.Equals("m_ObjectArgumentAssemblyTypeName") && modification.Value is AssetSimpleValue objectArgumentAssemblyTypeNameSimpleValue)
-                        assetMethodUsagesSet[index].Item2.type = objectArgumentAssemblyTypeNameSimpleValue.SimpleValue?.Split(',').FirstOrDefault(); // the logic here is simpler then in UnityEventsElementContainer.cs
+                        assetMethodUsagesSet[(location, unityEventName, index)].type = objectArgumentAssemblyTypeNameSimpleValue.SimpleValue?.Split(',').FirstOrDefault(); // the logic here is simpler then in UnityEventsElementContainer.cs
 
-                    assetMethodUsagesSet[index].Item2.textRangeOwner =
+                    assetMethodUsagesSet[(location, unityEventName, index)].textRangeOwner =
                         currentFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null");
                     assetMethodDataToModifiedFields.Add((location, unityEventName, index), last);
                 }
@@ -98,9 +98,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                         result.HasEventModificationWithoutMethodName = true;
             }
 
-            foreach (var valueTuple in assetMethodUsagesSet)
+            foreach (var ((localRef, _, _), value) in assetMethodUsagesSet)
             {
-                result.AssetMethodUsagesSet.Add(valueTuple.Value.Item1, valueTuple.Value.Item2.ToAssetMethodUsages());
+                result.AssetMethodUsagesSet.Add(localRef, value.ToAssetMethodUsages());
             }
 
             return result;
@@ -148,9 +148,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         {
             if (myImportedUnityEventDatas.TryGetValue(psiSourceFile, out var importedUnityEventData))
             {
-                foreach (var assetMethodUsages in importedUnityEventData.AssetMethodUsagesSet)
+                foreach (var (location, assetMethodUsagesList) in importedUnityEventData.AssetMethodUsagesSet)
                 {
-                    yield return (assetMethodUsages.Key, assetMethodUsages.Value);
+                    foreach (var assetMethodUsages in assetMethodUsagesList)
+                    {
+                        yield return (location, assetMethodUsages);    
+                    }
                 }
                 
                 foreach (var ((location, unityEventName), modifiedEvents) in importedUnityEventData.UnityEventToModifiedIndex)
