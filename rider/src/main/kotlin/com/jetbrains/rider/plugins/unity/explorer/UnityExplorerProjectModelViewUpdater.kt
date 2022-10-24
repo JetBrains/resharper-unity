@@ -13,7 +13,6 @@ import com.jetbrains.rider.plugins.unity.util.findFile
 import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 import com.jetbrains.rider.projectView.ProjectModelViewUpdater
 import com.jetbrains.rider.projectView.views.SolutionViewVisitor
-import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 
 class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewUpdater(project) {
@@ -45,7 +44,7 @@ class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewU
                 }
             }
         }
-        WorkspaceModelTopics.getInstance(project).subscribeImmediately(project.messageBus.connect(project), listener)
+        project.messageBus.connect(project).subscribe(WorkspaceModelTopics.CHANGED, listener)
     }
 
     override fun update(entity: ProjectModelEntity?) {
