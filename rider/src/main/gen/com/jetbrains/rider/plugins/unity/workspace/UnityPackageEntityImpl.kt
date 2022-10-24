@@ -3,16 +3,16 @@
 package com.jetbrains.rider.plugins.unity.workspace
 
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.workspaceModel.ide.impl.toVirtualFile
 import com.intellij.workspaceModel.storage.*
 import com.intellij.workspaceModel.storage.EntityInformation
 import com.intellij.workspaceModel.storage.EntitySource
 import com.intellij.workspaceModel.storage.EntityStorage
 import com.intellij.workspaceModel.storage.GeneratedCodeApiVersion
 import com.intellij.workspaceModel.storage.GeneratedCodeImplVersion
-import com.intellij.workspaceModel.storage.ModifiableWorkspaceEntity
 import com.intellij.workspaceModel.storage.MutableEntityStorage
 import com.intellij.workspaceModel.storage.WorkspaceEntity
-import com.intellij.workspaceModel.storage.bridgeEntities.api.ContentRootEntity
+import com.intellij.workspaceModel.storage.bridgeEntities.ContentRootEntity
 import com.intellij.workspaceModel.storage.impl.ConnectionId
 import com.intellij.workspaceModel.storage.impl.EntityLink
 import com.intellij.workspaceModel.storage.impl.ModifiableWorkspaceEntityBase
@@ -24,8 +24,6 @@ import com.intellij.workspaceModel.storage.impl.updateOneToOneChildOfParent
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityGitDetails
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
-import org.jetbrains.deft.ObjBuilder
-import org.jetbrains.deft.Type
 import org.jetbrains.deft.annotations.Child
 
 @GeneratedCodeApiVersion(1)
@@ -53,7 +51,7 @@ open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : Unit
         return connections
     }
 
-    class Builder(val result: UnityPackageEntityData?) : ModifiableWorkspaceEntityBase<UnityPackageEntity>(), UnityPackageEntity.Builder {
+    class Builder(var result: UnityPackageEntityData?) : ModifiableWorkspaceEntityBase<UnityPackageEntity>(), UnityPackageEntity.Builder {
         constructor() : this(UnityPackageEntityData())
 
         override fun applyToBuilder(builder: MutableEntityStorage) {
@@ -71,6 +69,9 @@ open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : Unit
             this.snapshot = builder
             addToBuilder()
             this.id = getEntityData().createEntityId()
+            // After adding entity data to the builder, we need to unbind it and move the control over entity data to builder
+            // Builder may switch to snapshot at any moment and lock entity data to modification
+            this.result = null
 
             // Process linked entities that are connected without a builder
             processLinkedEntities(builder)
@@ -94,8 +95,8 @@ open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : Unit
         // Relabeling code, move information from dataSource to this builder
         override fun relabel(dataSource: WorkspaceEntity, parents: Set<WorkspaceEntity>?) {
             dataSource as UnityPackageEntity
-            this.entitySource = dataSource.entitySource
-            this.descriptor = dataSource.descriptor
+            if (this.entitySource != dataSource.entitySource) this.entitySource = dataSource.entitySource
+            if (this.descriptor != dataSource.descriptor) this.descriptor = dataSource.descriptor
             if (parents != null) {
             }
         }
@@ -164,7 +165,7 @@ class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
 
     fun isDescriptorInitialized(): Boolean = ::descriptor.isInitialized
 
-    override fun wrapAsModifiable(diff: MutableEntityStorage): ModifiableWorkspaceEntity<UnityPackageEntity> {
+    override fun wrapAsModifiable(diff: MutableEntityStorage): WorkspaceEntity.Builder<UnityPackageEntity> {
         val modifiable = UnityPackageEntityImpl.Builder(null)
         modifiable.allowModifications {
             modifiable.diff = diff
@@ -208,7 +209,7 @@ class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
 
     override fun equals(other: Any?): Boolean {
         if (other == null) return false
-        if (this::class != other::class) return false
+        if (this.javaClass != other.javaClass) return false
 
         other as UnityPackageEntityData
 
@@ -219,7 +220,7 @@ class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
 
     override fun equalsIgnoringEntitySource(other: Any?): Boolean {
         if (other == null) return false
-        if (this::class != other::class) return false
+        if (this.javaClass != other.javaClass) return false
 
         other as UnityPackageEntityData
 
