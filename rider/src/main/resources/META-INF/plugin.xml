@@ -221,7 +221,7 @@
             description="Trigger refresh assets in Unity Editor"
             icon="UnityIcons.Actions.RefreshInUnity" />
 
-    <group id="UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
+    <group id="OldUIUnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
       <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
       <add-to-group group-id="RightToolbarSideGroup" relative-to-action="BuildSolutionAction" anchor="after" />
 
@@ -229,6 +229,12 @@
       <action id="UnityToolbarLabel"
               class="com.jetbrains.rider.plugins.unity.actions.UnityToolbarLabel"
               text="Unity:"/>
+    </group>
+
+    <group id="UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
+      <add-to-group group-id="OldUIUnityToolbarActions" anchor="last"/>
+      <add-to-group group-id="MainToolbarCenter" anchor="last" /> <!--new UI -->
+
       <action id="TriggerPlayInUnity"
               class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction"
               text="Play/Edit"
@@ -263,9 +269,7 @@
         <separator/>
 
         <action id="HideUnityPlayActions"
-                class="com.jetbrains.rider.plugins.unity.ui.UnityPlayButtonsAction"
-                text="Show Unity Play/Pause Actions"
-                description="Show or hide Unity Play/Pause actions" />
+                class="com.jetbrains.rider.plugins.unity.ui.UnityPlayButtonsAction" />
         <action id="SwitchUIModeAction"
                 class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode"
                 text="Show Non-Unity Applicable UI"
