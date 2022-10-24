@@ -141,7 +141,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         {
             if (typeSpec.TypeParameters.Length == 0)
             {
-                var keyword = CSharpTypeFactory.GetTypeKeyword(typeSpec.ClrTypeName);
+                var keyword = CSharpTypeFactory.GetTypeKeyword(typeSpec.ClrTypeName, module);
                 if (keyword != null)
                     return keyword;
             }
