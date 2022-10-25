@@ -213,7 +213,7 @@
             class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction"
             icon="UnityIcons.Actions.RefreshInUnity" />
 
-    <group id="OldUIUnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
+    <group id="UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
       <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
       <add-to-group group-id="RightToolbarSideGroup" relative-to-action="BuildSolutionAction" anchor="after" />
 
@@ -223,8 +223,8 @@
               text="Unity:"/>
     </group>
 
-    <group id="UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
-      <add-to-group group-id="OldUIUnityToolbarActions" anchor="last"/>
+    <group id="NewUI_UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
+      <add-to-group group-id="UnityToolbarActions" anchor="last"/>
       <add-to-group group-id="MainToolbarCenter" anchor="last" /> <!--new UI -->
 
       <action id="TriggerPlayInUnity"
