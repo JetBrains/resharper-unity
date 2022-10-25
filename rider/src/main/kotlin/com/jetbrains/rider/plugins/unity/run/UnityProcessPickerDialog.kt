@@ -323,7 +323,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                 append(itemComponent, " ${unityProcess.host}:${unityProcess.port}", SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
             }
             if (unityProcess is UnityLocalProcess) {
-                append(itemComponent, UnityBundle.message("appended.pid.0", unityProcess.pid), SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
+                append(itemComponent, UnityBundle.message("appended.pid.0", unityProcess.pid.toString()), SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
             }
 
             SpeedSearchUtil.applySpeedSearchHighlighting(tree, itemComponent, true, selected)
