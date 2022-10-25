@@ -53,10 +53,10 @@ class RiderUnityOpenPlayerLogAction : RiderUnityLogViewAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val f = project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.playerLogPath
-        if (f!=null)
+        val path = project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.playerLogPath
+        if (path!=null)
         {
-            val vf = VfsUtil.findFileByIoFile(File(f), true)
+            val vf = VfsUtil.findFileByIoFile(File(path), true)
             if (vf!=null)
             {
                 val descriptor = OpenFileDescriptor(project, vf)
@@ -66,7 +66,7 @@ class RiderUnityOpenPlayerLogAction : RiderUnityLogViewAction() {
             {
                 val groupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity log open")
                 val title = UnityPluginActionsBundle.message("notification.title.could.not.open.unity.player.log")
-                val message = UnityPluginActionsBundle.message("notification.content.not.present", f)
+                val message = UnityPluginActionsBundle.message("notification.content.not.present", path)
                 val notification = Notification(groupId.displayId, title, message, NotificationType.INFORMATION)
                 Notifications.Bus.notify(notification, project)
             }
