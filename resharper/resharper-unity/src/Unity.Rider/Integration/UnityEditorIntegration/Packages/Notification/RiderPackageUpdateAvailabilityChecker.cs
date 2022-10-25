@@ -140,7 +140,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                                 $"Check for JetBrains Rider package {packageVersion} in Unity Package Manager.",
                                 additionalCommands: new[]
                                 {
-                                    new UserNotificationCommand("Never show for this solution", () =>
+                                    new UserNotificationCommand("Do not show for this solution", () =>
                                     {
                                         mySettingsStore.BindToContextTransient(
                                                 ContextRange.ManuallyRestrictWritesToOneContext(
