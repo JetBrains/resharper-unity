@@ -15,6 +15,7 @@ using JetBrains.RdBackend.Common.Features;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Backend.Features.FileSystem;
@@ -106,7 +107,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             {
                 myLogger.Verbose($"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Started");
                 mySolution.GetComponent<BackgroundProgressManager>().AddNewTask(lifetimeDef.Lifetime,
-                    BackgroundProgressBuilder.Create().WithHeader("Refreshing solution in Unity Editor...")
+                    BackgroundProgressBuilder.Create().WithHeader(Strings.UnityRefresher_RefreshInternal_Refreshing_solution_in_Unity_Editor___)
                         .AsIndeterminate().AsNonCancelable());
 
                 var version = myUnityVersion.ActualVersionForSolution.Value;

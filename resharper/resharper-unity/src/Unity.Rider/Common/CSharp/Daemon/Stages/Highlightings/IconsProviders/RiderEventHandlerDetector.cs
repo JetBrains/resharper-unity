@@ -108,7 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Hi
             var animationEventUsagesCount = myAnimationEventUsagesContainer
                 .GetEventUsagesCountFor(declaredElement, out var animationEventsEstimatedResult);
             myUsagesCodeVisionProvider.AddHighlighting(consumer, element, declaredElement,
-                animationEventUsagesCount + eventsCount, "Click to view usages in assets", "Assets usages",
+                animationEventUsagesCount + eventsCount, Strings.RiderEventHandlerDetector_AddEventsHighlighting_Click_to_view_usages_in_assets, Strings.RiderEventHandlerDetector_AddEventsHighlighting_Assets_usages,
                 unityEventsEstimatedResult || animationEventsEstimatedResult, iconModel);
         }
     }

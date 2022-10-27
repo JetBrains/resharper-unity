@@ -14,6 +14,7 @@ using JetBrains.Rd.Tasks;
 using JetBrains.RdBackend.Common.Features;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitTesting;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.UnitTestFramework.Execution;
 using JetBrains.Rider.Backend.Features.Unity;
@@ -124,7 +125,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
       
             await myThreading.Tasks.YieldToIfNeeded(startUnityDefinition.Lifetime, Scheduling.MainGuard);
 
-            myIndicatorManager.CreateBackgroundProgress(startUnityDefinition.Lifetime, "Start Unity Editor", startUnityDefinition.Terminate);
+            myIndicatorManager.CreateBackgroundProgress(startUnityDefinition.Lifetime, Strings.UnityController_StartUnityInternal_Start_Unity_Editor, startUnityDefinition.Terminate);
 
             return await startUnityTask.ConfigureAwait(false);
         }

@@ -6,6 +6,7 @@ using JetBrains.ProjectModel;
 using JetBrains.RdBackend.Common.Features.TextControls;
 using JetBrains.ReSharper.Features.Inspections.Bookmarks.NumberedBookmarks;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.Rider.Backend.Features.Notifications;
 using JetBrains.Util;
@@ -41,17 +42,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                 
                 if (localPackageCacheFolder.IsPrefixOf(projectFile.Location))
                 {
-                    message = "This file is part of the Unity Package Cache. Any changes made will be lost.";
+                    message = Strings.ImmutablePackageNotification_ImmutablePackageNotification_This_file_is_part_of_the_Unity_Package_Cache__Any_changes_made_will_be_lost_;
                 }
                 else if (UnityCachesFinder.GetPackagesCacheRoot().IsPrefixOf(projectFile.Location)) 
                 {
-                    message = "This file is part of the Global Unity Package Cache. Any changes made will be lost.";
+                    message = Strings.ImmutablePackageNotification_ImmutablePackageNotification_This_file_is_part_of_the_Global_Unity_Package_Cache__Any_changes_made_will_be_lost_;
                 }
                 else 
                 {
                     var builtInPackagesFolder = UnityCachesFinder.GetBuiltInPackagesFolder(unityVersion.GetActualAppPathForSolution());
                     if (!builtInPackagesFolder.IsEmpty && builtInPackagesFolder.IsPrefixOf(projectFile.Location))
-                        message = "This file is part of the BuildIn Unity Package Cache. Any changes made will be lost.";
+                        message = Strings.ImmutablePackageNotification_ImmutablePackageNotification_This_file_is_part_of_the_BuildIn_Unity_Package_Cache__Any_changes_made_will_be_lost_;
                 }
                 
                 if (message is not null) 

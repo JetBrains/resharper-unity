@@ -4,6 +4,7 @@ using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Backend.Features.RunMarkers;
@@ -56,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Run
                     var model = backendUnityHost.BackendUnityModel.Value;
                     if (model == null)
                     {
-                        var notification = new NotificationModel("No connection to Unity", "Make sure Unity is running.",
+                        var notification = new NotificationModel(Strings.UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_No_connection_to_Unity, Strings.UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_Make_sure_Unity_is_running_,
                             true, RdNotificationEntryType.WARN, new List<NotificationHyperlink>());
                         notificationsModel.Notification(notification);
                         return;

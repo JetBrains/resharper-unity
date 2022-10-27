@@ -1,5 +1,4 @@
 using JetBrains.ReSharper.Daemon.Syntax;
-using JetBrains.ReSharper.Daemon.SyntaxHighlighting;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodeTypes;
 using JetBrains.ReSharper.Psi.Parsing;
