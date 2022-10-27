@@ -72,9 +72,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Bu
             var actions = myCodeInsights.GetBurstActions(methodDeclaration, context);
 
             myBurstCodeInsightProvider.AddHighlighting(consumer, methodDeclaration, declaredElement,
-                BurstCodeAnalysisUtil.BURST_DISPLAY_NAME,
-                BurstCodeAnalysisUtil.BURST_TOOLTIP,
-                BurstCodeAnalysisUtil.BURST_DISPLAY_NAME,
+                BurstCodeAnalysisUtil.BurstDisplayName,
+                BurstCodeAnalysisUtil.BurstTooltip,
+                BurstCodeAnalysisUtil.BurstDisplayName,
                 iconModel,
                 actions,
                 extraActions: null);

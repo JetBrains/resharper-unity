@@ -31,4 +31,7 @@
     <data name="TurnOnAnyway_Text" xml:space="preserve">
         <value>Turn on anyway</value>
     </data>
+    <data name="BurstCompiledCode_Text" xml:space="preserve">
+        <value>Burst compiled code</value>
+    </data>
 </root>

@@ -70,4 +70,13 @@
     <data name="RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__0__in_Unity_Package_Manager_" xml:space="preserve">
         <value>Check for JetBrains Rider package {0} in Unity Package Manager.</value>
     </data>
+    <data name="UsagesInAssetsAreNotAvailableDuring_Text" xml:space="preserve">
+        <value>Usages in assets are not available during asset indexing</value>
+    </data>
+    <data name="UnityImplicitUsage_Text" xml:space="preserve">
+        <value>Unity implicit usage</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_DisplayName_Unity_serialized_field" xml:space="preserve">
+        <value>Unity serialized field</value>
+    </data>
 </root>

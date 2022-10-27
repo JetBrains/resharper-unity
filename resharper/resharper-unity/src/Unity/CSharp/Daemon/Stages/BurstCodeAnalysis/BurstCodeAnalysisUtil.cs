@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis
 {
@@ -24,9 +25,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             new ClrTypeName("Unity.Collections.FixedString512Bytes"),
             new ClrTypeName("Unity.Collections.FixedString4096Bytes")
         };
-        
-        public const string BURST_DISPLAY_NAME = BURST_TOOLTIP;
-        public const string BURST_TOOLTIP = "Burst compiled code";
+
+        public static readonly string BurstDisplayName = BurstTooltip;
+        public static readonly string BurstTooltip = Strings.BurstCompiledCode_Text;
 
         /// <summary>
         /// Type can be freely used anywhere in Burst context without satisfying any constraints

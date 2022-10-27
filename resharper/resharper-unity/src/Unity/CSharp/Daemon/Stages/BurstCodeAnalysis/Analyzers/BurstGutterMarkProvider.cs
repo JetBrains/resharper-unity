@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 return;
             
             var items = myBurstCodeInsights.GetBurstActions(methodDeclaration, context);
-            var gutterMark = new UnityGutterMarkInfo(items, methodDeclaration, BurstCodeAnalysisUtil.BURST_TOOLTIP);
+            var gutterMark = new UnityGutterMarkInfo(items, methodDeclaration, BurstCodeAnalysisUtil.BurstTooltip);
           
             consumer.AddHighlighting(gutterMark);
         }

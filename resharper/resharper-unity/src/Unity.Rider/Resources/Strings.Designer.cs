@@ -64,5 +64,8 @@
     public static string RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Do_not_show_for_this_solution => ResourceManager.GetString("RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Do_not_show_for_this_solution");
     public static string RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Update_available___JetBrains_Rider_package_ => ResourceManager.GetString("RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Update_available___JetBrains_Rider_package_");
     public static string RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__0__in_Unity_Package_Manager_ => ResourceManager.GetString("RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__0__in_Unity_Package_Manager_");
+    public static string UsagesInAssetsAreNotAvailableDuring_Text => ResourceManager.GetString("UsagesInAssetsAreNotAvailableDuring_Text");
+    public static string UnityImplicitUsage_Text => ResourceManager.GetString("UnityImplicitUsage_Text");
+    public static string UnityCodeInsightFieldUsageProvider_DisplayName_Unity_serialized_field => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_DisplayName_Unity_serialized_field");
   }
 }

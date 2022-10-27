@@ -19,6 +19,7 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Backend.Platform.Icons;
 using JetBrains.Rider.Model;
+using Strings = JetBrains.ReSharper.Plugins.Unity.Rider.Resources.Strings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
@@ -82,7 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Hi
                         iconModel = myIconHost.Transform(CodeInsightsThemedIcons.InsightWait.Id);
 
                     if (!myDeferredCacheController.CompletedOnce.Value)
-                        tooltip = "Usages in assets are not available during asset indexing";
+                        tooltip = Strings.UsagesInAssetsAreNotAvailableDuring_Text;
                 }
 
                 if (!myAssetIndexingSupport.IsEnabled.Value || !myDeferredCacheController.CompletedOnce.Value || !myAssetSerializationMode.IsForceText)

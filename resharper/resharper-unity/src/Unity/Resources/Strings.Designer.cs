@@ -55,5 +55,6 @@
     public static string DisabledIndexingOfUnityAssets_Text => ResourceManager.GetString("DisabledIndexingOfUnityAssets_Text");
     public static string DueToTheSizeOfTheProjectIndexingOfUnity_Text => ResourceManager.GetString("DueToTheSizeOfTheProjectIndexingOfUnity_Text");
     public static string TurnOnAnyway_Text => ResourceManager.GetString("TurnOnAnyway_Text");
+    public static string BurstCompiledCode_Text => ResourceManager.GetString("BurstCompiledCode_Text");
   }
 }
