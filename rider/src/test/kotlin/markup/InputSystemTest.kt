@@ -6,6 +6,7 @@ import com.jetbrains.rdclient.daemon.util.backendAttributeIdOrThrow
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.*
@@ -13,7 +14,7 @@ import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
 
-
+@Mute("RIDER-84142")
 class InputSystemTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String {
         return "InputSystemTestData"

@@ -7,6 +7,7 @@ import com.jetbrains.rdclient.util.idea.toIOFile
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.executeWithGold
@@ -24,6 +25,7 @@ class InputSystemUnityEventModeTest : BaseTestWithSolution() {
     override fun preprocessTempDirectory(tempDir: File) {
         prepareAssemblies(activeSolutionDirectory)
     }
+    @Mute("RIDER-84142")
     @Test
     fun usedCodeTest() {
         val projectLifetime = project.lifetime
