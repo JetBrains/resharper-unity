@@ -15,6 +15,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration.Packages.Notification
 {
@@ -122,8 +123,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                             () =>
                             {
                                 myUserNotifications.CreateNotification(notificationLifetime.Lifetime, NotificationSeverity.WARNING,
-                                    "JetBrains Rider package in Unity is missing.",
-                                    "Make sure JetBrains Rider package is installed in Unity Package Manager.");
+                                    Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_JetBrains_Rider_package_in_Unity_is_missing_,
+                                    Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Make_sure_JetBrains_Rider_package_is_installed_in_Unity_Package_Manager_);
                             });
                     }
                     else if (package.Source == PackageSource.Registry &&
@@ -136,11 +137,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                             "RiderPackageUpdateAvailabilityChecker.ShowNotificationIfNeeded",
                             () => myUserNotifications.CreateNotification(notificationLifetime.Lifetime,
                                 NotificationSeverity.INFO,
-                                "Update available - JetBrains Rider package.",
-                                $"Check for JetBrains Rider package {packageVersion} in Unity Package Manager.",
+                                Resources.Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Update_available___JetBrains_Rider_package_,
+                                string.Format(Resources.Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__0__in_Unity_Package_Manager_, packageVersion),
                                 additionalCommands: new[]
                                 {
-                                    new UserNotificationCommand("Do not show for this solution", () =>
+                                    new UserNotificationCommand(Resources.Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Do_not_show_for_this_solution, () =>
                                     {
                                         mySettingsStore.BindToContextTransient(
                                                 ContextRange.ManuallyRestrictWritesToOneContext(

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+    </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_JetBrains_Rider_package_in_Unity_is_missing_" xml:space="preserve">
+        <value>JetBrains Rider package in Unity is missing.</value>
+    </data>
+    <data name="RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Make_sure_JetBrains_Rider_package_is_installed_in_Unity_Package_Manager_" xml:space="preserve">
+        <value>Make sure JetBrains Rider package is installed in Unity Package Manager.</value>
+    </data>
+    <data name="DisabledIndexingOfUnityAssets_Text" xml:space="preserve">
+        <value>Disabled indexing of Unity assets</value>
+    </data>
+    <data name="DueToTheSizeOfTheProjectIndexingOfUnity_Text" xml:space="preserve">
+        <value>Due to the size of the project, indexing of Unity scenes, assets and prefabs has been disabled. Usages of C# code in these files will not be detected. Re-enabling can impact initial file processing.</value>
+    </data>
+    <data name="TurnOnAnyway_Text" xml:space="preserve">
+        <value>Turn on anyway</value>
+    </data>
+</root>
