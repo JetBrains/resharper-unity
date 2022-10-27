@@ -34,4 +34,49 @@
     <data name="BurstCompiledCode_Text" xml:space="preserve">
         <value>Burst compiled code</value>
     </data>
+    <data name="ConvertToNamedAssemblyDefinitionReference_Name" xml:space="preserve">
+        <value>Convert to named assembly definition reference</value>
+    </data>
+    <data name="ConvertToNamedAssemblyDefinitionReference_Description" xml:space="preserve">
+        <value>Convert assembly definition reference from GUID to name based</value>
+    </data>
+    <data name="ConvertToNamedReferenceContextAction_Text_To_named_reference" xml:space="preserve">
+        <value>To named reference</value>
+    </data>
+    <data name="AsmDefGuidReferenceInlayHintHighlighting_ContextMenuTitle_GUID_Reference_Hints" xml:space="preserve">
+        <value>GUID Reference Hints</value>
+    </data>
+    <data name="AsmDefIntraTextAdornmentModel_BuildContextMenuItems_Configure___" xml:space="preserve">
+        <value>Configure...</value>
+    </data>
+    <data name="AsmDefPackageVersionInlayHintHighlighting_ContextMenuTitle_Package_Version_Hints" xml:space="preserve">
+        <value>Package Version Hints</value>
+    </data>
+    <data name="RemoveInvalidArrayItemQuickFix_Text_Remove_invalid_value" xml:space="preserve">
+        <value>Remove invalid value</value>
+    </data>
+    <data name="RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_File___0___already_exists" xml:space="preserve">
+        <value>File '{0}' already exists</value>
+    </data>
+    <data name="RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_Cannot_rename___0__" xml:space="preserve">
+        <value>Cannot rename '{0}'</value>
+    </data>
+    <data name="RenameFileToMatchAssemblyNameQuickFix_Text_Rename_file_to_match_assembly_name" xml:space="preserve">
+        <value>Rename file to match assembly name</value>
+    </data>
+    <data name="AsmDefProjectFileType_AsmDefProjectFileType_Assembly_Definition__Unity_" xml:space="preserve">
+        <value>Assembly Definition (Unity)</value>
+    </data>
+    <data name="AsmRefProjectFileType_AsmRefProjectFileType_Assembly_Definition_Reference__Unity_" xml:space="preserve">
+        <value>Assembly Definition Reference (Unity)</value>
+    </data>
+    <data name="UnityInlayHintSettings_t_Inlay_hint_settings_for_Unity_related_files" xml:space="preserve">
+        <value>Inlay hint settings for Unity related files</value>
+    </data>
+    <data name="UnityInlayHintSettings_t_Visibility_mode_of_hints_for_GUID_references_in__asmdef_files" xml:space="preserve">
+        <value>Visibility mode of hints for GUID references in .asmdef files</value>
+    </data>
+    <data name="UnityInlayHintSettings_t_Visibility_mode_of_hints_for_package_versions_in__asmdef_files" xml:space="preserve">
+        <value>Visibility mode of hints for package versions in .asmdef files</value>
+    </data>
 </root>

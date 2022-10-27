@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.TextControl;
@@ -36,8 +37,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
             {
                 if (projectFile.Location.Directory.Combine(newName).ExistsFile)
                 {
-                    MessageBox.ShowError($"File '{newName}' already exists",
-                        $"Cannot rename '{projectFile.Location.Name}'");
+                    MessageBox.ShowError(string.Format(Strings.RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_File___0___already_exists, newName),
+                        string.Format(Strings.RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_Cannot_rename___0__, projectFile.Location.Name));
                 }
                 else
                 {
@@ -48,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
             };
         }
 
-        public override string Text => "Rename file to match assembly name";
+        public override string Text => Strings.RenameFileToMatchAssemblyNameQuickFix_Text_Rename_file_to_match_assembly_name;
         public override bool IsAvailable(IUserDataHolder cache) => ValidUtils.Valid(myLiteral);
     }
 }

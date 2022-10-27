@@ -9,6 +9,8 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.LiveTemplates
 {
+    //todo: localization
+    
     [MacroDefinition("asmDefNameMacro", ShortDescription = "Current file name without whitespace characters",
             LongDescription = "Evaluates current file name without whitespace characters")]
     public class AsmDefNameMacroDef: SimpleMacroDefinition

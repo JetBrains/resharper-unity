@@ -56,5 +56,20 @@
     public static string DueToTheSizeOfTheProjectIndexingOfUnity_Text => ResourceManager.GetString("DueToTheSizeOfTheProjectIndexingOfUnity_Text");
     public static string TurnOnAnyway_Text => ResourceManager.GetString("TurnOnAnyway_Text");
     public static string BurstCompiledCode_Text => ResourceManager.GetString("BurstCompiledCode_Text");
+    public static string ConvertToNamedAssemblyDefinitionReference_Name => ResourceManager.GetString("ConvertToNamedAssemblyDefinitionReference_Name");
+    public static string ConvertToNamedAssemblyDefinitionReference_Description => ResourceManager.GetString("ConvertToNamedAssemblyDefinitionReference_Description");
+    public static string ConvertToNamedReferenceContextAction_Text_To_named_reference => ResourceManager.GetString("ConvertToNamedReferenceContextAction_Text_To_named_reference");
+    public static string AsmDefGuidReferenceInlayHintHighlighting_ContextMenuTitle_GUID_Reference_Hints => ResourceManager.GetString("AsmDefGuidReferenceInlayHintHighlighting_ContextMenuTitle_GUID_Reference_Hints");
+    public static string AsmDefIntraTextAdornmentModel_BuildContextMenuItems_Configure___ => ResourceManager.GetString("AsmDefIntraTextAdornmentModel_BuildContextMenuItems_Configure___");
+    public static string AsmDefPackageVersionInlayHintHighlighting_ContextMenuTitle_Package_Version_Hints => ResourceManager.GetString("AsmDefPackageVersionInlayHintHighlighting_ContextMenuTitle_Package_Version_Hints");
+    public static string RemoveInvalidArrayItemQuickFix_Text_Remove_invalid_value => ResourceManager.GetString("RemoveInvalidArrayItemQuickFix_Text_Remove_invalid_value");
+    public static string RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_File___0___already_exists => ResourceManager.GetString("RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_File___0___already_exists");
+    public static string RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_Cannot_rename___0__ => ResourceManager.GetString("RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_Cannot_rename___0__");
+    public static string RenameFileToMatchAssemblyNameQuickFix_Text_Rename_file_to_match_assembly_name => ResourceManager.GetString("RenameFileToMatchAssemblyNameQuickFix_Text_Rename_file_to_match_assembly_name");
+    public static string AsmDefProjectFileType_AsmDefProjectFileType_Assembly_Definition__Unity_ => ResourceManager.GetString("AsmDefProjectFileType_AsmDefProjectFileType_Assembly_Definition__Unity_");
+    public static string AsmRefProjectFileType_AsmRefProjectFileType_Assembly_Definition_Reference__Unity_ => ResourceManager.GetString("AsmRefProjectFileType_AsmRefProjectFileType_Assembly_Definition_Reference__Unity_");
+    public static string UnityInlayHintSettings_t_Inlay_hint_settings_for_Unity_related_files => ResourceManager.GetString("UnityInlayHintSettings_t_Inlay_hint_settings_for_Unity_related_files");
+    public static string UnityInlayHintSettings_t_Visibility_mode_of_hints_for_GUID_references_in__asmdef_files => ResourceManager.GetString("UnityInlayHintSettings_t_Visibility_mode_of_hints_for_GUID_references_in__asmdef_files");
+    public static string UnityInlayHintSettings_t_Visibility_mode_of_hints_for_package_versions_in__asmdef_files => ResourceManager.GetString("UnityInlayHintSettings_t_Visibility_mode_of_hints_for_package_versions_in__asmdef_files");
   }
 }
