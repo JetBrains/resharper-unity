@@ -23,6 +23,10 @@ class InputSystemTest : BaseTestWithSolution() {
         prepareAssemblies(activeSolutionDirectory)
     }
 
+    override val traceCategories: List<String>
+        get() = listOf(
+            "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages")
+
     @Test
     fun findUsagesTest() {
         // PlayerInput is attached to Cube
