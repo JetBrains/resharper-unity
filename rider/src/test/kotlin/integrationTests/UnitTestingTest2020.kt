@@ -6,7 +6,7 @@ import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.Test
 
-@TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS])
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnitTestingTest2020 : IntegrationTestWithEditorBase() {
     override fun getSolutionDirectoryName() = "UnitTesting/Project2020"
 
