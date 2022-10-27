@@ -79,4 +79,73 @@
     <data name="UnityInlayHintSettings_t_Visibility_mode_of_hints_for_package_versions_in__asmdef_files" xml:space="preserve">
         <value>Visibility mode of hints for package versions in .asmdef files</value>
     </data>
+    <data name="UnitySettings_t_Unity_plugin_settings" xml:space="preserve">
+        <value>Unity plugin settings</value>
+    </data>
+    <data name="UnitySettings_t_If_this_option_is_enabled__the_Rider_Unity_editor_plugin_will_be_automatically_installed_and_updated_" xml:space="preserve">
+        <value>If this option is enabled, the Rider Unity editor plugin will be automatically installed and updated.</value>
+    </data>
+    <data name="UnitySettings_t_If_this_option_is_disabled__Rider_package_update_notifications_would_never_be_shown_" xml:space="preserve">
+        <value>If this option is disabled, Rider package update notifications would never be shown.</value>
+    </data>
+    <data name="UnitySettings_t_If_this_option_is_enabled__Rider_will_automatically_notify_the_Unity_editor_to_refresh_assets_" xml:space="preserve">
+        <value>If this option is enabled, Rider will automatically notify the Unity editor to refresh assets.</value>
+    </data>
+    <data name="UnitySettings_t_If_this_option_is_enabled__UnityYamlMerge_would_be_used_to_merge_YAML_files_" xml:space="preserve">
+        <value>If this option is enabled, UnityYamlMerge would be used to merge YAML files.</value>
+    </data>
+    <data name="UnitySettings_t_Merge_parameters" xml:space="preserve">
+        <value>Merge parameters</value>
+    </data>
+    <data name="UnitySettings_t_Enables_syntax_error_highlighting__brace_matching_and_more_of_ShaderLab_files_" xml:space="preserve">
+        <value>Enables syntax error highlighting, brace matching and more of ShaderLab files.</value>
+    </data>
+    <data name="UnitySettings_t_Enables_completion_based_on_words_found_in_the_current_file_" xml:space="preserve">
+        <value>Enables completion based on words found in the current file.</value>
+    </data>
+    <data name="UnitySettings_t_Enables_syntax_error_highlighting_of_CG_blocks_in_ShaderLab_files_" xml:space="preserve">
+        <value>Enables syntax error highlighting of CG blocks in ShaderLab files.</value>
+    </data>
+    <data name="UnitySettings_t_Suppress_resolve_errors_in_HLSL_" xml:space="preserve">
+        <value>Suppress resolve errors in HLSL.</value>
+    </data>
+    <data name="UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_" xml:space="preserve">
+        <value>Suppress resolve errors in render-pipeline package in HLSL.</value>
+    </data>
+    <data name="UnitySettings_t_Unity_highlighter_scheme_for_editor_" xml:space="preserve">
+        <value>Unity highlighter scheme for editor.</value>
+    </data>
+    <data name="UnitySettings_t_Should_yaml_heuristic_be_applied_" xml:space="preserve">
+        <value>Should yaml heuristic be applied?</value>
+    </data>
+    <data name="UnitySettings_t_Enables_asset_indexing" xml:space="preserve">
+        <value>Enables asset indexing</value>
+    </data>
+    <data name="UnitySettings_t_Prefab_cache" xml:space="preserve">
+        <value>Prefab cache</value>
+    </data>
+    <data name="UnitySettings_t_Enables_performance_analysis_in_frequently_called_code" xml:space="preserve">
+        <value>Enables performance analysis in frequently called code</value>
+    </data>
+    <data name="UnitySettings_t_Enable_analysis_for_Burst_compiler_issues" xml:space="preserve">
+        <value>Enable analysis for Burst compiler issues</value>
+    </data>
+    <data name="UnitySettings_t_Enables_showing_Unity_icon_for_Burst_compiled_code" xml:space="preserve">
+        <value>Enables showing Unity icon for Burst compiled code</value>
+    </data>
+    <data name="UnitySettings_t_Highlighting_mode_for_performance_critical_code" xml:space="preserve">
+        <value>Highlighting mode for performance critical code</value>
+    </data>
+    <data name="UnitySettings_t_Enables_showing_hot_icon_for_frequently_called_code" xml:space="preserve">
+        <value>Enables showing hot icon for frequently called code</value>
+    </data>
+    <data name="UnitySettings_t_Show_Inspector_properties_changes_in_editor" xml:space="preserve">
+        <value>Show Inspector properties changes in editor</value>
+    </data>
+    <data name="UnitySettings_t_Enable_debugger_extensions" xml:space="preserve">
+        <value>Enable debugger extensions</value>
+    </data>
+    <data name="UnitySettings_t_Ignore__Break_on_Unhandled_Exceptions__for_IL2CPP_players" xml:space="preserve">
+        <value>Ignore 'Break on Unhandled Exceptions' for IL2CPP players</value>
+    </data>
 </root>
