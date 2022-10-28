@@ -148,4 +148,161 @@
     <data name="UnitySettings_t_Ignore__Break_on_Unhandled_Exceptions__for_IL2CPP_players" xml:space="preserve">
         <value>Ignore 'Break on Unhandled Exceptions' for IL2CPP players</value>
     </data>
+    <data name="UnityInlayHintsOptionsPage_UnityInlayHintsOptionsPage_Assembly_Definition_file_GUID_references" xml:space="preserve">
+        <value>Assembly Definition file GUID references</value>
+    </data>
+    <data name="UnityInlayHintsOptionsPage_UnityInlayHintsOptionsPage_Assembly_Definition_file_package_versions" xml:space="preserve">
+        <value>Assembly Definition file package versions</value>
+    </data>
+    <data name="UnityOptionsPage_AddGeneralSection_General" xml:space="preserve">
+        <value>General</value>
+    </data>
+    <data name="UnityOptionsPage_AddGeneralSection_Automatically_install_and_update_Rider_s_Unity_editor_plugin" xml:space="preserve">
+        <value>Automatically install and update Rider's Unity editor plugin</value>
+    </data>
+    <data name="UnityOptionsPage_AddGeneralSection_" xml:space="preserve">
+        <value>Recommended. Integration features such as play/pause, log view and
+refreshing assets in the background are automatically supported by
+the Rider package in Unity 2019.2 and newer. Earlier versions require
+a plugin to be installed to a project.</value>
+    </data>
+    <data name="UnityOptionsPage_AddGeneralSection_Automatically_refresh_assets_in_Unity" xml:space="preserve">
+        <value>Automatically refresh assets in Unity</value>
+    </data>
+    <data name="UnityOptionsPage_AddGeneralSection_Notify_when_Rider_package_update_is_available" xml:space="preserve">
+        <value>Notify when Rider package update is available</value>
+    </data>
+    <data name="UnityOptionsPage_AddCSharpSection_Show_gutter_icons_for_implicit_script_usages_" xml:space="preserve">
+        <value>Show gutter icons for implicit script usages:</value>
+    </data>
+    <data name="UnityOptionsPage_AddCSharpSection_Always" xml:space="preserve">
+        <value>Always</value>
+    </data>
+    <data name="UnityOptionsPage_AddPerformanceAnalysisSubSection_Current_method_only" xml:space="preserve">
+        <value>Current method only</value>
+    </data>
+    <data name="UnityOptionsPage_AddPerformanceAnalysisSubSection_Never" xml:space="preserve">
+        <value>Never</value>
+    </data>
+    <data name="UnityOptionsPage_AddCSharpSection_When_Code_Vision_is_disabled" xml:space="preserve">
+        <value>When Code Vision is disabled</value>
+    </data>
+    <data name="UnityOptionsPage_AddCSharpSection_Show_gutter_icons_for_implicit_script_usages" xml:space="preserve">
+        <value>Show gutter icons for implicit script usages</value>
+    </data>
+    <data name="UnityOptionsPage_AddPerformanceAnalysisSubSection_Enable_performance_analysis_in_frequently_called_code" xml:space="preserve">
+        <value>Enable performance analysis in frequently called code</value>
+    </data>
+    <data name="UnityOptionsPage_AddPerformanceAnalysisSubSection_Highlight_performance_critical_contexts_" xml:space="preserve">
+        <value>Highlight performance critical contexts:</value>
+    </data>
+    <data name="UnityOptionsPage_AddPerformanceAnalysisSubSection_Show_gutter_icons_for_frequently_called_methods" xml:space="preserve">
+        <value>Show gutter icons for frequently called methods</value>
+    </data>
+    <data name="UnityOptionsPage_AddBurstAnalysisSubSection_Enable_analysis_for_Burst_compiler_issues" xml:space="preserve">
+        <value>Enable analysis for Burst compiler issues</value>
+    </data>
+    <data name="UnityOptionsPage_AddBurstAnalysisSubSection_Show_gutter_icons_for_Burst_compiled_called_methods" xml:space="preserve">
+        <value>Show gutter icons for Burst compiled called methods</value>
+    </data>
+    <data name="UnityOptionsPage_AddNamingSubSection_Serialized_field_naming_rules" xml:space="preserve">
+        <value>Serialized field naming rules</value>
+    </data>
+    <data name="UnityOptionsPage_AddNamingSubSection_Prefix_" xml:space="preserve">
+        <value>Prefix:</value>
+    </data>
+    <data name="UnityOptionsPage_AddNamingSubSection_Suffix_" xml:space="preserve">
+        <value>Suffix:</value>
+    </data>
+    <data name="UnityOptionsPage_AddNamingSubSection_Style_" xml:space="preserve">
+        <value>Style:</value>
+    </data>
+    <data name="UnityOptionsPage_AddNamingSubSection_Enable_inspection" xml:space="preserve">
+        <value>Enable inspection</value>
+    </data>
+    <data name="UnityOptionsPage_AddNamingSubSection_UpperCamelCase" xml:space="preserve">
+        <value>UpperCamelCase</value>
+    </data>
+    <data name="UnityOptionsPage_AddNamingSubSection_UpperCamelCase_UnderscoreTolerant" xml:space="preserve">
+        <value>UpperCamelCase_UnderscoreTolerant</value>
+    </data>
+    <data name="UnityOptionsPage_AddNamingSubSection_UpperCamelCase_underscoreTolerant2" xml:space="preserve">
+        <value>UpperCamelCase_underscoreTolerant</value>
+    </data>
+    <data name="UnityOptionsPage_AddNamingSubSection_lowerCamelCase" xml:space="preserve">
+        <value>lowerCamelCase</value>
+    </data>
+    <data name="UnityOptionsPage_AddNamingSubSection_lowerCamelCase_UnderscoreTolerant" xml:space="preserve">
+        <value>lowerCamelCase_UnderscoreTolerant</value>
+    </data>
+    <data name="UnityOptionsPage_AddNamingSubSection_lowerCamelCase_underscoreTolerant2" xml:space="preserve">
+        <value>lowerCamelCase_underscoreTolerant</value>
+    </data>
+    <data name="UnityOptionsPage_AddNamingSubSection_ALL_UPPER" xml:space="preserve">
+        <value>ALL_UPPER</value>
+    </data>
+    <data name="UnityOptionsPage_AddNamingSubSection_First_upper" xml:space="preserve">
+        <value>First_upper</value>
+    </data>
+    <data name="UnityOptionsPage_AddTextBasedAssetsSection_Text_based_assets" xml:space="preserve">
+        <value>Text based assets</value>
+    </data>
+    <data name="UnityOptionsPage_AddTextBasedAssetsSection_Parse_text_based_asset_files_for_script_and_event_handler_usages" xml:space="preserve">
+        <value>Parse text based asset files for script and event handler usages</value>
+    </data>
+    <data name="UnityOptionsPage_AddTextBasedAssetsSection_Show_Inspector_values_in_the_editor" xml:space="preserve">
+        <value>Show Inspector values in the editor</value>
+    </data>
+    <data name="UnityOptionsPage_AddTextBasedAssetsSection_Cache_prefab_data_to_improve_find_usage_performance" xml:space="preserve">
+        <value>Cache prefab data to improve find usage performance</value>
+    </data>
+    <data name="UnityOptionsPage_AddTextBasedAssetsSection_Automatically_disable_asset_indexing_for_large_solutions" xml:space="preserve">
+        <value>Automatically disable asset indexing for large solutions</value>
+    </data>
+    <data name="UnityOptionsPage_AddTextBasedAssetsSection_Prefer_UnityYamlMerge_for_merging_YAML_files" xml:space="preserve">
+        <value>Prefer UnityYamlMerge for merging YAML files</value>
+    </data>
+    <data name="UnityOptionsPage_AddTextBasedAssetsSection_Merge_parameters" xml:space="preserve">
+        <value>Merge parameters</value>
+    </data>
+    <data name="UnityOptionsPage_AddShadersSection_Shaders" xml:space="preserve">
+        <value>Shaders</value>
+    </data>
+    <data name="UnityOptionsPage_AddShadersSection_Suppress_resolve_errors_of_unqualified_names" xml:space="preserve">
+        <value>Suppress resolve errors of unqualified names</value>
+    </data>
+    <data name="UnityOptionsPage_AddDebuggingSection_Debugging" xml:space="preserve">
+        <value>Debugging</value>
+    </data>
+    <data name="UnityOptionsPage_AddDebuggingSection_Extend_value_rendering" xml:space="preserve">
+        <value>Extend value rendering</value>
+    </data>
+    <data name="UnityOptionsPage_AddDebuggingSection_Extend_value_rendering_Comment" xml:space="preserve">
+        <value>When enabled, Rider will show extra values in debugger object views,
+such as active scene and GameObject component data and children.
+Rendering of summary values is also improved, such as showing Vector3
+float values with full precision.</value>
+    </data>
+    <data name="UnityOptionsPage_AddDebuggingSection_Ignore__Break_on_unhandled_exceptions__setting_for_IL2CPP_players" xml:space="preserve">
+        <value>Ignore 'Break on unhandled exceptions' setting for IL2CPP players</value>
+    </data>
+    <data name="UnityOptionsPage_AddDebuggingSection_Break_on_unhandled_exceptions__setting_for_IL2CPP_players_Comment" xml:space="preserve">
+        <value>Unity's Mono 4.x runtime ignores the 'Break on unhandled exceptions' setting.
+This option applies the same behaviour to IL2CPP players.</value>
+    </data>
+    <data name="UnityOptionsPage_AddInternalSection_Internal" xml:space="preserve">
+        <value>Internal</value>
+    </data>
+    <data name="UnityOptionsPage_AddInternalSection_Suppress_resolve_errors_in_render_pipeline_packages" xml:space="preserve">
+        <value>Suppress resolve errors in render-pipeline packages</value>
+    </data>
+    <data name="UnityOptionsPage_AddInternalSection__Deprecated__Parse_GLSL_files_for_syntax_errors__requires_internal_mode__and_re_opening_solution_" xml:space="preserve">
+        <value>[Deprecated] Parse GLSL files for syntax errors (requires internal mode, and re-opening solution)</value>
+    </data>
+    <data name="UnityFindUsagesProvider_GetNotFoundMessage__are_only_implicit_" xml:space="preserve">
+        <value> are only implicit.</value>
+    </data>
+    <data name="DuplicateMenuItemShortCutProblemAnalyzer_Analyze_this_file" xml:space="preserve">
+        <value>this file</value>
+    </data>
 </root>
