@@ -305,4 +305,22 @@ This option applies the same behaviour to IL2CPP players.</value>
     <data name="DuplicateMenuItemShortCutProblemAnalyzer_Analyze_this_file" xml:space="preserve">
         <value>this file</value>
     </data>
+    <data name="AsmDefOccurrenceKindProvider_AssemblyDefinitionReference_Assembly_definition_reference" xml:space="preserve">
+        <value>Assembly definition reference</value>
+    </data>
+    <data name="UnityAssetSpecificOccurrenceKinds_EventHandler_Unity_event_handler" xml:space="preserve">
+        <value>Unity event handler</value>
+    </data>
+    <data name="UnityAssetSpecificOccurrenceKinds_ComponentUsage_Unity_component_usage" xml:space="preserve">
+        <value>Unity component usage</value>
+    </data>
+    <data name="UnityAssetSpecificOccurrenceKinds_InspectorUsage_Inspector_values" xml:space="preserve">
+        <value>Inspector values</value>
+    </data>
+    <data name="MetaProjectFileType_MetaProjectFileType_Unity_Meta_File" xml:space="preserve">
+        <value>Unity Meta File</value>
+    </data>
+    <data name="UnityYamlProjectFileType_UnityYamlProjectFileType_Unity_Yaml" xml:space="preserve">
+        <value>Unity Yaml File</value>
+    </data>
 </root>

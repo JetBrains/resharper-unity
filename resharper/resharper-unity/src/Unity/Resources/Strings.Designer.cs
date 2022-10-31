@@ -144,5 +144,11 @@
     public static string UnityOptionsPage_AddInternalSection__Deprecated__Parse_GLSL_files_for_syntax_errors__requires_internal_mode__and_re_opening_solution_ => ResourceManager.GetString("UnityOptionsPage_AddInternalSection__Deprecated__Parse_GLSL_files_for_syntax_errors__requires_internal_mode__and_re_opening_solution_");
     public static string UnityFindUsagesProvider_GetNotFoundMessage__are_only_implicit_ => ResourceManager.GetString("UnityFindUsagesProvider_GetNotFoundMessage__are_only_implicit_");
     public static string DuplicateMenuItemShortCutProblemAnalyzer_Analyze_this_file => ResourceManager.GetString("DuplicateMenuItemShortCutProblemAnalyzer_Analyze_this_file");
+    public static string AsmDefOccurrenceKindProvider_AssemblyDefinitionReference_Assembly_definition_reference => ResourceManager.GetString("AsmDefOccurrenceKindProvider_AssemblyDefinitionReference_Assembly_definition_reference");
+    public static string UnityAssetSpecificOccurrenceKinds_EventHandler_Unity_event_handler => ResourceManager.GetString("UnityAssetSpecificOccurrenceKinds_EventHandler_Unity_event_handler");
+    public static string UnityAssetSpecificOccurrenceKinds_ComponentUsage_Unity_component_usage => ResourceManager.GetString("UnityAssetSpecificOccurrenceKinds_ComponentUsage_Unity_component_usage");
+    public static string UnityAssetSpecificOccurrenceKinds_InspectorUsage_Inspector_values => ResourceManager.GetString("UnityAssetSpecificOccurrenceKinds_InspectorUsage_Inspector_values");
+    public static string MetaProjectFileType_MetaProjectFileType_Unity_Meta_File => ResourceManager.GetString("MetaProjectFileType_MetaProjectFileType_Unity_Meta_File");
+    public static string UnityYamlProjectFileType_UnityYamlProjectFileType_Unity_Yaml => ResourceManager.GetString("UnityYamlProjectFileType_UnityYamlProjectFileType_Unity_Yaml");
   }
 }
