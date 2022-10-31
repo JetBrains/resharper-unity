@@ -47,7 +47,7 @@
         <value>GUID Reference Hints</value>
     </data>
     <data name="AsmDefIntraTextAdornmentModel_BuildContextMenuItems_Configure___" xml:space="preserve">
-        <value>Configure...</value>
+        <value>Configure\u2026</value>
     </data>
     <data name="AsmDefPackageVersionInlayHintHighlighting_ContextMenuTitle_Package_Version_Hints" xml:space="preserve">
         <value>Package Version Hints</value>
