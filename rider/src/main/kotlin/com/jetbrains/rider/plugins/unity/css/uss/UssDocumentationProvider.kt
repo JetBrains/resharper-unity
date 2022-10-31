@@ -16,7 +16,6 @@ class UssDocumentationProvider : DocumentationProvider {
         if (element?.containingFile?.language is UssLanguage) {
             val docElement = findDocumentationElement(element)
             if (docElement != null) {
-                //TODO #Localization RIDER-82737
                 return generateDoc(element.text, docElement, originalElement)
             }
         }
@@ -34,6 +33,7 @@ class UssDocumentationProvider : DocumentationProvider {
     private fun findDocumentationElement(element: PsiElement) =
         CssDocumentationProvider.findDocumentationElement(element)
 
+    @Nls
     private fun generateDoc(descriptorText: String?,
                             documentationElement: PsiElement,
                             context: PsiElement?): String? {

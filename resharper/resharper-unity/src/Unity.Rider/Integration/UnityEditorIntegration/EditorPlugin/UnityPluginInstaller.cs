@@ -371,7 +371,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                     "The Unity editor plugin is out of date and automatic plugin updates are disabled. Advanced Unity integration features are unavailable until the plugin is updated.",
                     additionalCommands: new[]
                     {
-                        new UserNotificationCommand("Never show for this solution", () =>
+                        new UserNotificationCommand("Do not show for this solution", () =>
                         {
                             mySolution.Locks.ExecuteOrQueueReadLockEx(notificationLifetime.Lifetime,
                                 "UnityPluginInstaller.InstallEditorPlugin", () =>
