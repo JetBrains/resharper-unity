@@ -1,6 +1,7 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Plugins.Yaml.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
 {
@@ -17,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
         return ErrorStripeRequestWithDescription.StripeAndErrors;
       }
 
-      return ErrorStripeRequestWithDescription.None("File's primary language in not Yaml");
+      return ErrorStripeRequestWithDescription.None(Strings.YamlLanguageSpecificDaemonBehaviour_InitialErrorStripe_File_s_primary_language_in_not_Yaml);
     }
   }
 }
