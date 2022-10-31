@@ -14,8 +14,9 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Added
 
-- Add completion and analysis of assets for resource load methods
+- Add completion and analysis of assets for resource load methods ([RIDER-79879](https://youtrack.jetbrains.com/issue/RIDER-79879), [#2217](https://github.com/JetBrains/resharper-unity/issues/2217))
 - Add completion and analysis of tags in `GameObject.FindWithTag` methods
+- Add Find Usages of methods used by the new Input System ([RIDER-71588](https://youtrack.jetbrains.com/issue/RIDER-71588))
 - Rider: Notify when committing `.meta` file for empty folder ([RIDER-75587](https://youtrack.jetbrains.com/issue/RIDER-75587), [#2333](https://github.com/JetBrains/resharper-unity/pull/2333))
 - Rider: Notify when committing if any persistent objects in scene are modified but not saved ([RIDER-63673](https://youtrack.jetbrains.com/issue/RIDER-63673), [#2338](https://github.com/JetBrains/resharper-unity/pull/2338))
 - Rider: Show a notification when editing a file in the package cache ([RIDER-63994](https://youtrack.jetbrains.com/issue/RIDER-63994))
@@ -25,11 +26,15 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Treat fixed buffer fields as serialised fields
 - Treat `CustomPass` derived classes as Unity types ([RIDER-80783](https://youtrack.jetbrains.com/issue/RIDER-80783))
 - Add support for method references inside an array of Unity event subscriptions
+- Rider: Code coverage of Unity tests no longer requires restarting the editor ([RIDER-78815](https://youtrack.jetbrains.com/issue/RIDER-78815))
 - Rider: The "Start Unity" action will now invoke a run configuration, allowing customisation such as command line arguments and environment variables ([RIDER-78619](https://youtrack.jetbrains.com/issue/RIDER-78619), [RIDER-77371](https://youtrack.jetbrains.com/issue/RIDER-77371), [#2326](https://github.com/JetBrains/resharper-unity/pull/2326))
 - Rider: Show version when notifying about updated Rider package ([RIDER-77654](https://youtrack.jetbrains.com/issue/RIDER-77654), [#2335](https://github.com/JetBrains/resharper-unity/pull/2335))
 - Rider: Do not show include/exclude actions on files and folders in Unity Explorer ([RIDER-69113](https://youtrack.jetbrains.com/issue/RIDER-69113))
 - Rider: Allow opening the Unity log tool window even if Unity editor is not running ([RIDER-80029](https://youtrack.jetbrains.com/issue/RIDER-80029))
 - Rider: Support redesigned New File menu ([RIDER-80080](https://youtrack.jetbrains.com/issue/RIDER-80080), [RIDER-56481](https://youtrack.jetbrains.com/issue/RIDER-56481))
+- Rider: Support Unity buttons on new UI toolbar ([RIDER-82654](https://youtrack.jetbrains.com/issue/RIDER-82654))
+- Rider: Support updated Unity auto refresh settings ([#2361](https://github.com/JetBrains/resharper-unity/issues/2361))
+- Rider: Add notification when attempting to start and debug IL2CPP player rather than attach ([RIDER-79895](https://youtrack.jetbrains.com/issue/RIDER-79895), [#2364](https://github.com/JetBrains/resharper-unity/pull/2364))
 
 ### Fixed
 
@@ -46,6 +51,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix Unity log tool window to show multiple colours ([RIDER-69305](https://youtrack.jetbrains.com/issue/RIDER-69395))
 - Rider: Fix regression in 2021.3 that meant `.meta` files were being indexed ([RIDER-79712](https://youtrack.jetbrains.com/issue/RIDER-79712))
 - Rider: Fix issue reading packages with up-to-date but disabled `packages-lock.json` ([RIDER-81728](https://youtrack.jetbrains.com/issue/RIDER-81728), [#2355](https://github.com/JetBrains/resharper-unity/pull/2355))
+- Rider: Reduce overhead of checking for Android functionality
 
 
 
