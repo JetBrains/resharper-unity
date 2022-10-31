@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             new ClrTypeName("Unity.Collections.FixedString4096Bytes")
         };
 
-        public static readonly string BurstDisplayName = BurstTooltip;
+        public static readonly string BurstDisplayName = Strings.BurstCompiledCode_Text;
         public static readonly string BurstTooltip = Strings.BurstCompiledCode_Text;
 
         /// <summary>
