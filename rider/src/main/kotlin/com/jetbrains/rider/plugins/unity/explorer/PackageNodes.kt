@@ -6,7 +6,6 @@ import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.NlsContexts
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
@@ -378,9 +377,8 @@ private fun getPackageTooltip(displayName: String, packageEntity: UnityPackageEn
     return tooltip
 }
 
-@Suppress("HardCodedStringLiteral")
-@NlsContexts.Tooltip
-private fun formatDescription(@NlsSafe description: String): String {
+@NlsSafe
+private fun formatDescription(description: String): String {
     val text = description.replace("\n", "<br/>").let {
         StringUtil.shortenTextWithEllipsis(it, 600, 0, true)
     }
