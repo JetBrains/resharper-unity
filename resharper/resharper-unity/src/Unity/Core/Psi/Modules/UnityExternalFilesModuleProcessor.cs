@@ -91,12 +91,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
             assetIndexingSupport.IsEnabled.Change.Advise(lifetime, args =>
             {
-                // previously disabled, now enabled
-                if (args.HasOld && !args.Old && args.HasNew && args.New)
+                myLocks.ExecuteOrQueueEx(lifetime, "UnityInitialUpdateExternalFiles", () =>
                 {
-                    CollectInitialFiles();
-                }
+                    // previously disabled, now enabled
+                    if (args.HasOld && !args.Old && args.HasNew && args.New)
+                    {
+                        CollectInitialFiles();
+                    }
+                });
             });
+        }
+
+        private bool IsAsmDefMeta(VirtualFileSystemPath path)
+        {
+            if (!path.IsMeta())
+                return false;
+            
+            var assetExtension = path.ChangeExtension("").ExtensionWithDot;
+            return assetExtension.Equals(AsmRefProjectFileType.ASMREF_EXTENSION, StringComparison.InvariantCultureIgnoreCase) ||
+                   assetExtension.Equals(AsmDefProjectFileType.ASMDEF_EXTENSION, StringComparison.InvariantCultureIgnoreCase);
+
         }
 
         private bool IsIndexedWithCurrentIndexingSupport(VirtualFileSystemPath path)
@@ -104,12 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             if (myAssetIndexingSupport.IsEnabled.Value)
                 return true;
 
-            if (!path.IsMeta())
-                return false;
-
-            var assetExtension = path.ChangeExtension("").ExtensionWithDot;
-            return assetExtension.Equals(AsmRefProjectFileType.ASMREF_EXTENSION, StringComparison.InvariantCultureIgnoreCase) ||
-                assetExtension.Equals(AsmDefProjectFileType.ASMDEF_EXTENSION, StringComparison.InvariantCultureIgnoreCase);
+            return IsAsmDefMeta(path);
         }
         
         private ExternalFiles FilterFiles(ExternalFiles files)
@@ -121,9 +130,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
             foreach (var metaFile in files.MetaFiles)
             {
-                var assetExtension = metaFile.Path.ChangeExtension("").ExtensionWithDot;
-                if (assetExtension.Equals(AsmRefProjectFileType.ASMREF_EXTENSION, StringComparison.InvariantCultureIgnoreCase) ||
-                    assetExtension.Equals(AsmDefProjectFileType.ASMDEF_EXTENSION, StringComparison.InvariantCultureIgnoreCase))
+                if (IsAsmDefMeta(metaFile.Path))
                 {
                     newFiles.AssetFiles.Add(metaFile);
                 }
