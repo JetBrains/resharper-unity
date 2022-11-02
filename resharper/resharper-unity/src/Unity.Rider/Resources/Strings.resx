@@ -146,7 +146,8 @@
         <value>Add '{0}' to build settings</value>
     </data>
     <data name="AdditionalFileLayoutSettingsHelper_LoadDefaultPattern_You_are_about_to_replace_the_set_of_patterns_with_a_default_one___0_This_will_remove_all_changes_you_might_have_made__1_Do_you_want_to_proceed_" xml:space="preserve">
-        <value>You are about to replace the set of patterns with a default one. {0}This will remove all changes you might have made.{0}Do you want to proceed?</value>
+        <value>You are about to replace the set of patterns with a default one.{0}This will remove all changes you might have made.{0}Do you want to proceed?</value>
+        <comment>Just a NewLine is inserted here</comment>
     </data>
     <data name="UnityFileLayoutPageTab_Create_Default" xml:space="preserve">
         <value>Default</value>
