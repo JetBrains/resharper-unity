@@ -446,4 +446,96 @@ This option applies the same behaviour to IL2CPP players.</value>
     <data name="ToggleSerializedFieldOne_Text_Make_field___0___serialized" xml:space="preserve">
         <value>Make field '{0}' serialized</value>
     </data>
+    <data name="MoveAction_Text_Introduce_field_and_initialise_in___0__" xml:space="preserve">
+        <value>Introduce field and initialise in '{0}'</value>
+        <comment>myMethodName</comment>
+    </data>
+    <data name="MoveFromLoopAction_Text_Move_outside_of_loop" xml:space="preserve">
+        <value>Move outside of loop</value>
+    </data>
+    <data name="CachePropertyValueQuickFix_Text_Introduce_variable" xml:space="preserve">
+        <value>Introduce variable</value>
+    </data>
+    <data name="ConvertCoalescingToConditionalQuickFix_Text_Convert_to_conditional_expression" xml:space="preserve">
+        <value>Convert to conditional expression</value>
+    </data>
+    <data name="ConvertToCompareTagQuickFix_Text_Convert_to__CompareTag_" xml:space="preserve">
+        <value>Convert to 'CompareTag'</value>
+    </data>
+    <data name="ConvertToGameObjectAddComponentQuickFix_Text_Convert_to__GameObject_AddComponent__0_____" xml:space="preserve">
+        <value>Convert to 'GameObject.AddComponent&lt;{0}&gt;()'</value>
+    </data>
+    <data name="ConvertToScriptableObjectCreateInstanceQuickFix_Text_Convert_to__ScriptableObject_CreateInstance__0_____" xml:space="preserve">
+        <value>Convert to 'ScriptableObject.CreateInstance&lt;{0}&gt;()'</value>
+    </data>
+    <data name="CreateSerializedFieldFromUsageAction_Text_Create_Unity_serialized_field___0__" xml:space="preserve">
+        <value>Create Unity serialized field '{0}'</value>
+        <comment>shortName</comment>
+    </data>
+    <data name="CreateStaticConstructorFromUsageAction_Text_Create_static_constructor___0__" xml:space="preserve">
+        <value>Create static constructor '{0}'</value>
+        <comment>myClassLikeDeclaration.DeclaredName</comment>
+    </data>
+    <data name="FormerlySerializedAsSplitDeclarationsFix_Text_Split_into_separate_declarations" xml:space="preserve">
+        <value>Split into separate declarations</value>
+    </data>
+    <data name="GenerateUnityEventFunctionsFix_Text_Generate_Unity_event_functions" xml:space="preserve">
+        <value>Generate Unity event functions</value>
+    </data>
+    <data name="ChangeSignatureBulbAction_GetText_Make___0____1_" xml:space="preserve">
+        <value>Make '{0}' {1}</value>
+        <comment>Make '{methodName}' {staticTerm}</comment>
+    </data>
+    <data name="ChangeSignatureBulbAction_GetText_Remove___0___modifier" xml:space="preserve">
+        <value>Remove '{0}' modifier</value>
+        <comment>staticTerm</comment>
+    </data>
+    <data name="ChangeSignatureBulbAction_GetText_Change_parameters_to____0___" xml:space="preserve">
+        <value>Change parameters to '({0})'</value>
+        <comment>Parameters</comment>
+    </data>
+    <data name="ChangeSignatureBulbAction_GetText_Change_return_type_to___0__" xml:space="preserve">
+        <value>Change return type to '{0}'</value>
+        <comment>signature.GetReturnTypeName()</comment>
+    </data>
+    <data name="ChangeSignatureBulbAction_GetText_Remove_type_parameters" xml:space="preserve">
+        <value>Remove type parameters</value>
+    </data>
+    <data name="ChangeSignatureBulbAction_GetText_Change_signature_to___0__" xml:space="preserve">
+        <value>Change signature to '{0}'</value>
+    </data>
+    <data name="InefficientMultidimensionalArrayUsageQuickFix_Text_Convert_to_jagged_array" xml:space="preserve">
+        <value>Convert to jagged array</value>
+    </data>
+    <data name="ChangeSceneAtArgumentAction_Text_Change_scene_name_to___0__" xml:space="preserve">
+        <value>Change scene name to '{0}'</value>
+    </data>
+    <data name="MakeSerializable_Text_Make_type___0___serializable" xml:space="preserve">
+        <value>Make type '{0}' serializable</value>
+    </data>
+    <data name="MultiplicationOrderQuickFix_Text_Reorder_multiplication" xml:space="preserve">
+        <value>Reorder multiplication</value>
+    </data>
+    <data name="PreferAddressByIdToGraphicsParamsQuickFix_Text_Use_cached_property_index" xml:space="preserve">
+        <value>Use cached property index</value>
+    </data>
+    <data name="PreferNonAllocApiQuickFix_Text_Convert_to___0__" xml:space="preserve">
+        <value>Convert to '{0}'</value>
+        <comment>ShortName</comment>
+    </data>
+    <data name="RemoveAllReadonly_Text_Make_all_fields_non_readonly" xml:space="preserve">
+        <value>Make all fields non-readonly</value>
+    </data>
+    <data name="RemoveAllReadonly_Text_Make_field_non_readonly" xml:space="preserve">
+        <value>Make field non-readonly</value>
+    </data>
+    <data name="RemoveOneReadonly_Text_Make_Field_non_readonly" xml:space="preserve">
+        <value>Make '{0}' non-readonly</value>
+    </data>
+    <data name="RemoveRedundantAttributeQuickFix_Text_Remove_redundant_attribute" xml:space="preserve">
+        <value>Remove redundant attribute</value>
+    </data>
+    <data name="RemoveRedundantAttributeQuickFix_ScopedText_Remove_redundant_Unity_attributes" xml:space="preserve">
+        <value>Remove redundant Unity attributes</value>
+    </data>
 </root>

@@ -185,5 +185,33 @@
     public static string ToggleSerializedFieldOne_Text_Make_field___0___serialized__remove_readonly_ => ResourceManager.GetString("ToggleSerializedFieldOne_Text_Make_field___0___serialized__remove_readonly_");
     public static string ToggleSerializedFieldOne_Text_Make_field___0___non_serialized => ResourceManager.GetString("ToggleSerializedFieldOne_Text_Make_field___0___non_serialized");
     public static string ToggleSerializedFieldOne_Text_Make_field___0___serialized => ResourceManager.GetString("ToggleSerializedFieldOne_Text_Make_field___0___serialized");
+    public static string MoveAction_Text_Introduce_field_and_initialise_in___0__ => ResourceManager.GetString("MoveAction_Text_Introduce_field_and_initialise_in___0__");
+    public static string MoveFromLoopAction_Text_Move_outside_of_loop => ResourceManager.GetString("MoveFromLoopAction_Text_Move_outside_of_loop");
+    public static string CachePropertyValueQuickFix_Text_Introduce_variable => ResourceManager.GetString("CachePropertyValueQuickFix_Text_Introduce_variable");
+    public static string ConvertCoalescingToConditionalQuickFix_Text_Convert_to_conditional_expression => ResourceManager.GetString("ConvertCoalescingToConditionalQuickFix_Text_Convert_to_conditional_expression");
+    public static string ConvertToCompareTagQuickFix_Text_Convert_to__CompareTag_ => ResourceManager.GetString("ConvertToCompareTagQuickFix_Text_Convert_to__CompareTag_");
+    public static string ConvertToGameObjectAddComponentQuickFix_Text_Convert_to__GameObject_AddComponent__0_____ => ResourceManager.GetString("ConvertToGameObjectAddComponentQuickFix_Text_Convert_to__GameObject_AddComponent__0_____");
+    public static string ConvertToScriptableObjectCreateInstanceQuickFix_Text_Convert_to__ScriptableObject_CreateInstance__0_____ => ResourceManager.GetString("ConvertToScriptableObjectCreateInstanceQuickFix_Text_Convert_to__ScriptableObject_CreateInstance__0_____");
+    public static string CreateSerializedFieldFromUsageAction_Text_Create_Unity_serialized_field___0__ => ResourceManager.GetString("CreateSerializedFieldFromUsageAction_Text_Create_Unity_serialized_field___0__");
+    public static string CreateStaticConstructorFromUsageAction_Text_Create_static_constructor___0__ => ResourceManager.GetString("CreateStaticConstructorFromUsageAction_Text_Create_static_constructor___0__");
+    public static string FormerlySerializedAsSplitDeclarationsFix_Text_Split_into_separate_declarations => ResourceManager.GetString("FormerlySerializedAsSplitDeclarationsFix_Text_Split_into_separate_declarations");
+    public static string GenerateUnityEventFunctionsFix_Text_Generate_Unity_event_functions => ResourceManager.GetString("GenerateUnityEventFunctionsFix_Text_Generate_Unity_event_functions");
+    public static string ChangeSignatureBulbAction_GetText_Make___0____1_ => ResourceManager.GetString("ChangeSignatureBulbAction_GetText_Make___0____1_");
+    public static string ChangeSignatureBulbAction_GetText_Remove___0___modifier => ResourceManager.GetString("ChangeSignatureBulbAction_GetText_Remove___0___modifier");
+    public static string ChangeSignatureBulbAction_GetText_Change_parameters_to____0___ => ResourceManager.GetString("ChangeSignatureBulbAction_GetText_Change_parameters_to____0___");
+    public static string ChangeSignatureBulbAction_GetText_Change_return_type_to___0__ => ResourceManager.GetString("ChangeSignatureBulbAction_GetText_Change_return_type_to___0__");
+    public static string ChangeSignatureBulbAction_GetText_Remove_type_parameters => ResourceManager.GetString("ChangeSignatureBulbAction_GetText_Remove_type_parameters");
+    public static string ChangeSignatureBulbAction_GetText_Change_signature_to___0__ => ResourceManager.GetString("ChangeSignatureBulbAction_GetText_Change_signature_to___0__");
+    public static string InefficientMultidimensionalArrayUsageQuickFix_Text_Convert_to_jagged_array => ResourceManager.GetString("InefficientMultidimensionalArrayUsageQuickFix_Text_Convert_to_jagged_array");
+    public static string ChangeSceneAtArgumentAction_Text_Change_scene_name_to___0__ => ResourceManager.GetString("ChangeSceneAtArgumentAction_Text_Change_scene_name_to___0__");
+    public static string MakeSerializable_Text_Make_type___0___serializable => ResourceManager.GetString("MakeSerializable_Text_Make_type___0___serializable");
+    public static string MultiplicationOrderQuickFix_Text_Reorder_multiplication => ResourceManager.GetString("MultiplicationOrderQuickFix_Text_Reorder_multiplication");
+    public static string PreferAddressByIdToGraphicsParamsQuickFix_Text_Use_cached_property_index => ResourceManager.GetString("PreferAddressByIdToGraphicsParamsQuickFix_Text_Use_cached_property_index");
+    public static string PreferNonAllocApiQuickFix_Text_Convert_to___0__ => ResourceManager.GetString("PreferNonAllocApiQuickFix_Text_Convert_to___0__");
+    public static string RemoveAllReadonly_Text_Make_all_fields_non_readonly => ResourceManager.GetString("RemoveAllReadonly_Text_Make_all_fields_non_readonly");
+    public static string RemoveAllReadonly_Text_Make_field_non_readonly => ResourceManager.GetString("RemoveAllReadonly_Text_Make_field_non_readonly");
+    public static string RemoveOneReadonly_Text_Make_Field_non_readonly => ResourceManager.GetString("RemoveOneReadonly_Text_Make_Field_non_readonly");
+    public static string RemoveRedundantAttributeQuickFix_Text_Remove_redundant_attribute => ResourceManager.GetString("RemoveRedundantAttributeQuickFix_Text_Remove_redundant_attribute");
+    public static string RemoveRedundantAttributeQuickFix_ScopedText_Remove_redundant_Unity_attributes => ResourceManager.GetString("RemoveRedundantAttributeQuickFix_ScopedText_Remove_redundant_Unity_attributes");
   }
 }
