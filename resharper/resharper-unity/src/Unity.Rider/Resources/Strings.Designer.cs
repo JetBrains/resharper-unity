@@ -79,7 +79,7 @@
     public static string RiderTypeDetector_AddScriptUsagesHighlighting_Assets_usages => ResourceManager.GetString("RiderTypeDetector_AddScriptUsagesHighlighting_Assets_usages");
     public static string RiderDeferredCacheProgressBar_Start_Processing_assets => ResourceManager.GetString("RiderDeferredCacheProgressBar_Start_Processing_assets");
     public static string RiderDeferredCacheProgressBar_Start_Calculating_asset_index => ResourceManager.GetString("RiderDeferredCacheProgressBar_Start_Calculating_asset_index");
-    public static string RiderDeferredCacheProgressBar_Start_Processing__0_ => ResourceManager.GetString("RiderDeferredCacheProgressBar_Start_Processing__0_");
+    public static string RiderDeferredCacheProgressBar_Start_Processing_FileName => ResourceManager.GetString("RiderDeferredCacheProgressBar_Start_Processing_FileName");
     public static string UnityPathTemplateParameter_CreateContent_Custom => ResourceManager.GetString("UnityPathTemplateParameter_CreateContent_Custom");
     public static string UnityPathTemplateParameter_CreateContent_Custom__Unity_installation_was_not_found_ => ResourceManager.GetString("UnityPathTemplateParameter_CreateContent_Custom__Unity_installation_was_not_found_");
     public static string UnityPathTemplateParameter_CreateContent_Custom_path => ResourceManager.GetString("UnityPathTemplateParameter_CreateContent_Custom_path");
