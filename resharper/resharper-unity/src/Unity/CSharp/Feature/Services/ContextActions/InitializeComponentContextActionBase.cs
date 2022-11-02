@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.MoveQuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
@@ -174,7 +175,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 return null;
             }
 
-            public override string Text => $"Initialize in '{myMethodName}'";
+            public override string Text => string.Format(Strings.InitializeComponentBulbActionBase_Text_Initialize_in___0__, myMethodName);
         }
 
         private class AddRequireComponentBulbActionBase : BulbActionBase
@@ -197,7 +198,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 return null;
             }
 
-            public override string Text => $"Add 'RequireComponent'";
+            public override string Text => Strings.AddRequireComponentBulbActionBase_Text_Add__RequireComponent_;
         }
     }
 }

@@ -25,4 +25,10 @@
     <data name="CgBuiltInTypeTokenNodeType_TokenRepresentation_built_in_type" xml:space="preserve">
         <value>built-in type</value>
     </data>
+    <data name="RemoveToken_Text_Remove_invalid_parameters" xml:space="preserve">
+        <value>Remove invalid parameters</value>
+    </data>
+    <data name="RemoveSwallowedToken_Text_Insert_new_line" xml:space="preserve">
+        <value>Insert new line</value>
+    </data>
 </root>

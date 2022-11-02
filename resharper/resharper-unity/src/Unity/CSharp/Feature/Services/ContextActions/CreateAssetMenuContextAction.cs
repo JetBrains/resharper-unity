@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
@@ -98,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 return attribute?.CreateHotspotSession();
             }
 
-            public override string Text => "Add to Unity's 'Assets/Create' menu";
+            public override string Text => Strings.CreateAssetMenuAction_Text_Add_to_Unity_s__Assets_Create__menu;
         }
     }
 }

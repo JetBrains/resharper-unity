@@ -326,4 +326,124 @@ This option applies the same behaviour to IL2CPP players.</value>
     <data name="UnityYamlProjectFileType_UnityYamlProjectFileType_Unity_Yaml" xml:space="preserve">
         <value>Unity Yaml File</value>
     </data>
+    <data name="ConvertToGuidReferenceQuickFix_Text_To_GUID_reference" xml:space="preserve">
+        <value>To GUID reference</value>
+    </data>
+    <data name="PreferGenericMethodOverloadQuickFix_Text_Convert_to__MethodName__1__" xml:space="preserve">
+        <value>Convert to '{0}&lt;{1}&gt;()'</value>
+        <comment>$"Convert to '{myMethodName}&lt;{myTargetType.GetClrName()}&gt;()'";</comment>
+    </data>
+    <data name="PreferGenericMethodOverloadQuickFix_ScopedText_Use_strongly_typed_overloads" xml:space="preserve">
+        <value>Use strongly typed overloads</value>
+    </data>
+    <data name="DocumentationNavigationAction_Text_View_documentation" xml:space="preserve">
+        <value>View documentation</value>
+    </data>
+    <data name="ConvertFromCoroutineBulbAction_Text_To_standard_event_function" xml:space="preserve">
+        <value>To standard event function</value>
+    </data>
+    <data name="ConvertToCoroutineBulbAction_Text_To_coroutine" xml:space="preserve">
+        <value>To coroutine</value>
+    </data>
+    <data name="AddAttributeAction_Text_Add___0__" xml:space="preserve">
+        <value>Add '{0}'</value>
+        <comment>$"Add '{displayName}'";</comment>
+    </data>
+    <data name="AddAttributeAction_Text_Add___0___before_SelectedField" xml:space="preserve">
+        <value>Add '{0}' before '{1}'</value>
+        <comment>$"Add '{displayName}' before '{mySelectedFieldDeclaration.DeclaredName}'"</comment>
+    </data>
+    <data name="AddAttributeAction_Text_Add___0___before_all_fields" xml:space="preserve">
+        <value>Add '{0}' before all fields</value>
+        <comment>$"Add '{displayName}' before all fields"</comment>
+    </data>
+    <data name="AddAttributeAction_Text_Add___0___to_SelectedField" xml:space="preserve">
+        <value>Add '{0}' to '{1}'</value>
+        <comment>$"Add '{displayName}' to '{mySelectedFieldDeclaration.DeclaredName}'"</comment>
+    </data>
+    <data name="AddAttributeAction_Text_Add___0___to_all_fields" xml:space="preserve">
+        <value>Add '{0}' to all fields</value>
+        <comment>$"Add '{displayName}' to all fields"</comment>
+    </data>
+    <data name="RemoveAttributeAction_Text_Remove___0__" xml:space="preserve">
+        <value>Remove '{0}'</value>
+        <comment>$"Remove '{displayName}'"</comment>
+    </data>
+    <data name="RemoveAttributeAction_Text_Remove___0___from_SelectedField" xml:space="preserve">
+        <value>Remove '{0}' from '{1}'</value>
+        <comment>$"Remove '{displayName}' from '{mySelectedFieldDeclaration.DeclaredName}'"</comment>
+    </data>
+    <data name="RemoveAttributeAction_Text_Remove___0___from_all_fields" xml:space="preserve">
+        <value>Remove '{0}' from all fields</value>
+        <comment>$"Remove '{displayName}' from all fields"</comment>
+    </data>
+    <data name="AutoPropertyToSerializedBackingFieldAction_Text_To_property_with_serialized_backing_field" xml:space="preserve">
+        <value>To property with serialized backing field</value>
+    </data>
+    <data name="AddTooltipAttributeAction_Text_Convert_to__Tooltip__attribute" xml:space="preserve">
+        <value>Convert to 'Tooltip' attribute</value>
+    </data>
+    <data name="AddTooltipAttributeAction_Text_Add__Tooltip__attribute" xml:space="preserve">
+        <value>Add 'Tooltip' attribute</value>
+    </data>
+    <data name="AddTooltipAttributeAction_Text_Convert_XML_doc_to__Tooltip__attribute" xml:space="preserve">
+        <value>Convert XML doc to 'Tooltip' attribute</value>
+    </data>
+    <data name="AddTooltipAttributeAction_Text_Add__Tooltip__attribute_from_XML_doc" xml:space="preserve">
+        <value>Add 'Tooltip' attribute from XML doc</value>
+    </data>
+    <data name="CreateAssetMenuAction_Text_Add_to_Unity_s__Assets_Create__menu" xml:space="preserve">
+        <value>Add to Unity's 'Assets/Create' menu</value>
+    </data>
+    <data name="InitializeComponentBulbActionBase_Text_Initialize_in___0__" xml:space="preserve">
+        <value>Initialize in '{0}'</value>
+        <comment>$"Initialize in '{myMethodName}'"</comment>
+    </data>
+    <data name="AddRequireComponentBulbActionBase_Text_Add__RequireComponent_" xml:space="preserve">
+        <value>Add 'RequireComponent'</value>
+    </data>
+    <data name="ToggleSerializedFieldAll_Text_To_serialized_field" xml:space="preserve">
+        <value>To serialized field</value>
+    </data>
+    <data name="ToggleSerializedFieldAll_Text_Make__0__non_serialized" xml:space="preserve">
+        <value>Make {0} non-serialized</value>
+    </data>
+    <data name="ToggleSerializedFieldAll_Text_Make__0__serialized" xml:space="preserve">
+        <value>Make {0} serialized</value>
+    </data>
+    <data name="ToggleSerializedFieldAll_Text_all_fields" xml:space="preserve">
+        <value>all fields</value>
+        <comment>myMultipleFieldDeclaration.Declarators.Count > 1 ? Strings.ToggleSerializedFieldAll_Text_all_fields : Strings.ToggleSerializedFieldAll_Text_field;</comment>
+    </data>
+    <data name="ToggleSerializedFieldAll_Text_field" xml:space="preserve">
+        <value>field</value>
+        <comment>myMultipleFieldDeclaration.Declarators.Count > 1 ? Strings.ToggleSerializedFieldAll_Text_all_fields : Strings.ToggleSerializedFieldAll_Text_field;</comment>
+    </data>
+    <data name="ToggleSerializedFieldAll_Text_Make__0__serialized__remove_static_and_readonly_" xml:space="preserve">
+        <value>Make {0} serialized (remove static and readonly)</value>
+        <comment>targetDescription</comment>
+    </data>
+    <data name="ToggleSerializedFieldAll_Text_Make__0__serialized__remove_static_" xml:space="preserve">
+        <value>Make {0} serialized (remove static)</value>
+        <comment>targetDescription</comment>
+    </data>
+    <data name="ToggleSerializedFieldAll_Text_Make__0__serialized__remove_readonly_" xml:space="preserve">
+        <value>Make {0} serialized (remove readonly)</value>
+        <comment>targetDescription</comment>
+    </data>
+    <data name="ToggleSerializedFieldOne_Text_Make_field___0___serialized__remove_static_and_readonly_" xml:space="preserve">
+        <value>Make field '{0}' serialized (remove static and readonly)</value>
+    </data>
+    <data name="ToggleSerializedFieldOne_Text_Make_field___0___serialized__remove_static_" xml:space="preserve">
+        <value>Make field '{0}' serialized (remove static)</value>
+    </data>
+    <data name="ToggleSerializedFieldOne_Text_Make_field___0___serialized__remove_readonly_" xml:space="preserve">
+        <value>Make field '{0}' serialized (remove readonly)</value>
+    </data>
+    <data name="ToggleSerializedFieldOne_Text_Make_field___0___non_serialized" xml:space="preserve">
+        <value>Make field '{0}' non-serialized</value>
+    </data>
+    <data name="ToggleSerializedFieldOne_Text_Make_field___0___serialized" xml:space="preserve">
+        <value>Make field '{0}' serialized</value>
+    </data>
 </root>

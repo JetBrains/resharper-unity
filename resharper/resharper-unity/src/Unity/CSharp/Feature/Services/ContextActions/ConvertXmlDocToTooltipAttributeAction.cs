@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -119,10 +120,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 {
                     return (myCaretOnXml: myIsCaretOnXml, myDestructiveConvert) switch
                     {
-                        (true, true) => "Convert to 'Tooltip' attribute",
-                        (true, false) => "Add 'Tooltip' attribute",
-                        (false, true) => "Convert XML doc to 'Tooltip' attribute",
-                        (false, false) => "Add 'Tooltip' attribute from XML doc"
+                        (true, true) => Strings.AddTooltipAttributeAction_Text_Convert_to__Tooltip__attribute,
+                        (true, false) => Strings.AddTooltipAttributeAction_Text_Add__Tooltip__attribute,
+                        (false, true) => Strings.AddTooltipAttributeAction_Text_Convert_XML_doc_to__Tooltip__attribute,
+                        (false, false) => Strings.AddTooltipAttributeAction_Text_Add__Tooltip__attribute_from_XML_doc
                     };
                 }
             }
