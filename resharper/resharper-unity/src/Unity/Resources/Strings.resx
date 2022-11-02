@@ -550,4 +550,10 @@ This option applies the same behaviour to IL2CPP players.</value>
     <data name="ConvertXmlDocToTooltipAttributeAction_Description" xml:space="preserve">
         <value>Convert XML documentation to show a tooltip in the Unity Editor Inspector</value>
     </data>
+    <data name="AddDiscardAttributeContextAction_Name" xml:space="preserve">
+        <value>Add `BurstDiscard` attribute</value>
+    </data>
+    <data name="AddExpensiveCommentContextAction_Name" xml:space="preserve">
+        <value>Mark function expensive</value>
+    </data>
 </root>

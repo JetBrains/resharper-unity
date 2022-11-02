@@ -217,5 +217,7 @@
     public static string AutoPropertyToSerializedBackingFieldAction_Description => ResourceManager.GetString("AutoPropertyToSerializedBackingFieldAction_Description");
     public static string ConvertXmlDocToTooltipAttributeAction_Name => ResourceManager.GetString("ConvertXmlDocToTooltipAttributeAction_Name");
     public static string ConvertXmlDocToTooltipAttributeAction_Description => ResourceManager.GetString("ConvertXmlDocToTooltipAttributeAction_Description");
+    public static string AddDiscardAttributeContextAction_Name => ResourceManager.GetString("AddDiscardAttributeContextAction_Name");
+    public static string AddExpensiveCommentContextAction_Name => ResourceManager.GetString("AddExpensiveCommentContextAction_Name");
   }
 }
