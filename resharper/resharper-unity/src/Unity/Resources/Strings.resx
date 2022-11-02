@@ -299,8 +299,9 @@ This option applies the same behaviour to IL2CPP players.</value>
     <data name="UnityOptionsPage_AddInternalSection__Deprecated__Parse_GLSL_files_for_syntax_errors__requires_internal_mode__and_re_opening_solution_" xml:space="preserve">
         <value>[Deprecated] Parse GLSL files for syntax errors (requires internal mode, and re-opening solution)</value>
     </data>
-    <data name="UnityFindUsagesProvider_GetNotFoundMessage__are_only_implicit_" xml:space="preserve">
-        <value> are only implicit.</value>
+    <data name="UnityFindUsagesProvider_GetNotFoundMessage_SearchRequestLocalizedTitle_are_only_implicit_" xml:space="preserve">
+        <value>{0} are only implicit.</value>
+        <comment>(Title, which is localized) are only implicit</comment>
     </data>
     <data name="DuplicateMenuItemShortCutProblemAnalyzer_Analyze_this_file" xml:space="preserve">
         <value>this file</value>
