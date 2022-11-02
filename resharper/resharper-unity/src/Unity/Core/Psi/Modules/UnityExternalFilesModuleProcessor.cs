@@ -48,6 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
         private readonly UnityExternalFilesIndexDisablingStrategy myIndexDisablingStrategy;
         private readonly UnityAssetInfoCollector myUsageStatistics;
+        private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly Dictionary<VirtualFileSystemPath, LifetimeDefinition> myRootPathLifetimes;
         private readonly VirtualFileSystemPath mySolutionDirectory;
 
@@ -61,7 +62,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                                                  UnityExternalPsiSourceFileFactory psiSourceFileFactory,
                                                  UnityExternalFilesModuleFactory moduleFactory,
                                                  UnityExternalFilesIndexDisablingStrategy indexDisablingStrategy,
-                                                 UnityAssetInfoCollector usageStatistics)
+                                                 UnityAssetInfoCollector usageStatistics,
+                                                 AssetIndexingSupport assetIndexingSupport)
         {
             myLifetime = lifetime;
             myLogger = logger;
@@ -75,6 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             myModuleFactory = moduleFactory;
             myIndexDisablingStrategy = indexDisablingStrategy;
             myUsageStatistics = usageStatistics;
+            myAssetIndexingSupport = assetIndexingSupport;
 
             myRootPathLifetimes = new Dictionary<VirtualFileSystemPath, LifetimeDefinition>();
 
@@ -85,8 +88,51 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
             changeManager.RegisterChangeProvider(lifetime, this);
             changeManager.AddDependency(lifetime, psiModules, this);
+
+            assetIndexingSupport.IsEnabled.Change.Advise(lifetime, args =>
+            {
+                // previously disabled, now enabled
+                if (args.HasOld && !args.Old && args.HasNew && args.New)
+                {
+                    CollectInitialFiles();
+                }
+            });
         }
 
+        private bool IsIndexedWithCurrentIndexingSupport(VirtualFileSystemPath path)
+        {
+            if (myAssetIndexingSupport.IsEnabled.Value)
+                return true;
+
+            if (!path.IsMeta())
+                return false;
+
+            var assetExtension = path.ChangeExtension("").ExtensionWithDot;
+            return assetExtension.Equals(AsmRefProjectFileType.ASMREF_EXTENSION, StringComparison.InvariantCultureIgnoreCase) ||
+                assetExtension.Equals(AsmDefProjectFileType.ASMDEF_EXTENSION, StringComparison.InvariantCultureIgnoreCase);
+        }
+        
+        private ExternalFiles FilterFiles(ExternalFiles files)
+        {
+            if (myAssetIndexingSupport.IsEnabled.Value)
+                return files;
+
+            var newFiles = new ExternalFiles(mySolution, myLogger);
+
+            foreach (var metaFile in files.MetaFiles)
+            {
+                var assetExtension = metaFile.Path.ChangeExtension("").ExtensionWithDot;
+                if (assetExtension.Equals(AsmRefProjectFileType.ASMREF_EXTENSION, StringComparison.InvariantCultureIgnoreCase) ||
+                    assetExtension.Equals(AsmDefProjectFileType.ASMDEF_EXTENSION, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    newFiles.AssetFiles.Add(metaFile);
+                }
+            }
+            
+            return newFiles;
+        }
+        
+        
         // TODO: This is all run on the main thread, at least during solution load, which is very expensive
         // Are the PSI caches loaded before or after this? If we move collection to a background thread, would we clean
         // up "stale" PSI files from the caches because they haven't been found yet?
@@ -98,23 +144,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             // For project model access
             myLocks.AssertReadAccessAllowed();
 
-            var externalFiles = myLogger.DoCalculation("CollectExternalFiles", null,
-                () =>
-                {
-                    var files = new ExternalFiles(mySolution, myLogger);
-                    CollectExternalFilesForSolutionDirectory(files, "Assets");
-                    CollectExternalFilesForSolutionDirectory(files, "ProjectSettings", true);
-                    CollectExternalFilesForPackages(files);
-
-                    // Disable asset indexing for massive projects. Note that we still collect all files, and always index
-                    // project settings, meta and asmdef files.
-                    myIndexDisablingStrategy.Run(files.AssetFiles);
-
-                    return files;
-                });
-
-            myLogger.DoActivity("ProcessExternalFiles", null,
-                () => AddExternalFiles(externalFiles));
+            var externalFiles = CollectInitialFiles();
 
             try
             {
@@ -130,6 +160,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             SubscribeToProjectModelUpdates();
             
             myUsageStatistics.FinishInitialUpdate();
+        }
+
+        private ExternalFiles CollectInitialFiles()
+        {
+            var externalFiles = myLogger.DoCalculation("CollectExternalFiles", null,
+                () =>
+                {
+                    var files = new ExternalFiles(mySolution, myLogger);
+                    CollectExternalFilesForSolutionDirectory(files, "Assets");
+                    CollectExternalFilesForSolutionDirectory(files, "ProjectSettings", true);
+                    CollectExternalFilesForPackages(files);
+
+                    // Disable asset indexing for massive projects. Note that we still collect all files, and always index
+                    // project settings, meta and asmdef files.
+                    myIndexDisablingStrategy.Run(files.AssetFiles);
+
+                    return FilterFiles(files);
+                });
+
+            myLogger.DoActivity("ProcessExternalFiles", null,
+                () => AddExternalFiles(externalFiles));
+            return externalFiles;
         }
 
         public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
@@ -271,7 +323,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                         var externalFiles = new ExternalFiles(mySolution, myLogger);
                         CollectExternalFilesForDirectory(externalFiles, packageData.PackageFolder,
                             packageData.IsUserEditable);
-                        AddExternalFiles(externalFiles);
+                        AddExternalFiles(FilterFiles(externalFiles));
                     }
                 }
                 else
@@ -515,9 +567,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             }
         }
 
-        private static bool IsIndexedExternalFile(VirtualFileSystemPath path)
+        private bool IsIndexedExternalFile(VirtualFileSystemPath path)
         {
-            return path.IsIndexedExternalFile() && !IsBinaryAsset(path) && !IsAssetExcludedByName(path);
+            return path.IsIndexedExternalFile() && IsIndexedWithCurrentIndexingSupport(path) && !IsBinaryAsset(path) && !IsAssetExcludedByName(path);
         }
 
         private static bool IsBinaryAsset(VirtualDirectoryEntryData directoryEntry)
