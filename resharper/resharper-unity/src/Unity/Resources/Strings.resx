@@ -55,11 +55,13 @@
     <data name="RemoveInvalidArrayItemQuickFix_Text_Remove_invalid_value" xml:space="preserve">
         <value>Remove invalid value</value>
     </data>
-    <data name="RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_File___0___already_exists" xml:space="preserve">
+    <data name="RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_File___NewFileName___already_exists" xml:space="preserve">
         <value>File '{0}' already exists</value>
+        <comment>NewFileName</comment>
     </data>
-    <data name="RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_Cannot_rename___0__" xml:space="preserve">
+    <data name="RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_Cannot_rename___FileName__" xml:space="preserve">
         <value>Cannot rename '{0}'</value>
+        <comment>fileName</comment>
     </data>
     <data name="RenameFileToMatchAssemblyNameQuickFix_Text_Rename_file_to_match_assembly_name" xml:space="preserve">
         <value>Rename file to match assembly name</value>
