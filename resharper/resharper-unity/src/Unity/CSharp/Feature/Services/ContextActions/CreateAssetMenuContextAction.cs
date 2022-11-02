@@ -23,11 +23,8 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Add 'CreateAssetMenu' attribute",
-        Description = "Adds the 'CreateAssetMenu' attribute to a scriptable object. " +
-                      "This marks a 'ScriptableObject'-derived type to be automatically listed in " +
-                      "Unity's 'Assets/Create' menu, so that instances of the type can be easily created " +
-                      "and stored in the project as '.asset' files")]
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.CreateAssetMenuContextAction_Name), 
+        DescriptionResourceName = nameof(Strings.CreateAssetMenuContextAction_Description))]
     public class CreateAssetMenuContextAction : IContextAction
     {
         private static readonly SubmenuAnchor ourSubmenuAnchor =

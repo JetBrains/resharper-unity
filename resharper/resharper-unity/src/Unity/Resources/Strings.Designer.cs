@@ -219,5 +219,26 @@
     public static string ConvertXmlDocToTooltipAttributeAction_Description => ResourceManager.GetString("ConvertXmlDocToTooltipAttributeAction_Description");
     public static string AddDiscardAttributeContextAction_Name => ResourceManager.GetString("AddDiscardAttributeContextAction_Name");
     public static string AddExpensiveCommentContextAction_Name => ResourceManager.GetString("AddExpensiveCommentContextAction_Name");
+    public static string AddPerformanceAnalysisDisableCommentContextAction_Name => ResourceManager.GetString("AddPerformanceAnalysisDisableCommentContextAction_Name");
+    public static string AddHeaderAttributeAction_Name => ResourceManager.GetString("AddHeaderAttributeAction_Name");
+    public static string AddHeaderAttributeAction_Description => ResourceManager.GetString("AddHeaderAttributeAction_Description");
+    public static string AddRangeAttributeAction_Name => ResourceManager.GetString("AddRangeAttributeAction_Name");
+    public static string AddRangeAttributeAction_Description => ResourceManager.GetString("AddRangeAttributeAction_Description");
+    public static string AddSpaceAttributeAction_Name => ResourceManager.GetString("AddSpaceAttributeAction_Name");
+    public static string AddSpaceAttributeAction_Description => ResourceManager.GetString("AddSpaceAttributeAction_Description");
+    public static string AddTooltipAttributeAction_Name => ResourceManager.GetString("AddTooltipAttributeAction_Name");
+    public static string AddTooltipAttributeAction_Description => ResourceManager.GetString("AddTooltipAttributeAction_Description");
+    public static string CreateAssetMenuContextAction_Name => ResourceManager.GetString("CreateAssetMenuContextAction_Name");
+    public static string CreateAssetMenuContextAction_Description => ResourceManager.GetString("CreateAssetMenuContextAction_Description");
+    public static string GenerateUnityEventFunctionsAction_Name => ResourceManager.GetString("GenerateUnityEventFunctionsAction_Name");
+    public static string GenerateUnityEventFunctionsAction_Description => ResourceManager.GetString("GenerateUnityEventFunctionsAction_Description");
+    public static string InitializeFieldComponentContextAction_Name => ResourceManager.GetString("InitializeFieldComponentContextAction_Name");
+    public static string InitializeFieldComponentContextAction_Description => ResourceManager.GetString("InitializeFieldComponentContextAction_Description");
+    public static string InitializePropertyComponentContextAction_Name => ResourceManager.GetString("InitializePropertyComponentContextAction_Name");
+    public static string InitializePropertyComponentContextAction_Description => ResourceManager.GetString("InitializePropertyComponentContextAction_Description");
+    public static string ToggleHideInInspectorAttributeAction_Name => ResourceManager.GetString("ToggleHideInInspectorAttributeAction_Name");
+    public static string ToggleHideInInspectorAttributeAction_Description => ResourceManager.GetString("ToggleHideInInspectorAttributeAction_Description");
+    public static string ToggleSerializedFieldAction_Name => ResourceManager.GetString("ToggleSerializedFieldAction_Name");
+    public static string ToggleSerializedFieldAction_Description => ResourceManager.GetString("ToggleSerializedFieldAction_Description");
   }
 }

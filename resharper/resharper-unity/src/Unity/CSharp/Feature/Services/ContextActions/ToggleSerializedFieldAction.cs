@@ -23,8 +23,8 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Toggle 'SerializeField' and 'NonSerialized' attributes on fields",
-        Description = "Toggles a field in a Unity type between serialized and non-serialized. If the field is non-public, the 'UnityEngine.SerializeField' attribute is added. If the field is already serialized, the attribute is removed, and for public fields, the 'NonSerialized' field is added.")]
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.ToggleSerializedFieldAction_Name), 
+        DescriptionResourceName = nameof(Strings.ToggleSerializedFieldAction_Description))]
     public class ToggleSerializedFieldAction : IContextAction
     {
         private static readonly SubmenuAnchor ourSubmenuAnchor =

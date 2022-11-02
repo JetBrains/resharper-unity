@@ -556,4 +556,67 @@ This option applies the same behaviour to IL2CPP players.</value>
     <data name="AddExpensiveCommentContextAction_Name" xml:space="preserve">
         <value>Mark function expensive</value>
     </data>
+    <data name="AddPerformanceAnalysisDisableCommentContextAction_Name" xml:space="preserve">
+        <value>Disable performance analysis for method</value>
+    </data>
+    <data name="AddHeaderAttributeAction_Name" xml:space="preserve">
+        <value>Add 'Header' attribute</value>
+    </data>
+    <data name="AddHeaderAttributeAction_Description" xml:space="preserve">
+        <value>Add header for this property in the Unity Editor Inspector</value>
+    </data>
+    <data name="AddRangeAttributeAction_Name" xml:space="preserve">
+        <value>Add 'Range' attribute</value>
+    </data>
+    <data name="AddRangeAttributeAction_Description" xml:space="preserve">
+        <value>Add range for this property in the Unity Editor Inspector</value>
+    </data>
+    <data name="AddSpaceAttributeAction_Name" xml:space="preserve">
+        <value>Add 'Space' attribute</value>
+    </data>
+    <data name="AddSpaceAttributeAction_Description" xml:space="preserve">
+        <value>Add space before this property in the Unity Editor Inspector</value>
+    </data>
+    <data name="AddTooltipAttributeAction_Name" xml:space="preserve">
+        <value>Add 'Tooltip' attribute</value>
+    </data>
+    <data name="AddTooltipAttributeAction_Description" xml:space="preserve">
+        <value>Add tooltip for this property in the Unity Editor Inspector</value>
+    </data>
+    <data name="CreateAssetMenuContextAction_Name" xml:space="preserve">
+        <value>Add 'CreateAssetMenu' attribute</value>
+    </data>
+    <data name="CreateAssetMenuContextAction_Description" xml:space="preserve">
+        <value>Adds the 'CreateAssetMenu' attribute to a scriptable object. This marks a 'ScriptableObject'-derived type to be automatically listed in Unity's 'Assets/Create' menu, so that instances of the type can be easily created and stored in the project as '.asset' files</value>
+    </data>
+    <data name="GenerateUnityEventFunctionsAction_Name" xml:space="preserve">
+        <value>Generate Unity event functions</value>
+    </data>
+    <data name="GenerateUnityEventFunctionsAction_Description" xml:space="preserve">
+        <value>Generate Unity event functions inside Unity type</value>
+    </data>
+    <data name="InitializeFieldComponentContextAction_Name" xml:space="preserve">
+        <value>Initialize field in Start or Awake method</value>
+    </data>
+    <data name="InitializeFieldComponentContextAction_Description" xml:space="preserve">
+        <value>Initializes current field in Start or Awake method via calling `GetComponent`</value>
+    </data>
+    <data name="InitializePropertyComponentContextAction_Name" xml:space="preserve">
+        <value>Initialize property in Start or Awake method</value>
+    </data>
+    <data name="InitializePropertyComponentContextAction_Description" xml:space="preserve">
+        <value>Initializes current property in Start or Awake method via calling `GetComponent`</value>
+    </data>
+    <data name="ToggleHideInInspectorAttributeAction_Name" xml:space="preserve">
+        <value>Toggle 'HideInInspector' attribute on fields</value>
+    </data>
+    <data name="ToggleHideInInspectorAttributeAction_Description" xml:space="preserve">
+        <value>Adds or removes the 'HideInInspector' attribute on a Unity serialized field, removing the field from the Inspector window.</value>
+    </data>
+    <data name="ToggleSerializedFieldAction_Name" xml:space="preserve">
+        <value>Toggle 'SerializeField' and 'NonSerialized' attributes on fields</value>
+    </data>
+    <data name="ToggleSerializedFieldAction_Description" xml:space="preserve">
+        <value>Toggles a field in a Unity type between serialized and non-serialized. If the field is non-public, the 'UnityEngine.SerializeField' attribute is added. If the field is already serialized, the attribute is removed, and for public fields, the 'NonSerialized' field is added.</value>
+    </data>
 </root>

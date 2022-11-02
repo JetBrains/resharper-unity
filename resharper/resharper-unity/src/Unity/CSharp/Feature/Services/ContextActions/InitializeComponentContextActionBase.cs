@@ -25,9 +25,8 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Initialize field in Start or Awake method",
-        Description =
-            "Initializes current field in Start or Awake method via calling `GetComponent`")]
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.InitializeFieldComponentContextAction_Name), 
+        DescriptionResourceName = nameof(Strings.InitializeFieldComponentContextAction_Description))]
     public class InitializeFieldComponentContextAction : InitializeComponentContextActionBase<IFieldDeclaration>
     {
         public InitializeFieldComponentContextAction(ICSharpContextActionDataProvider dataProvider)
@@ -37,9 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
     }
 
     [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Initialize property in Start or Awake method",
-        Description =
-            "Initializes current property in Start or Awake method via calling `GetComponent`")]
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.InitializePropertyComponentContextAction_Name), 
+        DescriptionResourceName = nameof(Strings.InitializePropertyComponentContextAction_Description))]
     public class InitializePropertyComponentContextAction : InitializeComponentContextActionBase<IPropertyDeclaration>
     {
         public InitializePropertyComponentContextAction(ICSharpContextActionDataProvider dataProvider)

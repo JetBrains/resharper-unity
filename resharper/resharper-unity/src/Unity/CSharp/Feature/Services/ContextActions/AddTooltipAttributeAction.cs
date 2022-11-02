@@ -2,6 +2,7 @@
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -10,8 +11,8 @@ using JetBrains.ReSharper.Psi.Modules;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Add 'Tooltip' attribute",
-        Description = "Add tooltip for this property in the Unity Editor Inspector")]
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.AddTooltipAttributeAction_Name), 
+        DescriptionResourceName = nameof(Strings.AddTooltipAttributeAction_Description))]
     public class AddTooltipAttributeAction : AddInspectorAttributeAction
     {
         private static readonly SubmenuAnchor ourSubmenuAnchor =
