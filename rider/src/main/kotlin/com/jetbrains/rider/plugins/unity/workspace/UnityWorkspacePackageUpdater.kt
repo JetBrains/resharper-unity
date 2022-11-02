@@ -14,6 +14,7 @@ import com.intellij.workspaceModel.storage.bridgeEntities.addContentRootEntity
 import com.intellij.workspaceModel.storage.url.VirtualFileUrlManager
 import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.util.reactive.AddRemove
+import com.jetbrains.rd.util.reactive.adviseUntil
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
@@ -50,12 +51,12 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
             // calculating the packages, and then set to false. Depending on when we subscribe, we might not see all
             // states, but as long as it's false, we know it's done the initial bulk update and isn't working right now,
             // so we can flush the cached changes from the initial update.
-            val nested = serviceLifetime.createNested()
-            model.packagesUpdating.advise(nested.lifetime) { updating ->
+            model.packagesUpdating.adviseUntil(serviceLifetime) { updating ->
                 if (updating == false) {
                     syncInitialEntityStorage()
-                    nested.terminate()
+                    return@adviseUntil true
                 }
+                return@adviseUntil false
             }
         }
     }
@@ -106,10 +107,10 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
 
     private fun syncInitialEntityStorage() {
         val initialEntityStorage = initialEntityStorage ?: return
-        this.initialEntityStorage = null
         logger.trace("Sync Unity packages after startup...")
 
         application.runWriteAction {
+            this.initialEntityStorage = null
             WorkspaceModel.getInstance(project).updateProjectModel { entityStorage ->
                 entityStorage.replaceBySource({ it is RiderUnityPackageEntitySource }, initialEntityStorage)
             }
