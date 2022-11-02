@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public bool IsUnityType([NotNullWhen(true)] ITypeElement? type) =>
             type != null && myUnityTypeCache.IsUnityType(type);
 
-        public static bool IsDotsSystemType([NotNullWhen(true)] ITypeElement? typeElement) =>
+        public static bool IsDotsType([NotNullWhen(true)] ITypeElement? typeElement) =>
             typeElement.DerivesFrom(KnownTypes.ComponentSystemBase) 
             || typeElement.DerivesFrom(KnownTypes.ISystem)
             || typeElement.DerivesFrom(KnownTypes.IBaker);
