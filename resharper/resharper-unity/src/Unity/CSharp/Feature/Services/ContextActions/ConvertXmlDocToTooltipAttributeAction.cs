@@ -24,8 +24,9 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Convert XML doc to 'Tooltip' attribute",
-        Description = "Convert XML documentation to show a tooltip in the Unity Editor Inspector")]
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.ConvertXmlDocToTooltipAttributeAction_Name), 
+        DescriptionResourceName = nameof(Strings.ConvertXmlDocToTooltipAttributeAction_Description)
+        )]
     public class ConvertXmlDocToTooltipAttributeAction : IContextAction
     {
         private static readonly IAnchor ourAnchor = new SubmenuAnchor(IntentionsAnchors.LowPriorityContextActionsAnchor,

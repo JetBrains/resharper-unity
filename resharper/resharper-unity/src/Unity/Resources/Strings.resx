@@ -538,4 +538,16 @@ This option applies the same behaviour to IL2CPP players.</value>
     <data name="RemoveRedundantAttributeQuickFix_ScopedText_Remove_redundant_Unity_attributes" xml:space="preserve">
         <value>Remove redundant Unity attributes</value>
     </data>
+    <data name="AutoPropertyToSerializedBackingFieldAction_Name" xml:space="preserve">
+        <value>Replace auto-property with property and serialized backing field</value>
+    </data>
+    <data name="AutoPropertyToSerializedBackingFieldAction_Description" xml:space="preserve">
+        <value>Replaces an auto-property in a Unity type with a property that utilizes a backing field that is marked with the 'UnityEngine.SerializeField' attribute.</value>
+    </data>
+    <data name="ConvertXmlDocToTooltipAttributeAction_Name" xml:space="preserve">
+        <value>Convert XML doc to 'Tooltip' attribute</value>
+    </data>
+    <data name="ConvertXmlDocToTooltipAttributeAction_Description" xml:space="preserve">
+        <value>Convert XML documentation to show a tooltip in the Unity Editor Inspector</value>
+    </data>
 </root>

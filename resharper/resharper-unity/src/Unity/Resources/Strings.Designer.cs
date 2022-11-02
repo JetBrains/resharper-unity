@@ -213,5 +213,9 @@
     public static string RemoveOneReadonly_Text_Make_Field_non_readonly => ResourceManager.GetString("RemoveOneReadonly_Text_Make_Field_non_readonly");
     public static string RemoveRedundantAttributeQuickFix_Text_Remove_redundant_attribute => ResourceManager.GetString("RemoveRedundantAttributeQuickFix_Text_Remove_redundant_attribute");
     public static string RemoveRedundantAttributeQuickFix_ScopedText_Remove_redundant_Unity_attributes => ResourceManager.GetString("RemoveRedundantAttributeQuickFix_ScopedText_Remove_redundant_Unity_attributes");
+    public static string AutoPropertyToSerializedBackingFieldAction_Name => ResourceManager.GetString("AutoPropertyToSerializedBackingFieldAction_Name");
+    public static string AutoPropertyToSerializedBackingFieldAction_Description => ResourceManager.GetString("AutoPropertyToSerializedBackingFieldAction_Description");
+    public static string ConvertXmlDocToTooltipAttributeAction_Name => ResourceManager.GetString("ConvertXmlDocToTooltipAttributeAction_Name");
+    public static string ConvertXmlDocToTooltipAttributeAction_Description => ResourceManager.GetString("ConvertXmlDocToTooltipAttributeAction_Description");
   }
 }

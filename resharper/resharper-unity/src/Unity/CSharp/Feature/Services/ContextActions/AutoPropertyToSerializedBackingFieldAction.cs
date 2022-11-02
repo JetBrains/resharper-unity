@@ -17,9 +17,8 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
-    [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Replace auto-property with property and serialized backing field",
-        Description = "Replaces an auto-property in a Unity type with a property that utilizes a backing field that is marked with the 'UnityEngine.SerializeField' attribute.",
+    [ContextAction(Group = UnityContextActions.GroupID, 
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.AutoPropertyToSerializedBackingFieldAction_Name), DescriptionResourceName = nameof(Strings.AutoPropertyToSerializedBackingFieldAction_Description),
         Priority = 2)]
     public class AutoPropertyToSerializedBackingFieldAction : ContextActionBase
     {
