@@ -67,7 +67,7 @@
     <data name="RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Update_available___JetBrains_Rider_package_" xml:space="preserve">
         <value>Update available - JetBrains Rider package.</value>
     </data>
-    <data name="RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__0__in_Unity_Package_Manager_" xml:space="preserve">
+    <data name="RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__Version__in_Unity_Package_Manager_" xml:space="preserve">
         <value>Check for JetBrains Rider package {0} in Unity Package Manager.</value>
     </data>
     <data name="UsagesInAssetsAreNotAvailableDuring_Text" xml:space="preserve">
