@@ -26,35 +26,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Elements
     // need to provide default rules for all possible element kinds. For example, the XAML namespace naming rule can
     // fallback to the TypesAndNamespaces predefined type if XamlNamedElements.NAMESPACE_ALIAS doesn't have a rule.
     // Whatever, this class adds a default user rule for our Unity element kinds
-    [ShellComponent]
-    public class UnityNamingRuleDefaultSettings : HaveDefaultSettings
-    {
-        public static readonly Guid SerializedFieldRuleGuid = new("5F0FDB63-C892-4D2C-9324-15C80B22A7EF");
-
-        public UnityNamingRuleDefaultSettings(ILogger logger, ISettingsSchema settingsSchema)
-            : base(settingsSchema, logger)
-        {
-        }
-
-        public override void InitDefaultSettings(ISettingsStorageMountPoint mountPoint)
-        {
-            SetIndexedValue(mountPoint, (CSharpNamingSettings key) => key.UserRules, SerializedFieldRuleGuid,
-                GetUnitySerializedFieldRule());
-        }
-
-        public static ClrUserDefinedNamingRule GetUnitySerializedFieldRule()
-        {
-            var lowerCaseNamingPolicy = new NamingPolicy(new NamingRule {NamingStyleKind = NamingStyleKinds.aaBb});
-            return new ClrUserDefinedNamingRule(
-                new ClrNamedElementDescriptor(
-                    AccessRightKinds.Any,
-                    StaticnessKinds.Instance,
-                    new ElementKindSet(UnityNamedElement.SERIALISED_FIELD),
-                    "Unity serialized field"),
-                lowerCaseNamingPolicy
-            );
-        }
-
-        public override string Name => "Unity default naming rules";
-    }
+    // [ShellComponent]
+    // public class UnityNamingRuleDefaultSettings : HaveDefaultSettings
+    // {
+    //     public static readonly Guid SerializedFieldRuleGuid = new("5F0FDB63-C892-4D2C-9324-15C80B22A7EF");
+    //
+    //     public UnityNamingRuleDefaultSettings(ILogger logger, ISettingsSchema settingsSchema)
+    //         : base(settingsSchema, logger)
+    //     {
+    //     }
+    //
+    //     public override void InitDefaultSettings(ISettingsStorageMountPoint mountPoint)
+    //     {
+    //         SetIndexedValue(mountPoint, (CSharpNamingSettings key) => key.UserRules, SerializedFieldRuleGuid,
+    //             GetUnitySerializedFieldRule());
+    //     }
+    //
+    //     public override string Name => "Unity default naming rules";
+    // }
 }
