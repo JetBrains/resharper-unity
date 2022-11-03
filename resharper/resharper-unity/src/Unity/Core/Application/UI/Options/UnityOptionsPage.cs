@@ -163,8 +163,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
                 UnityNamingRuleDefaultSettings.SetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry, cachedUserRule);
             });
     
-          
             var enabledProperty = new Property<bool>(Lifetime, "BoolOptionViewModel_SerializedFieldEnableInspection");
+            AddBoolOption(enabledProperty, Strings.UnityOptionsPage_AddNamingSubSection_Enable_inspection, null);
 
             var actualUnitySerializedFieldRule = UnityNamingRuleDefaultSettings.GetActualUnitySerializedFieldRule(OptionsSettingsSmartContext, entry);
             enabledProperty.SetValue(actualUnitySerializedFieldRule != null);
@@ -181,21 +181,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
                 }
             });
 
-            AddStringOption(Lifetime, prefixProperty, Strings.UnityOptionsPage_AddNamingSubSection_Prefix_);
-            AddStringOption(Lifetime, suffixProperty, Strings.UnityOptionsPage_AddNamingSubSection_Suffix_);
-            AddComboOption(kindProperty, Strings.UnityOptionsPage_AddNamingSubSection_Style_, string.Empty, string.Empty,
-                new[]
-                {
-                    new RadioOptionPoint(NamingStyleKinds.AaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase),
-                    new RadioOptionPoint(NamingStyleKinds.AaBb_AaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase_UnderscoreTolerant),
-                    new RadioOptionPoint(NamingStyleKinds.AaBb_aaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase_underscoreTolerant2),
-                    new RadioOptionPoint(NamingStyleKinds.aaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase),
-                    new RadioOptionPoint(NamingStyleKinds.aaBb_AaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase_UnderscoreTolerant),
-                    new RadioOptionPoint(NamingStyleKinds.aaBb_aaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase_underscoreTolerant2),
-                    new RadioOptionPoint(NamingStyleKinds.AA_BB, Strings.UnityOptionsPage_AddNamingSubSection_ALL_UPPER),
-                    new RadioOptionPoint(NamingStyleKinds.Aa_bb, Strings.UnityOptionsPage_AddNamingSubSection_First_upper)
-                });
-            AddBoolOption(enabledProperty, Strings.UnityOptionsPage_AddNamingSubSection_Enable_inspection, null);
+            using (Indent())
+            {
+                var prefixOption = AddStringOption(Lifetime, prefixProperty, Strings.UnityOptionsPage_AddNamingSubSection_Prefix_);
+                AddBinding(prefixOption, BindingStyle.IsEnabledProperty, enabledProperty, enable => enable);
+                
+                var suffixOption = AddStringOption(Lifetime, suffixProperty, Strings.UnityOptionsPage_AddNamingSubSection_Suffix_);
+                AddBinding(suffixOption, BindingStyle.IsEnabledProperty, enabledProperty, enable => enable);
+                
+                var comboOption = AddComboOption(kindProperty, Strings.UnityOptionsPage_AddNamingSubSection_Style_, string.Empty, string.Empty,
+                    new[]
+                    {
+                        new RadioOptionPoint(NamingStyleKinds.AaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase),
+                        new RadioOptionPoint(NamingStyleKinds.AaBb_AaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase_UnderscoreTolerant),
+                        new RadioOptionPoint(NamingStyleKinds.AaBb_aaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase_underscoreTolerant2),
+                        new RadioOptionPoint(NamingStyleKinds.aaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase),
+                        new RadioOptionPoint(NamingStyleKinds.aaBb_AaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase_UnderscoreTolerant),
+                        new RadioOptionPoint(NamingStyleKinds.aaBb_aaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase_underscoreTolerant2),
+                        new RadioOptionPoint(NamingStyleKinds.AA_BB, Strings.UnityOptionsPage_AddNamingSubSection_ALL_UPPER),
+                        new RadioOptionPoint(NamingStyleKinds.Aa_bb, Strings.UnityOptionsPage_AddNamingSubSection_First_upper)
+                    });
+                AddBinding(comboOption, BindingStyle.IsEnabledProperty, enabledProperty, enable => enable);
+            }
         }
         private void AddTextBasedAssetsSection()
         {
@@ -261,9 +268,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
                 Strings.UnityOptionsPage_AddInternalSection__Deprecated__Parse_GLSL_files_for_syntax_errors__requires_internal_mode__and_re_opening_solution_);
         }
 
-        private void AddStringOption(Lifetime lifetime, IProperty<string> property, string text)
+        private BeControl AddStringOption(Lifetime lifetime, IProperty<string> property, string text)
         {
-            AddControlWithProperty(property, p => p.GetBeTextBox(lifetime).WithDescription(text, lifetime));
+           return AddControlWithProperty(property, p => p.GetBeTextBox(lifetime).WithDescription(text, lifetime));
         }
 
         private void AddBetterCommentText(string text)
