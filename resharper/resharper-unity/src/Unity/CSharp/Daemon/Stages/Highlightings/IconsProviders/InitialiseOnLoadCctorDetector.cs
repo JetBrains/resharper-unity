@@ -4,6 +4,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -35,8 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (containingType != null &&
                 containingType.HasAttributeInstance(KnownTypes.InitializeOnLoadAttribute, false))
             {
-                AddHighlighting(consumer, element, "Used implicitly",
-                    "Called when Unity first launches the editor, the player, or recompiles scripts", context);
+                AddHighlighting(consumer, element, Strings.InitialiseOnLoadCctorDetector_AddDeclarationHighlighting_Text,
+                    Strings.InitialiseOnLoadCctorDetector_AddDeclarationHighlighting_Tooltip, context);
                 return true;
             }
 

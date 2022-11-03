@@ -660,4 +660,73 @@ This option applies the same behaviour to IL2CPP players.</value>
     <data name="UnityHighlightingProcess_Execute_Frequently_called_code" xml:space="preserve">
         <value>Frequently called code</value>
     </data>
+    <data name="GenerateUnityEventFunctionsWorkflow_Unity_Event_Functions" xml:space="preserve">
+        <value>Unity Event Functions</value>
+    </data>
+    <data name="TypeDetector_GetActions_Generate_Unity_event_functions" xml:space="preserve">
+        <value>Generate Unity event functions</value>
+    </data>
+    <data name="TypeDetector_AddDeclarationHighlighting_Custom_Unity_editor" xml:space="preserve">
+        <value>Custom Unity editor</value>
+    </data>
+    <data name="TypeDetector_AddDeclarationHighlighting_Script" xml:space="preserve">
+        <value>Script</value>
+    </data>
+    <data name="TypeDetector_AddDeclarationHighlighting_Unity_script" xml:space="preserve">
+        <value>Unity script</value>
+    </data>
+    <data name="TypeDetector_AddDeclarationHighlighting_Editor" xml:space="preserve">
+        <value>Editor</value>
+    </data>
+    <data name="TypeDetector_AddDeclarationHighlighting_Scriptable_object" xml:space="preserve">
+        <value>Scriptable object</value>
+    </data>
+    <data name="TypeDetector_AddDeclarationHighlighting_Unity_scriptable_object" xml:space="preserve">
+        <value>Unity scriptable object</value>
+    </data>
+    <data name="TypeDetector_AddDeclarationHighlighting_Unity_type" xml:space="preserve">
+        <value>Unity type</value>
+    </data>
+    <data name="TypeDetector_AddDeclarationHighlighting_Custom_Unity_type" xml:space="preserve">
+        <value>Custom Unity type</value>
+    </data>
+    <data name="TypeDetector_AddDeclarationHighlighting_ECS_system" xml:space="preserve">
+        <value>ECS system</value>
+    </data>
+    <data name="TypeDetector_AddDeclarationHighlighting_Unity_entities_system" xml:space="preserve">
+        <value>Unity entities system</value>
+    </data>
+    <data name="EventHandlerDetector_AddEventHandlerHighlighting_Text" xml:space="preserve">
+        <value>Event handler</value>
+    </data>
+    <data name="EventHandlerDetector_AddEventHandlerHighlighting_Tooltip" xml:space="preserve">
+        <value>Unity event handler</value>
+    </data>
+    <data name="EventHandlerDetector_AddAnimationEventHighlighting_Text" xml:space="preserve">
+        <value>Animation event</value>
+    </data>
+    <data name="EventHandlerDetector_AddAnimationEventHighlighting_Tooltip" xml:space="preserve">
+        <value>Unity animation event</value>
+    </data>
+    <data name="EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Text" xml:space="preserve">
+        <value>Animation event and event handler</value>
+    </data>
+    <data name="EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Tooltip" xml:space="preserve">
+        <value>Unity animation event and Unity animation event</value>
+    </data>
+    <data name="FieldDetector_AddDeclarationHighlighting_This_field_is_initialized_from_Inspector" xml:space="preserve">
+        <value>This field is initialized from Inspector</value>
+    </data>
+    <data name="FieldDetector_AddDeclarationHighlighting_Serializable" xml:space="preserve">
+        <value>Serializable</value>
+    </data>
+    <data name="FieldDetector_AddDeclarationHighlighting_Tooltip" xml:space="preserve">
+        <value>This field is serialized by Unity</value>
+    </data>
+    <data name="InitialiseOnLoadCctorDetector_AddDeclarationHighlighting_Text" xml:space="preserve">
+        <value>Used implicitly</value>
+    </data>
+    <data name="InitialiseOnLoadCctorDetector_AddDeclarationHighlighting_Tooltip" xml:space="preserve">
+        <value>Called when Unity first launches the editor, the player, or recompiles scripts</value>
+    </data>
 </root>

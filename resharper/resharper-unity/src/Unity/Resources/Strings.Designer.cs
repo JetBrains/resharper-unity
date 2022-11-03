@@ -253,5 +253,28 @@
     public static string UnityHighlightingProcess_Event_function => ResourceManager.GetString("UnityHighlightingProcess_Event_function");
     public static string UnityHighlightingProcess_Execute_Frequently_called => ResourceManager.GetString("UnityHighlightingProcess_Execute_Frequently_called");
     public static string UnityHighlightingProcess_Execute_Frequently_called_code => ResourceManager.GetString("UnityHighlightingProcess_Execute_Frequently_called_code");
+    public static string GenerateUnityEventFunctionsWorkflow_Unity_Event_Functions => ResourceManager.GetString("GenerateUnityEventFunctionsWorkflow_Unity_Event_Functions");
+    public static string TypeDetector_GetActions_Generate_Unity_event_functions => ResourceManager.GetString("TypeDetector_GetActions_Generate_Unity_event_functions");
+    public static string TypeDetector_AddDeclarationHighlighting_Custom_Unity_editor => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Custom_Unity_editor");
+    public static string TypeDetector_AddDeclarationHighlighting_Script => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Script");
+    public static string TypeDetector_AddDeclarationHighlighting_Unity_script => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_script");
+    public static string TypeDetector_AddDeclarationHighlighting_Editor => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Editor");
+    public static string TypeDetector_AddDeclarationHighlighting_Scriptable_object => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Scriptable_object");
+    public static string TypeDetector_AddDeclarationHighlighting_Unity_scriptable_object => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_scriptable_object");
+    public static string TypeDetector_AddDeclarationHighlighting_Unity_type => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_type");
+    public static string TypeDetector_AddDeclarationHighlighting_Custom_Unity_type => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Custom_Unity_type");
+    public static string TypeDetector_AddDeclarationHighlighting_ECS_system => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_ECS_system");
+    public static string TypeDetector_AddDeclarationHighlighting_Unity_entities_system => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_entities_system");
+    public static string EventHandlerDetector_AddEventHandlerHighlighting_Text => ResourceManager.GetString("EventHandlerDetector_AddEventHandlerHighlighting_Text");
+    public static string EventHandlerDetector_AddEventHandlerHighlighting_Tooltip => ResourceManager.GetString("EventHandlerDetector_AddEventHandlerHighlighting_Tooltip");
+    public static string EventHandlerDetector_AddAnimationEventHighlighting_Text => ResourceManager.GetString("EventHandlerDetector_AddAnimationEventHighlighting_Text");
+    public static string EventHandlerDetector_AddAnimationEventHighlighting_Tooltip => ResourceManager.GetString("EventHandlerDetector_AddAnimationEventHighlighting_Tooltip");
+    public static string EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Text => ResourceManager.GetString("EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Text");
+    public static string EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Tooltip => ResourceManager.GetString("EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Tooltip");
+    public static string FieldDetector_AddDeclarationHighlighting_This_field_is_initialized_from_Inspector => ResourceManager.GetString("FieldDetector_AddDeclarationHighlighting_This_field_is_initialized_from_Inspector");
+    public static string FieldDetector_AddDeclarationHighlighting_Serializable => ResourceManager.GetString("FieldDetector_AddDeclarationHighlighting_Serializable");
+    public static string FieldDetector_AddDeclarationHighlighting_Tooltip => ResourceManager.GetString("FieldDetector_AddDeclarationHighlighting_Tooltip");
+    public static string InitialiseOnLoadCctorDetector_AddDeclarationHighlighting_Text => ResourceManager.GetString("InitialiseOnLoadCctorDetector_AddDeclarationHighlighting_Text");
+    public static string InitialiseOnLoadCctorDetector_AddDeclarationHighlighting_Tooltip => ResourceManager.GetString("InitialiseOnLoadCctorDetector_AddDeclarationHighlighting_Tooltip");
   }
 }

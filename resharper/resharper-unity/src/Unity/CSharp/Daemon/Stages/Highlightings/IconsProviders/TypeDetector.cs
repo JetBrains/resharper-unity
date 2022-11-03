@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -42,24 +43,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             {
                 if (typeElement.DerivesFromMonoBehaviour())
                 {
-                    AddMonoBehaviourHighlighting(consumer, element, "Script", "Unity script", context);
+                    AddMonoBehaviourHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_Script, Strings.TypeDetector_AddDeclarationHighlighting_Unity_script, context);
                 }
                 else if (typeElement.DerivesFrom(KnownTypes.Editor) || typeElement.DerivesFrom(KnownTypes.EditorWindow))
                 {
-                    AddEditorHighlighting(consumer, element, "Editor", "Custom Unity editor", context);
+                    AddEditorHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_Editor, Strings.TypeDetector_AddDeclarationHighlighting_Custom_Unity_editor, context);
                 }
                 else if (typeElement.DerivesFromScriptableObject())
                 {
-                    AddMonoBehaviourHighlighting(consumer, element, "Scriptable object", "Unity scriptable object", context);
+                    AddMonoBehaviourHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_Scriptable_object, Strings.TypeDetector_AddDeclarationHighlighting_Unity_scriptable_object, context);
                 }
                 else if (myUnityApi.IsUnityType(typeElement))
                 {
-                    AddUnityTypeHighlighting(consumer, element, "Unity type", "Custom Unity type", context);
+                    AddUnityTypeHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_Unity_type, Strings.TypeDetector_AddDeclarationHighlighting_Custom_Unity_type, context);
                 }
                 else if (UnityApi.IsDotsSystemType(typeElement))
                 {
                     //TODO obsolete
-                    AddUnityECSHighlighting(consumer, element, "ECS system", "Unity entities system",
+                    AddUnityECSHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_ECS_system, Strings.TypeDetector_AddDeclarationHighlighting_Unity_entities_system,
                         context);
                 }
 
@@ -109,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 textControl != null && myUnityApi.IsUnityType(classLikeDeclaration.DeclaredElement))
             {
                 var fix = new GenerateUnityEventFunctionsFix(classLikeDeclaration);
-                result.Add(new IntentionAction(fix, "Generate Unity event functions",
+                result.Add(new IntentionAction(fix, Strings.TypeDetector_GetActions_Generate_Unity_event_functions,
                         PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
                     .ToBulbMenuItem(Solution, textControl));
             }
