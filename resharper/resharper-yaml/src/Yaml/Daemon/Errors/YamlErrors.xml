@@ -11,21 +11,20 @@
   <Error name="YamlSyntax" staticGroup="YamlErrors">
     <Parameter type="string" name="text" />
     <Parameter type="DocumentRange" name="documentRange" />
-    <Message>
+    <Message resourceName="Message" resourceType="Strings">
       <Argument>Text</Argument>
-      <LocalizedValue resourceName="Message" resourceType="Strings" />
     </Message>
     <Range>DocumentRange</Range>
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
-  
+
   <Error name="NotResolved" staticGroup="YamlErrors">
     <Parameter type="IReference" name="reference" />
-    <Message>
+    <Message resourceName="CannotResolveSymbolMessage" resourceType="Strings">
       <Argument>Reference.GetName()</Argument>
-      <LocalizedValue resourceName="CannotResolveSymbolMessage" resourceType="Strings" />
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR" />
   </Error>
+
 </Errors>

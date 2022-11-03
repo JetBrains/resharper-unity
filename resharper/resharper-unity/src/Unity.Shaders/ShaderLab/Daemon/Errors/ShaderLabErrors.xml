@@ -13,9 +13,8 @@
   <Error name="ShaderLabSyntax" staticGroup="ShaderLabErrors">
     <Parameter type="string" name="text" />
     <Parameter type="DocumentRange" name="documentRange" />
-    <Message>
+    <Message resourceName="Message" resourceType="Strings">
       <Argument>Text</Argument>
-      <LocalizedValue resourceName="Message" resourceType="Strings" />
     </Message>
     <Range>DocumentRange</Range>
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
@@ -23,9 +22,8 @@
 
   <Error name="NotResolved" staticGroup="ShaderLabErrors">
     <Parameter type="IReference" name="reference" />
-    <Message>
+    <Message resourceName="CannotResolveSymbolMessage" resourceType="Strings">
       <Argument>Reference.GetName()</Argument>
-      <LocalizedValue resourceName="CannotResolveSymbolMessage" resourceType="Strings" />
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR" />
@@ -33,9 +31,8 @@
 
   <Warning name="NotResolvedProperty" staticGroup="ShaderLabWarnings">
     <Parameter type="IReference" name="reference" />
-    <Message>
+    <Message resourceName="PossibleUnintendedUseOfUndeclaredPropertyPropertyMayBeSetFromCodeMessage" resourceType="Strings">
       <Argument>Reference.GetName()</Argument>
-      <LocalizedValue resourceName="PossibleUnintendedUseOfUndeclaredPropertyPropertyMayBeSetFromCodeMessage" resourceType="Strings" />
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
@@ -45,10 +42,9 @@
     <Parameter type="JetBrains.DocumentModel.DocumentRange" name="textRange" />
     <Parameter type="string" name="candidates" />
     <Parameter type="IReference" name="reference" />
-    <Message>
+    <Message resourceName="AmbiguousReferencematchMessage" resourceType="Strings">
       <Argument>Candidates</Argument>
       <Argument>Environment.NewLine</Argument>
-      <LocalizedValue resourceName="AmbiguousReferencematchMessage" resourceType="Strings" />
     </Message>
     <Range>TextRange</Range>
     <Behavour overlapResolvePolicy="ERROR" />
@@ -57,9 +53,8 @@
   <Error name="ShaderLabPreprocessorDirective" staticGroup="ShaderLabErrors">
     <Parameter type="IPpErrorDirective" name="directiveNode" />
     <Parameter type="string" name="text" />
-    <Message>
+    <Message resourceName="Message" resourceType="Strings">
       <Argument>Text</Argument>
-      <LocalizedValue resourceName="Message" resourceType="Strings" />
     </Message>
     <Range>DirectiveNode.Directive.GetHighlightingRange()</Range>
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
@@ -67,9 +62,7 @@
 
   <Warning name="ShaderLabSwallowedPreprocessorChar" staticGroup="ShaderLabWarnings">
     <Parameter type="ITokenNode" name="swallowedToken" />
-    <Message>
-      <LocalizedValue resourceName="IgnoredCharacterConsiderInsertingNewLineForClarityMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="IgnoredCharacterConsiderInsertingNewLineForClarityMessage" resourceType="Strings" />
     <Range>SwallowedToken.GetHighlightingRange()</Range>
     <Behavour attributeID="DEADCODE" overlapResolvePolicy="DEADCODE" />
   </Warning>
@@ -77,9 +70,8 @@
   <Warning name="ShaderLabPreprocessorDirective" staticGroup="ShaderLabWarnings">
     <Parameter type="IPpWarningDirective" name="directiveNode" />
     <Parameter type="string" name="text" />
-    <Message>
+    <Message resourceName="Message" resourceType="Strings">
       <Argument>Text</Argument>
-      <LocalizedValue resourceName="Message" resourceType="Strings" />
     </Message>
     <Range>DirectiveNode.Directive.GetHighlightingRange()</Range>
     <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
@@ -88,9 +80,7 @@
   <Warning name="ShaderLabInvalidVariableReferenceParameters" staticGroup="ShaderLabWarnings">
     <Parameter type="IInvalidVariableReferenceParameters" name="invalidParameters" />
     <Parameter type="DocumentRange" name="documentRange" />
-    <Message>
-      <LocalizedValue resourceName="ParametersAreNotValidInThisLocationMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="ParametersAreNotValidInThisLocationMessage" resourceType="Strings" />
     <Range>DocumentRange</Range>
     <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
     <QuickFix>RemoveUnusedElementFix</QuickFix>
@@ -100,9 +90,8 @@
     <Parameter type="IPropertyDeclaration" name="propertyDeclaration" />
     <Parameter type="string" name="declarationName" />
     <Parameter type="DocumentRange" name="documentRange" />
-    <Message>
+    <Message resourceName="ConflictingPropertyIsDefinedBelowMessage" resourceType="Strings">
       <Argument>DeclarationName</Argument>
-      <LocalizedValue resourceName="ConflictingPropertyIsDefinedBelowMessage" resourceType="Strings" />
     </Message>
     <Range>DocumentRange</Range>
     <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
@@ -112,9 +101,8 @@
     <Parameter type="IPropertyDeclaration" name="propertyDeclaration" />
     <Parameter type="string" name="declarationName" />
     <Parameter type="DocumentRange" name="documentRange" />
-    <Message>
+    <Message resourceName="ThereIsAlreadyAPropertyNamedDeclaredMessage" resourceType="Strings">
       <Argument>DeclarationName</Argument>
-      <LocalizedValue resourceName="ThereIsAlreadyAPropertyNamedDeclaredMessage" resourceType="Strings" />
     </Message>
     <Range>DocumentRange</Range>
     <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />

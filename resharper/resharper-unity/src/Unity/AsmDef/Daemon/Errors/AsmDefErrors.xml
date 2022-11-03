@@ -18,12 +18,12 @@
          groups language agnostic -->
     <Group name="&quot;UNITY&quot;">
       <Tag externalName="MismatchedAsmDefFilenameWarning.HIGHLIGHTING_ID" default="SUGGESTION">
-        <LocalizedTitle resourceName="FileNameShouldMatchTheNameOfTheAssembly" resourceType="Strings" />
-        <LocalizedDescription resourceName="ToAvoidConfusionTheNameOfTheAssemblyDefinitionFileShouldMatchTheNameOfTheAssemblyBeingDefined" resourceType="Strings" />
+        <Title resourceName="FileNameShouldMatchTheNameOfTheAssembly" resourceType="Strings" />
+        <Description resourceName="ToAvoidConfusionTheNameOfTheAssemblyDefinitionFileShouldMatchTheNameOfTheAssemblyBeingDefined" resourceType="Strings" />
       </Tag>
       <Tag externalName="PreferGuidReferenceWarning.HIGHLIGHTING_ID" default="HINT">
-        <LocalizedTitle resourceName="PreferGUIDBasedAssemblyReferences" resourceType="Strings" />
-        <LocalizedDescription resourceName="ReferencesInAAsmdefFileCanBeByNameOrByAssetGUIDUsingAnAssetGUIDProtectsAgainstRenamingTheAssemblyDefinition" resourceType="Strings" />
+        <Title resourceName="PreferGUIDBasedAssemblyReferences" resourceType="Strings" />
+        <Description resourceName="ReferencesInAAsmdefFileCanBeByNameOrByAssetGUIDUsingAnAssetGUIDProtectsAgainstRenamingTheAssemblyDefinition" resourceType="Strings" />
       </Tag>
     </Group>
   </SeverityConfiguration>
@@ -31,9 +31,7 @@
   <Error name="InvalidDefineConstraintExpression" staticGroup="AsmDefErrors">
     <Parameter type="IJsonNewLiteralExpression" name="expression" />
     <Parameter type="DocumentRange" name="range" />
-    <Message>
-      <LocalizedValue resourceName="InvalidDefineConstraintExpressionMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="InvalidDefineConstraintExpressionMessage" resourceType="Strings" />
     <Range>Range</Range>
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
@@ -41,54 +39,43 @@
   <Error name="InvalidVersionDefineSymbol" staticGroup="AsmDefErrors">
     <Parameter type="IJsonNewLiteralExpression" name="expression" />
     <Parameter type="DocumentRange" name="range" />
-    <Message>
-      <LocalizedValue resourceName="InvalidVersionDefineSymbolMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="InvalidVersionDefineSymbolMessage" resourceType="Strings" />
     <Range>Range</Range>
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
 
   <Error name="InvalidVersionDefineExpression" staticGroup="AsmDefErrors">
     <Parameter type="IJsonNewLiteralExpression" name="expression" />
-    <Message>
-      <LocalizedValue resourceName="InvalidVersionDefineExpressionMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="InvalidVersionDefineExpressionMessage" resourceType="Strings" />
     <Range>Expression.GetUnquotedDocumentRange()</Range>
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
 
   <Warning name="MismatchedAsmDefFilename" configurableSeverity="MISMATCHED_ASMDEF_FILENAME">
     <Parameter type="IJsonNewLiteralExpression" name="literalExpression" />
-    <Message>
-      <LocalizedValue resourceName="FileNameShouldMatchTheNameOfTheAssemblyMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="FileNameShouldMatchTheNameOfTheAssemblyMessage" resourceType="Strings" />
     <Range>LiteralExpression.GetUnquotedDocumentRange()</Range>
     <Behavour attributeID="SUGGESTION" overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="PreferGuidReference" configurableSeverity="Unity.PreferGuidReference">
     <Parameter type="IJsonNewLiteralExpression" name="literalExpression" />
-    <Message>
-      <LocalizedValue resourceName="PreferGUIDReferenceMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="PreferGUIDReferenceMessage" resourceType="Strings" />
     <Range>LiteralExpression.GetUnquotedDocumentRange()</Range>
     <Behavour attributeID="HINT" />
   </Warning>
 
   <Error name="ReferencingSelf" staticGroup="AsmDefErrors">
     <Parameter type="IReference" name="reference" />
-    <Message>
-      <LocalizedValue resourceName="CannotReferenceSelfMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="CannotReferenceSelfMessage" resourceType="Strings" />
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
 
   <Warning name="UnresolvedProjectReference" staticGroup="AsmDefWarnings">
     <Parameter type="IReference" name="reference" />
-    <Message>
+    <Message resourceName="MissingAssemblyReferenceAssemblyWillNotBeReferencedDuringCompilationMessage" resourceType="Strings">
       <Argument>Reference.GetName()</Argument>
-      <LocalizedValue resourceName="MissingAssemblyReferenceAssemblyWillNotBeReferencedDuringCompilationMessage" resourceType="Strings" />
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour attributeID="DEADCODE" overlapResolvePolicy="DEADCODE" />

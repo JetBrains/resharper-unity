@@ -11,9 +11,8 @@
   <Error name="CgSyntax" staticGroup="CgErrors">
     <Parameter type="string" name="text" />
     <Parameter type="DocumentRange" name="documentRange" />
-    <Message>
+    <Message resourceName="Message" resourceType="Strings">
       <Argument>Text</Argument>
-      <LocalizedValue resourceName="Message" resourceType="Strings" />
     </Message>
     <Range>DocumentRange</Range>
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
