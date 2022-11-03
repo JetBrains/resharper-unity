@@ -244,5 +244,6 @@
     public static string Unity_Internal_DumpDuplicateTypeNames_Text => ResourceManager.GetString("Unity_Internal_DumpDuplicateTypeNames_Text");
     public static string Unity_Internal_DumpSpellCheckWordLists_Text => ResourceManager.GetString("Unity_Internal_DumpSpellCheckWordLists_Text");
     public static string GoToUnityUsagesProvider_CreateWorkflow_Unity_Usages_of_Symbol => ResourceManager.GetString("GoToUnityUsagesProvider_CreateWorkflow_Unity_Usages_of_Symbol");
+    public static string QuickFixRegistrar_Register_Remove_redundant_Unity_event_function => ResourceManager.GetString("QuickFixRegistrar_Register_Remove_redundant_Unity_event_function");
   }
 }

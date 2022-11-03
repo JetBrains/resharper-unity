@@ -632,4 +632,7 @@ This option applies the same behaviour to IL2CPP players.</value>
         <value>Unity Usages of Symbol</value>
         <comment>FindUnityUsages</comment>
     </data>
+    <data name="QuickFixRegistrar_Register_Remove_redundant_Unity_event_function" xml:space="preserve">
+        <value>Remove redundant Unity event function</value>
+    </data>
 </root>
