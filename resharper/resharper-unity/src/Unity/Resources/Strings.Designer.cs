@@ -150,5 +150,6 @@
     public static string UnityAssetSpecificOccurrenceKinds_InspectorUsage_Inspector_values => ResourceManager.GetString("UnityAssetSpecificOccurrenceKinds_InspectorUsage_Inspector_values");
     public static string MetaProjectFileType_MetaProjectFileType_Unity_Meta_File => ResourceManager.GetString("MetaProjectFileType_MetaProjectFileType_Unity_Meta_File");
     public static string UnityYamlProjectFileType_UnityYamlProjectFileType_Unity_Yaml => ResourceManager.GetString("UnityYamlProjectFileType_UnityYamlProjectFileType_Unity_Yaml");
+    public static string UnityOptionPage_AddNamingSubSection_Enable_SerializedField_Naming_Rule => ResourceManager.GetString("UnityOptionPage_AddNamingSubSection_Enable_SerializedField_Naming_Rule");
   }
 }
