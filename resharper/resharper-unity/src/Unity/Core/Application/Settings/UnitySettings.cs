@@ -84,8 +84,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
 
         [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Ignore__Break_on_Unhandled_Exceptions__for_IL2CPP_players))]
         public bool IgnoreBreakOnUnhandledExceptionsForIl2Cpp;
-                
-        [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnityOptionPage_AddNamingSubSection_Enable_SerializedField_Naming_Rule))]
-        public bool EnableSerializedFieldNamingRule;
     }
 }

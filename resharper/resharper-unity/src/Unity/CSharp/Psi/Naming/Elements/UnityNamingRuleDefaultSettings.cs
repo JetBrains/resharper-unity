@@ -26,22 +26,51 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Elements
     // need to provide default rules for all possible element kinds. For example, the XAML namespace naming rule can
     // fallback to the TypesAndNamespaces predefined type if XamlNamedElements.NAMESPACE_ALIAS doesn't have a rule.
     // Whatever, this class adds a default user rule for our Unity element kinds
-    // [ShellComponent]
-    // public class UnityNamingRuleDefaultSettings : HaveDefaultSettings
-    // {
-    //     public static readonly Guid SerializedFieldRuleGuid = new("5F0FDB63-C892-4D2C-9324-15C80B22A7EF");
-    //
-    //     public UnityNamingRuleDefaultSettings(ILogger logger, ISettingsSchema settingsSchema)
-    //         : base(settingsSchema, logger)
-    //     {
-    //     }
-    //
-    //     public override void InitDefaultSettings(ISettingsStorageMountPoint mountPoint)
-    //     {
-    //         SetIndexedValue(mountPoint, (CSharpNamingSettings key) => key.UserRules, SerializedFieldRuleGuid,
-    //             GetUnitySerializedFieldRule());
-    //     }
-    //
-    //     public override string Name => "Unity default naming rules";
-    // }
+    [ShellComponent]
+    public class UnityNamingRuleDefaultSettings : HaveDefaultSettings
+    {
+        private static readonly Guid SerializedFieldRuleGuid = new("5F0FDB63-C892-4D2C-9324-15C80B22A7EF");
+        public override string Name => "Unity default naming rules";
+
+        public UnityNamingRuleDefaultSettings(ILogger logger, ISettingsSchema settingsSchema)
+            : base(settingsSchema, logger)
+        {
+        }
+    
+        public override void InitDefaultSettings(ISettingsStorageMountPoint mountPoint)
+        {
+            SetIndexedValue(mountPoint, (CSharpNamingSettings key) => key.UserRules, SerializedFieldRuleGuid,
+                CreateDefaultUnitySerializedFieldRule());
+        }
+
+        public static ClrUserDefinedNamingRule CreateDefaultUnitySerializedFieldRule()
+        {
+            var lowerCaseNamingPolicy = new NamingPolicy(new NamingRule {NamingStyleKind = NamingStyleKinds.aaBb});
+            return new ClrUserDefinedNamingRule(
+                new ClrNamedElementDescriptor(
+                    AccessRightKinds.Any,
+                    StaticnessKinds.Instance,
+                    new ElementKindSet(UnityNamedElement.SERIALISED_FIELD),
+                    "Unity serialized field"),
+                lowerCaseNamingPolicy
+            );
+        }
+        
+        public static ClrUserDefinedNamingRule? GetActualUnitySerializedFieldRule(IContextBoundSettingsStore settingsStore,
+            SettingsIndexedEntry entry)
+        {
+            return settingsStore.GetIndexedValue(entry, SerializedFieldRuleGuid, null) as ClrUserDefinedNamingRule;
+        }
+
+        public static void SetUnitySerializedFieldRule(IContextBoundSettingsStore settingsStore,
+            SettingsIndexedEntry entry, ClrUserDefinedNamingRule userRule)
+        {
+            settingsStore.SetIndexedValue(entry, SerializedFieldRuleGuid, null, userRule);
+        }
+
+        public static void RemoveUnitySerializedFieldRule(IContextBoundSettingsStore settingsStore, SettingsIndexedEntry entry)
+        {
+            settingsStore.RemoveIndexedValue(entry, SerializedFieldRuleGuid, null);
+        }
+    }
 }

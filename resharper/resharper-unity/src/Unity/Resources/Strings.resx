@@ -323,7 +323,4 @@ This option applies the same behaviour to IL2CPP players.</value>
     <data name="UnityYamlProjectFileType_UnityYamlProjectFileType_Unity_Yaml" xml:space="preserve">
         <value>Unity Yaml File</value>
     </data>
-    <data name="UnityOptionPage_AddNamingSubSection_Enable_SerializedField_Naming_Rule" xml:space="preserve">
-        <value>Enable SerializedField naming rule</value>
-    </data>
 </root>
