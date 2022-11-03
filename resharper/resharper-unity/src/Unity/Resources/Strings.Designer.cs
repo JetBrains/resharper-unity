@@ -240,5 +240,8 @@
     public static string ToggleHideInInspectorAttributeAction_Description => ResourceManager.GetString("ToggleHideInInspectorAttributeAction_Description");
     public static string ToggleSerializedFieldAction_Name => ResourceManager.GetString("ToggleSerializedFieldAction_Name");
     public static string ToggleSerializedFieldAction_Description => ResourceManager.GetString("ToggleSerializedFieldAction_Description");
+    public static string FindUnityUsagesText => ResourceManager.GetString("FindUnityUsagesText");
+    public static string DumpDuplicateTypeNamesAction_Update_Dump_Duplicate_Type_Names => ResourceManager.GetString("DumpDuplicateTypeNamesAction_Update_Dump_Duplicate_Type_Names");
+    public static string DumpSpellCheckWordListsAction_Update_Dump_Spell_Check_Word_Lists => ResourceManager.GetString("DumpSpellCheckWordListsAction_Update_Dump_Spell_Check_Word_Lists");
   }
 }

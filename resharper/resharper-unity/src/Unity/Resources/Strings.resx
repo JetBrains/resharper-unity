@@ -619,4 +619,13 @@ This option applies the same behaviour to IL2CPP players.</value>
     <data name="ToggleSerializedFieldAction_Description" xml:space="preserve">
         <value>Toggles a field in a Unity type between serialized and non-serialized. If the field is non-public, the 'UnityEngine.SerializeField' attribute is added. If the field is already serialized, the attribute is removed, and for public fields, the 'NonSerialized' field is added.</value>
     </data>
+    <data name="FindUnityUsagesText" xml:space="preserve">
+        <value>Find Unity Usages</value>
+    </data>
+    <data name="DumpDuplicateTypeNamesAction_Update_Dump_Duplicate_Type_Names" xml:space="preserve">
+        <value>Dump Duplicate Type Names</value>
+    </data>
+    <data name="DumpSpellCheckWordListsAction_Update_Dump_Spell_Check_Word_Lists" xml:space="preserve">
+        <value>Dump Spell Check Word Lists</value>
+    </data>
 </root>
