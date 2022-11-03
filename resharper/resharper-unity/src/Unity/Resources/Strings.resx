@@ -651,4 +651,13 @@ This option applies the same behaviour to IL2CPP players.</value>
     <data name="UnityPerformanceCriticalCodeLineMarker_Performance_critical_context" xml:space="preserve">
         <value>Performance critical context</value>
     </data>
+    <data name="UnityHighlightingProcess_Event_function" xml:space="preserve">
+        <value>Event function</value>
+    </data>
+    <data name="UnityHighlightingProcess_Execute_Frequently_called" xml:space="preserve">
+        <value>Frequently called</value>
+    </data>
+    <data name="UnityHighlightingProcess_Execute_Frequently_called_code" xml:space="preserve">
+        <value>Frequently called code</value>
+    </data>
 </root>

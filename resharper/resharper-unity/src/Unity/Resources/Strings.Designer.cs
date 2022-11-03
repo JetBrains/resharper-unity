@@ -250,5 +250,8 @@
     public static string UnmetDefineConstraintInfo____Assembly_definition_will_not_be_compiled => ResourceManager.GetString("UnmetDefineConstraintInfo____Assembly_definition_will_not_be_compiled");
     public static string UnmetVersionConstraintInfo_Symbol_not_defined__Unmet_version_constraint___0_ => ResourceManager.GetString("UnmetVersionConstraintInfo_Symbol_not_defined__Unmet_version_constraint___0_");
     public static string UnityPerformanceCriticalCodeLineMarker_Performance_critical_context => ResourceManager.GetString("UnityPerformanceCriticalCodeLineMarker_Performance_critical_context");
+    public static string UnityHighlightingProcess_Event_function => ResourceManager.GetString("UnityHighlightingProcess_Event_function");
+    public static string UnityHighlightingProcess_Execute_Frequently_called => ResourceManager.GetString("UnityHighlightingProcess_Execute_Frequently_called");
+    public static string UnityHighlightingProcess_Execute_Frequently_called_code => ResourceManager.GetString("UnityHighlightingProcess_Execute_Frequently_called_code");
   }
 }
