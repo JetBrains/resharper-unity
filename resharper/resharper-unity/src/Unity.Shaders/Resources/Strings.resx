@@ -25,4 +25,7 @@
     <data name="CgBuiltInTypeTokenNodeType_TokenRepresentation_built_in_type" xml:space="preserve">
         <value>built-in type</value>
     </data>
+    <data name="ReformatCode_Text" xml:space="preserve">
+        <value>Reformat code</value>
+    </data>
 </root>

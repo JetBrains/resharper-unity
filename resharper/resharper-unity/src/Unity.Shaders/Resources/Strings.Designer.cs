@@ -53,5 +53,6 @@
     public static string CgLanguageSpecificDaemonBehaviour_InitialErrorStripe_File_s_primary_language_in_not_Cg => ResourceManager.GetString("CgLanguageSpecificDaemonBehaviour_InitialErrorStripe_File_s_primary_language_in_not_Cg");
     public static string CgSyntaxHighlightingProcess_VisitSemanticNode_Semantic__packoffset_or_register_expected => ResourceManager.GetString("CgSyntaxHighlightingProcess_VisitSemanticNode_Semantic__packoffset_or_register_expected");
     public static string CgBuiltInTypeTokenNodeType_TokenRepresentation_built_in_type => ResourceManager.GetString("CgBuiltInTypeTokenNodeType_TokenRepresentation_built_in_type");
+    public static string ReformatCode_Text => ResourceManager.GetString("ReformatCode_Text");
   }
 }
