@@ -3,6 +3,8 @@ using JetBrains.Application.UI.Options.OptionsDialog;
 using JetBrains.IDE.UI.Extensions;
 using JetBrains.IDE.UI.Extensions.Properties;
 using JetBrains.Lifetimes;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.Rider.Backend.Features.Dialog;
 using JetBrains.Rider.Backend.Features.Settings.OptionsPage.CSharpFileLayout;
 using JetBrains.Rider.Model;
@@ -33,9 +35,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Set
             var toolbar = BeControls.GetToolbar(textControl);
 
             var emptyPatternItem = BeControls.GetButton("Empty", lifetime, () => fileLayoutSettings.LoadDefaultPattern(DefaultPatternKind.Empty));
-            var defaultPatternWithoutRegionsItem = BeControls.GetButton("Default", lifetime, () => fileLayoutSettings.LoadDefaultPattern(DefaultPatternKind.WithoutRegions));
-            var defaultPatternWithRegionsItem = BeControls.GetButton("Default with regions", lifetime, () => fileLayoutSettings.LoadDefaultPattern(DefaultPatternKind.WithRegions));
-            toolbar.AddItem("Load patterns:".GetBeLabel());
+            var defaultPatternWithoutRegionsItem = BeControls.GetButton(Strings.UnityFileLayoutPageTab_Create_Default, lifetime, () => fileLayoutSettings.LoadDefaultPattern(DefaultPatternKind.WithoutRegions));
+            var defaultPatternWithRegionsItem = BeControls.GetButton(Strings.UnityFileLayoutPageTab_Create_Default_with_regions, lifetime, () => fileLayoutSettings.LoadDefaultPattern(DefaultPatternKind.WithRegions));
+            toolbar.AddItem(Strings.UnityFileLayoutPageTab_Create_Load_patterns_.GetBeLabel());
             toolbar.AddItem(emptyPatternItem);
             toolbar.AddItem(defaultPatternWithoutRegionsItem);
             toolbar.AddItem(defaultPatternWithRegionsItem);

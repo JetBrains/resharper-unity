@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.Rider.Backend.Features.Settings.Layers.ExportImportWorkaround;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Settings.Layers.ExportImportWorkaround
@@ -12,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Setti
     {
         private readonly Dictionary<string, Type[]> myCategoryToKeys = new Dictionary<string, Type[]>
         {
-            {"Unity plugin settings", new [] { typeof(UnitySettings) }}
+            {Strings.UnitySettingsCategoryProvider_myCategoryToKeys_Unity_plugin_settings, new [] { typeof(UnitySettings) }}
         };
 
         public bool TryGetRelatedIdeaConfigsBy(string category, out string[] configs)

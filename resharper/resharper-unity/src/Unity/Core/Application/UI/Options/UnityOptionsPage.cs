@@ -15,6 +15,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeEditing;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Psi.CSharp.Naming2;
 using JetBrains.ReSharper.Psi.Naming.Settings;
@@ -55,19 +56,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
         {
             if (!OptionsPageContext.IsRider) return;
 
-            AddHeader("General");
+            AddHeader(Strings.UnityOptionsPage_AddGeneralSection_General);
             AddBoolOption((UnitySettings s) => s.InstallUnity3DRiderPlugin,
-                "Automatically install and update Rider's Unity editor plugin");
-            AddBetterCommentText("Recommended. Integration features such as play/pause, log view and\n" +
-                                 "refreshing assets in the background are automatically supported by\n" +
-                                 "the Rider package in Unity 2019.2 and newer. Earlier versions require\n" +
-                                 "a plugin to be installed to a project.");
+                Strings.UnityOptionsPage_AddGeneralSection_Automatically_install_and_update_Rider_s_Unity_editor_plugin);
+            AddBetterCommentText(Strings.UnityOptionsPage_AddGeneralSection_);
 
             AddBoolOption((UnitySettings s) => s.AllowAutomaticRefreshInUnity,
-                "Automatically refresh assets in Unity");
+                Strings.UnityOptionsPage_AddGeneralSection_Automatically_refresh_assets_in_Unity);
             
             AddBoolOption((UnitySettings s) => s.AllowRiderUpdateNotifications,
-                "Notify when Rider package update is available");
+                Strings.UnityOptionsPage_AddGeneralSection_Notify_when_Rider_package_update_is_available);
         }
 
         private void AddCSharpSection()
@@ -79,17 +77,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             if (OptionsPageContext.IsRider)
             {
                 AddComboOption((UnitySettings s) => s.GutterIconMode,
-                    "Show gutter icons for implicit script usages:", string.Empty, string.Empty,
-                    new RadioOptionPoint(GutterIconMode.Always, "Always"),
-                    new RadioOptionPoint(GutterIconMode.CodeInsightDisabled, "When Code Vision is disabled"),
-                    new RadioOptionPoint(GutterIconMode.None, "Never")
+                    Strings.UnityOptionsPage_AddCSharpSection_Show_gutter_icons_for_implicit_script_usages_, string.Empty, string.Empty,
+                    new RadioOptionPoint(GutterIconMode.Always, Strings.UnityOptionsPage_AddCSharpSection_Always),
+                    new RadioOptionPoint(GutterIconMode.CodeInsightDisabled, Strings.UnityOptionsPage_AddCSharpSection_When_Code_Vision_is_disabled),
+                    new RadioOptionPoint(GutterIconMode.None, Strings.UnityOptionsPage_AddPerformanceAnalysisSubSection_Never)
                 );
             }
             else
             {
                 AddBoolOption((UnitySettings s) => s.GutterIconMode,
                     GutterIconMode.CodeInsightDisabled, GutterIconMode.None,
-                    "Show gutter icons for implicit script usages");
+                    Strings.UnityOptionsPage_AddCSharpSection_Show_gutter_icons_for_implicit_script_usages);
             }
 
             AddPerformanceAnalysisSubSection();
@@ -101,31 +99,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
         private void AddPerformanceAnalysisSubSection()
         {
             AddBoolOption(ourEnablePerformanceHighlightingAccessor,
-                "Enable performance analysis in frequently called code");
+                Strings.UnityOptionsPage_AddPerformanceAnalysisSubSection_Enable_performance_analysis_in_frequently_called_code);
 
             using (Indent())
             {
                 var option = AddComboOption((UnitySettings s) => s.PerformanceHighlightingMode,
-                    "Highlight performance critical contexts:", string.Empty, string.Empty,
-                    new RadioOptionPoint(PerformanceHighlightingMode.Always, "Always"),
-                    new RadioOptionPoint(PerformanceHighlightingMode.CurrentMethod, "Current method only"),
-                    new RadioOptionPoint(PerformanceHighlightingMode.Never, "Never")
+                    Strings.UnityOptionsPage_AddPerformanceAnalysisSubSection_Highlight_performance_critical_contexts_, string.Empty, string.Empty,
+                    new RadioOptionPoint(PerformanceHighlightingMode.Always, Strings.UnityOptionsPage_AddCSharpSection_Always),
+                    new RadioOptionPoint(PerformanceHighlightingMode.CurrentMethod, Strings.UnityOptionsPage_AddPerformanceAnalysisSubSection_Current_method_only),
+                    new RadioOptionPoint(PerformanceHighlightingMode.Never, Strings.UnityOptionsPage_AddPerformanceAnalysisSubSection_Never)
                 );
                 BindToEnabledProperty(option, ourEnablePerformanceHighlightingAccessor);
                 option = AddBoolOption((UnitySettings s) => s.EnableIconsForPerformanceCriticalCode,
-                    "Show gutter icons for frequently called methods");
+                    Strings.UnityOptionsPage_AddPerformanceAnalysisSubSection_Show_gutter_icons_for_frequently_called_methods);
                 BindToEnabledProperty(option, ourEnablePerformanceHighlightingAccessor);
             }
         }
 
         private void AddBurstAnalysisSubSection()
         {
-            AddBoolOption(ourEnableBurstHighlightingAccessor, "Enable analysis for Burst compiler issues");
+            AddBoolOption(ourEnableBurstHighlightingAccessor, Strings.UnityOptionsPage_AddBurstAnalysisSubSection_Enable_analysis_for_Burst_compiler_issues);
 
             using (Indent())
             {
                 var option = AddBoolOption((UnitySettings s) => s.EnableIconsForBurstCode,
-                    "Show gutter icons for Burst compiled called methods");
+                    Strings.UnityOptionsPage_AddBurstAnalysisSubSection_Show_gutter_icons_for_Burst_compiled_called_methods);
                 BindToEnabledProperty(option, ourEnableBurstHighlightingAccessor);
             }
         }
@@ -135,7 +133,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             // ReSharper already has a UI for editing user defined rules. Rider doesn't. See RIDER-8339
             if (!OptionsPageContext.IsRider) return;
 
-            AddHeader("Serialized field naming rules");
+            AddHeader(Strings.UnityOptionsPage_AddNamingSubSection_Serialized_field_naming_rules);
 
             var entry = OptionsSettingsSmartContext.Schema.GetIndexedEntry(ourUserRulesAccessor);
             var userRule = GetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry);
@@ -180,21 +178,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
                 SetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry, newRule);
             });
 
-            AddStringOption(Lifetime, prefixProperty, "Prefix:");
-            AddStringOption(Lifetime, suffixProperty, "Suffix:");
-            AddComboOption(kindProperty, "Style:", string.Empty, string.Empty,
+            AddStringOption(Lifetime, prefixProperty, Strings.UnityOptionsPage_AddNamingSubSection_Prefix_);
+            AddStringOption(Lifetime, suffixProperty, Strings.UnityOptionsPage_AddNamingSubSection_Suffix_);
+            AddComboOption(kindProperty, Strings.UnityOptionsPage_AddNamingSubSection_Style_, string.Empty, string.Empty,
                 new[]
                 {
-                    new RadioOptionPoint(NamingStyleKinds.AaBb, "UpperCamelCase"),
-                    new RadioOptionPoint(NamingStyleKinds.AaBb_AaBb, "UpperCamelCase_UnderscoreTolerant"),
-                    new RadioOptionPoint(NamingStyleKinds.AaBb_aaBb, "UpperCamelCase_underscoreTolerant"),
-                    new RadioOptionPoint(NamingStyleKinds.aaBb, "lowerCamelCase"),
-                    new RadioOptionPoint(NamingStyleKinds.aaBb_AaBb, "lowerCamelCase_UnderscoreTolerant"),
-                    new RadioOptionPoint(NamingStyleKinds.aaBb_aaBb, "lowerCamelCase_underscoreTolerant"),
-                    new RadioOptionPoint(NamingStyleKinds.AA_BB, "ALL_UPPER"),
-                    new RadioOptionPoint(NamingStyleKinds.Aa_bb, "First_upper")
+                    new RadioOptionPoint(NamingStyleKinds.AaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase),
+                    new RadioOptionPoint(NamingStyleKinds.AaBb_AaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase_UnderscoreTolerant),
+                    new RadioOptionPoint(NamingStyleKinds.AaBb_aaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase_underscoreTolerant2),
+                    new RadioOptionPoint(NamingStyleKinds.aaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase),
+                    new RadioOptionPoint(NamingStyleKinds.aaBb_AaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase_UnderscoreTolerant),
+                    new RadioOptionPoint(NamingStyleKinds.aaBb_aaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase_underscoreTolerant2),
+                    new RadioOptionPoint(NamingStyleKinds.AA_BB, Strings.UnityOptionsPage_AddNamingSubSection_ALL_UPPER),
+                    new RadioOptionPoint(NamingStyleKinds.Aa_bb, Strings.UnityOptionsPage_AddNamingSubSection_First_upper)
                 });
-            AddBoolOption(enabledProperty, "Enable inspection", null);
+            AddBoolOption(enabledProperty, Strings.UnityOptionsPage_AddNamingSubSection_Enable_inspection, null);
         }
 
         private static ClrUserDefinedNamingRule GetUnitySerializedFieldRule(IContextBoundSettingsStore settingsStore,
@@ -220,28 +218,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
 
         private void AddTextBasedAssetsSection()
         {
-            AddHeader("Text based assets");
+            AddHeader(Strings.UnityOptionsPage_AddTextBasedAssetsSection_Text_based_assets);
             AddBoolOption((UnitySettings s) => s.IsAssetIndexingEnabled,
-                "Parse text based asset files for script and event handler usages");
+                Strings.UnityOptionsPage_AddTextBasedAssetsSection_Parse_text_based_asset_files_for_script_and_event_handler_usages);
 
             if (OptionsPageContext.IsRider)
             {
                 AddBoolOption((UnitySettings s) => s.EnableInspectorPropertiesEditor,
-                    "Show Inspector values in the editor");
+                    Strings.UnityOptionsPage_AddTextBasedAssetsSection_Show_Inspector_values_in_the_editor);
             }
 
             AddBoolOption((UnitySettings s) => s.IsPrefabCacheEnabled,
-                "Cache prefab data to improve find usage performance");
+                Strings.UnityOptionsPage_AddTextBasedAssetsSection_Cache_prefab_data_to_improve_find_usage_performance);
             AddBoolOption((UnitySettings s) => s.EnableAssetIndexingPerformanceHeuristic,
-                "Automatically disable asset indexing for large solutions");
+                Strings.UnityOptionsPage_AddTextBasedAssetsSection_Automatically_disable_asset_indexing_for_large_solutions);
 
             if (OptionsPageContext.IsRider)
             {
-                AddBoolOption((UnitySettings s) => s.UseUnityYamlMerge, "Prefer UnityYamlMerge for merging YAML files");
+                AddBoolOption((UnitySettings s) => s.UseUnityYamlMerge, Strings.UnityOptionsPage_AddTextBasedAssetsSection_Prefer_UnityYamlMerge_for_merging_YAML_files);
                 using (Indent())
                 {
                     var option = AddControl((UnitySettings s) => s.MergeParameters,
-                        p => p.GetBeTextBox(Lifetime).WithDescription("Merge parameters", Lifetime));
+                        p => p.GetBeTextBox(Lifetime).WithDescription(Strings.UnityOptionsPage_AddTextBasedAssetsSection_Merge_parameters, Lifetime));
                     BindToEnabledProperty(option, s => s.UseUnityYamlMerge);
                 }
             }
@@ -250,40 +248,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
         private void AddShadersSection()
         {
             // TODO: For ReSharper, this is unavailable if the user hasn't installed ReSharper C++
-            AddHeader("Shaders");
+            AddHeader(Strings.UnityOptionsPage_AddShadersSection_Shaders);
             AddBoolOption((UnitySettings s) => s.SuppressShaderErrorHighlighting,
-                "Suppress resolve errors of unqualified names");
+                Strings.UnityOptionsPage_AddShadersSection_Suppress_resolve_errors_of_unqualified_names);
         }
 
         private void AddDebuggingSection()
         {
             if (!OptionsPageContext.IsRider) return;
 
-            AddHeader("Debugging");
+            AddHeader(Strings.UnityOptionsPage_AddDebuggingSection_Debugging);
             AddBoolOption((UnitySettings s) => s.EnableDebuggerExtensions,
-                "Extend value rendering");
-            AddBetterCommentText("When enabled, Rider will show extra values in debugger object views,\n" +
-                                 "such as active scene and GameObject component data and children.\n" +
-                                 "Rendering of summary values is also improved, such as showing Vector3\n" +
-                                 "float values with full precision.");
+                Strings.UnityOptionsPage_AddDebuggingSection_Extend_value_rendering);
+            AddBetterCommentText(Strings.UnityOptionsPage_AddDebuggingSection_Extend_value_rendering_Comment);
 
             AddBoolOption((UnitySettings s) => s.IgnoreBreakOnUnhandledExceptionsForIl2Cpp,
-                "Ignore 'Break on unhandled exceptions' setting for IL2CPP players");
-            AddBetterCommentText("Unity's Mono 4.x runtime ignores the 'Break on unhandled exceptions' setting.\n" +
-                                 "This option applies the same behaviour to IL2CPP players.");
+                Strings.UnityOptionsPage_AddDebuggingSection_Ignore__Break_on_unhandled_exceptions__setting_for_IL2CPP_players);
+            AddBetterCommentText(Strings.UnityOptionsPage_AddDebuggingSection_Break_on_unhandled_exceptions__setting_for_IL2CPP_players_Comment);
         }
 
         private void AddInternalSection(RunsProducts.ProductConfigurations productConfigurations)
         {
             if (!productConfigurations.IsInternalMode()) return;
 
-            AddHeader("Internal");
+            AddHeader(Strings.UnityOptionsPage_AddInternalSection_Internal);
 
             AddBoolOption((UnitySettings s) => s.SuppressShaderErrorHighlightingInRenderPipelinePackages,
-                "Suppress resolve errors in render-pipeline packages");
+                Strings.UnityOptionsPage_AddInternalSection_Suppress_resolve_errors_in_render_pipeline_packages);
 
             AddBoolOption((UnitySettings s) => s.EnableCgErrorHighlighting,
-                "[Deprecated] Parse GLSL files for syntax errors (requires internal mode, and re-opening solution)");
+                Strings.UnityOptionsPage_AddInternalSection__Deprecated__Parse_GLSL_files_for_syntax_errors__requires_internal_mode__and_re_opening_solution_);
         }
 
         private void AddStringOption(Lifetime lifetime, IProperty<string> property, string text)

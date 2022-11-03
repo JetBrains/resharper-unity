@@ -12,14 +12,14 @@ using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
 using JetBrains.Util;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 #nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.ContextActions
 {
-    [ContextAction(Name = "Convert to named assembly definition reference",
-        Description = "Convert assembly definition reference from GUID to name based",
-        Group = "Unity")]
+    [ContextAction(
+        Group = "Unity", ResourceType = typeof(Strings), NameResourceName = nameof(Strings.ConvertToNamedAssemblyDefinitionReference_Name), DescriptionResourceName = nameof(Strings.ConvertToNamedAssemblyDefinitionReference_Description))]
     public class ConvertToNamedReferenceContextAction : ScopedContextActionBase<IJsonNewLiteralExpression>
     {
         private readonly IJsonNewContextActionDataProvider myDataProvider;
@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.ContextActio
             myDataProvider = dataProvider;
         }
 
-        public override string Text => "To named reference";
+        public override string Text => Strings.ConvertToNamedReferenceContextAction_Text_To_named_reference;
 
         protected override IJsonNewLiteralExpression? TryCreateInfoFromDataProvider(IUserDataHolder cache)
         {
