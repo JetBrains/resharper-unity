@@ -17,6 +17,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Add completion and analysis of assets for resource load methods ([RIDER-79879](https://youtrack.jetbrains.com/issue/RIDER-79879), [#2217](https://github.com/JetBrains/resharper-unity/issues/2217))
 - Add completion and analysis of tags in `GameObject.FindWithTag` methods
 - Add Find Usages of methods used by the new Input System ([RIDER-71588](https://youtrack.jetbrains.com/issue/RIDER-71588))
+- Add suppression of `IBaker` implementing classes as unused ([RIDER-84159](https://youtrack.jetbrains.com/issue/RIDER-84159), [#2370](https://github.com/JetBrains/resharper-unity/pull/2370))
 - Rider: Notify when committing `.meta` file for empty folder ([RIDER-75587](https://youtrack.jetbrains.com/issue/RIDER-75587), [#2333](https://github.com/JetBrains/resharper-unity/pull/2333))
 - Rider: Notify when committing if any persistent objects in scene are modified but not saved ([RIDER-63673](https://youtrack.jetbrains.com/issue/RIDER-63673), [#2338](https://github.com/JetBrains/resharper-unity/pull/2338))
 - Rider: Show a notification when editing a file in the package cache ([RIDER-63994](https://youtrack.jetbrains.com/issue/RIDER-63994))
@@ -38,6 +39,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Fixed
 
+- Fix structs that implement `ISystem` incorrectly shown as unused ([RIDER-80062](https://youtrack.jetbrains.com/issue/RIDER-80062), [#2369](https://github.com/JetBrains/resharper-unity/pull/2369))
 - Fix incorrectly showing serialise field context actions for interfaces ([RIDER-51572](https://youtrack.jetbrains.com/issue/RIDER-51572))
 - Fix exception while trying to show online help ([DEXP-608179](https://youtrack.jetbrains.com/issue/DEXP-608179), [#2337](https://github.com/JetBrains/resharper-unity/pull/2337))
 - Link to documentation for constructor will fall back to type docs if constructor is not documented ([RIDER-79366](https://youtrack.jetbrains.com/issue/RIDER-79366), [#2336](https://github.com/JetBrains/resharper-unity/pull/2336))
@@ -52,6 +54,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix regression in 2021.3 that meant `.meta` files were being indexed ([RIDER-79712](https://youtrack.jetbrains.com/issue/RIDER-79712))
 - Rider: Fix issue reading packages with up-to-date but disabled `packages-lock.json` ([RIDER-81728](https://youtrack.jetbrains.com/issue/RIDER-81728), [#2355](https://github.com/JetBrains/resharper-unity/pull/2355))
 - Rider: Reduce overhead of checking for Android functionality
+- Rider: Improve startup time for very large projects when asset indexing disabled ([RIDER-83398](https://youtrack.jetbrains.com/issue/RIDER-83398))
 
 
 
