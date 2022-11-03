@@ -2,6 +2,7 @@ using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi.Util;
 
 #nullable enable
@@ -13,11 +14,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors
         Languages = "CSHARP",
         AttributeId = AnalysisHighlightingAttributeIds.DEADCODE,
         OverlapResolve = OverlapResolveKind.DEADCODE,
-        ToolTipFormatString = MESSAGE)]
+        ToolTipFormatStringResourceType = typeof(Strings),
+        ToolTipFormatStringResourceName = nameof(Strings.PackageNotInstalledInfo_Symbol_not_defined__Package___0___is_not_installed))]
     public class PackageNotInstalledInfo : IHighlighting
     {
-        private const string MESSAGE = "Symbol not defined. Package '{0}' is not installed";
-
         private readonly IJsonNewLiteralExpression myDefineValue;
         private readonly DocumentRange myHighlightingRange;
 
@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors
         {
             myDefineValue = defineValue;
             myHighlightingRange = defineValue.GetUnquotedDocumentRange();
-            ToolTip = string.Format(MESSAGE, packageId);
+            ToolTip = string.Format(Strings.PackageNotInstalledInfo_Symbol_not_defined__Package___0___is_not_installed, packageId);
         }
 
         public bool IsValid() => myDefineValue.IsValid() && myHighlightingRange.IsValid();
