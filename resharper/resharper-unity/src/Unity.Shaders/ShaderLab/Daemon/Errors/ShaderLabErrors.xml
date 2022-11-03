@@ -1,108 +1,120 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Errors language="C#" configurableSeverityImplementationLanguage="SHADERLAB" baseClass="ShaderLabHighlightingBase">
-
   <Usings>
-    JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree
+    JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+    Strings = JetBrains.ReSharper.Plugins.Unity.Shaders.Resources.Strings;
   </Usings>
-
+  
   <StaticSeverityGroups>
     <Group name="ShaderLab Errors" key="ShaderLabErrors" />
     <Group name="ShaderLab Warnings" key="ShaderLabWarnings" />
   </StaticSeverityGroups>
-
+  
   <Error name="ShaderLabSyntax" staticGroup="ShaderLabErrors">
-    <Parameter type="string" name="text"/>
-    <Parameter type="DocumentRange" name="documentRange"/>
-    <Message value="{0}">
+    <Parameter type="string" name="text" />
+    <Parameter type="DocumentRange" name="documentRange" />
+    <Message>
       <Argument>Text</Argument>
+      <LocalizedValue resourceName="Message" resourceType="Strings" />
     </Message>
     <Range>DocumentRange</Range>
-    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR"/>
+    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
 
   <Error name="NotResolved" staticGroup="ShaderLabErrors">
-    <Parameter type="IReference" name="reference"/>
-    <Message value="Cannot resolve symbol '{0}'">
+    <Parameter type="IReference" name="reference" />
+    <Message>
       <Argument>Reference.GetName()</Argument>
+      <LocalizedValue resourceName="CannotResolveSymbolMessage" resourceType="Strings" />
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
-    <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR"/>
+    <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR" />
   </Error>
-  
+
   <Warning name="NotResolvedProperty" staticGroup="ShaderLabWarnings">
     <Parameter type="IReference" name="reference" />
-    <Message value="Possible unintended use of undeclared property '{0}'. Property may be set from code" >
+    <Message>
       <Argument>Reference.GetName()</Argument>
+      <LocalizedValue resourceName="PossibleUnintendedUseOfUndeclaredPropertyPropertyMayBeSetFromCodeMessage" resourceType="Strings" />
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
-    <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING"/>
+    <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
   </Warning>
- 
+
   <Error name="MultipleResolveCandidates" staticGroup="ShaderLabErrors">
-    <Parameter type="JetBrains.DocumentModel.DocumentRange" name="textRange"/>
-    <Parameter type="string" name="candidates"/>
-    <Parameter type="IReference" name="reference"/>
-    <Message value="Ambiguous reference:{0}{1}match">
+    <Parameter type="JetBrains.DocumentModel.DocumentRange" name="textRange" />
+    <Parameter type="string" name="candidates" />
+    <Parameter type="IReference" name="reference" />
+    <Message>
       <Argument>Candidates</Argument>
       <Argument>Environment.NewLine</Argument>
+      <LocalizedValue resourceName="AmbiguousReferencematchMessage" resourceType="Strings" />
     </Message>
     <Range>TextRange</Range>
-    <Behavour overlapResolvePolicy="ERROR"/>
+    <Behavour overlapResolvePolicy="ERROR" />
   </Error>
 
   <Error name="ShaderLabPreprocessorDirective" staticGroup="ShaderLabErrors">
     <Parameter type="IPpErrorDirective" name="directiveNode" />
     <Parameter type="string" name="text" />
-    <Message value="{0}">
+    <Message>
       <Argument>Text</Argument>
+      <LocalizedValue resourceName="Message" resourceType="Strings" />
     </Message>
     <Range>DirectiveNode.Directive.GetHighlightingRange()</Range>
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
-  
+
   <Warning name="ShaderLabSwallowedPreprocessorChar" staticGroup="ShaderLabWarnings">
     <Parameter type="ITokenNode" name="swallowedToken" />
-    <Message value="Ignored character. Consider inserting new line for clarity" />
+    <Message>
+      <LocalizedValue resourceName="IgnoredCharacterConsiderInsertingNewLineForClarityMessage" resourceType="Strings" />
+    </Message>
     <Range>SwallowedToken.GetHighlightingRange()</Range>
     <Behavour attributeID="DEADCODE" overlapResolvePolicy="DEADCODE" />
   </Warning>
-  
+
   <Warning name="ShaderLabPreprocessorDirective" staticGroup="ShaderLabWarnings">
     <Parameter type="IPpWarningDirective" name="directiveNode" />
     <Parameter type="string" name="text" />
-    <Message value="{0}">
+    <Message>
       <Argument>Text</Argument>
+      <LocalizedValue resourceName="Message" resourceType="Strings" />
     </Message>
     <Range>DirectiveNode.Directive.GetHighlightingRange()</Range>
     <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
   </Warning>
-  
+
   <Warning name="ShaderLabInvalidVariableReferenceParameters" staticGroup="ShaderLabWarnings">
     <Parameter type="IInvalidVariableReferenceParameters" name="invalidParameters" />
     <Parameter type="DocumentRange" name="documentRange" />
-    <Message value="Parameters are not valid in this location" />
+    <Message>
+      <LocalizedValue resourceName="ParametersAreNotValidInThisLocationMessage" resourceType="Strings" />
+    </Message>
     <Range>DocumentRange</Range>
     <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
     <QuickFix>RemoveUnusedElementFix</QuickFix>
   </Warning>
-  
+
   <Warning name="ShaderLabFirstDuplicateProperty" staticGroup="ShaderLabWarnings">
     <Parameter type="IPropertyDeclaration" name="propertyDeclaration" />
     <Parameter type="string" name="declarationName" />
     <Parameter type="DocumentRange" name="documentRange" />
-    <Message value="Conflicting property '{0}' is defined below" >
+    <Message>
       <Argument>DeclarationName</Argument>
+      <LocalizedValue resourceName="ConflictingPropertyIsDefinedBelowMessage" resourceType="Strings" />
     </Message>
     <Range>DocumentRange</Range>
     <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
   </Warning>
-  
+
   <Warning name="ShaderLabSubsequentDuplicateProperty" staticGroup="ShaderLabWarnings">
     <Parameter type="IPropertyDeclaration" name="propertyDeclaration" />
     <Parameter type="string" name="declarationName" />
     <Parameter type="DocumentRange" name="documentRange" />
-    <Message value="There is already a property named '{0}' declared">
+    <Message>
       <Argument>DeclarationName</Argument>
+      <LocalizedValue resourceName="ThereIsAlreadyAPropertyNamedDeclaredMessage" resourceType="Strings" />
     </Message>
     <Range>DocumentRange</Range>
     <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />

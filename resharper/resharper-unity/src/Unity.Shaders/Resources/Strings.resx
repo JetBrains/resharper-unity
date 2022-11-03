@@ -16,14 +16,38 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
+    <data name="AmbiguousReferencematchMessage" xml:space="preserve">
+        <value>Ambiguous reference:{0}{1}match</value>
+    </data>
+    <data name="CannotResolveSymbolMessage" xml:space="preserve">
+        <value>Cannot resolve symbol &apos;{0}&apos;</value>
+    </data>
+    <data name="CgBuiltInTypeTokenNodeType_TokenRepresentation_built_in_type" xml:space="preserve">
+        <value>built-in type</value>
+    </data>
     <data name="CgLanguageSpecificDaemonBehaviour_InitialErrorStripe_File_s_primary_language_in_not_Cg" xml:space="preserve">
-        <value>File's primary language in not Cg</value>
+        <value>File&apos;s primary language in not Cg</value>
     </data>
     <data name="CgSyntaxHighlightingProcess_VisitSemanticNode_Semantic__packoffset_or_register_expected" xml:space="preserve">
         <value>Semantic, packoffset or register expected</value>
     </data>
-    <data name="CgBuiltInTypeTokenNodeType_TokenRepresentation_built_in_type" xml:space="preserve">
-        <value>built-in type</value>
+    <data name="ConflictingPropertyIsDefinedBelowMessage" xml:space="preserve">
+        <value>Conflicting property &apos;{0}&apos; is defined below</value>
+    </data>
+    <data name="IgnoredCharacterConsiderInsertingNewLineForClarityMessage" xml:space="preserve">
+        <value>Ignored character. Consider inserting new line for clarity</value>
+    </data>
+    <data name="Message" xml:space="preserve">
+        <value>{0}</value>
+    </data>
+    <data name="ParametersAreNotValidInThisLocationMessage" xml:space="preserve">
+        <value>Parameters are not valid in this location</value>
+    </data>
+    <data name="PossibleUnintendedUseOfUndeclaredPropertyPropertyMayBeSetFromCodeMessage" xml:space="preserve">
+        <value>Possible unintended use of undeclared property &apos;{0}&apos;. Property may be set from code</value>
+    </data>
+    <data name="ThereIsAlreadyAPropertyNamedDeclaredMessage" xml:space="preserve">
+        <value>There is already a property named &apos;{0}&apos; declared</value>
     </data>
     <data name="RemoveToken_Text_Remove_invalid_parameters" xml:space="preserve">
         <value>Remove invalid parameters</value>
