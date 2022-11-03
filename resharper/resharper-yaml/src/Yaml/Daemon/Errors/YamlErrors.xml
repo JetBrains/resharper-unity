@@ -1,28 +1,31 @@
-﻿<Errors language="C#" configurableSeverityImplementationLanguage="YAML">
-
-  <Usings>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Errors language="C#" configurableSeverityImplementationLanguage="YAML">
+  <Usings>  
+    Strings = JetBrains.ReSharper.Plugins.Yaml.Resources.Strings;
   </Usings>
-
+  
   <StaticSeverityGroups>
-    <Group name="YAML Errors" key="YamlErrors"/>
+    <Group name="YAML Errors" key="YamlErrors" />
   </StaticSeverityGroups>
-
+  
   <Error name="YamlSyntax" staticGroup="YamlErrors">
-    <Parameter type="string" name="text"/>
-    <Parameter type="DocumentRange" name="documentRange"/>
-    <Message value="{0}">
+    <Parameter type="string" name="text" />
+    <Parameter type="DocumentRange" name="documentRange" />
+    <Message>
       <Argument>Text</Argument>
+      <LocalizedValue resourceName="Message" resourceType="Strings" />
     </Message>
     <Range>DocumentRange</Range>
-    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR"/>
+    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
-
+  
   <Error name="NotResolved" staticGroup="YamlErrors">
-    <Parameter type="IReference" name="reference"/>
-    <Message value="Cannot resolve symbol '{0}'">
+    <Parameter type="IReference" name="reference" />
+    <Message>
       <Argument>Reference.GetName()</Argument>
+      <LocalizedValue resourceName="CannotResolveSymbolMessage" resourceType="Strings" />
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
-    <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR"/>
+    <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR" />
   </Error>
 </Errors>

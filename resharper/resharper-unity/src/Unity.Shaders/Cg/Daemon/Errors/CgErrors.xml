@@ -1,19 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Errors language="C#" configurableSeverityImplementationLanguage="Cg">
-
-  <Usings>    
+  <Usings>
+    Strings = JetBrains.ReSharper.Plugins.Unity.Shaders.Resources.Strings;
   </Usings>
-
+  
   <StaticSeverityGroups>
-    <Group name="Cg Errors" key="CgErrors"/>
+    <Group name="Cg Errors" key="CgErrors" />
   </StaticSeverityGroups>
-
+  
   <Error name="CgSyntax" staticGroup="CgErrors">
-    <Parameter type="string" name="text"/>
-    <Parameter type="DocumentRange" name="documentRange"/>
-    <Message value="{0}">
+    <Parameter type="string" name="text" />
+    <Parameter type="DocumentRange" name="documentRange" />
+    <Message>
       <Argument>Text</Argument>
+      <LocalizedValue resourceName="Message" resourceType="Strings" />
     </Message>
     <Range>DocumentRange</Range>
-    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR"/>
+    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
 </Errors>

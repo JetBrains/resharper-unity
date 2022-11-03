@@ -16,7 +16,13 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-  <data name="YamlLanguageSpecificDaemonBehaviour_InitialErrorStripe_File_s_primary_language_in_not_Yaml" xml:space="preserve">
-    <value>File's primary language in not Yaml</value>
-  </data>
+    <data name="CannotResolveSymbolMessage" xml:space="preserve">
+        <value>Cannot resolve symbol &apos;{0}&apos;</value>
+    </data>
+    <data name="Message" xml:space="preserve">
+        <value>{0}</value>
+    </data>
+    <data name="YamlLanguageSpecificDaemonBehaviour_InitialErrorStripe_File_s_primary_language_in_not_Yaml" xml:space="preserve">
+        <value>File&apos;s primary language in not Yaml</value>
+    </data>
 </root>
