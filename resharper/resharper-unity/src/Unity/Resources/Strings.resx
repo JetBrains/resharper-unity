@@ -622,10 +622,10 @@ This option applies the same behaviour to IL2CPP players.</value>
     <data name="FindUnityUsagesText" xml:space="preserve">
         <value>Find Unity Usages</value>
     </data>
-    <data name="DumpDuplicateTypeNamesAction_Update_Dump_Duplicate_Type_Names" xml:space="preserve">
+    <data name="Unity_Internal_DumpDuplicateTypeNames_Text" xml:space="preserve">
         <value>Dump Duplicate Type Names</value>
     </data>
-    <data name="DumpSpellCheckWordListsAction_Update_Dump_Spell_Check_Word_Lists" xml:space="preserve">
+    <data name="Unity_Internal_DumpSpellCheckWordLists_Text" xml:space="preserve">
         <value>Dump Spell Check Word Lists</value>
     </data>
 </root>

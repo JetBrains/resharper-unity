@@ -18,7 +18,7 @@ using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Internal
 {
-    [Action("Unity_Internal_DumpSpellCheckWordLists", typeof(Strings), nameof(Strings.DumpSpellCheckWordListsAction_Update_Dump_Spell_Check_Word_Lists))]
+    [Action("Unity_Internal_DumpSpellCheckWordLists", typeof(Strings), nameof(Strings.Unity_Internal_DumpSpellCheckWordLists_Text))]
     public class DumpSpellCheckWordListsAction : IExecutableAction
     {
         public bool Update(IDataContext context, ActionPresentation presentation, DelegateUpdate nextUpdate)
