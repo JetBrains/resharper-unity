@@ -9,11 +9,12 @@
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CommonCodeAnalysis.Highlightings;
     Strings = JetBrains.ReSharper.Plugins.Unity.Resources.Strings;
   </Usings>
+  
   <SeverityConfiguration>
     <Group name="UnityHighlightingGroupIds.Burst">
       <Tag externalName="SharedStaticUnmanagedTypeWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="SharedStaticTypeParameterRequiresTheUnmanagedConstraint" resourceType="Strings" />
-        <LocalizedDescription resourceName="SharedStaticTypeParameterRequiresTheUnmanagedConstraint" resourceType="Strings" />
+        <Title resourceName="SharedStaticTypeParameterRequiresTheUnmanagedConstraint" resourceType="Strings" />
+        <Description resourceName="SharedStaticTypeParameterRequiresTheUnmanagedConstraint" resourceType="Strings" />
       </Tag>
     </Group>
   </SeverityConfiguration>
@@ -21,9 +22,8 @@
   <Warning name="SharedStaticUnmanagedType" configurableSeverity="Unity.SharedStaticUnmanagedType">
     <Parameter type="ITreeNode" name="node" />
     <Parameter type="string" name="name" isValid="skip" />
-    <Message>
+    <Message resourceName="TypeParameterMustBeUnmanagedIsNotMessage" resourceType="Strings">
       <Argument>name</Argument>
-      <LocalizedValue resourceName="TypeParameterMustBeUnmanagedIsNotMessage" resourceType="Strings" />
     </Message>
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />

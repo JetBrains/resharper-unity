@@ -41,156 +41,156 @@
   <SeverityConfiguration>
     <Group name="UnityHighlightingGroupIds.Unity">
       <Tag externalName="DuplicateEventFunctionWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="EventFunctionWithTheSameNameIsAlreadyDeclared" resourceType="Strings" />
-        <LocalizedDescription resourceName="EventFunctionWithTheSameNameIsAlreadyDeclared2" resourceType="Strings" />
+        <Title resourceName="EventFunctionWithTheSameNameIsAlreadyDeclared" resourceType="Strings" />
+        <Description resourceName="EventFunctionWithTheSameNameIsAlreadyDeclared2" resourceType="Strings" />
       </Tag>
       <Tag externalName="ExpectedComponentWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="ExpectedTypeDerivedFromComponentOrMonoBehaviour" resourceType="Strings" />
-        <LocalizedDescription resourceName="ExpectedBuiltInTypeDerivedFromComponentOrUserTypeDerivedFromMonoBehaviour" resourceType="Strings" />
+        <Title resourceName="ExpectedTypeDerivedFromComponentOrMonoBehaviour" resourceType="Strings" />
+        <Description resourceName="ExpectedBuiltInTypeDerivedFromComponentOrUserTypeDerivedFromMonoBehaviour" resourceType="Strings" />
       </Tag>
       <Tag externalName="ExpectedScriptableObjectWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="ExpectedTypeDerivedFromScriptableObject" resourceType="Strings" />
-        <LocalizedDescription resourceName="ExpectedTypeDerivedFromScriptableObject3" resourceType="Strings" />
+        <Title resourceName="ExpectedTypeDerivedFromScriptableObject" resourceType="Strings" />
+        <Description resourceName="ExpectedTypeDerivedFromScriptableObject3" resourceType="Strings" />
       </Tag>
       <Tag externalName="ExplicitTagStringComparisonWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="UseCompareTagInsteadOfExplicitStringComparison" resourceType="Strings" />
-        <LocalizedDescription resourceName="ExplicitStringComparisonWithGameObjectTagOrComponentTagIsInefficientUseTheCompareTagMethodInstead" resourceType="Strings" />
+        <Title resourceName="UseCompareTagInsteadOfExplicitStringComparison" resourceType="Strings" />
+        <Description resourceName="ExplicitStringComparisonWithGameObjectTagOrComponentTagIsInefficientUseTheCompareTagMethodInstead" resourceType="Strings" />
       </Tag>
       <Tag externalName="IncorrectMonoBehaviourInstantiationWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="MonoBehaviourInstancesMustBeInstantiatedWithGameObjectAddComponentTInsteadOfnew" resourceType="Strings" />
-        <LocalizedDescription resourceName="UsingnewToInstantiateAClassDerivedFromMonoBehaviourWillNotAttachItToAGameObjectInstanceAndUnityWillNotCallAnyEventFunctionsCreateANewInstanceUsingGameObjectAddComponentT" resourceType="Strings" />
+        <Title resourceName="MonoBehaviourInstancesMustBeInstantiatedWithGameObjectAddComponentTInsteadOfnew" resourceType="Strings" />
+        <Description resourceName="UsingnewToInstantiateAClassDerivedFromMonoBehaviourWillNotAttachItToAGameObjectInstanceAndUnityWillNotCallAnyEventFunctionsCreateANewInstanceUsingGameObjectAddComponentT" resourceType="Strings" />
       </Tag>
       <Tag externalName="IncorrectScriptableObjectInstantiationWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="ScriptableObjectInstancesMustBeInstantiatedWithScriptableObjectCreateInstanceTInsteadOfnew" resourceType="Strings" />
-        <LocalizedDescription resourceName="UsingnewToInstantiateAClassDerivedFromScriptableObjectMeansThatUnityWillNotCallAnyEventFunctionsCreateANewInstanceUsingGameObjectAddComponentT" resourceType="Strings" />
+        <Title resourceName="ScriptableObjectInstancesMustBeInstantiatedWithScriptableObjectCreateInstanceTInsteadOfnew" resourceType="Strings" />
+        <Description resourceName="UsingnewToInstantiateAClassDerivedFromScriptableObjectMeansThatUnityWillNotCallAnyEventFunctionsCreateANewInstanceUsingGameObjectAddComponentT" resourceType="Strings" />
       </Tag>
       <Tag externalName="IncorrectSignatureWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="IncorrectMethodSignature" resourceType="Strings" />
-        <LocalizedDescription resourceName="MethodDoesNotMatchExpectedSignature" resourceType="Strings" />
+        <Title resourceName="IncorrectMethodSignature" resourceType="Strings" />
+        <Description resourceName="MethodDoesNotMatchExpectedSignature" resourceType="Strings" />
       </Tag>
       <Tag externalName="InefficientPropertyAccessWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="RepeatedAccessOfPropertyOnBuiltInComponentIsInefficient" resourceType="Strings" />
-        <LocalizedDescription resourceName="SomeUnityObjectPropertiesResultInNativeMethodsCallsAndRepeatedlyAccessingThePropertyIsInefficientIntroduceAVariableToLocallyCacheThePropertyValue" resourceType="Strings" />
+        <Title resourceName="RepeatedAccessOfPropertyOnBuiltInComponentIsInefficient" resourceType="Strings" />
+        <Description resourceName="SomeUnityObjectPropertiesResultInNativeMethodsCallsAndRepeatedlyAccessingThePropertyIsInefficientIntroduceAVariableToLocallyCacheThePropertyValue" resourceType="Strings" />
       </Tag>
       <Tag externalName="InstantiateWithoutParentWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="SettingparentPropertyImmediatelyAfterObjectInstantiationIsInefficient" resourceType="Strings" />
-        <LocalizedDescription resourceName="InstantiatingAUnityObjectAndSettingTheparentPropertyAsSeparateOperationsIsInefficientAsTheTransformHierarchyIsCreatedAndImmediatelyReplacedCombineSettingTheparentPropertyWithTheCallToInstantiateTheObject" resourceType="Strings" />
+        <Title resourceName="SettingparentPropertyImmediatelyAfterObjectInstantiationIsInefficient" resourceType="Strings" />
+        <Description resourceName="InstantiatingAUnityObjectAndSettingTheparentPropertyAsSeparateOperationsIsInefficientAsTheTransformHierarchyIsCreatedAndImmediatelyReplacedCombineSettingTheparentPropertyWithTheCallToInstantiateTheObject" resourceType="Strings" />
       </Tag>
       <!-- TODO: Merge this with ExpectedComponentWarning? -->
       <Tag externalName="ParameterNotDerivedFromComponentWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="ParameterShouldBeDerivedFromComponent" resourceType="Strings" />
-        <LocalizedDescription resourceName="ParameterShouldBeDerivedFromComponent4" resourceType="Strings" />
+        <Title resourceName="ParameterShouldBeDerivedFromComponent" resourceType="Strings" />
+        <Description resourceName="ParameterShouldBeDerivedFromComponent4" resourceType="Strings" />
       </Tag>
       <Tag externalName="PossibleMisapplicationOfAttributeToMultipleFieldsWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="PossibleIncorrectApplicationOfAttributeToMultipleFields" resourceType="Strings" />
-        <LocalizedDescription resourceName="ApplyingAnAttributeToASingleDeclarationContainingMultipleFieldsWillApplyTheAttributeToEachFieldTheHighlightedAttributeEGFormerlySerializedAsIsIntendedToBeAppliedOnlyToASingleFieldPreferAnExplicitApplicationToASingleFieldInASingleDeclaration" resourceType="Strings" />
+        <Title resourceName="PossibleIncorrectApplicationOfAttributeToMultipleFields" resourceType="Strings" />
+        <Description resourceName="ApplyingAnAttributeToASingleDeclarationContainingMultipleFieldsWillApplyTheAttributeToEachFieldTheHighlightedAttributeEGFormerlySerializedAsIsIntendedToBeAppliedOnlyToASingleFieldPreferAnExplicitApplicationToASingleFieldInASingleDeclaration" resourceType="Strings" />
       </Tag>
       <Tag externalName="PreferAddressByIdToGraphicsParamsWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="StringBasedGraphicsPropertyLookupIsInefficient" resourceType="Strings" />
-        <LocalizedDescription resourceName="StringBasedPropertyLookupIsInefficientAsEachTimeTheMethodIsCalledTheStringNameIsConvertedIntoAnIntegerValuePreferCalculatingTheIntegerValueOnceAndCachingTheResult" resourceType="Strings" />
+        <Title resourceName="StringBasedGraphicsPropertyLookupIsInefficient" resourceType="Strings" />
+        <Description resourceName="StringBasedPropertyLookupIsInefficientAsEachTimeTheMethodIsCalledTheStringNameIsConvertedIntoAnIntegerValuePreferCalculatingTheIntegerValueOnceAndCachingTheResult" resourceType="Strings" />
       </Tag>
       <Tag externalName="PreferGenericMethodOverloadWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="StringBasedLookupOfComponentTypeIsInefficient" resourceType="Strings" />
-        <LocalizedDescription resourceName="UsingAStringTypeNameToLookUpAComponentIsSlowerThanSpecifyingTheTypeAsAGenericTypeParameter" resourceType="Strings" />
+        <Title resourceName="StringBasedLookupOfComponentTypeIsInefficient" resourceType="Strings" />
+        <Description resourceName="UsingAStringTypeNameToLookUpAComponentIsSlowerThanSpecifyingTheTypeAsAGenericTypeParameter" resourceType="Strings" />
       </Tag>
       <Tag externalName="PreferNonAllocApiWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="AlternativeNonAllocatingMethodAvailable" resourceType="Strings" />
-        <LocalizedDescription resourceName="AnAlternativeMethodIsAvailableThatAvoidsAllocationAndReusesAnExistingBuffer" resourceType="Strings" />
+        <Title resourceName="AlternativeNonAllocatingMethodAvailable" resourceType="Strings" />
+        <Description resourceName="AnAlternativeMethodIsAvailableThatAvoidsAllocationAndReusesAnExistingBuffer" resourceType="Strings" />
       </Tag>
       <Tag externalName="PropertyDrawerOnGUIBaseWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="AvoidbaseOnGUIInClassesDerivedFromPropertyDrawer" resourceType="Strings" />
-        <LocalizedDescription resourceName="TheDefaultImplementationForOnGUIInPropertyDrawerWillPrintNoGUIImplementedInTheUnityInspector" resourceType="Strings" />
+        <Title resourceName="AvoidbaseOnGUIInClassesDerivedFromPropertyDrawer" resourceType="Strings" />
+        <Description resourceName="TheDefaultImplementationForOnGUIInPropertyDrawerWillPrintNoGUIImplementedInTheUnityInspector" resourceType="Strings" />
       </Tag>
       <Tag externalName="RedundantAttributeOnTargetWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="AttributeIsRedundantWhenAppliedToThisDeclarationType" resourceType="Strings" />
-        <LocalizedCompoundItemName resourceName="RedundantAttributeUsage" resourceType="Strings" />
-        <LocalizedDescription resourceName="TheAttributeDoesNotDefineAnyRestrictionsOnValidTargetsButIsOnlyUsefulWhenAppliedToSpecificDeclarationsEGFieldClassOrMethod" resourceType="Strings" />
+        <Title resourceName="AttributeIsRedundantWhenAppliedToThisDeclarationType" resourceType="Strings" />
+        <CompoundItemName resourceName="RedundantAttributeUsage" resourceType="Strings" />
+        <Description resourceName="TheAttributeDoesNotDefineAnyRestrictionsOnValidTargetsButIsOnlyUsefulWhenAppliedToSpecificDeclarationsEGFieldClassOrMethod" resourceType="Strings" />
       </Tag>
       <Tag externalName="RedundantEventFunctionWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="RedundantUnityEventFunction" resourceType="Strings" />
-        <LocalizedDescription resourceName="EmptyUnityEventFunctionsAreStillCalledFromNativeCodeWhichAffectsPerformance" resourceType="Strings" />
+        <Title resourceName="RedundantUnityEventFunction" resourceType="Strings" />
+        <Description resourceName="EmptyUnityEventFunctionsAreStillCalledFromNativeCodeWhichAffectsPerformance" resourceType="Strings" />
       </Tag>
       <Tag externalName="RedundantFormerlySerializedAsAttributeWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="RedundantFormerlySerializedAsAttribute" resourceType="Strings" />
-        <LocalizedCompoundItemName resourceName="RedundantAttributeUsage" resourceType="Strings" />
-        <LocalizedDescription resourceName="TheFormerlySerializedAsAttributeIsOnlyValidOnUnitySerializedFieldsItCanAlsoBeRedundantIfTheNameArgumentMatchesTheCurrentNameOfTheField" resourceType="Strings" />
+        <Title resourceName="RedundantFormerlySerializedAsAttribute" resourceType="Strings" />
+        <CompoundItemName resourceName="RedundantAttributeUsage" resourceType="Strings" />
+        <Description resourceName="TheFormerlySerializedAsAttributeIsOnlyValidOnUnitySerializedFieldsItCanAlsoBeRedundantIfTheNameArgumentMatchesTheCurrentNameOfTheField" resourceType="Strings" />
       </Tag>
       <Tag externalName="RedundantHideInInspectorAttributeWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="RedundantHideInInspectorAttribute" resourceType="Strings" />
-        <LocalizedCompoundItemName resourceName="RedundantAttributeUsage" resourceType="Strings" />
-        <LocalizedDescription resourceName="TheHideInInspectorAttributeOnlyAppliesToSerialisedFields" resourceType="Strings" />
+        <Title resourceName="RedundantHideInInspectorAttribute" resourceType="Strings" />
+        <CompoundItemName resourceName="RedundantAttributeUsage" resourceType="Strings" />
+        <Description resourceName="TheHideInInspectorAttributeOnlyAppliesToSerialisedFields" resourceType="Strings" />
       </Tag>
       <Tag externalName="RedundantInitializeOnLoadAttributeWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="RedundantInitializeOnLoadAttribute" resourceType="Strings" />
-        <LocalizedCompoundItemName resourceName="RedundantAttributeUsage" resourceType="Strings" />
-        <LocalizedDescription resourceName="TheInitializeOnLoadAttributeIsRedundantWhenTheStaticConstructorIsMissing" resourceType="Strings" />
+        <Title resourceName="RedundantInitializeOnLoadAttribute" resourceType="Strings" />
+        <CompoundItemName resourceName="RedundantAttributeUsage" resourceType="Strings" />
+        <Description resourceName="TheInitializeOnLoadAttributeIsRedundantWhenTheStaticConstructorIsMissing" resourceType="Strings" />
       </Tag>
       <Tag externalName="RedundantSerializeFieldAttributeWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="RedundantSerializeFieldAttribute" resourceType="Strings" />
-        <LocalizedCompoundItemName resourceName="RedundantAttributeUsage" resourceType="Strings" />
-        <LocalizedDescription resourceName="UnityWillIgnoreTheSerializeFieldAttributeIfAFieldIsAlsoMarkedWithTheNonSerializedAttribute" resourceType="Strings" />
+        <Title resourceName="RedundantSerializeFieldAttribute" resourceType="Strings" />
+        <CompoundItemName resourceName="RedundantAttributeUsage" resourceType="Strings" />
+        <Description resourceName="UnityWillIgnoreTheSerializeFieldAttributeIfAFieldIsAlsoMarkedWithTheNonSerializedAttribute" resourceType="Strings" />
       </Tag>
       <Tag externalName="StringLiteralReferenceIncorrectSignatureWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="MethodReferencedInStringLiteralDoesNotHaveTheExpectedSignature" resourceType="Strings" />
-        <LocalizedDescription resourceName="MethodReferencedInStringLiteralDoesNotHaveTheExpectedSignature5" resourceType="Strings" />
+        <Title resourceName="MethodReferencedInStringLiteralDoesNotHaveTheExpectedSignature" resourceType="Strings" />
+        <Description resourceName="MethodReferencedInStringLiteralDoesNotHaveTheExpectedSignature5" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnityObjectNullCoalescingWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject" resourceType="Strings" />
-        <LocalizedCompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
-        <LocalizedDescription resourceName="TheNullCoalescingOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" resourceType="Strings" />
+        <Title resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject" resourceType="Strings" />
+        <CompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
+        <Description resourceName="TheNullCoalescingOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnityObjectNullPropagationWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject6" resourceType="Strings" />
-        <LocalizedCompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
-        <LocalizedDescription resourceName="TheNullPropagatingOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" resourceType="Strings" />
+        <Title resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject6" resourceType="Strings" />
+        <CompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
+        <Description resourceName="TheNullPropagatingOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnresolvedComponentOrScriptableObjectWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="CannotResolveComponentOrScriptableObject" resourceType="Strings" />
-        <LocalizedDescription resourceName="TheClassReferredToInTheCallToGetComponentAddComponentOrScriptableObjectCreateInstanceCannotBeFoundInTheCurrentProjectOrReferencedAssembliesTheCallIsLikelyToFailAtRuntimeAndReturnNull" resourceType="Strings" />
+        <Title resourceName="CannotResolveComponentOrScriptableObject" resourceType="Strings" />
+        <Description resourceName="TheClassReferredToInTheCallToGetComponentAddComponentOrScriptableObjectCreateInstanceCannotBeFoundInTheCurrentProjectOrReferencedAssembliesTheCallIsLikelyToFailAtRuntimeAndReturnNull" resourceType="Strings" />
       </Tag>
       <Tag externalName="LoadSceneWrongIndexWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="TheIndexIsMissingInTheBuildSettings" resourceType="Strings" />
-        <LocalizedDescription resourceName="ThereIsNoSceneWithTheSameIndexInTheUnityBuildSettings" resourceType="Strings" />
+        <Title resourceName="TheIndexIsMissingInTheBuildSettings" resourceType="Strings" />
+        <Description resourceName="ThereIsNoSceneWithTheSameIndexInTheUnityBuildSettings" resourceType="Strings" />
       </Tag>
       <Tag externalName="LoadSceneAmbiguousSceneNameWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="ShortSceneNameIsNotUnique" resourceType="Strings" />
-        <LocalizedDescription resourceName="ThereAreSeveralScenesWithTheSameNameInTheUnityBuildSettingsOnlySceneWithSmallestIndexWillBeUsed" resourceType="Strings" />
+        <Title resourceName="ShortSceneNameIsNotUnique" resourceType="Strings" />
+        <Description resourceName="ThereAreSeveralScenesWithTheSameNameInTheUnityBuildSettingsOnlySceneWithSmallestIndexWillBeUsed" resourceType="Strings" />
       </Tag>
       <Tag externalName="LoadSceneUnknownSceneNameWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="ThereIsNoSceneWithTheSameNameInTheBuildSettings" resourceType="Strings" />
-        <LocalizedDescription resourceName="TheSceneIsMissingInTheUnityBuildSettings" resourceType="Strings" />
+        <Title resourceName="ThereIsNoSceneWithTheSameNameInTheBuildSettings" resourceType="Strings" />
+        <Description resourceName="TheSceneIsMissingInTheUnityBuildSettings" resourceType="Strings" />
       </Tag>
       <Tag externalName="LoadSceneUnexistingSceneNameWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="SceneDoesNotExist" resourceType="Strings" />
-        <LocalizedDescription resourceName="ThereIsNoSceneWithTheSameNameInTheProject" resourceType="Strings" />
+        <Title resourceName="SceneDoesNotExist" resourceType="Strings" />
+        <Description resourceName="ThereIsNoSceneWithTheSameNameInTheProject" resourceType="Strings" />
       </Tag>
       <Tag externalName="LoadSceneDisabledSceneNameWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="SceneIsDisabledInTheBuildSettings" resourceType="Strings" />
-        <LocalizedDescription resourceName="SceneIsDisabledInTheUnityBuildSettingsSoItCouldNotBeLoaded" resourceType="Strings" />
+        <Title resourceName="SceneIsDisabledInTheBuildSettings" resourceType="Strings" />
+        <Description resourceName="SceneIsDisabledInTheUnityBuildSettingsSoItCouldNotBeLoaded" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnknownInputAxesWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="TheInputNameIsNotDefinedInTheInputManager" resourceType="Strings" />
-        <LocalizedDescription resourceName="TheNameIsNotDefinedInTheInputManagerTheCallIsLikelyToFailAtRuntime" resourceType="Strings" />
+        <Title resourceName="TheInputNameIsNotDefinedInTheInputManager" resourceType="Strings" />
+        <Description resourceName="TheNameIsNotDefinedInTheInputManagerTheCallIsLikelyToFailAtRuntime" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnknownTagWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="TheTagIsNotDefinedInTheTagsLayers" resourceType="Strings" />
-        <LocalizedDescription resourceName="TheTagIsNotDefinedInTheTagsLayersExpressionWillReturnfalse" resourceType="Strings" />
+        <Title resourceName="TheTagIsNotDefinedInTheTagsLayers" resourceType="Strings" />
+        <Description resourceName="TheTagIsNotDefinedInTheTagsLayersExpressionWillReturnfalse" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnknownResourceWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="TheResourceIsNotDefinedInTheProject" resourceType="Strings" />
-        <LocalizedDescription resourceName="TheResourceIsNotDefinedInTheProjectExpressionWillReturnnull" resourceType="Strings" />
+        <Title resourceName="TheResourceIsNotDefinedInTheProject" resourceType="Strings" />
+        <Description resourceName="TheResourceIsNotDefinedInTheProjectExpressionWillReturnnull" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnknownLayerWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="TheLayerIsNotDefinedInTheTagsLayers" resourceType="Strings" />
-        <LocalizedDescription resourceName="TheLayerIsNotDefinedInTheTagsLayersTheCallIsLikelyToFailAtRuntime" resourceType="Strings" />
+        <Title resourceName="TheLayerIsNotDefinedInTheTagsLayers" resourceType="Strings" />
+        <Description resourceName="TheLayerIsNotDefinedInTheTagsLayersTheCallIsLikelyToFailAtRuntime" resourceType="Strings" />
       </Tag>
       <Tag externalName="DuplicateShortcutWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="TheSameShortcutIsDefinedForAnotherMenuItem" resourceType="Strings" />
-        <LocalizedDescription resourceName="TheSameShortcutIsDefinedForAnotherMenuItem" resourceType="Strings" />
+        <Title resourceName="TheSameShortcutIsDefinedForAnotherMenuItem" resourceType="Strings" />
+        <Description resourceName="TheSameShortcutIsDefinedForAnotherMenuItem" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnknownAnimatorStateNameWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="ThereIsNoAnimatorStateWithTheSameNameInTheProject" resourceType="Strings" />
-        <LocalizedDescription resourceName="ThereIsNoAnimatorStateWithTheSameNameInTheProject" resourceType="Strings" />
+        <Title resourceName="ThereIsNoAnimatorStateWithTheSameNameInTheProject" resourceType="Strings" />
+        <Description resourceName="ThereIsNoAnimatorStateWithTheSameNameInTheProject" resourceType="Strings" />
       </Tag>
     </Group>
   </SeverityConfiguration>
@@ -215,45 +215,35 @@
        -->
   <Warning name="UnknownAnimatorStateName" configurableSeverity="Unity.UnknownAnimatorStateName">
     <Parameter type="IArgument" name="argument" />
-    <Message>
-      <LocalizedValue resourceName="ThereIsNoAnimatorStateWithTheSameNameInTheProjectMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="ThereIsNoAnimatorStateWithTheSameNameInTheProjectMessage" resourceType="Strings" />
     <Range>Argument.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="UnknownInputAxes" configurableSeverity="Unity.UnknownInputAxes">
     <Parameter type="ITreeNode" name="node" />
-    <Message>
-      <LocalizedValue resourceName="TheNameIsNotDefinedInTheInputManagerTheCallIsLikelyToFailAtRuntimeMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="TheNameIsNotDefinedInTheInputManagerTheCallIsLikelyToFailAtRuntimeMessage" resourceType="Strings" />
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="UnknownTag" configurableSeverity="Unity.UnknownTag">
     <Parameter type="ITreeNode" name="node" />
-    <Message>
-      <LocalizedValue resourceName="TheTagIsNotDefinedInTheTagsLayersExpressionWillReturnfalseMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="TheTagIsNotDefinedInTheTagsLayersExpressionWillReturnfalseMessage" resourceType="Strings" />
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="UnknownResource" configurableSeverity="Unity.UnknownResource">
     <Parameter type="ITreeNode" name="node" />
-    <Message>
-      <LocalizedValue resourceName="TheResourceIsNotDefinedInTheProjectExpressionWillReturnnullMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="TheResourceIsNotDefinedInTheProjectExpressionWillReturnnullMessage" resourceType="Strings" />
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="UnknownLayer" configurableSeverity="Unity.UnknownLayer">
     <Parameter type="ITreeNode" name="node" />
-    <Message>
-      <LocalizedValue resourceName="TheLayerIsNotDefinedInTheTagsLayersTheCallIsLikelyToFailAtRuntimeMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="TheLayerIsNotDefinedInTheTagsLayersTheCallIsLikelyToFailAtRuntimeMessage" resourceType="Strings" />
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -261,9 +251,8 @@
   <Warning name="DuplicateShortcut" configurableSeverity="Unity.DuplicateShortcut">
     <Parameter type="ITreeNode" name="node" />
     <Parameter type="string" name="file" />
-    <Message>
+    <Message resourceName="TheSameShortcutIsDefinedForAnotherMenuItemInMessage" resourceType="Strings">
       <Argument>File</Argument>
-      <LocalizedValue resourceName="TheSameShortcutIsDefinedForAnotherMenuItemInMessage" resourceType="Strings" />
     </Message>
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
@@ -271,9 +260,7 @@
 
   <Warning name="LoadSceneUnexistingSceneName" configurableSeverity="Unity.LoadSceneUnexistingScene">
     <Parameter type="IArgument" name="argument" />
-    <Message>
-      <LocalizedValue resourceName="ThereIsNoSceneWithSameNameInTheProjectMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="ThereIsNoSceneWithSameNameInTheProjectMessage" resourceType="Strings" />
     <Range>Argument.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -281,9 +268,7 @@
   <Warning name="LoadSceneDisabledSceneName" configurableSeverity="Unity.LoadSceneDisabledSceneName">
     <Parameter type="IArgument" name="argument" />
     <Parameter type="string" name="sceneName" />
-    <Message>
-      <LocalizedValue resourceName="SceneIsDisabledInTheUnityBuildSettingsSoItCouldNotBeLoadedMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="SceneIsDisabledInTheUnityBuildSettingsSoItCouldNotBeLoadedMessage" resourceType="Strings" />
     <Range>Argument.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -291,9 +276,7 @@
   <Warning name="LoadSceneUnknownSceneName" configurableSeverity="Unity.LoadSceneUnknownSceneName">
     <Parameter type="IArgument" name="argument" />
     <Parameter type="string" name="sceneName" />
-    <Message>
-      <LocalizedValue resourceName="TheSceneIsMissingInTheUnityBuildSettingsMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="TheSceneIsMissingInTheUnityBuildSettingsMessage" resourceType="Strings" />
     <Range>Argument.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -301,27 +284,21 @@
   <Warning name="LoadSceneAmbiguousSceneName" configurableSeverity="Unity.LoadSceneAmbiguousSceneName">
     <Parameter type="IArgument" name="argument" />
     <Parameter type="string" name="sceneName" />
-    <Message>
-      <LocalizedValue resourceName="ThereAreSeveralScenesWithSameNameInTheUnityBuildSettingsOnlySceneWithSmallestIndexWillBeUsedMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="ThereAreSeveralScenesWithSameNameInTheUnityBuildSettingsOnlySceneWithSmallestIndexWillBeUsedMessage" resourceType="Strings" />
     <Range>Argument.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="LoadSceneWrongIndex" configurableSeverity="Unity.LoadSceneWrongIndex">
     <Parameter type="IArgument" name="argument" />
-    <Message>
-      <LocalizedValue resourceName="ThereIsNoSceneWithSameIndexInTheUnityBuildSettingsMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="ThereIsNoSceneWithSameIndexInTheUnityBuildSettingsMessage" resourceType="Strings" />
     <Range>Argument.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="DuplicateEventFunction" configurableSeverity="Unity.DuplicateEventFunction">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
-    <Message>
-      <LocalizedValue resourceName="EventFunctionWithTheSameNameIsAlreadyDeclaredMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="EventFunctionWithTheSameNameIsAlreadyDeclaredMessage" resourceType="Strings" />
     <Range>CSharpErrorUtil.GetMethodNameAndParametersHighlightingRange(MethodDeclaration)</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -329,18 +306,15 @@
   <Warning name="ExpectedComponent" configurableSeverity="Unity.ExpectedComponent">
     <Parameter type="IReference" name="reference" />
     <Parameter type="string" name="requiredBaseType" />
-    <Message>
+    <Message resourceName="ExpectedTypeDerivedFromMessage" resourceType="Strings">
       <Argument>RequiredBaseType</Argument>
-      <LocalizedValue resourceName="ExpectedTypeDerivedFromMessage" resourceType="Strings" />
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
   </Warning>
 
   <Warning name="ExpectedScriptableObject" configurableSeverity="Unity.ExpectedScriptableObject">
     <Parameter type="IReference" name="reference" />
-    <Message>
-      <LocalizedValue resourceName="ExpectedTypeDerivedFromUnityEngineScriptableObjectMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="ExpectedTypeDerivedFromUnityEngineScriptableObjectMessage" resourceType="Strings" />
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -348,27 +322,21 @@
   <Warning name="ExplicitTagStringComparison" configurableSeverity="Unity.ExplicitTagComparison">
     <Parameter type="IEqualityExpression" name="equalityExpression" />
     <Parameter type="bool" name="leftOperandIsTagReference" />
-    <Message>
-      <LocalizedValue resourceName="ExplicitStringComparisonIsInefficientUseCompareTagInsteadMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="ExplicitStringComparisonIsInefficientUseCompareTagInsteadMessage" resourceType="Strings" />
     <Range>EqualityExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="IncorrectMonoBehaviourInstantiation" configurableSeverity="Unity.IncorrectMonoBehaviourInstantiation">
     <Parameter type="IObjectCreationExpression" name="creationExpression" />
-    <Message>
-      <LocalizedValue resourceName="MonoBehaviourInstancesMustBeInstantiatedWithGameObjectAddComponentTInsteadOfnewMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="MonoBehaviourInstancesMustBeInstantiatedWithGameObjectAddComponentTInsteadOfnewMessage" resourceType="Strings" />
     <Range>CreationExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="IncorrectScriptableObjectInstantiation" configurableSeverity="Unity.IncorrectScriptableObjectInstantiation">
     <Parameter type="IObjectCreationExpression" name="creationExpression" />
-    <Message>
-      <LocalizedValue resourceName="ScriptableObjectInstancesMustBeInstantiatedWithScriptableObjectCreateInstanceTInsteadOfnewMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="ScriptableObjectInstancesMustBeInstantiatedWithScriptableObjectCreateInstanceTInsteadOfnewMessage" resourceType="Strings" />
     <Range>CreationExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -377,9 +345,8 @@
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
     <Parameter type="MethodSignatureMatch" name="methodSignatureMatch" isValid="skip" />
-    <Message>
+    <Message resourceName="IncorrectMethodSignatureExpectedMessage" resourceType="Strings">
       <Argument>ExpectedMethodSignature.FormatSignature(MethodDeclaration.DeclaredName)</Argument>
-      <LocalizedValue resourceName="IncorrectMethodSignatureExpectedMessage" resourceType="Strings" />
     </Message>
     <Range>MethodDeclaration.GetNameDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
@@ -388,9 +355,7 @@
   <Warning name="IncorrectSignatureWithChoice" configurableSeverity="Unity.IncorrectMethodSignature">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Parameter type="MethodSignature[]" name="expectedMethodSignatures" isValid="skip" />
-    <Message>
-      <LocalizedValue resourceName="IncorrectMethodSignatureMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="IncorrectMethodSignatureMessage" resourceType="Strings" />
     <Range>MethodDeclaration.GetNameDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -402,9 +367,7 @@
     <Parameter type="bool" name="inlineCacheValue" />
     <Parameter type="ICSharpTreeNode" name="restoreAnchor" />
     <Parameter type="bool" name="inlineRestoreValue" />
-    <Message>
-      <LocalizedValue resourceName="RepeatedPropertyAccessOfBuiltInComponentIsInefficientMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="RepeatedPropertyAccessOfBuiltInComponentIsInefficientMessage" resourceType="Strings" />
     <Range>HighlightedReference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
@@ -414,9 +377,7 @@
     <Parameter type="IInvocationExpression" name="invocation" />
     <Parameter type="ICSharpExpression" name="newArgument" isValid="skip" />
     <Parameter type="bool" name="stayInWorldCoords" isValid="skip" />
-    <Message>
-      <LocalizedValue resourceName="SettingparentPropertyImmediatelyAfterObjectInstantiationIsInefficientMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="SettingparentPropertyImmediatelyAfterObjectInstantiationIsInefficientMessage" resourceType="Strings" />
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
@@ -424,9 +385,8 @@
   <Warning name="InvalidParameters" configurableSeverity="Unity.IncorrectMethodSignature">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
-    <Message>
+    <Message resourceName="IncorrectMethodParametersExpectedMessage" resourceType="Strings">
       <Argument>ExpectedMethodSignature.Parameters.GetParameterList()</Argument>
-      <LocalizedValue resourceName="IncorrectMethodParametersExpectedMessage" resourceType="Strings" />
     </Message>
     <Range>CSharpErrorUtil.GetParametersHighlightingRange(MethodDeclaration)</Range>
     <Behavour overlapResolvePolicy="WARNING" />
@@ -435,9 +395,8 @@
   <Warning name="InvalidReturnType" configurableSeverity="Unity.IncorrectMethodSignature">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
-    <Message>
+    <Message resourceName="IncorrectReturnTypeExpectedMessage" resourceType="Strings">
       <Argument>ExpectedMethodSignature.GetReturnTypeName()</Argument>
-      <LocalizedValue resourceName="IncorrectReturnTypeExpectedMessage" resourceType="Strings" />
     </Message>
     <Range>CSharpErrorUtil.GetReturnTypeHighlightingRange(MethodDeclaration)</Range>
     <Behavour overlapResolvePolicy="WARNING" />
@@ -446,9 +405,8 @@
   <Warning name="InvalidStaticModifier" configurableSeverity="Unity.IncorrectMethodSignature">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
-    <Message>
+    <Message resourceName="Message" resourceType="Strings">
       <Argument>MethodDeclaration.IsStatic ? "Incorrect static modifier" : "Missing static modifier"</Argument>
-      <LocalizedValue resourceName="Message" resourceType="Strings" />
     </Message>
     <Range>CSharpErrorUtil.GetStaticModifierOrMethodNameHighlightingRange(MethodDeclaration)</Range>
     <Behavour overlapResolvePolicy="WARNING" />
@@ -457,9 +415,7 @@
   <Warning name="InvalidTypeParameters" configurableSeverity="Unity.IncorrectMethodSignature">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
-    <Message>
-      <LocalizedValue resourceName="IncorrectTypeParametersMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="IncorrectTypeParametersMessage" resourceType="Strings" />
     <Range>CSharpErrorUtil.GetTypeParametersOrMethodNameHighlightingRange(MethodDeclaration)</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -467,9 +423,8 @@
   <!-- TODO: Merge this with ExpectedComponentWarning? -->
   <Warning name="ParameterNotDerivedFromComponent" configurableSeverity="Unity.ParameterNotDerivedFromComponent">
     <Parameter type="ICSharpParameterDeclaration" name="parameterDeclaration" />
-    <Message>
+    <Message resourceName="ParameterShouldBeDerivedFromComponentMessage" resourceType="Strings">
       <Argument>ParameterDeclaration.DeclaredName</Argument>
-      <LocalizedValue resourceName="ParameterShouldBeDerivedFromComponentMessage" resourceType="Strings" />
     </Message>
     <Range>ParameterDeclaration.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
@@ -477,9 +432,7 @@
 
   <Warning name="PossibleMisapplicationOfAttributeToMultipleFields" configurableSeverity="Unity.PossibleMisapplicationOfAttributeToMultipleFields">
     <Parameter type="IAttribute" name="attribute" />
-    <Message>
-      <LocalizedValue resourceName="PossibleIncorrectApplicationOfFormerlySerializedAsAttributeToMultipleFieldsMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="PossibleIncorrectApplicationOfFormerlySerializedAsAttributeToMultipleFieldsMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -491,9 +444,7 @@
     <Parameter type="string" name="literal" />
     <Parameter type="string" name="typeName" />
     <Parameter type="string" name="mapFunction" />
-    <Message>
-      <LocalizedValue resourceName="StringBasedPropertyLookupIsInefficientMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="StringBasedPropertyLookupIsInefficientMessage" resourceType="Strings" />
     <Range>Argument.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
@@ -503,9 +454,7 @@
     <Parameter type="string" name="methodName" isValid="skip" />
     <Parameter type="ILiteralExpression" name="argument" />
     <Parameter type="ITypeElement" name="typeElement" isValid="skip" />
-    <Message>
-      <LocalizedValue resourceName="StringBasedTypeLookupIsInefficientUseGenericOverloadMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="StringBasedTypeLookupIsInefficientUseGenericOverloadMessage" resourceType="Strings" />
     <Range>Argument.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
@@ -514,9 +463,8 @@
     <Parameter type="IInvocationExpression" name="invocationExpression" />
     <Parameter type="IReferenceExpression" name="invokedExpression" />
     <Parameter type="IMethod" name="nonAllocMethod" />
-    <Message>
+    <Message resourceName="UseNonAllocatingMethodMessage" resourceType="Strings">
       <Argument>NonAllocMethod.ShortName</Argument>
-      <LocalizedValue resourceName="UseNonAllocatingMethodMessage" resourceType="Strings" />
     </Message>
     <Range>InvokedExpression.Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
@@ -524,9 +472,7 @@
 
   <Warning name="PropertyDrawerOnGUIBase" configurableSeverity="Unity.PropertyDrawerOnGUIBase">
     <Parameter type="IReference" name="invocation" />
-    <Message>
-      <LocalizedValue resourceName="baseOnGUIWillPrintNoGUIImplementedInTheUnityInspectorMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="baseOnGUIWillPrintNoGUIImplementedInTheUnityInspectorMessage" resourceType="Strings" />
     <Range>Invocation.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
@@ -535,10 +481,9 @@
     <Parameter type="IAttribute" name="attribute" />
     <Parameter type="ITypeElement" name="attributeType" />
     <Parameter type="System.AttributeTargets" name="validTargets" isValid="skip" />
-    <Message>
+    <Message resourceName="AttributeIsRedundantOnThisDeclarationTypeItIsOnlyUsedWhenAppliedToDeclarationsMessage" resourceType="Strings">
       <Argument>DeclaredElementPresenter.Format(CSharpLanguage.Instance, DeclaredElementPresenter.QUALIFIED_NAME_PRESENTER, AttributeType)</Argument>
       <Argument>ValidTargets</Argument>
-      <LocalizedValue resourceName="AttributeIsRedundantOnThisDeclarationTypeItIsOnlyUsedWhenAppliedToDeclarationsMessage" resourceType="Strings" />
     </Message>
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
@@ -546,63 +491,53 @@
 
   <Warning name="RedundantEventFunction" configurableSeverity="Unity.RedundantEventFunction">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
-    <Message>
-      <LocalizedValue resourceName="RedundantUnityEventFunctionMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="RedundantUnityEventFunctionMessage" resourceType="Strings" />
     <Range>MethodDeclaration.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
   </Warning>
 
   <Warning name="RedundantFormerlySerializedAsAttribute" configurableSeverity="Unity.RedundantFormerlySerializedAsAttribute">
     <Parameter type="IAttribute" name="attribute" />
-    <Message>
-      <LocalizedValue resourceName="RedundantFormerlySerializedAsAttributeMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="RedundantFormerlySerializedAsAttributeMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
   </Warning>
 
   <Warning name="RedundantHideInInspectorAttribute" configurableSeverity="Unity.RedundantHideInInspectorAttribute">
     <Parameter type="IAttribute" name="attribute" />
-    <Message>
-      <LocalizedValue resourceName="RedundantHideInInspectorAttributeMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="RedundantHideInInspectorAttributeMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour attributeID="DEADCODE" overlapResolvePolicy="DEADCODE" />
   </Warning>
 
   <Warning name="RedundantInitializeOnLoadAttribute" configurableSeverity="Unity.RedundantInitializeOnLoadAttribute">
     <Parameter type="IAttribute" name="attribute" />
-    <Message>
-      <LocalizedValue resourceName="InitializeOnLoadAttributeIsRedundantWhenStaticConstructorIsMissingMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="InitializeOnLoadAttributeIsRedundantWhenStaticConstructorIsMissingMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
   </Warning>
 
   <Warning name="RedundantSerializeFieldAttribute" configurableSeverity="Unity.RedundantSerializeFieldAttribute">
     <Parameter type="IAttribute" name="attribute" />
-    <Message>
-      <LocalizedValue resourceName="RedundantSerializeFieldAttributeMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="RedundantSerializeFieldAttributeMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour attributeID="DEADCODE" overlapResolvePolicy="DEADCODE" />
   </Warning>
 
   <Error name="StringLiteralReferenceIncorrectSignature" staticGroup="UnityErrors">
     <Parameter type="SyncVarHookReference" name="reference" />
-    <Message>
+    <Message resourceName="ExpectedAMethodWithSignatureMessage" resourceType="Strings">
       <Argument>Reference.MethodSignature.FormatSignature(Reference.GetName())</Argument>
-      <LocalizedValue resourceName="ExpectedAMethodWithSignatureMessage" resourceType="Strings" />
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Error>
+
+
   <Warning name="StringLiteralReferenceIncorrectSignature" configurableSeverity="Unity.IncorrectMethodSignatureInStringLiteral">
     <Parameter type="UnityEventFunctionReference" name="reference" isValid="skip" />
-    <Message>
+    <Message resourceName="ExpectedAMethodWithSignatureMessage" resourceType="Strings">
       <Argument>Reference.MethodSignature.FormatSignature(Reference.GetName())</Argument>
-      <LocalizedValue resourceName="ExpectedAMethodWithSignatureMessage" resourceType="Strings" />
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
@@ -610,36 +545,32 @@
 
   <Error name="SyncVarUsage" staticGroup="UnityErrors">
     <Parameter type="IAttribute" name="attribute" />
-    <Message>
-      <LocalizedValue resourceName="SyncVarAttributeCanOnlyBeAppliedInAClassThatDerivesFromNetworkBehaviourMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="SyncVarAttributeCanOnlyBeAppliedInAClassThatDerivesFromNetworkBehaviourMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="ERROR" />
   </Error>
+
+
   <Warning name="UnityObjectNullCoalescing" configurableSeverity="Unity.NoNullCoalescing">
     <Parameter type="INullCoalescingExpression" name="expression" />
-    <Message>
-      <LocalizedValue resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage" resourceType="Strings" />
     <Range>Expression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="UnityObjectNullPropagation" configurableSeverity="Unity.NoNullPropagation">
     <Parameter type="IConditionalAccessExpression" name="expression" />
-    <Message>
-      <LocalizedValue resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage1" resourceType="Strings" />
-    </Message>
+    <Message resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage1" resourceType="Strings" />
     <Range>Expression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="UnresolvedComponentOrScriptableObject" configurableSeverity="Unity.UnresolvedComponentOrScriptableObject">
     <Parameter type="IReference" name="reference" />
-    <Message>
+    <Message resourceName="CannotResolveSymbolMessage" resourceType="Strings">
       <Argument>Reference.GetName()</Argument>
-      <LocalizedValue resourceName="CannotResolveSymbolMessage" resourceType="Strings" />
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
   </Warning>
+
 </Errors>

@@ -13,24 +13,24 @@
   <SeverityConfiguration>
     <Group name="UnityHighlightingGroupIds.UnityPerformance">
       <Tag externalName="InefficientMultiplicationOrderWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="OrderOfMultiplicationOperationsIsInefficient" resourceType="Strings" />
-        <LocalizedDescription resourceName="ReorderingMultiplicationOperationsWillImprovePerformance" resourceType="Strings" />
+        <Title resourceName="OrderOfMultiplicationOperationsIsInefficient" resourceType="Strings" />
+        <Description resourceName="ReorderingMultiplicationOperationsWillImprovePerformance" resourceType="Strings" />
       </Tag>
       <Tag externalName="InefficientMultidimensionalArrayUsageWarning.HIGHLIGHTING_ID" default="WARNING">
-        <LocalizedTitle resourceName="UseJaggedOrOneDimensionalArrayInsteadOfMultidimensionalArray" resourceType="Strings" />
-        <LocalizedDescription resourceName="MultidimensionalArrayElementAccessIsConvertedToAMethodCallItIsMoreEfficientToUseAJaggedOrOneDimensionalArray" resourceType="Strings" />
+        <Title resourceName="UseJaggedOrOneDimensionalArrayInsteadOfMultidimensionalArray" resourceType="Strings" />
+        <Description resourceName="MultidimensionalArrayElementAccessIsConvertedToAMethodCallItIsMoreEfficientToUseAJaggedOrOneDimensionalArray" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnityPerformanceInvocationWarning.HIGHLIGHTING_ID" default="HINT">
-        <LocalizedTitle resourceName="ExpensiveMethodInvocation" resourceType="Strings" />
-        <LocalizedDescription resourceName="ThisMethodCallIsInefficientWhenCalledInsideAPerformanceCriticalContext" resourceType="Strings" />
+        <Title resourceName="ExpensiveMethodInvocation" resourceType="Strings" />
+        <Description resourceName="ThisMethodCallIsInefficientWhenCalledInsideAPerformanceCriticalContext" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnityPerformanceNullComparisonWarning.HIGHLIGHTING_ID" default="HINT">
-        <LocalizedTitle resourceName="ExpensiveNullComparison" resourceType="Strings" />
-        <LocalizedDescription resourceName="EqualityOperationsOnObjectsDerivingFromUnityEngineObjectWillAlsoCheckThatTheUnderlyingNativeObjectHasNotBeenDestroyedThisRequiresACallIntoNativeCodeAndCanHaveAPerformanceImpactWhenUsedInsideFrequentlyCalledMethods" resourceType="Strings" />
+        <Title resourceName="ExpensiveNullComparison" resourceType="Strings" />
+        <Description resourceName="EqualityOperationsOnObjectsDerivingFromUnityEngineObjectWillAlsoCheckThatTheUnderlyingNativeObjectHasNotBeenDestroyedThisRequiresACallIntoNativeCodeAndCanHaveAPerformanceImpactWhenUsedInsideFrequentlyCalledMethods" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnityPerformanceCameraMainWarning.HIGHLIGHTING_ID" default="HINT">
-        <LocalizedTitle resourceName="CameraMainIsExpensive" resourceType="Strings" />
-        <LocalizedDescription resourceName="CameraMainIsSlowAndDoesNotCacheItsResultUsingCameraMainInFrequentlyCalledMethodsIsVeryInefficientPreferCachingTheResultInStartOrAwake" resourceType="Strings" />
+        <Title resourceName="CameraMainIsExpensive" resourceType="Strings" />
+        <Description resourceName="CameraMainIsSlowAndDoesNotCacheItsResultUsingCameraMainInFrequentlyCalledMethodsIsVeryInefficientPreferCachingTheResultInStartOrAwake" resourceType="Strings" />
       </Tag>
     </Group>
   </SeverityConfiguration>
@@ -39,21 +39,17 @@
     <Parameter type="List&lt;ITreeNodePointer&lt;ITreeNode&gt;&gt;" name="usages" isValid="skip" />
     <Parameter type="IArrayCreationExpression" name="arrayCreationExpression" isValid="skip" />
     <Parameter type="IVariableDeclaration" name="variableDeclaration" />
-    <Parameter type="IMultipleDeclaration" name="multiplyDeclaration" /><Parameter type="DocumentRange" name="highlightingRange" />
-    <Message>
-      <LocalizedValue resourceName="AccessingMultidimensionalArraysIsInefficientUseAJaggedOrOneDimensionalArrayInsteadMessage" resourceType="Strings" />
-    </Message>
-    <Range>HighlightingRange</Range>
-    <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIDIMENSIONAL_ARRAYS_USAGE" />
+    <Parameter type="IMultipleDeclaration" name="multiplyDeclaration" />
+    <Parameter type="DocumentRange" name="highlightingRange" />
+    <Message resourceName="AccessingMultidimensionalArraysIsInefficientUseAJaggedOrOneDimensionalArrayInsteadMessage" resourceType="Strings" />
+    <Range>HighlightingRange</Range><Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIDIMENSIONAL_ARRAYS_USAGE" />
   </Warning>
 
   <Warning name="InefficientMultiplicationOrder" configurableSeverity="Unity.InefficientMultiplicationOrder">
     <Parameter type="ICSharpExpression" name="expression" />
     <Parameter type="List&lt;ICSharpExpression&gt;" name="scalars" isValid="skip" />
     <Parameter type="List&lt;ICSharpExpression&gt;" name="matrices" isValid="skip" />
-    <Message>
-      <LocalizedValue resourceName="OrderOfMultiplicationOperationsIsInefficientMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="OrderOfMultiplicationOperationsIsInefficientMessage" resourceType="Strings" />
     <Range>Expression.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIPLICATION_ORDER" />
   </Warning>
@@ -61,9 +57,7 @@
   <Warning name="UnityPerformanceInvocation" configurableSeverity="Unity.PerformanceCriticalCodeInvocation">
     <Parameter type="IInvocationExpression" name="invocationExpression" isValid="skip" />
     <Parameter type="IReference" name="reference" />
-    <Message>
-      <LocalizedValue resourceName="ExpensiveMethodInvocationMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="ExpensiveMethodInvocationMessage" resourceType="Strings" />
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.COSTLY_METHOD_INVOCATION" />
   </Warning>
@@ -72,18 +66,14 @@
     <Parameter type="ICSharpExpression" name="expression" isValid="skip" />
     <Parameter type="string" name="fieldName" isValid="skip" />
     <Parameter type="IReference" name="reference" />
-    <Message>
-      <LocalizedValue resourceName="ComparisonTonullIsExpensiveMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="ComparisonTonullIsExpensiveMessage" resourceType="Strings" />
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.NULL_COMPARISON" />
   </Warning>
 
   <Warning name="UnityPerformanceCameraMain" configurableSeverity="Unity.PerformanceCriticalCodeCameraMain">
     <Parameter type="IReferenceExpression" name="referenceExpression" />
-    <Message>
-      <LocalizedValue resourceName="CameraMainIsExpensiveMessage" resourceType="Strings" />
-    </Message>
+    <Message resourceName="CameraMainIsExpensiveMessage" resourceType="Strings" />
     <Range>ReferenceExpression.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.CAMERA_MAIN" />
   </Warning>
