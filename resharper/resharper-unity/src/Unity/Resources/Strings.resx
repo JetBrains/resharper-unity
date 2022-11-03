@@ -628,4 +628,8 @@ This option applies the same behaviour to IL2CPP players.</value>
     <data name="Unity_Internal_DumpSpellCheckWordLists_Text" xml:space="preserve">
         <value>Dump Spell Check Word Lists</value>
     </data>
+    <data name="GoToUnityUsagesProvider_CreateWorkflow_Unity_Usages_of_Symbol" xml:space="preserve">
+        <value>Unity Usages of Symbol</value>
+        <comment>FindUnityUsages</comment>
+    </data>
 </root>

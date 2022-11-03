@@ -243,5 +243,6 @@
     public static string FindUnityUsagesText => ResourceManager.GetString("FindUnityUsagesText");
     public static string Unity_Internal_DumpDuplicateTypeNames_Text => ResourceManager.GetString("Unity_Internal_DumpDuplicateTypeNames_Text");
     public static string Unity_Internal_DumpSpellCheckWordLists_Text => ResourceManager.GetString("Unity_Internal_DumpSpellCheckWordLists_Text");
+    public static string GoToUnityUsagesProvider_CreateWorkflow_Unity_Usages_of_Symbol => ResourceManager.GetString("GoToUnityUsagesProvider_CreateWorkflow_Unity_Usages_of_Symbol");
   }
 }
