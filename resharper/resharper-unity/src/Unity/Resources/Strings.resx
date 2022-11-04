@@ -1266,19 +1266,13 @@ a plugin to be installed to a project.</value>
     <data name="UnityEventFunctionInheritanceMarkOnGutter_KindName_Unity_event_function" xml:space="preserve">
         <value>Unity event function</value>
     </data>
-    <data name="CurrentFileNameWithoutWhitespaceCharacters_Text" xml:space="preserve">
-        <value>Current file name without whitespace characters</value>
+        <data name="UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property" xml:space="preserve">
+        <value>Always add 'FormerlySerializedAs' when renaming serialized fields</value>
     </data>
-    <data name="EvaluatesCurrentFileNameWithoutWhitespace_Text" xml:space="preserve">
-        <value>Evaluates current file name without whitespace characters</value>
+    <data name="UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property " xml:space="preserve">
+        <value>Ask whether to add 'FormerlySerializedAs' when renaming serialized fields</value>
     </data>
-    <data name="UnityCommonIconProvider_GetEventFunctionTooltip_Unity_event_function" xml:space="preserve">
-        <value>Unity event function</value>
-    </data>
-    <data name="UnityCommonIconProvider_GetEventFunctionTooltip_This_function_can_be_a_coroutine_" xml:space="preserve">
-        <value>This function can be a coroutine.</value>
-    </data>
-    <data name="UnityEventFunctionInheritanceMarkOnGutter_KindName_Unity_event_function" xml:space="preserve">
-        <value>Unity event function</value>
+    <data name="UnitySettings_Refactoring_Dont_shot_popup_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property" xml:space="preserve">
+        <value>Don't show this dialog next time</value>
     </data>
 </root>

@@ -1,4 +1,5 @@
 ﻿using JetBrains.Application.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings.Rename
 {
@@ -6,22 +7,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
     {
         private readonly ISettingsStore mySettingsStore;
 
-        public bool ShouldAddFormerlySerializedAs;
+        public bool ShouldAddFormerlySerializedAs { get; private set; }
+        public bool DontShowPopup { get; private set; }
 
         public SerializedFieldRenameModel(ISettingsStore settingsStore)
         {
             mySettingsStore = settingsStore;
             var store = settingsStore.BindToContextTransient(ContextRange.ApplicationWide);
-            ShouldAddFormerlySerializedAs = store.GetValue((SerializedFieldRenameRefactoringSettings s) =>
-                s.ShouldAddFormerlySerializedAs);
+            ShouldAddFormerlySerializedAs =
+                store.GetValue((UnitySettings s) => s.AddFormallySerializedAttributeOnRenaming);
+            DontShowPopup = !store.GetValue((UnitySettings s) => s.ShowPopupForAddingFormallySerializedAttributeOnRenaming);
         }
 
-        public void Commit(bool shouldAddFormerlySerializedAs)
+        public void Commit(bool shouldAddFormerlySerializedAs, bool dontShowPopup)
         {
             ShouldAddFormerlySerializedAs = shouldAddFormerlySerializedAs;
+            DontShowPopup = dontShowPopup;
+
             var store = mySettingsStore.BindToContextTransient(ContextRange.ApplicationWide);
-            store.SetValue((SerializedFieldRenameRefactoringSettings s) => s.ShouldAddFormerlySerializedAs,
+            store.SetValue((UnitySettings s) => s.AddFormallySerializedAttributeOnRenaming,
                 ShouldAddFormerlySerializedAs);
+            store.SetValue((UnitySettings s) => s.ShowPopupForAddingFormallySerializedAttributeOnRenaming,
+                !DontShowPopup);
         }
     }
 }
