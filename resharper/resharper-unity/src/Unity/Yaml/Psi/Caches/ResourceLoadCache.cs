@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
     [PsiComponent]
     public class ResourceLoadCache : SimpleICache<ResourcesCacheItem>
     {
-        private const string ResourcesFolderName = "Resources";
+        public const string ResourcesFolderName = "Resources";
         private const string EditorFolderName = "Editor";
 
         private readonly ISolution mySolution;
