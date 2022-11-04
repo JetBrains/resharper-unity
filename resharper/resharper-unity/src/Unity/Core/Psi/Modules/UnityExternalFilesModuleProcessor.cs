@@ -27,6 +27,7 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
 using JetBrains.Util.Logging;
+using ProjectExtensions = JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.ProjectExtensions;
 
 #nullable enable
 
@@ -88,6 +89,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             if (!mySolutionDirectory.IsAbsolute)
                 mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory().ToVirtualFileSystemPath());
 
+            myProjectSettingsFolder = mySolutionDirectory.Combine(ProjectExtensions.ProjectSettingsFolder);
+            
             changeManager.RegisterChangeProvider(lifetime, this);
             changeManager.AddDependency(lifetime, psiModules, this);
 
@@ -96,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 // previously disabled, now enabled
                 if (args.HasOld && !args.Old && args.HasNew && args.New)
                 {
-                    myLocks.ExecuteOrQueueEx(lifetime, "UnityInitialUpdateExternalFiles", () =>
+                    myLocks.ExecuteOrQueueReadLockEx(lifetime, "UnityInitialUpdateExternalFiles", () =>
                     {
                         CollectInitialFiles();
                     });
@@ -142,6 +145,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     newFiles.AssetFiles.Add(metaFile);
                 }
             }
+
+            newFiles.Directories.AddRange(files.Directories);
             
             return newFiles;
         }
@@ -181,6 +186,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             var externalFiles = myLogger.DoCalculation("CollectExternalFiles", null,
                 () =>
                 {
+                    var roots = myRootPathLifetimes.Keys.ToList();
+
+                    foreach (var root in roots)
+                    {
+                        myRootPathLifetimes[root].Terminate();
+                        myRootPathLifetimes.Remove(root);
+                    }
+                    
                     var files = new ExternalFiles(mySolution, myLogger);
                     CollectExternalFilesForSolutionDirectory(files, "Assets");
                     CollectExternalFilesForSolutionDirectory(files, "ProjectSettings", true);
