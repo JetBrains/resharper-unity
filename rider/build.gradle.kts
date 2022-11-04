@@ -208,6 +208,9 @@ tasks {
     runIde {
         // Match Rider's default heap size of 1.5Gb (default for runIde is 512Mb)
         maxHeapSize = "1500m"
+        jvmArgs("-Didea.jna.unpacked=true",
+        "-Djna.nounpack=true",
+        "-Djna.boot.library.path=${setupDependencies.orNull?.idea?.get()?.classes}/lib/jna/${System.getProperty("os.arch")}")
     }
 
     named<Wrapper>("wrapper") {
