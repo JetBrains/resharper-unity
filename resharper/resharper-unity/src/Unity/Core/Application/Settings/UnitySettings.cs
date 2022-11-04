@@ -84,5 +84,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
 
         [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Ignore__Break_on_Unhandled_Exceptions__for_IL2CPP_players))]
         public bool IgnoreBreakOnUnhandledExceptionsForIl2Cpp;
+        
+        //Refactoring
+        [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property))]
+        public bool AddFormallySerializedAttributeOnRenaming;
+        
+        [SettingsEntry(false, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property))]
+        public bool ShowPopupForAddingFormallySerializedAttributeOnRenaming;
     }
 }

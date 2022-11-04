@@ -41,6 +41,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         {
             // hide confirmation page only, refactoring should update shared document too otherwise
             // we will get inconsistent change modification message box
+            if (myModel.DontShowPopup)
+                return null;
 
             return new FormerlySerializedAsRefactoringPage(
                 ((RefactoringWorkflowBase) renameWorkflow).WorkflowExecuterLifetime, myModel);
