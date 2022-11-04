@@ -19,6 +19,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
@@ -51,6 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly Dictionary<VirtualFileSystemPath, LifetimeDefinition> myRootPathLifetimes;
         private readonly VirtualFileSystemPath mySolutionDirectory;
+        private readonly VirtualFileSystemPath myProjectSettingsFolder;
 
         public UnityExternalFilesModuleProcessor(Lifetime lifetime, ILogger logger, ISolution solution,
                                                  ChangeManager changeManager,
@@ -91,26 +93,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
             assetIndexingSupport.IsEnabled.Change.Advise(lifetime, args =>
             {
-                myLocks.ExecuteOrQueueEx(lifetime, "UnityInitialUpdateExternalFiles", () =>
+                // previously disabled, now enabled
+                if (args.HasOld && !args.Old && args.HasNew && args.New)
                 {
-                    // previously disabled, now enabled
-                    if (args.HasOld && !args.Old && args.HasNew && args.New)
+                    myLocks.ExecuteOrQueueEx(lifetime, "UnityInitialUpdateExternalFiles", () =>
                     {
                         CollectInitialFiles();
-                    }
-                });
+                    });
+                }
             });
-        }
-
-        private bool IsAsmDefMeta(VirtualFileSystemPath path)
-        {
-            if (!path.IsMeta())
-                return false;
-            
-            var assetExtension = path.ChangeExtension("").ExtensionWithDot;
-            return assetExtension.Equals(AsmRefProjectFileType.ASMREF_EXTENSION, StringComparison.InvariantCultureIgnoreCase) ||
-                   assetExtension.Equals(AsmDefProjectFileType.ASMDEF_EXTENSION, StringComparison.InvariantCultureIgnoreCase);
-
         }
 
         private bool IsIndexedWithCurrentIndexingSupport(VirtualFileSystemPath path)
@@ -118,9 +109,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             if (myAssetIndexingSupport.IsEnabled.Value)
                 return true;
 
-            return IsAsmDefMeta(path);
+            return IsIndexedFileWithDisabledAssetSupport(path);
+        }
+
+        private bool IsIndexedFileWithDisabledAssetSupport(VirtualFileSystemPath path)
+        {
+            return path.IsAsmDefMeta() || path.IsAsmRef() || path.IsAsmDef() || IsFromProjectSettingsFolder(path) || IsFromResourceFolder(path);
+        }
+
+        private bool IsFromResourceFolder(VirtualFileSystemPath path)
+        {
+            return path.Components.Any(t => t.Equals(ResourceLoadCache.ResourcesFolderName));
         }
         
+        private bool IsFromProjectSettingsFolder(VirtualFileSystemPath path)
+        {
+            return path.StartsWith(myProjectSettingsFolder);
+        }
+
         private ExternalFiles FilterFiles(ExternalFiles files)
         {
             if (myAssetIndexingSupport.IsEnabled.Value)
@@ -130,7 +136,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
             foreach (var metaFile in files.MetaFiles)
             {
-                if (IsAsmDefMeta(metaFile.Path))
+                var path = metaFile.Path;
+                if (IsIndexedFileWithDisabledAssetSupport(path))
                 {
                     newFiles.AssetFiles.Add(metaFile);
                 }
@@ -138,8 +145,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             
             return newFiles;
         }
-        
-        
+
+
         // TODO: This is all run on the main thread, at least during solution load, which is very expensive
         // Are the PSI caches loaded before or after this? If we move collection to a background thread, would we clean
         // up "stale" PSI files from the caches because they haven't been found yet?
@@ -290,7 +297,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     {
                         // Do not add any directory tree that ends with `~`. Unity does not import these directories
                         // into the asset database
-                        if (entry.RelativePath.Name.EndsWith("~"))
+                        if (entry.RelativePath.FullPath.EndsWith("~"))
                             continue;
                         CollectFiles(entry.GetAbsolutePath(), files, isProjectSettings);
                     }
