@@ -7,6 +7,7 @@ import com.intellij.execution.util.ExecUtil
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
@@ -18,7 +19,7 @@ import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Paths
 
-data class UnityProcessInfo(val projectName: String?, val roleName: String?)
+data class UnityProcessInfo(val projectName: String?, @NlsSafe val roleName: String?)
 
 object UnityRunUtil {
     private val logger = Logger.getInstance(UnityRunUtil::class.java)

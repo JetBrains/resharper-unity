@@ -1,36 +1,40 @@
 ﻿using System;
 using System.Linq;
 using JetBrains.Annotations;
-using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
-using JetBrains.RdBackend.Common.Env;
 using JetBrains.RdBackend.Common.Features;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Common.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 {
     [SolutionComponent]
     public class FrontendBackendHost : IFrontendBackendHost
     {
+        private readonly ISolution mySolution;
+        private readonly ILogger myLogger;
         private readonly bool myIsInTests;
 
         // This will only ever be null when running tests. The value does not change for the lifetime of the solution.
         // Prefer using this field over calling GetFrontendBackendModel(), as that method will throw in tests
         [CanBeNull] public readonly FrontendBackendModel Model;
 
-        public FrontendBackendHost(Lifetime lifetime, ISolution solution, IShellLocks shellLocks,
+        public FrontendBackendHost(Lifetime lifetime, ISolution solution, IShellLocks shellLocks, ILogger logger,
                                    PackageManager packageManager,
                                    DeferredCacheController deferredCacheController,
                                    bool isInTests = false)
         {
+            mySolution = solution;
+            myLogger = logger;
             myIsInTests = isInTests;
             if (myIsInTests)
                 return;
@@ -56,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
             action(Model);
         }
 
-        private static void AdviseModel(Lifetime lifetime,
+        private void AdviseModel(Lifetime lifetime,
                                         FrontendBackendModel frontendBackendModel,
                                         PackageManager packageManager,
                                         DeferredCacheController deferredCacheController,
@@ -64,6 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
         {
             AdvisePackages(lifetime, frontendBackendModel, packageManager);
             AdviseIntegrationTestHelpers(lifetime, frontendBackendModel, deferredCacheController, shellLocks);
+            frontendBackendModel.GetScriptingBackend.Set((_, _) => ProjectSettingsAsset.GetScriptingBackend(mySolution, myLogger));
         }
 
         private static void AdvisePackages(Lifetime lifetime,

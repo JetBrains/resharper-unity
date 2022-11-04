@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
@@ -28,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
             return null;
         }
 
-        public override string Text => "Remove invalid value";
+        public override string Text => Strings.RemoveInvalidArrayItemQuickFix_Text_Remove_invalid_value;
         public override bool IsAvailable(IUserDataHolder cache) => ValidUtils.Valid(myLiteral);
     }
 }

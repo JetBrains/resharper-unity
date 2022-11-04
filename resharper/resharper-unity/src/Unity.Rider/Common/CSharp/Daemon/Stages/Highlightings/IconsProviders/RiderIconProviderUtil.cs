@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Common.Protocol;
 using JetBrains.Rider.Model;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
@@ -37,8 +38,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Hi
             var extraActions = new List<CodeLensEntryExtraActionModel>();
             if (solutionTracker.IsUnityProject.HasTrueValue() && !backendUnityHost.IsConnectionEstablished())
             {
-                extraActions.Add(new CodeLensEntryExtraActionModel("Unity is not running", null));
-                extraActions.Add(new CodeLensEntryExtraActionModel("Start Unity Editor",
+                extraActions.Add(new CodeLensEntryExtraActionModel(Strings.UnityIsNotRunning_Text, null));
+                extraActions.Add(new CodeLensEntryExtraActionModel(Strings.RiderIconProviderUtil_GetExtraActions_Start_Unity_Editor,
                     AbstractUnityCodeInsightProvider.StartUnityActionId));
             }
 

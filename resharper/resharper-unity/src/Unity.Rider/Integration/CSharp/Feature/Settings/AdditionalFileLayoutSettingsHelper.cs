@@ -3,6 +3,7 @@ using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.Rider.Backend.Features.Dialog;
 using JetBrains.Rider.Backend.Features.Settings.OptionsPage.CSharpFileLayout;
 using JetBrains.Util;
@@ -54,10 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Set
                 previousText != EmptyPattern)
             {
                 if (!MessageBox.ShowYesNo(
-                    "You are about to replace the set of patterns with a default one." +
-                    Environment.NewLine +
-                    "This will remove all changes you might have made." + Environment.NewLine +
-                    "Do you want to proceed?"))
+                    string.Format(Strings.AdditionalFileLayoutSettingsHelper_LoadDefaultPattern_You_are_about_to_replace_the_set_of_patterns_with_a_default_one___0_This_will_remove_all_changes_you_might_have_made__1_Do_you_want_to_proceed_, Environment.NewLine)))
                 {
                     return;
                 }

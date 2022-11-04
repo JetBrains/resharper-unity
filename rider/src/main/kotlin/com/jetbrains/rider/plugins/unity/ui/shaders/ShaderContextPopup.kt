@@ -72,13 +72,13 @@ class ShaderContextPopup(private val group: ActionGroup, private val dataContext
             return layoutComponent(textPanel)
         }
 
+        @Suppress("HardCodedStringLiteral")
         override fun customizeComponent(list: JList<out PopupFactoryImpl.ActionItem>?, value: PopupFactoryImpl.ActionItem?, isSelected: Boolean) {
             super.customizeComponent(list, value, isSelected)
             myTextLabel.icon = UnityIcons.FileTypes.ShaderLab
 
             val action = value?.action ?: return
             if (action is ShaderContextSwitchAction) {
-                //TODO #Localization RIDER-82737 Should be localized?
                 myInfoLabel!!.text = action.data.folder
                 myPosLabel!!.text = ":" + action.data.startLine
             } else {

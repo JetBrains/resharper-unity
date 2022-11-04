@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
 using JetBrains.ReSharper.Feature.Services.InlayHints;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.TextControl.DocumentMarkup.IntraTextAdornments;
 using JetBrains.UI.RichText;
 
@@ -31,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 
         public string Text { get; }
         public InlayHintsMode Mode { get; }
-        public string ContextMenuTitle => "GUID Reference Hints";
+        public string ContextMenuTitle => Strings.AsmDefGuidReferenceInlayHintHighlighting_ContextMenuTitle_GUID_Reference_Hints;
         public bool IsValid() => myDocumentRange.IsValid();
         public DocumentRange CalculateRange() => myDocumentRange;
         public string ToolTip => string.Empty;

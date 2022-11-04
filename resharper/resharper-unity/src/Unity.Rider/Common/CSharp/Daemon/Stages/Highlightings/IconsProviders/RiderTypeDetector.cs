@@ -19,6 +19,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Backend.Platform.Icons;
 using JetBrains.Rider.Model;
+using Strings = JetBrains.ReSharper.Plugins.Unity.Rider.Resources.Strings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
@@ -78,7 +79,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Hi
                         iconModel = myIconHost.Transform(CodeInsightsThemedIcons.InsightWait.Id);
 
                     if (!myDeferredCacheController.CompletedOnce.Value)
-                        tooltip = "Usages in assets are not available during asset indexing";
+                        tooltip = Strings.RiderTypeDetector_AddMonoBehaviourHighlighting_Usages_in_assets_are_not_available_during_asset_indexing;
                 }
 
                 if (!myAssetIndexingSupport.IsEnabled.Value || !myDeferredCacheController.CompletedOnce.Value || !myAssetSerializationMode.IsForceText)
@@ -106,7 +107,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Hi
                 estimatedResult = estimatedResult || result;
             }
             myUsagesCodeVisionProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, count,
-                "Click to view usages in assets", "Assets usages", estimatedResult, iconModel);
+                Strings.RiderTypeDetector_AddScriptUsagesHighlighting_Click_to_view_usages_in_assets, Strings.RiderTypeDetector_AddScriptUsagesHighlighting_Assets_usages, estimatedResult, iconModel);
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,

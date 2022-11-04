@@ -299,7 +299,6 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
             val unityProcess = node.process
             val attributes = if (!node.debuggerAttached) SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES else SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES
-            //TODO #Localization RIDER-82737 should be localized?
             val projectName = unityProcess.projectName ?: if (unityProcess is UnityIosUsbProcess) USB_DEVICES else UNKNOWN_PROJECTS
             val hasSeparator = !isChildProcess(node) && (isFirstItem(node) || getPreviousSiblingProjectName(node) != projectName)
 
@@ -310,10 +309,8 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
             val focused = tree.hasFocus()
             if (unityProcess is UnityEditorHelper && unityProcess.roleName.isNotEmpty()) {
-                //TODO #Localization RIDER-82737 should be localized?
                 append(itemComponent, unityProcess.roleName, attributes, selected, focused, true)
             } else {
-                //TODO #Localization RIDER-82737 should be localized?
                 append(itemComponent, unityProcess.displayName, attributes, selected, focused, true)
             }
             if (node.debuggerAttached) {
@@ -326,7 +323,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                 append(itemComponent, " ${unityProcess.host}:${unityProcess.port}", SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
             }
             if (unityProcess is UnityLocalProcess) {
-                append(itemComponent, UnityBundle.message("appended.pid.0", unityProcess.pid), SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
+                append(itemComponent, UnityBundle.message("appended.pid.0", unityProcess.pid.toString()), SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
             }
 
             SpeedSearchUtil.applySpeedSearchHighlighting(tree, itemComponent, true, selected)
