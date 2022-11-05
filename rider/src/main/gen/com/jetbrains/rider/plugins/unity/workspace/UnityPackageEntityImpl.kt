@@ -56,7 +56,8 @@ open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : Unit
     return connections
   }
 
-  class Builder(var result: UnityPackageEntityData?) : ModifiableWorkspaceEntityBase<UnityPackageEntity>(), UnityPackageEntity.Builder {
+  class Builder(result: UnityPackageEntityData?) : ModifiableWorkspaceEntityBase<UnityPackageEntity, UnityPackageEntityData>(
+    result), UnityPackageEntity.Builder {
     constructor() : this(UnityPackageEntityData())
 
     override fun applyToBuilder(builder: MutableEntityStorage) {
@@ -76,7 +77,7 @@ open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : Unit
       this.id = getEntityData().createEntityId()
       // After adding entity data to the builder, we need to unbind it and move the control over entity data to builder
       // Builder may switch to snapshot at any moment and lock entity data to modification
-      this.result = null
+      this.currentEntityData = null
 
       // Process linked entities that are connected without a builder
       processLinkedEntities(builder)
@@ -111,7 +112,7 @@ open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : Unit
       get() = getEntityData().entitySource
       set(value) {
         checkModificationAllowed()
-        getEntityData().entitySource = value
+        getEntityData(true).entitySource = value
         changedProperty.add("entitySource")
 
       }
@@ -120,7 +121,7 @@ open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : Unit
       get() = getEntityData().descriptor
       set(value) {
         checkModificationAllowed()
-        getEntityData().descriptor = value
+        getEntityData(true).descriptor = value
         changedProperty.add("descriptor")
 
       }
@@ -139,18 +140,18 @@ open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : Unit
       set(value) {
         checkModificationAllowed()
         val _diff = diff
-        if (_diff != null && value is ModifiableWorkspaceEntityBase<*> && value.diff == null) {
-          if (value is ModifiableWorkspaceEntityBase<*>) {
+        if (_diff != null && value is ModifiableWorkspaceEntityBase<*, *> && value.diff == null) {
+          if (value is ModifiableWorkspaceEntityBase<*, *>) {
             value.entityLinks[EntityLink(false, CONTENTROOTENTITY_CONNECTION_ID)] = this
           }
           // else you're attaching a new entity to an existing entity that is not modifiable
           _diff.addEntity(value)
         }
-        if (_diff != null && (value !is ModifiableWorkspaceEntityBase<*> || value.diff != null)) {
+        if (_diff != null && (value !is ModifiableWorkspaceEntityBase<*, *> || value.diff != null)) {
           _diff.updateOneToOneChildOfParent(CONTENTROOTENTITY_CONNECTION_ID, this, value)
         }
         else {
-          if (value is ModifiableWorkspaceEntityBase<*>) {
+          if (value is ModifiableWorkspaceEntityBase<*, *>) {
             value.entityLinks[EntityLink(false, CONTENTROOTENTITY_CONNECTION_ID)] = this
           }
           // else you're attaching a new entity to an existing entity that is not modifiable
@@ -160,7 +161,6 @@ open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : Unit
         changedProperty.add("contentRootEntity")
       }
 
-    override fun getEntityData(): UnityPackageEntityData = result ?: super.getEntityData() as UnityPackageEntityData
     override fun getEntityClass(): Class<UnityPackageEntity> = UnityPackageEntity::class.java
   }
 }
@@ -172,12 +172,9 @@ class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
 
   override fun wrapAsModifiable(diff: MutableEntityStorage): WorkspaceEntity.Builder<UnityPackageEntity> {
     val modifiable = UnityPackageEntityImpl.Builder(null)
-    modifiable.allowModifications {
-      modifiable.diff = diff
-      modifiable.snapshot = diff
-      modifiable.id = createEntityId()
-    }
-    modifiable.changedProperty.clear()
+    modifiable.diff = diff
+    modifiable.snapshot = diff
+    modifiable.id = createEntityId()
     return modifiable
   }
 
