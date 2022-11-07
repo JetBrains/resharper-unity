@@ -72,7 +72,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             {
                 ImportedUnityEventData.UnityEventToModifiedIndex.AddRange(key, values);
             }
-            ImportedUnityEventData.AssetMethodUsagesSet.AddRange(buildResult.ModificationDescription.AssetMethodUsagesSet);
         }
     }
 }

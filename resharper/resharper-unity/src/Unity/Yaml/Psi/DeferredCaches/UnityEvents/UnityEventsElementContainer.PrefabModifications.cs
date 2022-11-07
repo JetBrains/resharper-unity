@@ -7,12 +7,10 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.E
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
 using JetBrains.Util.Extension;
-using JetBrains.Util.Maths;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 {
@@ -25,24 +23,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         /// If file has m_Target modification and does not have any m_MethodName modification, we will add it to that counting set and
         /// for each find usages request for method we will scan all files from that set for usages
         ///
-        /// Possible improvment:
+        /// Possible improvement:
         /// 1. Store for each IPsiSourceFile collection of m_Target references
         /// 2. GetPossibleFilesWithUsage will resolve m_Target to real ScriptComponentHierarchy with m_Script guid
         /// 3. GetPossibleFilesWithUsage will check that associated with guid type element is derived from method's type element and process only in that case
         /// NB : resolve to real ScriptComponentHierarchy will be cached in PrefabImportCache for stripped elements or will be simply available in current scene hierarchy
         /// </summary>
-        private readonly CountingSet<IPsiSourceFile> myFilesToCheckForUsages = new();
+        private readonly CountingSet<IPsiSourceFile> myFilesToCheckForUsages = new CountingSet<IPsiSourceFile>();
         
-        // both collection could be removed and replaced by pointer to UnityEventsDataElement with coressponding sourceFile
+        // both collection could be removed and replaced by pointer to UnityEventsDataElement with corresponding sourceFile
         // NB: LocalReference == pointer to source file too.
-        private readonly Dictionary<IPsiSourceFile, ImportedUnityEventData> myImportedUnityEventDatas = new();
+        private readonly Dictionary<IPsiSourceFile, ImportedUnityEventData> myImportedUnityEventDatas = new Dictionary<IPsiSourceFile, ImportedUnityEventData>();
         #endregion
         
         
         private ImportedUnityEventData ProcessPrefabModifications(IPsiSourceFile currentFile, AssetDocument document)
         {
             var result = new ImportedUnityEventData();
-            var assetMethodUsagesSet = new Dictionary<(LocalReference, string, int), AssetMethodUsagesData>();
             if (document.HierarchyElement is IPrefabInstanceHierarchy prefabInstanceHierarchy)
             {
                 var assetMethodDataToModifiedFields = new OneToSetMap<(LocalReference, string, int), string>();
@@ -57,6 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     var location = new LocalReference(currentFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), PrefabsUtil.GetImportedDocumentAnchor(prefabInstanceHierarchy.Location.LocalDocumentAnchor, externalReference.LocalDocumentAnchor));
                     var parts = modification.PropertyPath.Split('.');
                     var unityEventName = parts[0];
+                    
 
                     var dataPart = parts.FirstOrDefault(t => t.StartsWith("data"));
                     if (dataPart == null)
@@ -64,46 +62,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     
                     if (!int.TryParse(dataPart.RemoveStart("data[").RemoveEnd("]"), out var index))
                         continue;
-                    
-                    if (!assetMethodUsagesSet.TryGetValue((location, unityEventName, index), out var value))
-                    {
-                        value = new AssetMethodUsagesData();
-                        assetMethodUsagesSet.Add((location, unityEventName, index), value);
-                    }
-                    
-                    assetMethodUsagesSet[(location, unityEventName, index)].unityEventName = unityEventName;
+
                     result.UnityEventToModifiedIndex.Add((location, unityEventName), index);
-                    
                     var last = parts.Last();
                     if (last.Equals("m_MethodName") && modification.Value is AssetSimpleValue assetSimpleValue)
-                    {
                         result.AssetMethodNameInModifications.Add(assetSimpleValue.SimpleValue);
-                        assetMethodUsagesSet[(location, unityEventName, index)].methodName = assetSimpleValue.SimpleValue;
-                        assetMethodUsagesSet[(location, unityEventName, index)].textRangeOwnerPsiPersistentIndex = modification.ValueRange;
-                    }
-                    else if (last.Equals("m_Target") && modification.ObjectReference is not null)
-                        assetMethodUsagesSet[(location, unityEventName, index)].targetReference = modification.ObjectReference;
-                    else if (last.Equals("m_Mode") && modification.Value is AssetSimpleValue modeSimpleValue)
-                        assetMethodUsagesSet[(location, unityEventName, index)].mode = GetEventHandlerArgumentMode(modeSimpleValue.SimpleValue);
-                    else if (last.Equals("m_ObjectArgumentAssemblyTypeName") && modification.Value is AssetSimpleValue objectArgumentAssemblyTypeNameSimpleValue)
-                        assetMethodUsagesSet[(location, unityEventName, index)].type = objectArgumentAssemblyTypeNameSimpleValue.SimpleValue?.Split(',').FirstOrDefault(); // the logic here is simpler then in UnityEventsElementContainer.cs
 
-                    assetMethodUsagesSet[(location, unityEventName, index)].textRangeOwner =
-                        currentFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null");
                     assetMethodDataToModifiedFields.Add((location, unityEventName, index), last);
+
                 }
                 
                 foreach (var (_, set) in assetMethodDataToModifiedFields)
                     if (!set.Contains("m_MethodName"))
                         result.HasEventModificationWithoutMethodName = true;
             }
-
-            foreach (var ((localRef, _, _), value) in assetMethodUsagesSet)
-            {
-                var assetMethodUsage = value.ToAssetMethodUsages();
-                if (assetMethodUsage != null) result.AssetMethodUsagesSet.Add(localRef, assetMethodUsage);
-            }
-
+        
             return result;
         }
 
@@ -172,32 +145,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                             yield return (location, result);
                     }
                 }
-                
-                foreach (var (location, assetMethodUsagesList) in importedUnityEventData.AssetMethodUsagesSet)
-                {
-                    foreach (var assetMethodUsages in assetMethodUsagesList)
-                    {
-                        yield return (location, assetMethodUsages);    
-                    }
-                }
-            }
-        }
-        private class AssetMethodUsagesData
-        {
-            public string unityEventName; 
-            public string methodName;
-            public EventHandlerArgumentMode mode = EventHandlerArgumentMode.EventDefined;
-            public string type;
-            public IHierarchyReference targetReference;
-            public TextRange textRangeOwnerPsiPersistentIndex = TextRange.InvalidRange;
-            public OWORD textRangeOwner;
-
-            public AssetMethodUsages ToAssetMethodUsages()
-            {
-                if (targetReference != null) // see also TryCreateAssetMethodFromModifications
-                    return new AssetMethodUsages(unityEventName, methodName, textRangeOwnerPsiPersistentIndex,
-                        textRangeOwner, mode, type, targetReference);
-                return null;
             }
         }
     }

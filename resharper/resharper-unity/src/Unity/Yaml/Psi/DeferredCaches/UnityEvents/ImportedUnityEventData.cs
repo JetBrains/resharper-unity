@@ -10,7 +10,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
     {
         public readonly OneToSetMap<(LocalReference Location, string EventName), int> UnityEventToModifiedIndex = new();
         public readonly HashSet<string> AssetMethodNameInModifications = new();
-        public readonly OneToListMap<LocalReference, AssetMethodUsages> AssetMethodUsagesSet = new();
         public bool HasEventModificationWithoutMethodName { get; set; }
 
         public void WriteTo(UnsafeWriter writer)
@@ -31,17 +30,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             writer.Write(AssetMethodNameInModifications.Count);
             foreach (var name in AssetMethodNameInModifications)
                 writer.Write(name);
-            
-            writer.Write(AssetMethodUsagesSet.Count);
-            foreach (var (key, values) in AssetMethodUsagesSet)
-            {
-                key.WriteTo(writer);
-                writer.Write(values.Count);
-                foreach (var v in values)
-                {
-                    v.WriteTo(writer);
-                }
-            }
         }
 
         public static ImportedUnityEventData ReadFrom(UnsafeReader unsafeReader)
@@ -62,17 +50,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             var methodsCount = unsafeReader.ReadInt();
             for (int i = 0; i < methodsCount; i++)
                 result.AssetMethodNameInModifications.Add(unsafeReader.ReadString());
-
-            var assetUsagesCount = unsafeReader.ReadInt();
-            for (int i = 0; i < assetUsagesCount; i++)
-            {
-                var key = HierarchyReferenceUtil.ReadLocalReferenceFrom(unsafeReader);
-                var setCount = unsafeReader.ReadInt();
-                for (int j = 0; j < setCount; j++)
-                {
-                    result.AssetMethodUsagesSet.Add(key, AssetMethodUsages.ReadFrom(unsafeReader));
-                }
-            }
             
             return result;
         }
