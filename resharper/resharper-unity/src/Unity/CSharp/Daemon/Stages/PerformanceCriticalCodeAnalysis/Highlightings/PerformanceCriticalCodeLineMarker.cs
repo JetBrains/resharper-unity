@@ -13,10 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         typeof(UnityPerformanceHighlighting),
         Languages = CSharpLanguage.Name,
         AttributeId = PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER,
-        ShowToolTipInStatusBar = false,
-        ToolTipFormatStringResourceType = typeof(Strings),
-        ToolTipFormatStringResourceName = nameof(Strings
-            .UnityPerformanceCriticalCodeLineMarker_Performance_critical_context)
+        ShowToolTipInStatusBar = false
         )]
     public class UnityPerformanceCriticalCodeLineMarker : CSharpUnityHighlightingBase, IUnityPerformanceHighlighting, IHighlighting, IActiveLineMarkerInfo
     {

@@ -13,9 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors
         typeof(HighlightingGroupIds.IdentifierHighlightings),
         Languages = "CSHARP",
         AttributeId = AnalysisHighlightingAttributeIds.DEADCODE,
-        OverlapResolve = OverlapResolveKind.DEADCODE,
-        ToolTipFormatStringResourceType = typeof(Strings),
-        ToolTipFormatStringResourceName = nameof(Strings.PackageNotInstalledInfo_Symbol_not_defined__Package___0___is_not_installed))]
+        OverlapResolve = OverlapResolveKind.DEADCODE)]
     public class PackageNotInstalledInfo : IHighlighting
     {
         private readonly IJsonNewLiteralExpression myDefineValue;

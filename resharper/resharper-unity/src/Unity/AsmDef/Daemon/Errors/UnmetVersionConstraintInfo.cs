@@ -13,10 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors
         typeof(HighlightingGroupIds.IdentifierHighlightings),
         Languages = "CSHARP",
         AttributeId = AnalysisHighlightingAttributeIds.DEADCODE,
-        OverlapResolve = OverlapResolveKind.DEADCODE,
-        ToolTipFormatStringResourceType = typeof(Strings),
-        ToolTipFormatStringResourceName = nameof(Strings
-            .UnmetVersionConstraintInfo_Symbol_not_defined__Unmet_version_constraint___0_)
+        OverlapResolve = OverlapResolveKind.DEADCODE
     )]
     public class UnmetVersionConstraintInfo : IHighlighting
     {

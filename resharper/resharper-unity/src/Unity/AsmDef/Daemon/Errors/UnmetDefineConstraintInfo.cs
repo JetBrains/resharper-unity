@@ -12,9 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors
         typeof(HighlightingGroupIds.IdentifierHighlightings),
         Languages = "CSHARP",
         AttributeId = AnalysisHighlightingAttributeIds.DEADCODE,
-        OverlapResolve = OverlapResolveKind.DEADCODE,
-        ToolTipFormatStringResourceType = typeof(Strings),
-        ToolTipFormatStringResourceName = nameof(Strings.UnmetDefineConstraintInfo_Unmet_define_constraint_0_)
+        OverlapResolve = OverlapResolveKind.DEADCODE
         )]
     public class UnmetDefineConstraintInfo : IHighlighting
     {
