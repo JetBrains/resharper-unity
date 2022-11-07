@@ -9,15 +9,16 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
 {
     [SolutionComponent]
-    public class SuperTypeDeclaredInOtherPartSuppressor : ISuperTypeDeclaredInOtherPartSuppressor
+    public class DotsElementsSuperTypeDeclaredInOtherPartSuppressor : ISuperTypeDeclaredInOtherPartSuppressor
         , IPartialTypeWithSinglePartSuppressor
     {
         bool ISuperTypeDeclaredInOtherPartSuppressor.SuppressInspections(IClassLikeDeclaration classLikeDeclaration,
             IDeclaredType currentSuperInterfaceType,
-            IDeclaredType otherSuperInterfaceType,
             IPsiSourceFile otherSuperTypeSourceFile)
         {
-            return otherSuperTypeSourceFile.IsSourceGeneratedFile();
+            return UnityApi.IsDotsImplicitlyUsedType(classLikeDeclaration.DeclaredElement) && 
+                   UnityApi.IsDotsImplicitlyUsedType(currentSuperInterfaceType.GetTypeElement()) &&
+                otherSuperTypeSourceFile.IsSourceGeneratedFile();
         }
 
         bool IPartialTypeWithSinglePartSuppressor.SuppressInspections(IClassLikeDeclaration classLikeDeclaration)
