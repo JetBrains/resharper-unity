@@ -140,7 +140,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
                         var objectReference = map.GetMapEntryValue<INode>("objectReference").ToHierarchyReference(currentAssetSourceFile);
 
-                        var valueRange = valueNode.GetTreeTextRange();
+                        var valueRange = valueNode.Value.GetTreeTextRange();
 
                         result.Add(new PrefabModification(target, name, value,
                             new TextRange(assetDocument.StartOffset + valueRange.StartOffset.Offset,
