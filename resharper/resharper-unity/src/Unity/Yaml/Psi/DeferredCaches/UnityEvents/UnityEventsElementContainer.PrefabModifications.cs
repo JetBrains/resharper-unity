@@ -81,8 +81,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                         assetMethodUsagesSet[(location, unityEventName, index)].methodName = assetSimpleValue.SimpleValue;
                         assetMethodUsagesSet[(location, unityEventName, index)].textRangeOwnerPsiPersistentIndex = modification.ValueRange;
                     }
-                    else if (last.Equals("m_Target") && modification.ObjectReference is ExternalReference er)
-                        assetMethodUsagesSet[(location, unityEventName, index)].targetReference = er;
+                    else if (last.Equals("m_Target") && modification.ObjectReference is not null)
+                        assetMethodUsagesSet[(location, unityEventName, index)].targetReference = modification.ObjectReference;
                     else if (last.Equals("m_Mode") && modification.Value is AssetSimpleValue modeSimpleValue)
                         assetMethodUsagesSet[(location, unityEventName, index)].mode = GetEventHandlerArgumentMode(modeSimpleValue.SimpleValue);
                     else if (last.Equals("m_ObjectArgumentAssemblyTypeName") && modification.Value is AssetSimpleValue objectArgumentAssemblyTypeNameSimpleValue)
@@ -149,14 +149,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         {
             if (myImportedUnityEventDatas.TryGetValue(psiSourceFile, out var importedUnityEventData))
             {
-                foreach (var (location, assetMethodUsagesList) in importedUnityEventData.AssetMethodUsagesSet)
-                {
-                    foreach (var assetMethodUsages in assetMethodUsagesList)
-                    {
-                        yield return (location, assetMethodUsages);    
-                    }
-                }
-                
                 foreach (var ((location, unityEventName), modifiedEvents) in importedUnityEventData.UnityEventToModifiedIndex)
                 {
                     var script = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(location, true) as IScriptComponentHierarchy;
@@ -178,6 +170,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                         var result = AssetMethodUsages.TryCreateAssetMethodFromModifications(location, unityEventName, modifications[index]);
                         if (result != null)
                             yield return (location, result);
+                    }
+                }
+                
+                foreach (var (location, assetMethodUsagesList) in importedUnityEventData.AssetMethodUsagesSet)
+                {
+                    foreach (var assetMethodUsages in assetMethodUsagesList)
+                    {
+                        yield return (location, assetMethodUsages);    
                     }
                 }
             }
