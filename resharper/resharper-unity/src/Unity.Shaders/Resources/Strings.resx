@@ -20,7 +20,7 @@
         <value>File's primary language in not Cg</value>
     </data>
     <data name="CgSyntaxHighlightingProcess_VisitSemanticNode_Semantic__packoffset_or_register_expected" xml:space="preserve">
-        <value>Semantic, packoffset or register expected</value>
+        <value>Semantic, packoffset, or register expected</value>
     </data>
     <data name="CgBuiltInTypeTokenNodeType_TokenRepresentation_built_in_type" xml:space="preserve">
         <value>built-in type</value>

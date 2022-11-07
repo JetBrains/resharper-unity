@@ -167,10 +167,10 @@
         <value>This file is part of the BuildIn Unity Package Cache. Any changes made will be lost.</value>
     </data>
     <data name="UnityRefresher_RefreshInternal_Refreshing_solution_in_Unity_Editor___" xml:space="preserve">
-        <value>Refreshing solution in Unity Editor...</value>
+        <value>Refreshing solution in Unity Editor…</value>
     </data>
     <data name="RiderUnityAssetOccurrenceNavigator_Navigate_Start_the_Unity_Editor_to_view_results" xml:space="preserve">
-        <value>Start the Unity Editor to view results</value>
+        <value>Start Unity Editor to view results</value>
     </data>
     <data name="UnityEditorFindUsageResultCreator_CreateRequestToUnity_Finding_usages_in_Unity_for__" xml:space="preserve">
         <value>Finding usages in Unity for: </value>

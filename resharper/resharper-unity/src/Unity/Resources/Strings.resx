@@ -26,7 +26,7 @@
         <value>Disabled indexing of Unity assets</value>
     </data>
     <data name="DueToTheSizeOfTheProjectIndexingOfUnity_Text" xml:space="preserve">
-        <value>Due to the size of the project, indexing of Unity scenes, assets and prefabs has been disabled. Usages of C# code in these files will not be detected. Re-enabling can impact initial file processing.</value>
+        <value>Due to the size of the project, indexing of Unity scenes, assets, and prefabs has been disabled. Usages of C# code in these files will not be detected. Re-enabling can impact initial file processing.</value>
     </data>
     <data name="TurnOnAnyway_Text" xml:space="preserve">
         <value>Turn on anyway</value>
@@ -59,7 +59,7 @@
         <value>File '{0}' already exists</value>
     </data>
     <data name="RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_Cannot_rename___0__" xml:space="preserve">
-        <value>Cannot rename '{0}'</value>
+        <value>Unable to rename '{0}'</value>
     </data>
     <data name="RenameFileToMatchAssemblyNameQuickFix_Text_Rename_file_to_match_assembly_name" xml:space="preserve">
         <value>Rename file to match assembly name</value>
@@ -83,40 +83,40 @@
         <value>Unity plugin settings</value>
     </data>
     <data name="UnitySettings_t_If_this_option_is_enabled__the_Rider_Unity_editor_plugin_will_be_automatically_installed_and_updated_" xml:space="preserve">
-        <value>If this option is enabled, the Rider Unity editor plugin will be automatically installed and updated.</value>
+        <value>If this option is enabled, the Rider Unity editor plugin will be automatically installed and updated</value>
     </data>
     <data name="UnitySettings_t_If_this_option_is_disabled__Rider_package_update_notifications_would_never_be_shown_" xml:space="preserve">
-        <value>If this option is disabled, Rider package update notifications would never be shown.</value>
+        <value>If this option is disabled, Rider package update notifications would never be shown</value>
     </data>
     <data name="UnitySettings_t_If_this_option_is_enabled__Rider_will_automatically_notify_the_Unity_editor_to_refresh_assets_" xml:space="preserve">
-        <value>If this option is enabled, Rider will automatically notify the Unity editor to refresh assets.</value>
+        <value>If this option is enabled, Rider will automatically notify the Unity editor to refresh assets</value>
     </data>
     <data name="UnitySettings_t_If_this_option_is_enabled__UnityYamlMerge_would_be_used_to_merge_YAML_files_" xml:space="preserve">
-        <value>If this option is enabled, UnityYamlMerge would be used to merge YAML files.</value>
+        <value>If this option is enabled, UnityYamlMerge would be used to merge YAML files</value>
     </data>
     <data name="UnitySettings_t_Merge_parameters" xml:space="preserve">
         <value>Merge parameters</value>
     </data>
     <data name="UnitySettings_t_Enables_syntax_error_highlighting__brace_matching_and_more_of_ShaderLab_files_" xml:space="preserve">
-        <value>Enables syntax error highlighting, brace matching and more of ShaderLab files.</value>
+        <value>Enables syntax error highlighting, brace matching, and more of ShaderLab files</value>
     </data>
     <data name="UnitySettings_t_Enables_completion_based_on_words_found_in_the_current_file_" xml:space="preserve">
-        <value>Enables completion based on words found in the current file.</value>
+        <value>Enables code completion based on words found in the current file</value>
     </data>
     <data name="UnitySettings_t_Enables_syntax_error_highlighting_of_CG_blocks_in_ShaderLab_files_" xml:space="preserve">
-        <value>Enables syntax error highlighting of CG blocks in ShaderLab files.</value>
+        <value>Enables syntax error highlighting of CG blocks in ShaderLab files</value>
     </data>
     <data name="UnitySettings_t_Suppress_resolve_errors_in_HLSL_" xml:space="preserve">
-        <value>Suppress resolve errors in HLSL.</value>
+        <value>Suppress resolve errors in HLSL</value>
     </data>
     <data name="UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_" xml:space="preserve">
-        <value>Suppress resolve errors in render-pipeline package in HLSL.</value>
+        <value>Suppress resolve errors in render-pipeline package in HLSL</value>
     </data>
     <data name="UnitySettings_t_Unity_highlighter_scheme_for_editor_" xml:space="preserve">
-        <value>Unity highlighter scheme for editor.</value>
+        <value>Unity highlighter scheme for the editor</value>
     </data>
     <data name="UnitySettings_t_Should_yaml_heuristic_be_applied_" xml:space="preserve">
-        <value>Should yaml heuristic be applied?</value>
+        <value>Should YAML heuristic be applied?</value>
     </data>
     <data name="UnitySettings_t_Enables_asset_indexing" xml:space="preserve">
         <value>Enables asset indexing</value>
@@ -137,7 +137,7 @@
         <value>Highlighting mode for performance critical code</value>
     </data>
     <data name="UnitySettings_t_Enables_showing_hot_icon_for_frequently_called_code" xml:space="preserve">
-        <value>Enables showing hot icon for frequently called code</value>
+        <value>Enables the 'hot spot' icon for frequently called code</value>
     </data>
     <data name="UnitySettings_t_Show_Inspector_properties_changes_in_editor" xml:space="preserve">
         <value>Show Inspector properties changes in editor</value>
@@ -194,7 +194,7 @@ a plugin to be installed to a project.</value>
         <value>Enable performance analysis in frequently called code</value>
     </data>
     <data name="UnityOptionsPage_AddPerformanceAnalysisSubSection_Highlight_performance_critical_contexts_" xml:space="preserve">
-        <value>Highlight performance critical contexts:</value>
+        <value>Highlight performance-critical contexts:</value>
     </data>
     <data name="UnityOptionsPage_AddPerformanceAnalysisSubSection_Show_gutter_icons_for_frequently_called_methods" xml:space="preserve">
         <value>Show gutter icons for frequently called methods</value>
@@ -222,39 +222,47 @@ a plugin to be installed to a project.</value>
     </data>
     <data name="UnityOptionsPage_AddNamingSubSection_UpperCamelCase" xml:space="preserve">
         <value>UpperCamelCase</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="UnityOptionsPage_AddNamingSubSection_UpperCamelCase_UnderscoreTolerant" xml:space="preserve">
         <value>UpperCamelCase_UnderscoreTolerant</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="UnityOptionsPage_AddNamingSubSection_UpperCamelCase_underscoreTolerant2" xml:space="preserve">
         <value>UpperCamelCase_underscoreTolerant</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="UnityOptionsPage_AddNamingSubSection_lowerCamelCase" xml:space="preserve">
         <value>lowerCamelCase</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="UnityOptionsPage_AddNamingSubSection_lowerCamelCase_UnderscoreTolerant" xml:space="preserve">
         <value>lowerCamelCase_UnderscoreTolerant</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="UnityOptionsPage_AddNamingSubSection_lowerCamelCase_underscoreTolerant2" xml:space="preserve">
         <value>lowerCamelCase_underscoreTolerant</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="UnityOptionsPage_AddNamingSubSection_ALL_UPPER" xml:space="preserve">
         <value>ALL_UPPER</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="UnityOptionsPage_AddNamingSubSection_First_upper" xml:space="preserve">
         <value>First_upper</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="UnityOptionsPage_AddTextBasedAssetsSection_Text_based_assets" xml:space="preserve">
-        <value>Text based assets</value>
+        <value>Text-based assets</value>
     </data>
     <data name="UnityOptionsPage_AddTextBasedAssetsSection_Parse_text_based_asset_files_for_script_and_event_handler_usages" xml:space="preserve">
-        <value>Parse text based asset files for script and event handler usages</value>
+        <value>Parse text-based asset files for script and event handler usages</value>
     </data>
     <data name="UnityOptionsPage_AddTextBasedAssetsSection_Show_Inspector_values_in_the_editor" xml:space="preserve">
         <value>Show Inspector values in the editor</value>
     </data>
     <data name="UnityOptionsPage_AddTextBasedAssetsSection_Cache_prefab_data_to_improve_find_usage_performance" xml:space="preserve">
-        <value>Cache prefab data to improve find usage performance</value>
+        <value>Cache prefab data to improve Find Usages performance</value>
     </data>
     <data name="UnityOptionsPage_AddTextBasedAssetsSection_Automatically_disable_asset_indexing_for_large_solutions" xml:space="preserve">
         <value>Automatically disable asset indexing for large solutions</value>
@@ -321,6 +329,6 @@ This option applies the same behaviour to IL2CPP players.</value>
         <value>Unity Meta File</value>
     </data>
     <data name="UnityYamlProjectFileType_UnityYamlProjectFileType_Unity_Yaml" xml:space="preserve">
-        <value>Unity Yaml File</value>
+        <value>Unity YAML File</value>
     </data>
 </root>
