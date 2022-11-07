@@ -128,13 +128,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     // missed script
                     if (script == null)
                         continue;
-                    
+
+                    var names = new JetHashSet<string>() { unityEventName };
+                     
+                    // sources-case : get all formerly serialized field names, let's assume that we do not need it for scripts from assemblies
                     var scriptType = AssetUtils.GetTypeElementFromScriptAssetGuid(mySolution, script.ScriptReference.ExternalAssetGuid);
                     var field = scriptType?.GetMembers().FirstOrDefault(t => t is IField f && AssetUtils.GetAllNamesFor(f).Contains(unityEventName)) as IField;
-                    if (field == null)
-                        continue;
-
-                    var names = AssetUtils.GetAllNamesFor(field).ToJetHashSet();
+                    
+                    if (field != null)
+                        names.AddRange(AssetUtils.GetAllNamesFor(field).ToJetHashSet());
+                    
                     var modifications = script.ImportUnityEventData(this, names);
 
                     foreach (var index in modifiedEvents)
