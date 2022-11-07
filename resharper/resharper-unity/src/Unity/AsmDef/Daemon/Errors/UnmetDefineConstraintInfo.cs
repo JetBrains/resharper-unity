@@ -27,7 +27,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors
         {
             myConstraintValue = constraintValue;
             myHighlightingRange = highlightingRange;
-            ToolTip = string.Format(Strings.UnmetDefineConstraintInfo_Unmet_define_constraint_0_, allSymbolsUndefined ? Strings.UnmetDefineConstraintInfo____Assembly_definition_will_not_be_compiled : string.Empty);
+            ToolTip = allSymbolsUndefined ? 
+                Strings.UnmetDefineConstraintInfo_Unmet_define_constraint_Assembly_definition_will_not_be_compiled 
+                : Strings.UnmetDefineConstraintInfo_Unmet_define_constraint;
         }
 
         public bool IsValid() => myConstraintValue.IsValid() && myHighlightingRange.IsValid();

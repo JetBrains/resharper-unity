@@ -406,8 +406,8 @@
     public static string GoToUnityUsagesProvider_CreateWorkflow_Unity_Usages_of_Symbol => ResourceManager.GetString("GoToUnityUsagesProvider_CreateWorkflow_Unity_Usages_of_Symbol");
     public static string QuickFixRegistrar_Register_Remove_redundant_Unity_event_function => ResourceManager.GetString("QuickFixRegistrar_Register_Remove_redundant_Unity_event_function");
     public static string PackageNotInstalledInfo_Symbol_not_defined__Package___0___is_not_installed => ResourceManager.GetString("PackageNotInstalledInfo_Symbol_not_defined__Package___0___is_not_installed");
-    public static string UnmetDefineConstraintInfo_Unmet_define_constraint_0_ => ResourceManager.GetString("UnmetDefineConstraintInfo_Unmet_define_constraint_0_");
-    public static string UnmetDefineConstraintInfo____Assembly_definition_will_not_be_compiled => ResourceManager.GetString("UnmetDefineConstraintInfo____Assembly_definition_will_not_be_compiled");
+    public static string UnmetDefineConstraintInfo_Unmet_define_constraint_Assembly_definition_will_not_be_compiled => ResourceManager.GetString("UnmetDefineConstraintInfo_Unmet_define_constraint_Assembly_definition_will_not_be_compiled");
+    public static string UnmetDefineConstraintInfo_Unmet_define_constraint => ResourceManager.GetString("UnmetDefineConstraintInfo_Unmet_define_constraint");
     public static string UnmetVersionConstraintInfo_Symbol_not_defined__Unmet_version_constraint___0_ => ResourceManager.GetString("UnmetVersionConstraintInfo_Symbol_not_defined__Unmet_version_constraint___0_");
     public static string UnityPerformanceCriticalCodeLineMarker_Performance_critical_context => ResourceManager.GetString("UnityPerformanceCriticalCodeLineMarker_Performance_critical_context");
     public static string UnityHighlightingProcess_Event_function => ResourceManager.GetString("UnityHighlightingProcess_Event_function");

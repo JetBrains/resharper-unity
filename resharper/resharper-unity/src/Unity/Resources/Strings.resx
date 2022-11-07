@@ -1129,12 +1129,11 @@ a plugin to be installed to a project.</value>
     <data name="PackageNotInstalledInfo_Symbol_not_defined__Package___0___is_not_installed" xml:space="preserve">
         <value>Symbol not defined. Package '{0}' is not installed</value>
     </data>
-    <data name="UnmetDefineConstraintInfo_Unmet_define_constraint_0_" xml:space="preserve">
-        <value>Unmet define constraint{0}</value>
+    <data name="UnmetDefineConstraintInfo_Unmet_define_constraint_Assembly_definition_will_not_be_compiled" xml:space="preserve">
+        <value>Unmet define constraint. Assembly definition will not be compiled</value>
     </data>
-    <data name="UnmetDefineConstraintInfo____Assembly_definition_will_not_be_compiled" xml:space="preserve">
-        <value>. Assembly definition will not be compiled</value>
-        <comment>second part of UnmetDefineConstraintInfo_Unmet_define_constraint_0_</comment>
+    <data name="UnmetDefineConstraintInfo_Unmet_define_constraint" xml:space="preserve">
+        <value>Unmet define constraint</value>
     </data>
     <data name="UnmetVersionConstraintInfo_Symbol_not_defined__Unmet_version_constraint___0_" xml:space="preserve">
         <value>Symbol not defined. Unmet version constraint: {0}</value>
