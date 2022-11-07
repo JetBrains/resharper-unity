@@ -21,6 +21,7 @@
     </data>
     <data name="Message" xml:space="preserve">
         <value>{0}</value>
+        <comment>Nothing to translate here. It is part of the generator's work, not a mistake.</comment>
     </data>
     <data name="YamlLanguageSpecificDaemonBehaviour_InitialErrorStripe_File_s_primary_language_in_not_Yaml" xml:space="preserve">
         <value>File&apos;s primary language in not Yaml</value>

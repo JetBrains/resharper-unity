@@ -249,6 +249,7 @@
     </data>
     <data name="Message" xml:space="preserve">
         <value>{0}</value>
+        <comment>Nothing to translate here. It is part of the generator's work, not a mistake.</comment>
     </data>
     <data name="MetaProjectFileType_MetaProjectFileType_Unity_Meta_File" xml:space="preserve">
         <value>Unity Meta File</value>
@@ -895,9 +896,11 @@ a plugin to be installed to a project.</value>
     </data>
     <data name="ToggleSerializedFieldAll_Text_Make__0__non_serialized" xml:space="preserve">
         <value>Make {0} non-serialized</value>
+        <comment>Proposition to make a specific field non-serialized</comment>
     </data>
     <data name="ToggleSerializedFieldAll_Text_Make__0__serialized" xml:space="preserve">
         <value>Make {0} serialized</value>
+        <comment>Proposition to make a specific field serialized</comment>
     </data>
     <data name="ToggleSerializedFieldAll_Text_all_fields" xml:space="preserve">
         <value>all fields</value>

@@ -18,6 +18,7 @@
     </resheader>
     <data name="AmbiguousReferencematchMessage" xml:space="preserve">
         <value>Ambiguous reference:{0}{1}match</value>
+        <comment>listOfReferences, NewLine</comment>
     </data>
     <data name="CannotResolveSymbolMessage" xml:space="preserve">
         <value>Cannot resolve symbol &apos;{0}&apos;</value>
@@ -39,6 +40,7 @@
     </data>
     <data name="Message" xml:space="preserve">
         <value>{0}</value>
+        <comment>Nothing to translate here. It is part of the generator's work, not a mistake.</comment>
     </data>
     <data name="ParametersAreNotValidInThisLocationMessage" xml:space="preserve">
         <value>Parameters are not valid in this location</value>
