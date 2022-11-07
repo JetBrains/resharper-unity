@@ -100,7 +100,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 
             foreach (var ((localRef, _, _), value) in assetMethodUsagesSet)
             {
-                result.AssetMethodUsagesSet.Add(localRef, value.ToAssetMethodUsages());
+                var assetMethodUsage = value.ToAssetMethodUsages();
+                if (assetMethodUsage != null) result.AssetMethodUsagesSet.Add(localRef, assetMethodUsage);
             }
 
             return result;
@@ -193,8 +194,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 
             public AssetMethodUsages ToAssetMethodUsages()
             {
-                return new AssetMethodUsages(unityEventName, methodName, textRangeOwnerPsiPersistentIndex,
-                    textRangeOwner, mode, type, targetReference);
+                if (targetReference != null) // see also TryCreateAssetMethodFromModifications
+                    return new AssetMethodUsages(unityEventName, methodName, textRangeOwnerPsiPersistentIndex,
+                        textRangeOwner, mode, type, targetReference);
+                return null;
             }
         }
     }

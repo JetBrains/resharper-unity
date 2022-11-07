@@ -59,7 +59,7 @@
         <value>Avoid &apos;base.OnGUI()&apos; in classes derived from &apos;PropertyDrawer&apos;</value>
     </data>
     <data name="baseOnGUIWillPrintNoGUIImplementedInTheUnityInspectorMessage" xml:space="preserve">
-        <value>&apos;base.OnGUI()&apos; will print \&quot;No GUI Implemented\&quot; in the Unity inspector</value>
+        <value>&apos;base.OnGUI()&apos; will print &quot;No GUI Implemented&quot; in the Unity inspector</value>
     </data>
     <data name="BoxingIsNotSupported" xml:space="preserve">
         <value>Boxing is not supported</value>
@@ -441,7 +441,7 @@
           be found in the current project or referenced assemblies. The call is likely to fail at runtime and return null.</value>
     </data>
     <data name="TheDefaultImplementationForOnGUIInPropertyDrawerWillPrintNoGUIImplementedInTheUnityInspector" xml:space="preserve">
-        <value>The default implementation for &apos;OnGUI&apos; in &apos;PropertyDrawer&apos; will print \&quot;No GUI Implemented\&quot; in the Unity inspector.</value>
+        <value>The default implementation for &apos;OnGUI&apos; in &apos;PropertyDrawer&apos; will print &quot;No GUI Implemented&quot; in the Unity inspector.</value>
     </data>
     <data name="TheforeachConstructionIsNotSupported" xml:space="preserve">
         <value>The &apos;foreach&apos; construction is not supported</value>
