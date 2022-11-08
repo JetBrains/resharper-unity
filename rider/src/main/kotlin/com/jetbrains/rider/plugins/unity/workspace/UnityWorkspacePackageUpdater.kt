@@ -10,7 +10,7 @@ import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.intellij.workspaceModel.ide.getInstance
 import com.intellij.workspaceModel.ide.impl.toVirtualFileUrl
 import com.intellij.workspaceModel.storage.MutableEntityStorage
-import com.intellij.workspaceModel.storage.bridgeEntities.addContentRootEntityWithCustomEntitySource
+import com.intellij.workspaceModel.storage.bridgeEntities.addContentRootEntity
 import com.intellij.workspaceModel.storage.url.VirtualFileUrlManager
 import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.util.reactive.AddRemove
@@ -55,7 +55,7 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
 
         val packageFolder = unityPackage.packageFolderPath?.let { VfsUtil.findFile(Paths.get(it), true) }
         val contentRootEntity = if (packageFolder != null && unityPackage.source != UnityPackageSource.Unknown) {
-            builder.addContentRootEntityWithCustomEntitySource(
+            builder.addContentRootEntity(
                 packageFolder.toVirtualFileUrl(VirtualFileUrlManager.getInstance(project)),
                 listOf(),
                 UNITY_EXCLUDED_PATTERNS,
