@@ -57,6 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static bool IsDotsImplicitlyUsedType([NotNullWhen(true)] ITypeElement? typeElement) =>
             typeElement.DerivesFrom(KnownTypes.ComponentSystemBase) 
             || typeElement.DerivesFrom(KnownTypes.ISystem)
+            || typeElement.DerivesFrom(KnownTypes.IAspect)
             || typeElement.DerivesFrom(KnownTypes.IBaker);
 
         // A serialised field cannot be abstract or generic, but a type declaration that will be serialised can be. This
