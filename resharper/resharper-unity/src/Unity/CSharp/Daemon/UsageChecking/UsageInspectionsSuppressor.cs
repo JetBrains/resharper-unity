@@ -55,11 +55,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             switch (element)
             {
                 case IClass cls when unityApi.IsUnityType(cls) ||
-                                     UnityApi.IsDotsSystemType(cls) ||
+                                     UnityApi.IsDotsImplicitlyUsedType(cls) ||
                                      IsUxmlFactory(cls):
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
-
+                case IStruct @struct when unityApi.IsUnityType(@struct) ||
+                                     UnityApi.IsDotsImplicitlyUsedType(@struct) :
+                    flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
+                    return true;
                 case ITypeElement typeElement when unityApi.IsSerializableTypeDeclaration(typeElement):
                     // TODO: We should only really mark it as in use if it's actually used somewhere
                     // That is, it should be used as a field in a Unity type, or another serializable type
