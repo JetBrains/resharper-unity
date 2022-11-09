@@ -60,7 +60,9 @@ class UnityWorkspaceModelUpdater(private val project: Project) {
             RiderUnityEntitySource)
 
         application.runWriteAction {
-            WorkspaceModel.getInstance(project).updateProjectModel { x -> x.replaceBySource({ it is RiderUnityEntitySource }, builder) }
+            WorkspaceModel.getInstance(project).updateProjectModel("Unity: update workspace model") {
+                x -> x.replaceBySource({ it is RiderUnityEntitySource }, builder)
+            }
         }
     }
 

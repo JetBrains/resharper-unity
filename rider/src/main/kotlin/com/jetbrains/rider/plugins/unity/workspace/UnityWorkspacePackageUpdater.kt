@@ -100,7 +100,7 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
             if (entityStorage != null) {
                 action.invoke(entityStorage)
             } else {
-                WorkspaceModel.getInstance(project).updateProjectModel(action)
+                WorkspaceModel.getInstance(project).updateProjectModel("Unity: update packages", action)
             }
         }
     }
@@ -111,7 +111,7 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
 
         application.runWriteAction {
             this.initialEntityStorage = null
-            WorkspaceModel.getInstance(project).updateProjectModel { entityStorage ->
+            WorkspaceModel.getInstance(project).updateProjectModel("Unity: sync packages") { entityStorage ->
                 entityStorage.replaceBySource({ it is RiderUnityPackageEntitySource }, initialEntityStorage)
             }
         }
