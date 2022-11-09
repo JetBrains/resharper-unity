@@ -12,6 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Pe
         EffectType = EffectType.LINE_MARKER,
         ForegroundColor = "#ff7526",
         DarkForegroundColor = "#ff7526",
+        RiderPresentableName = "Performance critical line marker",
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX,
         TransmitUpdates = true)]
     public class PerformanceHighlightingAttributeIdsRegistrar

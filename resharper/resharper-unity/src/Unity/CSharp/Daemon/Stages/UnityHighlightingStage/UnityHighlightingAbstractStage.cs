@@ -11,6 +11,7 @@ using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -98,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.UnityHighlighti
                         continue;
 
                     myCommonIconProvider.AddEventFunctionHighlighting(highlightingConsumer, method, eventFunction,
-                        "Event function", myContext);
+                        Strings.UnityHighlightingProcess_Event_function, myContext);
                     myMarkedDeclarations.Add(method);
                 }
                 else
@@ -107,7 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.UnityHighlighti
                         continue;
 
                     myCommonIconProvider.AddFrequentlyCalledMethodHighlighting(highlightingConsumer, declaration,
-                        "Frequently called", "Frequently called code", myContext);
+                        Strings.UnityHighlightingProcess_Execute_Frequently_called, Strings.UnityHighlightingProcess_Execute_Frequently_called_code, myContext);
                 }
             }
 

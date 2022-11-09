@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.explorer
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
@@ -23,10 +24,11 @@ class AssetsRootNode(project: Project, virtualFile: VirtualFile)
     : UnityExplorerFileSystemNode(project, virtualFile, emptyList(), AncestorNodeType.Assets) {
 
     private val referenceRoot = ReferenceRootNode(project)
+    @NlsSafe private val assets = "Assets"
 
     override fun update(presentation: PresentationData) {
         if (!virtualFile.isValid) return
-        presentation.addText(UnityBundle.message("label.assets"), SimpleTextAttributes.REGULAR_ATTRIBUTES)
+        presentation.addText(assets, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(UnityIcons.Explorer.AssetsRoot)
 
         val solutionEntity = WorkspaceModel.getInstance(myProject).getSolutionEntity() ?: return

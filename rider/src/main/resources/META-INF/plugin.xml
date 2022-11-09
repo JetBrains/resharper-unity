@@ -218,9 +218,7 @@
       <add-to-group group-id="RightToolbarSideGroup" relative-to-action="BuildSolutionAction" anchor="after" />
 
       <separator/>
-      <action id="UnityToolbarLabel"
-              class="com.jetbrains.rider.plugins.unity.actions.UnityToolbarLabel"
-              text="Unity:"/>
+      <action id="UnityToolbarLabel" class="com.jetbrains.rider.plugins.unity.actions.UnityToolbarLabel"/>
     </group>
 
     <group id="NewUI_UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">

@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Caches
                     .WithProgress(progress)
                     .Build();
 
-                CurrentFile.AdviseNotNull(startLifetime, v => { description.Value = string.Format(Strings.RiderDeferredCacheProgressBar_Start_Processing__0_, v.DisplayName); });
+                CurrentFile.AdviseNotNull(startLifetime, v => { description.Value = string.Format(Strings.RiderDeferredCacheProgressBar_Start_Processing_FileName, v.DisplayName); });
 
                 myLocks.Tasks.StartNew(startLifetime, Scheduling.MainDispatcher,
                     () => { myBackgroundProgressManager.AddNewTask(lifetimeDef.Lifetime, task); });

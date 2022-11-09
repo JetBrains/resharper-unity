@@ -3,14 +3,14 @@ using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Toggle 'HideInInspector' attribute on fields",
-        Description =
-            "Adds or removes the 'HideInInspector' attribute on a Unity serialized field, removing the field from the Inspector window.")]
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.ToggleHideInInspectorAttributeAction_Name), 
+        DescriptionResourceName = nameof(Strings.ToggleHideInInspectorAttributeAction_Description))]
     public class ToggleHideInInspectorAttributeAction : AddInspectorAttributeAction
     {
         [NotNull] private static readonly SubmenuAnchor ourSubmenuAnchor =

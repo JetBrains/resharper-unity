@@ -37,8 +37,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
             {
                 if (projectFile.Location.Directory.Combine(newName).ExistsFile)
                 {
-                    MessageBox.ShowError(string.Format(Strings.RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_File___0___already_exists, newName),
-                        string.Format(Strings.RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_Cannot_rename___0__, projectFile.Location.Name));
+                    MessageBox.ShowError(string.Format(Strings.RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_File___NewFileName___already_exists, newName),
+                        string.Format(Strings.RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_Cannot_rename___FileName__, projectFile.Location.Name));
                 }
                 else
                 {
