@@ -24,9 +24,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
                                                      UnityExternalPsiSourceFileFactory psiSourceFileFactory,
                                                      UnityExternalFilesModuleFactory moduleFactory,
                                                      UnityExternalFilesIndexDisablingStrategy indexDisablingStrategy,
-                                                     UnityAssetInfoCollector usageStatistics)
+                                                     UnityAssetInfoCollector usageStatistics,
+                                                     AssetIndexingSupport assetIndexingSupport)
             : base(lifetime, logger, solution, changeManager, psiModules, packageManager, locks, fileSystemTracker,
-                projectFileExtensions, psiSourceFileFactory, moduleFactory, indexDisablingStrategy, usageStatistics)
+                projectFileExtensions, psiSourceFileFactory, moduleFactory, indexDisablingStrategy, usageStatistics, assetIndexingSupport)
         {
         }
 
