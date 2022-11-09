@@ -5,6 +5,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.QuickFixes.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
@@ -23,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         public void Register(IQuickFixesRegistrar table)
         {
             table.RegisterQuickFix<RedundantEventFunctionWarning>(myLifetime,
-                h => new RemoveUnusedElementFix(h.MethodDeclaration, "Remove redundant Unity event function"),
+                h => new RemoveUnusedElementFix(h.MethodDeclaration, Strings.QuickFixRegistrar_Register_Remove_redundant_Unity_event_function),
                 typeof(RemoveUnusedElementFix));
         }
 

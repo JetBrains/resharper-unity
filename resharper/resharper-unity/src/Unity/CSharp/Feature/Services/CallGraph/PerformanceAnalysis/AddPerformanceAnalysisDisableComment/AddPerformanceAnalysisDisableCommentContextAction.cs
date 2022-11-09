@@ -11,13 +11,14 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddPerformanceAnalysisDisableComment
 {
     [ContextAction(
         Group = UnityContextActions.GroupID,
-        Name = AddPerformanceAnalysisDisableCommentUtil.MESSAGE,
-        Description = AddPerformanceAnalysisDisableCommentUtil.MESSAGE,
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.AddPerformanceAnalysisDisableCommentContextAction_Name), 
+        DescriptionResourceName = nameof(Strings.AddPerformanceAnalysisDisableCommentContextAction_Name),
         Disabled = false,
         AllowedInNonUserFiles = false,
         Priority = 1)]

@@ -7,6 +7,7 @@ using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -139,7 +140,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             }
         }
 
-        public override string Text => "Convert to jagged array";
+        public override string Text => Strings.InefficientMultidimensionalArrayUsageQuickFix_Text_Convert_to_jagged_array;
         
         public override bool IsAvailable(IUserDataHolder cache)
         {

@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl;
 using JetBrains.Util;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
@@ -28,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             myPropertyDeclaration = error.Property as IPropertyDeclaration;
         }
 
-        public override string Text => AutoPropertyToSerializedBackingFieldAction.ActionText;
+        public override string Text => Strings.AutoPropertyToSerializedBackingFieldAction_Text_To_property_with_serialized_backing_field;
 
         public override bool IsAvailable(IUserDataHolder cache)
         {

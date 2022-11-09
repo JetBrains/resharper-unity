@@ -1,5 +1,8 @@
 using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
+using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddExpensiveComment
 {
@@ -10,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
         {
         }
 
-        public override string Text => AddExpensiveCommentUtil.MESSAGE;
-        protected override string Comment => AddExpensiveCommentUtil.COMMENT;
+        public override string Text => Strings.AddExpensiveCommentContextAction_Name;
+        protected override string Comment => "// " + ReSharperControlConstruct.RestorePrefix + " " + ExpensiveCodeMarksProvider.MarkId;
     }
 }
