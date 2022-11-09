@@ -29,20 +29,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Elements
     [ShellComponent]
     public class UnityNamingRuleDefaultSettings : HaveDefaultSettings
     {
-        public static readonly Guid SerializedFieldRuleGuid = new("5F0FDB63-C892-4D2C-9324-15C80B22A7EF");
+        private static readonly Guid SerializedFieldRuleGuid = new("5F0FDB63-C892-4D2C-9324-15C80B22A7EF");
+        public override string Name => "Unity default naming rules";
 
         public UnityNamingRuleDefaultSettings(ILogger logger, ISettingsSchema settingsSchema)
             : base(settingsSchema, logger)
         {
         }
-
+    
         public override void InitDefaultSettings(ISettingsStorageMountPoint mountPoint)
         {
             SetIndexedValue(mountPoint, (CSharpNamingSettings key) => key.UserRules, SerializedFieldRuleGuid,
-                GetUnitySerializedFieldRule());
+                CreateDefaultUnitySerializedFieldRule());
         }
 
-        public static ClrUserDefinedNamingRule GetUnitySerializedFieldRule()
+        public static ClrUserDefinedNamingRule CreateDefaultUnitySerializedFieldRule()
         {
             var lowerCaseNamingPolicy = new NamingPolicy(new NamingRule {NamingStyleKind = NamingStyleKinds.aaBb});
             return new ClrUserDefinedNamingRule(
@@ -54,7 +55,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Elements
                 lowerCaseNamingPolicy
             );
         }
+        
+        public static ClrUserDefinedNamingRule? GetActualUnitySerializedFieldRule(IContextBoundSettingsStore settingsStore,
+            SettingsIndexedEntry entry)
+        {
+            return settingsStore.GetIndexedValue(entry, SerializedFieldRuleGuid, null) as ClrUserDefinedNamingRule;
+        }
 
-        public override string Name => "Unity default naming rules";
+        public static void SetUnitySerializedFieldRule(IContextBoundSettingsStore settingsStore,
+            SettingsIndexedEntry entry, ClrUserDefinedNamingRule userRule)
+        {
+            settingsStore.SetIndexedValue(entry, SerializedFieldRuleGuid, null, userRule);
+        }
+
+        public static void RemoveUnitySerializedFieldRule(IContextBoundSettingsStore settingsStore, SettingsIndexedEntry entry)
+        {
+            settingsStore.RemoveIndexedValue(entry, SerializedFieldRuleGuid, null);
+        }
     }
 }
