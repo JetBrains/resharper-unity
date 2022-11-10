@@ -4,6 +4,7 @@ using JetBrains.Application.UI.Options.OptionsDialog;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.InlayHints;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
 {
@@ -23,10 +24,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
         {
             AddVisibilityHelpText();
 
-            AddHeader("Assembly Definition file GUID references");
+            AddHeader(Strings.UnityInlayHintsOptionsPage_UnityInlayHintsOptionsPage_Assembly_Definition_file_GUID_references);
             AddVisibilityOption((UnityInlayHintSettings s) => s.ShowAsmDefGuidReferenceNames);
 
-            AddHeader("Assembly Definition file package versions");
+            AddHeader(Strings.UnityInlayHintsOptionsPage_UnityInlayHintsOptionsPage_Assembly_Definition_file_package_versions);
             AddVisibilityOption((UnityInlayHintSettings s) => s.ShowAsmDefVersionDefinePackageVersions);
         }
     }

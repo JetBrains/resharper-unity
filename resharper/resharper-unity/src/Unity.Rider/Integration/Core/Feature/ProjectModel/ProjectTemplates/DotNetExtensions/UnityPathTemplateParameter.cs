@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.Rider.Backend.Features.ProjectModel.ProjectTemplates.DotNetExtensions;
 using JetBrains.Rider.Backend.Features.ProjectModel.ProjectTemplates.DotNetTemplates;
@@ -36,10 +37,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Proje
             }
 
             options.Add(new RdProjectTemplateGroupOption(
-                "Custom",
-                possiblePaths.Any()?"Custom":"Custom (Unity installation was not found)",
+                Strings.UnityPathTemplateParameter_CreateContent_Custom,
+                possiblePaths.Any() ? Strings.UnityPathTemplateParameter_CreateContent_Custom : Strings.UnityPathTemplateParameter_CreateContent_Custom__Unity_installation_was_not_found_,
                 null,
-                new RdProjectTemplateTextParameter(Name, "Custom path", null, Tooltip, RdTextParameterStyle.FileChooser, content)));
+                new RdProjectTemplateTextParameter(Name, Strings.UnityPathTemplateParameter_CreateContent_Custom_path, null, Tooltip, RdTextParameterStyle.FileChooser, content)));
 
             return new RdProjectTemplateGroupParameter(Name, "UnityEngineDll",
                 possiblePaths.Any()?possiblePaths.Last().FullPath:string.Empty, null, options);

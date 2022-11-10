@@ -1,6 +1,5 @@
 using System;
 using JetBrains.Application;
-using JetBrains.Application.Threading;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;

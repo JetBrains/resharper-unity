@@ -66,9 +66,9 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
     private val shaderContextDataBase = baseclass {}
     private val autoShaderContextData = classdef extends shaderContextDataBase {}
     private val shaderContextData = classdef extends shaderContextDataBase {
-        field("path", string.interned(shaderInternScope))
-        field("name", string.interned(shaderInternScope))
-        field("folder", string.interned(shaderInternScope))
+        field("path", string.interned(shaderInternScope).attrs(KnownAttrs.NlsSafe))
+        field("name", string.interned(shaderInternScope).attrs(KnownAttrs.NlsSafe))
+        field("folder", string.interned(shaderInternScope).attrs(KnownAttrs.NlsSafe))
         field("start", int)
         field("end", int)
         field("startLine", int)
@@ -156,5 +156,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
         // profiler
         call ("startProfiling", bool, void).documentation = "Start profiling and enter PlayMode, depending on the param"
+
+        // debug
+        call("getScriptingBackend", void, int).documentation = "Mono, IL2CPP, WinRTDotNET"
     }
 }

@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.InlayHints;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.TextControl.DocumentMarkup.IntraTextAdornments;
 using JetBrains.UI.RichText;
 using JetBrains.Util;
@@ -73,7 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
                         if (optionsDialogOwner != null)
                             Logger.Catch(() => optionsDialogOwner.Show(page: UnityInlayHintsOptionsPage.PID));
                     }),
-                    new RichText("Configure..."),
+                    new RichText(Strings.AsmDefIntraTextAdornmentModel_BuildContextMenuItems_Configure___),
                     null,
                     BulbMenuAnchors.SecondClassContextItems)
             };

@@ -6,6 +6,7 @@ using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -238,7 +239,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         // TODO: Show different text
         // "Introduce field to cache property index"
         // "Use cached property index"
-        public override string Text => "Use cached property index";
+        public override string Text => Strings.PreferAddressByIdToGraphicsParamsQuickFix_Text_Use_cached_property_index;
 
         public override bool IsAvailable(IUserDataHolder cache)
         {

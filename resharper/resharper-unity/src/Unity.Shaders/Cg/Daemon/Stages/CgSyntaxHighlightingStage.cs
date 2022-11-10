@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodes;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Resources;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using ICgFile = JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Tree.ICgFile;
@@ -160,7 +161,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon.Stages
                     else if (myIsErrorHighlightingEnabled)
                     {
                         var range = GetErrorRange(id);
-                        context.AddHighlighting(new CgSyntaxError("Semantic, packoffset or register expected", range));
+                        context.AddHighlighting(new CgSyntaxError(Strings.CgSyntaxHighlightingProcess_VisitSemanticNode_Semantic__packoffset_or_register_expected, range));
                     }
                 }
 

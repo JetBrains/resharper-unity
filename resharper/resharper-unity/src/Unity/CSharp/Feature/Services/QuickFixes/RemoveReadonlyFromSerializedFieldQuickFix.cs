@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -80,8 +81,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             }
 
             public override string Text => myFieldDeclarations.Declarators.Count > 1
-                ? "Make all fields non-readonly"
-                : "Make field non-readonly";
+                ? Strings.RemoveAllReadonly_Text_Make_all_fields_non_readonly
+                : Strings.RemoveAllReadonly_Text_Make_field_non_readonly;
         }
 
         private class RemoveOneReadonly : BulbActionBase
@@ -99,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 return null;
             }
 
-            public override string Text => $"Make '{myFieldDeclaration.DeclaredName}' non-readonly";
+            public override string Text => string.Format(Strings.RemoveOneReadonly_Text_Make_Field_non_readonly, myFieldDeclaration.DeclaredName);
         }
     }
 }

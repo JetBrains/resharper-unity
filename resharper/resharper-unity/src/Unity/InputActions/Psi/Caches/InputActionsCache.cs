@@ -49,12 +49,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
             var results = new List<InputActionsCacheItem>();
 
             if (rootObject == null) return results;
-            var maps = rootObject.MembersEnumerable.FirstOrDefault(member => member.Key == "maps")?.Value;
+            var maps = rootObject.MembersEnumerable.FirstOrDefault(member => member.Key == "maps")?.Value; // maps can be only once
             if (maps is not IJsonNewArray mapsArray) return results;
             var members = mapsArray.Values.SelectMany(a => ((IJsonNewObject)a).MembersEnumerable);
-            var actions = members.FirstOrDefault(m => m is { Key: "actions", Value: IJsonNewArray })?.Value;
-            if (actions is not IJsonNewArray actionsArray) return results;
-            var possibleNames = actionsArray.Values.SelectMany(a => ((IJsonNewObject)a).MembersEnumerable);
+            var actions = members.Where(m => m is { Key: "actions", Value: IJsonNewArray }) // actions may appear multiple times
+                .SelectNotNull(a=>a.Value).OfType<IJsonNewArray>().SelectMany(a=>a.Values);
+            var possibleNames = actions.SelectMany(a => ((IJsonNewObject)a).MembersEnumerable);
             var nameObjects = possibleNames.Where(nameMember => nameMember.Key == "name").SelectNotNull(a=>a.Value);
             foreach (var nameObject in nameObjects)
             {

@@ -78,7 +78,6 @@ class ShaderContextPopup(private val group: ActionGroup, private val dataContext
 
             val action = value?.action ?: return
             if (action is ShaderContextSwitchAction) {
-                //TODO #Localization RIDER-82737 Should be localized?
                 myInfoLabel!!.text = action.data.folder
                 myPosLabel!!.text = ":" + action.data.startLine
             } else {
