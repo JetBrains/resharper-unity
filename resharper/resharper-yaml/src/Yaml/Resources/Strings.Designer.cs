@@ -50,6 +50,8 @@
       }
     }
 
+    public static string CannotResolveSymbolMessage => ResourceManager.GetString("CannotResolveSymbolMessage");
+    public static string Message => ResourceManager.GetString("Message");
     public static string YamlLanguageSpecificDaemonBehaviour_InitialErrorStripe_File_s_primary_language_in_not_Yaml => ResourceManager.GetString("YamlLanguageSpecificDaemonBehaviour_InitialErrorStripe_File_s_primary_language_in_not_Yaml");
   }
 }

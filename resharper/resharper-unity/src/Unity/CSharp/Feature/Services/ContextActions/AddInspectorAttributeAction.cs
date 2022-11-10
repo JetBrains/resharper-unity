@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
@@ -198,13 +199,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 {
                     var displayName = myAttributeTypeName.ShortName.RemoveEnd("Attribute");
                     if (myMultipleFieldDeclaration.Declarators.Count == 1)
-                        return $"Add '{displayName}'";
+                        return string.Format(Strings.AddAttributeAction_Text_Add___0__, displayName);
 
                     // Layout attribute is about position between fields, not being applied to fields
-                    var preposition = myIsLayoutAttribute ? "before" : "to";
-                    return mySelectedFieldDeclaration != null
-                        ? $"Add '{displayName}' {preposition} '{mySelectedFieldDeclaration.DeclaredName}'"
-                        : $"Add '{displayName}' {preposition} all fields";
+                    if (myIsLayoutAttribute)
+                        return mySelectedFieldDeclaration != null
+                            ? string.Format(Strings.AddAttributeAction_Text_Add___0___before_SelectedField, displayName, mySelectedFieldDeclaration.DeclaredName)
+                            : string.Format(Strings.AddAttributeAction_Text_Add___0___before_all_fields, displayName);
+                    else
+                        return mySelectedFieldDeclaration != null
+                            ? string.Format(Strings.AddAttributeAction_Text_Add___0___to_SelectedField, displayName, mySelectedFieldDeclaration.DeclaredName)
+                            : string.Format(Strings.AddAttributeAction_Text_Add___0___to_all_fields, displayName);
+                    
                 }
             }
         }
@@ -247,14 +253,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 {
                     var displayName = myExistingAttribute.Name.ShortName;
                     if (myMultipleFieldDeclaration.Declarators.Count == 1)
-                        return $"Remove '{displayName}'";
+                        return string.Format(Strings.RemoveAttributeAction_Text_Remove___0__, displayName);
 
                     if (mySelectedFieldDeclaration != null)
                     {
-                        return $"Remove '{displayName}' from '{mySelectedFieldDeclaration.DeclaredName}'";
+                        return string.Format(Strings.RemoveAttributeAction_Text_Remove___0___from_SelectedField, displayName, mySelectedFieldDeclaration.DeclaredName);
                     }
 
-                    return $"Remove '{displayName}' from all fields";
+                    return string.Format(Strings.RemoveAttributeAction_Text_Remove___0___from_all_fields, displayName);
                 }
             }
         }

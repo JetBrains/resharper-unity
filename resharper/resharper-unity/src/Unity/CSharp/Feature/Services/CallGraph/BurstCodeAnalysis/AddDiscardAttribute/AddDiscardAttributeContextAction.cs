@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
 
@@ -14,8 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Bu
 {
     [ContextAction(
         Group = UnityContextActions.GroupID,
-        Name = AddDiscardAttributeUtil.DiscardActionMessage,
-        Description = AddDiscardAttributeUtil.DiscardActionMessage,
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.AddDiscardAttributeContextAction_Name), DescriptionResourceName = nameof(Strings.AddDiscardAttributeContextAction_Name),
         Disabled = false,
         AllowedInNonUserFiles = false,
         Priority = 1)]

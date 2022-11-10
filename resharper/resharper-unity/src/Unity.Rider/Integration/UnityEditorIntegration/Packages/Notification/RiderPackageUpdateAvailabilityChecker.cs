@@ -138,7 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                             () => myUserNotifications.CreateNotification(notificationLifetime.Lifetime,
                                 NotificationSeverity.INFO,
                                 Resources.Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Update_available___JetBrains_Rider_package_,
-                                string.Format(Resources.Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__0__in_Unity_Package_Manager_, packageVersion),
+                                string.Format(Resources.Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__Version__in_Unity_Package_Manager_, packageVersion),
                                 additionalCommands: new[]
                                 {
                                     new UserNotificationCommand(Resources.Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Do_not_show_for_this_solution, () =>

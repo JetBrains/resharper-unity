@@ -158,7 +158,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Ser
                 return null;
             }
 
-            public override string Text => string.Format(Strings.LoadSceneFixBulbAction_Text_Add___0___to_build_settings, mySceneName);
+            public override string Text => string.Format(Strings.LoadSceneFixBulbAction_Text_Add___SceneName___to_build_settings, mySceneName);
 
             private static IBlockSequenceNode CreateBlockSequenceNode(string sceneName, Guid guid, IPsiModule module)
             {

@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Navigation.FindUsages
                         || declaredElement is IField field && api.IsSerialisedField(field)
                         || declaredElement is ITypeElement type && api.IsUnityType(type))
                     {
-                        return request.Title + Strings.UnityFindUsagesProvider_GetNotFoundMessage__are_only_implicit_;
+                        return string.Format(Strings.UnityFindUsagesProvider_GetNotFoundMessage_SearchRequestLocalizedTitle_are_only_implicit_, request.Title);
                     }
                 }
             }
