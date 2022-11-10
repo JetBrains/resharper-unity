@@ -144,7 +144,7 @@
         <value>Enable scene in build settings</value>
     </data>
     <data name="LoadSceneFixBulbAction_Text_Add___SceneName___to_build_settings" xml:space="preserve">
-        <value>Add &apos;{0}&apos; to build settings</value>
+        <value>Add '{0}' to build settings</value>
         <comment>Add sceneName to build settings</comment>
     </data>
     <data name="AdditionalFileLayoutSettingsHelper_LoadDefaultPattern_You_are_about_to_replace_the_set_of_patterns_with_a_default_one___0_This_will_remove_all_changes_you_might_have_made__1_Do_you_want_to_proceed_" xml:space="preserve">

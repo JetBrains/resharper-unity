@@ -35,8 +35,8 @@ namespace DefaultNamespace
 ---------------------------------------------------------
 (0): ReSharper Unity Performance Critical Line Marker: Performance critical context
 (1): ReSharper Unity Inefficient Multiplication Order: Order of multiplication operations is inefficient
-(2): ReSharper Unity Inefficient Multidimensional Array Usage: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead
+(2): ReSharper Unity Inefficient Multidimensional Array Usage: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead.
 (3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (4): ReSharper Unity Performance Critical Line Marker: Performance critical context
 (5): ReSharper Unity Inefficient Multiplication Order: Order of multiplication operations is inefficient
-(6): ReSharper Unity Inefficient Multidimensional Array Usage: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead
+(6): ReSharper Unity Inefficient Multidimensional Array Usage: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead.
