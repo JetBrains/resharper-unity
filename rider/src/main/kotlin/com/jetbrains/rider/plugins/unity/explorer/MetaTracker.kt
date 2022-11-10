@@ -8,6 +8,7 @@ import com.intellij.openapi.command.undo.UndoManager
 import com.intellij.openapi.components.serviceIfCreated
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.vcs.VcsBundle
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
@@ -17,7 +18,6 @@ import com.intellij.util.PathUtil
 import com.intellij.util.application
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.jetbrains.rd.platform.util.getLogger
-import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorerFileSystemNode.Companion.isHiddenAsset
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
 import com.jetbrains.rider.plugins.unity.workspace.getPackages
@@ -109,9 +109,9 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
 
     private fun isValidCommand():Boolean {
         val currentCommandName = CommandProcessor.getInstance().currentCommandName
-        val res = currentCommandName == UnityBundle.message("command.name.apply.patch")
+        val res = currentCommandName == VcsBundle.message("patch.apply.command")
         if (res)
-            logger.trace("Avoid MetaTracker functionallity for the $currentCommandName. See RIDER-77123.")
+            logger.trace("Avoid MetaTracker functionality for the $currentCommandName. See RIDER-77123.")
         return !res
     }
 
