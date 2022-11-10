@@ -5,6 +5,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Errors;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
@@ -56,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Q
                 return null;
             }
 
-            public override string Text => "Remove invalid parameters";
+            public override string Text => Strings.RemoveToken_Text_Remove_invalid_parameters;
         }
     }
 }

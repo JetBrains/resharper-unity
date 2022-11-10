@@ -8,7 +8,6 @@ import org.testng.annotations.Test
 
 @TestEnvironment(platform = [PlatformType.ALL], toolset = ToolsetVersion.TOOLSET_17_CORE, coreVersion = CoreVersion.DOT_NET_6)
 class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
-
     override val traceCategories: List<String>
         get() = super.traceCategories + "JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents"
 

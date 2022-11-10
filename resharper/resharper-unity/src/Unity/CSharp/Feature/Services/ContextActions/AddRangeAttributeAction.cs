@@ -6,12 +6,14 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Modules;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Add 'Range' attribute",
-        Description = "Add range for this property in the Unity Editor Inspector")]
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.AddRangeAttributeAction_Name), 
+        DescriptionResourceName = nameof(Strings.AddRangeAttributeAction_Description)
+        )]
     public class AddRangeAttributeAction : AddInspectorAttributeAction
     {
         private static readonly SubmenuAnchor ourSubmenuAnchor =

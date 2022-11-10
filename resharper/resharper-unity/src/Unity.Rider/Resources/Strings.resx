@@ -67,7 +67,7 @@
     <data name="RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Update_available___JetBrains_Rider_package_" xml:space="preserve">
         <value>Update available - JetBrains Rider package.</value>
     </data>
-    <data name="RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__0__in_Unity_Package_Manager_" xml:space="preserve">
+    <data name="RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__Version__in_Unity_Package_Manager_" xml:space="preserve">
         <value>Check for JetBrains Rider package {0} in Unity Package Manager.</value>
     </data>
     <data name="UsagesInAssetsAreNotAvailableDuring_Text" xml:space="preserve">
@@ -115,8 +115,9 @@
     <data name="RiderDeferredCacheProgressBar_Start_Calculating_asset_index" xml:space="preserve">
         <value>Calculating asset index</value>
     </data>
-    <data name="RiderDeferredCacheProgressBar_Start_Processing__0_" xml:space="preserve">
+    <data name="RiderDeferredCacheProgressBar_Start_Processing_FileName" xml:space="preserve">
         <value>Processing {0}</value>
+        <comment>Processing fileName</comment>
     </data>
     <data name="UnityPathTemplateParameter_CreateContent_Custom" xml:space="preserve">
         <value>Custom</value>
@@ -142,11 +143,16 @@
     <data name="SceneManagerLoadSceneEnableQuickFix_Text_Enable_scene_in_build_settings" xml:space="preserve">
         <value>Enable scene in build settings</value>
     </data>
-    <data name="LoadSceneFixBulbAction_Text_Add___0___to_build_settings" xml:space="preserve">
-        <value>Add '{0}' to build settings</value>
+    <data name="LoadSceneFixBulbAction_Text_Add___SceneName___to_build_settings" xml:space="preserve">
+        <value>Add &apos;{0}&apos; to build settings</value>
+        <comment>Add sceneName to build settings</comment>
     </data>
     <data name="AdditionalFileLayoutSettingsHelper_LoadDefaultPattern_You_are_about_to_replace_the_set_of_patterns_with_a_default_one___0_This_will_remove_all_changes_you_might_have_made__1_Do_you_want_to_proceed_" xml:space="preserve">
-        <value>You are about to replace the set of patterns with a default one. {0}This will remove all changes you might have made.{0}Do you want to proceed?</value>
+        <value>You are about to replace the set of patterns with a default one.{0}This will remove all changes you might have made.{0}Do you want to proceed?</value>
+        <comment>Just a NewLine is inserted here</comment>
+    </data>
+    <data name="UnityFileLayoutPageTab_Create_Empty" xml:space="preserve">
+        <value>Empty</value>
     </data>
     <data name="UnityFileLayoutPageTab_Create_Default" xml:space="preserve">
         <value>Default</value>

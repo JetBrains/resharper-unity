@@ -4,6 +4,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -28,12 +29,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         }
 
         public override bool IsAvailable(IUserDataHolder cache) => base.IsAvailable(cache) && myTargetType.IsValid();
-        public override string Text => $"Convert to '{myMethodName}<{myTargetType.GetClrName()}>()'";
+        public override string Text => string.Format(Strings.PreferGenericMethodOverloadQuickFix_Text_Convert_to__MethodName__1__, myMethodName, myTargetType.GetClrName());
 
         // Can't use method name or target type for scoped fixes. This text is weak, but it's a sub-menu under something
         // like "Convert to 'GetComponent<UnityEngine.Grid>()'", so I think it gets the point across. I don't think
         // people will be too surprised that this will change other methods, too.
-        public override string ScopedText => "Use strongly typed overloads";
+        public override string ScopedText => Strings.PreferGenericMethodOverloadQuickFix_ScopedText_Use_strongly_typed_overloads;
         protected override ITreeNode TryGetContextTreeNode() => myInvocationExpression;
 
         protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)

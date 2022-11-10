@@ -10,7 +10,6 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 
-@Suppress("HardCodedStringLiteral")
 class ShaderContextSwitchAction(val project: Project, val id: RdDocumentId, val host: FrontendBackendHost,
                                 val data: ShaderContextData, private val currentContext:  IProperty<ShaderContextData?>) : AnAction(data.name) {
 

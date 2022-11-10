@@ -3,6 +3,7 @@ using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.Generate.Actions;
 using JetBrains.ReSharper.Feature.Services.Generate.Workflows;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
@@ -11,8 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
     {
         public GenerateUnityEventFunctionsWorkflow()
             : base(
-                GeneratorUnityKinds.UnityEventFunctions, LogoIcons.Unity.Id, "Unity Event Functions", GenerateActionGroup.CLR_LANGUAGE,
-                "Unity Event Functions", "", "Generate.UnityEventFunction")
+                GeneratorUnityKinds.UnityEventFunctions, LogoIcons.Unity.Id, Strings.GenerateUnityEventFunctionsWorkflow_Unity_Event_Functions, GenerateActionGroup.CLR_LANGUAGE,
+                Strings.GenerateUnityEventFunctionsWorkflow_Unity_Event_Functions, "", "Generate.UnityEventFunction")
         {
         }
 

@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Feature.Services.Intentions.CreateDeclaration;
 using JetBrains.ReSharper.Feature.Services.Intentions.Impl.DeclarationBuilders;
 using JetBrains.ReSharper.Intentions.CSharp.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeStyle;
@@ -38,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 if (!targetTypeElement.Equals(sourceTypeElement))
                     shortName = target.TargetType.ShortName + "." + shortName;
 
-                return $"Create Unity serialized field '{shortName}'";
+                return string.Format(Strings.CreateSerializedFieldFromUsageAction_Text_Create_Unity_serialized_field___0__, shortName);
             }
         }
 

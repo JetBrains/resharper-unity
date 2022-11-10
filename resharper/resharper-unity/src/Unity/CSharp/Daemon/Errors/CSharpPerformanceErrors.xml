@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Errors language="C#" configurableSeverityImplementationLanguage="CSHARP"
-        baseClass="CSharpUnityHighlightingBase, IUnityPerformanceHighlighting">
-
+<Errors language="C#" configurableSeverityImplementationLanguage="CSHARP" baseClass="CSharpUnityHighlightingBase, IUnityPerformanceHighlighting">
   <Usings>
     JetBrains.ReSharper.Psi.CSharp;
     JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -9,84 +7,74 @@
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
+    Strings = JetBrains.ReSharper.Plugins.Unity.Resources.Strings;
   </Usings>
-
+  
   <SeverityConfiguration>
     <Group name="UnityHighlightingGroupIds.UnityPerformance">
-      <Tag externalName="InefficientMultiplicationOrderWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Order of multiplication operations is inefficient</Title>
-        <Description>Reordering multiplication operations will improve performance</Description>
+      <Tag externalName="InefficientMultiplicationOrderWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="OrderOfMultiplicationOperationsIsInefficient" resourceType="Strings" />
+        <Description resourceName="ReorderingMultiplicationOperationsWillImprovePerformance" resourceType="Strings" />
       </Tag>
       <Tag externalName="InefficientMultidimensionalArrayUsageWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Use jagged or one-dimensional array instead of multidimensional array</Title>
-        <Description>
-          Multidimensional array element access is converted to a method call. It is more efficient to use a jagged or one-dimensional array.
-        </Description>
+        <Title resourceName="UseJaggedOrOneDimensionalArrayInsteadOfMultidimensionalArray" resourceType="Strings" />
+        <Description resourceName="MultidimensionalArrayElementAccessIsConvertedToAMethodCallItIsMoreEfficientToUseAJaggedOrOneDimensionalArray" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnityPerformanceInvocationWarning.HIGHLIGHTING_ID" default="HINT">
-        <Title>Expensive method invocation</Title>
-        <Description>
-          This method call is inefficient when called inside a performance critical context.
-        </Description>
+        <Title resourceName="ExpensiveMethodInvocation" resourceType="Strings" />
+        <Description resourceName="ThisMethodCallIsInefficientWhenCalledInsideAPerformanceCriticalContext" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnityPerformanceNullComparisonWarning.HIGHLIGHTING_ID" default="HINT">
-        <Title>Expensive null comparison</Title>
-        <Description>
-          Equality operations on objects deriving from 'UnityEngine.Object' will also check that the underlying native object has not been destroyed. This requires a call into native code and can have a performance impact when used inside frequently called methods.
-        </Description>
+        <Title resourceName="ExpensiveNullComparison" resourceType="Strings" />
+        <Description resourceName="EqualityOperationsOnObjectsDerivingFromUnityEngineObjectWillAlsoCheckThatTheUnderlyingNativeObjectHasNotBeenDestroyedThisRequiresACallIntoNativeCodeAndCanHaveAPerformanceImpactWhenUsedInsideFrequentlyCalledMethods" resourceType="Strings" />
       </Tag>
       <Tag externalName="UnityPerformanceCameraMainWarning.HIGHLIGHTING_ID" default="HINT">
-        <Title>'Camera.main' is expensive</Title>
-        <Description>
-          'Camera.main' is slow and does not cache its result. Using 'Camera.main' in frequently called methods is very inefficient. Prefer caching the result in 'Start()' or 'Awake()'.
-        </Description>
+        <Title resourceName="CameraMainIsExpensive" resourceType="Strings" />
+        <Description resourceName="CameraMainIsSlowAndDoesNotCacheItsResultUsingCameraMainInFrequentlyCalledMethodsIsVeryInefficientPreferCachingTheResultInStartOrAwake" resourceType="Strings" />
       </Tag>
     </Group>
   </SeverityConfiguration>
-
+  
   <Warning name="InefficientMultidimensionalArrayUsage" configurableSeverity="Unity.InefficientMultidimensionalArrayUsage">\
     <Parameter type="List&lt;ITreeNodePointer&lt;ITreeNode&gt;&gt;" name="usages" isValid="skip" />
-    <Parameter type="IArrayCreationExpression" name="arrayCreationExpression" isValid="skip"/>
+    <Parameter type="IArrayCreationExpression" name="arrayCreationExpression" isValid="skip" />
     <Parameter type="IVariableDeclaration" name="variableDeclaration" />
     <Parameter type="IMultipleDeclaration" name="multiplyDeclaration" />
     <Parameter type="DocumentRange" name="highlightingRange" />
-    <Message value="Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead" />
-    <Range>HighlightingRange</Range>
-    <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIDIMENSIONAL_ARRAYS_USAGE"/>
+    <Message resourceName="AccessingMultidimensionalArraysIsInefficientUseAJaggedOrOneDimensionalArrayInsteadMessage" resourceType="Strings" />
+    <Range>HighlightingRange</Range><Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIDIMENSIONAL_ARRAYS_USAGE" />
   </Warning>
 
   <Warning name="InefficientMultiplicationOrder" configurableSeverity="Unity.InefficientMultiplicationOrder">
-    <Parameter type="ICSharpExpression" name="expression"/>
-    <Parameter type="List&lt;ICSharpExpression&gt;" name="scalars" isValid="skip"/>
-    <Parameter type="List&lt;ICSharpExpression&gt;" name="matrices" isValid="skip"/>
-    <Message value="Order of multiplication operations is inefficient" />
+    <Parameter type="ICSharpExpression" name="expression" />
+    <Parameter type="List&lt;ICSharpExpression&gt;" name="scalars" isValid="skip" />
+    <Parameter type="List&lt;ICSharpExpression&gt;" name="matrices" isValid="skip" />
+    <Message resourceName="OrderOfMultiplicationOperationsIsInefficientMessage" resourceType="Strings" />
     <Range>Expression.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIPLICATION_ORDER"/>
+    <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIPLICATION_ORDER" />
   </Warning>
 
   <Warning name="UnityPerformanceInvocation" configurableSeverity="Unity.PerformanceCriticalCodeInvocation">
-    <Parameter type="IInvocationExpression" name="invocationExpression" isValid="skip"/>
-    <Parameter type="IReference" name="reference"/>
-    <Message value="Expensive method invocation" />
+    <Parameter type="IInvocationExpression" name="invocationExpression" isValid="skip" />
+    <Parameter type="IReference" name="reference" />
+    <Message resourceName="ExpensiveMethodInvocationMessage" resourceType="Strings" />
     <Range>Reference.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.COSTLY_METHOD_INVOCATION"/>
+    <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.COSTLY_METHOD_INVOCATION" />
   </Warning>
 
   <Warning name="UnityPerformanceNullComparison" configurableSeverity="Unity.PerformanceCriticalCodeNullComparison">
-    <Parameter type="ICSharpExpression" name="expression" isValid="skip"/>
-    <Parameter type="string" name="fieldName" isValid="skip"/>
-    <Parameter type="IReference" name="reference"/>
-    <Message value="Comparison to 'null' is expensive" />
+    <Parameter type="ICSharpExpression" name="expression" isValid="skip" />
+    <Parameter type="string" name="fieldName" isValid="skip" />
+    <Parameter type="IReference" name="reference" />
+    <Message resourceName="ComparisonTonullIsExpensiveMessage" resourceType="Strings" />
     <Range>Reference.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.NULL_COMPARISON"/>
+    <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.NULL_COMPARISON" />
   </Warning>
 
   <Warning name="UnityPerformanceCameraMain" configurableSeverity="Unity.PerformanceCriticalCodeCameraMain">
-    <Parameter type="IReferenceExpression" name="referenceExpression"/>
-    <Message value="'Camera.main' is expensive" />
+    <Parameter type="IReferenceExpression" name="referenceExpression" />
+    <Message resourceName="CameraMainIsExpensiveMessage" resourceType="Strings" />
     <Range>ReferenceExpression.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.CAMERA_MAIN"/>
+    <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.CAMERA_MAIN" />
   </Warning>
-
 </Errors>

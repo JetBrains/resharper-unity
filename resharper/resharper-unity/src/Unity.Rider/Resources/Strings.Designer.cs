@@ -63,7 +63,7 @@
     public static string MakeSureRider_IsSetAsTheExternalEditor_Text => ResourceManager.GetString("MakeSureRider_IsSetAsTheExternalEditor_Text");
     public static string RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Do_not_show_for_this_solution => ResourceManager.GetString("RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Do_not_show_for_this_solution");
     public static string RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Update_available___JetBrains_Rider_package_ => ResourceManager.GetString("RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Update_available___JetBrains_Rider_package_");
-    public static string RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__0__in_Unity_Package_Manager_ => ResourceManager.GetString("RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__0__in_Unity_Package_Manager_");
+    public static string RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__Version__in_Unity_Package_Manager_ => ResourceManager.GetString("RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__Version__in_Unity_Package_Manager_");
     public static string UsagesInAssetsAreNotAvailableDuring_Text => ResourceManager.GetString("UsagesInAssetsAreNotAvailableDuring_Text");
     public static string UnityImplicitUsage_Text => ResourceManager.GetString("UnityImplicitUsage_Text");
     public static string UnityCodeInsightFieldUsageProvider_DisplayName_Unity_serialized_field => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_DisplayName_Unity_serialized_field");
@@ -79,7 +79,7 @@
     public static string RiderTypeDetector_AddScriptUsagesHighlighting_Assets_usages => ResourceManager.GetString("RiderTypeDetector_AddScriptUsagesHighlighting_Assets_usages");
     public static string RiderDeferredCacheProgressBar_Start_Processing_assets => ResourceManager.GetString("RiderDeferredCacheProgressBar_Start_Processing_assets");
     public static string RiderDeferredCacheProgressBar_Start_Calculating_asset_index => ResourceManager.GetString("RiderDeferredCacheProgressBar_Start_Calculating_asset_index");
-    public static string RiderDeferredCacheProgressBar_Start_Processing__0_ => ResourceManager.GetString("RiderDeferredCacheProgressBar_Start_Processing__0_");
+    public static string RiderDeferredCacheProgressBar_Start_Processing_FileName => ResourceManager.GetString("RiderDeferredCacheProgressBar_Start_Processing_FileName");
     public static string UnityPathTemplateParameter_CreateContent_Custom => ResourceManager.GetString("UnityPathTemplateParameter_CreateContent_Custom");
     public static string UnityPathTemplateParameter_CreateContent_Custom__Unity_installation_was_not_found_ => ResourceManager.GetString("UnityPathTemplateParameter_CreateContent_Custom__Unity_installation_was_not_found_");
     public static string UnityPathTemplateParameter_CreateContent_Custom_path => ResourceManager.GetString("UnityPathTemplateParameter_CreateContent_Custom_path");
@@ -88,8 +88,9 @@
     public static string UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_No_connection_to_Unity => ResourceManager.GetString("UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_No_connection_to_Unity");
     public static string UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_Make_sure_Unity_is_running_ => ResourceManager.GetString("UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_Make_sure_Unity_is_running_");
     public static string SceneManagerLoadSceneEnableQuickFix_Text_Enable_scene_in_build_settings => ResourceManager.GetString("SceneManagerLoadSceneEnableQuickFix_Text_Enable_scene_in_build_settings");
-    public static string LoadSceneFixBulbAction_Text_Add___0___to_build_settings => ResourceManager.GetString("LoadSceneFixBulbAction_Text_Add___0___to_build_settings");
+    public static string LoadSceneFixBulbAction_Text_Add___SceneName___to_build_settings => ResourceManager.GetString("LoadSceneFixBulbAction_Text_Add___SceneName___to_build_settings");
     public static string AdditionalFileLayoutSettingsHelper_LoadDefaultPattern_You_are_about_to_replace_the_set_of_patterns_with_a_default_one___0_This_will_remove_all_changes_you_might_have_made__1_Do_you_want_to_proceed_ => ResourceManager.GetString("AdditionalFileLayoutSettingsHelper_LoadDefaultPattern_You_are_about_to_replace_the_set_of_patterns_with_a_default_one___0_This_will_remove_all_changes_you_might_have_made__1_Do_you_want_to_proceed_");
+    public static string UnityFileLayoutPageTab_Create_Empty => ResourceManager.GetString("UnityFileLayoutPageTab_Create_Empty");
     public static string UnityFileLayoutPageTab_Create_Default => ResourceManager.GetString("UnityFileLayoutPageTab_Create_Default");
     public static string UnityFileLayoutPageTab_Create_Default_with_regions => ResourceManager.GetString("UnityFileLayoutPageTab_Create_Default_with_regions");
     public static string UnityFileLayoutPageTab_Create_Load_patterns_ => ResourceManager.GetString("UnityFileLayoutPageTab_Create_Load_patterns_");

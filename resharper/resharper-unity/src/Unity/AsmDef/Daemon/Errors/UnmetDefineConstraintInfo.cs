@@ -2,6 +2,7 @@ using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 #nullable enable
 
@@ -11,13 +12,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors
         typeof(HighlightingGroupIds.IdentifierHighlightings),
         Languages = "CSHARP",
         AttributeId = AnalysisHighlightingAttributeIds.DEADCODE,
-        OverlapResolve = OverlapResolveKind.DEADCODE,
-        ToolTipFormatString = MESSAGE)]
+        OverlapResolve = OverlapResolveKind.DEADCODE
+        )]
     public class UnmetDefineConstraintInfo : IHighlighting
     {
-        private const string MESSAGE = "Unmet define constraint{0}";
-        private const string NOT_COMPILED = ". Assembly definition will not be compiled";
-
         private readonly IJsonNewLiteralExpression myConstraintValue;
         private readonly DocumentRange myHighlightingRange;
 
@@ -27,7 +25,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors
         {
             myConstraintValue = constraintValue;
             myHighlightingRange = highlightingRange;
-            ToolTip = string.Format(MESSAGE, allSymbolsUndefined ? NOT_COMPILED : string.Empty);
+            ToolTip = allSymbolsUndefined ? 
+                Strings.UnmetDefineConstraintInfo_Unmet_define_constraint_Assembly_definition_will_not_be_compiled 
+                : Strings.UnmetDefineConstraintInfo_Unmet_define_constraint;
         }
 
         public bool IsValid() => myConstraintValue.IsValid() && myHighlightingRange.IsValid();

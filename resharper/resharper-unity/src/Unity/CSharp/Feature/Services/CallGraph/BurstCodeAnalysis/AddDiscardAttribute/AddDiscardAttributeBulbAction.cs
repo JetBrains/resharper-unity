@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.BurstCodeAnalysis.AddDiscardAttribute
 {
@@ -34,6 +35,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Bu
             });
         }
 
-        public string Text => AddDiscardAttributeUtil.DiscardActionMessage;
+        public string Text => Strings.AddDiscardAttributeContextAction_Name;
     }
 }

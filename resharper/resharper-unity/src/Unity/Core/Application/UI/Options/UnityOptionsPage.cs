@@ -136,86 +136,74 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             AddHeader(Strings.UnityOptionsPage_AddNamingSubSection_Serialized_field_naming_rules);
 
             var entry = OptionsSettingsSmartContext.Schema.GetIndexedEntry(ourUserRulesAccessor);
-            var userRule = GetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry);
-            Assertion.AssertNotNull(userRule, "userRule != null");
-
+            var cachedUserRule = UnityNamingRuleDefaultSettings.GetActualUnitySerializedFieldRule(OptionsSettingsSmartContext, entry)
+                                 ?? UnityNamingRuleDefaultSettings.CreateDefaultUnitySerializedFieldRule();
+            
             var prefixProperty = new Property<string>(Lifetime, "StringOptionViewModel_SerializedFieldPrefix");
-            prefixProperty.SetValue(userRule.Policy.NamingRule.Prefix);
+            prefixProperty.SetValue(cachedUserRule.Policy.NamingRule.Prefix);
             prefixProperty.Change.Advise_NoAcknowledgement(Lifetime, args =>
             {
-                var rule = GetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry);
-                rule.Policy.NamingRule.Prefix = args.New ?? string.Empty;
-                SetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry, rule);
+                cachedUserRule.Policy.NamingRule.Prefix = args.New ?? string.Empty;
+                UnityNamingRuleDefaultSettings.SetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry, cachedUserRule);
             });
 
             var suffixProperty = new Property<string>(Lifetime, "StringOptionViewModel_SerializedFieldSuffix");
-            suffixProperty.SetValue(userRule.Policy.NamingRule.Suffix);
+            suffixProperty.SetValue(cachedUserRule.Policy.NamingRule.Suffix);
             suffixProperty.Change.Advise_NoAcknowledgement(Lifetime, args =>
             {
-                var rule = GetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry);
-                rule.Policy.NamingRule.Suffix = args.New ?? string.Empty;
-                SetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry, rule);
+                cachedUserRule.Policy.NamingRule.Suffix = args.New ?? string.Empty;
+                UnityNamingRuleDefaultSettings.SetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry, cachedUserRule);
             });
 
             var kindProperty = new Property<object>(Lifetime, "ComboOptionViewModel_SerializedFieldNamingStyle");
-            kindProperty.SetValue(userRule.Policy.NamingRule.NamingStyleKind);
+            kindProperty.SetValue(cachedUserRule.Policy.NamingRule.NamingStyleKind);
             kindProperty.Change.Advise_NoAcknowledgement(Lifetime, args =>
             {
-                var rule = GetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry);
-                rule.Policy.NamingRule.NamingStyleKind = (NamingStyleKinds)args.New;
-                SetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry, rule);
+                cachedUserRule.Policy.NamingRule.NamingStyleKind = (NamingStyleKinds)args.New;
+                UnityNamingRuleDefaultSettings.SetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry, cachedUserRule);
             });
+    
+            var enabledProperty = new Property<bool>(Lifetime, "BoolOptionViewModel_SerializedFieldEnableInspection");
+            AddBoolOption(enabledProperty, Strings.UnityOptionsPage_AddNamingSubSection_Enable_inspection, null);
 
-            var enabledProperty =
-                new Property<bool>(Lifetime, "BoolOptionViewModel_SerializedFieldEnableInspection");
-            enabledProperty.SetValue(userRule.Policy.EnableInspection);
+            var actualUnitySerializedFieldRule = UnityNamingRuleDefaultSettings.GetActualUnitySerializedFieldRule(OptionsSettingsSmartContext, entry);
+            enabledProperty.SetValue(actualUnitySerializedFieldRule != null);
             enabledProperty.Change.Advise_NoAcknowledgement(Lifetime, args =>
             {
-                var existingRule = GetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry);
-                var newRule = new ClrUserDefinedNamingRule(existingRule.Descriptor,
-                    new NamingPolicy(existingRule.Policy.ExtraRules.ToIReadOnlyList(),
-                        existingRule.Policy.NamingRule, args.New));
-                SetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry, newRule);
+                if(args.New)
+                {
+                    var defaultUnitySerializedFieldRule = UnityNamingRuleDefaultSettings.CreateDefaultUnitySerializedFieldRule();
+                    UnityNamingRuleDefaultSettings.SetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry, defaultUnitySerializedFieldRule);
+                }
+                else
+                {
+                    UnityNamingRuleDefaultSettings.RemoveUnitySerializedFieldRule(OptionsSettingsSmartContext, entry);
+                }
             });
 
-            AddStringOption(Lifetime, prefixProperty, Strings.UnityOptionsPage_AddNamingSubSection_Prefix_);
-            AddStringOption(Lifetime, suffixProperty, Strings.UnityOptionsPage_AddNamingSubSection_Suffix_);
-            AddComboOption(kindProperty, Strings.UnityOptionsPage_AddNamingSubSection_Style_, string.Empty, string.Empty,
-                new[]
-                {
-                    new RadioOptionPoint(NamingStyleKinds.AaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase),
-                    new RadioOptionPoint(NamingStyleKinds.AaBb_AaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase_UnderscoreTolerant),
-                    new RadioOptionPoint(NamingStyleKinds.AaBb_aaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase_underscoreTolerant2),
-                    new RadioOptionPoint(NamingStyleKinds.aaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase),
-                    new RadioOptionPoint(NamingStyleKinds.aaBb_AaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase_UnderscoreTolerant),
-                    new RadioOptionPoint(NamingStyleKinds.aaBb_aaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase_underscoreTolerant2),
-                    new RadioOptionPoint(NamingStyleKinds.AA_BB, Strings.UnityOptionsPage_AddNamingSubSection_ALL_UPPER),
-                    new RadioOptionPoint(NamingStyleKinds.Aa_bb, Strings.UnityOptionsPage_AddNamingSubSection_First_upper)
-                });
-            AddBoolOption(enabledProperty, Strings.UnityOptionsPage_AddNamingSubSection_Enable_inspection, null);
-        }
-
-        private static ClrUserDefinedNamingRule GetUnitySerializedFieldRule(IContextBoundSettingsStore settingsStore,
-                                                                            SettingsIndexedEntry entry)
-        {
-            var userRule = settingsStore.GetIndexedValue(entry,
-                UnityNamingRuleDefaultSettings.SerializedFieldRuleGuid, null) as ClrUserDefinedNamingRule;
-            if (userRule == null)
+            using (Indent())
             {
-                userRule = UnityNamingRuleDefaultSettings.GetUnitySerializedFieldRule();
-                SetUnitySerializedFieldRule(settingsStore, entry, userRule);
+                var prefixOption = AddStringOption(Lifetime, prefixProperty, Strings.UnityOptionsPage_AddNamingSubSection_Prefix_);
+                AddBinding(prefixOption, BindingStyle.IsEnabledProperty, enabledProperty, enable => enable);
+                
+                var suffixOption = AddStringOption(Lifetime, suffixProperty, Strings.UnityOptionsPage_AddNamingSubSection_Suffix_);
+                AddBinding(suffixOption, BindingStyle.IsEnabledProperty, enabledProperty, enable => enable);
+                
+                var comboOption = AddComboOption(kindProperty, Strings.UnityOptionsPage_AddNamingSubSection_Style_, string.Empty, string.Empty,
+                    new[]
+                    {
+                        new RadioOptionPoint(NamingStyleKinds.AaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase),
+                        new RadioOptionPoint(NamingStyleKinds.AaBb_AaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase_UnderscoreTolerant),
+                        new RadioOptionPoint(NamingStyleKinds.AaBb_aaBb, Strings.UnityOptionsPage_AddNamingSubSection_UpperCamelCase_underscoreTolerant2),
+                        new RadioOptionPoint(NamingStyleKinds.aaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase),
+                        new RadioOptionPoint(NamingStyleKinds.aaBb_AaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase_UnderscoreTolerant),
+                        new RadioOptionPoint(NamingStyleKinds.aaBb_aaBb, Strings.UnityOptionsPage_AddNamingSubSection_lowerCamelCase_underscoreTolerant2),
+                        new RadioOptionPoint(NamingStyleKinds.AA_BB, Strings.UnityOptionsPage_AddNamingSubSection_ALL_UPPER),
+                        new RadioOptionPoint(NamingStyleKinds.Aa_bb, Strings.UnityOptionsPage_AddNamingSubSection_First_upper)
+                    });
+                AddBinding(comboOption, BindingStyle.IsEnabledProperty, enabledProperty, enable => enable);
             }
-
-            return userRule;
         }
-
-        private static void SetUnitySerializedFieldRule(IContextBoundSettingsStore settingsStore,
-                                                        SettingsIndexedEntry entry, ClrUserDefinedNamingRule userRule)
-        {
-            settingsStore.SetIndexedValue(entry, UnityNamingRuleDefaultSettings.SerializedFieldRuleGuid, null,
-                userRule);
-        }
-
         private void AddTextBasedAssetsSection()
         {
             AddHeader(Strings.UnityOptionsPage_AddTextBasedAssetsSection_Text_based_assets);
@@ -280,9 +268,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
                 Strings.UnityOptionsPage_AddInternalSection__Deprecated__Parse_GLSL_files_for_syntax_errors__requires_internal_mode__and_re_opening_solution_);
         }
 
-        private void AddStringOption(Lifetime lifetime, IProperty<string> property, string text)
+        private BeControl AddStringOption(Lifetime lifetime, IProperty<string> property, string text)
         {
-            AddControlWithProperty(property, p => p.GetBeTextBox(lifetime).WithDescription(text, lifetime));
+           return AddControlWithProperty(property, p => p.GetBeTextBox(lifetime).WithDescription(text, lifetime));
         }
 
         private void AddBetterCommentText(string text)
