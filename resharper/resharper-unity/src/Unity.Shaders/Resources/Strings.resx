@@ -57,4 +57,7 @@
     <data name="RemoveSwallowedToken_Text_Insert_new_line" xml:space="preserve">
         <value>Insert new line</value>
     </data>
+    <data name="ReformatCode_Text" xml:space="preserve">
+        <value>Reformat code</value>
+    </data>
 </root>
