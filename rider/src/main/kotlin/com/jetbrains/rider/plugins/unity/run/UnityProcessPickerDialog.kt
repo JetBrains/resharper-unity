@@ -67,7 +67,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             TreeSpeedSearch(this, { path -> path.lastPathComponent?.toString() }, true)
                 .apply { comparator = SpeedSearchComparator(false) }
 
-            emptyText.text = "Searching"
+            emptyText.text = UnityBundle.message("dialog.progress.searching")
 
             // Show that we're always searching. We poll players every second, but that is so fast that we can't show it
             // for the poll duration, so just always show it.
