@@ -161,7 +161,7 @@ public class Test : MonoBehaviour
 }
 
 ---------------------------------------------------------
-(0): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (2): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
@@ -172,7 +172,7 @@ public class Test : MonoBehaviour
 (8): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (9): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (10): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(11): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(11): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (12): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (13): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (14): ReSharper Unity Expensive Method Invocation: Expensive method invocation
@@ -184,7 +184,7 @@ public class Test : MonoBehaviour
 (20): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (21): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (22): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(23): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(23): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (24): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (25): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (26): ReSharper Unity Expensive Method Invocation: Expensive method invocation
@@ -195,7 +195,7 @@ public class Test : MonoBehaviour
 (31): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (32): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (33): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(34): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(34): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (35): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (36): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (37): ReSharper Unity Expensive Method Invocation: Expensive method invocation
@@ -206,9 +206,9 @@ public class Test : MonoBehaviour
 (42): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (43): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (44): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(45): ReSharper Unity Performance Critical Line Marker: Performance critical context
-(46): ReSharper Unity Performance Critical Line Marker: Performance critical context
-(47): ReSharper Unity Performance Critical Line Marker: Performance critical context
-(48): ReSharper Unity Performance Critical Line Marker: Performance critical context
-(49): ReSharper Unity Performance Critical Line Marker: Performance critical context
-(50): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(45): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(46): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(47): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(48): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(49): ReSharper Unity Performance Critical Line Marker: Performance-critical context
+(50): ReSharper Unity Performance Critical Line Marker: Performance-critical context
