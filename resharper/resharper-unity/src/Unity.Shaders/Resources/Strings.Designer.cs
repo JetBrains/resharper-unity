@@ -63,5 +63,6 @@
     public static string ThereIsAlreadyAPropertyNamedDeclaredMessage => ResourceManager.GetString("ThereIsAlreadyAPropertyNamedDeclaredMessage");
     public static string RemoveToken_Text_Remove_invalid_parameters => ResourceManager.GetString("RemoveToken_Text_Remove_invalid_parameters");
     public static string RemoveSwallowedToken_Text_Insert_new_line => ResourceManager.GetString("RemoveSwallowedToken_Text_Insert_new_line");
+    public static string ReformatCode_Text => ResourceManager.GetString("ReformatCode_Text");
   }
 }
