@@ -31,7 +31,7 @@
 
 ---------------------------------------------------------
 (0): ReSharper Warning: Conflicting property '_ZBias' is defined below
-(1): ReSharper Warning: There is already a property named '_ZBias' declared
+(1): ReSharper Warning: The property named '_ZBias' is already declared
 (2): ReSharper Underlined Error Highlighting: Ambiguous reference:
   Float _ZBias "Duplicate ZBias property"
   Float _ZBias "ZBias"

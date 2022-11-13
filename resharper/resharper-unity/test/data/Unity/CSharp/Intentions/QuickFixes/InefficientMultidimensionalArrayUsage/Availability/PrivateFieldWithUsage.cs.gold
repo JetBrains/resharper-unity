@@ -16,5 +16,5 @@ public class Foo : MonoBehaviour
 }
 
 ------------------------------------------------
-0: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead
+0: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead.
 NO QUICKFIXES
