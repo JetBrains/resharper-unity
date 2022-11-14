@@ -21,40 +21,44 @@
         <comment>listOfReferences, NewLine</comment>
     </data>
     <data name="CannotResolveSymbolMessage" xml:space="preserve">
-        <value>Cannot resolve symbol &apos;{0}&apos;</value>
+        <value>Cannot resolve symbol '{0}'</value>
     </data>
     <data name="CgBuiltInTypeTokenNodeType_TokenRepresentation_built_in_type" xml:space="preserve">
         <value>built-in type</value>
     </data>
     <data name="CgLanguageSpecificDaemonBehaviour_InitialErrorStripe_File_s_primary_language_in_not_Cg" xml:space="preserve">
-        <value>File&apos;s primary language in not Cg</value>
+        <value>File's primary language in not Cg</value>
     </data>
     <data name="CgSyntaxHighlightingProcess_VisitSemanticNode_Semantic__packoffset_or_register_expected" xml:space="preserve">
-        <value>Semantic, packoffset or register expected</value>
+        <value>Semantic, packoffset, or register expected</value>
     </data>
     <data name="ConflictingPropertyIsDefinedBelowMessage" xml:space="preserve">
-        <value>Conflicting property &apos;{0}&apos; is defined below</value>
+        <value>Conflicting property '{0}' is defined below</value>
     </data>
     <data name="IgnoredCharacterConsiderInsertingNewLineForClarityMessage" xml:space="preserve">
-        <value>Ignored character. Consider inserting new line for clarity</value>
+        <value>Ignored character. Consider inserting new line for clarity.</value>
     </data>
     <data name="Message" xml:space="preserve">
         <value>{0}</value>
+        <comment>Don't localize</comment>
         <comment>Nothing to translate here. It is part of the generator's work, not a mistake.</comment>
     </data>
     <data name="ParametersAreNotValidInThisLocationMessage" xml:space="preserve">
         <value>Parameters are not valid in this location</value>
     </data>
     <data name="PossibleUnintendedUseOfUndeclaredPropertyPropertyMayBeSetFromCodeMessage" xml:space="preserve">
-        <value>Possible unintended use of undeclared property &apos;{0}&apos;. Property may be set from code</value>
+        <value>Possible unintended use of undeclared property '{0}'. Property may be set from code.</value>
     </data>
     <data name="ThereIsAlreadyAPropertyNamedDeclaredMessage" xml:space="preserve">
-        <value>There is already a property named &apos;{0}&apos; declared</value>
+        <value>The property named '{0}' is already declared</value>
     </data>
     <data name="RemoveToken_Text_Remove_invalid_parameters" xml:space="preserve">
         <value>Remove invalid parameters</value>
     </data>
     <data name="RemoveSwallowedToken_Text_Insert_new_line" xml:space="preserve">
         <value>Insert new line</value>
+    </data>
+    <data name="ReformatCode_Text" xml:space="preserve">
+        <value>Reformat code</value>
     </data>
 </root>

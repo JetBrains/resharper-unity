@@ -4,7 +4,7 @@
 }
 
 ------------------------------------------------
-0: Missing assembly reference 'Unresolved'. Assembly will not be referenced during compilation
+0: Missing assembly reference 'Unresolved'. Assembly will not be referenced during compilation.
 NO QUICKFIXES
 1: Cannot reference self
 QUICKFIXES:
