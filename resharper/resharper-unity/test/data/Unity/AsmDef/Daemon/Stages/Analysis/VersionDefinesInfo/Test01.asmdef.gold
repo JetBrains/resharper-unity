@@ -20,5 +20,5 @@
 }
 
 ---------------------------------------------------------
-(0): ReSharper Dead Code: Symbol not defined. Unmet version constraint: x >= 2035.0
-(1): ReSharper Dead Code: Symbol not defined. Package 'com.unknown.package' is not installed
+(0): ReSharper Dead Code: Symbol not defined. Unmet version constraint: x >= 2035.0.
+(1): ReSharper Dead Code: Symbol not defined. Package 'com.unknown.package' is not installed.

@@ -2,6 +2,7 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 #nullable enable
 
@@ -12,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Occurrences
     public class AsmDefOccurrenceKindProvider : IOccurrenceKindProvider
     {
         public static readonly OccurrenceKind AssemblyDefinitionReference =
-            OccurrenceKind.CreateSemantic("Assembly definition reference");
+            OccurrenceKind.CreateSemantic(Strings.AsmDefOccurrenceKindProvider_AssemblyDefinitionReference_Assembly_definition_reference);
 
         public ICollection<OccurrenceKind>? GetOccurrenceKinds(IOccurrence occurrence)
         {

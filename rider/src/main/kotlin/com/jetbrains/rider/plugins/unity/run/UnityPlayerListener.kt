@@ -140,7 +140,7 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
 
                 // If UseAlternateIP is set that means we should use the IP in the broadcast message rather than the
                 // packet source address
-                var hostAddress = when {
+                val hostAddress = when {
                     UnityPlayerConnectionFlags.UseAlternateIP.isSet(flags) -> InetAddress.getByName(ipInMessage)
                     else -> packetSourceAddress
                 }

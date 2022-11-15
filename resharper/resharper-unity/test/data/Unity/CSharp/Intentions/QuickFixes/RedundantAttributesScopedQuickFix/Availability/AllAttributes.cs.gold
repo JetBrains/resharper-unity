@@ -64,7 +64,7 @@ public class MissingConstructor3
 }
 
 ------------------------------------------------
-0: Attribute 'UnityEngine.SerializeField' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+0: Attribute 'UnityEngine.SerializeField' is redundant on this declaration type. It is only used when applied to 'Field' declarations.
 QUICKFIXES:
 Remove redundant attribute
 --Remove redundant Unity attributes in file
@@ -73,7 +73,7 @@ Remove redundant attribute
 Remove redundant code in file
 --Remove redundant code in project
 --Remove redundant code in solution
-1: Attribute 'UnityEngine.SerializeField' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+1: Attribute 'UnityEngine.SerializeField' is redundant on this declaration type. It is only used when applied to 'Field' declarations.
 QUICKFIXES:
 Remove redundant attribute
 --Remove redundant Unity attributes in class 'Foo'
@@ -84,7 +84,7 @@ Remove redundant code in class 'Foo'
 --Remove redundant code in file
 --Remove redundant code in project
 --Remove redundant code in solution
-2: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations
+2: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations.
 QUICKFIXES:
 Remove redundant attribute
 --Remove redundant Unity attributes in class 'Foo'
@@ -331,7 +331,7 @@ Remove redundant code in struct 'Tes3'
 --Remove redundant code in file
 --Remove redundant code in project
 --Remove redundant code in solution
-24: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+24: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations.
 QUICKFIXES:
 Remove redundant attribute
 --Remove redundant Unity attributes in delegate 'MyEventHandler'

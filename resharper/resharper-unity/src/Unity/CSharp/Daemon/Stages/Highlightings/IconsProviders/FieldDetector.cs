@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -40,16 +41,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             bool isSerializedField = myUnityApi.IsSerialisedField(declaredElement);
             if (isSerializedField)
             {
-                const string displayText = "Serializable";
-                const string baseTooltip = "This field is initialized from Inspector";
+                var displayText = Strings.FieldDetector_AddDeclarationHighlighting_Serializable;
                 var containingType = declaredElement.GetContainingType();
                 if (containingType.DerivesFromMonoBehaviour() || containingType.DerivesFromScriptableObject())
                 {
-                    AddMonoBehaviourHighlighting(consumer, field, displayText, baseTooltip, context);
+                    AddMonoBehaviourHighlighting(consumer, field, displayText, Strings.FieldDetector_AddDeclarationHighlighting_This_field_is_initialized_from_Inspector, context);
                     return true;
                 }
 
-                AddSerializableHighlighting(consumer, field, displayText, "This field is serialized by Unity", context);
+                AddSerializableHighlighting(consumer, field, displayText, Strings.FieldDetector_AddDeclarationHighlighting_Tooltip, context);
                 return false;
             }
 

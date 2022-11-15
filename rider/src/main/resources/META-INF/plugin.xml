@@ -196,29 +196,21 @@
 
     <action id="AttachToUnityEditorAction"
             class="com.jetbrains.rider.plugins.unity.actions.AttachUnityEditorAction"
-            text="Attach to Unity Editor"
-            description="Attach debugger to Unity Editor process"
             icon="UnityIcons.Actions.AttachToUnity">
     </action>
 
     <action id="ShowUnitySettingsInRider"
             class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction"
-            text="Unity Settings&#8230;"
-            description="Show Unity settings"
             icon="AllIcons.General.Settings" />
 
     <action id="RiderUnityOpenEditorLogAction"
             class="com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction"
-            text="Open Unity Editor Log"
             icon="UnityIcons.Actions.OpenEditorLog" />
     <action id="RiderUnityOpenPlayerLogAction"
             class="com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction"
-            text="Open Unity Player Log"
             icon="UnityIcons.Actions.OpenPlayerLog" />
     <action id="TriggerRefreshInUnity"
             class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction"
-            text="Refresh Unity Assets"
-            description="Trigger refresh assets in Unity Editor"
             icon="UnityIcons.Actions.RefreshInUnity" />
 
     <group id="UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
@@ -226,53 +218,43 @@
       <add-to-group group-id="RightToolbarSideGroup" relative-to-action="BuildSolutionAction" anchor="after" />
 
       <separator/>
-      <action id="UnityToolbarLabel"
-              class="com.jetbrains.rider.plugins.unity.actions.UnityToolbarLabel"
-              text="Unity:"/>
+      <action id="UnityToolbarLabel" class="com.jetbrains.rider.plugins.unity.actions.UnityToolbarLabel"/>
+    </group>
+
+    <group id="NewUI_UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
+      <add-to-group group-id="UnityToolbarActions" anchor="last"/>
+      <add-to-group group-id="MainToolbarCenter" anchor="last" /> <!--new UI -->
+
       <action id="TriggerPlayInUnity"
               class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction"
-              text="Play/Edit"
-              description="Toggle play mode in Unity Editor"
               icon="UnityIcons.Actions.Execute" />
       <action id="TriggerPauseInUnityEditor"
               class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction"
-              text="Pause/Resume"
-              description="Toggle play/pause in Unity Editor"
               icon="UnityIcons.Actions.Pause" />
       <action id="TriggerStepInUnityEditor"
               class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction"
-              text="Step"
-              description="Step a single frame in Unity Editor"
               icon="UnityIcons.Actions.Step" />
 
-      <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions" text="Important Unity Related Actions">
+      <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions">
         <action id="UnityProtocolStatusAction"
-                class="com.jetbrains.rider.plugins.unity.ui.UnityProtocolConnectionAction"
-                text="Unity Editor Connection Status" />
+                class="com.jetbrains.rider.plugins.unity.ui.UnityProtocolConnectionAction" />
         <action id="StartUnityAction"
                 class="com.jetbrains.rider.plugins.unity.actions.StartUnityAction"
-                text="Start Unity"
-                description="Start Unity with current project"
                 icon="UnityIcons.Actions.StartUnity" />
         <reference ref="AttachToUnityEditorAction" />
         <reference ref="AttachToUnityProcessAction" />
         <reference ref="ShowUnitySettingsInRider" />
         <action id="ShowUnityLogInRiderAction"
-                class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction"
-                text="Unity Log Window&#8230;" />
+                class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction"/>
         <separator/>
 
         <action id="HideUnityPlayActions"
-                class="com.jetbrains.rider.plugins.unity.ui.UnityPlayButtonsAction"
-                text="Show Unity Play/Pause Actions"
-                description="Show or hide Unity Play/Pause actions" />
+                class="com.jetbrains.rider.plugins.unity.ui.UnityPlayButtonsAction" />
         <action id="SwitchUIModeAction"
-                class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode"
-                text="Show Non-Unity Applicable UI"
-                description="Show or hide UI that is not applicable to Unity projects" />
+                class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode" />
       </group>
 
-      <group id="UnityDllShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityDllImportantActions" text="Important Unity Related Actions">
+      <group id="UnityDllShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityDllImportantActions">
         <reference ref="StartUnityAction" />
         <reference ref="AttachToUnityProcessAction" />
         <reference ref="ShowUnitySettingsInRider" />
@@ -288,37 +270,32 @@
     <action id="DumpUnityExplorerAction" class="com.jetbrains.rider.plugins.unity.actions.internal.DumpUnityExplorerAction" internal="true" />
 
     <action id="InstallEditorPluginAction"
-            class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction"
-            text="Install Unity Editor Plugin" />
+            class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction" />
 
-    <action class="com.jetbrains.rider.plugins.unity.actions.FindUnityUsagesAction" id="RdFindUnityUsagesAction" text="Find Unity Usages">
+    <action class="com.jetbrains.rider.plugins.unity.actions.FindUnityUsagesAction" id="RdFindUnityUsagesAction">
       <add-to-group group-id="FindMenuGroup" anchor="after" relative-to-action="FindUsages"/>
       <add-to-group group-id="EditorPopupMenu1.FindRefactor" anchor="after" relative-to-action="FindUsages"/>
     </action>
 
-    <group id="RiderInternal.Unity" text="Unity Actions" popup="true" internal="true">
+    <group id="RiderInternal.Unity" popup="true" internal="true">
       <add-to-group group-id="RiderInternal" anchor="last" />
 
       <action id="Unity_Internal_DumpDuplicateTypeNames"
               class="com.jetbrains.rider.plugins.unity.actions.internal.DumpDuplicateTypeNamesAction"
-              text="Dump Duplicate Type Names"
               internal="true" />
 
       <action id="Unity_Internal_DumpSpellCheckWordLists"
               class="com.jetbrains.rider.plugins.unity.actions.internal.DumpSpellCheckWordListsAction"
-              text="Dump Spell Check Word Lists"
               internal="true" />
     </group>
     <action id="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityAction"
             class="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityAction"
-            icon="UnityIcons.Actions.StartUnity"
-            text="Show in Unity">
+            icon="UnityIcons.Actions.StartUnity">
       <add-to-group group-id="SolutionExplorerPopupMenu" anchor="after" relative-to-action="RiderRevealFile"/>
     </action>
     <action id="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityFromExplorerAction"
             class="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityFromExplorerAction"
-            icon="UnityIcons.Actions.StartUnity"
-            text="Unity">
+            icon="UnityIcons.Actions.StartUnity">
       <add-to-group group-id="RevealGroup" anchor="last"/>
     </action>
   </actions>

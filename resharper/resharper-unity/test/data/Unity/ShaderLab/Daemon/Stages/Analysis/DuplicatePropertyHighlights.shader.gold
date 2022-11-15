@@ -13,7 +13,7 @@
 
 ---------------------------------------------------------
 (0): ReSharper Warning: Conflicting property '_Op' is defined below
-(1): ReSharper Warning: There is already a property named '_Op' declared
-(2): ReSharper Warning: There is already a property named '_Op' declared
+(1): ReSharper Warning: The property named '_Op' is already declared
+(2): ReSharper Warning: The property named '_Op' is already declared
 (3): ReSharper Warning: Conflicting property '_Another' is defined below
-(4): ReSharper Warning: There is already a property named '_Another' declared
+(4): ReSharper Warning: The property named '_Another' is already declared

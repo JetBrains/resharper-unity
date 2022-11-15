@@ -191,13 +191,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 
                 var arguments = methodDescription.GetMapEntryValue<IBlockMappingNode>("m_Arguments");
                 var modeText = methodDescription.GetMapEntryPlainScalarText("m_Mode");
-                var argMode = EventHandlerArgumentMode.EventDefined;
-                if (int.TryParse(modeText, out var mode))
-                {
-                    if (1 <= mode && mode <= 6)
-                        argMode = (EventHandlerArgumentMode)mode;
-                }
-
+                var argMode = GetEventHandlerArgumentMode(modeText);
                 var argumentTypeName = arguments.GetMapEntryPlainScalarText("m_ObjectArgumentAssemblyTypeName");
 
                 var type = argumentTypeName?.Split(',').FirstOrDefault();
@@ -215,6 +209,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             }
 
             return result;
+        }
+
+        private static EventHandlerArgumentMode GetEventHandlerArgumentMode(string modeText)
+        {
+            var argMode = EventHandlerArgumentMode.EventDefined;
+            if (int.TryParse(modeText, out var mode))
+            {
+                if (1 <= mode && mode <= 6)
+                    argMode = (EventHandlerArgumentMode)mode;
+            }
+
+            return argMode;
         }
 
         public void Drop(IPsiSourceFile currentAssetSourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElement unityAssetDataElement)

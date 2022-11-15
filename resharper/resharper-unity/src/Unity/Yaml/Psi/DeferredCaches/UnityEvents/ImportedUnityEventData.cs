@@ -8,8 +8,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 {
     public class ImportedUnityEventData
     {
-        public readonly OneToSetMap<(LocalReference Location, string EventName), int> UnityEventToModifiedIndex = new OneToSetMap<(LocalReference, string), int>();
-        public readonly HashSet<string> AssetMethodNameInModifications = new HashSet<string>();
+        public readonly OneToSetMap<(LocalReference Location, string EventName), int> UnityEventToModifiedIndex = new();
+        public readonly HashSet<string> AssetMethodNameInModifications = new();
         public bool HasEventModificationWithoutMethodName { get; set; }
 
         public void WriteTo(UnsafeWriter writer)

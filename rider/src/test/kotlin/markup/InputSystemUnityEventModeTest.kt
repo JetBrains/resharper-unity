@@ -3,12 +3,11 @@ import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.daemon.util.annotateDocumentWithHighlighterTags
 import com.jetbrains.rdclient.daemon.util.backendAttributeIdOrThrow
-import com.jetbrains.rdclient.util.idea.toIOFile
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.base.BaseTestWithSolution
-import com.jetbrains.rider.test.framework.combine
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.Test
@@ -25,6 +24,7 @@ class InputSystemUnityEventModeTest : BaseTestWithSolution() {
         prepareAssemblies(activeSolutionDirectory)
     }
     @Test
+    @Mute("RIDER-84142")
     fun usedCodeTest() {
         val projectLifetime = project.lifetime
         val model = project.solution.frontendBackendModel

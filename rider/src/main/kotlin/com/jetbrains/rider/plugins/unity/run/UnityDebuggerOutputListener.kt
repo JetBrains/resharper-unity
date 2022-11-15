@@ -3,7 +3,10 @@ package com.jetbrains.rider.plugins.unity.run
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.ide.BrowserUtil
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import com.intellij.util.text.VersionComparatorUtil
 import com.intellij.xdebugger.XDebuggerManager
@@ -15,7 +18,6 @@ import com.jetbrains.rider.model.debuggerWorker.OutputType
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.run.IDebuggerOutputListener
-import javax.swing.event.HyperlinkEvent
 
 class UnityDebuggerOutputListener(val project: Project, private val host: String, private val targetName: String, private val isEditor: Boolean)
     : IDebuggerOutputListener {
@@ -25,13 +27,13 @@ class UnityDebuggerOutputListener(val project: Project, private val host: String
             var text = UnityBundle.message("notification.content.unable.to.connect.to", targetName)
 
             val unityVersion: String? = UnityInstallationFinder.getInstance(project).getApplicationVersion(2)
+            var url:String? = null
             text += if (unityVersion != null && VersionComparatorUtil.compare(unityVersion, "2018.2") >= 0) {
-                val url = "https://docs.unity3d.com/$unityVersion/Documentation/Manual/ManagedCodeDebugging.html"
-                if (isEditor) {
-                    UnityBundle.message("notification.content.please.follow.href.debugging.in.editor.documentation", url)
-                } else {
-                    UnityBundle.message("notification.content.please.follow.href.debugging.in.player.documentation", url)
-                }
+                url = "https://docs.unity3d.com/$unityVersion/Documentation/Manual/ManagedCodeDebugging.html"
+                if (isEditor)
+                    UnityBundle.message("notification.content.please.follow.href.debugging.in.editor.documentation")
+                else
+                    UnityBundle.message("notification.content.please.follow.href.debugging.in.player.documentation")
             } else {
                 if (isEditor) {
                     UnityBundle.message("notification.content.please.ensure.editor.attaching.enabled.in.unity.s.external.tools.settings.page")
@@ -42,14 +44,14 @@ class UnityDebuggerOutputListener(val project: Project, private val host: String
 
             val debugNotification = XDebuggerManagerImpl.getNotificationGroup().createNotification(text, NotificationType.ERROR)
 
-            debugNotification.setListener { notification, hyperlinkEvent ->
-                if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED)
-                    return@setListener
-
-                BrowserUtil.browse(hyperlinkEvent.url)
-                notification.hideBalloon()
+            if (url != null){
+                debugNotification.addAction(object : NotificationAction(
+                    UnityBundle.message("open.documentation")) {
+                    override fun actionPerformed(e: AnActionEvent, notification: Notification) {
+                        BrowserUtil.browse(url)
+                    }
+                })
             }
-
             debugNotification.notify(project)
 
             val debuggerManager = project.getService(XDebuggerManager::class.java)

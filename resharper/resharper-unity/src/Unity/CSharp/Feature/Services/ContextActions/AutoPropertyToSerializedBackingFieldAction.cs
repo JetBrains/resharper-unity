@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.Util;
 using JetBrains.ReSharper.Intentions.CSharp.ContextActions;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -16,14 +17,11 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
-    [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Replace auto-property with property and serialized backing field",
-        Description = "Replaces an auto-property in a Unity type with a property that utilizes a backing field that is marked with the 'UnityEngine.SerializeField' attribute.",
+    [ContextAction(Group = UnityContextActions.GroupID, 
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.AutoPropertyToSerializedBackingFieldAction_Name), DescriptionResourceName = nameof(Strings.AutoPropertyToSerializedBackingFieldAction_Description),
         Priority = 2)]
     public class AutoPropertyToSerializedBackingFieldAction : ContextActionBase
     {
-        public const string ActionText = "To property with serialized backing field";
-
         private readonly ICSharpContextActionDataProvider myDataProvider;
 
         public AutoPropertyToSerializedBackingFieldAction(ICSharpContextActionDataProvider dataProvider)
@@ -31,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             myDataProvider = dataProvider;
         }
 
-        public override string Text => ActionText;
+        public override string Text => Strings.AutoPropertyToSerializedBackingFieldAction_Text_To_property_with_serialized_backing_field;
 
         public override bool IsAvailable(IUserDataHolder cache)
         {

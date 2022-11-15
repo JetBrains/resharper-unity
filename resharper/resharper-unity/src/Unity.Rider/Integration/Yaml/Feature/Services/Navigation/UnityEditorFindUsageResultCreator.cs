@@ -10,6 +10,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.ProjectsHost.SolutionHost.Progress;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages;
@@ -86,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
             if (myBackgroundProgressManager != null)
             {
                 var task = BackgroundProgressBuilder.Create()
-                    .WithTitle("Finding usages in Unity for: " + declaredElement.ShortName)
+                    .WithTitle(Strings.UnityEditorFindUsageResultCreator_CreateRequestToUnity_Finding_usages_in_Unity_for__ + declaredElement.ShortName)
                     .AsIndeterminate()
                     .AsCancelable(() => { pi.Cancel(); })
                     .Build();

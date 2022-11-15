@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -29,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.QuickFixes
         }
 
        protected override ITreeNode TryGetContextTreeNode() => myLiteralExpression;
-        public override string Text => "To GUID reference";
+        public override string Text => Strings.ConvertToGuidReferenceQuickFix_Text_To_GUID_reference;
 
         protected override Action<ITextControl>? ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {

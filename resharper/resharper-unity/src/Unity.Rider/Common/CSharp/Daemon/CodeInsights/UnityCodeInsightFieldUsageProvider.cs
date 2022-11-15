@@ -24,6 +24,7 @@ using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Common.Protocol;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
@@ -53,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
         private readonly IActionManager myActionManager;
 
         public override string ProviderId => "Unity serialized field";
-        public override string DisplayName => "Unity serialized field";
+        public override string DisplayName => Strings.UnityCodeInsightFieldUsageProvider_DisplayName_Unity_serialized_field;
         public override CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Right;
 
         public override ICollection<CodeLensRelativeOrdering> RelativeOrderings =>

@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -18,8 +19,8 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Generate Unity event functions",
-        Description = "Generate Unity event functions inside Unity type")]
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.GenerateUnityEventFunctionsAction_Name), 
+        DescriptionResourceName = nameof(Strings.GenerateUnityEventFunctionsAction_Description))]
     public class GenerateUnityEventFunctionsAction : IContextAction
     {
         private readonly ICSharpContextActionDataProvider myDataProvider;

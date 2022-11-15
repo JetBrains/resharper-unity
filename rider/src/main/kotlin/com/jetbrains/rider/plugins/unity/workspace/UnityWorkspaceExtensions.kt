@@ -5,7 +5,7 @@ package com.jetbrains.rider.plugins.unity.workspace
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.workspaceModel.ide.WorkspaceModel
 
-val UNITY_EXCLUDED_PATTERNS = listOf("*.meta", "*.tmp")
+val UNITY_EXCLUDED_PATTERNS = listOf("*.tmp") // don't exclude meta - undo would not work RIDER-81449, see also RIDER-79712, RIDER-83846
 val UNITY_PACKAGE_ID_MAPPING = "rider.unity.package.id"
 
 

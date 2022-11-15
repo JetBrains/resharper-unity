@@ -44,7 +44,7 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
     private val currentContextMode : IProperty<ShaderContextData?> = Property(null)
 
     companion object {
-        //TODO #Localization RIDER-82737 `data.name` should be localized?
+
         @Nls
         private fun getContextPresentation(data : ShaderContextData) = "${data.name}:${data.startLine}"
     }

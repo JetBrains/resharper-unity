@@ -411,7 +411,7 @@ namespace JetBrains.Rider.Unity.Editor
             {
                 try
                 {
-                    UnityProfilerApiInterop.StartProfiling(data.UnityProfilerApiPath);
+                    UnityProfilerApiInterop.StartProfiling(data.UnityProfilerApiPath, data.NeedRestartScripts);
                 
                     var current = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
                     if (current != data.EnterPlayMode)
@@ -419,6 +419,25 @@ namespace JetBrains.Rider.Unity.Editor
                         ourLogger.Verbose("StartProfiling. Request to change play mode from model: {0}", data.EnterPlayMode);
                         EditorApplication.isPlaying = data.EnterPlayMode;
                     }
+                }
+                catch (Exception e)
+                {
+                    if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE) 
+                        Debug.LogError(e);
+                    throw;
+                }
+            });
+
+            return Unit.Instance;
+        });
+        
+        model.StopProfiling.Set((_, data) =>
+        {
+            MainThreadDispatcher.Instance.Queue(() =>
+            {
+                try
+                {
+                    UnityProfilerApiInterop.StopProfiling(data.UnityProfilerApiPath);
                 }
                 catch (Exception e)
                 {

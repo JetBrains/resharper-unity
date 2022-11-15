@@ -14,6 +14,7 @@ using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.InplaceRefactorings;
 using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -244,18 +245,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                     case MethodSignatureMatch.IncorrectStaticModifier:
                     {
                         var staticTerm = PresentationHelper.GetHelper(language).GetStaticTerm();
-                        return signature.IsStatic == true ? $"Make '{methodName}' {staticTerm}" : $"Remove '{staticTerm}' modifier";
+                        return signature.IsStatic == true ? string.Format(Strings.ChangeSignatureBulbAction_GetText_Make___0____1_, methodName, staticTerm) : string.Format(Strings.ChangeSignatureBulbAction_GetText_Remove___0___modifier, staticTerm);
                     }
                     case MethodSignatureMatch.IncorrectParameters:
-                        return $"Change parameters to '({signature.Parameters.GetParameterList()})'";
+                        return string.Format(Strings.ChangeSignatureBulbAction_GetText_Change_parameters_to____0___, signature.Parameters.GetParameterList());
                     case MethodSignatureMatch.IncorrectReturnType:
-                        return $"Change return type to '{signature.GetReturnTypeName()}'";
+                        return string.Format(Strings.ChangeSignatureBulbAction_GetText_Change_return_type_to___0__, signature.GetReturnTypeName());
                     case MethodSignatureMatch.IncorrectTypeParameters:
-                        return "Remove type parameters";
+                        return Strings.ChangeSignatureBulbAction_GetText_Remove_type_parameters;
 
                     // NoMatch, and any combination of flags
                     default:
-                        return $"Change signature to '{signature.FormatSignature(methodName.Text)}'";
+                        return string.Format(Strings.ChangeSignatureBulbAction_GetText_Change_signature_to___0__, signature.FormatSignature(methodName.Text));
                 }
             }
         }
