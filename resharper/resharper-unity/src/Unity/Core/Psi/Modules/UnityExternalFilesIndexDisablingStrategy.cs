@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 #nullable enable
 
@@ -117,10 +118,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         {
             myUserNotifications.CreateNotification(myLifetime,
                 NotificationSeverity.WARNING,
-                "Disabled indexing of Unity assets",
-                @"Due to the size of the project, indexing of Unity scenes, assets and prefabs has been disabled. Usages of C# code in these files will not be detected. Re-enabling can impact initial file processing.",
+                Strings.DisabledIndexingOfUnityAssets_Text,
+                Strings.DueToTheSizeOfTheProjectIndexingOfUnity_Text,
                 closeAfterExecution: true,
-                executed: new UserNotificationCommand("Turn on anyway",
+                executed: new UserNotificationCommand(Strings.TurnOnAnyway_Text,
                     () => myAssetIndexingSupport.IsEnabled.SetValue(true)));
         }
 

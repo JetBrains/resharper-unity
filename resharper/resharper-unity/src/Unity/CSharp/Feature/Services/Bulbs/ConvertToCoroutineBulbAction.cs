@@ -3,6 +3,7 @@ using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Intentions.Util;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl;
@@ -33,6 +34,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Bulbs
             return null;
         }
 
-        public override string Text => "To coroutine";
+        public override string Text => Strings.ConvertToCoroutineBulbAction_Text_To_coroutine;
     }
 }

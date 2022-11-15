@@ -25,17 +25,24 @@ object UnityLogPanelToolbarBuilder {
     }
 
     fun createLeftToolbar(model: UnityLogPanelModel): JPanel {
-        //TODO #Localization RIDER-82737 This pluralization will not work in other languages
-        fun createType(type: LogEventType) = object : ToggleAction("Show/Hide ${type}s", "", type.getIcon()) {
+
+        fun getLocalizedName(eventType: LogEventType):String {
+            return when (eventType) {
+                LogEventType.Error -> UnityBundle.message("logEventType.errors")
+                LogEventType.Warning -> UnityBundle.message("logEventType.warning")
+                LogEventType.Message -> UnityBundle.message("logEventType.messages")
+            }
+        }
+
+        fun createType(type: LogEventType) = object : ToggleAction(UnityBundle.message("show.hide", getLocalizedName(type)), "", type.getIcon()) {
             override fun isSelected(e: AnActionEvent) = model.typeFilters.getShouldBeShown(type)
             override fun setSelected(e: AnActionEvent, value: Boolean) = model.typeFilters.setShouldBeShown(type, value)
 
-            //TODO #Localization RIDER-82737 This pluralization will not work in other languages
             override fun update(e: AnActionEvent) {
                 if (isSelected(e))
-                    e.presentation.text = "Hide ${type}s"
+                    e.presentation.text = UnityBundle.message("hide", getLocalizedName(type))
                 else
-                    e.presentation.text = "Show ${type}s"
+                    e.presentation.text = UnityBundle.message("show", getLocalizedName(type))
                 super.update(e)
             }
         }

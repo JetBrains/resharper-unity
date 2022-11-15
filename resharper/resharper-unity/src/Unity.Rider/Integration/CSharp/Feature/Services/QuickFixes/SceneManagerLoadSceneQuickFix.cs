@@ -12,6 +12,7 @@ using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
@@ -157,7 +158,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Ser
                 return null;
             }
 
-            public override string Text => $"Add '{mySceneName}' to build settings";
+            public override string Text => string.Format(Strings.LoadSceneFixBulbAction_Text_Add___SceneName___to_build_settings, mySceneName);
 
             private static IBlockSequenceNode CreateBlockSequenceNode(string sceneName, Guid guid, IPsiModule module)
             {

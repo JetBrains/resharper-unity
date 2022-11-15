@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Caches;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
@@ -39,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 var anotherFile = files.FirstOrDefault(t => t != sourceFile);
                 if (anotherFile == null)
                 {
-                    consumer.AddHighlighting(new DuplicateShortcutWarning(argument, "this file"));
+                    consumer.AddHighlighting(new DuplicateShortcutWarning(argument, Strings.DuplicateMenuItemShortCutProblemAnalyzer_Analyze_this_file));
                 }
                 else
                 {

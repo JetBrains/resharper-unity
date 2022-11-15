@@ -1,6 +1,7 @@
 using JetBrains.Application.UI.Tooltips;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Psi;
@@ -25,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
                     return true;
 
                 var tooltipManager = solution.GetComponent<ITooltipManager>();
-                tooltipManager.Show("Start the Unity Editor to view results", textControl.PopupWindowContextFactory.ForCaret());
+                tooltipManager.Show(Strings.RiderUnityAssetOccurrenceNavigator_Navigate_Start_the_Unity_Editor_to_view_results, textControl.PopupWindowContextFactory.ForCaret());
                 return true;
             }
 

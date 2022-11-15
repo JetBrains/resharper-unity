@@ -1,5 +1,6 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Resources;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon.Stages
@@ -17,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon.Stages
                 return ErrorStripeRequestWithDescription.StripeAndErrors;
             }
 
-            return ErrorStripeRequestWithDescription.None("File's primary language in not Cg");
+            return ErrorStripeRequestWithDescription.None(Strings.CgLanguageSpecificDaemonBehaviour_InitialErrorStripe_File_s_primary_language_in_not_Cg);
         }
     }
 }

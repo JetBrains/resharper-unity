@@ -15,7 +15,7 @@ import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
 import java.io.File
 
-@TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS])
+@TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 abstract class DebuggerTestBase : IntegrationTestWithEditorBase() {
     override fun getSolutionDirectoryName() = "SimpleUnityProjectWithoutPlugin"
 

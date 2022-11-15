@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -76,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 return null;
             }
 
-            public override string Text => $"Make type '{myTypeDeclaration.DeclaredName}' serializable";
+            public override string Text => string.Format(Strings.MakeSerializable_Text_Make_type___0___serializable, myTypeDeclaration.DeclaredName);
         }
     }
 }

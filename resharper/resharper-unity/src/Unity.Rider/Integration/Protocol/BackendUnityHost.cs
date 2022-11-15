@@ -11,7 +11,6 @@ using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Common.Protocol;
-using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Model.Unity.BackendUnity;

@@ -18,11 +18,12 @@ import com.jetbrains.rd.ide.model.RdVirtualSolution
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rd.util.reactive.whenTrue
-import com.jetbrains.rider.model.*
+import com.jetbrains.rider.model.RdUnloadProjectDescriptor
+import com.jetbrains.rider.model.RdUnloadProjectState
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
@@ -35,7 +36,6 @@ import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntityVisitor
 import com.jetbrains.rider.projectView.workspace.getSolutionEntity
 import org.jetbrains.annotations.Nls
-import javax.swing.event.HyperlinkEvent
 
 class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
 
@@ -77,7 +77,7 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                 @Nls(capitalization = Nls.Capitalization.Sentence)
                 val mainText =
                     if (solutionDescription.projectFilePaths.isEmpty())
-                        UnityBundle.message("eatures.are.not.available.when.the.project.is.opened.as.a.folder")
+                        UnityBundle.message("features.are.not.available.when.the.project.is.opened.as.a.folder")
                     else
                         UnityBundle.message("specific.features.are.not.available.when.only.single.project.opened")
 
@@ -99,15 +99,14 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
 
                 val notification = Notification(notificationGroupId.displayId,
                                                 UnityBundle.message("notification.title.this.looks.like.unity.project"), contentWoSolution, NotificationType.WARNING)
-                notification.setListener { _, hyperlinkEvent ->
 
-                    if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED) return@setListener
-
-                    if (hyperlinkEvent.description == "close") {
+                notification.addAction(object : NotificationAction(
+                    UnityBundle.message("close.solution")) {
+                    override fun actionPerformed(e: AnActionEvent, notification: Notification) {
                         ProjectManagerEx.getInstanceEx().closeAndDispose(project)
                         WelcomeFrame.showIfNoProjectOpened()
                     }
-                }
+                })
 
                 val baseDir: VirtualFile = project.projectDir
                 val solutionFile = baseDir.findChild(baseDir.name + ".sln")

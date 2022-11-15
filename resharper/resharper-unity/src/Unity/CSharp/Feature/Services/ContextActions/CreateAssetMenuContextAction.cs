@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
@@ -22,11 +23,8 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Add 'CreateAssetMenu' attribute",
-        Description = "Adds the 'CreateAssetMenu' attribute to a scriptable object. " +
-                      "This marks a 'ScriptableObject'-derived type to be automatically listed in " +
-                      "Unity's 'Assets/Create' menu, so that instances of the type can be easily created " +
-                      "and stored in the project as '.asset' files")]
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.CreateAssetMenuContextAction_Name), 
+        DescriptionResourceName = nameof(Strings.CreateAssetMenuContextAction_Description))]
     public class CreateAssetMenuContextAction : IContextAction
     {
         private static readonly SubmenuAnchor ourSubmenuAnchor =
@@ -98,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 return attribute?.CreateHotspotSession();
             }
 
-            public override string Text => "Add to Unity's 'Assets/Create' menu";
+            public override string Text => Strings.CreateAssetMenuAction_Text_Add_to_Unity_s__Assets_Create__menu;
         }
     }
 }
