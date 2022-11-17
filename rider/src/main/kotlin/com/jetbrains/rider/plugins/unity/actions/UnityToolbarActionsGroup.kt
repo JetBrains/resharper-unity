@@ -26,3 +26,22 @@ class UnityToolbarActionsGroup : DefaultActionGroup() {
                 || UnityImportantActions.isVisible(e))
     }
 }
+
+class NewUIUnityToolbarActionsGroup : DefaultActionGroup() {
+
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.BGT
+    }
+
+    override fun update(e: AnActionEvent) {
+        val project = e.project
+        if (project == null)
+        {
+            e.presentation.isVisible = false
+            return
+        }
+
+        e.presentation.isVisible = (project.solution.frontendBackendModel.hasUnityReference.valueOrDefault(false)
+                                    || UnityImportantActions.isVisible(e))
+    }
+}
