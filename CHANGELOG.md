@@ -17,7 +17,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Add completion and analysis of assets for resource load methods ([RIDER-79879](https://youtrack.jetbrains.com/issue/RIDER-79879), [#2217](https://github.com/JetBrains/resharper-unity/issues/2217))
 - Add completion and analysis of tags in `GameObject.FindWithTag` methods
 - Add Find Usages of methods used by the new Input System ([RIDER-71588](https://youtrack.jetbrains.com/issue/RIDER-71588))
-- Add suppression of `IBaker` implementing classes as unused ([RIDER-84159](https://youtrack.jetbrains.com/issue/RIDER-84159), [#2370](https://github.com/JetBrains/resharper-unity/pull/2370))
+- Add suppression of unused class warning for classes that implement `IBaker` and `IAspect` ([RIDER-84159](https://youtrack.jetbrains.com/issue/RIDER-84159), [#2370](https://github.com/JetBrains/resharper-unity/pull/2370))
+- Add suppression of warning for redundant super type declared in generated partial class ([RIDER-84182](https://youtrack.jetbrains.com/issue/RIDER-84182))
 - Rider: Notify when committing `.meta` file for empty folder ([RIDER-75587](https://youtrack.jetbrains.com/issue/RIDER-75587), [#2333](https://github.com/JetBrains/resharper-unity/pull/2333))
 - Rider: Notify when committing if any persistent objects in scene are modified but not saved ([RIDER-63673](https://youtrack.jetbrains.com/issue/RIDER-63673), [#2338](https://github.com/JetBrains/resharper-unity/pull/2338))
 - Rider: Show a notification when editing a file in the package cache ([RIDER-63994](https://youtrack.jetbrains.com/issue/RIDER-63994))
@@ -27,6 +28,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Treat fixed buffer fields as serialised fields
 - Treat `CustomPass` derived classes as Unity types ([RIDER-80783](https://youtrack.jetbrains.com/issue/RIDER-80783))
 - Add support for method references inside an array of Unity event subscriptions
+- Allow disabling serialised field naming rules, rather than just disabling inspections ([RIDER-52012](https://youtrack.jetbrains.com/issue/RIDER-52012))
+- Allow never showing the "Add 'FormerlySerialisedAs' attribute" page while renaming a serialised field ([RIDER-63450](https://youtrack.jetbrains.com/issue/RIDER-63450))
 - Rider: Code coverage of Unity tests no longer requires restarting the editor ([RIDER-78815](https://youtrack.jetbrains.com/issue/RIDER-78815))
 - Rider: The "Start Unity" action will now invoke a run configuration, allowing customisation such as command line arguments and environment variables ([RIDER-78619](https://youtrack.jetbrains.com/issue/RIDER-78619), [RIDER-77371](https://youtrack.jetbrains.com/issue/RIDER-77371), [#2326](https://github.com/JetBrains/resharper-unity/pull/2326))
 - Rider: Show version when notifying about updated Rider package ([RIDER-77654](https://youtrack.jetbrains.com/issue/RIDER-77654), [#2335](https://github.com/JetBrains/resharper-unity/pull/2335))
@@ -48,6 +51,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Fix links to documentation when local Unity version cannot be detected
 - Fix issue with online documentation URL generation ([RIDER-79366](https://youtrack.jetbrains.com/issue/RIDER-79366))
 - Fix exception editing `.asmdef` files in non-project folders ([DEXP-678810](https://youtrack.jetbrains.com/issue/DEXP-678810), [#2350](https://github.com/JetBrains/resharper-unity/pull/2350))
+- Fix not showing usages on event handlers in nested prefabs ([RIDER-73665](https://youtrack.jetbrains.com/issue/RIDER-73665))
 - Rider: Fix unable to connect debugger to Switch players. Thanks @bitter! ([RIDER-76841](https://youtrack.jetbrains.com/issue/RIDER-77123), [#2358](https://github.com/JetBrains/resharper-unity/pull/2358))
 - Rider: Fix recreating `.meta` file when shelving/unshelving asset files ([RIDER-77123](https://youtrack.jetbrains.com/issue/RIDER-77123))
 - Rider: Fix Unity log tool window to show multiple colours ([RIDER-69305](https://youtrack.jetbrains.com/issue/RIDER-69395))
