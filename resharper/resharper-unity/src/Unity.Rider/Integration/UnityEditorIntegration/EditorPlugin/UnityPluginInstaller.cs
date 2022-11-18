@@ -20,6 +20,8 @@ using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
+using JetBrains.Application.I18n;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration.EditorPlugin
 {
@@ -220,31 +222,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                 switch (installationInfo.InstallReason)
                 {
                     case UnityPluginDetector.InstallReason.FreshInstall:
-                        userTitle = "Unity Editor plugin installed";
-                        userMessage = $@"Please switch to Unity Editor to load the plugin.
-                            Rider plugin v{myCurrentVersion} can be found at:
-                            {installedPath.MakeRelativeTo(mySolution.SolutionDirectory)}.";
+                        userTitle = Strings.UnityEditorPluginInstalled_Text;
+                        userMessage = Strings.PleaseSwitchToUnityEditorToLoadThePlugin_Text.Format(myCurrentVersion, installedPath.MakeRelativeTo(mySolution.SolutionDirectory));
                         break;
 
                     case UnityPluginDetector.InstallReason.Update:
-                        userTitle = "Unity Editor plugin updated";
-                        userMessage = $@"Please switch to the Unity Editor to reload the plugin.
-                            Rider plugin v{myCurrentVersion} can be found at:
-                            {installedPath.MakeRelativeTo(mySolution.SolutionDirectory)}.";
+                        userTitle = Strings.UnityEditorPluginUpdated_Text;
+                        userMessage = Strings.PleaseSwitchToTheUnityEditorToReload_Text.Format(myCurrentVersion, installedPath.MakeRelativeTo(mySolution.SolutionDirectory));
                         break;
 
                     case UnityPluginDetector.InstallReason.ForceUpdateForDebug:
-                        userTitle = "Unity Editor plugin updated (debug build)";
-                        userMessage = $@"Please switch to the Unity Editor to reload the plugin.
-                            Rider plugin v{myCurrentVersion} can be found at:
-                            {installedPath.MakeRelativeTo(mySolution.SolutionDirectory)}.";
+                        userTitle = Strings.UnityEditorPluginUpdatedDebugBuild_Text;
+                        userMessage = Strings.PleaseSwitchToTheUnityEditorToReload_Text.Format(myCurrentVersion, installedPath.MakeRelativeTo(mySolution.SolutionDirectory));
                         break;
 
                     case UnityPluginDetector.InstallReason.UpToDate:
-                        userTitle = "Unity Editor plugin updated (up to date)";
-                        userMessage = $@"Please switch to the Unity Editor to reload the plugin.
-                            Rider plugin v{myCurrentVersion} can be found at:
-                            {installedPath.MakeRelativeTo(mySolution.SolutionDirectory)}.";
+                        userTitle = Strings.UnityEditorPluginUpdatedUpToDate_Text;
+                        userMessage = Strings.PleaseSwitchToTheUnityEditorToReload_Text.Format(myCurrentVersion, installedPath.MakeRelativeTo(mySolution.SolutionDirectory));
                         break;
 
                     default:
@@ -367,11 +361,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                 var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
                 var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lifetime, entry, null).Value;
                 if (isEnabled) return;
-                myUserNotifications.CreateNotification(notificationLifetime.Lifetime, NotificationSeverity.WARNING, "Unity editor plugin update required",
-                    "The Unity editor plugin is out of date and automatic plugin updates are disabled. Advanced Unity integration features are unavailable until the plugin is updated.",
+                myUserNotifications.CreateNotification(notificationLifetime.Lifetime, NotificationSeverity.WARNING, Strings.UnityEditorPluginUpdateRequired_Text,
+                    Strings.TheUnityEditorPluginIsOutOfDateAndAutomatic_Text,
                     additionalCommands: new[]
                     {
-                        new UserNotificationCommand("Never show for this solution", () =>
+                        new UserNotificationCommand(Strings.DoNotShowForThisSolution_Text, () =>
                         {
                             mySolution.Locks.ExecuteOrQueueReadLockEx(notificationLifetime.Lifetime,
                                 "UnityPluginInstaller.InstallEditorPlugin", () =>
@@ -386,8 +380,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             else
             {
                 myUserNotifications.CreateNotification(notificationLifetime.Lifetime, NotificationSeverity.WARNING,
-                    "Advanced Unity integration is unavailable",
-                    $"Make sure Rider {myHostProductInfo.VersionMarketingString} is set as the External Editor in Unity preferences.");
+                    Strings.AdvancedUnityIntegrationIsUnavailable_Text,
+                    Strings.MakeSureRider_IsSetAsTheExternalEditor_Text.Format(myHostProductInfo.VersionMarketingString));
             }
         }
     }

@@ -11,6 +11,7 @@ using JetBrains.ReSharper.Feature.Services.LiveTemplates.Templates;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
@@ -61,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         }
 
         public override string Text =>
-            $"Convert to 'GameObject.AddComponent<{myWarningCreationExpression.TypeName.ShortName}>()'";
+            string.Format(Strings.ConvertToGameObjectAddComponentQuickFix_Text_Convert_to__GameObject_AddComponent__0_____, myWarningCreationExpression.TypeName.ShortName);
 
         public override bool IsAvailable(IUserDataHolder cache)
         {

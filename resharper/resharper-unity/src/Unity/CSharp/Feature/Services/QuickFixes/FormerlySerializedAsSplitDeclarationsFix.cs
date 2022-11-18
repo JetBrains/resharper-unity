@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.CSharp.ContextActions;
 using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl;
 using JetBrains.Util;
@@ -30,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             return null;
         }
 
-        public override string Text => "Split into separate declarations";
+        public override string Text => Strings.FormerlySerializedAsSplitDeclarationsFix_Text_Split_into_separate_declarations;
         public override bool IsAvailable(IUserDataHolder cache) => ValidUtils.Valid(myAttribute);
     }
 }

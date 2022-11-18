@@ -2,6 +2,7 @@ using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi.Util;
 
 #nullable enable
@@ -12,12 +13,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors
         typeof(HighlightingGroupIds.IdentifierHighlightings),
         Languages = "CSHARP",
         AttributeId = AnalysisHighlightingAttributeIds.DEADCODE,
-        OverlapResolve = OverlapResolveKind.DEADCODE,
-        ToolTipFormatString = MESSAGE)]
+        OverlapResolve = OverlapResolveKind.DEADCODE
+    )]
     public class UnmetVersionConstraintInfo : IHighlighting
     {
-        private const string MESSAGE = "Symbol not defined. Unmet version constraint: {0}";
-
         private readonly IJsonNewLiteralExpression myDefineValue;
         private readonly DocumentRange myHighlightingRange;
 
@@ -25,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors
         {
             myDefineValue = defineValue;
             myHighlightingRange = defineValue.GetUnquotedDocumentRange();
-            ToolTip = string.Format(MESSAGE, expression);
+            ToolTip = string.Format(Strings.UnmetVersionConstraintInfo_Symbol_not_defined__Unmet_version_constraint___0_, expression);
         }
 
         public bool IsValid() => myDefineValue.IsValid() && myHighlightingRange.IsValid();

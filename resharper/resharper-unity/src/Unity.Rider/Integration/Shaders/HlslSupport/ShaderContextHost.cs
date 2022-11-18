@@ -13,7 +13,6 @@ using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Backend.Env;
-using JetBrains.Rider.Backend.Features.Documents;
 using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
@@ -27,12 +26,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
         private readonly ISolution mySolution;
         private readonly IPsiFiles myPsiFiles;
         private readonly CppGlobalSymbolCache myCppGlobalSymbolCache;
-        private readonly DocumentHostBase myDocumentHost;
+        private readonly IDocumentHost myDocumentHost;
         private readonly ShaderContextCache myShaderContextCache;
         private readonly ShaderContextDataPresentationCache myShaderContextDataPresentationCache;
 
         public ShaderContextHost(Lifetime lifetime, ISolution solution, IPsiFiles psiFiles,
-                                 DocumentHostBase documentHost,
+                                 IDocumentHost documentHost,
                                  CppGlobalSymbolCache cppGlobalSymbolCache,
                                  ShaderContextCache shaderContextCache,
                                  ShaderContextDataPresentationCache shaderContextDataPresentationCache, ILogger logger,
@@ -113,7 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
 
         private IPsiSourceFile GetSourceFile(RdDocumentId id)
         {
-            var document = myDocumentHost.TryGetHostDocument(id);
+            var document = myDocumentHost.TryGetDocument(id);
             return document?.GetPsiSourceFile(mySolution);
         }
 

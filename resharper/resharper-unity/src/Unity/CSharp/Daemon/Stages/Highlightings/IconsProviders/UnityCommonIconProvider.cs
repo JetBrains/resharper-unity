@@ -23,6 +23,7 @@ using JetBrains.ReSharper.Psi.Util;
 using JetBrains.TextControl;
 using JetBrains.TextControl.CodeWithMe;
 using JetBrains.Util;
+using Strings = JetBrains.ReSharper.Plugins.Unity.Resources.Strings;
 
 #nullable enable
 
@@ -122,11 +123,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
 
         protected virtual string GetEventFunctionTooltip(UnityEventFunction eventFunction)
         {
-            var tooltip = "Unity event function";
+            var tooltip = Strings.UnityCommonIconProvider_GetEventFunctionTooltip_Unity_event_function;
             if (!string.IsNullOrEmpty(eventFunction.Description))
                 tooltip += Environment.NewLine + Environment.NewLine + eventFunction.Description;
             if (eventFunction.CanBeCoroutine)
-                tooltip += Environment.NewLine + "This function can be a coroutine.";
+                tooltip += Environment.NewLine + Strings.UnityCommonIconProvider_GetEventFunctionTooltip_This_function_can_be_a_coroutine_;
 
             return tooltip;
         }
@@ -151,7 +152,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 return null;
             }
 
-            public override string Text => "View documentation";
+            public override string Text => Strings.DocumentationNavigationAction_Text_View_documentation;
         }
 
         private static bool? IsCoroutine(IMethodDeclaration methodDeclaration, UnityApi unityApi)

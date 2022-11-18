@@ -1,40 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Configurable severity items are added as CSHARP so that they appear in the Unity group inside the CSHARP options page -->
 <Errors language="C#" configurableSeverityImplementationLanguage="CSHARP">
-
   <Usings>
     JetBrains.ReSharper.Psi.Util;
     JetBrains.ReSharper.Plugins.Json.Psi.Tree;
     JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors;
+    Strings = JetBrains.ReSharper.Plugins.Unity.Resources.Strings;
   </Usings>
-
+  
   <StaticSeverityGroups>
     <Group name="AsmDef Errors" key="AsmDefErrors" />
     <Group name="AsmDef Warnings" key="AsmDefWarnings" />
   </StaticSeverityGroups>
-
+  
   <SeverityConfiguration>
     <!-- This matches UnityHighlightingGroupIds.Unity in the CSharp hierarchy. Consider making the "Unity" highlighting
          groups language agnostic -->
     <Group name="&quot;UNITY&quot;">
-      <Tag externalName="MismatchedAsmDefFilenameWarning.HIGHLIGHTING_ID"
-           default="SUGGESTION">
-        <Title>File name should match the name of the assembly</Title>
-        <Description>To avoid confusion, the name of the assembly definition file should match the name of the assembly being defined.</Description>
+      <Tag externalName="MismatchedAsmDefFilenameWarning.HIGHLIGHTING_ID" default="SUGGESTION">
+        <Title resourceName="FileNameShouldMatchTheNameOfTheAssembly" resourceType="Strings" />
+        <Description resourceName="ToAvoidConfusionTheNameOfTheAssemblyDefinitionFileShouldMatchTheNameOfTheAssemblyBeingDefined" resourceType="Strings" />
       </Tag>
-
-      <Tag externalName="PreferGuidReferenceWarning.HIGHLIGHTING_ID"
-           default="HINT">
-        <Title>Prefer GUID-based assembly references</Title>
-        <Description>References in a .asmdef file can be by name or by asset GUID. Using an asset GUID protects against renaming the assembly definition.</Description>
+      <Tag externalName="PreferGuidReferenceWarning.HIGHLIGHTING_ID" default="HINT">
+        <Title resourceName="PreferGUIDBasedAssemblyReferences" resourceType="Strings" />
+        <Description resourceName="ReferencesInAAsmdefFileCanBeByNameOrByAssetGUIDUsingAnAssetGUIDProtectsAgainstRenamingTheAssemblyDefinition" resourceType="Strings" />
       </Tag>
     </Group>
   </SeverityConfiguration>
-
+  
   <Error name="InvalidDefineConstraintExpression" staticGroup="AsmDefErrors">
     <Parameter type="IJsonNewLiteralExpression" name="expression" />
     <Parameter type="DocumentRange" name="range" />
-    <Message value="Invalid define constraint expression" />
+    <Message resourceName="InvalidDefineConstraintExpressionMessage" resourceType="Strings" />
     <Range>Range</Range>
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
@@ -42,42 +39,42 @@
   <Error name="InvalidVersionDefineSymbol" staticGroup="AsmDefErrors">
     <Parameter type="IJsonNewLiteralExpression" name="expression" />
     <Parameter type="DocumentRange" name="range" />
-    <Message value="Invalid version define symbol" />
+    <Message resourceName="InvalidVersionDefineSymbolMessage" resourceType="Strings" />
     <Range>Range</Range>
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
 
   <Error name="InvalidVersionDefineExpression" staticGroup="AsmDefErrors">
     <Parameter type="IJsonNewLiteralExpression" name="expression" />
-    <Message value="Invalid version define expression" />
+    <Message resourceName="InvalidVersionDefineExpressionMessage" resourceType="Strings" />
     <Range>Expression.GetUnquotedDocumentRange()</Range>
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
 
   <Warning name="MismatchedAsmDefFilename" configurableSeverity="MISMATCHED_ASMDEF_FILENAME">
     <Parameter type="IJsonNewLiteralExpression" name="literalExpression" />
-    <Message value="File name should match the name of the assembly" />
+    <Message resourceName="FileNameShouldMatchTheNameOfTheAssemblyMessage" resourceType="Strings" />
     <Range>LiteralExpression.GetUnquotedDocumentRange()</Range>
     <Behavour attributeID="SUGGESTION" overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="PreferGuidReference" configurableSeverity="Unity.PreferGuidReference">
     <Parameter type="IJsonNewLiteralExpression" name="literalExpression" />
-    <Message value="Prefer GUID reference" />
+    <Message resourceName="PreferGUIDReferenceMessage" resourceType="Strings" />
     <Range>LiteralExpression.GetUnquotedDocumentRange()</Range>
     <Behavour attributeID="HINT" />
   </Warning>
 
   <Error name="ReferencingSelf" staticGroup="AsmDefErrors">
     <Parameter type="IReference" name="reference" />
-    <Message value="Cannot reference self" />
+    <Message resourceName="CannotReferenceSelfMessage" resourceType="Strings" />
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR" />
   </Error>
 
   <Warning name="UnresolvedProjectReference" staticGroup="AsmDefWarnings">
     <Parameter type="IReference" name="reference" />
-    <Message value="Missing assembly reference '{0}'. Assembly will not be referenced during compilation">
+    <Message resourceName="MissingAssemblyReferenceAssemblyWillNotBeReferencedDuringCompilationMessage" resourceType="Strings">
       <Argument>Reference.GetName()</Argument>
     </Message>
     <Range>Reference.GetDocumentRange()</Range>

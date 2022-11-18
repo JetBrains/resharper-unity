@@ -13,6 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         ForegroundColor = "#ff7526",
         DarkForegroundColor = "#ff7526",
         NotRecyclable = true,
+        RiderPresentableName = "Expensive method invocation",
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     [RegisterHighlighter(NULL_COMPARISON,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
@@ -20,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         ForegroundColor = "#ff7526",
         DarkForegroundColor = "#ff7526",
         NotRecyclable = true,
+        RiderPresentableName = "Expensive null comparison",
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     [RegisterHighlighter(CAMERA_MAIN,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
@@ -27,6 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         DarkForegroundColor = "#ff7526",
         NotRecyclable = true,
         EffectType = EffectType.SOLID_UNDERLINE,
+        RiderPresentableName = "Expensive `Camera.main` usage",
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     [RegisterHighlighter(INEFFICIENT_MULTIDIMENSIONAL_ARRAYS_USAGE,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
@@ -34,6 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         DarkForegroundColor = "#ff7526",
         NotRecyclable = true,
         EffectType = EffectType.SOLID_UNDERLINE,
+        RiderPresentableName = "Inefficient multidimensional array usage",
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     [RegisterHighlighter(INEFFICIENT_MULTIPLICATION_ORDER,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
@@ -41,6 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         DarkForegroundColor = "#ff7526",
         NotRecyclable = true,
         EffectType = EffectType.SOLID_UNDERLINE,
+        RiderPresentableName = "Inefficient multiplication order",
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     // Note that PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER is registered separately for Rider and ReSharper, because VS/R#
     // don't support EffectType.LINE_MARKER

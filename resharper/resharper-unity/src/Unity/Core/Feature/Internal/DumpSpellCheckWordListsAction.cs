@@ -9,6 +9,7 @@ using JetBrains.Collections;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Features.ReSpeller.SpellEngine;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Modules;
@@ -17,7 +18,7 @@ using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Internal
 {
-    [Action("Unity_Internal_DumpSpellCheckWordLists", "Dump Spell Check Word Lists")]
+    [Action("Unity_Internal_DumpSpellCheckWordLists", typeof(Strings), nameof(Strings.Unity_Internal_DumpSpellCheckWordLists_Text))]
     public class DumpSpellCheckWordListsAction : IExecutableAction
     {
         public bool Update(IDataContext context, ActionPresentation presentation, DelegateUpdate nextUpdate)

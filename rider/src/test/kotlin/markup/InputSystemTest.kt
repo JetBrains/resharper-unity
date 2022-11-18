@@ -12,7 +12,7 @@ import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
-
+import com.jetbrains.rider.test.annotations.Mute
 
 class InputSystemTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String {
@@ -22,6 +22,10 @@ class InputSystemTest : BaseTestWithSolution() {
     override fun preprocessTempDirectory(tempDir: File) {
         prepareAssemblies(activeSolutionDirectory)
     }
+
+    override val traceCategories: List<String>
+        get() = listOf(
+            "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages")
 
     @Test
     fun findUsagesTest() {
@@ -93,6 +97,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
+    @Mute("RIDER-84142")
     fun usedCodeTest() {
         // PlayerInput is attached to Cube
         // NewBehaviourScript is attached Cube
@@ -100,6 +105,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
+    @Mute("RIDER-84142")
     fun usedCodeTestWithPrefab1() {
         // Cube1 is a prefab
         // PlayerInput is attached to the Cube1 prefab
@@ -108,6 +114,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
+    @Mute("RIDER-84142")
     fun usedCodeTestWithPrefab2() {
         // Cube2 is a prefab, but everything is attached on the scene:
         // PlayerInput is attached to Cube2 on the scene
@@ -116,6 +123,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
+    @Mute("RIDER-84142")
     fun usedCodeTestWithPrefab3() {
         // Cube3 is a prefab, everything is attached to the prefab:
         // PlayerInput is attached to Cube2 on the prefab
@@ -124,6 +132,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
+    @Mute("RIDER-84142")
     fun usedCodeTestWithPrefab4() {
         // Cube4 is a prefab
         // PlayerInput is attached to Cube4 on the scene
@@ -132,6 +141,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
+    @Mute("RIDER-84142")
     fun usedCodeTestBroadcastScript1() {
         // PlayerInput is attached to root (Cube)
         // BroadcastScript1 is attached to child (Cube2)

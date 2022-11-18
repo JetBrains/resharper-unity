@@ -118,7 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                 var backendUnityModel = backendUnityModelProperty.Maybe.ValueOrDefault;
                 return backendUnityModel == null
                     ? Rd.Tasks.RdTask<Unit>.Cancelled()
-                    : backendUnityModel.StartProfiling.Start(l, new ProfilingData(play, GetProfilerApiPath())).ToRdTask(l);
+                    : backendUnityModel.StartProfiling.Start(l, new ProfilingData(play, GetProfilerApiPath(), false)).ToRdTask(l);
             });
         }
 

@@ -4,4 +4,4 @@
 }
 
 ---------------------------------------------------------
-(0): ReSharper Dead Code: Missing assembly reference 'unresolvedAsm'. Assembly will not be referenced during compilation
+(0): ReSharper Dead Code: Missing assembly reference 'unresolvedAsm'. Assembly will not be referenced during compilation.

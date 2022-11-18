@@ -3,6 +3,7 @@ using JetBrains.ReSharper.Feature.Services.CSharp.Generate;
 using JetBrains.ReSharper.Feature.Services.Generate;
 using JetBrains.ReSharper.Intentions.CSharp.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -19,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             myAnchor = anchor;
         }
 
-        public override string Text => "Generate Unity event functions";
+        public override string Text => Strings.GenerateUnityEventFunctionsFix_Text_Generate_Unity_event_functions;
 
         protected override GenerateUnityEventFunctionsWorkflow TryCreateWorkflow()
         {

@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.FileTypes;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 
 #nullable enable
@@ -15,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
         [UsedImplicitly] public new static UnityYamlProjectFileType? Instance { get; private set; }
 
         public UnityYamlProjectFileType()
-            : base(Name, "Unity Yaml", UnityFileExtensions.YamlDataFileExtensionsWithDot)
+            : base(Name, Strings.UnityYamlProjectFileType_UnityYamlProjectFileType_Unity_Yaml, UnityFileExtensions.YamlDataFileExtensionsWithDot)
         {
         }
     }

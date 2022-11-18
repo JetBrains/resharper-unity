@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Feature.Services.LiveTemplates.Hotspots;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
@@ -171,7 +172,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             return i;
         }
 
-        public override string Text => $"Convert to '{myNewMethod.ShortName}'";
+        public override string Text => string.Format(Strings.PreferNonAllocApiQuickFix_Text_Convert_to___0__, myNewMethod.ShortName);
 
         public override bool IsAvailable(IUserDataHolder cache)
         {

@@ -41,7 +41,7 @@ class ProcessesPanel : PanelWithButtons() {
 
         val vm = viewModel!!
 
-        val columns = arrayOf("Process ID", "Process Name", "Project Name")
+        val columns = arrayOf(UnityBundle.message("process.id"), UnityBundle.message("process.name"), UnityBundle.message("project.name"))
 
         val dataModel = object : AbstractTableModel() {
             override fun getColumnCount() = columns.count()
@@ -70,7 +70,7 @@ class ProcessesPanel : PanelWithButtons() {
         table = JBTable(dataModel)
         with(table!!) {
             setEnableAntialiasing(true)
-            emptyText.text = "No Unity Editor instances found"
+            emptyText.text = UnityBundle.message("no.unity.editor.instances.found")
             preferredScrollableViewportSize = Dimension(150, rowHeight * 6)
 
             val fontMetrics = tableHeader.getFontMetrics(tableHeader.font)
