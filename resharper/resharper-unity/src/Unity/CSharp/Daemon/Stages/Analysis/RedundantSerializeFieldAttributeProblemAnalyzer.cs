@@ -17,7 +17,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
         }
 
-        protected override void Analyze(IAttribute attribute, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+        protected override void Analyze(IAttribute attribute, ElementProblemAnalyzerData data,
+            IHighlightingConsumer consumer)
         {
             if (!(attribute.TypeReference?.Resolve().DeclaredElement is ITypeElement attributeTypeElement))
                 return;
@@ -27,9 +28,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
             foreach (var declaration in AttributesOwnerDeclarationNavigator.GetByAttribute(attribute))
             {
-                if (declaration.DeclaredElement is IField field && !Api.IsSerialisedField(field)
-                    || (declaration.DeclaredElement is IProperty property && attribute.Target == AttributeTarget.Field
-                                                                          && !Api.IsSerialisedAutoProperty(property, attribute)))
+                if (declaration.DeclaredElement is IField field && Api.IsSerialisedField(field, false) == SerializedFieldStatus.NonSerializedField
+                    || (
+                        declaration.DeclaredElement is IProperty property 
+                        && attribute.Target == AttributeTarget.Field
+                        && Api.IsSerialisedAutoProperty(property, attribute, false) == SerializedFieldStatus.NonSerializedField
+                        )
+                    )
                 {
                     consumer.AddHighlighting(new RedundantSerializeFieldAttributeWarning(attribute));
                     return;
