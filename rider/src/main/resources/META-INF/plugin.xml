@@ -221,7 +221,7 @@
       <action id="UnityToolbarLabel" class="com.jetbrains.rider.plugins.unity.actions.UnityToolbarLabel"/>
     </group>
 
-    <group id="NewUI_UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
+    <group id="NewUI_UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.NewUIUnityToolbarActionsGroup">
       <add-to-group group-id="UnityToolbarActions" anchor="last"/>
       <add-to-group group-id="MainToolbarCenter" anchor="last" /> <!--new UI -->
 

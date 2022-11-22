@@ -3,7 +3,7 @@
 package com.jetbrains.rider.plugins.unity.workspace
 
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.workspaceModel.ide.impl.toVirtualFile
+import com.intellij.workspaceModel.ide.impl.virtualFile
 import com.intellij.workspaceModel.storage.*
 import com.intellij.workspaceModel.storage.EntitySource
 import com.intellij.workspaceModel.storage.GeneratedCodeApiVersion
@@ -19,31 +19,31 @@ import org.jetbrains.deft.annotations.Child
 
 interface UnityPackageEntity : WorkspaceEntity {
 
-    val descriptor: UnityPackage
+  val descriptor: UnityPackage
 
-    val packageId: String get() = descriptor.id
-    val version: String get() = descriptor.version
-    val source: UnityPackageSource get() = descriptor.source
-    val displayName: String get() = descriptor.displayName
-    val description: String? get() = descriptor.description
-    val dependencies: Map<String, String> get() = descriptor.dependencies.associate { it.id to it.version }
-    val tarballLocation: String? get() = descriptor.tarballLocation
-    val gitUrl: String? get() = descriptor.gitDetails?.url
-    val gitHash: String? get() = descriptor.gitDetails?.hash
-    val gitRevision: String?  get() = descriptor.gitDetails?.revision
+  val packageId: String get() = descriptor.id
+  val version: String get() = descriptor.version
+  val source: UnityPackageSource get() = descriptor.source
+  val displayName: String get() = descriptor.displayName
+  val description: String? get() = descriptor.description
+  val dependencies: Map<String, String> get() = descriptor.dependencies.associate { it.id to it.version }
+  val tarballLocation: String? get() = descriptor.tarballLocation
+  val gitUrl: String? get() = descriptor.gitDetails?.url
+  val gitHash: String? get() = descriptor.gitDetails?.hash
+  val gitRevision: String? get() = descriptor.gitDetails?.revision
 
-    fun isEditable(): Boolean {
-        return descriptor.source in arrayOf(UnityPackageSource.Embedded, UnityPackageSource.Local)
-    }
+  fun isEditable(): Boolean {
+    return descriptor.source in arrayOf(UnityPackageSource.Embedded, UnityPackageSource.Local)
+  }
 
-    fun isReadOnly(): Boolean {
-        return !isEditable() && descriptor.source != UnityPackageSource.Unknown
-    }
+  fun isReadOnly(): Boolean {
+    return !isEditable() && descriptor.source != UnityPackageSource.Unknown
+  }
 
-    @Child
-    val contentRootEntity: ContentRootEntity?
+  @Child
+  val contentRootEntity: ContentRootEntity?
 
-    val packageFolder: VirtualFile? get() = contentRootEntity?.url?.toVirtualFile()
+  val packageFolder: VirtualFile? get() = contentRootEntity?.url?.virtualFile
 
   //region generated code
   @GeneratedCodeApiVersion(1)
