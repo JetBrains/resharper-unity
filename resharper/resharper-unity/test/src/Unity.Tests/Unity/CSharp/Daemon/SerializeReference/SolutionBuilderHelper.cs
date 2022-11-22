@@ -21,7 +21,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
             var commandLineBuilderJet = new CommandLineBuilderJet()
                 .AppendFileName(fileName)
                 .AppendSwitch("build")
-                .AppendSwitch("-t:Restore,Build")
                 .AppendSwitch("--force")
                 .AppendSwitch("--no-incremental")
                 .AppendFileName(dependencyDirectoryAbsolutePath)

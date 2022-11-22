@@ -48,16 +48,16 @@
       </ProjectReference>
     </ItemGroup>
     <ItemGroup>
-      <None Include="packages.config" />
+      <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net35" Version="1.0.3">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-    <Import Project="..\..\..\..\..\%JET_TEST_PACKAGES_DIR%\Microsoft.NETFramework.ReferenceAssemblies.net35.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net35.targets" Condition="Exists('..\..\..\..\..\%JET_TEST_PACKAGES_DIR%\Microsoft.NETFramework.ReferenceAssemblies.net35.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net35.targets')" />
-    <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-      <PropertyGroup>
-        <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
-      </PropertyGroup>
-      <Error Condition="!Exists('..\..\..\..\..\%JET_TEST_PACKAGES_DIR%\Microsoft.NETFramework.ReferenceAssemblies.net35.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net35.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\%JET_TEST_PACKAGES_DIR%\Microsoft.NETFramework.ReferenceAssemblies.net35.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net35.targets'))" />
-    </Target>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
          Other similar extension points exist, see Microsoft.Common.targets.
     <Target Name="BeforeBuild">
