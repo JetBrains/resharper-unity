@@ -8,7 +8,7 @@ import com.intellij.openapi.vcs.FileStatus
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.workspaceModel.ide.WorkspaceModel
-import com.intellij.workspaceModel.ide.impl.toVirtualFile
+import com.intellij.workspaceModel.ide.impl.virtualFile
 import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 import com.jetbrains.rider.projectView.calculateFileSystemIcon
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
@@ -176,51 +176,51 @@ open class UnityExplorerFileSystemNode(project: Project,
         return it.name.replace(UnityExplorer.DefaultProjectPrefixRegex, "")
     }
 
-    private fun containingProjectNode(entity: ProjectModelEntity): ProjectModelEntity? {
-        if (descendentOf == AncestorNodeType.FileSystem) {
-            return null
-        }
-
-        if (entity.isProject())
-            return null
-
-        val projectEntity = entity.containingProjectEntity() ?: return null
-
-        // Show the project on the owner of the assembly definition file
-        val dir = entity.url?.toVirtualFile()
-        if (dir != null && hasAssemblyDefinitionFile(dir)) {
-            return projectEntity
-        }
-
-        // Hide the project if we're under an assembly definition - the first .asmdef we meet is the root of this project
-        if (isUnderAssemblyDefinition()) {
-            return null
-        }
-
-        // These special folders aren't used in Packages
-        if (descendentOf == AncestorNodeType.Assets) {
-
-            // This won't work if the projects are renamed by some kind of Unity plugin
-            // If the project is -Editor, hide if this node is under the Editor folder
-            // If the project is -firstpass, hide if this node is under Plugins, Standard Assets or Pro Standard Assets
-            // If the project is -Editor-firstpass, see if this node is under an Editor folder that is itself under
-            //   Plugins, Standard Assets, Pro Standard Assets
-            if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-Editor" && isUnderEditorFolder()) {
-                return null
-            }
-            if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-firstpass" && isUnderFirstpassFolder()) {
-                return null
-            }
-            if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-Editor-firstpass") {
-                val editor = findAncestor(this.parent as? FileSystemNodeBase?, "Editor")
-                if (editor != null && isUnderFirstpassFolder(editor)) {
-                    return null
-                }
-            }
-        }
-
-        return projectEntity
+  private fun containingProjectNode(entity: ProjectModelEntity): ProjectModelEntity? {
+    if (descendentOf == AncestorNodeType.FileSystem) {
+      return null
     }
+
+    if (entity.isProject())
+      return null
+
+    val projectEntity = entity.containingProjectEntity() ?: return null
+
+    // Show the project on the owner of the assembly definition file
+    val dir = entity.url?.virtualFile
+    if (dir != null && hasAssemblyDefinitionFile(dir)) {
+      return projectEntity
+    }
+
+    // Hide the project if we're under an assembly definition - the first .asmdef we meet is the root of this project
+    if (isUnderAssemblyDefinition()) {
+      return null
+    }
+
+    // These special folders aren't used in Packages
+    if (descendentOf == AncestorNodeType.Assets) {
+
+      // This won't work if the projects are renamed by some kind of Unity plugin
+      // If the project is -Editor, hide if this node is under the Editor folder
+      // If the project is -firstpass, hide if this node is under Plugins, Standard Assets or Pro Standard Assets
+      // If the project is -Editor-firstpass, see if this node is under an Editor folder that is itself under
+      //   Plugins, Standard Assets, Pro Standard Assets
+      if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-Editor" && isUnderEditorFolder()) {
+        return null
+      }
+      if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-firstpass" && isUnderFirstpassFolder()) {
+        return null
+      }
+      if (projectEntity.name == UnityExplorer.DefaultProjectPrefix + "-Editor-firstpass") {
+        val editor = findAncestor(this.parent as? FileSystemNodeBase?, "Editor")
+        if (editor != null && isUnderFirstpassFolder(editor)) {
+          return null
+        }
+      }
+    }
+
+    return projectEntity
+  }
 
     private fun forEachAncestor(root: FileSystemNodeBase?, action: FileSystemNodeBase.() -> Boolean): FileSystemNodeBase? {
         var node: FileSystemNodeBase? = root
