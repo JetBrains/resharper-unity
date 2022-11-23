@@ -59,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             }
             
             if (!myResourceLoadCache.HasResource(literal))
-                consumer.AddHighlighting(new UnknownResourceWarning(argument));
+                consumer.AddHighlighting(new UnknownResourceWarning(argument, literal));
         }
     }
 }
