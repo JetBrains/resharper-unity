@@ -11,6 +11,7 @@ using JetBrains.DataFlow;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon.SolutionAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -494,6 +495,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
             var sourceFile = myPsiSourceFileFactory.CreateExternalPsiSourceFile(myModuleFactory.PsiModule, path,
                 projectFileType, properties, fileSystemData);
+            
+            if(path.IsMeta() && IsFromResourceFolder(path))
+            {
+                sourceFile.PutData(UnityExternalFileKey.Key, UnityExternalFileKey.Instance);
+            }
+
             builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Added);
 
             return sourceFile;

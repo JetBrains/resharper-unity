@@ -4,11 +4,12 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
-using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
+using JetBrains.ReSharper.Psi.Dependencies;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
@@ -19,31 +20,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public const string ResourcesFolderName = "Resources";
         private const string EditorFolderName = "Editor";
 
-        private readonly ISolution mySolution;
-
+        private readonly object myCachedResourcesLock = new();
+        private readonly HashSet<ResourceCacheInfo> myCachedResources = new();
+        private readonly VirtualFileSystemPath mySolutionDirectory;
+        
         public ResourceLoadCache(Lifetime lifetime,
             [NotNull] IShellLocks locks,
             [NotNull] IPersistentIndexManager persistentIndexManager,
             ISolution solution)
             : base(lifetime, locks, persistentIndexManager, ResourcesCacheItem.Marshaller)
         {
-            mySolution = solution;
-            
-            // SolutionDirectory isn't absolute in tests, and will throw if used with FileSystemTracker
-            mySolutionDirectory = solution.SolutionDirectory;
-            if (!mySolutionDirectory.IsAbsolute)
-                mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory().ToVirtualFileSystemPath());
+            mySolutionDirectory = GetSolutionDirectoryPath(solution);
         }
 
-        private readonly object myCachedResourcesLock = new();
-        private readonly HashSet<ResourceCacheInfo> myCachedResources = new();
-        private readonly VirtualFileSystemPath mySolutionDirectory;
+        public static VirtualFileSystemPath GetSolutionDirectoryPath(ISolution solution)
+        {
+            // SolutionDirectory isn't absolute in tests, and will throw if used with FileSystemTracker
+            var solutionDirectory = solution.SolutionDirectory;
+            if (!solutionDirectory.IsAbsolute)
+                solutionDirectory =
+                    solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory().ToVirtualFileSystemPath());
+            return solutionDirectory;
+        }
 
         protected override bool IsApplicable(IPsiSourceFile sourceFile)
         {
-            return sourceFile.Name.EndsWith(".meta", StringComparison.InvariantCultureIgnoreCase);
+            return sourceFile.GetLocation().IsMeta();
         }
-
+        
         public override object Build(IPsiSourceFile sourceFile, bool isStartup)
         {
             if (!IsApplicable(sourceFile))
@@ -73,13 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 ? false
                 : relativeToSolution.AsRelative().StartsWith("Assets");
 
-            //determine if editor or runtime resource
-            var distanceToResourcesFolder = GetDistanceToParentFolder(relativeToSolution, ResourcesFolderName);
-            var distanceToEditorFolder = GetDistanceToParentFolder(relativeToSolution, EditorFolderName);
-
-            //Resources/Editor/asset.png -> Editor/asset.png RUNTIME
-            //Editor/Resources/asset.png -> asset.png EDITOR
-            var isEditorResource = distanceToEditorFolder >= 0 && distanceToEditorFolder > distanceToResourcesFolder;
+            var isEditorResource = IsEditorResource(relativeToSolution);
 
             if (inAssetsFolder)
             {
@@ -97,7 +95,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 extensionNoDot);
         }
 
-        private static RelativePath GetPathInsideResourcesFolder(IPath relativeSourceFilePath)
+        private static Hash CalculateResourceMetaFileHash(string normalizedPath)
+        {
+            var hash = new Hash(43);
+            hash.PutString("UnityResourceDependency");
+            hash.PutString(normalizedPath);
+            return hash;
+        }
+
+        public static Dependency CreateDependency(IPsiSourceFile psiSourceFile, string literal)
+        {
+            var hash = CalculateResourceMetaFileHash(literal);
+            return DependencyFactory.Create(hash.Value, psiSourceFile, _ =>$"Unity.ResourcesLoadCache.{literal}");
+        }
+
+
+        private static bool IsEditorResource(IPath relativeToSolution)
+        {
+            //determine if editor or runtime resource
+            var distanceToResourcesFolder = GetDistanceToParentFolder(relativeToSolution, ResourcesFolderName);
+            var distanceToEditorFolder = GetDistanceToParentFolder(relativeToSolution, EditorFolderName);
+
+            //Resources/Editor/asset.png -> Editor/asset.png RUNTIME
+            //Editor/Resources/asset.png -> asset.png EDITOR
+            var isEditorResource = distanceToEditorFolder >= 0 && distanceToEditorFolder > distanceToResourcesFolder;
+            return isEditorResource;
+        }
+
+        public static RelativePath GetPathInsideResourcesFolder(IPath relativeSourceFilePath)
         {
             //Assets/Resources/Folder/img.png
             //Assets/Resources/Folder/Resources/img.png -> img.png
