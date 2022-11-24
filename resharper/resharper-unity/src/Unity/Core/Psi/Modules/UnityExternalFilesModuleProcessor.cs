@@ -12,6 +12,7 @@ using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.SolutionAnalysis;
+using JetBrains.ReSharper.Daemon.SolutionAnalysis.FileImages;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -497,9 +498,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 projectFileType, properties, fileSystemData);
             
             if(path.IsMeta() && IsFromResourceFolder(path))
-            {
-                sourceFile.PutData(UnityExternalFileKey.Key, UnityExternalFileKey.Instance);
-            }
+                sourceFile.PutData(FileImagesBuilder.FileImagesBuilderAllowKey, FileImagesBuilderAllowKey.Instance);
 
             builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Added);
 
