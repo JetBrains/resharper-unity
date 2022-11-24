@@ -24,6 +24,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         public const string ControllerFileExtensionWithDot = ".controller";
         public const string AnimFileExtensionWithDot = ".anim";
         public const string InputActionsExtensionWithDot = ".inputactions";
+        
+        public const string ResourcesFolderName = "Resources";
+        public const string EditorFolderName = "Editor";
 
         // Data files - does not include .meta
         public static readonly string[] YamlDataFileExtensionsWithDot =
@@ -34,6 +37,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             ControllerFileExtensionWithDot,
             AnimFileExtensionWithDot
         };
+
+        public static bool IsFromResourceFolder(this IPath path) =>
+            path.Components.Any(t => t.Equals(ResourcesFolderName));
 
         public static bool IsMeta(this IPath path) =>
             SimplePathEndsWith(path, MetaFileExtensionWithDot);

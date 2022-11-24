@@ -17,9 +17,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
     [PsiComponent]
     public class ResourceLoadCache : SimpleICache<ResourcesCacheItem>
     {
-        public const string ResourcesFolderName = "Resources";
-        private const string EditorFolderName = "Editor";
-
         private readonly object myCachedResourcesLock = new();
         private readonly HashSet<ResourceCacheInfo> myCachedResources = new();
         private readonly VirtualFileSystemPath mySolutionDirectory;
@@ -45,7 +42,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         protected override bool IsApplicable(IPsiSourceFile sourceFile)
         {
-            return sourceFile.GetLocation().IsMeta();
+            var virtualFileSystemPath = sourceFile.GetLocation();
+            return virtualFileSystemPath.IsMeta() && virtualFileSystemPath.IsFromResourceFolder();
         }
         
         public override object Build(IPsiSourceFile sourceFile, bool isStartup)
@@ -113,8 +111,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         private static bool IsEditorResource(IPath relativeToSolution)
         {
             //determine if editor or runtime resource
-            var distanceToResourcesFolder = GetDistanceToParentFolder(relativeToSolution, ResourcesFolderName);
-            var distanceToEditorFolder = GetDistanceToParentFolder(relativeToSolution, EditorFolderName);
+            var distanceToResourcesFolder = GetDistanceToParentFolder(relativeToSolution, UnityFileExtensions.ResourcesFolderName);
+            var distanceToEditorFolder = GetDistanceToParentFolder(relativeToSolution, UnityFileExtensions.EditorFolderName);
 
             //Resources/Editor/asset.png -> Editor/asset.png RUNTIME
             //Editor/Resources/asset.png -> asset.png EDITOR
@@ -131,7 +129,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
             while (!parent.IsEmpty)
             {
-                if (parent.Name == ResourcesFolderName)
+                if (parent.Name == UnityFileExtensions.ResourcesFolderName)
                 {
                     if (!relativeSourceFilePath.IsAbsolute)
                         return relativeSourceFilePath.AsRelative().MakeRelativeTo(parent.AsRelative());

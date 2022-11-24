@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         public IEnumerable<KeyValuePair<Dependency, Hash>> FileDependencies(IPsiSourceFile psiSourceFile)
         {
             var virtualFileSystemPath = psiSourceFile.GetLocation(); // /some/path/Assets/Resource/MyPrefab.prefab.meta
-            if (!virtualFileSystemPath.IsMeta()) 
+            if (!virtualFileSystemPath.IsMeta() && !virtualFileSystemPath.IsFromResourceFolder()) 
                 yield break;
             virtualFileSystemPath = virtualFileSystemPath.ChangeExtension("");// /some/path/Assets/Resource/MyPrefab.prefab
             
