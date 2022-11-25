@@ -99,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
 
         private void AddRefactoringSection()
         {
-            AddHeader("Refactoring");
+            AddHeader(Strings.UnitySettings_Refactoring_Refactoring_Settings_Header);
             
             AddBoolOption((UnitySettings s) => s.ShowPopupForAddingFormallySerializedAttributeOnRenaming,
                 Strings.UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property);
