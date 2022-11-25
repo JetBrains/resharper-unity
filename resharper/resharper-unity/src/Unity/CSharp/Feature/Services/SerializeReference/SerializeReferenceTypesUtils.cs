@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         bool IsTypeParameterType, string FieldName)
     {
         public static FieldAdapter InValidFieldAdapter =>
-            new FieldAdapter(false, false, false, null, String.Empty, false, String.Empty);
+            new(false, false, false, null, String.Empty, false, String.Empty);
     }
 
     internal record ClassInfoAdapter(ElementId? ElementId,
@@ -104,8 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                 if (elementId == null)
                     continue;
 
-                var declaredElementShortName =
-                    $"{classLikeDeclaration.GetClrName()}<{typeParameterOfTypeDeclaration.ShortName}[{typeParameterOfTypeDeclaration.Index}]>";
+                var declaredElementShortName = GetDeclaredElementNameDescription(classLikeDeclaration, typeParameterOfTypeDeclaration);
 
                 result.Add(elementId.Value,
                     new TypeParameter(elementId.Value, declaredElementShortName, typeParameterOfTypeDeclaration.Index,
@@ -126,8 +125,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                 if (elementId == null)
                     continue;
 
-                var parameterName =
-                    $"{typeParameter.TypeOwner.FullyQualifiedName}<{typeParameter.Name}[{typeParameter.Index}]>";
+                var parameterName = GetParameterNameDescription(typeParameter);
 
                 var parameter = new TypeParameter(
                     elementId.Value,
@@ -225,7 +223,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                 }
                 else
                 {
-                    Assertion.Fail("ClassIs should already exist in index");
+                    Assertion.Fail($"ClassId '{classId.Value}' should already exists in index");
                 }
             }
             else if (resultInfoTypeToInterfaces.TryGetValue(fieldTypeId.Value, out var originalClassMetaInfo))
@@ -257,13 +255,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             var elementId = metadataFieldType != null
                 ? unityElementIdProvider.GetElementId(metadataFieldType, assemblyFile)
                 : null;
-            var typeFullName = metadataFieldType != null ? metadataFieldType.FullName : string.Empty;
-            var fieldName = metadataField?.Name ?? string.Empty;
+            var typeFullName = GetTypeFullNameDescription(metadataFieldType);
+            var fieldName = GetMetadataFieldNameDescription(metadataField);
             var isTypeParameterType = metadataFieldType is IMetadataTypeParameterReferenceType;
 
             return new FieldAdapter(isValid, isUnityFieldType, isObjectTypeField, elementId, typeFullName,
                 isTypeParameterType, fieldName);
         }
+
 
         public static bool HasFieldAttribute(this IProperty property, IClrTypeName clrTypeName)
         {
@@ -310,13 +309,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             var elementId = fieldDeclaredType != null
                 ? provider.GetElementId(fieldDeclaredType.GetTypeElement(), ownerTypeElement)
                 : null;
-            var typeFullName = declaredType != null ? declaredType.GetClrName().FullName : string.Empty;
-            var fieldName = typeOwner?.ShortName ?? string.Empty;
+            var typeFullName = GetTypeFullNameDescription(declaredType);
+            var fieldName = GetFieldNameDescription(typeOwner);
             var isTypeParameterType = declaredType?.IsOpenType ?? false;
 
             return new FieldAdapter(isValid, isUnityFieldType, isObjectTypeField, elementId, typeFullName,
                 isTypeParameterType, fieldName);
         }
+
+
         internal static ClassInfoAdapter ToAdapter(this IMetadataTypeInfo classType, IPsiAssemblyFile assemblyFile,
             IUnityElementIdProvider provider)
         {
@@ -332,7 +333,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                     .Select(t => provider.GetElementId(t!.Type, assemblyFile))
                     .Select(id => new KeyValuePair<ElementId, int>(id!.Value, 1));
 
-            var fullyQualifiedName = classType.FullyQualifiedName;
+            var fullyQualifiedName = GetClassTypeFullyQualifiedNameDescription(classType);
             var typeParametersDictionary =
                 GetTypeParametersDict(classType, assemblyFile, provider);
 
@@ -374,11 +375,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                     {
                         case IMetadataTypeParameterReferenceType parameterReferenceType:
                             resolvedId = provider.GetElementId(parameterReferenceType.TypeParameter, assemblyFile);
-                            typeParameterName = parameterReferenceType.TypeParameter.Name;
+                            typeParameterName = GetTypeParameterNameDescription(parameterReferenceType);
                             break;
                         case IMetadataClassType parameterClassType:
                             resolvedId = provider.GetElementId(parameterClassType.Type, assemblyFile);
-                            typeParameterName = parameterClassType.FullName;
+                            typeParameterName = GetTypeParameterNameDescription(parameterClassType);
                             break;
                     }
 
@@ -387,7 +388,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
 
                     typeResolves.Add(new TypeParameterResolve(
-                        $"{superClassType.FullName}:[{index}]{metadataType.FullName}->{typeParameterName}",
+                        GetResolutionDescription(superClassType, index, metadataType, typeParameterName),
                         parameterId.Value,
                         resolvedId.Value
                     ));
@@ -396,6 +397,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
             return typeResolves;
         }
+
 
         internal static ClassInfoAdapter ToAdapter(this ITypeElement typeElement,
             IUnityElementIdProvider provider)
@@ -412,7 +414,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                 .Select(i => provider.GetElementId(i))
                 .Select(id => new KeyValuePair<ElementId, int>(id!.Value, 1));
 
-            var fullyQualifiedName = typeElement.GetClrName().FullName;
+            var fullyQualifiedName = GetFullyQualifiedNameDescription(typeElement);
 
             var typeParametersDictionary = GetTypeParametersDict(typeElement, provider);
 
@@ -467,7 +469,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                         continue;
 
                     typeResolves.Add(new TypeParameterResolve(
-                        $"{typeParameter.OwnerType?.ShortName}:[{typeParameter.Index}]{typeParameter.ShortName}->{declaredElement.ShortName}",
+                        GetResolutionDescription(typeParameter, declaredElement),
                         typeParamElementId.Value, resolvedTypeElementId.Value
                     ));
                 }
@@ -475,5 +477,101 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
             return typeResolves;
         }
+
+        #region Additiona debug info 
+
+        private static bool IsDetailedInfoEnabled()
+        {
+            return ourLogger.IsEnabled(LoggingLevel.TRACE);
+        }
+        
+        private static string GetResolutionDescription(ITypeParameter typeParameter, ITypeElement declaredElement)
+        {
+            if (IsDetailedInfoEnabled())
+                return $"{typeParameter.OwnerType?.ShortName}:[{typeParameter.Index}]{typeParameter.ShortName}->{declaredElement.ShortName}";
+            return string.Empty;
+        }
+
+        private static string GetFullyQualifiedNameDescription(ITypeElement typeElement)
+        {
+            if (IsDetailedInfoEnabled())
+                return typeElement.GetClrName().FullName;
+            return string.Empty;
+        }
+
+        private static string GetResolutionDescription(IMetadataClassType superClassType, int index,
+            IMetadataType metadataType, string typeParameterName)
+        {
+            if (IsDetailedInfoEnabled())
+                return $"{superClassType.FullName}:[{index}]{metadataType.FullName}->{typeParameterName}";
+            return string.Empty;
+        }
+
+        private static string GetTypeParameterNameDescription(IMetadataClassType parameterClassType)
+        {
+            if (IsDetailedInfoEnabled())
+                return parameterClassType.FullName;
+            return string.Empty;
+        }
+
+        private static string GetTypeParameterNameDescription(
+            IMetadataTypeParameterReferenceType parameterReferenceType)
+        {
+            if (IsDetailedInfoEnabled())
+                return parameterReferenceType.TypeParameter.Name;
+            return string.Empty;
+        }
+
+        private static string GetDeclaredElementNameDescription(ITypeElement classLikeDeclaration,
+            ITypeParameter typeParameterOfTypeDeclaration)
+        {
+            if (IsDetailedInfoEnabled())
+                return $"{classLikeDeclaration.GetClrName()}<{typeParameterOfTypeDeclaration.ShortName}[{typeParameterOfTypeDeclaration.Index}]>";
+            return string.Empty;
+        }
+
+        private static string GetParameterNameDescription(IMetadataTypeParameter typeParameter)
+        {
+            if (IsDetailedInfoEnabled())
+                return $"{typeParameter.TypeOwner.FullyQualifiedName}<{typeParameter.Name}[{typeParameter.Index}]>";
+            return string.Empty;
+        }
+
+        private static string GetMetadataFieldNameDescription(IMetadataField metadataField)
+        {
+            if (IsDetailedInfoEnabled())
+                return metadataField?.Name ?? string.Empty;
+            return string.Empty;
+        }
+
+        private static string GetTypeFullNameDescription(IMetadataType? metadataFieldType)
+        {
+            if (IsDetailedInfoEnabled())
+                return metadataFieldType != null ? metadataFieldType.FullName : string.Empty;
+            return string.Empty;
+        }
+
+        private static string GetFieldNameDescription(ITypeOwner? typeOwner)
+        {
+            if (IsDetailedInfoEnabled())
+                return typeOwner?.ShortName ?? string.Empty;
+            return string.Empty;
+        }
+
+        private static string GetTypeFullNameDescription(IDeclaredType? declaredType)
+        {
+            if (IsDetailedInfoEnabled())
+                return declaredType != null ? declaredType.GetClrName().FullName : string.Empty;
+            return string.Empty;
+        }
+
+        private static string GetClassTypeFullyQualifiedNameDescription(IMetadataTypeInfo classType)
+        {
+            if (IsDetailedInfoEnabled())
+                return classType.FullyQualifiedName;
+            return string.Empty;
+        }
+
+        #endregion
     }
 }

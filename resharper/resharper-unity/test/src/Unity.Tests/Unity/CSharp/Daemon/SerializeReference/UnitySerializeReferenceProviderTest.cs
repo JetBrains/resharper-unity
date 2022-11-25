@@ -9,7 +9,6 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReference
 {
-    // public abstract 
     [TestFixture, ReuseSolution(false)]
     public class UnitySerializeReferenceProviderTest : BaseTestWithExistingSolution
     {
@@ -75,6 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         
         private void DoSolutionTestWithGold(FileSystemPath solutionPath)
         {
+            UnitySerializeReferenceProviderDescriptionInfo.CreateLifetimeCookie(TestLifetime);
             DoTestSolution(solutionPath,
                 (lt, solution) =>
                 {

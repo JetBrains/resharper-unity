@@ -282,7 +282,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                 }
                 else
                 {
-                    Assertion.Require(!string.IsNullOrEmpty(classMetaInfoDiff.ClassName));
+                    //Assertion.Require(!string.IsNullOrEmpty(classMetaInfoDiff.ClassName));
                     Assertion.Require(!classMetaInfoDiff.IsEmpty() || diff.DiffType == DiffType.Added);
 
                     metaInfo = new IndexClassInfo(classMetaInfoDiff.ClassName);
@@ -311,7 +311,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                 }
                 else
                 {
-                    Assertion.Require(!string.IsNullOrEmpty(diff.ClassName));
+                    // Assertion.Require(!string.IsNullOrEmpty(diff.ClassName));
                     Assertion.Require(diff.DiffType == DiffType.Added);
 
                     metaInfo = new IndexClassInfo(diff.ClassName, true);
