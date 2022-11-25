@@ -87,31 +87,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
             return null;
         }
-        private static IMetadataType? GetUnityFieldType(IMetadataType? fieldType, int levelOfRecursion = 0)
-        {
-            if (fieldType == null)
-                return null;
-
-            if (fieldType is IMetadataArrayType { Rank: 1 } arrayType && levelOfRecursion == 0)
-                return GetUnityFieldType(arrayType.ElementType as IMetadataClassType, 1);
-
-            if (fieldType is IMetadataTypeParameterReferenceType metadataTypeParameterReferenceType)
-                return metadataTypeParameterReferenceType;
-
-            if (fieldType is not IMetadataClassType classType)
-                return null;
-
-            var fieldTypeInfo = classType.Type;
-
-            if (fieldTypeInfo.IsList() && levelOfRecursion == 0)
-                return GetUnityFieldType(classType.Arguments[0] as IMetadataClassType, 1);
-
-            if (fieldTypeInfo.TypeParameters.Length == 0)
-                return classType;
-
-            return null;
-        }
-
 
         private static Dictionary<ElementId, TypeParameter> GetTypeParametersDict(
             ITypeElement classLikeDeclaration,
