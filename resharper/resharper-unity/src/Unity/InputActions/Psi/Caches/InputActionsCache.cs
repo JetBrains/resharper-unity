@@ -122,7 +122,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.Caches
         public IEnumerable<InputActionsDeclaredElement> GetDeclaredElements(VirtualFileSystemPath file, string name)
         {
             myShellLocks.AssertReadAccessAllowed();
-            var list = myDeclaredElements.Single(a => a.Key.GetLocation() == file).Value;
+            var list = myDeclaredElements.Where(a => a.Key.GetLocation() == file).SelectMany(a=>a.Value); // https://youtrack.jetbrains.com/issue/RIDER-85555/Include-inputactions-file-into-csproj-and-generate-.Player-projects
             return list.Where(element => element.ShortName == name);
         }
 
