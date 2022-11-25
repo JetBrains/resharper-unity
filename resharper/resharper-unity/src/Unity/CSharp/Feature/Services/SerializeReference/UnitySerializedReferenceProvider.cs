@@ -136,15 +136,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                     else
                     {
                         var currentTimestamp = assemblyFile.Timestamp.Ticks;
-                        var assemblyExternalAnnotations = assemblyFile.ExternalAnnotations;
-                        if (assemblyExternalAnnotations != null)
-                        {
-                            unchecked
-                            {
-                                currentTimestamp += assemblyExternalAnnotations.Timestamp;
-                            }
-                        }
-
+                    
                         var fullAssemblyId = new FullAssemblyId(assembly);
                         var (dataMap, timestampMap) = GetAssemblyCache(assembly);
                         if (timestampMap.TryGetValue(fullAssemblyId, out var cachedTimestamp) &&
