@@ -2,11 +2,9 @@
 using JetBrains.Application;
 using JetBrains.Application.DataContext;
 using JetBrains.Application.UI.Actions.ActionManager;
-using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Json.Psi;
-using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
-using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
@@ -38,12 +36,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.DataConstant
 
                 if (containingNode.IsNamePropertyValue())
                 {
-                    var node = (containingNode as IJsonNewLiteralExpression).NotNull("node != null");
-                    return new List<IDeclaredElement>
+                    var nameDeclaredElement = dataContext.GetComponent<AsmDefCache>().GetNameDeclaredElement(sourceFile);
+                    if (nameDeclaredElement != null)
                     {
-                        new AsmDefNameDeclaredElement(node.GetStringValue(), sourceFile,
-                            containingNode.GetTreeStartOffset().Offset)
-                    };
+                        return new List<IDeclaredElement>
+                        {
+                            nameDeclaredElement
+                        };
+                    }
                 }
             }
 
