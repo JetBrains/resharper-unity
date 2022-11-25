@@ -24,10 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
     }
 
     [ZoneMarker(typeof(IInternalVisibilityZone))]
-    [Action(nameof(SerializeReferenceDumpAction), nameof(SerializeReferenceDumpAction)
-        , VsShortcuts = new[] { "Control+Alt+Shift+=" }
-        , IdeaShortcuts = new[] { "Control+Alt+Shift+=" }
-    )]
+    [Action(nameof(SerializeReferenceDumpAction), nameof(SerializeReferenceDumpAction))]
     public class SerializeReferenceDumpAction : IExecutableAction
     {
         public bool Update(IDataContext context, ActionPresentation presentation, DelegateUpdate nextUpdate)
