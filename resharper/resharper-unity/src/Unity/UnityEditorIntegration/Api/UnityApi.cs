@@ -90,14 +90,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             bool useSwea = true,
             bool hasSerializeReference = false)
         {
-            if (IsSerializableType2(type, project, isTypeUsage, hasSerializeReference))
+            if (IsSerializableTypeSimpleCheck(type, project, isTypeUsage, hasSerializeReference))
                 return SerializedFieldStatus.SerializedField;
             
             return mySerializedReferenceProvider.GetSerializableStatus(type, useSwea);
         }
 
         // NOTE: This method assumes that the type is not a descendant of UnityEngine.Object!
-        private bool IsSerializableType2([NotNullWhen(true)] ITypeElement? type, IProject project, bool isTypeUsage,
+        private bool IsSerializableTypeSimpleCheck([NotNullWhen(true)] ITypeElement? type, IProject project, bool isTypeUsage,
                                         bool hasSerializeReference = false)
         {
             if (type is not (IStruct or IClass))
