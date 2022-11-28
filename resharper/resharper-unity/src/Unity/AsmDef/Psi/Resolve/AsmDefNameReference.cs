@@ -119,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
 
         public override ISymbolFilter[] GetSymbolFilters()
         {
-            return EmptyArray<ISymbolFilter>.Instance;
+            return new ISymbolFilter[] { new DistinctFilterByFileLocation(myOwner.GetSourceFile().ToProjectFile()) };
         }
     }
 
