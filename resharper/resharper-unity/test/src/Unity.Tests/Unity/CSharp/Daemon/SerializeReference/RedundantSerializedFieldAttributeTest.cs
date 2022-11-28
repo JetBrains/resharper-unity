@@ -47,6 +47,13 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
             SolutionBuilderHelper.PrepareDependencies(BaseTestDataPath, testSolutionAbsolutePath, "AssemblyWithoutSerilaizeRef", AssembliesDirectory);
             DoSolutionTestWithGold(testSolutionAbsolutePath);
         }
+        
+        [Test]
+        public void RedundantFieldsWithGenerics()
+        {
+            var testSolutionAbsolutePath = GetTestDataFilePath2(@"Solutions\RedundantFieldsWithGenerics\RedundantFieldsWithGenerics.sln");
+            DoSolutionTestWithGold(testSolutionAbsolutePath);
+        }
 
         private void DoSolutionTestWithGold(FileSystemPath solutionPath)
         {
