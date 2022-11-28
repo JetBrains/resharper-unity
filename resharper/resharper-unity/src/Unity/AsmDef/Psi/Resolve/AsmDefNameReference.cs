@@ -1,8 +1,11 @@
-﻿using JetBrains.Annotations;
+﻿using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Json.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
@@ -11,6 +14,7 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.ReSharper.PsiGen.Util;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
@@ -72,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
             if (useReferenceName)
             {
                 var name = GetName();
-                return symbolTable.Filter(name, new ExactNameFilter(name));
+                return symbolTable.Filter(name, new ExactNameFilter(name), new DistinctFilterByFileLocation(myOwner.GetSourceFile().ToProjectFile()));
             }
             return symbolTable;
         }
@@ -117,5 +121,49 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
         {
             return EmptyArray<ISymbolFilter>.Instance;
         }
+    }
+
+    /// <summary>
+    /// Avoid showing both asmdef from the Editor and Player projects 
+    /// </summary>
+    public class DistinctFilterByFileLocation : ISymbolFilter
+    {
+        //private readonly bool myIsUnityExternalFile;
+        private readonly IProjectFile myProjectFile;
+
+        public DistinctFilterByFileLocation(IProjectFile projectFile)
+        {
+            myProjectFile = projectFile;
+        }
+        
+        public IList<ISymbolInfo> FilterArray(IList<ISymbolInfo> data)
+        {
+            // if (myIsUnityExternalFile) // we do not expect any project files in this case 
+            //     return data;
+
+            var hashset = new HashSet<ISymbolInfo>();
+            var groups = data.GroupBy(a => a.GetDeclaredElement().GetSourceFiles().SingleItem.GetLocation()).ToArray();
+            foreach (var group in groups)
+            {
+                if (group.Count() > 2)
+                    hashset.AddAll(group.AsArray()); // weird case - may happen, but only if case of some manual non-Rider package project modifications
+                else if (group.Count() == 1)
+                    hashset.Add(group.FirstNotNull());
+                else
+                {
+                    // prefer Editor project, if myProjectFile is from Editor project
+                    // prefer Player, if myProjectFile is from Player project
+                    var preferred = group.AsArray()
+                        .OrderBy(a => a.GetDeclaredElement().GetSourceFiles().SingleItem?.GetProject()?.ProjectFileLocation);
+                    hashset.Add(!myProjectFile.GetProject().IsPlayerProject() ? preferred.First() : preferred.Last());
+                }
+
+            }
+            
+            return hashset.ToList();
+        }
+
+        public ResolveErrorType ErrorType => ResolveErrorType.NOT_RESOLVED;
+        public FilterRunType RunType => FilterRunType.MUST_RUN;
     }
 }
