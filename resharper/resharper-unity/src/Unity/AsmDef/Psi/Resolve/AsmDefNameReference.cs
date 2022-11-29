@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
 
         public override ResolveResultWithInfo ResolveWithoutCache()
         {
-            var resolveResultWithInfo = CheckedReferenceImplUtil.Resolve(this, GetReferenceSymbolTable(true));
+            var resolveResultWithInfo = CheckedReferenceImplUtil.Resolve(this, GetReferenceSymbolTable(true).Filter(GetSymbolFilters()));
             if (!resolveResultWithInfo.Result.IsEmpty)
                 return resolveResultWithInfo;
 
@@ -76,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
             if (useReferenceName)
             {
                 var name = GetName();
-                return symbolTable.Filter(name, new ExactNameFilter(name), new DistinctFilterByFileLocation(myOwner.GetSourceFile().ToProjectFile()));
+                return symbolTable.Filter(name, new ExactNameFilter(name));
             }
             return symbolTable;
         }
