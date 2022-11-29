@@ -138,8 +138,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
         
         public IList<ISymbolInfo> FilterArray(IList<ISymbolInfo> data)
         {
-            // if (myIsUnityExternalFile) // we do not expect any project files in this case 
-            //     return data;
+            if (data.Count <= 1)
+                return data;
 
             var hashset = new HashSet<ISymbolInfo>();
             var groups = data.GroupBy(a => a.GetDeclaredElement().GetSourceFiles().SingleItem.GetLocation()).ToArray();
