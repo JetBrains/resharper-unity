@@ -53,7 +53,7 @@
     <backend.actions.support language="ShaderLab" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <backend.autoPopup.support language="ShaderLab" implementationClass="com.jetbrains.rider.completion.BackendAndGenericRider" />
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabIconProvider" />
-    <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rdclient.completion.ProtocolCompletionContributor" />
+    <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rider.completion.ProtocolCompletionContributor" />
     <codeInsight.parameterInfo language="ShaderLab" implementationClass="com.jetbrains.rdclient.parameterInfo.FrontendParameterInfoHandler"/>
     <lang.documentationProvider language="ShaderLab" implementationClass="com.jetbrains.rdclient.quickDoc.FrontendDocumentationProvider"/>
     <backend.typedHandler language="ShaderLab" implementationClass="com.jetbrains.rider.cpp.fileType.CppTypedHandler"/>
@@ -80,7 +80,7 @@
 
     <lang.altEnter language="JSON" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperBulbMenuModelFactory" />
     <backend.markup.adapterFactory language="JSON" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
-    <completion.contributor language="JSON" implementationClass="com.jetbrains.rdclient.completion.ProtocolCompletionContributor" />
+    <completion.contributor language="JSON" implementationClass="com.jetbrains.rider.completion.ProtocolCompletionContributor" />
     <backend.actions.support language="JSON" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefActionCallPolicy" />
     <backend.actions.support language="JSON" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmref.AsmRefActionCallPolicy" />
     <spellchecker.support language="JSON" order="first" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.spellchecker.AsmDefSpellcheckerStrategy" />
@@ -93,7 +93,7 @@
     <lang.parserDefinition language="UnityYaml" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlParserDefinition" />
     <backend.actions.support language="UnityYaml" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <backend.markup.adapterFactory language="UnityYaml" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
-    <backend.typedHandler language="UnityYaml" implementationClass="com.jetbrains.rdclient.editorActions.FrontendTypedHandler"/>
+    <backend.typedHandler language="UnityYaml" implementationClass="com.jetbrains.rider.editorActions.FrontendTypedHandler"/>
 
     <!-- UXML support -->
     <fileType name="UXML" language="UXML" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileType" extensions="uxml" />

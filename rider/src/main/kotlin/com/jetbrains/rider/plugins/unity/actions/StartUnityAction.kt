@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.actions
 
+import com.intellij.execution.ExecutionTargetManager
 import com.intellij.execution.Executor
 import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultRunExecutor
@@ -45,7 +46,7 @@ open class StartUnityAction : DumbAwareAction() {
             val settings =
                 runManager.findConfigurationByTypeAndName(UnityExeConfigurationType.id, DefaultRunConfigurationGenerator.RUN_DEBUG_START_UNITY_CONFIGURATION_NAME)
 
-            if (settings != null){
+            if (settings?.configuration != null && ExecutionTargetManager.getInstance(project).getTargetsFor(settings.configuration).isEmpty()){
                 ExecutionUtil.runConfiguration(settings, Executor.EXECUTOR_EXTENSION_NAME.extensionList.single {it is DefaultRunExecutor })
             }
             else {
