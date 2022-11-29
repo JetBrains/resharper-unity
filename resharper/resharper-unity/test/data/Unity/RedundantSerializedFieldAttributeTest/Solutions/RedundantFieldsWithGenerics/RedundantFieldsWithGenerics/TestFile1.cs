@@ -9,12 +9,6 @@ namespace RedundantFieldsWithGenerics
         [SerializeReference] public IMyInterface MyInterface;
     }
 
-    internal class ClassWithXAndYFields
-    {
-        [SerializeReference] public X X_Field_In_C_Class;
-        [SerializeReference] public Y Y_Field_In_C_Class;
-    }
-
     public class C : B<X, Y>
     {
     }
