@@ -524,7 +524,7 @@
         <value>The resource is not defined in the project. Expression will return 'null'.</value>
     </data>
     <data name="TheResourceIsNotDefinedInTheProjectExpressionWillReturnnullMessage" xml:space="preserve">
-        <value>The resource is not defined in the project. Expression will return 'null'.</value>
+        <value>The resource '{0}' is not defined in the project. Expression will return 'null'.</value>
     </data>
     <data name="TheSameShortcutIsDefinedForAnotherMenuItem" xml:space="preserve">
         <value>The same shortcut is defined for another menu item</value>
