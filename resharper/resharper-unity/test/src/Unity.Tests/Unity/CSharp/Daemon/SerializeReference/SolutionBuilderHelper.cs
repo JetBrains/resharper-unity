@@ -1,12 +1,37 @@
 using System.IO;
+using System.Text;
 using JetBrains.Diagnostics;
-using JetBrains.Rider.Backend.Features.DeploymentHost.DeploymentProviders.Uwp;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReference
 {
     internal static class SolutionBuilderHelper
     {
+        private class StdErrCollector
+        {
+            private readonly bool myWriteStdOutInTrace;
+            private readonly StringBuilder myStringBuilder = new();
+
+            public StdErrCollector(bool writeStdOutInTrace = true)
+            {
+                myWriteStdOutInTrace = writeStdOutInTrace;
+            }
+
+            public string StdErr => myStringBuilder.ToString();
+
+            public InvokeChildProcess.PumpStreamHighLevelDelegate Collect => (chunk, isStderrNotStdout, logger) =>
+            {
+                if (isStderrNotStdout)
+                {
+                    myStringBuilder.Append(chunk);
+                }
+                else if (myWriteStdOutInTrace)
+                {
+                    logger.Trace(chunk);
+                }
+            };
+        }
+        
         public static void PrepareDependencies(FileSystemPath baseTestDataPath, FileSystemPath testSolutionAbsolutePath, string dependencySolutionName, string outputDirectoryName)
         {
             const string DotNetSdkCmdBootstrapperFileName = "dotnet-sdk.cmd";
