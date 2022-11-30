@@ -47,7 +47,7 @@ open class StartUnityAction : DumbAwareAction() {
                 runManager.findConfigurationByTypeAndName(UnityExeConfigurationType.id, DefaultRunConfigurationGenerator.RUN_DEBUG_START_UNITY_CONFIGURATION_NAME)
 
             if (settings?.configuration != null && ExecutionTargetManager.getInstance(project).getTargetsFor(settings.configuration).isEmpty()){
-                ExecutionUtil.runConfiguration(settings, Executor.EXECUTOR_EXTENSION_NAME.extensionList.single {it is DefaultRunExecutor })
+                ExecutionUtil.runConfiguration(settings, Executor.EXECUTOR_EXTENSION_NAME.extensionList.single {it is DefaultRunExecutor && it.id == DefaultRunExecutor.EXECUTOR_ID})
             }
             else {
                 logger.warn("UnityExeConfiguration ${DefaultRunConfigurationGenerator.RUN_DEBUG_START_UNITY_CONFIGURATION_NAME} was not found.")
