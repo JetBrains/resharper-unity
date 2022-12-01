@@ -22,7 +22,7 @@ class AttachUnityEditorAction: DumbAwareAction() {
 
         if (settings != null) {
             ExecutionUtil.runConfiguration(settings,
-                Executor.EXECUTOR_EXTENSION_NAME.extensionList.single { it is DefaultDebugExecutor })
+                Executor.EXECUTOR_EXTENSION_NAME.extensionList.single { it is DefaultDebugExecutor && it.id == DefaultDebugExecutor.EXECUTOR_ID })
         } else {
             logger.warn("Have not found run-configuration ${DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME}.")
         }

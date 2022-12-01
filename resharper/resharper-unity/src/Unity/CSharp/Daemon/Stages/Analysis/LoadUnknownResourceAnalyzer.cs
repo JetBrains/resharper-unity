@@ -3,6 +3,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -41,9 +42,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         protected override void Analyze(IInvocationExpression element, ElementProblemAnalyzerData data,
             IHighlightingConsumer consumer)
         {
-            if(data.GetDaemonProcessKind() != DaemonProcessKind.VISIBLE_DOCUMENT)
-                return;
-
             if (!element.IsResourcesLoadMethod()) 
                 return;
             
@@ -53,8 +51,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (literal == null)
                 return;
 
+            var psiSourceFile = element.GetSourceFile();
+            var dependencyStore = psiSourceFile.GetPsiServices().DependencyStore;
+            if (dependencyStore.HasDependencySet)
+            {
+                dependencyStore.AddDependency(ResourceLoadCache.CreateDependency(psiSourceFile, literal));
+            }
+            
             if (!myResourceLoadCache.HasResource(literal))
-                consumer.AddHighlighting(new UnknownResourceWarning(argument));
+                consumer.AddHighlighting(new UnknownResourceWarning(argument, literal));
         }
     }
 }
