@@ -46,6 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
         {
             AddGeneralSection();
             AddCSharpSection();
+            AddRefactoringSection();
             AddTextBasedAssetsSection();
             AddShadersSection();
             AddDebuggingSection();
@@ -94,6 +95,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             AddBurstAnalysisSubSection();
             using (Indent())
                 AddNamingSubSection();
+        }
+
+        private void AddRefactoringSection()
+        {
+            AddHeader(Strings.UnitySettings_Refactoring_Refactoring_Settings_Header);
+            
+            AddBoolOption((UnitySettings s) => s.ShowPopupForAddingFormallySerializedAttributeOnRenaming,
+                Strings.UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property);
+            
+            AddBoolOption((UnitySettings s) => s.AddFormallySerializedAttributeOnRenaming,
+                Strings.UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property);
         }
 
         private void AddPerformanceAnalysisSubSection()

@@ -11,6 +11,8 @@ using JetBrains.DataFlow;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon.SolutionAnalysis;
+using JetBrains.ReSharper.Daemon.SolutionAnalysis.FileImages;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -117,14 +119,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
         private bool IsIndexedFileWithDisabledAssetSupport(VirtualFileSystemPath path)
         {
-            return path.IsAsmDefMeta() || path.IsAsmRef() || path.IsAsmDef() || IsFromProjectSettingsFolder(path) || IsFromResourceFolder(path);
+            return path.IsAsmDefMeta() || path.IsAsmRef() || path.IsAsmDef() || IsFromProjectSettingsFolder(path) || path.IsFromResourceFolder();
         }
 
-        private bool IsFromResourceFolder(VirtualFileSystemPath path)
-        {
-            return path.Components.Any(t => t.Equals(ResourceLoadCache.ResourcesFolderName));
-        }
-        
         private bool IsFromProjectSettingsFolder(VirtualFileSystemPath path)
         {
             return path.StartsWith(myProjectSettingsFolder);
@@ -495,6 +492,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
             var sourceFile = myPsiSourceFileFactory.CreateExternalPsiSourceFile(myModuleFactory.PsiModule, path,
                 projectFileType, properties, fileSystemData);
+            
+            if(path.IsMeta() && path.IsFromResourceFolder())
+                sourceFile.PutData(FileImagesBuilder.FileImagesBuilderAllowKey, FileImagesBuilderAllowKey.Instance);
+
             builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Added);
 
             return sourceFile;
