@@ -5,6 +5,7 @@ using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.ProjectsHost.SolutionHost.Progress;
@@ -40,6 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
         private readonly AssetHierarchyProcessor myAssetHierarchyProcessor;
         private readonly AnimatorScriptUsagesElementContainer myAnimatorContainer;
         private readonly PackageManager myPackageManager;
+        private readonly ILogger myLogger;
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly BackgroundProgressManager? myBackgroundProgressManager;
         private readonly FrontendBackendHost myFrontendBackendHost;
@@ -55,6 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
                                                  IPersistentIndexManager persistentIndexManager,
                                                  AnimatorScriptUsagesElementContainer animatorContainer,
                                                  PackageManager packageManager,
+                                                 ILogger logger,
                                                  BackgroundProgressManager? backgroundProgressManager = null)
         {
             myLifetime = lifetime;
@@ -67,6 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
             myFrontendBackendHost = frontendBackendHost;
             myAnimatorContainer = animatorContainer;
             myPackageManager = packageManager;
+            myLogger = logger;
             myPersistentIndexManager = persistentIndexManager;
             mySolutionDirectoryPath = solution.SolutionDirectory;
         }
@@ -74,14 +78,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
         public void CreateRequestToUnity(IDeclaredElement declaredElement, LocalReference location)
         {
             var finder = mySolution.GetPsiServices().AsyncFinder;
-            var consumer = new UnityUsagesFinderConsumer(myPackageManager, myAssetHierarchyProcessor, myAnimatorContainer, myPersistentIndexManager,
+            var consumer = new UnityUsagesFinderConsumer(myPackageManager, myLogger, myAssetHierarchyProcessor,
+                myAnimatorContainer, myPersistentIndexManager,
                 mySolutionDirectoryPath, declaredElement);
 
             var sourceFile = myPersistentIndexManager[location.OwningPsiPersistentIndex];
             if (sourceFile == null)
                 return;
 
-            var selectRequest = CreateRequest(myPackageManager, mySolutionDirectoryPath, myAssetHierarchyProcessor, myAnimatorContainer,
+            var selectRequest = CreateRequest(myPackageManager, myLogger, mySolutionDirectoryPath,
+                myAssetHierarchyProcessor, myAnimatorContainer,
                 location, sourceFile, declaredElement);
             if (selectRequest == null)
                 return;
@@ -111,14 +117,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
             });
         }
 
-        private static AssetFindUsagesResultBase? CreateRequest(PackageManager packageManager, VirtualFileSystemPath solutionDirPath,
-                                                                AssetHierarchyProcessor assetDocumentHierarchy,
-                                                                AnimatorScriptUsagesElementContainer animatorContainer,
-                                                                LocalReference location, IPsiSourceFile sourceFile,
-                                                                IDeclaredElement declaredElement,
-                                                                bool needExpand = false)
+        private static AssetFindUsagesResultBase? CreateRequest(PackageManager packageManager, ILogger logger,
+            VirtualFileSystemPath solutionDirPath,
+            AssetHierarchyProcessor assetDocumentHierarchy,
+            AnimatorScriptUsagesElementContainer animatorContainer,
+            LocalReference location, IPsiSourceFile sourceFile,
+            IDeclaredElement declaredElement,
+            bool needExpand = false)
         {
-            if (!GetPathFromAssetFolder(packageManager, solutionDirPath, sourceFile, out var pathFromAsset, out var fileName, out var extension))
+            if (!GetPathFromAssetFolder(packageManager, logger, solutionDirPath, sourceFile, out var pathFromAsset, out var fileName, out var extension))
                 return null;
 
             var path = sourceFile.GetLocation();
@@ -147,13 +154,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
             return new HierarchyFindUsagesResult(consumer.NameParts.ToArray(), consumer.RootIndexes.ToArray(), needExpand, pathFromAsset, fileName, extension);
         }
 
-        private static bool GetPathFromAssetFolder(
-            PackageManager packageManager,
+        private static bool GetPathFromAssetFolder(PackageManager packageManager,
+            ILogger logger,
             VirtualFileSystemPath solutionDirPath,
-                                                   IPsiSourceFile file,
-                                                   [NotNullWhen(true)] out string? filePath,
-                                                   [NotNullWhen(true)] out string? fileName,
-                                                   [NotNullWhen(true)] out string? extension)
+            IPsiSourceFile file,
+            [NotNullWhen(true)] out string? filePath,
+            [NotNullWhen(true)] out string? fileName,
+            [NotNullWhen(true)] out string? extension)
         {
             extension = null;
             filePath = null;
@@ -169,7 +176,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
             else
             {
                 var packageData = packageManager.GetPackageByAssetPath(file.GetLocation());
-                if (packageData == null || packageData.PackageFolder == null) return false;
+                if (packageData == null || packageData.PackageFolder == null)
+                {
+                    var ex = new Assertion.AssertionException(packageData == null
+                        ? "Failed to determine Package for path."
+                        : "PackageFolder is null for absolute path.");
+                    ex.AddSensitiveData("Path", file.GetLocation());
+                    logger.Error(ex);
+                    return false;
+                }
                 var pathInsidePackage = file.GetLocation().MakeRelativeTo(packageData.PackageFolder);
                 filePath = $"Packages/{packageData.Id}/{pathInsidePackage}";
             }
@@ -183,6 +198,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
         private class UnityUsagesFinderConsumer : IFindResultConsumer<UnityAssetFindResult>
         {
             private readonly PackageManager myPackageManager;
+            private readonly ILogger myLogger;
             private readonly AssetHierarchyProcessor myAssetHierarchyProcessor;
             private readonly AnimatorScriptUsagesElementContainer myAnimatorContainer;
             private readonly IPersistentIndexManager myPersistentIndexManager;
@@ -191,14 +207,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
 
             public readonly List<AssetFindUsagesResultBase> Result = new();
 
-            public UnityUsagesFinderConsumer(PackageManager packageManager, 
-                AssetHierarchyProcessor assetHierarchyProcessor,
+            public UnityUsagesFinderConsumer(PackageManager packageManager, ILogger logger,
+                                             AssetHierarchyProcessor assetHierarchyProcessor,
                                              AnimatorScriptUsagesElementContainer animatorContainer,
                                              IPersistentIndexManager persistentIndexManager,
                                              VirtualFileSystemPath solutionDirectoryPath,
                                              IDeclaredElement declaredElement)
             {
                 myPackageManager = packageManager;
+                myLogger = logger;
                 myAssetHierarchyProcessor = assetHierarchyProcessor;
                 myPersistentIndexManager = persistentIndexManager;
                 mySolutionDirectoryPath = solutionDirectoryPath;
@@ -218,7 +235,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
                 if (sourceFile == null)
                     return FindExecution.Continue;
 
-                var request = CreateRequest(myPackageManager, mySolutionDirectoryPath, myAssetHierarchyProcessor, myAnimatorContainer,
+                var request = CreateRequest(myPackageManager, myLogger, mySolutionDirectoryPath, myAssetHierarchyProcessor, myAnimatorContainer,
                     data.OwningElemetLocation, sourceFile, myDeclaredElement);
                 if (request != null)
                     Result.Add(request);
