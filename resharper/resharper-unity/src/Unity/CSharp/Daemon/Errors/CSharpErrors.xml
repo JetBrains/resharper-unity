@@ -236,7 +236,10 @@
 
   <Warning name="UnknownResource" configurableSeverity="Unity.UnknownResource">
     <Parameter type="ITreeNode" name="node" />
-    <Message resourceName="TheResourceIsNotDefinedInTheProjectExpressionWillReturnnullMessage" resourceType="Strings" />
+    <Parameter type="string" name="resourceName" />
+    <Message resourceName="TheResourceIsNotDefinedInTheProjectExpressionWillReturnnullMessage" resourceType="Strings">
+        <Argument>ResourceName</Argument>
+    </Message>
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
