@@ -305,11 +305,16 @@
     <additionalTextAttributes file="colorSchemes/default_additional.xml" scheme="Default" />
     <additionalTextAttributes file="colorSchemes/darcula_additional.xml" scheme="Darcula" />
 
-    <notificationGroup id="Unity log open" displayType="BALLOON"/>
-    <notificationGroup id="Unity Asset Mode" displayType="BALLOON"/>
-    <notificationGroup id="Unity project open" displayType="STICKY_BALLOON"/>
-    <notificationGroup id="Unity connection is out of sync" displayType="BALLOON"/>
-    <notificationGroup id="Unity commit failure" displayType="BALLOON"/>
+    <notificationGroup id="Unity log open" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.log.open" />
+    <notificationGroup id="Unity Asset Mode" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.asset.mode" />
+    <notificationGroup id="Unity project open" displayType="STICKY_BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.project.open"/>
+    <notificationGroup id="Unity connection is out of sync" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.connection.out.of.sync"/>
+    <notificationGroup id="Unity commit failure" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.unity.commit.failure"/>
     <statistics.projectUsagesCollector implementation="com.jetbrains.rider.plugins.unity.fus.UnityProjectUsageCollector" />
   </extensions>
 
