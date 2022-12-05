@@ -1287,4 +1287,12 @@ a plugin to be installed to a project.</value>
     <data name="UnityDots_CurrentComponentLookupMustBeUpdated" xml:space="preserve">
         <value>ComponentLookup field must be updated before usage.</value>
     </data>
+    <data name="UnityDots_AddComponentLookup_Update_Text" xml:space="preserve">
+        <value>Add Update call for '{0}'</value>
+        <comment>ShortName</comment>
+    </data>
+    <data name="UnityDots_AddComponentLookupScoped_Update_Text" xml:space="preserve">
+        <value>Add Update call for QueryLookups</value>
+        <comment>ShortName</comment>
+    </data>
 </root>

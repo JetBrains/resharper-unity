@@ -432,36 +432,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             return type is IDeclaredType declaredType &&
                    ourUnityBuiltinSerializedFieldTypes.Contains(declaredType.GetClrName());
         }
-
-        public static bool IsISystemOnCreateMethod(IMethod? method)
-        {
-            return IsISystemMethod(method, "OnCreate");
-        }
-
-        public static bool IsISystemOnDestroyMethod(IMethod? method)
-        {
-            return IsISystemMethod(method, "OnDestroy");
-        }
-
-        private static bool IsISystemMethod(IMethod? method, string methodName) //
-        {
-            if (method == null)
-                return false;
-
-            if (method.ShortName != methodName)
-                return false;
-
-            if (method.Parameters.Count != 1)
-                return false;
-
-            var methodParameter = method.Parameters[0];
-            if (!IsSystemStateType(methodParameter.Type.GetTypeElement()))
-                return false;
-
-            if (!methodParameter.IsRefMember())
-                return false;
-
-            return true;
-        }
     }
 }

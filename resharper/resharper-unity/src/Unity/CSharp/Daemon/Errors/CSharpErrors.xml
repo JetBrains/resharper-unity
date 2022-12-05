@@ -581,12 +581,14 @@
   </Warning>
 
   <Warning name="NotUpdatedComponentLookup" configurableSeverity="Unity.Entities.NotUpdatedComponentLookup">
-    <Parameter type="ITreeNode" name="node" />
+    <Parameter type="IFieldDeclaration" name="queryLookupFieldDeclaration" />
+    <Parameter type="IClassLikeDeclaration" name="classLikeDeclaration" />
+    <Parameter type="IMethodDeclaration" name="availableUpdateMethod" />
     <Parameter type="string" name="componentLookupName" />
     <Message resourceName="UnityDots_ComponentLookupFieldMustBeUpdated" resourceType="Strings">
       <Argument>componentLookupName</Argument>
     </Message>
-    <Range>Node.GetDocumentRange()</Range>
+    <Range>QueryLookupFieldDeclaration.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
