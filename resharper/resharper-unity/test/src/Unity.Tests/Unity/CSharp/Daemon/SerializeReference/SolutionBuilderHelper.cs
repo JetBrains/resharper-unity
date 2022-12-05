@@ -55,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
             var collector = new StdErrCollector();
 
             var shellName = PlatformUtil.IsRunningUnderWindows
-                ? FileSystemPath.Parse("cmd.exe")
+                ? FileSystemPath.Parse("C:\\Windows\\System32\\cmd.exe")
                 : FileSystemPath.Parse("/bin/sh");
             
             var result = InvokeChildProcess.InvokeSync(shellName, commandLineBuilderJet, InvokeChildProcess.PipeStreams.Custom(collector.Collect));
