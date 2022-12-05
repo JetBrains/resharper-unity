@@ -36,7 +36,7 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 
 
-class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusBarWidget, Multiframe {
+class ShaderWidget(project: Project) : EditorBasedWidget(project), FileEditorManagerListener, CustomStatusBarWidget, Multiframe {
 
     private val statusBarComponent = JPanel(BorderLayout())
     private val label = JLabel(UnityIcons.FileTypes.ShaderLab)
