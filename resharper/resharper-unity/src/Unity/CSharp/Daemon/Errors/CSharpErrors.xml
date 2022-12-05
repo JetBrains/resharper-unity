@@ -192,6 +192,10 @@
         <Title resourceName="ThereIsNoAnimatorStateWithTheSameNameInTheProject" resourceType="Strings" />
         <Description resourceName="ThereIsNoAnimatorStateWithTheSameNameInTheProject" resourceType="Strings" />
       </Tag>
+      <Tag externalName="NotUpdatedComponentLookupWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="UnityDots_ComponentLookupMustBeUpdatedInDuringTheUpdateCall" resourceType="Strings" />
+        <Description resourceName="UnityDots_CurrentComponentLookupMustBeUpdated" resourceType="Strings" />
+      </Tag>
     </Group>
   </SeverityConfiguration>
   
@@ -574,6 +578,16 @@
       <Argument>Reference.GetName()</Argument>
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
+  </Warning>
+
+  <Warning name="NotUpdatedComponentLookup" configurableSeverity="Unity.Entities.NotUpdatedComponentLookup">
+    <Parameter type="ITreeNode" name="node" />
+    <Parameter type="string" name="componentLookupName" />
+    <Message resourceName="UnityDots_ComponentLookupFieldMustBeUpdated" resourceType="Strings">
+      <Argument>componentLookupName</Argument>
+    </Message>
+    <Range>Node.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
 </Errors>

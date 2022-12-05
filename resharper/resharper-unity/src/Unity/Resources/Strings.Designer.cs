@@ -452,5 +452,8 @@
     public static string UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property => ResourceManager.GetString("UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property");
     public static string UnitySettings_Refactoring_Dont_shot_popup_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property => ResourceManager.GetString("UnitySettings_Refactoring_Dont_shot_popup_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property");
     public static string UnitySettings_Refactoring_Refactoring_Settings_Header => ResourceManager.GetString("UnitySettings_Refactoring_Refactoring_Settings_Header");
+    public static string UnityDots_ComponentLookupFieldMustBeUpdated => ResourceManager.GetString("UnityDots_ComponentLookupFieldMustBeUpdated");
+    public static string UnityDots_ComponentLookupMustBeUpdatedInDuringTheUpdateCall => ResourceManager.GetString("UnityDots_ComponentLookupMustBeUpdatedInDuringTheUpdateCall");
+    public static string UnityDots_CurrentComponentLookupMustBeUpdated => ResourceManager.GetString("UnityDots_CurrentComponentLookupMustBeUpdated");
   }
 }

@@ -1278,4 +1278,13 @@ a plugin to be installed to a project.</value>
     <data name="UnitySettings_Refactoring_Refactoring_Settings_Header" xml:space="preserve">
         <value>Refactoring</value>
     </data>
+    <data name="UnityDots_ComponentLookupFieldMustBeUpdated" xml:space="preserve">
+        <value>Component lookup '{0}' must be updated</value>
+    </data>
+    <data name="UnityDots_ComponentLookupMustBeUpdatedInDuringTheUpdateCall" xml:space="preserve">
+        <value>ComponentLookup field must be updated before usage.</value>
+    </data>
+    <data name="UnityDots_CurrentComponentLookupMustBeUpdated" xml:space="preserve">
+        <value>ComponentLookup field must be updated before usage.</value>
+    </data>
 </root>
