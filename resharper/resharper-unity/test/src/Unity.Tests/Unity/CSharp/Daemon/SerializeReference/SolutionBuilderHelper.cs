@@ -43,8 +43,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
             var assembliesDirectoryAbsolutePath = testSolutionDirectory.Parent.Combine(outputDirectoryName);
             Directory.CreateDirectory(assembliesDirectoryAbsolutePath.ToString());
             var dependencyDirectoryAbsolutePath = testSolutionDirectory.Parent.Combine(dependencySolutionName);
-            var commandLineBuilderJet = new CommandLineBuilderJet()
-                .AppendFileName(fileName)
+            var commandLineBuilderJet = new CommandLineBuilderJet();
+            if (PlatformUtil.IsRunningUnderWindows)
+                commandLineBuilderJet.AppendSwitch("/C");
+                
+            commandLineBuilderJet.AppendFileName(fileName)
                 .AppendSwitch("build")
                 .AppendSwitch("--force")
                 .AppendSwitch("--no-incremental")
