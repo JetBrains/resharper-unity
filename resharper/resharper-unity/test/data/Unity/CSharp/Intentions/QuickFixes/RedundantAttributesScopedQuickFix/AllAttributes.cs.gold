@@ -33,12 +33,12 @@ public class Test2 : MonoBehaviour
 
 public struct Tes3
 {
-  public int Bar;
+    [SerializeField, FormerlySerializedAs("Foo")] public int Bar;
 
-  [NonSerialized] public int Value1;
-  [NonSerialized] public int Value2;
-  [NonSerialized] public int Value3;
-  [NonSerialized] public int Value4;
+    [NonSerialized] public int Value1;
+    [NonSerialized] public int Value2;
+    [NonSerialized] public int Value3;
+    [NonSerialized] public int Value4;
 }
 
 public delegate void MyEventHandler(object sender, EventArgs e);

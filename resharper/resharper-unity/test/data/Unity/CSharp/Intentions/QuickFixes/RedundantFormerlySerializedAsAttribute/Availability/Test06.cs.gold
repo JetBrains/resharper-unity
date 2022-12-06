@@ -18,7 +18,7 @@ public class Test2 : MonoBehaviour
 
 public struct Tes3
 {
-    [|SerializeField|(6), |FormerlySerializedAs("Foo")|(7)] public int Bar;
+    [SerializeField, FormerlySerializedAs("Foo")] public int Bar;
 }
 
 ------------------------------------------------
@@ -85,29 +85,6 @@ Remove redundant attribute
 --Remove redundant Unity attributes in project
 --Remove redundant Unity attributes in solution
 Remove redundant code in class 'Test2'
---Remove redundant code in file
---Remove redundant code in project
---Remove redundant code in solution
-6: Redundant 'SerializeField' attribute
-QUICKFIXES:
-Make type 'Tes3' serializable
-Remove redundant attribute
---Remove redundant Unity attributes in struct 'Tes3'
---Remove redundant Unity attributes in file
---Remove redundant Unity attributes in project
---Remove redundant Unity attributes in solution
-Remove redundant code in struct 'Tes3'
---Remove redundant code in file
---Remove redundant code in project
---Remove redundant code in solution
-7: Redundant 'FormerlySerializedAs' attribute
-QUICKFIXES:
-Remove redundant attribute
---Remove redundant Unity attributes in struct 'Tes3'
---Remove redundant Unity attributes in file
---Remove redundant Unity attributes in project
---Remove redundant Unity attributes in solution
-Remove redundant code in struct 'Tes3'
 --Remove redundant code in file
 --Remove redundant code in project
 --Remove redundant code in solution
