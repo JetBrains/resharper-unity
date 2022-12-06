@@ -1,0 +1,74 @@
+﻿using Unity.Entities;
+
+struct Bar : IComponentData, IEnableableComponent
+{
+}
+
+partial struct Foo : ISystem
+{
+    private ComponentLookup<Bar> |NotUpdatedComponentLookupFromAnotherClassDeclaration|(0); //Must be marked with warning
+    private ComponentLookup<Bar> UpdatedComponentLookupFromAnotherClassDeclaration;
+}
+
+
+partial struct Foo : ISystem
+{
+    private ComponentLookup<Bar> |NotUpdatedComponentLookup|(1); //Must be marked with warning
+    private ComponentLookup<Bar> UpdatedByUpdateFunction;
+    private ComponentLookup<Bar> UpdatedByInternalMethod;
+    private ComponentLookup<Bar> UpdatedInStaticMethod;
+    private ComponentLookup<Bar> |UpdatedInOnCreateMethod|(2); //Must be marked with warning - OnCreate method is skipped
+    private ComponentLookup<Bar> |UpdatedInOnDestroyMethod|(3);//Must be marked with warning - OnDestroy method is skipped
+
+    public void OnUpdate(ref SystemState state)
+    {
+        UpdatedByUpdateFunction.Update(ref state);
+        UpdatedComponentLookupFromAnotherClassDeclaration.Update(ref state);
+    }
+
+    public void OnCreate(ref SystemState state)
+    {
+        UpdatedInOnCreateMethod.Update(ref state);
+    }
+
+    public void OnDestroy(ref SystemState state)
+    {
+        UpdatedInOnDestroyMethod.Update(ref state);
+    }
+
+    public static void StaticFunction(ref Foo sys, ref SystemState state)
+    {
+        sys.UpdatedInStaticMethod.Update(ref state);
+    }
+
+    private void customUpdate(ref SystemState state)
+    {
+        this.UpdatedByInternalMethod.Update(ref state);
+    }
+}
+
+------------------------------------------------
+0: Component lookup 'NotUpdatedComponentLookupFromAnotherClassDeclaration' must be updated
+QUICKFIXES:
+Add Update call for 'NotUpdatedComponentLookupFromAnotherClassDeclaration'
+--Add Update call for QueryLookups in file
+--Add Update call for QueryLookups in project
+--Add Update call for QueryLookups in solution
+1: Component lookup 'NotUpdatedComponentLookup' must be updated
+QUICKFIXES:
+Add Update call for 'NotUpdatedComponentLookup'
+--Add Update call for QueryLookups in file
+--Add Update call for QueryLookups in project
+--Add Update call for QueryLookups in solution
+2: Component lookup 'UpdatedInOnCreateMethod' must be updated
+QUICKFIXES:
+Add Update call for 'UpdatedInOnCreateMethod'
+--Add Update call for QueryLookups in file
+--Add Update call for QueryLookups in project
+--Add Update call for QueryLookups in solution
+3: Component lookup 'UpdatedInOnDestroyMethod' must be updated
+QUICKFIXES:
+Add Update call for 'UpdatedInOnDestroyMethod'
+--Add Update call for QueryLookups in file
+--Add Update call for QueryLookups in project
+--Add Update call for QueryLookups in solution
