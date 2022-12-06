@@ -72,79 +72,80 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
             }
 
             foreach (var field in queryLookupFields)
-                consumer.AddHighlighting(new NotUpdatedComponentLookupWarning(dictionary[field], element, onUpdate, field.ShortName));
+                consumer.AddHighlighting(
+                    new NotUpdatedComponentLookupWarning(dictionary[field], element, onUpdate, field.ShortName));
         }
-    }
 
-    public class VisitorDotsMethods : IRecursiveElementProcessor
-    {
-        private readonly HashSet<IDeclaredElement> myQueryLookupFields;
-
-        public VisitorDotsMethods(HashSet<IDeclaredElement> queryLookupFields)
+        private class VisitorDotsMethods : IRecursiveElementProcessor
         {
-            myQueryLookupFields = queryLookupFields;
+            private readonly HashSet<IDeclaredElement> myQueryLookupFields;
+
+            public VisitorDotsMethods(HashSet<IDeclaredElement> queryLookupFields)
+            {
+                myQueryLookupFields = queryLookupFields;
+            }
+
+            public bool InteriorShouldBeProcessed(ITreeNode element)
+            {
+                if (element is ILocalFunctionDeclaration)
+                    return false;
+                if (element is ILambdaExpression)
+                    return false;
+
+                return true;
+            }
+
+            public void ProcessBeforeInterior(ITreeNode element)
+            {
+                if (myQueryLookupFields.Count == 0)
+                    return;
+
+                if (element is not IInvocationExpression expression)
+                    return;
+
+                var method = expression.Reference.Resolve().DeclaredElement as IMethod;
+
+                if (method == null)
+                    return;
+
+                //looking for .Update(ref SystemState state) method
+
+                if (method.ShortName != "Update")
+                    return;
+
+                if (!UnityApi.IsComponentLookup(method.ContainingType))
+                    return;
+
+                if (method.Parameters.Count != 1)
+                    return;
+
+                var possibleStateParameter = method.Parameters[0];
+                if (!possibleStateParameter.IsRefMember())
+                    return;
+
+                if (!UnityApi.IsSystemStateType(possibleStateParameter.Type.GetTypeElement()))
+                    return;
+
+                var qualifier = expression.InvocationExpressionReference.IsPassThrough()
+                    ? expression.GetInvokedReferenceExpressionQualifier()
+                    : expression.ConditionalQualifier;
+
+                if (qualifier is not IReferenceExpression possibleFieldReference)
+                    return;
+
+                var possibleFieldElement = possibleFieldReference.Reference.Resolve().DeclaredElement;
+
+                if (myQueryLookupFields.Contains(possibleFieldElement))
+                    myQueryLookupFields.Remove(possibleFieldElement);
+
+                ProcessingIsFinished = myQueryLookupFields.Count == 0;
+            }
+
+            public void ProcessAfterInterior(ITreeNode element)
+            {
+            }
+
+            public bool ProcessingIsFinished { get; private set; }
         }
-
-        public bool InteriorShouldBeProcessed(ITreeNode element)
-        {
-            if (element is ILocalFunctionDeclaration)
-                return false;
-            if (element is ILambdaExpression)
-                return false;
-
-            return true;
-        }
-
-        public void ProcessBeforeInterior(ITreeNode element)
-        {
-            if (myQueryLookupFields.Count == 0)
-                return;
-
-            if (element is not IInvocationExpression expression)
-                return;
-
-            var method = expression.Reference.Resolve().DeclaredElement as IMethod;
-
-            if (method == null)
-                return;
-
-            //looking for .Update(ref SystemState state) method
-
-            if (method.ShortName != "Update")
-                return;
-
-            if (!UnityApi.IsComponentLookup(method.ContainingType))
-                return;
-
-            if (method.Parameters.Count != 1)
-                return;
-
-            var possibleStateParameter = method.Parameters[0];
-            if (!possibleStateParameter.IsRefMember())
-                return;
-
-            if (!UnityApi.IsSystemStateType(possibleStateParameter.Type.GetTypeElement()))
-                return;
-
-            var qualifier = expression.InvocationExpressionReference.IsPassThrough()
-                ? expression.GetInvokedReferenceExpressionQualifier()
-                : expression.ConditionalQualifier;
-
-            if (qualifier is not IReferenceExpression possibleFieldReference)
-                return;
-
-            var possibleFieldElement = possibleFieldReference.Reference.Resolve().DeclaredElement;
-
-            if (myQueryLookupFields.Contains(possibleFieldElement))
-                myQueryLookupFields.Remove(possibleFieldElement);
-
-            ProcessingIsFinished = myQueryLookupFields.Count == 0;
-        }
-
-        public void ProcessAfterInterior(ITreeNode element)
-        {
-        }
-
-        public bool ProcessingIsFinished { get; private set; }
     }
 }
