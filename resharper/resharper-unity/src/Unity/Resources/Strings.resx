@@ -1209,12 +1209,6 @@ a plugin to be installed to a project.</value>
     <data name="EventHandlerDetector_AddAnimationEventHighlighting_Tooltip" xml:space="preserve">
         <value>Unity animation event</value>
     </data>
-    <data name="EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Text" xml:space="preserve">
-        <value>Animation event and event handler</value>
-    </data>
-    <data name="EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Tooltip" xml:space="preserve">
-        <value>Unity animation event and Unity animation event</value>
-    </data>
     <data name="FieldDetector_AddDeclarationHighlighting_This_field_is_initialized_from_Inspector" xml:space="preserve">
         <value>This field is initialized from Inspector</value>
     </data>

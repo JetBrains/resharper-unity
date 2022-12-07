@@ -429,8 +429,6 @@
     public static string EventHandlerDetector_AddEventHandlerHighlighting_Tooltip => ResourceManager.GetString("EventHandlerDetector_AddEventHandlerHighlighting_Tooltip");
     public static string EventHandlerDetector_AddAnimationEventHighlighting_Text => ResourceManager.GetString("EventHandlerDetector_AddAnimationEventHighlighting_Text");
     public static string EventHandlerDetector_AddAnimationEventHighlighting_Tooltip => ResourceManager.GetString("EventHandlerDetector_AddAnimationEventHighlighting_Tooltip");
-    public static string EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Text => ResourceManager.GetString("EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Text");
-    public static string EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Tooltip => ResourceManager.GetString("EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Tooltip");
     public static string FieldDetector_AddDeclarationHighlighting_This_field_is_initialized_from_Inspector => ResourceManager.GetString("FieldDetector_AddDeclarationHighlighting_This_field_is_initialized_from_Inspector");
     public static string FieldDetector_AddDeclarationHighlighting_Serializable => ResourceManager.GetString("FieldDetector_AddDeclarationHighlighting_Serializable");
     public static string FieldDetector_AddDeclarationHighlighting_Tooltip => ResourceManager.GetString("FieldDetector_AddDeclarationHighlighting_Tooltip");
