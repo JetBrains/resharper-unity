@@ -193,7 +193,7 @@
         <Description resourceName="ThereIsNoAnimatorStateWithTheSameNameInTheProject" resourceType="Strings" />
       </Tag>
       <Tag externalName="NotUpdatedComponentLookupWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title resourceName="UnityDots_ComponentLookupMustBeUpdatedInDuringTheUpdateCall" resourceType="Strings" />
+        <Title resourceName="UnityDots_CurrentComponentLookupMustBeUpdated" resourceType="Strings" />
         <Description resourceName="UnityDots_CurrentComponentLookupMustBeUpdated" resourceType="Strings" />
       </Tag>
     </Group>
