@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.Impl.CodeStyle;
 using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
@@ -18,13 +19,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
 
         public static IEnumerable<IMethodDeclaration> GetMethodsFromAllDeclarations(ITypeElement typeElement)
         {
-            return typeElement
-                .GetDeclarations().OfType<IStructDeclaration>()
-                .Where(d => !d.GetSourceFile().IsSourceGeneratedFile())
-                .SelectMany(d => d.MethodDeclarations);
+            var sourceFiles = typeElement.GetSourceFiles();
+            var result = new List<IMethodDeclaration>();
+            foreach (IPsiSourceFile sourceFile in sourceFiles)
+            {
+                if(sourceFile.IsSourceGeneratedFile())
+                    continue;
+
+                var declarations = typeElement.GetDeclarationsIn(sourceFile);
+                foreach (var declaration in declarations)
+                {
+                    if (declaration is IClassLikeDeclaration classLikeDeclaration)
+                    {
+                        result.AddRange(classLikeDeclaration.MethodDeclarations);
+                    }
+                }
+            }
+
+            return result;
         }
 
-        private static bool IsISystemMethod(IMethod method, string methodName) //
+        private static bool IsISystemMethod(IMethod method, string methodName) 
         {
             if (method == null)
                 return false;
