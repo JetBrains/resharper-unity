@@ -67,8 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
                 if (DotsUtils.IsISystemOnUpdateMethod(method))
                     onUpdate = methodDeclaration;
 
-                if (queryLookupFields.Count > 0)
-                    methodDeclaration.ProcessThisAndDescendants(new VisitorDotsMethods(queryLookupFields));
+                methodDeclaration.ProcessThisAndDescendants(new VisitorDotsMethods(queryLookupFields));
             }
 
             foreach (var field in queryLookupFields)
