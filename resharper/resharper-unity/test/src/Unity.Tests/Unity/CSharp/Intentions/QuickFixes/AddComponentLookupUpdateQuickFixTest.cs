@@ -21,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
 
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\AddComponentLookupUpdate\Availability";
         [Test] public void Test01() { DoNamedTest("../DotsClasses.cs"); }
+        [Test] public void Test02() { DoNamedTest("../DotsClasses.cs"); }
     }
 
     [TestUnity]
