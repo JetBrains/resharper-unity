@@ -49,8 +49,7 @@
            </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets/erf.cs" />
-     <Compile Include="Assets/PlayerInput.cs" />
+     <Compile Include="Assets/**/*.cs" />
      <Folder Include="Assets" />
      <Folder Include="Assets/Scenes" />
   </ItemGroup>

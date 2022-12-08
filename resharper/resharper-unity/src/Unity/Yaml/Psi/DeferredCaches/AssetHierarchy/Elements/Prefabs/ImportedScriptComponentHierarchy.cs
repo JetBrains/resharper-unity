@@ -4,7 +4,6 @@ using JetBrains.Collections;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
-using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs
 {
@@ -59,27 +58,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 if (!(modification.Target is ExternalReference externalReference))
                     continue;
                 
-                if (!modification.PropertyPath.Contains("m_PersistentCalls"))
+                if (!modification.PropertyPath.Contains(".m_PersistentCalls."))
                     continue;
                 
                 var location = new LocalReference(Location.OwningPsiPersistentIndex, PrefabsUtil.GetImportedDocumentAnchor(myPrefabInstanceHierarchy.Location.LocalDocumentAnchor, externalReference.LocalDocumentAnchor));
                 if (!location.Equals(scriptLocation))
                     continue;
-                
-                var parts = modification.PropertyPath.Split('.');
-                var unityEventName = parts[0];
+
+                var (unityEventName, parts) = PrefabsUtil.SplitPropertyPath(modification.PropertyPath);
                 if (!allUnityEventNames.Contains(unityEventName))
                     continue;
 
-                var dataPart = parts.FirstOrDefault(t => t.StartsWith("data"));
-                if (dataPart == null)
+                if (!PrefabsUtil.TryGetDataIndex(parts, out var index))
                     continue;
                 
-                if (!int.TryParse(dataPart.RemoveStart("data[").RemoveEnd("]"), out var index))
-                    continue;
-
                 var last = parts.Last();
-
                 if (!result.TryGetValue(index, out var modifications))
                 {
                     modifications = new Dictionary<string, IAssetValue>();

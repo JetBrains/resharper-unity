@@ -133,17 +133,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         {
             if (node is IBlockSequenceNode blockSequenceNode)
             {
+                var i = 0;
                 foreach (var entryContent in blockSequenceNode.Entries)
                 {
                     if (ourMethodNameSearcher.Find(entryContent.GetTextAsBuffer()) >= 0)
-                        BuildRootMappingNode(currentAssetSourceFile, assetDocument, entryContent.Value, name,
-                            ref result, location,
-                            scriptReference);
+                    {
+                        BuildRootMappingNode(currentAssetSourceFile, assetDocument, entryContent.Value, $"{name}.Array.data[{i}]",
+                            ref result, location, scriptReference);
+                        i++;
+                    }
                 }
             }
 
             if (node is not IBlockMappingNode rootMap)
                 return;
+            
             var persistentCallsMap = rootMap.GetMapEntryValue<IBlockMappingNode>("m_PersistentCalls");
             if (persistentCallsMap == null)
             {
@@ -151,7 +155,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 {
                     var entryContent = blockMappingEntry.Content;
                     if (ourMethodNameSearcher.Find(entryContent.GetTextAsBuffer()) >= 0)
-                        BuildRootMappingNode(currentAssetSourceFile, assetDocument, entryContent.Value, name,
+                        BuildRootMappingNode(currentAssetSourceFile, assetDocument, entryContent.Value, $"{name}.{blockMappingEntry.Key.GetPlainScalarText()}",
                             ref result, location, scriptReference);
                 }
             }
