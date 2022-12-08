@@ -19,15 +19,12 @@ partial struct Foo : ISystem
         
         ActionRef<SafeZoneSystem> action2 = (ref SafeZoneSystem sys, ref SystemState systemState) =>
             sys.m_TurretActiveFromEntity.Update(ref systemState);
-
         
         var fff = this;
-        
         void LocalMethod(ref SystemState state)
         {
             fff.m_TurretActiveFromEntity.Update(systemState: ref state);
         }
-
     }
 }
 

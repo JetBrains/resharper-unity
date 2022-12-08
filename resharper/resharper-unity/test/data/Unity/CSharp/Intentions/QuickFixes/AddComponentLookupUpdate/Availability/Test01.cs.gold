@@ -50,25 +50,25 @@ partial struct Foo : ISystem
 ------------------------------------------------
 0: Component lookup 'NotUpdatedComponentLookupFromAnotherClassDeclaration' must be updated
 QUICKFIXES:
-Add Update call for 'NotUpdatedComponentLookupFromAnotherClassDeclaration'
---Add Update call for QueryLookups in file
---Add Update call for QueryLookups in project
---Add Update call for QueryLookups in solution
+Add missing 'Update' call for 'NotUpdatedComponentLookupFromAnotherClassDeclaration'
+--Add missing 'Update' call for all QueryLookups in file
+--Add missing 'Update' call for all QueryLookups in project
+--Add missing 'Update' call for all QueryLookups in solution
 1: Component lookup 'NotUpdatedComponentLookup' must be updated
 QUICKFIXES:
-Add Update call for 'NotUpdatedComponentLookup'
---Add Update call for QueryLookups in file
---Add Update call for QueryLookups in project
---Add Update call for QueryLookups in solution
+Add missing 'Update' call for 'NotUpdatedComponentLookup'
+--Add missing 'Update' call for all QueryLookups in file
+--Add missing 'Update' call for all QueryLookups in project
+--Add missing 'Update' call for all QueryLookups in solution
 2: Component lookup 'UpdatedInOnCreateMethod' must be updated
 QUICKFIXES:
-Add Update call for 'UpdatedInOnCreateMethod'
---Add Update call for QueryLookups in file
---Add Update call for QueryLookups in project
---Add Update call for QueryLookups in solution
+Add missing 'Update' call for 'UpdatedInOnCreateMethod'
+--Add missing 'Update' call for all QueryLookups in file
+--Add missing 'Update' call for all QueryLookups in project
+--Add missing 'Update' call for all QueryLookups in solution
 3: Component lookup 'UpdatedInOnDestroyMethod' must be updated
 QUICKFIXES:
-Add Update call for 'UpdatedInOnDestroyMethod'
---Add Update call for QueryLookups in file
---Add Update call for QueryLookups in project
---Add Update call for QueryLookups in solution
+Add missing 'Update' call for 'UpdatedInOnDestroyMethod'
+--Add missing 'Update' call for all QueryLookups in file
+--Add missing 'Update' call for all QueryLookups in project
+--Add missing 'Update' call for all QueryLookups in solution
