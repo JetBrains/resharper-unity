@@ -93,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         }
         
         
-        private sealed class StringLiteralItem : TextLookupItemBase
+        private sealed class StringLiteralItem : TextLookupItemBase, IMLSortingAwareItem
         {
             public StringLiteralItem([NotNull] string text)
             {
@@ -116,6 +116,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             {
                 base.Accept(textControl, nameRange, LookupItemInsertType.Replace, suffix, solution, keepCaretStill);
             }
+
+            public bool UseMLSort() => false;
         }
     }
 }

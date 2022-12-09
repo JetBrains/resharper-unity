@@ -37,28 +37,28 @@ public class Test2 : MonoBehaviour
 
 public struct Tes3
 {
-    [|SerializeField|(18), |FormerlySerializedAs("Foo")|(19)] public int Bar;
+    [SerializeField, FormerlySerializedAs("Foo")] public int Bar;
 
-    [|SerializeField|(20)] [NonSerialized] public int Value1;
-    [|SerializeField|(21)] [NonSerialized] public int Value2;
-    [|SerializeField|(22)] [NonSerialized] public int Value3;
-    [|SerializeField|(23)] [NonSerialized] public int Value4;
+    [|SerializeField|(18)] [NonSerialized] public int Value1;
+    [|SerializeField|(19)] [NonSerialized] public int Value2;
+    [|SerializeField|(20)] [NonSerialized] public int Value3;
+    [|SerializeField|(21)] [NonSerialized] public int Value4;
 }
 
-[|HideInInspector|(24)]
+[|HideInInspector|(22)]
 public delegate void MyEventHandler(object sender, EventArgs e);
 
-[|InitializeOnLoad|(25)]
+[|InitializeOnLoad|(23)]
 public class MissingConstructor
 {
 }
 
-[|InitializeOnLoad|(26)]
+[|InitializeOnLoad|(24)]
 public class MissingConstructor2
 {
 }
 
-[|InitializeOnLoad|(27)]
+[|InitializeOnLoad|(25)]
 public class MissingConstructor3
 {
 }
@@ -272,8 +272,9 @@ Remove redundant code in struct 'Tes3'
 --Remove redundant code in file
 --Remove redundant code in project
 --Remove redundant code in solution
-19: Redundant 'FormerlySerializedAs' attribute
+19: Redundant 'SerializeField' attribute
 QUICKFIXES:
+Make type 'Tes3' serializable
 Remove redundant attribute
 --Remove redundant Unity attributes in struct 'Tes3'
 --Remove redundant Unity attributes in file
@@ -307,31 +308,7 @@ Remove redundant code in struct 'Tes3'
 --Remove redundant code in file
 --Remove redundant code in project
 --Remove redundant code in solution
-22: Redundant 'SerializeField' attribute
-QUICKFIXES:
-Make type 'Tes3' serializable
-Remove redundant attribute
---Remove redundant Unity attributes in struct 'Tes3'
---Remove redundant Unity attributes in file
---Remove redundant Unity attributes in project
---Remove redundant Unity attributes in solution
-Remove redundant code in struct 'Tes3'
---Remove redundant code in file
---Remove redundant code in project
---Remove redundant code in solution
-23: Redundant 'SerializeField' attribute
-QUICKFIXES:
-Make type 'Tes3' serializable
-Remove redundant attribute
---Remove redundant Unity attributes in struct 'Tes3'
---Remove redundant Unity attributes in file
---Remove redundant Unity attributes in project
---Remove redundant Unity attributes in solution
-Remove redundant code in struct 'Tes3'
---Remove redundant code in file
---Remove redundant code in project
---Remove redundant code in solution
-24: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations.
+22: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations.
 QUICKFIXES:
 Remove redundant attribute
 --Remove redundant Unity attributes in delegate 'MyEventHandler'
@@ -342,7 +319,7 @@ Remove redundant code in delegate 'MyEventHandler'
 --Remove redundant code in file
 --Remove redundant code in project
 --Remove redundant code in solution
-25: 'InitializeOnLoad' attribute is redundant when static constructor is missing
+23: 'InitializeOnLoad' attribute is redundant when static constructor is missing
 QUICKFIXES:
 Create static constructor 'MissingConstructor'
 Remove redundant attribute
@@ -354,7 +331,7 @@ Remove redundant code in class 'MissingConstructor'
 --Remove redundant code in file
 --Remove redundant code in project
 --Remove redundant code in solution
-26: 'InitializeOnLoad' attribute is redundant when static constructor is missing
+24: 'InitializeOnLoad' attribute is redundant when static constructor is missing
 QUICKFIXES:
 Create static constructor 'MissingConstructor2'
 Remove redundant attribute
@@ -366,7 +343,7 @@ Remove redundant code in class 'MissingConstructor2'
 --Remove redundant code in file
 --Remove redundant code in project
 --Remove redundant code in solution
-27: 'InitializeOnLoad' attribute is redundant when static constructor is missing
+25: 'InitializeOnLoad' attribute is redundant when static constructor is missing
 QUICKFIXES:
 Create static constructor 'MissingConstructor3'
 Remove redundant attribute

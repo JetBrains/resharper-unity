@@ -12,8 +12,8 @@ public class Foo
     {
     }
 
-    [SerializeField]
-    public string Field;
+    [SerializeField] public string Field;
+    [SerializeField] private int PrivateField;
 
     [SerializeField]
     public const string ConstField = "Hello world";

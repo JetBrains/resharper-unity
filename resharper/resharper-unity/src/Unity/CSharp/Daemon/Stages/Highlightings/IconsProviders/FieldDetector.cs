@@ -38,7 +38,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (declaredElement == null)
                 return false;
 
-            bool isSerializedField = myUnityApi.IsSerialisedField(declaredElement);
+            bool isSerializedField =
+                myUnityApi.IsSerialisedField(declaredElement) == SerializedFieldStatus.SerializedField;
             if (isSerializedField)
             {
                 var displayText = Strings.FieldDetector_AddDeclarationHighlighting_Serializable;

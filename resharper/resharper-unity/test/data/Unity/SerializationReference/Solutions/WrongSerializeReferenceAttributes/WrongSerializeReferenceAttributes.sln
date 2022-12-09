@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WrongSerializeReferenceAttributes", "WrongSerializeReferenceAttributes\WrongSerializeReferenceAttributes.csproj", "{F8E452F9-3793-43AB-9449-0611E74195ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityRelatedClasses", "..\UnityRelatedClasses\UnityRelatedClasses.csproj", "{72C08D4B-1E79-42E5-968E-B250197126FA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F8E452F9-3793-43AB-9449-0611E74195ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8E452F9-3793-43AB-9449-0611E74195ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8E452F9-3793-43AB-9449-0611E74195ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8E452F9-3793-43AB-9449-0611E74195ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72C08D4B-1E79-42E5-968E-B250197126FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72C08D4B-1E79-42E5-968E-B250197126FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72C08D4B-1E79-42E5-968E-B250197126FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72C08D4B-1E79-42E5-968E-B250197126FA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

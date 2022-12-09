@@ -116,7 +116,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                     return count > 0 || unityEventsEstimatedResult || animationEventsEstimatedResult;
 
                 case IField field:
-                    return unityApi.IsSerialisedField(field);
+                    return unityApi.IsSerialisedField(field) == SerializedFieldStatus.SerializedField;
             }
 
             return false;
