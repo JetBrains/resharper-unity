@@ -65,11 +65,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 if (!location.Equals(scriptLocation))
                     continue;
 
-                var (unityEventName, parts) = PrefabsUtil.SplitPropertyPath(modification.PropertyPath);
+                var (unityEventName, parts) = UnityEventUtils.SplitPropertyPath(modification.PropertyPath);
                 if (!allUnityEventNames.Contains(unityEventName))
                     continue;
 
-                if (!PrefabsUtil.TryGetDataIndex(parts, out var index))
+                if (!UnityEventUtils.TryGetDataIndex(parts, out var index))
                     continue;
                 
                 var last = parts.Last();
