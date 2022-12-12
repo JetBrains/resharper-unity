@@ -6,7 +6,6 @@ import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.refactoring.rename.RenameHandlerRegistry
-import com.jetbrains.rd.platform.util.getComponent
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rdclient.protocol.protocolHost
 import com.jetbrains.rider.ideaInterop.vfs.VfsWriteOperationsHost
@@ -159,7 +158,7 @@ fun doActionAndWait(project: Project, action: () -> Unit, @Suppress("SameParamet
     action()
     flushQueues(project.protocolHost)
     waitAllCommandsFinished()
-    project.getComponent<VfsWriteOperationsHost>().waitRefreshIsFinished()
+    VfsWriteOperationsHost.getInstance(project).waitRefreshIsFinished()
 
     if (closeEditors) {
         FileEditorManagerEx.getInstanceEx(project).closeAllFiles()
