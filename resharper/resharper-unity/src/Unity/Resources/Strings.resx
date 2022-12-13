@@ -1272,4 +1272,25 @@ a plugin to be installed to a project.</value>
     <data name="UnitySettings_Refactoring_Refactoring_Settings_Header" xml:space="preserve">
         <value>Refactoring</value>
     </data>
+    <data name="UnityAssetsFolder_Text" xml:space="preserve">
+        <value>Unity Assets folder</value>
+    </data>
+    <data name="UnityEditorFolder_Text" xml:space="preserve">
+        <value>Unity Editor folder</value>
+    </data>
+    <data name="UnityRuntimeFolder_Text" xml:space="preserve">
+        <value>Unity runtime folder</value>
+    </data>
+    <data name="UnityFirstpassFolder_Text" xml:space="preserve">
+        <value>Unity firstpass folder</value>
+    </data>
+    <data name="UnityFirstpassEditorFolder_Text" xml:space="preserve">
+        <value>Unity firstpass Editor folder</value>
+    </data>
+    <data name="UnityFirstpassRuntimeFolder_Text" xml:space="preserve">
+        <value>Unity firstpass runtime folder</value>
+    </data>
+    <data name="UnityProjects_Text" xml:space="preserve">
+        <value>Unity projects</value>
+    </data>
 </root>
