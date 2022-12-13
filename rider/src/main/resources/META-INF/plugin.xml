@@ -316,6 +316,7 @@
     <notificationGroup id="Unity commit failure" displayType="BALLOON" bundle="messages.UnityBundle"
                        key="notification.group.unity.unity.commit.failure"/>
     <statistics.projectUsagesCollector implementation="com.jetbrains.rider.plugins.unity.fus.UnityProjectUsageCollector" />
+    <iconMapper mappingFile="UnityIconMappings.json"/>
   </extensions>
 
   <extensions defaultExtensionNs="JavaScript">

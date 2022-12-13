@@ -1,7 +1,6 @@
 package com.jetbrains.rider.plugins.unity.actions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
