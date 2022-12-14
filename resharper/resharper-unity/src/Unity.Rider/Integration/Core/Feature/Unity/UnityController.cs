@@ -12,6 +12,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
 using JetBrains.RdBackend.Common.Features;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitTesting;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
@@ -33,6 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
         
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly UnityVersion myUnityVersion;
+        private readonly UnitySolutionTracker myUnitySolutionTracker;
         private readonly IThreading myThreading;
         private readonly ILogger myLogger;
         private readonly ISolution mySolution;
@@ -48,6 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
                                BackendUnityHost backendUnityHost,
                                IBackgroundProgressIndicatorManager indicatorManager,
                                UnityVersion unityVersion,
+                               UnitySolutionTracker unitySolutionTracker,
                                IThreading threading,
                                ILogger logger)
         {
@@ -56,6 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
 
             myBackendUnityHost = backendUnityHost;
             myUnityVersion = unityVersion;
+            myUnitySolutionTracker = unitySolutionTracker;
             myThreading = threading;
             myLogger = logger;
             mySolution = solution;
@@ -107,7 +111,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
             
             return myThreading.Tasks.StartNew(lifetime, Scheduling.MainDispatcher, () => unityModel.StopProfiling.Sync(data, ourUnityStartProfilingTimeouts));
         }
-        
+
+        public bool IsUnitySolution() => myUnitySolutionTracker.IsUnityGeneratedProject.Maybe.ValueOrDefault;
+
         private VirtualFileSystemPath EditorInstanceJsonPath => mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
 
         private async Task<int> StartUnityInternal(Lifetime lifetime, Func<bool> condition = null)
