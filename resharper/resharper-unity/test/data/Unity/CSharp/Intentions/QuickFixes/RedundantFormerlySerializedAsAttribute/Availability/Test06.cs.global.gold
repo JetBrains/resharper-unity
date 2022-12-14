@@ -1,0 +1,101 @@
+﻿// ${RUN:2}
+using System;
+using UnityEngine;
+using UnityEngine.Serialization;
+
+public class Test : MonoBehaviour
+{
+    [|FormerlySerializedAs("NotSerializedField1")|(0)] public static int Value1;
+    [|FormerlySerializedAs("NotSerializedField2")|(1)] [NonSerialized] public int Value2;
+    [|FormerlySerializedAs("RedundantValue")|(2)] [NonSerialized] public int RedundantValue;
+    [|FormerlySerializedAs("RedundantValue2")|(3), |FormerlySerializedAs("RedundantValue2")|(4)] [NonSerialized] public int RedundantValue2;
+}
+
+public class Test2 : MonoBehaviour
+{
+    [|FormerlySerializedAs("RedundantValue")|(5)] [NonSerialized] public int RedundantValue;
+}
+
+public struct Tes3
+{
+    [SerializeField, |FormerlySerializedAs("Foo")|(6)] public int Bar;
+}
+
+------------------------------------------------
+0: Redundant 'FormerlySerializedAs' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+1: Redundant 'FormerlySerializedAs' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+2: Redundant 'FormerlySerializedAs' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+3: Redundant 'FormerlySerializedAs' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+4: Redundant 'FormerlySerializedAs' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+5: Redundant 'FormerlySerializedAs' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test2'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test2'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+6: Redundant 'FormerlySerializedAs' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in struct 'Tes3'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in struct 'Tes3'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution

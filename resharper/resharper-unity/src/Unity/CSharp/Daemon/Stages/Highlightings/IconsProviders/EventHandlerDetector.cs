@@ -75,14 +75,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         private bool TryAddMethodHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer, IReadOnlyCallGraphContext context,
                                               IMethod method)
         {
-            var eventHandlersCount = UnityEventsElementContainer.GetAssetUsagesCount(method, out _);
-            var animationEventsCount = myAnimationEventUsagesContainer.GetEventUsagesCountFor(method, out _);
-            if (eventHandlersCount + animationEventsCount <= 0) return false;
-            if (eventHandlersCount != 0 && animationEventsCount == 0)
-                AddEventHandlerHighlighting(treeNode, consumer, context);
+            var eventHandlersCount = UnityEventsElementContainer.GetAssetUsagesCount(method, out var estimated);
+            var animationEventsCount = myAnimationEventUsagesContainer.GetEventUsagesCountFor(method, out var estimated2);
             if (eventHandlersCount == 0 && animationEventsCount != 0)
                 AddAnimationEventHighlighting(treeNode, consumer, context);
-            AddAnimationEventAndEventHandlerHighlighting(treeNode, consumer, context);
+            else if (estimated || estimated2 || animationEventsCount + eventHandlersCount > 0)
+                AddEventHandlerHighlighting(treeNode, consumer, context);
+            
             return true;
         }
 
@@ -98,14 +97,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                                                    IReadOnlyCallGraphContext context)
         {
             AddHighlighting(consumer, treeNode as ICSharpDeclaration, Strings.EventHandlerDetector_AddAnimationEventHighlighting_Text, Strings.EventHandlerDetector_AddAnimationEventHighlighting_Tooltip, context);
-        }
-        
-        private void AddAnimationEventAndEventHandlerHighlighting([NotNull] ITreeNode treeNode,
-                                                                  [NotNull] IHighlightingConsumer consumer,
-                                                                  IReadOnlyCallGraphContext context)
-        {
-            AddHighlighting(consumer, treeNode as ICSharpDeclaration, Strings.EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Text,
-                Strings.EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Tooltip, context);
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,

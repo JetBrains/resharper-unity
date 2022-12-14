@@ -72,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return resourceLoadCache.CollectItems(CollectAutocompletion);
         }
 
-        private sealed class ResourcesCompletionItem : TextLookupItemBase
+        private sealed class ResourcesCompletionItem : TextLookupItemBase, IMLSortingAwareItem
         {
             public ResourcesCompletionItem([NotNull] string text, [NotNull] string additionalInfo,
                 ResourceLocationType locationType,
@@ -100,6 +100,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             {
                 base.Accept(textControl, nameRange, LookupItemInsertType.Replace, suffix, solution, keepCaretStill);
             }
+
+            public bool UseMLSort() => false;
         }
     }
 }

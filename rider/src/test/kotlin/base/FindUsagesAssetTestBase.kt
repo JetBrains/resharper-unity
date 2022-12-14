@@ -35,7 +35,7 @@ abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
 
         withOpenedEditor("Assets/$fileName") {
             setCaretToPosition(line, column)
-            val text = requestFindUsages(activeSolutionDirectory)
+            val text = requestFindUsages(activeSolutionDirectory, true)
             executeWithGold(testGoldFile) { printStream ->
                 printStream.print(text)
             }

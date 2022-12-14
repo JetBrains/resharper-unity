@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Set
                                                                 IUIApplicationSimple uiApplicationSimple,
                                                                 ISolution solution)
         {
-            if (declaredElement is IField field && myUnityApi.IsSerialisedField(field))
+            if (declaredElement is IField field && myUnityApi.IsSerialisedField(field) == SerializedFieldStatus.SerializedField)//Use old check
             {
                 var optionsDialogOwner = solution.TryGetComponent<IOptionsDialogViewOwner>();
                 if (optionsDialogOwner != null)

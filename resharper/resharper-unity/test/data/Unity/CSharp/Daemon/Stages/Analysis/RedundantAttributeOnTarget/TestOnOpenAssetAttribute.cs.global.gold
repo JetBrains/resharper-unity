@@ -1,0 +1,79 @@
+﻿using System;
+using UnityEngine;
+using UnityEditor;
+using UnityEditor.Callbacks;
+
+[assembly: |OnOpenAsset|(0)]
+
+[|OnOpenAsset|(1)]
+public class Foo
+{
+    [|OnOpenAsset|(2)]
+    public Foo()
+    {
+    }
+
+    [|OnOpenAsset|(3)]
+    public string Field;
+
+    [|OnOpenAsset|(4)]
+    public const string ConstField = "Hello world";
+
+    [|OnOpenAsset|(5)]
+    public string Property { get; set; }
+
+    [OnOpenAsset]
+    public static bool DoOnOpenAsset(int instanceID, int line)
+    {
+        return true;
+    }
+
+    [return: |OnOpenAsset|(6)]
+    public string Method<[|OnOpenAsset|(7)] T>([|OnOpenAsset|(8)] int param1)
+    {
+        return null;
+    }
+
+    [|OnOpenAsset|(9)]
+    public event EventHandler MyEvent;
+
+    [field: |OnOpenAsset|(10)]
+    public event EventHandler MyEvent2;
+}
+
+[|OnOpenAsset|(11)]
+public delegate void MyEventHandler(object sender, EventArgs e);
+
+[|OnOpenAsset|(12)]
+public struct Bar
+{
+}
+
+[|OnOpenAsset|(13)]
+public enum Baz
+{
+    One,
+    Two
+}
+
+[|OnOpenAsset|(14)]
+public interface Quux
+{
+}
+
+---------------------------------------------------------
+(0): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations.
+(1): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations.
+(2): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations.
+(3): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations.
+(4): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations.
+(5): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations.
+(6): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations.
+(7): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations.
+(8): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations.
+(9): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations.
+(10): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations.
+(11): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations.
+(12): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations.
+(13): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations.
+(14): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.OnOpenAssetAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations.

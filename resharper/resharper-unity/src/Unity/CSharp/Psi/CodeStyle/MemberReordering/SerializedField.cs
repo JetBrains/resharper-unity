@@ -17,14 +17,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.MemberReorderin
                 {
                     if (multipleDeclarationMember is IFieldDeclaration field)
                     {
-                        if (unityApi.IsSerialisedField(field.DeclaredElement))
+                        if (unityApi.IsSerialisedField(field.DeclaredElement) == SerializedFieldStatus.SerializedField)
                             return true;
                     }
                 }
             }
 
             if (node is IFieldDeclaration fieldDeclaration)
-                return unityApi.IsSerialisedField(fieldDeclaration.DeclaredElement);
+                return unityApi.IsSerialisedField(fieldDeclaration.DeclaredElement) == SerializedFieldStatus.SerializedField;
 
             return false;
         }

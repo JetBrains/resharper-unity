@@ -58,10 +58,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             if (hasTooltipAttribute)
                 return false;
 
-            var isSerialisedField = unityApi.IsSerialisedField(firstFieldDeclaration.DeclaredElement);
             var hasXml = multipleFieldDeclaration.DocCommentBlock != null;
 
-            if (!isSerialisedField || !hasXml) return false;
+            if (unityApi.IsSerialisedField(firstFieldDeclaration.DeclaredElement) == SerializedFieldStatus.NonSerializedField || !hasXml) return false;
 
             var psi = ((ICSharpDocCommentBlock) multipleFieldDeclaration.DocCommentBlock).GetXmlPsi();
             foreach (var innerTag in psi.XmlFile.InnerTags)
