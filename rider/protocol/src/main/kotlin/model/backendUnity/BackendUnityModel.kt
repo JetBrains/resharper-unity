@@ -104,11 +104,6 @@ object BackendUnityModel: Root() {
         +"Normal"
     }
 
-    private val CompiledAssembly = structdef {
-        field("name", string)
-        field("outputPath", string)
-    }
-
     init {
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.BackendUnity")
 
@@ -168,7 +163,6 @@ object BackendUnityModel: Root() {
 
         // Actions called from Unity to the backend
         callback("openFileLineCol", RdOpenFileArgs, bool).documentation = "Called from Unity to quickly open a file in an existing Rider instance"
-        sink("compiledAssemblies", immutableList(CompiledAssembly)).documentation = "Fired from Unity to provide a list of the assemblies compiled by Unity"
 
         // Unit testing
         property("unitTestLaunch", UnitTestLaunch).documentation = "Set the details of the current unit test session"
