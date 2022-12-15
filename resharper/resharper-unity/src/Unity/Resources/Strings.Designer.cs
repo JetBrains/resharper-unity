@@ -429,8 +429,6 @@
     public static string EventHandlerDetector_AddEventHandlerHighlighting_Tooltip => ResourceManager.GetString("EventHandlerDetector_AddEventHandlerHighlighting_Tooltip");
     public static string EventHandlerDetector_AddAnimationEventHighlighting_Text => ResourceManager.GetString("EventHandlerDetector_AddAnimationEventHighlighting_Text");
     public static string EventHandlerDetector_AddAnimationEventHighlighting_Tooltip => ResourceManager.GetString("EventHandlerDetector_AddAnimationEventHighlighting_Tooltip");
-    public static string EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Text => ResourceManager.GetString("EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Text");
-    public static string EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Tooltip => ResourceManager.GetString("EventHandlerDetector_AddAnimationEventAndEventHandlerHighlighting_Tooltip");
     public static string FieldDetector_AddDeclarationHighlighting_This_field_is_initialized_from_Inspector => ResourceManager.GetString("FieldDetector_AddDeclarationHighlighting_This_field_is_initialized_from_Inspector");
     public static string FieldDetector_AddDeclarationHighlighting_Serializable => ResourceManager.GetString("FieldDetector_AddDeclarationHighlighting_Serializable");
     public static string FieldDetector_AddDeclarationHighlighting_Tooltip => ResourceManager.GetString("FieldDetector_AddDeclarationHighlighting_Tooltip");
@@ -452,5 +450,12 @@
     public static string UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property => ResourceManager.GetString("UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property");
     public static string UnitySettings_Refactoring_Dont_shot_popup_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property => ResourceManager.GetString("UnitySettings_Refactoring_Dont_shot_popup_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property");
     public static string UnitySettings_Refactoring_Refactoring_Settings_Header => ResourceManager.GetString("UnitySettings_Refactoring_Refactoring_Settings_Header");
+    public static string UnityAssetsFolder_Text => ResourceManager.GetString("UnityAssetsFolder_Text");
+    public static string UnityEditorFolder_Text => ResourceManager.GetString("UnityEditorFolder_Text");
+    public static string UnityRuntimeFolder_Text => ResourceManager.GetString("UnityRuntimeFolder_Text");
+    public static string UnityFirstpassFolder_Text => ResourceManager.GetString("UnityFirstpassFolder_Text");
+    public static string UnityFirstpassEditorFolder_Text => ResourceManager.GetString("UnityFirstpassEditorFolder_Text");
+    public static string UnityFirstpassRuntimeFolder_Text => ResourceManager.GetString("UnityFirstpassRuntimeFolder_Text");
+    public static string UnityProjects_Text => ResourceManager.GetString("UnityProjects_Text");
   }
 }

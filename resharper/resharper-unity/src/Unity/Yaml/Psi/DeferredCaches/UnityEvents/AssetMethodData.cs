@@ -110,9 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             EventHandlerArgumentMode mode;
             if (!modifications.TryGetValue("m_Mode", out var modeValue))
             {
-                if (source == null)
-                    return null;
-                mode = source.Mode;
+                mode = source?.Mode ?? EventHandlerArgumentMode.Void;
             }
             else
             {

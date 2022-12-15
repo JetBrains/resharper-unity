@@ -1,6 +1,7 @@
 ﻿using System;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 
@@ -25,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         }
 
         public override Guid GetDefaultUID() => DefaultUID;
-        public override string PresentableShortName => "Unity projects";
+        public override string PresentableShortName => Strings.UnityProjects_Text;
 
         public override PsiLanguageType RelatedLanguage => CSharpLanguage.Instance;
 
@@ -47,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         private static readonly Guid DefaultUID = new Guid("400D0960-419A-4D68-B6BD-024A7C9E4DDB");
 
         public override Guid GetDefaultUID() => DefaultUID;
-        public override string PresentableShortName => "Unity Assets folder";
+        public override string PresentableShortName => Strings.UnityAssetsFolder_Text;
     }
 
     // Scope is Assets/**/Editor/**
@@ -56,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         private static readonly Guid DefaultUID = new Guid("725DF216-7E35-4AAF-8C8E-3FEF06B172AA");
 
         public override Guid GetDefaultUID() => DefaultUID;
-        public override string PresentableShortName => "Unity Editor folder";
+        public override string PresentableShortName => Strings.UnityEditorFolder_Text;
     }
 
     // Scope is anywhere under non-editor folder under Assets: Assets/**/!Editor/**
@@ -65,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         private static readonly Guid DefaultUID = new Guid("AD3BD55C-0026-4C29-B6AD-6B82170CD657");
 
         public override Guid GetDefaultUID() => DefaultUID;
-        public override string PresentableShortName => "Unity runtime folder";
+        public override string PresentableShortName => Strings.UnityRuntimeFolder_Text;
     }
 
 
@@ -79,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         private static readonly Guid DefaultUID = new Guid("9B4C634E-812C-4699-BED0-7FC0A34533DB");
 
         public override Guid GetDefaultUID() => DefaultUID;
-        public override string PresentableShortName => "Unity firstpass folder";
+        public override string PresentableShortName => Strings.UnityFirstpassFolder_Text;
     }
 
     // Scope is anywhere under an Editor folder in a firstpass folder of Assets:
@@ -91,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         private static readonly Guid DefaultUID = new Guid("375D8555-CCD0-4D17-B6F6-2DCC1E01FCAB");
 
         public override Guid GetDefaultUID() => DefaultUID;
-        public override string PresentableShortName => "Unity firstpass Editor folder";
+        public override string PresentableShortName => Strings.UnityFirstpassEditorFolder_Text;
     }
 
     // Scope is anywhere under a firstpass folder in Assets that is NOT an editor folder:
@@ -103,6 +104,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         private static readonly Guid DefaultUID = new Guid("101DB5F5-CE2E-4CD3-954F-34CE9AB3ECEA");
 
         public override Guid GetDefaultUID() => DefaultUID;
-        public override string PresentableShortName => "Unity firstpass runtime folder";
+        public override string PresentableShortName => Strings.UnityFirstpassRuntimeFolder_Text;
     }
 }

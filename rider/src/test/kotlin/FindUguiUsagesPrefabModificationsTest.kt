@@ -26,4 +26,41 @@ class FindUguiUsagesPrefabModificationsTest : FindUsagesAssetTestBase() {
         disableAllGroups()
         doTest(10, 20, "PlayerInput.cs")
     }
+
+    @Test
+    fun test03() {
+        disableAllGroups()
+        doTest(6, 20, "EventTrigger/even.cs")
+    }
+
+    @Test
+    fun test031() {
+        disableAllGroups()
+        doTest(11, 20, "EventTrigger/even.cs")
+    }
+
+    @Test
+    fun test032() {
+        disableAllGroups()
+        doTest(16, 20, "EventTrigger/even.cs")
+    }
+
+    @Test
+    fun test033() {
+        disableAllGroups()
+        doTest(21, 30, "EventTrigger/even.cs")
+    }
+
+    @Test
+    fun test04() {
+        disableAllGroups()
+        doTest(6, 20, "EventTrigger/NewBehaviourScript.cs")
+        //doTest(11, 20, "EventTrigger/NewBehaviourScript.cs")
+    }
+
+    @Test
+    fun test041() {
+        disableAllGroups()
+        doTest(11, 25, "EventTrigger/NewBehaviourScript.cs")
+    }
 }
