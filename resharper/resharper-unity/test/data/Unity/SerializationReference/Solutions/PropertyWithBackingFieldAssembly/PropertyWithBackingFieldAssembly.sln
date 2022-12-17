@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyWithBackingFieldAssembly", "PropertyWithBackingFieldAssembly\PropertyWithBackingFieldAssembly.csproj", "{D8D2D689-3738-4A37-8202-A8EBD33E6060}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D8D2D689-3738-4A37-8202-A8EBD33E6060}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8D2D689-3738-4A37-8202-A8EBD33E6060}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8D2D689-3738-4A37-8202-A8EBD33E6060}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8D2D689-3738-4A37-8202-A8EBD33E6060}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

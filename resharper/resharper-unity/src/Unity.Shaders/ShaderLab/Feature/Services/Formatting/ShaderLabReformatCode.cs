@@ -5,6 +5,7 @@ using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.CodeCleanup;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -22,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.F
 
     private static readonly CodeCleanupSingleOptionDescriptor ourDescriptor =
         new CodeCleanupOptionDescriptor<bool>("ShaderLabReformatCode", ourShaderLabCleanupLanguage,
-            CodeCleanupOptionDescriptor.ReformatGroup, displayName: "Reformat code");
+            CodeCleanupOptionDescriptor.ReformatGroup, displayName: Strings.ReformatCode_Text);
 
     public ICollection<CodeCleanupOptionDescriptor> Descriptors => new[] { ourDescriptor };
 

@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericClassesLib01", "GenericClassesLib01\GenericClassesLib01.csproj", "{00546D19-BF1E-466D-97CD-303057AD5A61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityRelatedClasses", "..\UnityRelatedClasses\UnityRelatedClasses.csproj", "{72C08D4B-1E79-42E5-968E-B250197126FA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{00546D19-BF1E-466D-97CD-303057AD5A61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00546D19-BF1E-466D-97CD-303057AD5A61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00546D19-BF1E-466D-97CD-303057AD5A61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00546D19-BF1E-466D-97CD-303057AD5A61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72C08D4B-1E79-42E5-968E-B250197126FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72C08D4B-1E79-42E5-968E-B250197126FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72C08D4B-1E79-42E5-968E-B250197126FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72C08D4B-1E79-42E5-968E-B250197126FA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

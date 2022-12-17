@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -22,8 +23,8 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Toggle 'SerializeField' and 'NonSerialized' attributes on fields",
-        Description = "Toggles a field in a Unity type between serialized and non-serialized. If the field is non-public, the 'UnityEngine.SerializeField' attribute is added. If the field is already serialized, the attribute is removed, and for public fields, the 'NonSerialized' field is added.")]
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.ToggleSerializedFieldAction_Name), 
+        DescriptionResourceName = nameof(Strings.ToggleSerializedFieldAction_Description))]
     public class ToggleSerializedFieldAction : IContextAction
     {
         private static readonly SubmenuAnchor ourSubmenuAnchor =
@@ -44,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 return EmptyList<IntentionAction>.Enumerable;
 
             var unityApi = myDataProvider.Solution.GetComponent<UnityApi>();
-            var isSerialized = unityApi.IsSerialisedField(fieldDeclaration.DeclaredElement);
+            var isSerialized = unityApi.IsSerialisedField(fieldDeclaration.DeclaredElement) == SerializedFieldStatus.SerializedField;
 
             if (multipleFieldDeclaration.Declarators.Count == 1)
             {
@@ -78,10 +79,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 
             if (fieldDeclaration.DeclaredElement == null)
                 return false;
+
+            var unityType = unityApi.IsFieldTypeSerializable(fieldDeclaration.DeclaredElement,
+                hasSerializeReference: false, useSwea: true);
             
-            var unityType = unityApi.IsFieldTypeSerializable(fieldDeclaration.DeclaredElement);
-            
-            return unityType;
+            return unityType == SerializedFieldStatus.SerializedField;
         }
 
         private class ToggleSerializedFieldAll : BulbActionBase
@@ -136,21 +138,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             {
                 get
                 {
-                    var targetDescription = myMultipleFieldDeclaration.Declarators.Count > 1 ? "all fields" : "field";
+                    var targetDescription = myMultipleFieldDeclaration.Declarators.Count > 1 ? Strings.ToggleSerializedFieldAll_Text_all_fields : Strings.ToggleSerializedFieldAll_Text_field;
 
                     if (myFieldDeclaration.IsStatic && myFieldDeclaration.IsReadonly)
-                        return $"Make {targetDescription} serialized (remove static and readonly)";
+                        return string.Format(Strings.ToggleSerializedFieldAll_Text_Make__0__serialized__remove_static_and_readonly_, targetDescription);
                     if (myFieldDeclaration.IsStatic)
-                        return $"Make {targetDescription} serialized (remove static)";
+                        return string.Format(Strings.ToggleSerializedFieldAll_Text_Make__0__serialized__remove_static_, targetDescription);
                     if (myFieldDeclaration.IsReadonly)
-                        return $"Make {targetDescription} serialized (remove readonly)";
+                        return string.Format(Strings.ToggleSerializedFieldAll_Text_Make__0__serialized__remove_readonly_, targetDescription);
 
                     if (!myIsSerialized && myMultipleFieldDeclaration.Declarators.Count == 1)
-                        return "To serialized field";
+                        return Strings.ToggleSerializedFieldAll_Text_To_serialized_field;
 
                     return myIsSerialized
-                        ? $"Make {targetDescription} non-serialized"
-                        : $"Make {targetDescription} serialized";
+                        ? string.Format(Strings.ToggleSerializedFieldAll_Text_Make__0__non_serialized, targetDescription)
+                        : string.Format(Strings.ToggleSerializedFieldAll_Text_Make__0__serialized, targetDescription);
                 }
             }
         }
@@ -209,17 +211,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                     if (myFieldDeclaration.IsStatic && myFieldDeclaration.IsReadonly)
                     {
                         return
-                            $"Make field '{myFieldDeclaration.DeclaredName}' serialized (remove static and readonly)";
+                            string.Format(Strings.ToggleSerializedFieldOne_Text_Make_field___0___serialized__remove_static_and_readonly_, myFieldDeclaration.DeclaredName);
                     }
 
                     if (myFieldDeclaration.IsStatic)
-                        return $"Make field '{myFieldDeclaration.DeclaredName}' serialized (remove static)";
+                        return string.Format(Strings.ToggleSerializedFieldOne_Text_Make_field___0___serialized__remove_static_, myFieldDeclaration.DeclaredName);
                     if (myFieldDeclaration.IsReadonly)
-                        return $"Make field '{myFieldDeclaration.DeclaredName}' serialized (remove readonly)";
+                        return string.Format(Strings.ToggleSerializedFieldOne_Text_Make_field___0___serialized__remove_readonly_, myFieldDeclaration.DeclaredName);
 
                     return myIsSerialized
-                        ? $"Make field '{myFieldDeclaration.DeclaredName}' non-serialized"
-                        : $"Make field '{myFieldDeclaration.DeclaredName}' serialized";
+                        ? string.Format(Strings.ToggleSerializedFieldOne_Text_Make_field___0___non_serialized, myFieldDeclaration.DeclaredName)
+                        : string.Format(Strings.ToggleSerializedFieldOne_Text_Make_field___0___serialized, myFieldDeclaration.DeclaredName);
                 }
             }
         }

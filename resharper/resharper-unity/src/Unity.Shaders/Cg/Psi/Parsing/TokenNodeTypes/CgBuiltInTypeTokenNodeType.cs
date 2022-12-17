@@ -1,4 +1,5 @@
 ﻿using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodes;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Resources;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.Text;
@@ -25,6 +26,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi.Parsing.TokenNodeType
             return new CgBuiltInTypeTokenNode(this, token);
         }
 
-        public override string TokenRepresentation => "built-in type";
+        public override string TokenRepresentation => Strings.CgBuiltInTypeTokenNodeType_TokenRepresentation_built_in_type;
     }
 }

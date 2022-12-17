@@ -125,7 +125,7 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
                     }
 
                     override fun processTerminated(processEvent: ProcessEvent) {
-                        monoConnectResult.executionConsole.tryWriteMessageToConsoleView(OutputMessageWithSubject(output = UnityBundle.message("process.0.terminated.with.exit.code.1", commandLineString, processEvent.exitCode), type = OutputType.Warning, subject = OutputSubject.Default))
+                        monoConnectResult.executionConsole.tryWriteMessageToConsoleView(OutputMessageWithSubject(output = UnityBundle.message("process.0.terminated.with.exit.code.1", commandLineString, processEvent.exitCode.toString()), type = OutputType.Warning, subject = OutputSubject.Default))
                     }
 
                     override fun startNotified(processEvent: ProcessEvent) {

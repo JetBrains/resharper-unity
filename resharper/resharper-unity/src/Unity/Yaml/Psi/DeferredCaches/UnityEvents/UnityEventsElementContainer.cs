@@ -133,17 +133,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         {
             if (node is IBlockSequenceNode blockSequenceNode)
             {
+                var i = 0;
                 foreach (var entryContent in blockSequenceNode.Entries)
                 {
                     if (ourMethodNameSearcher.Find(entryContent.GetTextAsBuffer()) >= 0)
-                        BuildRootMappingNode(currentAssetSourceFile, assetDocument, entryContent.Value, name,
-                            ref result, location,
-                            scriptReference);
+                    {
+                        BuildRootMappingNode(currentAssetSourceFile, assetDocument, entryContent.Value, $"{name}.Array.data[{i}]",
+                            ref result, location, scriptReference);
+                        i++;
+                    }
                 }
             }
 
             if (node is not IBlockMappingNode rootMap)
                 return;
+            
             var persistentCallsMap = rootMap.GetMapEntryValue<IBlockMappingNode>("m_PersistentCalls");
             if (persistentCallsMap == null)
             {
@@ -151,7 +155,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 {
                     var entryContent = blockMappingEntry.Content;
                     if (ourMethodNameSearcher.Find(entryContent.GetTextAsBuffer()) >= 0)
-                        BuildRootMappingNode(currentAssetSourceFile, assetDocument, entryContent.Value, name,
+                        BuildRootMappingNode(currentAssetSourceFile, assetDocument, entryContent.Value, $"{name}.{blockMappingEntry.Key.GetPlainScalarText()}",
                             ref result, location, scriptReference);
                 }
             }
@@ -191,13 +195,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 
                 var arguments = methodDescription.GetMapEntryValue<IBlockMappingNode>("m_Arguments");
                 var modeText = methodDescription.GetMapEntryPlainScalarText("m_Mode");
-                var argMode = EventHandlerArgumentMode.EventDefined;
-                if (int.TryParse(modeText, out var mode))
-                {
-                    if (1 <= mode && mode <= 6)
-                        argMode = (EventHandlerArgumentMode)mode;
-                }
-
+                var argMode = GetEventHandlerArgumentMode(modeText);
                 var argumentTypeName = arguments.GetMapEntryPlainScalarText("m_ObjectArgumentAssemblyTypeName");
 
                 var type = argumentTypeName?.Split(',').FirstOrDefault();
@@ -215,6 +213,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             }
 
             return result;
+        }
+
+        private static EventHandlerArgumentMode GetEventHandlerArgumentMode(string modeText)
+        {
+            var argMode = EventHandlerArgumentMode.EventDefined;
+            if (int.TryParse(modeText, out var mode))
+            {
+                if (1 <= mode && mode <= 6)
+                    argMode = (EventHandlerArgumentMode)mode;
+            }
+
+            return argMode;
         }
 
         public void Drop(IPsiSourceFile currentAssetSourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElement unityAssetDataElement)
@@ -498,7 +508,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             var symbolTable = ResolveUtil.GetSymbolTableByTypeElement(targetType, SymbolTableMode.FULL, psiModule);
 
             return symbolTable.Filter(assetMethodUsages.MethodName, IsMethodFilter.INSTANCE, OverriddenFilter.INSTANCE, new ExactNameFilter(assetMethodUsages.MethodName),
-                new StaticFilter(new NonStaticAccessContext(null)), new EventHandlerSymbolFilter(assetMethodUsages.Mode, assetMethodUsages.Type, targetType.Module));
+                new EventHandlerSymbolFilter(assetMethodUsages.Mode, assetMethodUsages.Type, targetType.Module));
         }
 
         public string Id => nameof(UnityEventsElementContainer);

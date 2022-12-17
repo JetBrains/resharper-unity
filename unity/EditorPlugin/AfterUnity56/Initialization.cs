@@ -26,11 +26,6 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
             var connectionLifetime = modelAndLifetime.Lifetime;
 
             model.GetCompilationResult.Set(_ => !EditorUtility.scriptCompilationFailed);
-
-#if !UNITY_5_6 // only need to ignore 5.6, because before 5.6 this whole file is not included
-            CompiledAssembliesTracker.Init(modelAndLifetime);
-#endif
-
             model.UnitTestLaunch.Advise(connectionLifetime, launch =>
             {
                 new TestEventsSender(launch);

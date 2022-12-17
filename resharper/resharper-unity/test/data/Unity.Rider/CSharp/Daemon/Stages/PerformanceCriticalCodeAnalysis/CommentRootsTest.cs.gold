@@ -26,7 +26,7 @@ namespace CommentRootsTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (2): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(3): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(3): ReSharper Unity Performance Critical Line Marker: Performance-critical context

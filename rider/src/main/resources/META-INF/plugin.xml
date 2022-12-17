@@ -4,7 +4,7 @@
   <version>2021.3.0.9999</version>
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
 
-  <idea-version since-build="2022.3" />
+  <idea-version since-build="2023.1" />
 
   <depends>com.intellij.modules.rider</depends>
   <depends>com.intellij.modules.xdebugger</depends>
@@ -53,7 +53,7 @@
     <backend.actions.support language="ShaderLab" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <backend.autoPopup.support language="ShaderLab" implementationClass="com.jetbrains.rider.completion.BackendAndGenericRider" />
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabIconProvider" />
-    <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rdclient.completion.ProtocolCompletionContributor" />
+    <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rider.completion.ProtocolCompletionContributor" />
     <codeInsight.parameterInfo language="ShaderLab" implementationClass="com.jetbrains.rdclient.parameterInfo.FrontendParameterInfoHandler"/>
     <lang.documentationProvider language="ShaderLab" implementationClass="com.jetbrains.rdclient.quickDoc.FrontendDocumentationProvider"/>
     <backend.typedHandler language="ShaderLab" implementationClass="com.jetbrains.rider.cpp.fileType.CppTypedHandler"/>
@@ -80,7 +80,7 @@
 
     <lang.altEnter language="JSON" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperBulbMenuModelFactory" />
     <backend.markup.adapterFactory language="JSON" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
-    <completion.contributor language="JSON" implementationClass="com.jetbrains.rdclient.completion.ProtocolCompletionContributor" />
+    <completion.contributor language="JSON" implementationClass="com.jetbrains.rider.completion.ProtocolCompletionContributor" />
     <backend.actions.support language="JSON" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefActionCallPolicy" />
     <backend.actions.support language="JSON" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmref.AsmRefActionCallPolicy" />
     <spellchecker.support language="JSON" order="first" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.spellchecker.AsmDefSpellcheckerStrategy" />
@@ -93,7 +93,7 @@
     <lang.parserDefinition language="UnityYaml" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlParserDefinition" />
     <backend.actions.support language="UnityYaml" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <backend.markup.adapterFactory language="UnityYaml" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
-    <backend.typedHandler language="UnityYaml" implementationClass="com.jetbrains.rdclient.editorActions.FrontendTypedHandler"/>
+    <backend.typedHandler language="UnityYaml" implementationClass="com.jetbrains.rider.editorActions.FrontendTypedHandler"/>
 
     <!-- UXML support -->
     <fileType name="UXML" language="UXML" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileType" extensions="uxml" />
@@ -196,29 +196,21 @@
 
     <action id="AttachToUnityEditorAction"
             class="com.jetbrains.rider.plugins.unity.actions.AttachUnityEditorAction"
-            text="Attach to Unity Editor"
-            description="Attach debugger to Unity Editor process"
             icon="UnityIcons.Actions.AttachToUnity">
     </action>
 
     <action id="ShowUnitySettingsInRider"
             class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction"
-            text="Unity Settings&#8230;"
-            description="Show Unity settings"
             icon="AllIcons.General.Settings" />
 
     <action id="RiderUnityOpenEditorLogAction"
             class="com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction"
-            text="Open Unity Editor Log"
             icon="UnityIcons.Actions.OpenEditorLog" />
     <action id="RiderUnityOpenPlayerLogAction"
             class="com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction"
-            text="Open Unity Player Log"
             icon="UnityIcons.Actions.OpenPlayerLog" />
     <action id="TriggerRefreshInUnity"
             class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction"
-            text="Refresh Unity Assets"
-            description="Trigger refresh assets in Unity Editor"
             icon="UnityIcons.Actions.RefreshInUnity" />
 
     <group id="UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
@@ -226,53 +218,43 @@
       <add-to-group group-id="RightToolbarSideGroup" relative-to-action="BuildSolutionAction" anchor="after" />
 
       <separator/>
-      <action id="UnityToolbarLabel"
-              class="com.jetbrains.rider.plugins.unity.actions.UnityToolbarLabel"
-              text="Unity:"/>
+      <action id="UnityToolbarLabel" class="com.jetbrains.rider.plugins.unity.actions.UnityToolbarLabel"/>
+    </group>
+
+    <group id="NewUI_UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.NewUIUnityToolbarActionsGroup">
+      <add-to-group group-id="UnityToolbarActions" anchor="last"/>
+      <add-to-group group-id="MainToolbarCenter" anchor="last" /> <!--new UI -->
+
       <action id="TriggerPlayInUnity"
               class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction"
-              text="Play/Edit"
-              description="Toggle play mode in Unity Editor"
               icon="UnityIcons.Actions.Execute" />
       <action id="TriggerPauseInUnityEditor"
               class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction"
-              text="Pause/Resume"
-              description="Toggle play/pause in Unity Editor"
               icon="UnityIcons.Actions.Pause" />
       <action id="TriggerStepInUnityEditor"
               class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction"
-              text="Step"
-              description="Step a single frame in Unity Editor"
               icon="UnityIcons.Actions.Step" />
 
-      <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions" text="Important Unity Related Actions">
+      <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions">
         <action id="UnityProtocolStatusAction"
-                class="com.jetbrains.rider.plugins.unity.ui.UnityProtocolConnectionAction"
-                text="Unity Editor Connection Status" />
+                class="com.jetbrains.rider.plugins.unity.ui.UnityProtocolConnectionAction" />
         <action id="StartUnityAction"
                 class="com.jetbrains.rider.plugins.unity.actions.StartUnityAction"
-                text="Start Unity"
-                description="Start Unity with current project"
                 icon="UnityIcons.Actions.StartUnity" />
         <reference ref="AttachToUnityEditorAction" />
         <reference ref="AttachToUnityProcessAction" />
         <reference ref="ShowUnitySettingsInRider" />
         <action id="ShowUnityLogInRiderAction"
-                class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction"
-                text="Unity Log Window&#8230;" />
+                class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction"/>
         <separator/>
 
         <action id="HideUnityPlayActions"
-                class="com.jetbrains.rider.plugins.unity.ui.UnityPlayButtonsAction"
-                text="Show Unity Play/Pause Actions"
-                description="Show or hide Unity Play/Pause actions" />
+                class="com.jetbrains.rider.plugins.unity.ui.UnityPlayButtonsAction" />
         <action id="SwitchUIModeAction"
-                class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode"
-                text="Show Non-Unity Applicable UI"
-                description="Show or hide UI that is not applicable to Unity projects" />
+                class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode" />
       </group>
 
-      <group id="UnityDllShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityDllImportantActions" text="Important Unity Related Actions">
+      <group id="UnityDllShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityDllImportantActions">
         <reference ref="StartUnityAction" />
         <reference ref="AttachToUnityProcessAction" />
         <reference ref="ShowUnitySettingsInRider" />
@@ -288,37 +270,32 @@
     <action id="DumpUnityExplorerAction" class="com.jetbrains.rider.plugins.unity.actions.internal.DumpUnityExplorerAction" internal="true" />
 
     <action id="InstallEditorPluginAction"
-            class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction"
-            text="Install Unity Editor Plugin" />
+            class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction" />
 
-    <action class="com.jetbrains.rider.plugins.unity.actions.FindUnityUsagesAction" id="RdFindUnityUsagesAction" text="Find Unity Usages">
+    <action class="com.jetbrains.rider.plugins.unity.actions.FindUnityUsagesAction" id="RdFindUnityUsagesAction">
       <add-to-group group-id="FindMenuGroup" anchor="after" relative-to-action="FindUsages"/>
       <add-to-group group-id="EditorPopupMenu1.FindRefactor" anchor="after" relative-to-action="FindUsages"/>
     </action>
 
-    <group id="RiderInternal.Unity" text="Unity Actions" popup="true" internal="true">
+    <group id="RiderInternal.Unity" popup="true" internal="true">
       <add-to-group group-id="RiderInternal" anchor="last" />
 
       <action id="Unity_Internal_DumpDuplicateTypeNames"
               class="com.jetbrains.rider.plugins.unity.actions.internal.DumpDuplicateTypeNamesAction"
-              text="Dump Duplicate Type Names"
               internal="true" />
 
       <action id="Unity_Internal_DumpSpellCheckWordLists"
               class="com.jetbrains.rider.plugins.unity.actions.internal.DumpSpellCheckWordListsAction"
-              text="Dump Spell Check Word Lists"
               internal="true" />
     </group>
     <action id="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityAction"
             class="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityAction"
-            icon="UnityIcons.Actions.StartUnity"
-            text="Show in Unity">
+            icon="UnityIcons.Actions.StartUnity">
       <add-to-group group-id="SolutionExplorerPopupMenu" anchor="after" relative-to-action="RiderRevealFile"/>
     </action>
     <action id="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityFromExplorerAction"
             class="com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityFromExplorerAction"
-            icon="UnityIcons.Actions.StartUnity"
-            text="Unity">
+            icon="UnityIcons.Actions.StartUnity">
       <add-to-group group-id="RevealGroup" anchor="last"/>
     </action>
   </actions>
@@ -328,12 +305,18 @@
     <additionalTextAttributes file="colorSchemes/default_additional.xml" scheme="Default" />
     <additionalTextAttributes file="colorSchemes/darcula_additional.xml" scheme="Darcula" />
 
-    <notificationGroup id="Unity log open" displayType="BALLOON"/>
-    <notificationGroup id="Unity Asset Mode" displayType="BALLOON"/>
-    <notificationGroup id="Unity project open" displayType="STICKY_BALLOON"/>
-    <notificationGroup id="Unity connection is out of sync" displayType="BALLOON"/>
-    <notificationGroup id="Unity commit failure" displayType="BALLOON"/>
+    <notificationGroup id="Unity log open" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.log.open" />
+    <notificationGroup id="Unity Asset Mode" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.asset.mode" />
+    <notificationGroup id="Unity project open" displayType="STICKY_BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.project.open"/>
+    <notificationGroup id="Unity connection is out of sync" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.connection.out.of.sync"/>
+    <notificationGroup id="Unity commit failure" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.unity.commit.failure"/>
     <statistics.projectUsagesCollector implementation="com.jetbrains.rider.plugins.unity.fus.UnityProjectUsageCollector" />
+    <iconMapper mappingFile="UnityIconMappings.json"/>
   </extensions>
 
   <extensions defaultExtensionNs="JavaScript">

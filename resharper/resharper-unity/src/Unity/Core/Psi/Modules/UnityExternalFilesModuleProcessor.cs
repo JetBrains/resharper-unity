@@ -11,6 +11,8 @@ using JetBrains.DataFlow;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon.SolutionAnalysis;
+using JetBrains.ReSharper.Daemon.SolutionAnalysis.FileImages;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -19,6 +21,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
@@ -26,6 +29,7 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
 using JetBrains.Util.Logging;
+using ProjectExtensions = JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.ProjectExtensions;
 
 #nullable enable
 
@@ -48,8 +52,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
         private readonly UnityExternalFilesIndexDisablingStrategy myIndexDisablingStrategy;
         private readonly UnityAssetInfoCollector myUsageStatistics;
+        private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly Dictionary<VirtualFileSystemPath, LifetimeDefinition> myRootPathLifetimes;
         private readonly VirtualFileSystemPath mySolutionDirectory;
+        private readonly VirtualFileSystemPath myProjectSettingsFolder;
 
         public UnityExternalFilesModuleProcessor(Lifetime lifetime, ILogger logger, ISolution solution,
                                                  ChangeManager changeManager,
@@ -61,7 +67,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                                                  UnityExternalPsiSourceFileFactory psiSourceFileFactory,
                                                  UnityExternalFilesModuleFactory moduleFactory,
                                                  UnityExternalFilesIndexDisablingStrategy indexDisablingStrategy,
-                                                 UnityAssetInfoCollector usageStatistics)
+                                                 UnityAssetInfoCollector usageStatistics,
+                                                 AssetIndexingSupport assetIndexingSupport)
         {
             myLifetime = lifetime;
             myLogger = logger;
@@ -75,6 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             myModuleFactory = moduleFactory;
             myIndexDisablingStrategy = indexDisablingStrategy;
             myUsageStatistics = usageStatistics;
+            myAssetIndexingSupport = assetIndexingSupport;
 
             myRootPathLifetimes = new Dictionary<VirtualFileSystemPath, LifetimeDefinition>();
 
@@ -83,9 +91,63 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             if (!mySolutionDirectory.IsAbsolute)
                 mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory().ToVirtualFileSystemPath());
 
+            myProjectSettingsFolder = mySolutionDirectory.Combine(ProjectExtensions.ProjectSettingsFolder);
+            
             changeManager.RegisterChangeProvider(lifetime, this);
             changeManager.AddDependency(lifetime, psiModules, this);
+
+            assetIndexingSupport.IsEnabled.Change.Advise(lifetime, args =>
+            {
+                // previously disabled, now enabled
+                if (args.HasOld && !args.Old && args.HasNew && args.New)
+                {
+                    myLocks.ExecuteOrQueueReadLockEx(lifetime, "UnityInitialUpdateExternalFiles", () =>
+                    {
+                        CollectInitialFiles();
+                    });
+                }
+            });
         }
+
+        private bool IsIndexedWithCurrentIndexingSupport(VirtualFileSystemPath path)
+        {
+            if (myAssetIndexingSupport.IsEnabled.Value)
+                return true;
+
+            return IsIndexedFileWithDisabledAssetSupport(path);
+        }
+
+        private bool IsIndexedFileWithDisabledAssetSupport(VirtualFileSystemPath path)
+        {
+            return path.IsAsmDefMeta() || path.IsAsmRef() || path.IsAsmDef() || IsFromProjectSettingsFolder(path) || path.IsFromResourceFolder();
+        }
+
+        private bool IsFromProjectSettingsFolder(VirtualFileSystemPath path)
+        {
+            return path.StartsWith(myProjectSettingsFolder);
+        }
+
+        private ExternalFiles FilterFiles(ExternalFiles files)
+        {
+            if (myAssetIndexingSupport.IsEnabled.Value)
+                return files;
+
+            var newFiles = new ExternalFiles(mySolution, myLogger);
+
+            foreach (var metaFile in files.MetaFiles)
+            {
+                var path = metaFile.Path;
+                if (IsIndexedFileWithDisabledAssetSupport(path))
+                {
+                    newFiles.AssetFiles.Add(metaFile);
+                }
+            }
+
+            newFiles.Directories.AddRange(files.Directories);
+            
+            return newFiles;
+        }
+
 
         // TODO: This is all run on the main thread, at least during solution load, which is very expensive
         // Are the PSI caches loaded before or after this? If we move collection to a background thread, would we clean
@@ -98,23 +160,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             // For project model access
             myLocks.AssertReadAccessAllowed();
 
-            var externalFiles = myLogger.DoCalculation("CollectExternalFiles", null,
-                () =>
-                {
-                    var files = new ExternalFiles(mySolution, myLogger);
-                    CollectExternalFilesForSolutionDirectory(files, "Assets");
-                    CollectExternalFilesForSolutionDirectory(files, "ProjectSettings", true);
-                    CollectExternalFilesForPackages(files);
-
-                    // Disable asset indexing for massive projects. Note that we still collect all files, and always index
-                    // project settings, meta and asmdef files.
-                    myIndexDisablingStrategy.Run(files.AssetFiles);
-
-                    return files;
-                });
-
-            myLogger.DoActivity("ProcessExternalFiles", null,
-                () => AddExternalFiles(externalFiles));
+            var externalFiles = CollectInitialFiles();
 
             try
             {
@@ -130,6 +176,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             SubscribeToProjectModelUpdates();
             
             myUsageStatistics.FinishInitialUpdate();
+        }
+
+        private ExternalFiles CollectInitialFiles()
+        {
+            var externalFiles = myLogger.DoCalculation("CollectExternalFiles", null,
+                () =>
+                {
+                    var roots = myRootPathLifetimes.Keys.ToList();
+
+                    foreach (var root in roots)
+                    {
+                        myRootPathLifetimes[root].Terminate();
+                        myRootPathLifetimes.Remove(root);
+                    }
+                    
+                    var files = new ExternalFiles(mySolution, myLogger);
+                    CollectExternalFilesForSolutionDirectory(files, "Assets");
+                    CollectExternalFilesForSolutionDirectory(files, "ProjectSettings", true);
+                    CollectExternalFilesForPackages(files);
+
+                    // Disable asset indexing for massive projects. Note that we still collect all files, and always index
+                    // project settings, meta and asmdef files.
+                    myIndexDisablingStrategy.Run(files.AssetFiles);
+
+                    return FilterFiles(files);
+                });
+
+            myLogger.DoActivity("ProcessExternalFiles", null,
+                () => AddExternalFiles(externalFiles));
+            return externalFiles;
         }
 
         public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
@@ -231,7 +307,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     {
                         // Do not add any directory tree that ends with `~`. Unity does not import these directories
                         // into the asset database
-                        if (entry.RelativePath.Name.EndsWith("~"))
+                        if (entry.RelativePath.FullPath.EndsWith("~"))
                             continue;
                         CollectFiles(entry.GetAbsolutePath(), files, isProjectSettings);
                     }
@@ -271,7 +347,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                         var externalFiles = new ExternalFiles(mySolution, myLogger);
                         CollectExternalFilesForDirectory(externalFiles, packageData.PackageFolder,
                             packageData.IsUserEditable);
-                        AddExternalFiles(externalFiles);
+                        AddExternalFiles(FilterFiles(externalFiles));
                     }
                 }
                 else
@@ -311,11 +387,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     // (which would lead to an infinite loop).
                     // Note that GetOldProject returns the project the file is being added to, or the project it has
                     // just been removed from
+                    // Warning: Removing .Player project should not cause adding file to the ExternalModule 
                     if (itemChange.ProjectItem is IProjectFile projectFile
-                        && !itemChange.GetOldProject().IsMiscFilesProject()
                         && IsIndexedExternalFile(projectFile.Location))
                     {
-                        if (itemChange.IsAdded || itemChange.IsMovedIn)
+                        if ((itemChange.IsAdded || itemChange.IsMovedIn) && !itemChange.ProjectItem.IsMiscProjectItem())
                         {
                             myLogger.Trace(
                                 "External Unity file added to project {0}. Removing from external files module: {1}",
@@ -323,7 +399,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
                             RemoveExternalPsiSourceFile(builder, projectFile.Location);
                         }
-                        else if ((itemChange.IsRemoved || itemChange.IsMovedOut) && itemChange.OldLocation.ExistsFile)
+                        else if ((itemChange.IsRemoved || itemChange.IsMovedOut) && itemChange.OldLocation.ExistsFile 
+                                 && mySolution.FindProjectItemsByLocation(itemChange.OldLocation).All(t => t.IsMiscProjectItem()))
                         {
                             myLogger.Trace(
                                 "External Unity file removed from project {0}. Adding to external files module: {1}",
@@ -415,6 +492,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
             var sourceFile = myPsiSourceFileFactory.CreateExternalPsiSourceFile(myModuleFactory.PsiModule, path,
                 projectFileType, properties, fileSystemData);
+            
+            if(path.IsMeta() && path.IsFromResourceFolder())
+                sourceFile.PutData(FileImagesBuilder.FileImagesBuilderAllowKey, FileImagesBuilderAllowKey.Instance);
+
             builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Added);
 
             return sourceFile;
@@ -515,9 +596,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             }
         }
 
-        private static bool IsIndexedExternalFile(VirtualFileSystemPath path)
+        private bool IsIndexedExternalFile(VirtualFileSystemPath path)
         {
-            return path.IsIndexedExternalFile() && !IsBinaryAsset(path) && !IsAssetExcludedByName(path);
+            return path.IsIndexedExternalFile() && IsIndexedWithCurrentIndexingSupport(path) && !IsBinaryAsset(path) && !IsAssetExcludedByName(path);
         }
 
         private static bool IsBinaryAsset(VirtualDirectoryEntryData directoryEntry)

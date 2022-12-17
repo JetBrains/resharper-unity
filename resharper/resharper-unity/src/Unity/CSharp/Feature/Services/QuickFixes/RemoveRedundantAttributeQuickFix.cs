@@ -2,6 +2,7 @@
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.CSharp.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -38,9 +39,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         }
 
         protected override ITreeNode TryGetContextTreeNode() => myAttribute;
-        public override string Text => "Remove redundant attribute";
+        public override string Text => Strings.RemoveRedundantAttributeQuickFix_Text_Remove_redundant_attribute;
         // We don't remove all redundant attributes, just Unity ones
-        public override string ScopedText => "Remove redundant Unity attributes";
+        public override string ScopedText => Strings.RemoveRedundantAttributeQuickFix_ScopedText_Remove_redundant_Unity_attributes;
         public override bool IsReanalysisRequired => false;
         public override ITreeNode ReanalysisDependencyRoot => null;
 

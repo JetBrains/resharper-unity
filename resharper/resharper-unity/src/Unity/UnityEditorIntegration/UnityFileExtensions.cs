@@ -13,7 +13,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         // Metadata (.meta is YAML, .asmdef/.asmref is JSON)
         public const string MetaFileExtensionWithDot = ".meta";
         public const string AsmDefFileExtensionWithDot = ".asmdef";
+        public const string AsmDefMetaFileExtensionWithDot = ".asmdef.meta";
         public const string AsmRefFileExtensionWithDot = ".asmref";
+        public const string AsmRefMetaFileExtensionWithDot = ".asmref.meta";
 
         // Game assets - all YAML
         public const string AssetFileExtensionWithDot = ".asset";
@@ -22,6 +24,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         public const string ControllerFileExtensionWithDot = ".controller";
         public const string AnimFileExtensionWithDot = ".anim";
         public const string InputActionsExtensionWithDot = ".inputactions";
+        
+        public const string ResourcesFolderName = "Resources";
+        public const string EditorFolderName = "Editor";
 
         // Data files - does not include .meta
         public static readonly string[] YamlDataFileExtensionsWithDot =
@@ -32,6 +37,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             ControllerFileExtensionWithDot,
             AnimFileExtensionWithDot
         };
+
+        public static bool IsFromResourceFolder(this IPath path) =>
+            path.Components.Any(t => t.Equals(ResourcesFolderName));
 
         public static bool IsMeta(this IPath path) =>
             SimplePathEndsWith(path, MetaFileExtensionWithDot);
@@ -50,7 +58,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
         public static bool IsAsmRef(this IPsiSourceFile psiSourceFile) =>
             SourceFileNameEndsWith(psiSourceFile, AsmRefFileExtensionWithDot);
+        
+        public static bool IsAsmDefMeta(this IPath path) =>
+            SimplePathEndsWith(path, AsmDefMetaFileExtensionWithDot);
 
+        public static bool IsAsmRefMeta(this IPath path) =>
+            SimplePathEndsWith(path, AsmRefMetaFileExtensionWithDot);
+
+        
         public static bool IsAsset(this IPath path) =>
             SimplePathEndsWith(path, AssetFileExtensionWithDot);
 

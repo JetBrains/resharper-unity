@@ -24,8 +24,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Bu
                 : new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingLast()};
         }
 
-        public override string ProviderId => BurstCodeAnalysisUtil.BURST_DISPLAY_NAME;
-        public override string DisplayName => BurstCodeAnalysisUtil.BURST_DISPLAY_NAME;
+        public override string ProviderId => "Burst compiled code";
+        public override string DisplayName => BurstCodeAnalysisUtil.BurstDisplayName;
         public override CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Top;
         public override ICollection<CodeLensRelativeOrdering> RelativeOrderings { get; }
     }

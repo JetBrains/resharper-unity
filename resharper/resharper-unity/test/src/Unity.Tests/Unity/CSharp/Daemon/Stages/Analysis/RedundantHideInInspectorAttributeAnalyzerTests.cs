@@ -10,4 +10,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
 
         [Test] public void TestRedundantHideInInspectorAttribute() { DoNamedTest2(); }
     }
+    
+    [TestUnity]
+    public class RedundantHideInInspectorAttributeGlobalAnalyzerTests : UnitySerializationGlobalStageTestBase<IUnityAnalyzerHighlighting>
+    {
+        protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis";
+
+        [Test] public void TestRedundantHideInInspectorAttribute() { DoNamedTest2(); }
+    }
 }

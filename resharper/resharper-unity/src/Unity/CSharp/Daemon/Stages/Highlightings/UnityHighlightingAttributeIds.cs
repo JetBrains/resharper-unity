@@ -24,6 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
         FontStyle = FontStyle.Bold,
+        RiderPresentableName = "Implicitly used identifier",
         Layer = HighlighterLayer.SYNTAX + 1)]
     public static class UnityHighlightingAttributeIds
     {

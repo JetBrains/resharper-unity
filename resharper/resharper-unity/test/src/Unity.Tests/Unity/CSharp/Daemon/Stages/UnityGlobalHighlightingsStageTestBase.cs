@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages
 {
     [Category("Daemon"), Category("PerformanceCriticalCode")]
     public abstract class UnityGlobalHighlightingsStageTestBase<THighlighting> : BaseTestWithSingleProject
-    {
+    {//use as basis for failed tests
         protected override void DoTest(Lifetime lifetime, IProject project)
         {
             var swea = SolutionAnalysisService.GetInstance(Solution);

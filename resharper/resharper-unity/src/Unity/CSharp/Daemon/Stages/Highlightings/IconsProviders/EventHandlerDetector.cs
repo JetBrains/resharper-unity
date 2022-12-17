@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
@@ -74,14 +75,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         private bool TryAddMethodHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer, IReadOnlyCallGraphContext context,
                                               IMethod method)
         {
-            var eventHandlersCount = UnityEventsElementContainer.GetAssetUsagesCount(method, out _);
-            var animationEventsCount = myAnimationEventUsagesContainer.GetEventUsagesCountFor(method, out _);
-            if (eventHandlersCount + animationEventsCount <= 0) return false;
-            if (eventHandlersCount != 0 && animationEventsCount == 0)
-                AddEventHandlerHighlighting(treeNode, consumer, context);
+            var eventHandlersCount = UnityEventsElementContainer.GetAssetUsagesCount(method, out var estimated);
+            var animationEventsCount = myAnimationEventUsagesContainer.GetEventUsagesCountFor(method, out var estimated2);
             if (eventHandlersCount == 0 && animationEventsCount != 0)
                 AddAnimationEventHighlighting(treeNode, consumer, context);
-            AddAnimationEventAndEventHandlerHighlighting(treeNode, consumer, context);
+            else if (estimated || estimated2 || animationEventsCount + eventHandlersCount > 0)
+                AddEventHandlerHighlighting(treeNode, consumer, context);
+            
             return true;
         }
 
@@ -89,22 +89,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                                                  [NotNull] IHighlightingConsumer consumer,
                                                  IReadOnlyCallGraphContext context)
         {
-            AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Event handler", "Unity event handler", context);
+            AddHighlighting(consumer, treeNode as ICSharpDeclaration, Strings.EventHandlerDetector_AddEventHandlerHighlighting_Text, Strings.EventHandlerDetector_AddEventHandlerHighlighting_Tooltip, context);
         }
 
         private void AddAnimationEventHighlighting([NotNull] ITreeNode treeNode,
                                                    [NotNull] IHighlightingConsumer consumer,
                                                    IReadOnlyCallGraphContext context)
         {
-            AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Animation event", "Unity animation event", context);
-        }
-        
-        private void AddAnimationEventAndEventHandlerHighlighting([NotNull] ITreeNode treeNode,
-                                                                  [NotNull] IHighlightingConsumer consumer,
-                                                                  IReadOnlyCallGraphContext context)
-        {
-            AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Animation event and event handler",
-                "Unity animation event and Unity animation event", context);
+            AddHighlighting(consumer, treeNode as ICSharpDeclaration, Strings.EventHandlerDetector_AddAnimationEventHighlighting_Text, Strings.EventHandlerDetector_AddAnimationEventHighlighting_Tooltip, context);
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,

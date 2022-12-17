@@ -577,7 +577,7 @@ tasks {
         buildFile.set(backend.resharperHostPluginSolution)
     }
 
-    val packReSharperPlugin by registering(com.ullink.NuGetPack::class) {
+    val packReSharperPlugin by creating(com.ullink.NuGetPack::class) {
         group = backendGroup
         onlyIf { isWindows } // non-windows builds are just for running tests, and agents don't have `mono` installed. NuGetPack requires `mono` though.
         description = "Packs resulting DLLs into a NuGet package which is an R# extension."
@@ -694,9 +694,9 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
 
     val publishCiBackendArtifacts by registering {
         group = ciGroup
-        inputs.files(packReSharperPlugin.get().outputs)
+        inputs.files(packReSharperPlugin.outputs)
         doLast {
-            buildServer.publishArtifact(packReSharperPlugin.get().packageFile)
+            buildServer.publishArtifact(packReSharperPlugin.packageFile)
         }
     }
 

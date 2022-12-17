@@ -4,13 +4,16 @@ using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Hotspots;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Macros;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.LiveTemplates
 {
-    [MacroDefinition("asmDefNameMacro", ShortDescription = "Current file name without whitespace characters",
-            LongDescription = "Evaluates current file name without whitespace characters")]
+    [MacroDefinition("asmDefNameMacro",
+            ResourceType = typeof(Strings),
+            DescriptionResourceName = nameof(Strings.CurrentFileNameWithoutWhitespaceCharacters_Text),
+            LongDescriptionResourceName = nameof(Strings.EvaluatesCurrentFileNameWithoutWhitespace_Text))]
     public class AsmDefNameMacroDef: SimpleMacroDefinition
     {
         public override string GetPlaceholder(IDocument document, ISolution solution, IEnumerable<IMacroParameterValue> parameters)

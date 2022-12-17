@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Errors language="C#" configurableSeverityImplementationLanguage="CSHARP"
-        baseClass="CSharpUnityHighlightingBase, IUnityAnalyzerHighlighting">
-
+<Errors language="C#" configurableSeverityImplementationLanguage="CSHARP" baseClass="CSharpUnityHighlightingBase, IUnityAnalyzerHighlighting">
   <Usings>
     JetBrains.ReSharper.Psi.CSharp;
     JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -10,15 +8,16 @@
     JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
     JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+    Strings = JetBrains.ReSharper.Plugins.Unity.Resources.Strings;
   </Usings>
-
+  
   <!-- Register the static severity groups. This is mostly used in grouping items in SWEA results.
        The groups should be different to any configurable severity groups -->
   <StaticSeverityGroups>
     <Group name="Unity Errors" key="UnityErrors" />
     <Group name="Unity Warnings" key="UnityWarnings" />
   </StaticSeverityGroups>
-
+  
   <!-- Register the configurable severities
        Can take a child Tag or Group element
        * Tag is configurable severity without a group
@@ -41,249 +40,161 @@
        -->
   <SeverityConfiguration>
     <Group name="UnityHighlightingGroupIds.Unity">
-      <Tag externalName="DuplicateEventFunctionWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Event function with the same name is already declared</Title>
-        <Description>Event function with the same name is already declared.</Description>
+      <Tag externalName="DuplicateEventFunctionWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="EventFunctionWithTheSameNameIsAlreadyDeclared" resourceType="Strings" />
+        <Description resourceName="EventFunctionWithTheSameNameIsAlreadyDeclared2" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="ExpectedComponentWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Expected type derived from 'Component' or 'MonoBehaviour'</Title>
-        <Description>Expected built in type derived from 'Component', or user type derived from 'MonoBehaviour'.</Description>
+        <Title resourceName="ExpectedTypeDerivedFromComponentOrMonoBehaviour" resourceType="Strings" />
+        <Description resourceName="ExpectedBuiltInTypeDerivedFromComponentOrUserTypeDerivedFromMonoBehaviour" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="ExpectedScriptableObjectWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Expected type derived from 'ScriptableObject'</Title>
-        <Description>Expected type derived from 'ScriptableObject'.</Description>
+        <Title resourceName="ExpectedTypeDerivedFromScriptableObject" resourceType="Strings" />
+        <Description resourceName="ExpectedTypeDerivedFromScriptableObject3" resourceType="Strings" />
       </Tag>
-
-      <Tag externalName="ExplicitTagStringComparisonWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Use 'CompareTag' instead of explicit string comparison</Title>
-        <Description>Explicit string comparison with 'GameObject.tag' or 'Component.tag' is inefficient. Use the 'CompareTag' method instead.</Description>
+      <Tag externalName="ExplicitTagStringComparisonWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="UseCompareTagInsteadOfExplicitStringComparison" resourceType="Strings" />
+        <Description resourceName="ExplicitStringComparisonWithGameObjectTagOrComponentTagIsInefficientUseTheCompareTagMethodInstead" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="IncorrectMonoBehaviourInstantiationWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>'MonoBehaviour' instances must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'</Title>
-        <Description>Using 'new' to instantiate a class derived from 'MonoBehaviour' will not attach it to a 'GameObject' instance, and Unity will not call any event functions. Create a new instance using 'GameObject.AddComponent&lt;T&gt;()'.</Description>
+        <Title resourceName="MonoBehaviourInstancesMustBeInstantiatedWithGameObjectAddComponentTInsteadOfnew" resourceType="Strings" />
+        <Description resourceName="UsingnewToInstantiateAClassDerivedFromMonoBehaviourWillNotAttachItToAGameObjectInstanceAndUnityWillNotCallAnyEventFunctionsCreateANewInstanceUsingGameObjectAddComponentT" resourceType="Strings" />
       </Tag>
-
-      <Tag externalName="IncorrectScriptableObjectInstantiationWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>'ScriptableObject' instances must be instantiated with 'ScriptableObject.CreateInstance&lt;T&gt;()' instead of 'new'</Title>
-        <Description>Using 'new' to instantiate a class derived from 'ScriptableObject' means that Unity will not call any event functions. Create a new instance using 'GameObject.AddComponent&lt;T&gt;()'.</Description>
+      <Tag externalName="IncorrectScriptableObjectInstantiationWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="ScriptableObjectInstancesMustBeInstantiatedWithScriptableObjectCreateInstanceTInsteadOfnew" resourceType="Strings" />
+        <Description resourceName="UsingnewToInstantiateAClassDerivedFromScriptableObjectMeansThatUnityWillNotCallAnyEventFunctionsCreateANewInstanceUsingGameObjectAddComponentT" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="IncorrectSignatureWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Incorrect method signature</Title>
-        <Description>Method does not match expected signature.</Description>
+        <Title resourceName="IncorrectMethodSignature" resourceType="Strings" />
+        <Description resourceName="MethodDoesNotMatchExpectedSignature" resourceType="Strings" />
       </Tag>
-
-      <Tag externalName="InefficientPropertyAccessWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Repeated access of property on built in component is inefficient</Title>
-        <Description>Some Unity object properties result in native methods calls and repeatedly accessing the property is inefficient. Introduce a variable to locally cache the property value.</Description>
+      <Tag externalName="InefficientPropertyAccessWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="RepeatedAccessOfPropertyOnBuiltInComponentIsInefficient" resourceType="Strings" />
+        <Description resourceName="SomeUnityObjectPropertiesResultInNativeMethodsCallsAndRepeatedlyAccessingThePropertyIsInefficientIntroduceAVariableToLocallyCacheThePropertyValue" resourceType="Strings" />
       </Tag>
-
-      <Tag externalName="InstantiateWithoutParentWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Setting 'parent' property immediately after object instantiation is inefficient</Title>
-        <Description>Instantiating a Unity object and setting the 'parent' property as separate operations is inefficient, as the transform hierarchy is created and immediately replaced. Combine setting the 'parent' property with the call to instantiate the object.</Description>
+      <Tag externalName="InstantiateWithoutParentWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="SettingparentPropertyImmediatelyAfterObjectInstantiationIsInefficient" resourceType="Strings" />
+        <Description resourceName="InstantiatingAUnityObjectAndSettingTheparentPropertyAsSeparateOperationsIsInefficientAsTheTransformHierarchyIsCreatedAndImmediatelyReplacedCombineSettingTheparentPropertyWithTheCallToInstantiateTheObject" resourceType="Strings" />
       </Tag>
-
       <!-- TODO: Merge this with ExpectedComponentWarning? -->
-      <Tag externalName="ParameterNotDerivedFromComponentWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Parameter should be derived from 'Component'</Title>
-        <Description>Parameter should be derived from 'Component'.</Description>
+      <Tag externalName="ParameterNotDerivedFromComponentWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="ParameterShouldBeDerivedFromComponent" resourceType="Strings" />
+        <Description resourceName="ParameterShouldBeDerivedFromComponent4" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="PossibleMisapplicationOfAttributeToMultipleFieldsWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Possible incorrect application of attribute to multiple fields</Title>
-        <Description>Applying an attribute to a single declaration containing multiple fields will apply the attribute to each field. The highlighted attribute (e.g. 'FormerlySerializedAs') is intended to be applied only to a single field. Prefer an explicit application to a single field in a single declaration.</Description>
+        <Title resourceName="PossibleIncorrectApplicationOfAttributeToMultipleFields" resourceType="Strings" />
+        <Description resourceName="ApplyingAnAttributeToASingleDeclarationContainingMultipleFieldsWillApplyTheAttributeToEachFieldTheHighlightedAttributeEGFormerlySerializedAsIsIntendedToBeAppliedOnlyToASingleFieldPreferAnExplicitApplicationToASingleFieldInASingleDeclaration" resourceType="Strings" />
       </Tag>
-
-      <Tag externalName="PreferAddressByIdToGraphicsParamsWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>String based graphics property lookup is inefficient</Title>
-        <Description>String based property lookup is inefficient, as each time the method is called, the string name is converted into an integer value. Prefer calculating the integer value once and caching the result.</Description>
+      <Tag externalName="PreferAddressByIdToGraphicsParamsWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="StringBasedGraphicsPropertyLookupIsInefficient" resourceType="Strings" />
+        <Description resourceName="StringBasedPropertyLookupIsInefficientAsEachTimeTheMethodIsCalledTheStringNameIsConvertedIntoAnIntegerValuePreferCalculatingTheIntegerValueOnceAndCachingTheResult" resourceType="Strings" />
       </Tag>
-
-      <Tag externalName="PreferGenericMethodOverloadWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>String based lookup of component type is inefficient</Title>
-        <Description>Using a string type name to look up a component is slower than specifying the type as a generic type parameter.</Description>
+      <Tag externalName="PreferGenericMethodOverloadWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="StringBasedLookupOfComponentTypeIsInefficient" resourceType="Strings" />
+        <Description resourceName="UsingAStringTypeNameToLookUpAComponentIsSlowerThanSpecifyingTheTypeAsAGenericTypeParameter" resourceType="Strings" />
       </Tag>
-
-      <Tag externalName="PreferNonAllocApiWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Alternative non-allocating method available</Title>
-        <Description>An alternative method is available that avoids allocation and reuses an existing buffer.</Description>
+      <Tag externalName="PreferNonAllocApiWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="AlternativeNonAllocatingMethodAvailable" resourceType="Strings" />
+        <Description resourceName="AnAlternativeMethodIsAvailableThatAvoidsAllocationAndReusesAnExistingBuffer" resourceType="Strings" />
       </Tag>
-
-      <Tag externalName="PropertyDrawerOnGUIBaseWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Avoid 'base.OnGUI()' in classes derived from 'PropertyDrawer'</Title>
-        <Description>The default implementation for 'OnGUI' in 'PropertyDrawer' will print \&quot;No GUI Implemented\&quot; in the Unity inspector.</Description>
+      <Tag externalName="PropertyDrawerOnGUIBaseWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="AvoidbaseOnGUIInClassesDerivedFromPropertyDrawer" resourceType="Strings" />
+        <Description resourceName="TheDefaultImplementationForOnGUIInPropertyDrawerWillPrintNoGUIImplementedInTheUnityInspector" resourceType="Strings" />
       </Tag>
-
-      <Tag externalName="RedundantAttributeOnTargetWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Attribute is redundant when applied to this declaration type</Title>
-        <Description>The attribute does not define any restrictions on valid targets, but is only useful when applied to specific declarations, e.g. field, class or method.</Description>
-        <CompoundItemName>Redundant attribute usage</CompoundItemName>
+      <Tag externalName="RedundantAttributeOnTargetWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="AttributeIsRedundantWhenAppliedToThisDeclarationType" resourceType="Strings" />
+        <CompoundItemName resourceName="RedundantAttributeUsage" resourceType="Strings" />
+        <Description resourceName="TheAttributeDoesNotDefineAnyRestrictionsOnValidTargetsButIsOnlyUsefulWhenAppliedToSpecificDeclarationsEGFieldClassOrMethod" resourceType="Strings" />
       </Tag>
-
-      <Tag externalName="RedundantEventFunctionWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Redundant Unity event function</Title>
-        <Description>Empty Unity event functions are still called from native code, which affects performance.</Description>
+      <Tag externalName="RedundantEventFunctionWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="RedundantUnityEventFunction" resourceType="Strings" />
+        <Description resourceName="EmptyUnityEventFunctionsAreStillCalledFromNativeCodeWhichAffectsPerformance" resourceType="Strings" />
       </Tag>
-
-      <Tag externalName="RedundantFormerlySerializedAsAttributeWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Redundant 'FormerlySerializedAs' attribute</Title>
-        <Description>The 'FormerlySerializedAs' attribute is only valid on Unity serialized fields. It can also be redundant if the name argument matches the current name of the field.</Description>
-        <CompoundItemName>Redundant attribute usage</CompoundItemName>
+      <Tag externalName="RedundantFormerlySerializedAsAttributeWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="RedundantFormerlySerializedAsAttribute" resourceType="Strings" />
+        <CompoundItemName resourceName="RedundantAttributeUsage" resourceType="Strings" />
+        <Description resourceName="TheFormerlySerializedAsAttributeIsOnlyValidOnUnitySerializedFieldsItCanAlsoBeRedundantIfTheNameArgumentMatchesTheCurrentNameOfTheField" resourceType="Strings" />
       </Tag>
-
-      <Tag externalName="RedundantHideInInspectorAttributeWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Redundant 'HideInInspector' attribute</Title>
-        <Description>The 'HideInInspector' attribute only applies to serialised fields.</Description>
-        <CompoundItemName>Redundant attribute usage</CompoundItemName>
+      <Tag externalName="RedundantHideInInspectorAttributeWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="RedundantHideInInspectorAttribute" resourceType="Strings" />
+        <CompoundItemName resourceName="RedundantAttributeUsage" resourceType="Strings" />
+        <Description resourceName="TheHideInInspectorAttributeOnlyAppliesToSerialisedFields" resourceType="Strings" />
       </Tag>
-
-      <Tag externalName="RedundantInitializeOnLoadAttributeWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Redundant 'InitializeOnLoad' attribute</Title>
-        <Description>The 'InitializeOnLoad' attribute is redundant when the static constructor is missing.</Description>
-        <CompoundItemName>Redundant attribute usage</CompoundItemName>
+      <Tag externalName="RedundantInitializeOnLoadAttributeWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="RedundantInitializeOnLoadAttribute" resourceType="Strings" />
+        <CompoundItemName resourceName="RedundantAttributeUsage" resourceType="Strings" />
+        <Description resourceName="TheInitializeOnLoadAttributeIsRedundantWhenTheStaticConstructorIsMissing" resourceType="Strings" />
       </Tag>
-
-      <Tag externalName="RedundantSerializeFieldAttributeWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Redundant 'SerializeField' attribute</Title>
-        <Description>Unity will ignore the 'SerializeField' attribute if a field is also marked with the 'NonSerialized' attribute.</Description>
-        <CompoundItemName>Redundant attribute usage</CompoundItemName>
+      <Tag externalName="RedundantSerializeFieldAttributeWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="RedundantSerializeFieldAttribute" resourceType="Strings" />
+        <CompoundItemName resourceName="RedundantAttributeUsage" resourceType="Strings" />
+        <Description resourceName="UnityWillIgnoreTheSerializeFieldAttributeIfAFieldIsAlsoMarkedWithTheNonSerializedAttribute" resourceType="Strings" />
       </Tag>
-
-      <Tag externalName="StringLiteralReferenceIncorrectSignatureWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-        <Title>Method referenced in string literal does not have the expected signature</Title>
-        <Description>Method referenced in string literal does not have the expected signature.</Description>
+      <Tag externalName="StringLiteralReferenceIncorrectSignatureWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="MethodReferencedInStringLiteralDoesNotHaveTheExpectedSignature" resourceType="Strings" />
+        <Description resourceName="MethodReferencedInStringLiteralDoesNotHaveTheExpectedSignature5" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="UnityObjectNullCoalescingWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>'??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</Title>
-        <Description>
-          The null coalescing operator does not call the custom equality operators defined on 'UnityEngine.Object',
-          which will check to see if the underlying Unity engine object has been destroyed. Prefer an explicit null
-          comparison or implicit bool comparison if the lifetime check is intended, or explicitly use 'object.ReferenceEquals()'
-          for a standard (and quicker) CLR null check.
-        </Description>
-        <CompoundItemName>Possible unintended bypass of lifetime check of underlying Unity engine object</CompoundItemName>
+        <Title resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject" resourceType="Strings" />
+        <CompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
+        <Description resourceName="TheNullCoalescingOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="UnityObjectNullPropagationWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>'?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</Title>
-        <Description>
-          The null propagating operator does not call the custom equality operators defined on 'UnityEngine.Object',
-          which will check to see if the underlying Unity engine object has been destroyed. Prefer an explicit null
-          comparison or implicit bool comparison if the lifetime check is intended, or explicitly use 'object.ReferenceEquals()'
-          for a standard (and quicker) CLR null check.
-        </Description>
-        <CompoundItemName>Possible unintended bypass of lifetime check of underlying Unity engine object</CompoundItemName>
+        <Title resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject6" resourceType="Strings" />
+        <CompoundItemName resourceName="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" resourceType="Strings" />
+        <Description resourceName="TheNullPropagatingOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="UnresolvedComponentOrScriptableObjectWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Cannot resolve component or scriptable object</Title>
-        <Description>
-          The class referred to in the call to 'GetComponent', 'AddComponent' or 'ScriptableObject.CreateInstance' cannot
-          be found in the current project or referenced assemblies. The call is likely to fail at runtime and return null.
-        </Description>
+        <Title resourceName="CannotResolveComponentOrScriptableObject" resourceType="Strings" />
+        <Description resourceName="TheClassReferredToInTheCallToGetComponentAddComponentOrScriptableObjectCreateInstanceCannotBeFoundInTheCurrentProjectOrReferencedAssembliesTheCallIsLikelyToFailAtRuntimeAndReturnNull" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="LoadSceneWrongIndexWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>The index is missing in the build settings</Title>
-        <Description>
-          There is no scene with the same index in the Unity build settings.
-        </Description>
+        <Title resourceName="TheIndexIsMissingInTheBuildSettings" resourceType="Strings" />
+        <Description resourceName="ThereIsNoSceneWithTheSameIndexInTheUnityBuildSettings" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="LoadSceneAmbiguousSceneNameWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Short scene name is not unique</Title>
-        <Description>
-          There are several scenes with the same name in the Unity build settings.
-          Only scene with smallest index will be used.
-        </Description>
+        <Title resourceName="ShortSceneNameIsNotUnique" resourceType="Strings" />
+        <Description resourceName="ThereAreSeveralScenesWithTheSameNameInTheUnityBuildSettingsOnlySceneWithSmallestIndexWillBeUsed" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="LoadSceneUnknownSceneNameWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>There is no scene with the same name in the build settings</Title>
-        <Description>
-          The scene is missing in the Unity build settings.
-        </Description>
+        <Title resourceName="ThereIsNoSceneWithTheSameNameInTheBuildSettings" resourceType="Strings" />
+        <Description resourceName="TheSceneIsMissingInTheUnityBuildSettings" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="LoadSceneUnexistingSceneNameWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Scene does not exist</Title>
-        <Description>
-          There is no scene with the same name in the project.
-        </Description>
+        <Title resourceName="SceneDoesNotExist" resourceType="Strings" />
+        <Description resourceName="ThereIsNoSceneWithTheSameNameInTheProject" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="LoadSceneDisabledSceneNameWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Scene is disabled in the build settings</Title>
-        <Description>
-          Scene is disabled in the Unity build settings, so it could not be loaded
-        </Description>
+        <Title resourceName="SceneIsDisabledInTheBuildSettings" resourceType="Strings" />
+        <Description resourceName="SceneIsDisabledInTheUnityBuildSettingsSoItCouldNotBeLoaded" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="UnknownInputAxesWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>The input name is not defined in the Input manager</Title>
-        <Description>
-          The name is not defined in the Input manager. The call is likely to fail at runtime.
-        </Description>
+        <Title resourceName="TheInputNameIsNotDefinedInTheInputManager" resourceType="Strings" />
+        <Description resourceName="TheNameIsNotDefinedInTheInputManagerTheCallIsLikelyToFailAtRuntime" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="UnknownTagWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>The tag is not defined in the 'Tags &amp; Layers'</Title>
-        <Description>
-          The tag is not defined in the 'Tags &amp; Layers'. Expression will return 'false'.
-        </Description>
+        <Title resourceName="TheTagIsNotDefinedInTheTagsLayers" resourceType="Strings" />
+        <Description resourceName="TheTagIsNotDefinedInTheTagsLayersExpressionWillReturnfalse" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="UnknownResourceWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>The resource is not defined in the project</Title>
-        <Description>
-          The resource is not defined in the project. Expression will return 'null'.
-        </Description>
+        <Title resourceName="TheResourceIsNotDefinedInTheProject" resourceType="Strings" />
+        <Description resourceName="TheResourceIsNotDefinedInTheProjectExpressionWillReturnnull" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="UnknownLayerWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>The layer is not defined in the 'Tags &amp; Layers'</Title>
-        <Description>
-          The layer is not defined in the 'Tags &amp; Layers'. The call is likely to fail at runtime.
-        </Description>
+        <Title resourceName="TheLayerIsNotDefinedInTheTagsLayers" resourceType="Strings" />
+        <Description resourceName="TheLayerIsNotDefinedInTheTagsLayersTheCallIsLikelyToFailAtRuntime" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="DuplicateShortcutWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>The same shortcut is defined for another menu item</Title>
-        <Description>
-          The same shortcut is defined for another menu item
-        </Description>
+        <Title resourceName="TheSameShortcutIsDefinedForAnotherMenuItem" resourceType="Strings" />
+        <Description resourceName="TheSameShortcutIsDefinedForAnotherMenuItem" resourceType="Strings" />
       </Tag>
-
       <Tag externalName="UnknownAnimatorStateNameWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>There is no animator state with the same name in the project.</Title>
-        <Description>
-          There is no animator state with the same name in the project.
-        </Description>
+        <Title resourceName="ThereIsNoAnimatorStateWithTheSameNameInTheProject" resourceType="Strings" />
+        <Description resourceName="ThereIsNoAnimatorStateWithTheSameNameInTheProject" resourceType="Strings" />
       </Tag>
     </Group>
   </SeverityConfiguration>
-
+  
   <!-- Warning, Error, Info or LocalAndGlobal
        * @name - name of the highlighting. Suffix based on parent element is automatically added
        * @configurableSeverity - the value of HIGHLIGHTING_ID. Treated as a string literal and quoted
@@ -302,38 +213,40 @@
          for this highlight. Only used when the file is processed in QUICKFIX mode (default is
          to use ERROR mode)
        -->
-
   <Warning name="UnknownAnimatorStateName" configurableSeverity="Unity.UnknownAnimatorStateName">
     <Parameter type="IArgument" name="argument" />
-    <Message value="There is no animator state with the same name in the project." />
+    <Message resourceName="ThereIsNoAnimatorStateWithTheSameNameInTheProjectMessage" resourceType="Strings" />
     <Range>Argument.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="UnknownInputAxes" configurableSeverity="Unity.UnknownInputAxes">
     <Parameter type="ITreeNode" name="node" />
-    <Message value="The name is not defined in the Input manager. The call is likely to fail at runtime." />
+    <Message resourceName="TheNameIsNotDefinedInTheInputManagerTheCallIsLikelyToFailAtRuntimeMessage" resourceType="Strings" />
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="UnknownTag" configurableSeverity="Unity.UnknownTag">
     <Parameter type="ITreeNode" name="node" />
-    <Message value="The tag is not defined in the 'Tags &amp; Layers'. Expression will return 'false'." />
+    <Message resourceName="TheTagIsNotDefinedInTheTagsLayersExpressionWillReturnfalseMessage" resourceType="Strings" />
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="UnknownResource" configurableSeverity="Unity.UnknownResource">
     <Parameter type="ITreeNode" name="node" />
-    <Message value="The resource is not defined in the project. Expression will return 'null'." />
+    <Parameter type="string" name="resourceName" />
+    <Message resourceName="TheResourceIsNotDefinedInTheProjectExpressionWillReturnnullMessage" resourceType="Strings">
+        <Argument>ResourceName</Argument>
+    </Message>
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="UnknownLayer" configurableSeverity="Unity.UnknownLayer">
     <Parameter type="ITreeNode" name="node" />
-    <Message value="The layer is not defined in the 'Tags &amp; Layers'. The call is likely to fail at runtime." />
+    <Message resourceName="TheLayerIsNotDefinedInTheTagsLayersTheCallIsLikelyToFailAtRuntimeMessage" resourceType="Strings" />
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -341,7 +254,7 @@
   <Warning name="DuplicateShortcut" configurableSeverity="Unity.DuplicateShortcut">
     <Parameter type="ITreeNode" name="node" />
     <Parameter type="string" name="file" />
-    <Message value="The same shortcut is defined for another menu item in {0}">
+    <Message resourceName="TheSameShortcutIsDefinedForAnotherMenuItemInMessage" resourceType="Strings">
       <Argument>File</Argument>
     </Message>
     <Range>Node.GetDocumentRange()</Range>
@@ -350,7 +263,7 @@
 
   <Warning name="LoadSceneUnexistingSceneName" configurableSeverity="Unity.LoadSceneUnexistingScene">
     <Parameter type="IArgument" name="argument" />
-    <Message value="There is no scene with same name in the project." />
+    <Message resourceName="ThereIsNoSceneWithSameNameInTheProjectMessage" resourceType="Strings" />
     <Range>Argument.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -358,7 +271,7 @@
   <Warning name="LoadSceneDisabledSceneName" configurableSeverity="Unity.LoadSceneDisabledSceneName">
     <Parameter type="IArgument" name="argument" />
     <Parameter type="string" name="sceneName" />
-    <Message value="Scene is disabled in the Unity build settings, so it could not be loaded" />
+    <Message resourceName="SceneIsDisabledInTheUnityBuildSettingsSoItCouldNotBeLoadedMessage" resourceType="Strings" />
     <Range>Argument.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -366,7 +279,7 @@
   <Warning name="LoadSceneUnknownSceneName" configurableSeverity="Unity.LoadSceneUnknownSceneName">
     <Parameter type="IArgument" name="argument" />
     <Parameter type="string" name="sceneName" />
-    <Message value="The scene is missing in the Unity build settings." />
+    <Message resourceName="TheSceneIsMissingInTheUnityBuildSettingsMessage" resourceType="Strings" />
     <Range>Argument.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -374,21 +287,21 @@
   <Warning name="LoadSceneAmbiguousSceneName" configurableSeverity="Unity.LoadSceneAmbiguousSceneName">
     <Parameter type="IArgument" name="argument" />
     <Parameter type="string" name="sceneName" />
-    <Message value="There are several scenes with same name in the Unity build settings. Only scene with smallest index will be used." />
+    <Message resourceName="ThereAreSeveralScenesWithSameNameInTheUnityBuildSettingsOnlySceneWithSmallestIndexWillBeUsedMessage" resourceType="Strings" />
     <Range>Argument.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="LoadSceneWrongIndex" configurableSeverity="Unity.LoadSceneWrongIndex">
     <Parameter type="IArgument" name="argument" />
-    <Message value="There is no scene with same index in the Unity build settings." />
+    <Message resourceName="ThereIsNoSceneWithSameIndexInTheUnityBuildSettingsMessage" resourceType="Strings" />
     <Range>Argument.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="DuplicateEventFunction" configurableSeverity="Unity.DuplicateEventFunction">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
-    <Message value="Event function with the same name is already declared" />
+    <Message resourceName="EventFunctionWithTheSameNameIsAlreadyDeclaredMessage" resourceType="Strings" />
     <Range>CSharpErrorUtil.GetMethodNameAndParametersHighlightingRange(MethodDeclaration)</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -396,7 +309,7 @@
   <Warning name="ExpectedComponent" configurableSeverity="Unity.ExpectedComponent">
     <Parameter type="IReference" name="reference" />
     <Parameter type="string" name="requiredBaseType" />
-    <Message value="Expected type derived from '{0}'">
+    <Message resourceName="ExpectedTypeDerivedFromMessage" resourceType="Strings">
       <Argument>RequiredBaseType</Argument>
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
@@ -404,7 +317,7 @@
 
   <Warning name="ExpectedScriptableObject" configurableSeverity="Unity.ExpectedScriptableObject">
     <Parameter type="IReference" name="reference" />
-    <Message value="Expected type derived from 'UnityEngine.ScriptableObject'" />
+    <Message resourceName="ExpectedTypeDerivedFromUnityEngineScriptableObjectMessage" resourceType="Strings" />
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -412,21 +325,21 @@
   <Warning name="ExplicitTagStringComparison" configurableSeverity="Unity.ExplicitTagComparison">
     <Parameter type="IEqualityExpression" name="equalityExpression" />
     <Parameter type="bool" name="leftOperandIsTagReference" />
-    <Message value="Explicit string comparison is inefficient, use 'CompareTag' instead" />
+    <Message resourceName="ExplicitStringComparisonIsInefficientUseCompareTagInsteadMessage" resourceType="Strings" />
     <Range>EqualityExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="IncorrectMonoBehaviourInstantiation" configurableSeverity="Unity.IncorrectMonoBehaviourInstantiation">
     <Parameter type="IObjectCreationExpression" name="creationExpression" />
-    <Message value="'MonoBehaviour' instances must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'" />
+    <Message resourceName="MonoBehaviourInstancesMustBeInstantiatedWithGameObjectAddComponentTInsteadOfnewMessage" resourceType="Strings" />
     <Range>CreationExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="IncorrectScriptableObjectInstantiation" configurableSeverity="Unity.IncorrectScriptableObjectInstantiation">
     <Parameter type="IObjectCreationExpression" name="creationExpression" />
-    <Message value="'ScriptableObject' instances must be instantiated with 'ScriptableObject.CreateInstance&lt;T&gt;()' instead of 'new'" />
+    <Message resourceName="ScriptableObjectInstancesMustBeInstantiatedWithScriptableObjectCreateInstanceTInsteadOfnewMessage" resourceType="Strings" />
     <Range>CreationExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -435,7 +348,7 @@
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
     <Parameter type="MethodSignatureMatch" name="methodSignatureMatch" isValid="skip" />
-    <Message value="Incorrect method signature. Expected '{0}'">
+    <Message resourceName="IncorrectMethodSignatureExpectedMessage" resourceType="Strings">
       <Argument>ExpectedMethodSignature.FormatSignature(MethodDeclaration.DeclaredName)</Argument>
     </Message>
     <Range>MethodDeclaration.GetNameDocumentRange()</Range>
@@ -445,29 +358,29 @@
   <Warning name="IncorrectSignatureWithChoice" configurableSeverity="Unity.IncorrectMethodSignature">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Parameter type="MethodSignature[]" name="expectedMethodSignatures" isValid="skip" />
-    <Message value="Incorrect method signature" />
+    <Message resourceName="IncorrectMethodSignatureMessage" resourceType="Strings" />
     <Range>MethodDeclaration.GetNameDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="InefficientPropertyAccess" configurableSeverity="Unity.InefficientPropertyAccess">
-    <Parameter type="IReferenceExpression" name="highlightedReference"/>
+    <Parameter type="IReferenceExpression" name="highlightedReference" />
     <Parameter type="List&lt;IReferenceExpression&gt;" name="references" isValid="skip" />
     <Parameter type="ICSharpTreeNode" name="cacheAnchor" />
-    <Parameter type="bool" name = "inlineCacheValue" />
+    <Parameter type="bool" name="inlineCacheValue" />
     <Parameter type="ICSharpTreeNode" name="restoreAnchor" />
     <Parameter type="bool" name="inlineRestoreValue" />
-    <Message value="Repeated property access of built in component is inefficient" />
+    <Message resourceName="RepeatedPropertyAccessOfBuiltInComponentIsInefficientMessage" resourceType="Strings" />
     <Range>HighlightedReference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="InstantiateWithoutParent" configurableSeverity="Unity.InstantiateWithoutParent">
     <Parameter type="IReferenceExpression" name="reference" />
-    <Parameter type="IInvocationExpression" name="invocation"/>
-    <Parameter type="ICSharpExpression" name="newArgument" isValid="skip"/>
-    <Parameter type="bool" name="stayInWorldCoords" isValid="skip"/>
-    <Message value="Setting 'parent' property immediately after object instantiation is inefficient" />
+    <Parameter type="IInvocationExpression" name="invocation" />
+    <Parameter type="ICSharpExpression" name="newArgument" isValid="skip" />
+    <Parameter type="bool" name="stayInWorldCoords" isValid="skip" />
+    <Message resourceName="SettingparentPropertyImmediatelyAfterObjectInstantiationIsInefficientMessage" resourceType="Strings" />
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
@@ -475,7 +388,7 @@
   <Warning name="InvalidParameters" configurableSeverity="Unity.IncorrectMethodSignature">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
-    <Message value="Incorrect method parameters. Expected '({0})'">
+    <Message resourceName="IncorrectMethodParametersExpectedMessage" resourceType="Strings">
       <Argument>ExpectedMethodSignature.Parameters.GetParameterList()</Argument>
     </Message>
     <Range>CSharpErrorUtil.GetParametersHighlightingRange(MethodDeclaration)</Range>
@@ -485,7 +398,7 @@
   <Warning name="InvalidReturnType" configurableSeverity="Unity.IncorrectMethodSignature">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
-    <Message value="Incorrect return type. Expected '{0}'">
+    <Message resourceName="IncorrectReturnTypeExpectedMessage" resourceType="Strings">
       <Argument>ExpectedMethodSignature.GetReturnTypeName()</Argument>
     </Message>
     <Range>CSharpErrorUtil.GetReturnTypeHighlightingRange(MethodDeclaration)</Range>
@@ -495,7 +408,7 @@
   <Warning name="InvalidStaticModifier" configurableSeverity="Unity.IncorrectMethodSignature">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
-    <Message value="{0}">
+    <Message resourceName="Message" resourceType="Strings">
       <Argument>MethodDeclaration.IsStatic ? "Incorrect static modifier" : "Missing static modifier"</Argument>
     </Message>
     <Range>CSharpErrorUtil.GetStaticModifierOrMethodNameHighlightingRange(MethodDeclaration)</Range>
@@ -505,7 +418,7 @@
   <Warning name="InvalidTypeParameters" configurableSeverity="Unity.IncorrectMethodSignature">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Parameter type="MethodSignature" name="expectedMethodSignature" isValid="skip" />
-    <Message value="Incorrect type parameters" />
+    <Message resourceName="IncorrectTypeParametersMessage" resourceType="Strings" />
     <Range>CSharpErrorUtil.GetTypeParametersOrMethodNameHighlightingRange(MethodDeclaration)</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -513,7 +426,7 @@
   <!-- TODO: Merge this with ExpectedComponentWarning? -->
   <Warning name="ParameterNotDerivedFromComponent" configurableSeverity="Unity.ParameterNotDerivedFromComponent">
     <Parameter type="ICSharpParameterDeclaration" name="parameterDeclaration" />
-    <Message value="Parameter '{0}' should be derived from 'Component'">
+    <Message resourceName="ParameterShouldBeDerivedFromComponentMessage" resourceType="Strings">
       <Argument>ParameterDeclaration.DeclaredName</Argument>
     </Message>
     <Range>ParameterDeclaration.GetHighlightingRange()</Range>
@@ -522,7 +435,7 @@
 
   <Warning name="PossibleMisapplicationOfAttributeToMultipleFields" configurableSeverity="Unity.PossibleMisapplicationOfAttributeToMultipleFields">
     <Parameter type="IAttribute" name="attribute" />
-    <Message value="Possible incorrect application of 'FormerlySerializedAs' attribute to multiple fields" />
+    <Message resourceName="PossibleIncorrectApplicationOfFormerlySerializedAsAttributeToMultipleFieldsMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
@@ -534,17 +447,17 @@
     <Parameter type="string" name="literal" />
     <Parameter type="string" name="typeName" />
     <Parameter type="string" name="mapFunction" />
-    <Message value="String based property lookup is inefficient" />
+    <Message resourceName="StringBasedPropertyLookupIsInefficientMessage" resourceType="Strings" />
     <Range>Argument.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="PreferGenericMethodOverload" configurableSeverity="Unity.PreferGenericMethodOverload">
     <Parameter type="IInvocationExpression" name="invocationMethod" />
-    <Parameter type="string" name="methodName" isValid="skip"/>
+    <Parameter type="string" name="methodName" isValid="skip" />
     <Parameter type="ILiteralExpression" name="argument" />
-    <Parameter type="ITypeElement" name="typeElement" isValid="skip"/>
-    <Message value="String based type lookup is inefficient, use generic overload" />
+    <Parameter type="ITypeElement" name="typeElement" isValid="skip" />
+    <Message resourceName="StringBasedTypeLookupIsInefficientUseGenericOverloadMessage" resourceType="Strings" />
     <Range>Argument.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
@@ -553,7 +466,7 @@
     <Parameter type="IInvocationExpression" name="invocationExpression" />
     <Parameter type="IReferenceExpression" name="invokedExpression" />
     <Parameter type="IMethod" name="nonAllocMethod" />
-    <Message value="Use non-allocating method '{0}'">
+    <Message resourceName="UseNonAllocatingMethodMessage" resourceType="Strings">
       <Argument>NonAllocMethod.ShortName</Argument>
     </Message>
     <Range>InvokedExpression.Reference.GetDocumentRange()</Range>
@@ -562,16 +475,16 @@
 
   <Warning name="PropertyDrawerOnGUIBase" configurableSeverity="Unity.PropertyDrawerOnGUIBase">
     <Parameter type="IReference" name="invocation" />
-    <Message value="'base.OnGUI()' will print \&quot;No GUI Implemented\&quot; in the Unity inspector" />
+    <Message resourceName="baseOnGUIWillPrintNoGUIImplementedInTheUnityInspectorMessage" resourceType="Strings" />
     <Range>Invocation.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="RedundantAttributeOnTarget" configurableSeverity="Unity.RedundantAttributeOnTarget">
     <Parameter type="IAttribute" name="attribute" />
-    <Parameter type="ITypeElement" name="attributeType"/>
+    <Parameter type="ITypeElement" name="attributeType" />
     <Parameter type="System.AttributeTargets" name="validTargets" isValid="skip" />
-    <Message value="Attribute '{0}' is redundant on this declaration type. It is only used when applied to '{1}' declarations">
+    <Message resourceName="AttributeIsRedundantOnThisDeclarationTypeItIsOnlyUsedWhenAppliedToDeclarationsMessage" resourceType="Strings">
       <Argument>DeclaredElementPresenter.Format(CSharpLanguage.Instance, DeclaredElementPresenter.QUALIFIED_NAME_PRESENTER, AttributeType)</Argument>
       <Argument>ValidTargets</Argument>
     </Message>
@@ -581,52 +494,52 @@
 
   <Warning name="RedundantEventFunction" configurableSeverity="Unity.RedundantEventFunction">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
-    <Message value="Redundant Unity event function" />
+    <Message resourceName="RedundantUnityEventFunctionMessage" resourceType="Strings" />
     <Range>MethodDeclaration.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
   </Warning>
 
   <Warning name="RedundantFormerlySerializedAsAttribute" configurableSeverity="Unity.RedundantFormerlySerializedAsAttribute">
     <Parameter type="IAttribute" name="attribute" />
-    <Message value="Redundant 'FormerlySerializedAs' attribute" />
+    <Message resourceName="RedundantFormerlySerializedAsAttributeMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
   </Warning>
 
   <Warning name="RedundantHideInInspectorAttribute" configurableSeverity="Unity.RedundantHideInInspectorAttribute">
     <Parameter type="IAttribute" name="attribute" />
-    <Message value="Redundant 'HideInInspector' attribute" />
+    <Message resourceName="RedundantHideInInspectorAttributeMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour attributeID="DEADCODE" overlapResolvePolicy="DEADCODE" />
   </Warning>
 
   <Warning name="RedundantInitializeOnLoadAttribute" configurableSeverity="Unity.RedundantInitializeOnLoadAttribute">
     <Parameter type="IAttribute" name="attribute" />
-    <Message value="'InitializeOnLoad' attribute is redundant when static constructor is missing" />
+    <Message resourceName="InitializeOnLoadAttributeIsRedundantWhenStaticConstructorIsMissingMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="DEADCODE" attributeID="DEADCODE" />
   </Warning>
 
   <Warning name="RedundantSerializeFieldAttribute" configurableSeverity="Unity.RedundantSerializeFieldAttribute">
     <Parameter type="IAttribute" name="attribute" />
-    <Message value="Redundant 'SerializeField' attribute" />
+    <Message resourceName="RedundantSerializeFieldAttributeMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour attributeID="DEADCODE" overlapResolvePolicy="DEADCODE" />
   </Warning>
 
   <Error name="StringLiteralReferenceIncorrectSignature" staticGroup="UnityErrors">
     <Parameter type="SyncVarHookReference" name="reference" />
-    <Message value="Expected a method with '{0}' signature">
+    <Message resourceName="ExpectedAMethodWithSignatureMessage" resourceType="Strings">
       <Argument>Reference.MethodSignature.FormatSignature(Reference.GetName())</Argument>
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Error>
 
-  <Warning name="StringLiteralReferenceIncorrectSignature"
-           configurableSeverity="Unity.IncorrectMethodSignatureInStringLiteral">
+
+  <Warning name="StringLiteralReferenceIncorrectSignature" configurableSeverity="Unity.IncorrectMethodSignatureInStringLiteral">
     <Parameter type="UnityEventFunctionReference" name="reference" isValid="skip" />
-    <Message value="Expected a method with '{0}' signature">
+    <Message resourceName="ExpectedAMethodWithSignatureMessage" resourceType="Strings">
       <Argument>Reference.MethodSignature.FormatSignature(Reference.GetName())</Argument>
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
@@ -635,30 +548,32 @@
 
   <Error name="SyncVarUsage" staticGroup="UnityErrors">
     <Parameter type="IAttribute" name="attribute" />
-    <Message value="'SyncVar' attribute can only be applied in a class that derives from 'NetworkBehaviour'" />
+    <Message resourceName="SyncVarAttributeCanOnlyBeAppliedInAClassThatDerivesFromNetworkBehaviourMessage" resourceType="Strings" />
     <Range>Attribute.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="ERROR" />
   </Error>
 
+
   <Warning name="UnityObjectNullCoalescing" configurableSeverity="Unity.NoNullCoalescing">
     <Parameter type="INullCoalescingExpression" name="expression" />
-    <Message value="'??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object" />
+    <Message resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage" resourceType="Strings" />
     <Range>Expression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="UnityObjectNullPropagation" configurableSeverity="Unity.NoNullPropagation">
     <Parameter type="IConditionalAccessExpression" name="expression" />
-    <Message value="'?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object" />
+    <Message resourceName="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage1" resourceType="Strings" />
     <Range>Expression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="UnresolvedComponentOrScriptableObject" configurableSeverity="Unity.UnresolvedComponentOrScriptableObject">
     <Parameter type="IReference" name="reference" />
-    <Message value="Cannot resolve symbol '{0}'">
+    <Message resourceName="CannotResolveSymbolMessage" resourceType="Strings">
       <Argument>Reference.GetName()</Argument>
     </Message>
     <Range>Reference.GetDocumentRange()</Range>
   </Warning>
+
 </Errors>

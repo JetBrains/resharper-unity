@@ -3,6 +3,7 @@ using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Intentions.Util;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -36,6 +37,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Bulbs
             return null;
         }
 
-        public override string Text => "To standard event function";
+        public override string Text => Strings.ConvertFromCoroutineBulbAction_Text_To_standard_event_function;
     }
 }

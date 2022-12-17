@@ -12,8 +12,10 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
 using JetBrains.RdBackend.Common.Features;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitTesting;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.UnitTestFramework.Execution;
 using JetBrains.Rider.Backend.Features.Unity;
@@ -32,6 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
         
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly UnityVersion myUnityVersion;
+        private readonly UnitySolutionTracker myUnitySolutionTracker;
         private readonly IThreading myThreading;
         private readonly ILogger myLogger;
         private readonly ISolution mySolution;
@@ -47,6 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
                                BackendUnityHost backendUnityHost,
                                IBackgroundProgressIndicatorManager indicatorManager,
                                UnityVersion unityVersion,
+                               UnitySolutionTracker unitySolutionTracker,
                                IThreading threading,
                                ILogger logger)
         {
@@ -55,6 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
 
             myBackendUnityHost = backendUnityHost;
             myUnityVersion = unityVersion;
+            myUnitySolutionTracker = unitySolutionTracker;
             myThreading = threading;
             myLogger = logger;
             mySolution = solution;
@@ -106,7 +111,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
             
             return myThreading.Tasks.StartNew(lifetime, Scheduling.MainDispatcher, () => unityModel.StopProfiling.Sync(data, ourUnityStartProfilingTimeouts));
         }
-        
+
+        public bool IsUnitySolution() => myUnitySolutionTracker.IsUnityGeneratedProject.Maybe.ValueOrDefault;
+
         private VirtualFileSystemPath EditorInstanceJsonPath => mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
 
         private async Task<int> StartUnityInternal(Lifetime lifetime, Func<bool> condition = null)
@@ -124,7 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
       
             await myThreading.Tasks.YieldToIfNeeded(startUnityDefinition.Lifetime, Scheduling.MainGuard);
 
-            myIndicatorManager.CreateBackgroundProgress(startUnityDefinition.Lifetime, "Start Unity Editor", startUnityDefinition.Terminate);
+            myIndicatorManager.CreateBackgroundProgress(startUnityDefinition.Lifetime, Strings.UnityController_StartUnityInternal_Start_Unity_Editor, startUnityDefinition.Terminate);
 
             return await startUnityTask.ConfigureAwait(false);
         }

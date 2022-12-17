@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectManagerEx
+import com.intellij.openapi.rd.util.launchBackground
 import com.intellij.openapi.rd.util.launchNonUrgentBackground
 import com.intellij.openapi.rd.util.withUiContext
 import com.intellij.openapi.util.NlsSafe
@@ -16,13 +17,15 @@ import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.ide.model.RdVirtualSolution
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
+import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rd.util.reactive.whenTrue
-import com.jetbrains.rider.model.*
+import com.jetbrains.rider.model.RdUnloadProjectDescriptor
+import com.jetbrains.rider.model.RdUnloadProjectState
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
@@ -35,7 +38,6 @@ import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntityVisitor
 import com.jetbrains.rider.projectView.workspace.getSolutionEntity
 import org.jetbrains.annotations.Nls
-import javax.swing.event.HyperlinkEvent
 
 class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
 
@@ -77,7 +79,7 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                 @Nls(capitalization = Nls.Capitalization.Sentence)
                 val mainText =
                     if (solutionDescription.projectFilePaths.isEmpty())
-                        UnityBundle.message("eatures.are.not.available.when.the.project.is.opened.as.a.folder")
+                        UnityBundle.message("features.are.not.available.when.the.project.is.opened.as.a.folder")
                     else
                         UnityBundle.message("specific.features.are.not.available.when.only.single.project.opened")
 
@@ -99,15 +101,14 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
 
                 val notification = Notification(notificationGroupId.displayId,
                                                 UnityBundle.message("notification.title.this.looks.like.unity.project"), contentWoSolution, NotificationType.WARNING)
-                notification.setListener { _, hyperlinkEvent ->
 
-                    if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED) return@setListener
-
-                    if (hyperlinkEvent.description == "close") {
+                notification.addAction(object : NotificationAction(
+                    UnityBundle.message("close.solution")) {
+                    override fun actionPerformed(e: AnActionEvent, notification: Notification) {
                         ProjectManagerEx.getInstanceEx().closeAndDispose(project)
                         WelcomeFrame.showIfNoProjectOpened()
                     }
-                }
+                })
 
                 val baseDir: VirtualFile = project.projectDir
                 val solutionFile = baseDir.findChild(baseDir.name + ".sln")
@@ -119,16 +120,19 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                             // and if it's set to false, we get prompted if we want to open in new or same frame. We
                             // don't care - we want to close this project, so new frame or reusing means nothing
                             e.project?.let { ProjectManagerEx.getInstanceEx().closeAndDispose(it) }
-                            val newProject = SolutionManager.openExistingSolution(null, true, solutionFile, true, true) ?: return
+                            Lifetime.Eternal.launchBackground {
+                                val newProject = SolutionManager.openExistingSolution(null, true, solutionFile, true, true)
+                                                 ?: return@launchBackground
 
-                            // Opening as folder saves settings to `.idea/.idea.{folder}`. This includes the last selected
-                            // solution view pane, which will be file system. A Unity generated solution will use the
-                            // same settings folder, so will read the last selected solution view pane and fail to show
-                            // the Unity explorer view. We'll override that saved value here, and make Unity Explorer
-                            // the currently selected value. See RIDER-17865
-                            EdtInvocationManager.getInstance().invokeLater {
-                                val projectView = ProjectView.getInstance(newProject)
-                                projectView.changeView(UnityExplorer.ID)
+                                // Opening as folder saves settings to `.idea/.idea.{folder}`. This includes the last selected
+                                // solution view pane, which will be file system. A Unity generated solution will use the
+                                // same settings folder, so will read the last selected solution view pane and fail to show
+                                // the Unity explorer view. We'll override that saved value here, and make Unity Explorer
+                                // the currently selected value. See RIDER-17865
+                                EdtInvocationManager.getInstance().invokeLater {
+                                    val projectView = ProjectView.getInstance(newProject)
+                                    projectView.changeView(UnityExplorer.ID)
+                                }
                             }
                         }
                     })

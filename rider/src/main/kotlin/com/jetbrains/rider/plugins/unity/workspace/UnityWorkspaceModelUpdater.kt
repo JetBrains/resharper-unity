@@ -7,7 +7,7 @@ import com.intellij.util.application
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.intellij.workspaceModel.ide.getInstance
 import com.intellij.workspaceModel.storage.MutableEntityStorage
-import com.intellij.workspaceModel.storage.bridgeEntities.addContentRootEntityWithCustomEntitySource
+import com.intellij.workspaceModel.storage.bridgeEntities.addContentRootEntity
 import com.intellij.workspaceModel.storage.impl.url.toVirtualFileUrl
 import com.intellij.workspaceModel.storage.url.VirtualFileUrl
 import com.intellij.workspaceModel.storage.url.VirtualFileUrlManager
@@ -45,14 +45,14 @@ class UnityWorkspaceModelUpdater(private val project: Project) {
         val excludedUrls = emptyList<VirtualFileUrl>()
         val excludedPatterns = UNITY_EXCLUDED_PATTERNS
 
-        builder.addContentRootEntityWithCustomEntitySource(
+        builder.addContentRootEntity(
             project.solutionDirectory.resolve("Packages").toVirtualFileUrl(virtualFileUrlManager),
             excludedUrls,
             excludedPatterns,
             packagesModuleEntity,
             RiderUnityEntitySource)
 
-        builder.addContentRootEntityWithCustomEntitySource(
+        builder.addContentRootEntity(
             project.solutionDirectory.resolve("ProjectSettings").toVirtualFileUrl(virtualFileUrlManager),
             excludedUrls,
             excludedPatterns,
@@ -60,7 +60,9 @@ class UnityWorkspaceModelUpdater(private val project: Project) {
             RiderUnityEntitySource)
 
         application.runWriteAction {
-            WorkspaceModel.getInstance(project).updateProjectModel { x -> x.replaceBySource({ it is RiderUnityEntitySource }, builder) }
+            WorkspaceModel.getInstance(project).updateProjectModel("Unity: update workspace model") {
+                x -> x.replaceBySource({ it is RiderUnityEntitySource }, builder)
+            }
         }
     }
 
