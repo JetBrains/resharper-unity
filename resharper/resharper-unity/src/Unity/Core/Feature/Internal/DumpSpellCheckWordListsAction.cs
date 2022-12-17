@@ -6,6 +6,7 @@ using JetBrains.Application.DataContext;
 using JetBrains.Application.Diagnostics;
 using JetBrains.Application.UI.Actions;
 using JetBrains.Application.UI.ActionsRevised.Menu;
+using JetBrains.Application.UI.ActionSystem.ActionsRevised.Menu;
 using JetBrains.Collections;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
@@ -22,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Internal
 {
     [ZoneMarker(typeof(IReSpellerZone))]
     [Action("Unity_Internal_DumpSpellCheckWordLists", typeof(Strings), nameof(Strings.Unity_Internal_DumpSpellCheckWordLists_Text))]
-    public class DumpSpellCheckWordListsAction : IExecutableAction
+    public class DumpSpellCheckWordListsAction : IExecutableAction, IInsertLast<UnityInternalActionGroup>
     {
         public bool Update(IDataContext context, ActionPresentation presentation, DelegateUpdate nextUpdate)
         {
