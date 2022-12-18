@@ -63,10 +63,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatter
         private void HeaderAttributeRules()
         {
             var singleHeaderAttributeSection = Node().In(ElementType.ATTRIBUTE_SECTION).Satisfies((node, _) =>
-                myPossibleHeaderNames.Contains(GetSingleAttributeSectionName(node))).Obj;
+                myPossibleHeaderNames.Contains(GetSingleAttributeSectionName(node.Node))).Obj;
 
             var singleHeaderAttributeSectionList = Node().In(ElementType.ATTRIBUTE_SECTION_LIST).Satisfies((node, _) =>
-                myPossibleHeaderNames.Contains(GetSingleSectionAttributeListName(node))).Obj;
+                myPossibleHeaderNames.Contains(GetSingleSectionAttributeListName(node.Node))).Obj;
 
             var multipleFieldDeclaration = Node().In(ElementBitsets.MULTIPLE_DECLARATION_BIT_SET
                 .Except(ElementType.MULTIPLE_EVENT_DECLARATION)
@@ -75,12 +75,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatter
             var attributeSectionFollowingHeader = Node().In(ElementType.ATTRIBUTE_SECTION).Satisfies((node, _) =>
             {
                 // Default case: if node is the first section and it is not a Header section, we 
-                var attributeSectionList = AttributeSectionListNavigator.GetBySection(node as IAttributeSection);
-                if (attributeSectionList?.Sections.First() == node && !myPossibleHeaderNames.Contains(GetSingleAttributeSectionName(node)))
+                var attributeSectionList = AttributeSectionListNavigator.GetBySection(node.Node as IAttributeSection);
+                if (attributeSectionList?.Sections.First() == node && !myPossibleHeaderNames.Contains(GetSingleAttributeSectionName(node.Node)))
                     return true;
 
-                var previousSection = node?.GetPreviousMeaningfulSibling();
-                return myPossibleHeaderNames.Contains(GetSingleAttributeSectionName(previousSection));
+                var previousSection = node.GetPreviousMeaningfulSibling();
+                return myPossibleHeaderNames.Contains(GetSingleAttributeSectionName(previousSection.Node));
             }).Obj;
 
             // Blank lines after [Header]
@@ -202,8 +202,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatter
                     Parent().In(ElementType.ATTRIBUTE_SECTION_LIST),
                     Left().Is(attributeSectionFollowingHeader)
                 )
-                .CloseNodeGetter((node, _) =>
-                    AttributeSectionListNavigator.GetBySection(node as IAttributeSection)?.Parent?.LastChild
+                .CloseNodeGetter((node, context) =>
+                    new(context, AttributeSectionListNavigator.GetBySection(node.Node as IAttributeSection)?.Parent?.LastChild)
                 )
                 .SwitchOnExternalKey(x => x.ENFORCE_CUSTOM_HEADER_FORMATTING,
                     When(true).Switch(x => x.PLACE_FIELD_ATTRIBUTE_ON_SAME_LINE_EX,
