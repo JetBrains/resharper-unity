@@ -133,7 +133,6 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
             }, {
                 SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles = it
         }))
-        ActionManager.getInstance().getAction("ViewInAssemblyExplorer")!!.let { actionGroup.addAction(it) }
         actionGroup.addSeparator()
         super.addPrimaryToolbarActions(actionGroup)
     }
