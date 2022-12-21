@@ -457,5 +457,6 @@
     public static string UnityFirstpassEditorFolder_Text => ResourceManager.GetString("UnityFirstpassEditorFolder_Text");
     public static string UnityFirstpassRuntimeFolder_Text => ResourceManager.GetString("UnityFirstpassRuntimeFolder_Text");
     public static string UnityProjects_Text => ResourceManager.GetString("UnityProjects_Text");
+    public static string InputActionsProjectFileType_InputActionsProjectFileType_InputActions__Unity_ => ResourceManager.GetString("InputActionsProjectFileType_InputActionsProjectFileType_InputActions__Unity_");
   }
 }

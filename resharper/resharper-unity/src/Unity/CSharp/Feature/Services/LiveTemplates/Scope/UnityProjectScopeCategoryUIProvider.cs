@@ -15,9 +15,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
             // for the UITag "Unity Class" menu item
             TemplateImage.Register("UnityCSharp", UnityFileTypeThemedIcons.FileUnity.Id);
             TemplateImage.Register("UnityShaderLab", ShaderFileTypeThemedIcons.FileShader.Id);
-
-            // TODO: Proper icon (see RIDER-68006)
-            TemplateImage.Register("UnityAsmDef", UnityFileTypeThemedIcons.FileUnity.Id);
+            
+            TemplateImage.Register("UnityAsmDef", UnityFileTypeThemedIcons.Asmdef.Id);
+            TemplateImage.Register("UnityAsmRef", UnityFileTypeThemedIcons.Asmref.Id);
+            TemplateImage.Register("UnityInputActions", UnityFileTypeThemedIcons.InputActions.Id);
         }
 
         // Needs to be less than other priorities in R#'s built in ScopeCategoryUIProvider

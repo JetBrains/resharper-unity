@@ -1,20 +1,18 @@
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Usages;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Resources;
 using JetBrains.Rider.Backend.Features.Usages;
 using JetBrains.Rider.Backend.Platform.Icons;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Usages
 {
     [SolutionComponent]
-    public class UnityAsmDefCustomGroupingProjectItemProvider : ProjectItemRule.ICustomProjectItemProvider
+    public class UnityAsmDefCustomGroupingProjectItemProvider : UnityCustomProjectItemProvider
     {
         private const string ExternalPackages = "<External Packages>";
         private const string ExternalPackagesPrefix = ExternalPackages + "\\";
@@ -31,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Usa
             myIconHost = iconHost;
         }
 
-        public RdUsageGroupTextAndIcon? GetUsageGroup(IOccurrence occurrence, ProjectItemKind kind, bool takeParent)
+        public override RdUsageGroupTextAndIcon? GetUsageGroup(IOccurrence occurrence, ProjectItemKind kind, bool takeParent)
         {
             if (occurrence is ReferenceOccurrence referenceOccurrence &&
                 referenceOccurrence.Kinds.Contains(AsmDefOccurrenceKindProvider.AssemblyDefinitionReference) &&
@@ -50,17 +48,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Usa
                 switch (kind)
                 {
                     case ProjectItemKind.PHYSICAL_FILE:
-                        var filePath = GetPackageRelativePath(sourceLocation);
+                        var filePath = GetPresentablePath(sourceLocation, mySolution.SolutionDirectory);
                         if (filePath != null)
                         {
-                            // TODO: Use a (new) specific .asmdef file icon
                             return new RdUsageGroupTextAndIcon(ExternalPackagesPrefix + filePath.FullPath,
-                                myIconHost.Transform(PsiJavaScriptThemedIcons.Json.Id));
+                                myIconHost.Transform(UnityFileTypeThemedIcons.AsmdefPackage.Id));
                         }
                         break;
 
                     case ProjectItemKind.PHYSICAL_DIRECTORY:
-                        var directoryPath = GetPackageRelativePath(sourceLocation.Directory);
+                        var directoryPath = GetPresentablePath(sourceLocation.Directory, mySolution.SolutionDirectory);
                         if (directoryPath != null)
                         {
                             return new RdUsageGroupTextAndIcon(ExternalPackagesPrefix + directoryPath.FullPath,
@@ -79,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Usa
                         else
                         {
                             // Group by package
-                            directoryPath = GetPackageRelativePath(sourceLocation);
+                            directoryPath = GetPresentablePath(sourceLocation, mySolution.SolutionDirectory);
                             if (directoryPath != null)
                             {
                                 return new RdUsageGroupTextAndIcon(
@@ -87,27 +84,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Usa
                                     myIconHost.Transform(UnityFileTypeThemedIcons.FolderPackageReferenced.Id));
                             }
                         }
-                        return null;
+                        return new RdUsageGroupTextAndIcon(string.Empty, myIconHost.Transform(UnityFileTypeThemedIcons.FileUnity.Id));
                 }
             }
 
             return null;
         }
 
-        [CanBeNull]
-        private RelativePath GetPackageRelativePath(VirtualFileSystemPath assetFile)
-        {
-            // Get a path that is relative to Library/PackageCache. This will give us a root folder of the package
-            // name, e.g. com.unity.foo@1.0.0. We add a prefix of <External Packages>, which is the same as the solution
-            // folder group. If we are grouping by solution folder, we show a nice icon for it. If we're not grouping
-            // by solution folder, we still show it as the root folder name
-            var solutionFolder = mySolution.SolutionFile?.Location.Parent;
-            var packageCacheFolder = solutionFolder?.Combine("Library/PackageCache");
-            if (packageCacheFolder != null && packageCacheFolder.IsPrefixOf(assetFile))
-                return assetFile.MakeRelativeTo(packageCacheFolder);
-            if (solutionFolder != null && solutionFolder.IsPrefixOf(assetFile))
-                return assetFile.MakeRelativeTo(solutionFolder);
-            return null;
-        }
     }
 }

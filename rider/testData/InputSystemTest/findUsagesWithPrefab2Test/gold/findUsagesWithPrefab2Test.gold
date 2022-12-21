@@ -1,4 +1,7 @@
 Search target
     NewBehaviourScript2.OnJump1WithPrefab2():void
 Found usages  (1 usage found)
-    [219, Assets/MyInputForPrefab2.inputactions] (9: 30)  "name": "Jump1WithPrefab2",
+    Other  (1 usage found)
+        Assets  (1 usage found)
+            MyInputForPrefab2.inputactions  (1 usage found)
+                [219, Assets/MyInputForPrefab2.inputactions] (9: 30)  "name": "Jump1WithPrefab2",

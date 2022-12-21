@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using JetBrains.ProjectModel.Resources;
 using JetBrains.ReSharper.Plugins.Json.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.UI.Icons;
 
@@ -11,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.DeclaredElements
     public class AsmDefDeclaredElementType : JsonNewDeclaredElementType
     {
         public static readonly AsmDefDeclaredElementType AsmDef = new("assembly definition",
-            ProjectModelThemedIcons.Assembly.Id);
+            UnityFileTypeThemedIcons.Asmdef.Id);
 
         private AsmDefDeclaredElementType(string name, IconId? imageName)
             : base(name, imageName)
