@@ -1,7 +1,6 @@
 package icons
 
 import com.intellij.openapi.util.IconLoader
-import com.intellij.ui.AnimatedIcon
 import javax.swing.Icon
 
 // FYI: Icons are defined in C# files in the backend. When being shown in the frontend, only the icon ID is passed to
@@ -50,8 +49,8 @@ class UnityIcons {
             val ShaderLab = IconLoader.getIcon("/resharper/ShaderFileType/FileShader.svg", UnityIcons::class.java)
             val Cg = ShaderLab
 
-            val AsmDef: Icon = ReSharperIcons.PsiJavaScript.Json
-            val AsmRef: Icon = ReSharperIcons.PsiJavaScript.Json
+            val AsmDef: Icon = IconLoader.getIcon("/resharper/UnityFileType/Asmdef.svg", UnityIcons::class.java)
+            val AsmRef: Icon = IconLoader.getIcon("/resharper/UnityFileType/Asmref.svg", UnityIcons::class.java)
 
             val UnityYaml = IconLoader.getIcon("/resharper/YamlFileType/FileYaml.svg", UnityIcons::class.java)
             val UnityScene = IconLoader.getIcon("/resharper/UnityFileType/FileUnity.svg", UnityIcons::class.java)
@@ -60,6 +59,7 @@ class UnityIcons {
             val Prefab = IconLoader.getIcon("/resharper/UnityFileType/FileUnityPrefab.svg", UnityIcons::class.java)
             val Controller = IconLoader.getIcon("/resharper/UnityFileType/FileAnimatorController.svg", UnityIcons::class.java)
             val Anim = IconLoader.getIcon("/resharper/UnityFileType/FileAnimationClip.svg", UnityIcons::class.java)
+            val InputActions = IconLoader.getIcon("/resharper/UnityFileType/InputActions.svg", UnityIcons::class.java)
 
             // These are front end only file types
             val Uss = IconLoader.getIcon("/unityIcons/fileTypes/uss.svg", UnityIcons::class.java)

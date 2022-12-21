@@ -1293,4 +1293,7 @@ a plugin to be installed to a project.</value>
     <data name="UnityProjects_Text" xml:space="preserve">
         <value>Unity projects</value>
     </data>
+    <data name="InputActionsProjectFileType_InputActionsProjectFileType_InputActions__Unity_" xml:space="preserve">
+        <value>InputActions (Unity)</value>
+    </data>
 </root>
