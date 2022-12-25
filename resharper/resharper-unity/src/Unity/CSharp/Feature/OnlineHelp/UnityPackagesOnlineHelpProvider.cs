@@ -1,4 +1,5 @@
 using System;
+using System.Security.Policy;
 using JetBrains.Application;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.OnlineHelp;
@@ -6,14 +7,13 @@ using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
 {
     // Unity registry package have their api doc online like:
     // https://docs.unity3d.com/Packages/com.unity.mathematics@1.2/api/Unity.Mathematics.math.clamp.html
-    
-    // todo: somehow skip the non-unity npm 
-    
+
     [ShellComponent]
     public class UnityPackagesOnlineHelpProvider : CompiledElementOnlineHelpProvider
     {
@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
             if (element is not ICompiledElement compiledElement) 
                 return base.GetPresentableName(element);
             
-            if (!IsUnityPackageCompiledCode(compiledElement)) return base.GetPresentableName(element);
+            if (!IsApplicable(compiledElement)) return base.GetPresentableName(element);
 
             // todo: check
             // if (compiledElement is ITypeMember typeMemberElement)
@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
 
         public override Uri GetUrl(ICompiledElement compiledElement)
         {
-            if (!IsUnityPackageCompiledCode(compiledElement)) return null;
+            if (!IsApplicable(compiledElement)) return null;
             var solution = compiledElement.GetSolution();
             
             var asmDefCache = solution.GetComponent<AsmDefCache>();
@@ -54,27 +54,42 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
             // }
 
             var version = new Version(packageData.PackageDetails.Version);
-            var ulr = $"https://docs.unity3d.com/Packages/{packageData.Id}@{version.ToString(2)}/api/{compiledElement.GetSearchableText()}.html";
-            return new Uri(ulr);
+
+            var urlHost = "docs.unity3d.com";
+            if (!packageData.Id.StartsWith("com.unity.") && packageData.PackageDetails.DocumentationUrl != null && Uri.TryCreate(packageData.PackageDetails.DocumentationUrl, UriKind.Absolute, out var result)) 
+                urlHost = result.Host;
+            
+            return new Uri($"https://{urlHost}/Packages/{packageData.Id}@{version.ToString(2)}/api/{compiledElement.GetSearchableText()}.html");
         }
 
-        private static bool IsUnityPackageCompiledCode(ICompiledElement element)
+        private static bool IsPublic(ICompiledElement element)
+        {
+            return element is ITypeMember typeMemberElement && typeMemberElement.AccessibilityDomain.DomainType ==
+                AccessibilityDomain.AccessibilityDomainType.PUBLIC;
+        }
+
+        private static bool IsApplicable(ICompiledElement element)
         {
             var solution = element.GetSolution();
             if (!solution.HasUnityReference()) return false;
+            if (!IsPublic(element)) return false;
             var asmDefCache = solution.GetComponent<AsmDefCache>();
             var asmDefLocation = asmDefCache.GetAsmDefLocationByAssemblyName(element.Module.Name);
             if (asmDefLocation.IsEmpty)
                 return false;
             var packageManager = solution.GetComponent<PackageManager>();
-            var package = packageManager.GetOwningPackage(asmDefLocation);
-            if (package == null)
+            var packageData = packageManager.GetOwningPackage(asmDefLocation);
+            if (packageData == null)
                 return false;
 
-            if (package.Source != PackageSource.Registry)
+            if (packageData.Source != PackageSource.Registry)
+                return false;
+
+            if (!packageData.Id.StartsWith("com.unity.") && (packageData.PackageDetails.DocumentationUrl == null ||
+                !Uri.TryCreate(packageData.PackageDetails.DocumentationUrl, UriKind.Absolute, out _)))
                 return false;
             
-            if (!Version.TryParse(package.PackageDetails.Version, out _)) return false;
+            if (!Version.TryParse(packageData.PackageDetails.Version, out _)) return false;
 
             return true;
         }
