@@ -1,5 +1,4 @@
 using System;
-using System.Security.Policy;
 using JetBrains.Application;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.OnlineHelp;
@@ -7,7 +6,6 @@ using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
 {
@@ -23,15 +21,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
                 return base.GetPresentableName(element);
             
             if (!IsApplicable(compiledElement)) return base.GetPresentableName(element);
-
-            // todo: check
-            // if (compiledElement is ITypeMember typeMemberElement)
-            // {
-            //     var containingType = typeMemberElement.ContainingType;
-            //     if (containingType is IEnum) 
-            //         return ShowUnityHelp.FormatDocumentationKeyword($"{containingType.GetClrName().FullName}.{typeMemberElement.ShortName}");
-            // }
-            
             return base.GetPresentableName(element);
         }
 
@@ -43,23 +32,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
             var asmDefCache = solution.GetComponent<AsmDefCache>();
             var asmDefLocation = asmDefCache.GetAsmDefLocationByAssemblyName(compiledElement.Module.Name);
             var packageManager = solution.GetComponent<PackageManager>();
-            var packageData = packageManager.GetOwningPackage(asmDefLocation);    
-            
-            // todo: check
-            // if (compiledElement is ITypeMember typeMemberElement)
-            // {
-            //     var containingType = typeMemberElement.ContainingType;
-            //     if (containingType is IEnum) 
-            //         return ShowUnityHelp.FormatDocumentationKeyword($"{containingType.GetClrName().FullName}.{typeMemberElement.ShortName}");
-            // }
+            var packageData = packageManager.GetOwningPackage(asmDefLocation);
 
+            var linkPart = compiledElement.GetSearchableText()!.Replace("+", ".");
+            
             var version = new Version(packageData.PackageDetails.Version);
 
             var urlHost = "docs.unity3d.com";
             if (!packageData.Id.StartsWith("com.unity.") && packageData.PackageDetails.DocumentationUrl != null && Uri.TryCreate(packageData.PackageDetails.DocumentationUrl, UriKind.Absolute, out var result)) 
                 urlHost = result.Host;
             
-            return new Uri($"https://{urlHost}/Packages/{packageData.Id}@{version.ToString(2)}/api/{compiledElement.GetSearchableText()}.html");
+            return new Uri($"https://{urlHost}/Packages/{packageData.Id}@{version.ToString(2)}/api/{linkPart}.html");
         }
 
         private static bool IsPublic(ICompiledElement element)
@@ -90,6 +73,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
                 return false;
             
             if (!Version.TryParse(packageData.PackageDetails.Version, out _)) return false;
+
+            if (element.GetSearchableText() == null) return false;
 
             return true;
         }
