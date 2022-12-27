@@ -78,6 +78,9 @@
     <fileType name="AsmRef" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmref.AsmRefFileType" language="JSON" extensions="asmref"/>
     <quoteHandler fileType="AsmRef" className="com.intellij.json.JsonQuoteHandler"/>
 
+    <fileType name="InputActions" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.inputactions.InputActionsFileType" language="JSON" extensions="inputactions"/>
+    <quoteHandler fileType="InputActions" className="com.intellij.json.JsonQuoteHandler"/>
+
     <lang.altEnter language="JSON" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperBulbMenuModelFactory" />
     <backend.markup.adapterFactory language="JSON" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
     <completion.contributor language="JSON" implementationClass="com.jetbrains.rider.completion.ProtocolCompletionContributor" />
@@ -305,12 +308,18 @@
     <additionalTextAttributes file="colorSchemes/default_additional.xml" scheme="Default" />
     <additionalTextAttributes file="colorSchemes/darcula_additional.xml" scheme="Darcula" />
 
-    <notificationGroup id="Unity log open" displayType="BALLOON"/>
-    <notificationGroup id="Unity Asset Mode" displayType="BALLOON"/>
-    <notificationGroup id="Unity project open" displayType="STICKY_BALLOON"/>
-    <notificationGroup id="Unity connection is out of sync" displayType="BALLOON"/>
-    <notificationGroup id="Unity commit failure" displayType="BALLOON"/>
+    <notificationGroup id="Unity log open" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.log.open" />
+    <notificationGroup id="Unity Asset Mode" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.asset.mode" />
+    <notificationGroup id="Unity project open" displayType="STICKY_BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.project.open"/>
+    <notificationGroup id="Unity connection is out of sync" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.connection.out.of.sync"/>
+    <notificationGroup id="Unity commit failure" displayType="BALLOON" bundle="messages.UnityBundle"
+                       key="notification.group.unity.unity.commit.failure"/>
     <statistics.projectUsagesCollector implementation="com.jetbrains.rider.plugins.unity.fus.UnityProjectUsageCollector" />
+    <iconMapper mappingFile="UnityIconMappings.json"/>
   </extensions>
 
   <extensions defaultExtensionNs="JavaScript">

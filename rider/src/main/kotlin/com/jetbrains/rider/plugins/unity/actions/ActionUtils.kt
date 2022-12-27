@@ -1,7 +1,7 @@
 package com.jetbrains.rider.plugins.unity.actions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.jetbrains.rider.plugins.unity.FrontendBackendHost
+import com.intellij.ui.ExperimentalUI
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
@@ -25,7 +25,7 @@ fun AnActionEvent.isUnityProjectFolder(): Boolean {
 }
 
 fun AnActionEvent.handleUpdateForUnityConnection(update: ((FrontendBackendModel) -> Boolean)? = null) {
-    if (!isUnityProject()) {
+    if (!isUnityProject() && !ExperimentalUI.isNewUI()) { // do not hide UnityActions in the toolbar for the new UI
         presentation.isVisible = false
         return
     }

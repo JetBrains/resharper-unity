@@ -10,15 +10,12 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.LiveTemplates
 {
-    //todo: localization
-    
     [MacroDefinition("asmDefNameMacro",
             ResourceType = typeof(Strings),
             DescriptionResourceName = nameof(Strings.CurrentFileNameWithoutWhitespaceCharacters_Text),
             LongDescriptionResourceName = nameof(Strings.EvaluatesCurrentFileNameWithoutWhitespace_Text))]
     public class AsmDefNameMacroDef: SimpleMacroDefinition
     {
-        public string t = "Current file name without whitespace characters";
         public override string GetPlaceholder(IDocument document, ISolution solution, IEnumerable<IMacroParameterValue> parameters)
         {
             return Evaluate(document.GetPsiSourceFile(solution));

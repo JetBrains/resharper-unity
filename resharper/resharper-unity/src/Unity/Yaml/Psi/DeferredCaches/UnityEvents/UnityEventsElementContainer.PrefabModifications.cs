@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
-using JetBrains.Util.Extension;
+using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 {
@@ -47,20 +47,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 {
                     if (!(modification.Target is ExternalReference externalReference))
                         continue;
-                    
-                    if (!modification.PropertyPath.Contains("m_PersistentCalls"))
+
+                    if (!modification.PropertyPath.Contains(".m_PersistentCalls."))
                         continue;
                     
                     var location = new LocalReference(currentFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), PrefabsUtil.GetImportedDocumentAnchor(prefabInstanceHierarchy.Location.LocalDocumentAnchor, externalReference.LocalDocumentAnchor));
-                    var parts = modification.PropertyPath.Split('.');
-                    var unityEventName = parts[0];
                     
-
-                    var dataPart = parts.FirstOrDefault(t => t.StartsWith("data"));
-                    if (dataPart == null)
-                        continue;
-                    
-                    if (!int.TryParse(dataPart.RemoveStart("data[").RemoveEnd("]"), out var index))
+                    var (unityEventName, parts) = UnityEventUtils.SplitPropertyPath(modification.PropertyPath);
+                    if (!UnityEventUtils.TryGetDataIndex(parts, out var index))
                         continue;
 
                     result.UnityEventToModifiedIndex.Add((location, unityEventName), index);
@@ -143,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     foreach (var index in modifiedEvents)
                     {
                         Assertion.Assert(index < modifications.Count, "index < modifications.Count");
-                        var result = AssetMethodUsages.TryCreateAssetMethodFromModifications(location, unityEventName, modifications[index]);
+                        var result = Logger.Catch(()=>AssetMethodUsages.TryCreateAssetMethodFromModifications(location, unityEventName, modifications[index]));
                         if (result != null)
                             yield return (location, result);
                     }

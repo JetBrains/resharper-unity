@@ -6,8 +6,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Internal
     [ActionGroup(ActionGroupInsertStyles.Submenu | ActionGroupInsertStyles.Separated, Text = "Unity")]
     public class UnityInternalActionGroup : IAction, IInsertLast<IntoInternalMenu>
     {
-        public UnityInternalActionGroup(DumpDuplicateTypeNamesAction dumpDuplicateTypeNamesAction,
-            DumpSpellCheckWordListsAction dumpSpellCheckWordListsAction)
+        public UnityInternalActionGroup(DumpDuplicateTypeNamesAction dumpDuplicateTypeNamesAction)
         {
         }
     }
