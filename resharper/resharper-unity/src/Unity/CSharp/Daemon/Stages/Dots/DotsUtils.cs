@@ -1,10 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
-using JetBrains.ReSharper.Psi.Impl.CodeStyle;
 using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
@@ -12,12 +12,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
     public static class DotsUtils
     {
         public static IEnumerable<IMethodDeclaration> GetMethodsFromAllDeclarations(
-            IClassLikeDeclaration classLikeDeclaration)
+            IClassLikeDeclaration classLikeDeclaration, Func<IClassLikeDeclaration,bool> predicate = null)
         {
-            return GetMethodsFromAllDeclarations(classLikeDeclaration.DeclaredElement);
+            return GetMethodsFromAllDeclarations(classLikeDeclaration.DeclaredElement, predicate);
         }
 
-        public static IEnumerable<IMethodDeclaration> GetMethodsFromAllDeclarations(ITypeElement typeElement)
+        public static IEnumerable<IMethodDeclaration> GetMethodsFromAllDeclarations(ITypeElement typeElement, Func<IClassLikeDeclaration,bool> predicate = null)
         {
             var sourceFiles = typeElement.GetSourceFiles();
             var result = new List<IMethodDeclaration>();
@@ -29,7 +29,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
                 var declarations = typeElement.GetDeclarationsIn(sourceFile);
                 foreach (var declaration in declarations)
                 {
-                    if (declaration is IClassLikeDeclaration classLikeDeclaration)
+                    if (declaration is IClassLikeDeclaration classLikeDeclaration
+                        && (predicate?.Invoke(classLikeDeclaration) ?? true))
                     {
                         result.AddRange(classLikeDeclaration.MethodDeclarations);
                     }
@@ -39,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
             return result;
         }
 
-        private static bool IsISystemMethod(IMethod method, string methodName) 
+        private static bool IsISystemMethod(IMethod method, string methodName)
         {
             if (method == null)
                 return false;
