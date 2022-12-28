@@ -1,4 +1,5 @@
 ﻿using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Plugins.Json.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -26,6 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Json.Psi
             (PsiLanguageType) JsonNewLanguage.Instance ?? UnknownLanguage.Instance;
 
         // TODO: icon
-        public override IconId Icon => null;
+        // don't leave it empty - you may get no icon in find usages, when asmdef/inputactions are in the misc project
+        public override IconId Icon => ServicesNavigationThemedIcons.UsageOther.Id;
     }
 }

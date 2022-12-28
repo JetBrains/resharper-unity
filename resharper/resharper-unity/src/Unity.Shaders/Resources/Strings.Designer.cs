@@ -64,5 +64,7 @@
     public static string RemoveToken_Text_Remove_invalid_parameters => ResourceManager.GetString("RemoveToken_Text_Remove_invalid_parameters");
     public static string RemoveSwallowedToken_Text_Insert_new_line => ResourceManager.GetString("RemoveSwallowedToken_Text_Insert_new_line");
     public static string ReformatCode_Text => ResourceManager.GetString("ReformatCode_Text");
+    public static string InUnityShaderLabFile_PresentableShortName_ShaderLab__Unity_ => ResourceManager.GetString("InUnityShaderLabFile_PresentableShortName_ShaderLab__Unity_");
+    public static string InUnityShaderLabFile_QuickListTitle_Unity_files => ResourceManager.GetString("InUnityShaderLabFile_QuickListTitle_Unity_files");
   }
 }

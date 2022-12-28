@@ -30,7 +30,7 @@
   Async context menu shown `Usages of 'Ref1'`:
     TO: [O] "references": [ "|Ref1|" ] RANGE: (39,43) @ Ref2.asmdef
     Menu item (enabled) :
-      icon: UsageOther
+      icon: UsageAsmdef
       text: Ref2.asmdef      <font color="FF8B0000">"references": [ "**Ref1**" ]</font><font color="06C"> (3)</font>
       tail: <font color="FF6D6D6D">in <TestProject></font>
       tooltip: "references": [ "**Ref1**" ]
@@ -46,7 +46,7 @@
 
     TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test03.asmdef
     Menu item (enabled) :
-      icon: UsageOther
+      icon: UsageAsmdef
       text: Test03.asmdef      <font color="FF8B0000">"references": [ "**Ref1**" ]</font><font color="06C"> (3)</font>
       tail: <font color="FF6D6D6D">in <TestProject></font>
       tooltip: "references": [ "**Ref1**" ]

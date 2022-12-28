@@ -108,6 +108,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static readonly IClrTypeName ISystem = new ClrTypeName("Unity.Entities.ISystem");
         public static readonly IClrTypeName IBaker = new ClrTypeName("Unity.Entities.IBaker");
         public static readonly IClrTypeName IAspect = new ClrTypeName("Unity.Entities.IAspect");
+        public static readonly IClrTypeName ComponentLookup = new ClrTypeName("Unity.Entities.ComponentLookup`1");
+        public static readonly IClrTypeName SystemState = new ClrTypeName("Unity.Entities.SystemState");
 
         // Burst
         public static readonly IClrTypeName BurstCompiler = new ClrTypeName("Unity.Burst.BurstCompiler");

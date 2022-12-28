@@ -1293,4 +1293,21 @@ a plugin to be installed to a project.</value>
     <data name="UnityProjects_Text" xml:space="preserve">
         <value>Unity projects</value>
     </data>
+    <data name="InputActionsProjectFileType_InputActionsProjectFileType_InputActions__Unity_" xml:space="preserve">
+        <value>InputActions (Unity)</value>
+    </data>
+    <data name="UnityDots_ComponentLookupFieldMustBeUpdated" xml:space="preserve">
+        <value>Component lookup '{0}' must be updated</value>
+    </data>
+    <data name="UnityDots_CurrentComponentLookupMustBeUpdated" xml:space="preserve">
+        <value>Field of 'ComponentLookup' type must be updated before being used.</value>
+    </data>
+    <data name="UnityDots_AddComponentLookup_Update_Text" xml:space="preserve">
+        <value>Add missing 'Update' call for '{0}'</value>
+        <comment>ShortName</comment>
+    </data>
+    <data name="UnityDots_AddComponentLookupScoped_Update_Text" xml:space="preserve">
+        <value>Add missing 'Update' call for all QueryLookups</value>
+        <comment>ShortName</comment>
+    </data>
 </root>

@@ -1,4 +1,5 @@
 import base.integrationTests.prepareAssemblies
+import com.jetbrains.rd.ide.model.findUsagesHost
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.daemon.util.annotateDocumentWithHighlighterTags
@@ -13,6 +14,7 @@ import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
 import com.jetbrains.rider.test.annotations.Mute
+import org.testng.annotations.BeforeMethod
 
 class InputSystemTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String {
@@ -26,6 +28,11 @@ class InputSystemTest : BaseTestWithSolution() {
     override val traceCategories: List<String>
         get() = listOf(
             "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages")
+
+    @BeforeMethod(alwaysRun = true)
+    fun resetGroupings() {
+        project.solution.findUsagesHost.groupingRules.valueOrNull?.items?.forEach { it.enabled.set(true) }
+    }
 
     @Test
     fun findUsagesTest() {

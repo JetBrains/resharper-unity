@@ -800,6 +800,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
                 "-Djna.nounpack=true",
                 "-Djna.boot.library.path=${setupDependencies.orNull?.idea?.get()?.classes}/lib/jna/${System.getProperty("os.arch")}")
 
+        if (project.hasProperty("ignoreFailures")) { ignoreFailures = true }
 
         if (project.hasProperty("integrationTests")) {
             val testsType = project.property("integrationTests").toString()
