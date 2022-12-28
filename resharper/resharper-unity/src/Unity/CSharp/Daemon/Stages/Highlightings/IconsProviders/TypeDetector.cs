@@ -106,13 +106,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             var result = new List<BulbMenuItem>();
             var textControl = Solution.GetComponent<ITextControlManager>().LastFocusedTextControlPerClient
                 .ForCurrentClient();
-            if (declaration is IClassLikeDeclaration classLikeDeclaration &&
-                textControl != null && myUnityApi.IsUnityType(classLikeDeclaration.DeclaredElement))
+            if (declaration is IClassLikeDeclaration classLikeDeclaration && textControl != null)
             {
-                var fix = new GenerateUnityEventFunctionsFix(classLikeDeclaration);
-                result.Add(new IntentionAction(fix, Strings.TypeDetector_GetActions_Generate_Unity_event_functions,
-                        PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
-                    .ToBulbMenuItem(Solution, textControl));
+                if (myUnityApi.IsUnityType(classLikeDeclaration.DeclaredElement))
+                {
+                    var fix = new GenerateUnityEventFunctionsFix(classLikeDeclaration);
+                    result.Add(new IntentionAction(fix, Strings.TypeDetector_GetActions_Generate_Unity_event_functions,
+                            PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
+                        .ToBulbMenuItem(Solution, textControl));
+                }
+
+                if (UnityApi.IsDerivesFromIComponentData(classLikeDeclaration.DeclaredElement))
+                {
+                    var fix = new GenerateBakerAndAuthoringActionFix(classLikeDeclaration);
+                    result.Add(new IntentionAction(fix, Strings.UnityDots_GenerateBakerAndAuthoring_Name,
+                            PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
+                        .ToBulbMenuItem(Solution, textControl));
+                }
             }
 
             return result;

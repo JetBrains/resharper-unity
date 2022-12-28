@@ -1,0 +1,25 @@
+// ${KIND:Unity.GenerateBakerAndAuthoring}
+// ${SELECT0:FieldDimensions:Unity.Mathematics.float2}
+// ${SELECT1:TombstonePrefab:Unity.Entities.Entity}
+
+using Unity.Entities;
+using Unity.Mathematics;
+using UnityEngine;
+
+namespace ComponentsAndTags
+{
+    struct Graveyard{caret}Properties : IComponentData
+    {
+        public float2 FieldDimensions;
+        public int NumberTombstonesToSpawn;
+        public Entity TombstonePrefab;
+    }
+
+    public class GraveyardPropertiesBaker : Baker<GraveyardPropertiesAuthoring>
+    {
+        public override void Bake(GraveyardPropertiesAuthoring authoring)
+        {
+            AddComponent(new GraveyardProperties(){});
+        }
+    }
+}
