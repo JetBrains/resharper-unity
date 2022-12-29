@@ -18,6 +18,8 @@ Description |
 [Edit Mode Test](File/EditModeTest.md) |
 [Editor EntryPoint C# script](File/EditorEntryPoint.md) |
 [Editor Window](File/EditorWindow.md) |
+[IAspect](File/Aspect.md) |
+[IComponentData](File/ComponentData.md) |
 [Image Effect Shader](File/ImageEffectShader.md) |
 [ISystem](File/System.md) |
 [Mono Behaviour](File/MonoBehaviour.md) |
@@ -61,6 +63,8 @@ Description |
 [Edit Mode Test](File/EditModeTest.md) |
 [Editor EntryPoint C# script](File/EditorEntryPoint.md) |
 [Editor Window](File/EditorWindow.md) |
+[IAspect](File/Aspect.md) |
+[IComponentData](File/ComponentData.md) |
 [Image Effect Shader](File/ImageEffectShader.md) |
 [ISystem](File/System.md) |
 [Mono Behaviour](File/MonoBehaviour.md) |
