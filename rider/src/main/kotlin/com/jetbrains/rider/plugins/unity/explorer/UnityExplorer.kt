@@ -10,14 +10,13 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.intellij.openapi.util.NlsSafe
-import com.jetbrains.rider.actions.RiderActionsBundle
+import com.intellij.ui.ExperimentalUI
 import com.jetbrains.rider.plugins.unity.actions.UnityPluginActionsBundle
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
 import com.jetbrains.rider.projectView.views.actions.SolutionViewToggleAction
 import com.jetbrains.rider.projectView.views.impl.SolutionViewSelectInTargetBase
-import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 import icons.UnityIcons
 import org.jdom.Element
 
@@ -125,14 +124,10 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, createRoot
 
     // Adds to the project view pane's own toolbar
     override fun addPrimaryToolbarActions(actionGroup: DefaultActionGroup) {
-        actionGroup.addAction(SolutionViewToggleAction(
-            RiderActionsBundle.message("action.show.all.files.text"),
-            UnityPluginActionsBundle.message("action.show.all.files.description"),
-            AllIcons.Actions.ToggleVisibility, {
-                SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles
-            }, {
-                SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles = it
-        }))
+        if (!ExperimentalUI.isNewUI()) {
+            actionGroup.addAction(ActionManager.getInstance().getAction("ShowAllInUnityExplorer"))
+        }
+
         actionGroup.addSeparator()
         super.addPrimaryToolbarActions(actionGroup)
     }
