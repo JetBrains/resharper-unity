@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis\Dots";
         
-        //.Generated is used to mark file as generated - check DotsElementsSuperTypeDeclaredInOtherPartSuppressorMock
+        //.Generated is used to mark file as ISourceGeneratorOutputFile - check DotsElementsSuperTypeDeclaredInOtherPartSuppressorMock
 
         [Test]
         public void TestISystemPartialClassRedundantBaseClass()
