@@ -9,6 +9,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
             SuperTypeDeclaredInOtherPartWarning>
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis\Dots";
+        
+        //.Generated is used to mark file as generated - check DotsElementsSuperTypeDeclaredInOtherPartSuppressorMock
 
         [Test]
         public void TestISystemPartialClassRedundantBaseClass()
