@@ -301,6 +301,10 @@
             icon="UnityIcons.Actions.StartUnity">
       <add-to-group group-id="RevealGroup" anchor="last"/>
     </action>
+
+    <action id="ShowAllInUnityExplorer" class="com.jetbrains.rider.plugins.unity.explorer.UnityShowAllFilesAction">
+      <add-to-group group-id="ProjectViewTabToolbar" anchor="first"/>
+    </action>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
