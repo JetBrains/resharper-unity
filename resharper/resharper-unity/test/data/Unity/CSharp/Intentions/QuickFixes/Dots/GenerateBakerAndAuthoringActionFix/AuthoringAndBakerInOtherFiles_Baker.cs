@@ -1,5 +1,3 @@
-
-
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -14,7 +12,7 @@ namespace ComponentsAndTags
             {
                 NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn
             });
-            
+
             float f = 1.0f + 41.0f //existing code must be saved
         }
     }

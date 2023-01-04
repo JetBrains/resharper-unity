@@ -34,16 +34,16 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
-        [Test] public void GenerateBakerWithExistingAuthoringClassInOtherFile01()
+        [Test] public void AuthoringInOtherFile01()
         {
-            DoNamedTest($"../{DotsClassesFileName}", $"{TestMethod!.Name}_ExistingAuthoringClass.cs");
+            DoNamedTest($"../{DotsClassesFileName}", $"{TestMethod!.Name}_Authoring.cs");
         }
         
-        [Test] public void GenerateBakerWithExistingAuthoringClassAndBakerInOtherFiles()
+        [Test] public void AuthoringAndBakerInOtherFiles()
         {
             DoNamedTest($"../{DotsClassesFileName}"
-                , $"{TestMethod!.Name}_ExistingAuthoringClass.cs"
-                , $"{TestMethod!.Name}_ExistingBakerClass.cs"
+                , $"{TestMethod!.Name}_Authoring.cs"
+                , $"{TestMethod!.Name}_Baker.cs"
                 );
         }
     }

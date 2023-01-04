@@ -1,5 +1,3 @@
-﻿
-
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -11,6 +9,5 @@ namespace ComponentsAndTags
         public string OtherField01;
         public int NumberTombstonesToSpawn;
         public GameObject TombstonePrefab;
-        public float2 FieldDimensions;
     }
 }
