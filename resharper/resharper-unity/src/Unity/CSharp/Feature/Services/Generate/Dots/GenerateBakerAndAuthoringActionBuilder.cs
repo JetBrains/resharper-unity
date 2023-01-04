@@ -31,15 +31,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             return context.ClassDeclaration.IsFromUnityProject() && HasUnityBaseType(context) && base.IsAvailable(context);
         }
 
-        private static IObjectInitializer EnsureHasInitializer(IObjectCreationExpression objectCreationExpression, CSharpElementFactory elementFactory)
-        {
-            var initializer = objectCreationExpression.Initializer;
-            if (initializer is IObjectInitializer objectInitializer) 
-                return objectInitializer;
-
-            return (IObjectInitializer)objectCreationExpression.SetInitializer(elementFactory.CreateObjectInitializer());
-        }
-        
         protected override void Process(CSharpGeneratorContext context, IProgressIndicator progress)
         {
             if (!HasUnityBaseType(context)) return;
@@ -61,10 +52,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
         {
             var componentDeclaredType = componentStructDeclaration.DeclaredElement;// TypeFactory.CreateType(componentStructDeclaration.DeclaredElement);
 
-            var bakerClassDeclaration = TryCreateBakerClassDeclaration(context, factory, componentName, componentStructDeclaration, declaredAuthoringType);
-            var bakeMethodExpression = TryCreateBakeMethodExpression(bakerClassDeclaration, factory, declaredAuthoringType, out var authoringParameterName);
-            var componentCreationExpression = TryCreateComponentCreationExpression(factory, bakeMethodExpression, componentDeclaredType);
-            var creationExpressionInitializer = EnsureHasInitializer(componentCreationExpression, factory);
+            var bakerClassDeclaration = GetOrCreateBakerClassDeclaration(context, factory, componentName, componentStructDeclaration, declaredAuthoringType);
+            var bakeMethodExpression = GetOrCreateBakeMethodExpression(bakerClassDeclaration, factory, declaredAuthoringType, out var authoringParameterName);
+            var componentCreationExpression = GetOrCreateComponentCreationExpression(factory, bakeMethodExpression, componentDeclaredType);
+            var creationExpressionInitializer = GetOrCreateInitializer(componentCreationExpression, factory);
 
             //remove all member initialization
             foreach (var initializer in creationExpressionInitializer.MemberInitializers)
@@ -102,58 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             componentCreationExpression.FormatNode(CodeFormatProfile.COMPACT);
         }
 
-        private static IObjectCreationExpression TryCreateComponentCreationExpression(CSharpElementFactory factory,
-            IMethodDeclaration bakeMethodExpression, ITypeElement componentDeclaredType)
-        {
-            var existingCreationExpression = bakeMethodExpression.Body.FindNextNode( node => (node is IObjectCreationExpression expression
-                && componentDeclaredType.Equals(expression.Type().GetTypeElement()))? TreeNodeActionType.ACCEPT : TreeNodeActionType.CONTINUE);
-
-            if (existingCreationExpression != null)
-                return (IObjectCreationExpression)existingCreationExpression;
-
-            //AddComponent(new ComponentData{})
-            var addComponentStatement =
-                (IExpressionStatement)bakeMethodExpression.Body.AddStatementAfter(factory.CreateStatement("AddComponent();"),
-                    null);
-            var addComponentExpression = (addComponentStatement.Expression as IInvocationExpression).NotNull();
-            var creationArgument = addComponentExpression.AddArgumentAfter(
-                factory.CreateArgument(ParameterKind.VALUE, factory.CreateExpression("new $0()", componentDeclaredType)), null);
-
-            var componentCreationExpression = (IObjectCreationExpression)creationArgument.Value;
-            return componentCreationExpression;
-        }
-
-        private static IMethodDeclaration TryCreateBakeMethodExpression(IClassDeclaration bakerClassDeclaration,
-            CSharpElementFactory factory,
-            IDeclaredType declaredAuthoringType, out string authoringParameterName)
-        {
-            //'public override void Bake(ComponentNameAuthoring authoring)'
-            const string bakeMethodName = "Bake";
-            authoringParameterName = "authoring";
-
-            //TODO: maybe check if implements void Baker<T>::Bake(T) 
-            var existingBakeMethodDeclaration = bakerClassDeclaration.MethodDeclarations.FirstOrDefault(m => m.DeclaredName.Equals(bakeMethodName));
-            if(existingBakeMethodDeclaration is { IsOverride: true } && existingBakeMethodDeclaration.Type.IsVoid())
-            {
-                var parameters = existingBakeMethodDeclaration.DeclaredElement.NotNull().Parameters;
-                if (parameters.Count == 1 &&
-                    (parameters[0].Type.GetTypeElement()?.Equals(declaredAuthoringType.GetTypeElement()) ?? false))
-                {
-                    authoringParameterName = parameters[0].ShortName;
-                    return existingBakeMethodDeclaration;
-                }
-            }
-            
-            var bakeMethodExpression =
-                (IMethodDeclaration)factory.CreateTypeMemberDeclaration("void $0($1 $2) {}", bakeMethodName, declaredAuthoringType,
-                    authoringParameterName);
-            bakeMethodExpression.SetOverride(true);
-            bakeMethodExpression.SetAccessRights(AccessRights.PUBLIC);
-            bakeMethodExpression = bakerClassDeclaration.AddClassMemberDeclaration(bakeMethodExpression);
-            return bakeMethodExpression;
-        }
-
-        private static IClassDeclaration TryCreateBakerClassDeclaration(CSharpGeneratorContext context,
+        private static IClassDeclaration GetOrCreateBakerClassDeclaration(CSharpGeneratorContext context,
             CSharpElementFactory factory, string componentName, IClassLikeDeclaration componentStructDeclaration,
             IDeclaredType declaredAuthoringType)
         {
@@ -195,12 +135,72 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             return bakerClassDeclaration;
         }
 
+        private static IMethodDeclaration GetOrCreateBakeMethodExpression(IClassDeclaration bakerClassDeclaration,
+            CSharpElementFactory factory,
+            IDeclaredType declaredAuthoringType, out string authoringParameterName)
+        {
+            //'public override void Bake(ComponentNameAuthoring authoring)'
+            const string bakeMethodName = "Bake";
+            authoringParameterName = "authoring";
+
+            //TODO: maybe check if implements void Baker<T>::Bake(T) 
+            var existingBakeMethodDeclaration = bakerClassDeclaration.MethodDeclarations.FirstOrDefault(m => m.DeclaredName.Equals(bakeMethodName));
+            if(existingBakeMethodDeclaration is { IsOverride: true } && existingBakeMethodDeclaration.Type.IsVoid())
+            {
+                var parameters = existingBakeMethodDeclaration.DeclaredElement.NotNull().Parameters;
+                if (parameters.Count == 1 &&
+                    (parameters[0].Type.GetTypeElement()?.Equals(declaredAuthoringType.GetTypeElement()) ?? false))
+                {
+                    authoringParameterName = parameters[0].ShortName;
+                    return existingBakeMethodDeclaration;
+                }
+            }
+            
+            var bakeMethodExpression =
+                (IMethodDeclaration)factory.CreateTypeMemberDeclaration("void $0($1 $2) {}", bakeMethodName, declaredAuthoringType,
+                    authoringParameterName);
+            bakeMethodExpression.SetOverride(true);
+            bakeMethodExpression.SetAccessRights(AccessRights.PUBLIC);
+            bakeMethodExpression = bakerClassDeclaration.AddClassMemberDeclaration(bakeMethodExpression);
+            return bakeMethodExpression;
+        }
+
+        private static IObjectCreationExpression GetOrCreateComponentCreationExpression(CSharpElementFactory factory,
+            IMethodDeclaration bakeMethodExpression, ITypeElement componentDeclaredType)
+        {
+            var existingCreationExpression = bakeMethodExpression.Body.FindNextNode( node => (node is IObjectCreationExpression expression
+                && componentDeclaredType.Equals(expression.Type().GetTypeElement()))? TreeNodeActionType.ACCEPT : TreeNodeActionType.CONTINUE);
+
+            if (existingCreationExpression != null)
+                return (IObjectCreationExpression)existingCreationExpression;
+
+            //AddComponent(new ComponentData{})
+            var addComponentStatement =
+                (IExpressionStatement)bakeMethodExpression.Body.AddStatementAfter(factory.CreateStatement("AddComponent();"),
+                    null);
+            var addComponentExpression = (addComponentStatement.Expression as IInvocationExpression).NotNull();
+            var creationArgument = addComponentExpression.AddArgumentAfter(
+                factory.CreateArgument(ParameterKind.VALUE, factory.CreateExpression("new $0()", componentDeclaredType)), null);
+
+            var componentCreationExpression = (IObjectCreationExpression)creationArgument.Value;
+            return componentCreationExpression;
+        }
+
+        private static IObjectInitializer GetOrCreateInitializer(IObjectCreationExpression objectCreationExpression, CSharpElementFactory elementFactory)
+        {
+            var initializer = objectCreationExpression.Initializer;
+            if (initializer is IObjectInitializer objectInitializer) 
+                return objectInitializer;
+
+            return (IObjectInitializer)objectCreationExpression.SetInitializer(elementFactory.CreateObjectInitializer());
+        }
+
         private static IDeclaredType GenerateAuthoringDeclaration(CSharpGeneratorContext context, string componentName,
             IClassLikeDeclaration componentStructDeclaration,
             CSharpElementFactory factory,
             ref Dictionary<string, string> componentToAuthoringFieldNames)
         {
-            var authoringDeclaration = TryCreateAuthoringClassDeclaration(context, componentName, componentStructDeclaration, factory);
+            var authoringDeclaration = GetOrCreateAuthoringClassDeclaration(context, componentName, componentStructDeclaration, factory);
 
             var selectedGeneratorElements = context.InputElements.OfType<GeneratorDeclaredElement>();
             var existingFields =  authoringDeclaration.DeclaredElement.NotNull().Fields.ToDictionary(f => f.ShortName, f => f);
@@ -248,7 +248,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             return TypeFactory.CreateType(authoringDeclaration!.DeclaredElement);
         }
 
-        private static IClassDeclaration TryCreateAuthoringClassDeclaration(CSharpGeneratorContext context, string componentName, IClassLikeDeclaration componentStructDeclaration, CSharpElementFactory factory)
+        private static IClassDeclaration GetOrCreateAuthoringClassDeclaration(CSharpGeneratorContext context, string componentName, IClassLikeDeclaration componentStructDeclaration, CSharpElementFactory factory)
         {
             // public class ComponentNameAuthoring : MonoBehaviour {}
             var authoringMonoBehName = $"{componentName}Authoring";
@@ -278,7 +278,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             return authoringDeclaration;
         }
 
-        private bool HasUnityBaseType(CSharpGeneratorContext context)
+        private static bool HasUnityBaseType(CSharpGeneratorContext context)
         {
             return context.ClassDeclaration.DeclaredElement is IStruct typeElement && 
                    (UnityApi.IsDerivesFromIComponentData(typeElement) || UnityApi.IsDerivesFromIAspect(typeElement));
