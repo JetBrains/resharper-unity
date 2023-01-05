@@ -25,7 +25,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             // CompactOneToListMap is optimised for the typical use case of only one item per key
             var existingFields = new Dictionary<string, IField>();
             foreach (var typeMemberInstance in typeElement.GetAllClassMembers<IField>())
-                existingFields.Add(typeMemberInstance.Member.ShortName, typeMemberInstance.Member);
+            {
+                var field = typeMemberInstance.Member;
+                if (!field.IsStatic && field.GetAccessRights() == AccessRights.PUBLIC)
+                    existingFields.Add(field.ShortName, field);
+            }
 
             var elements = new List<GeneratorDeclaredElement>();
 

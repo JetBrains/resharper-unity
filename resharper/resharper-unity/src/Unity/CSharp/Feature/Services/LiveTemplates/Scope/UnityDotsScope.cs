@@ -1,7 +1,5 @@
 using System;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
-using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CSharp;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope
 {
