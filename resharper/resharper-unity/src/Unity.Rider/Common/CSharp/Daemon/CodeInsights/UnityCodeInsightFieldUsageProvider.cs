@@ -54,10 +54,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
 
         public override string ProviderId => "Unity serialized field";
         public override string DisplayName => Strings.UnityCodeInsightFieldUsageProvider_DisplayName_Unity_serialized_field;
-        public override CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Right;
+        public override CodeVisionAnchorKind DefaultAnchor => CodeVisionAnchorKind.Right;
 
-        public override ICollection<CodeLensRelativeOrdering> RelativeOrderings =>
-            new[] {new CodeLensRelativeOrderingLast()};
+        public override ICollection<CodeVisionRelativeOrdering> RelativeOrderings =>
+            new[] {new CodeVisionRelativeOrderingLast()};
 
         public UnityCodeInsightFieldUsageProvider(IFrontendBackendHost frontendBackendHost, BulbMenuComponent bulbMenu,
                                                   DeferredCacheController deferredCacheController,
@@ -115,7 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
 
         public void AddInspectorHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element,
             IDeclaredElement declaredElement, string baseDisplayName, string baseTooltip, string moreText, IconModel iconModel,
-            IEnumerable<BulbMenuItem> items, List<CodeLensEntryExtraActionModel> extraActions)
+            IEnumerable<BulbMenuItem> items, List<CodeVisionEntryExtraActionModel> extraActions)
         {
             string displayName = null;
 

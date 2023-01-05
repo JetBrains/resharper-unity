@@ -52,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
 
         public virtual void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element,
             IDeclaredElement declaredElement, string displayName, string tooltip, string moreText, IconModel iconModel,
-            IEnumerable<BulbMenuItem> items, List<CodeLensEntryExtraActionModel> extraActions)
+            IEnumerable<BulbMenuItem> items, List<CodeVisionEntryExtraActionModel> extraActions)
         {
             consumer.AddHighlighting(new UnityCodeInsightsHighlighting(element.GetNameDocumentRange(),
                 displayName, tooltip, moreText, this, declaredElement, iconModel, items,
@@ -61,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
 
         public abstract string ProviderId { get; }
         public abstract string DisplayName { get; }
-        public abstract CodeLensAnchorKind DefaultAnchor { get; }
-        public abstract ICollection<CodeLensRelativeOrdering> RelativeOrderings { get; }
+        public abstract CodeVisionAnchorKind DefaultAnchor { get; }
+        public abstract ICollection<CodeVisionRelativeOrdering> RelativeOrderings { get; }
     }
 }

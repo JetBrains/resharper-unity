@@ -40,8 +40,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             UnityPresentationType = unityPresentationType;
         }
 
-        public string TestOutput => ((TextCodeLensEntry)Entry).Text
-                                    + " | " + ((TextCodeLensEntry)Entry).LongPresentation
-                                    + " | " + ((TextCodeLensEntry)Entry).Tooltip;
+        public string TestOutput => ((TextCodeVisionEntry)Entry).Text
+                                    + " | " + ((TextCodeVisionEntry)Entry).LongPresentation
+                                    + " | " + ((TextCodeVisionEntry)Entry).Tooltip;
     }
 }

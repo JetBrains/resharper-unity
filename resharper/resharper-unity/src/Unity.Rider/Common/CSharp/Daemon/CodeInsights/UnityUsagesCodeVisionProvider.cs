@@ -83,10 +83,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
 
         public string ProviderId => "Unity Assets Usage";
         public string DisplayName => Strings.UnityAssetsUsage_Text;
-        public CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Top;
+        public CodeVisionAnchorKind DefaultAnchor => CodeVisionAnchorKind.Top;
 
-        public ICollection<CodeLensRelativeOrdering> RelativeOrderings =>
-            new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingBefore(ReferencesCodeInsightsProvider.Id)};
+        public ICollection<CodeVisionRelativeOrdering> RelativeOrderings =>
+            new CodeVisionRelativeOrdering[] {new CodeVisionRelativeOrderingBefore(ReferencesCodeInsightsProvider.Id)};
         protected IconId IconId => InsightUnityIcons.InsightUnity.Id;
 
         public void AddHighlighting(IHighlightingConsumer consumer, IDeclaration declaration,
