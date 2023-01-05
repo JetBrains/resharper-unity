@@ -12,12 +12,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
     public class DotsElementsSuperTypeDeclaredInOtherPartSuppressor : ISuperTypeDeclaredInOtherPartSuppressor
         , IPartialTypeWithSinglePartSuppressor
     {
-        public virtual bool SuppressInspections(IClassLikeDeclaration classLikeDeclaration,
-            IDeclaredType currentSuperInterfaceType,
+        public virtual bool SuppressInspections(IDeclaredType superType, IClassLikeDeclaration declaration,
             IPsiSourceFile otherSuperTypeSourceFile)
         {
-            return UnityApi.IsDotsImplicitlyUsedType(classLikeDeclaration.DeclaredElement) && 
-                   UnityApi.IsDotsImplicitlyUsedType(currentSuperInterfaceType.GetTypeElement()) &&
+            return UnityApi.IsDotsImplicitlyUsedType(declaration.DeclaredElement) && 
+                   UnityApi.IsDotsImplicitlyUsedType(superType.GetTypeElement()) &&
                 otherSuperTypeSourceFile.IsSourceGeneratedFile();
         }
 

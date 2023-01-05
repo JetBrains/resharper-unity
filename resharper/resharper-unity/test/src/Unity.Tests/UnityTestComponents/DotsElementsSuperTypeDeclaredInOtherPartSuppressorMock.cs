@@ -14,16 +14,14 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
 {
     [SolutionComponent]
-    public class
-        DotsElementsSuperTypeDeclaredInOtherPartSuppressorMock : DotsElementsSuperTypeDeclaredInOtherPartSuppressor
+    public class DotsElementsSuperTypeDeclaredInOtherPartSuppressorMock : DotsElementsSuperTypeDeclaredInOtherPartSuppressor
     {
-        public override bool SuppressInspections(IClassLikeDeclaration classLikeDeclaration,
-            IDeclaredType currentSuperInterfaceType,
+        public override bool SuppressInspections(IDeclaredType superType, IClassLikeDeclaration declaration,
             IPsiSourceFile otherSuperTypeSourceFile)
         {
             if (otherSuperTypeSourceFile.Name.Contains("Generated"))
                 otherSuperTypeSourceFile = new SourceGeneratedFileMock(otherSuperTypeSourceFile);
-            return base.SuppressInspections(classLikeDeclaration, currentSuperInterfaceType, otherSuperTypeSourceFile);
+            return base.SuppressInspections(superType, declaration, otherSuperTypeSourceFile);
         }
 
         private class SourceGeneratedFileMock : ISourceGeneratorOutputFile

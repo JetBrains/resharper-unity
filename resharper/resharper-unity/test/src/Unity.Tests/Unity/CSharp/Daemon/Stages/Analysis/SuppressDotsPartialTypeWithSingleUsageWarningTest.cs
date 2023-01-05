@@ -13,13 +13,13 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
             [Test]
             public void TestISystemSinglePartialClass()
             {
-                DoNamedTest2( "DotsClasses.cs");
+                DoNamedTest2("DotsClasses.cs");
             }
 
             [Test]
             public void TestSystemBaseSinglePartialClass()
             {
-                DoNamedTest2( "DotsClasses.cs");
+                DoNamedTest2("DotsClasses.cs");
             }
         }
     }
