@@ -10,10 +10,10 @@ Categorised:
 
 Description |
 ------------|
-[Aspect](File/Aspect.md) |
+[IAspect](File/Aspect.md) |
 [Assembly Definition File](File/AsmDef.md) |
 [Asset Postprocessor](File/AssetPostprocessor.md) |
-[ComponentData](File/ComponentData.md) |
+[IComponentData](File/ComponentData.md) |
 [Custom Editor](File/CustomEditor.md) |
 [Edit Mode Test](File/EditModeTest.md) |
 [Editor EntryPoint C# script](File/EditorEntryPoint.md) |
@@ -55,10 +55,10 @@ Shortcut | Description
 
 Description |
 ------------|
-[Aspect](File/Aspect.md) |
+[IAspect](File/Aspect.md) |
 [Assembly Definition File](File/AsmDef.md) |
 [Asset Postprocessor](File/AssetPostprocessor.md) |
-[ComponentData](File/ComponentData.md) |
+[IComponentData](File/ComponentData.md) |
 [Custom Editor](File/CustomEditor.md) |
 [Edit Mode Test](File/EditModeTest.md) |
 [Editor EntryPoint C# script](File/EditorEntryPoint.md) |

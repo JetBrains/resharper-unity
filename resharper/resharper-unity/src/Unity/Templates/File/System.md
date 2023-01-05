@@ -6,7 +6,7 @@ reformat: True
 shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=System, ValidateFileName=True
-scopes:  UnityFileTemplateSectionMarker;InUnityCSharpProject
+scopes:  UnityFileTemplateSectionMarker;UnityDotsScope
 uitag: DOTS
 parameterOrder: HEADER, (SYSTEM), (NAMESPACE)
 HEADER-expression: fileheader()

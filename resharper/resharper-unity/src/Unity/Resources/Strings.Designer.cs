@@ -465,5 +465,6 @@
     public static string UnityDots_GenerateBakerAndAuthoring_Name => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Name");
     public static string UnityDots_GenerateBakerAndAuthoring_Description => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Description");
     public static string UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields");
+    public static string UnityDots_projects => ResourceManager.GetString("UnityDots_projects");
   }
 }

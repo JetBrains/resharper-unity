@@ -1319,4 +1319,7 @@ a plugin to be installed to a project.</value>
     <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields" xml:space="preserve">
         <value>Component fields for baking</value>
     </data>
+    <data name="UnityDots_projects" xml:space="preserve">
+        <value>Unity DOTS projects</value>
+    </data>
 </root>
