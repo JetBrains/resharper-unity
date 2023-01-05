@@ -19,6 +19,7 @@ using JetBrains.ReSharper.Feature.Services.Navigation.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.ReSharper.Psi.Tree;
@@ -81,7 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
         }
 
         public string ProviderId => "Unity Assets Usage";
-        public string DisplayName => "Unity assets usage";
+        public string DisplayName => Strings.UnityAssetsUsage_Text;
         public CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Top;
 
         public ICollection<CodeLensRelativeOrdering> RelativeOrderings =>
