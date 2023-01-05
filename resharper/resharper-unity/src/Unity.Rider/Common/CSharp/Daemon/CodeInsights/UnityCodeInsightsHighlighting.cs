@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
         public UnityCodeInsightsHighlighting(DocumentRange range, [NotNull] string lenText, string tooltipText, [NotNull] string moreText,
                                              [NotNull] ICodeInsightsProvider provider, IDeclaredElement element,
                                              [CanBeNull] IconModel icon, IEnumerable<BulbMenuItem> menuItems,
-                                             List<CodeLensEntryExtraActionModel> extraActions = null)
+                                             List<CodeVisionEntryExtraActionModel> extraActions = null)
             : base(range, lenText, tooltipText, moreText, provider, element, icon, extraActions)
         {
             MenuItems = menuItems.ToList();
@@ -36,8 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
 
         public List<BulbMenuItem> MenuItems { get; }
 
-        public string TestOutput => ((TextCodeLensEntry)Entry).Text
-                                    + " | " + ((TextCodeLensEntry)Entry).LongPresentation
-                                    + " | " + ((TextCodeLensEntry)Entry).Tooltip;
+        public string TestOutput => ((TextCodeVisionEntry)Entry).Text
+                                    + " | " + ((TextCodeVisionEntry)Entry).LongPresentation
+                                    + " | " + ((TextCodeVisionEntry)Entry).Tooltip;
     }
 }
