@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Collections.Synchronized;
@@ -5,13 +6,13 @@ using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.FeaturesStatistics;
-using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.UsageStatistics.FUS.EventLog;
 using JetBrains.UsageStatistics.FUS.EventLog.Events;
 using JetBrains.UsageStatistics.FUS.EventLog.Fus;
 using JetBrains.UsageStatistics.FUS.Utils;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics
 {
@@ -22,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
         
         private readonly EventId2<long, bool> myMetaFileAverage;
         private readonly EventId1<long> myFilesAverage;
+        private readonly EventId3<FileType,long, bool> myFileSizeMax;
         private readonly EventId1<int> myMetaCount;
         private readonly EventId1<int> myAssetCount;
 
@@ -30,10 +32,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
 
         public UnityAssetInfoCollector(Lifetime lifetime, PackageManager packageManager, FeatureUsageLogger featureUsageLogger)
         {
-            myGroup = new EventLogGroup("dotnet.unity.assets", "Unity Asset Information", 1, featureUsageLogger);
+            myGroup = new EventLogGroup("dotnet.unity.assets", "Unity Asset Information", 2, featureUsageLogger);
             
             myMetaFileAverage = myGroup.RegisterEvent("metaAverage", "Meta Files Average", EventFields.Long("average", "Average (bytes)"), EventFields.Boolean("isReadonly", "IsReadonly"));
             myFilesAverage = myGroup.RegisterEvent("assetAverage", "All Asset Files Average", EventFields.Long("average", "Average (mb)"));
+
+            myFileSizeMax = myGroup.RegisterEvent("fileSizeMax", "Max file size (bytes) for each file type", 
+                EventFields.Enum<FileType>("type", "File Type"), 
+                EventFields.Long("size", "Max size (bytes)"),
+                EventFields.Boolean("isReadonly", "IsReadonly")
+                );
+
             myMetaCount = myGroup.RegisterEvent("metaCount", "Meta Files Count", EventFields.Int("count", "Count"));
             myAssetCount = myGroup.RegisterEvent("assetCount", "Asset Files Count", EventFields.Int("count", "Count"));
 
@@ -84,6 +93,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
                         long metaSize = 0;
                         long readonlyMetaSize = 0;
 
+                        var maxFileSizes = new Dictionary<string, long>();
+                        var readonlyMaxFileSizes = new Dictionary<string, long>();
+
                         int metaCount = 0;
                         int assetCount = 0;
                         
@@ -105,15 +117,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
                             }
                             else
                             {
+                                if (statistic.IsUserEditable)
+                                {
+                                    if (maxFileSizes.TryGetValue(statistic.FileType.ToString()) < statistic.Length)
+                                        maxFileSizes[statistic.FileType.ToString()] = statistic.Length;    
+                                }
+                                else
+                                {
+                                    if (readonlyMaxFileSizes.TryGetValue(statistic.FileType.ToString()) < statistic.Length)
+                                        readonlyMaxFileSizes[statistic.FileType.ToString()] = statistic.Length;    
+                                }
+                                    
                                 totalSize += statistic.Length;
                                 assetCount++;
                             }
                         }
-
-
+                        
                         hashSet.Add(myMetaFileAverage.Metric(StatisticsUtil.GetNextPowerOfTwo(metaSize), false));
                         hashSet.Add(myMetaFileAverage.Metric(StatisticsUtil.GetNextPowerOfTwo(readonlyMetaSize), true));
                         hashSet.Add(myFilesAverage.Metric(StatisticsUtil.GetNextPowerOfTwo(totalSize / 1024 / 1024)));
+
+                        foreach (var fileType in maxFileSizes.Keys)
+                        {
+                            hashSet.Add(myFileSizeMax.Metric((FileType)Enum.Parse(typeof(FileType), fileType), 
+                                StatisticsUtil.GetNextPowerOfTwo(maxFileSizes[fileType]), false));
+                        }
+                        
+                        foreach (var fileType in readonlyMaxFileSizes.Keys)
+                        {
+                            hashSet.Add(myFileSizeMax.Metric((FileType)Enum.Parse(typeof(FileType), fileType), 
+                                StatisticsUtil.GetNextPowerOfTwo(readonlyMaxFileSizes[fileType]), true));
+                        }
                         
                         hashSet.Add(myMetaCount.Metric(StatisticsUtil.GetNextPowerOfTwo(metaCount)));
                         hashSet.Add(myAssetCount.Metric(StatisticsUtil.GetNextPowerOfTwo(assetCount)));
@@ -156,6 +190,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
             AsmRef,
             Meta,
             InputActions,
+            Anim,
+            Controller,
 
             KnownBinary,
             ExcludedByName
@@ -182,6 +218,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
 
         // called from MT
         private SynchronizedList<Data> myStatistics = new();
+        
+
         public void AddStatistic(FileType fileType, long externalFileLength, bool externalFileIsUserEditable)
         {
             if (IsReady.Value)
