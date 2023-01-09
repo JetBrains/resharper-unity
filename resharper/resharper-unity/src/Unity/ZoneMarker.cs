@@ -1,6 +1,7 @@
 ﻿using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon.SolutionAnalysis;
 using JetBrains.ReSharper.Feature.Services;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.ExternalSources;
@@ -22,7 +23,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
         IRequire<ILanguageJsonNewZone>,
         IRequire<ILanguageCSharpZone>,
         IRequire<PsiFeaturesImplZone>,
-        IRequire<ILanguageYamlZone>
+        IRequire<ILanguageYamlZone>,
+        IRequire<SweaZone>
     {
         
     }
