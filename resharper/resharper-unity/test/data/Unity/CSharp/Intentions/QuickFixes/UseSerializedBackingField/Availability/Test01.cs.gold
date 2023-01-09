@@ -15,4 +15,3 @@ Make property 'Prop' abstract
 To property with serialized backing field
 Add accessor body
 To property with backing field
-Set C# language level to '6.0' for code analysis of this project (doesn't affect build)
