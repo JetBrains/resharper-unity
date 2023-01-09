@@ -24,7 +24,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
     public class GenerateBakerAndAuthoringActionBuilder : GeneratorBuilderBase<CSharpGeneratorContext>
     {
         public override double Priority => 100;
+        
+        private readonly struct ConversionData
+        {
+            public readonly  IClrTypeName TypeName;
+            public readonly string FunctionTemplate;
 
+            public ConversionData(IClrTypeName typeName, string functionTemplate)
+            {
+                TypeName = typeName;
+                FunctionTemplate = functionTemplate;
+            }
+
+            public void Deconstruct(out IClrTypeName typeName, out string functionTemplate)
+            {
+                typeName = TypeName;
+                functionTemplate = FunctionTemplate;
+            }
+        }
+
+        private static readonly Dictionary<IClrTypeName, ConversionData> ourTypesConversionDictionary = new() 
+        {
+            {KnownTypes.Entity, new ConversionData(KnownTypes.GameObject, "GetEntity($0.$1)")},
+            {KnownTypes.Random, new ConversionData(PredefinedType.UINT_FQN, "Unity.Mathematics.Random.CreateFromIndex($0.$1)")}
+        };
+        
         // Enables/disables the menu item
         protected override bool IsAvailable(CSharpGeneratorContext context)
         {
@@ -75,18 +99,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 
                 var authoringFieldType = TypeFactory.CreateTypeByCLRName(fieldTypeName, NullableAnnotation.NotAnnotated, selectedField.Module);
 
-                if (Equals(authoringFieldType.GetClrName(), KnownTypes.Entity))
-                {
-                    creationExpressionInitializer.AddMemberInitializerBefore(factory.CreateObjectPropertyInitializer(
-                            fieldShortName,
-                            factory.CreateExpression("GetEntity($0.$1)", authoringParameterName, authoringFieldName)), null);
-                }
-                else
-                {
-                    creationExpressionInitializer.AddMemberInitializerBefore(factory.CreateObjectPropertyInitializer(
-                        fieldShortName,
-                        factory.CreateExpression("$0.$1", authoringParameterName, authoringFieldName)), null);
-                }
+                var initializationFormat = "$0.$1";
+                if (ourTypesConversionDictionary.TryGetValue(authoringFieldType.GetClrName(), out var conversionData))
+                    initializationFormat = conversionData.FunctionTemplate;
+                
+                creationExpressionInitializer.AddMemberInitializerBefore(factory.CreateObjectPropertyInitializer(
+                    fieldShortName,
+                    factory.CreateExpression(initializationFormat, authoringParameterName, authoringFieldName)), null);
             }
 
             componentCreationExpression.RemoveArgumentList();
@@ -209,13 +228,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 if (!(generatorElement.DeclaredElement is IField selectedField)) 
                     continue;
                 
-                var fieldTypeName = selectedField.Type.GetTypeElement().NotNull().GetClrName();
                 var fieldShortName = selectedField.ShortName;
-                
-                var authoringFieldType = TypeFactory.CreateTypeByCLRName(fieldTypeName, NullableAnnotation.NotAnnotated, selectedField.Module);
-                if (Equals(authoringFieldType.GetClrName(), KnownTypes.Entity))
-                    authoringFieldType = TypeFactory.CreateTypeByCLRName(KnownTypes.GameObject, NullableAnnotation.NotAnnotated, selectedField.Module);
-
+                var authoringFieldType = GetFieldType(selectedField);
                 Assertion.AssertNotNull(authoringFieldType);
 
                 if (existingFields.TryGetValue(fieldShortName, out var existingField))
@@ -276,6 +290,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             }
 
             return authoringDeclaration;
+        }
+
+        private static IType GetFieldType(IField selectedField)
+        {
+            var fieldTypeName = selectedField.Type.GetTypeElement().NotNull().GetClrName();
+            var authoringFieldType = TypeFactory.CreateTypeByCLRName(fieldTypeName, NullableAnnotation.NotAnnotated, selectedField.Module);
+
+            if (ourTypesConversionDictionary.TryGetValue(authoringFieldType.GetClrName(), out var result))
+                return TypeFactory.CreateTypeByCLRName(result.TypeName, NullableAnnotation.NotAnnotated, selectedField.Module);
+            
+            return authoringFieldType;
         }
 
         private static bool HasUnityBaseType(CSharpGeneratorContext context)
