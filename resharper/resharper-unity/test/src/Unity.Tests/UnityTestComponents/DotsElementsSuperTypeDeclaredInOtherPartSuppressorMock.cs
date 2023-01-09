@@ -9,19 +9,20 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.SourceGenerators;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
+namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 {
     [SolutionComponent]
-    public class DotsElementsSuperTypeDeclaredInOtherPartSuppressorMock : DotsElementsSuperTypeDeclaredInOtherPartSuppressor
+    public partial class DotsElementsSuperTypeDeclaredInOtherPartSuppressorMock : DotsElementsSuperTypeDeclaredInOtherPartSuppressor
     {
         public override bool SuppressInspections(IDeclaredType superType, IClassLikeDeclaration declaration,
-            IPsiSourceFile otherSuperTypeSourceFile)
+            ITypeDeclaration otherPartDeclaration)
         {
-            if (otherSuperTypeSourceFile.Name.Contains("Generated"))
-                otherSuperTypeSourceFile = new SourceGeneratedFileMock(otherSuperTypeSourceFile);
-            return base.SuppressInspections(superType, declaration, otherSuperTypeSourceFile);
+            if (otherPartDeclaration.GetSourceFile().Name.Contains("Generated"))
+                otherPartDeclaration = new ClassLikeDeclarationFromGeneratedFileMock(otherPartDeclaration);
+            return base.SuppressInspections(superType, declaration, otherPartDeclaration);
         }
 
         private class SourceGeneratedFileMock : ISourceGeneratorOutputFile

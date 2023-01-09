@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
 {
@@ -13,11 +14,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
         , IPartialTypeWithSinglePartSuppressor
     {
         public virtual bool SuppressInspections(IDeclaredType superType, IClassLikeDeclaration declaration,
-            IPsiSourceFile otherSuperTypeSourceFile)
+            ITypeDeclaration otherPartDeclaration)
         {
             return UnityApi.IsDotsImplicitlyUsedType(declaration.DeclaredElement) && 
                    UnityApi.IsDotsImplicitlyUsedType(superType.GetTypeElement()) &&
-                otherSuperTypeSourceFile.IsSourceGeneratedFile();
+                otherPartDeclaration.GetSourceFile().IsSourceGeneratedFile();
         }
 
         public virtual bool SuppressInspections(IClassLikeDeclaration classLikeDeclaration)
