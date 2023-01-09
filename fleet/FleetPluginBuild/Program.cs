@@ -107,7 +107,7 @@ void GenerateNugetConfig(string buildDirectory, string path)
 
 void GenerateDotNetSdkPath(string buildDirectory, string path)
 {
-    var directory = Path.Combine(buildDirectory, "..", "resharper", "resharper", "build", "generated");
+    var directory = Path.Combine(buildDirectory, "..", "resharper", "build", "generated");
     if (!Directory.Exists(directory))
         Directory.CreateDirectory(directory);
     
