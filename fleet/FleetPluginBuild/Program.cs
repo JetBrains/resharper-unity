@@ -7,7 +7,7 @@ using System.Text;
 
 
 Console.WriteLine($"Working folder: {Environment.CurrentDirectory}");
-Environment.SetEnvironmentVariable("FleetBackendSdkPath", @"C:\Users\vlad.krasnotsvetov\Downloads\DotNetSdkForFleetPlugins.231.0.20230106.150417-eap01d");
+// Environment.SetEnvironmentVariable("FleetBackendSdkPath", @"C:\Users\vlad.krasnotsvetov\Downloads\DotNetSdkForFleetPlugins.231.0.20230106.150417-eap01d");
 
 var path = Environment.GetEnvironmentVariable("FleetBackendSdkPath");
 var configuration = "Release";
@@ -17,6 +17,8 @@ if (path == null)
     Console.Error.WriteLine("Fleet.Backend Sdk path is not found");
     return -1;
 }
+
+Console.Error.WriteLine($"Sdk path = {path}");
 
 GenerateNugetConfig(path);
 GenerateDotNetSdkPath(path);
