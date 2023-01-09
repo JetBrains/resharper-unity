@@ -7,4 +7,8 @@ $DotnetArgs = $DotnetArgs + "run"
 $DotnetArgs = $DotnetArgs + "--project"
 $DotnetArgs = $DotnetArgs + $projectPath
 $DotnetArgs = $DotnetArgs + "--configuration" + "Release"
+$DotnetArgs = $DotnetArgs + "--"
+$DotnetArgs = $DotnetArgs + "All"
+$DotnetArgs = $DotnetArgs + $scriptPath
+$DotnetArgs = $DotnetArgs + "local_sdk"
 & dotnet $DotnetArgs

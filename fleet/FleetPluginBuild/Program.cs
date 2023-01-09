@@ -169,7 +169,6 @@ int DoGenerate()
     
     Console.WriteLine($"Working folder: {buildDirectory}");
 
-    // sdk = @"C:\Users\vlad.krasnotsvetov\Downloads\DotNetSdkForFleetPlugins.231.0.20230106.150417-eap01d";
     if (sdk == null)
     {
         Console.Error.WriteLine("Fleet.Backend Sdk path is not found");
