@@ -6,10 +6,11 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 
-Console.WriteLine($"Working folder: {Environment.CurrentDirectory}");
-// Environment.SetEnvironmentVariable("FleetBackendSdkPath", @"C:\Users\vlad.krasnotsvetov\Downloads\DotNetSdkForFleetPlugins.231.0.20230106.150417-eap01d");
+var buildDirectory = args[0];
+var sdk = args[1];
 
-var path = Environment.GetEnvironmentVariable("FleetBackendSdkPath");
+Console.WriteLine($"Working folder: {buildDirectory}");
+var path = sdk;
 var configuration = "Release";
 
 if (path == null)
@@ -28,7 +29,7 @@ if (buildCode != 0)
     return buildCode;
 
 
-var resultPluginDirectory = Path.Combine(Environment.CurrentDirectory, "build", "fleet.dotnet.unity");
+var resultPluginDirectory = Path.Combine(buildDirectory, "build", "fleet.dotnet.unity");
 if (Directory.Exists(resultPluginDirectory))
     Directory.Delete(resultPluginDirectory, true);
 
@@ -45,7 +46,7 @@ var backendFilesToCopy = new List<string>()
 var resultBackendDirectory = Path.Combine(resultPluginDirectory, "backend");
 Directory.CreateDirectory(resultBackendDirectory);
 
-var originBackendPath = Path.Combine(Environment.CurrentDirectory, "..", "resharper", "build", "Unity", "bin", configuration, "net472");
+var originBackendPath = Path.Combine(buildDirectory, "..", "resharper", "build", "Unity", "bin", configuration, "net472");
 foreach (var fileToCopy in backendFilesToCopy)
 {
     var originFile = Path.Combine(originBackendPath, fileToCopy);
@@ -109,7 +110,7 @@ int RunBuild(string slnFile, string buildConfiguration, bool warningsAsErrors)
 
 void GenerateNugetConfig(string path)
 {
-    var directory = Path.Combine(Environment.CurrentDirectory, "..");
+    var directory = Path.Combine(buildDirectory, "..");
     if (!Directory.Exists(directory))
         Directory.CreateDirectory(directory);
             
@@ -129,7 +130,7 @@ void GenerateNugetConfig(string path)
 
 void GenerateDotNetSdkPath(string path)
 {
-    var directory = Path.Combine(Environment.CurrentDirectory, "..", "resharper", "resharper", "build", "generated");
+    var directory = Path.Combine(buildDirectory, "..", "resharper", "resharper", "build", "generated");
     if (!Directory.Exists(directory))
         Directory.CreateDirectory(directory);
     
