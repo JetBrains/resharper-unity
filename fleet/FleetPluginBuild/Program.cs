@@ -6,63 +6,40 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 
-var buildDirectory = args[0];
-var sdk = args[1];
+var step = args[0];
 
-Console.WriteLine($"Working folder: {buildDirectory}");
-var path = sdk;
 var configuration = "Release";
-
-if (path == null)
+if (step == "Generate")
 {
-    Console.Error.WriteLine("Fleet.Backend Sdk path is not found");
-    return -1;
+    return DoGenerate();
 }
 
-Console.Error.WriteLine($"Sdk path = {path}");
-
-GenerateNugetConfig(path);
-GenerateDotNetSdkPath(path);
-
-var buildCode = RunBuild(@"C:\workspace\resharper-unity\fleet\resharper-unity-fleet.sln", configuration, false);
-if (buildCode != 0)
-    return buildCode;
-
-
-var resultPluginDirectory = Path.Combine(buildDirectory, "build", "fleet.dotnet.unity");
-if (Directory.Exists(resultPluginDirectory))
-    Directory.Delete(resultPluginDirectory, true);
-
-Directory.CreateDirectory(resultPluginDirectory);
-
-var backendFilesToCopy = new List<string>()
+if (step == "Build")
 {
-    "JetBrains.ReSharper.Plugins.Unity.dll",
-    "JetBrains.ReSharper.Plugins.Unity.Fleet.dll",
-    "JetBrains.ReSharper.Plugins.Json.dll",
-    "JetBrains.ReSharper.Plugins.Yaml.dll"
-};
-
-var resultBackendDirectory = Path.Combine(resultPluginDirectory, "backend");
-Directory.CreateDirectory(resultBackendDirectory);
-
-var originBackendPath = Path.Combine(buildDirectory, "..", "resharper", "build", "Unity", "bin", configuration, "net472");
-foreach (var fileToCopy in backendFilesToCopy)
-{
-    var originFile = Path.Combine(originBackendPath, fileToCopy);
-    if (!File.Exists(originFile))
-    {
-        Console.WriteLine($"Expected \"{originFile}\" to exist");
-        return -1;
-    }
-    File.Copy(originFile, Path.Combine(resultBackendDirectory, fileToCopy), true);   
+    return DoBuild();
 }
 
-// final
-var archiveFile = resultPluginDirectory + ".zip";
-if (File.Exists(archiveFile))
-    File.Delete(archiveFile);
-ZipFile.CreateFromDirectory(resultPluginDirectory, archiveFile);
+if (step == "Pack")
+{
+    return DoPack();
+}
+
+if (step == "All")
+{
+    var generateCode = DoGenerate();
+    if (generateCode != 0)
+        return generateCode;
+    
+    var buildCode = DoBuild();
+    if (buildCode != 0)
+        return buildCode;
+    
+    return DoPack();
+}
+
+Console.Error.WriteLine("Unknown step");
+
+return -1;
 
 
 
@@ -108,7 +85,7 @@ int RunBuild(string slnFile, string buildConfiguration, bool warningsAsErrors)
     return process.ExitCode;
 }
 
-void GenerateNugetConfig(string path)
+void GenerateNugetConfig(string buildDirectory, string path)
 {
     var directory = Path.Combine(buildDirectory, "..");
     if (!Directory.Exists(directory))
@@ -128,7 +105,7 @@ void GenerateNugetConfig(string path)
 }
 
 
-void GenerateDotNetSdkPath(string path)
+void GenerateDotNetSdkPath(string buildDirectory, string path)
 {
     var directory = Path.Combine(buildDirectory, "..", "resharper", "resharper", "build", "generated");
     if (!Directory.Exists(directory))
@@ -144,4 +121,72 @@ void GenerateDotNetSdkPath(string path)
         """, Encoding.UTF8);
 }
 
-return 0;
+int DoPack()
+{
+    var buildDirectory = args[1];
+    var resultPluginDirectory = Path.Combine(buildDirectory, "build", "fleet.dotnet.unity");
+    if (Directory.Exists(resultPluginDirectory))
+        Directory.Delete(resultPluginDirectory, true);
+
+    Directory.CreateDirectory(resultPluginDirectory);
+
+    var backendFilesToCopy = new List<string>()
+    {
+        "JetBrains.ReSharper.Plugins.Unity.dll",
+        "JetBrains.ReSharper.Plugins.Unity.Fleet.dll",
+        "JetBrains.ReSharper.Plugins.Json.dll",
+        "JetBrains.ReSharper.Plugins.Yaml.dll"
+    };
+
+    var resultBackendDirectory = Path.Combine(resultPluginDirectory, "backend");
+    Directory.CreateDirectory(resultBackendDirectory);
+
+    var originBackendPath = Path.Combine(buildDirectory, "..", "resharper", "build", "Unity", "bin", configuration, "net472");
+    foreach (var fileToCopy in backendFilesToCopy)
+    {
+        var originFile = Path.Combine(originBackendPath, fileToCopy);
+        if (!File.Exists(originFile))
+        {
+            Console.WriteLine($"Expected \"{originFile}\" to exist");
+            return -1;
+        }
+        File.Copy(originFile, Path.Combine(resultBackendDirectory, fileToCopy), true);   
+    }
+
+// final
+    var archiveFile = resultPluginDirectory + ".zip";
+    if (File.Exists(archiveFile))
+        File.Delete(archiveFile);
+    ZipFile.CreateFromDirectory(resultPluginDirectory, archiveFile);
+
+    return 0;
+}
+
+int DoGenerate()
+{
+    var buildDirectory = args[1];
+    var sdk = args[2];
+    
+    Console.WriteLine($"Working folder: {buildDirectory}");
+
+    // sdk = @"C:\Users\vlad.krasnotsvetov\Downloads\DotNetSdkForFleetPlugins.231.0.20230106.150417-eap01d";
+    if (sdk == null)
+    {
+        Console.Error.WriteLine("Fleet.Backend Sdk path is not found");
+        return -1;
+    }
+        
+    Console.Error.WriteLine($"Sdk path = {sdk}");
+        
+    GenerateNugetConfig(buildDirectory, sdk);
+    GenerateDotNetSdkPath(buildDirectory, sdk);
+
+    return 0;
+}
+
+int DoBuild()
+{
+    var buildDirectory = args[1];
+    var slnPath = Path.Combine(buildDirectory, "resharper-unity-fleet.sln");
+    return RunBuild(slnPath, configuration, false);
+}
