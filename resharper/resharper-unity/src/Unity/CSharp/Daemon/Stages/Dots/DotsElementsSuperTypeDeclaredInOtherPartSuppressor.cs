@@ -16,14 +16,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
         public virtual bool SuppressInspections(IDeclaredType superType, IClassLikeDeclaration declaration,
             ITypeDeclaration otherPartDeclaration)
         {
-            return UnityApi.IsDotsImplicitlyUsedType(declaration.DeclaredElement) && 
-                   UnityApi.IsDotsImplicitlyUsedType(superType.GetTypeElement()) &&
-                otherPartDeclaration.GetSourceFile().IsSourceGeneratedFile();
+            return IsPossibleDotsPartialClasses(declaration.DeclaredElement) &&
+                   IsPossibleDotsPartialClasses(superType.GetTypeElement()) &&
+                   otherPartDeclaration.GetSourceFile().IsSourceGeneratedFile();
         }
 
         public virtual bool SuppressInspections(IClassLikeDeclaration classLikeDeclaration)
         {
-            return UnityApi.IsDotsImplicitlyUsedType(classLikeDeclaration.DeclaredElement);
+            return IsPossibleDotsPartialClasses(classLikeDeclaration.DeclaredElement);
+        }
+
+        private static bool IsPossibleDotsPartialClasses(ITypeElement? typeElement)
+        {
+            return UnityApi.IsDerivesFromSystemBase(typeElement)
+                   || UnityApi.IsDerivesFromISystem(typeElement)
+                   || UnityApi.IsDerivesFromIAspect(typeElement);
         }
     }
 }

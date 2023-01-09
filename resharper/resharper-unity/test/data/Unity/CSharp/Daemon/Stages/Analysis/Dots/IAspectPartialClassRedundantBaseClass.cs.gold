@@ -2,7 +2,7 @@
 
 namespace Systems
 {
-    public partial class Foo : SystemBase
+    public partial struct Foo : IAspect
     {
     }
 }

@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
     public partial class SuppressDotsSuperTypeDeclaredInOtherPartWarningTests : CSharpHighlightingTestBase<SuperTypeDeclaredInOtherPartWarning>
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\Stages\Analysis\Dots";
-        
+
         //.Generated is used to mark file as ISourceGeneratorOutputFile - check DotsElementsSuperTypeDeclaredInOtherPartSuppressorMock
 
         [Test]
@@ -18,6 +18,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
 
         [Test]
         public void TestSystemBasePartialClassRedundantBaseClass()
+        {
+            DoNamedTest2($"{TestMethodName2}.Generated.cs", "DotsClasses.cs");
+        }
+
+        [Test]
+        public void TestIAspectPartialClassRedundantBaseClass()
         {
             DoNamedTest2($"{TestMethodName2}.Generated.cs", "DotsClasses.cs");
         }

@@ -66,10 +66,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             type != null && myUnityTypeCache.IsUnityType(type);
 
         public static bool IsDotsImplicitlyUsedType([NotNullWhen(true)] ITypeElement? typeElement) =>
-            typeElement.DerivesFrom(KnownTypes.ComponentSystemBase) 
+            IsDerivesFromSystemBase(typeElement) 
             || IsDerivesFromISystem(typeElement)
-            || typeElement.DerivesFrom(KnownTypes.IAspect)
+            || IsDerivesFromIAspect(typeElement)
             || typeElement.DerivesFrom(KnownTypes.IBaker);
+
+        public static bool IsDerivesFromIAspect(ITypeElement? typeElement)
+        {
+            return typeElement.DerivesFrom(KnownTypes.IAspect);
+        }
+
+        public static bool IsDerivesFromSystemBase(ITypeElement? typeElement)
+        {
+            return typeElement.DerivesFrom(KnownTypes.ComponentSystemBase);
+        }
 
         public static bool IsDerivesFromISystem(ITypeElement? typeElement)
         {
@@ -113,7 +123,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 
         // NOTE: This method assumes that the type is not a descendant of UnityEngine.Object!
         private bool IsSerializableTypeSimpleCheck([NotNullWhen(true)] ITypeElement? type, IProject project, bool isTypeUsage,
-                                        bool hasSerializeReference = false)
+            bool hasSerializeReference = false)
         {
             if (type is not (IStruct or IClass))
                 return false;
@@ -312,7 +322,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             if (property is not { IsAuto: true, IsWritable: true, IsStatic: false }
                 || attribute.Target != AttributeTarget.Field 
                 || attribute.Name == null
-                )
+               )
                 return SerializedFieldStatus.NonSerializedField;
 
             var result = attribute.Name.Reference.Resolve();
@@ -404,7 +414,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         }
 
         public UnityEventFunction? GetUnityEventFunction(IMethod method, Version unityVersion,
-                                                         out MethodSignatureMatch match)
+            out MethodSignatureMatch match)
         {
             match = MethodSignatureMatch.NoMatch;
 
