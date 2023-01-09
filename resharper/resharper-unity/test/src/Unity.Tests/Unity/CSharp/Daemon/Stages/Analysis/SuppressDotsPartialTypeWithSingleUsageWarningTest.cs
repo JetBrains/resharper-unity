@@ -21,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
             {
                 DoNamedTest2("DotsClasses.cs");
             }
+
             [Test]
             public void TestIAspectSinglePartialClass()
             {
