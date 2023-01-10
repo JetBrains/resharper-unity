@@ -61,4 +61,10 @@
     <data name="ReformatCode_Text" xml:space="preserve">
         <value>Reformat code</value>
     </data>
+    <data name="InUnityShaderLabFile_PresentableShortName_ShaderLab__Unity_" xml:space="preserve">
+        <value>ShaderLab (Unity)</value>
+    </data>
+    <data name="InUnityShaderLabFile_QuickListTitle_Unity_files" xml:space="preserve">
+        <value>Unity files</value>
+    </data>
 </root>

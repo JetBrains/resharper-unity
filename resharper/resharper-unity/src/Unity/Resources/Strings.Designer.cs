@@ -457,5 +457,14 @@
     public static string UnityFirstpassEditorFolder_Text => ResourceManager.GetString("UnityFirstpassEditorFolder_Text");
     public static string UnityFirstpassRuntimeFolder_Text => ResourceManager.GetString("UnityFirstpassRuntimeFolder_Text");
     public static string UnityProjects_Text => ResourceManager.GetString("UnityProjects_Text");
+    public static string InputActionsProjectFileType_InputActionsProjectFileType_InputActions__Unity_ => ResourceManager.GetString("InputActionsProjectFileType_InputActionsProjectFileType_InputActions__Unity_");
+    public static string UnityDots_ComponentLookupFieldMustBeUpdated => ResourceManager.GetString("UnityDots_ComponentLookupFieldMustBeUpdated");
+    public static string UnityDots_CurrentComponentLookupMustBeUpdated => ResourceManager.GetString("UnityDots_CurrentComponentLookupMustBeUpdated");
+    public static string UnityDots_AddComponentLookup_Update_Text => ResourceManager.GetString("UnityDots_AddComponentLookup_Update_Text");
+    public static string UnityDots_AddComponentLookupScoped_Update_Text => ResourceManager.GetString("UnityDots_AddComponentLookupScoped_Update_Text");
+    public static string UnityDots_GenerateBakerAndAuthoring_Name => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Name");
+    public static string UnityDots_GenerateBakerAndAuthoring_Description => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Description");
+    public static string UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields");
+    public static string UnityDots_projects => ResourceManager.GetString("UnityDots_projects");
   }
 }

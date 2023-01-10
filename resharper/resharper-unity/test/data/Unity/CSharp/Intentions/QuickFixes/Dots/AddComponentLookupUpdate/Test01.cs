@@ -1,0 +1,14 @@
+using Unity.Entities;
+
+struct Bar : IComponentData, IEnableableComponent
+{
+}
+
+partial struct Foo : ISystem
+{
+    private ComponentLookup<Bar> NotUpdatedComponent{caret}Lookup; //Must be marked with warning
+
+    public void OnUpdate(ref SystemState state)
+    {
+    }
+}
