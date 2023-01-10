@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeReferen
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReference
+namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 {
     [SolutionComponent]
     public class UnityElementIdProviderMock : UnityElementIdProvider
