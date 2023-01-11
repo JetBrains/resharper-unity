@@ -19,7 +19,6 @@ using JetBrains.ReSharper.Feature.Services.Navigation.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.ReSharper.Psi.Tree;
@@ -66,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
 
                 rules.AddRule("DocumentEditorContext", DocumentModelDataConstants.EDITOR_CONTEXT, new DocumentEditorContext(highlightInfo.CodeInsightsHighlighting.Range));
                 rules.AddRule("PopupWindowSourceOverride", UIDataConstants.PopupWindowContextSource,
-                    new PopupWindowContextSource(_ => new RiderEditorOffsetPopupWindowContext(highlightInfo.CodeInsightsHighlighting.Range.StartOffset.Offset)));
+                    new PopupWindowContextSource(lt => new RiderEditorOffsetPopupWindowContext(highlightInfo.CodeInsightsHighlighting.Range.StartOffset.Offset)));
 
                 rules.AddRule("DontNavigateImmediatelyToSingleUsage", NavigationSettings.DONT_NAVIGATE_IMMEDIATELY_TO_SINGLE_USAGE, new object());
 
@@ -82,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
         }
 
         public string ProviderId => "Unity Assets Usage";
-        public string DisplayName => Strings.UnityAssetsUsage_Text;
+        public string DisplayName => "Unity assets usage";
         public CodeVisionAnchorKind DefaultAnchor => CodeVisionAnchorKind.Top;
 
         public ICollection<CodeVisionRelativeOrdering> RelativeOrderings =>
