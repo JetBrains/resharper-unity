@@ -32,14 +32,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Hi
             return true;
         }
 
-        public static List<CodeLensEntryExtraActionModel> GetExtraActions(UnitySolutionTracker solutionTracker,
+        public static List<CodeVisionEntryExtraActionModel> GetExtraActions(UnitySolutionTracker solutionTracker,
                                                                           IBackendUnityHost backendUnityHost)
         {
-            var extraActions = new List<CodeLensEntryExtraActionModel>();
+            var extraActions = new List<CodeVisionEntryExtraActionModel>();
             if (solutionTracker.IsUnityProject.HasTrueValue() && !backendUnityHost.IsConnectionEstablished())
             {
-                extraActions.Add(new CodeLensEntryExtraActionModel(Strings.UnityIsNotRunning_Text, null));
-                extraActions.Add(new CodeLensEntryExtraActionModel(Strings.RiderIconProviderUtil_GetExtraActions_Start_Unity_Editor,
+                extraActions.Add(new CodeVisionEntryExtraActionModel(Strings.UnityIsNotRunning_Text, null));
+                extraActions.Add(new CodeVisionEntryExtraActionModel(Strings.RiderIconProviderUtil_GetExtraActions_Start_Unity_Editor,
                     AbstractUnityCodeInsightProvider.StartUnityActionId));
             }
 
