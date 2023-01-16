@@ -2,6 +2,7 @@
 // ${SELECT0:FieldDimensions:Unity.Mathematics.float2}
 // ${SELECT1:TombstonePrefab:Unity.Entities.Entity}
 // ${SELECT2:NumberTombstonesToSpawn:System.Int32}
+// ${GLOBAL0:GenerateAsNested=False}
 
 using Unity.Entities;
 using Unity.Mathematics;

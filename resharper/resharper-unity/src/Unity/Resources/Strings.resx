@@ -1319,6 +1319,15 @@ a plugin to be installed to a project.</value>
     <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields" xml:space="preserve">
         <value>Component fields for baking</value>
     </data>
+    <data name="UnityDots_GenerateBakerAndAuthoring_SelectedBaker" xml:space="preserve">
+        <value>Selected Baker</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndAuthoring_NewBaker" xml:space="preserve">
+        <value>New Baker</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndAuthoring_GenerateBakerAsNestedClass" xml:space="preserve">
+        <value>Generate Baker as nested class</value>
+    </data>
     <data name="UnityDots_projects" xml:space="preserve">
         <value>Unity DOTS projects</value>
     </data>

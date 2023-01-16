@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Progress;
@@ -5,6 +6,7 @@ using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.CSharp.Generate;
 using JetBrains.ReSharper.Feature.Services.Generate;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
@@ -14,6 +16,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Naming.Settings;
 using JetBrains.ReSharper.Psi.Resolve;
+using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
@@ -43,12 +46,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             }
         }
 
+        private const string SelectedBaker = "SelectedBaker";
+        private const string GenerateAsNested = "GenerateAsNested";
+        
         private static readonly Dictionary<IClrTypeName, ConversionData> ourTypesConversionDictionary = new() 
         {
             {KnownTypes.Entity, new ConversionData(KnownTypes.GameObject, "GetEntity($0.$1)")},
             {KnownTypes.Random, new ConversionData(PredefinedType.UINT_FQN, "Unity.Mathematics.Random.CreateFromIndex($0.$1)")}
         };
-        
+
+        protected override void BuildOptions(CSharpGeneratorContext context, ICollection<IGeneratorOption> options)
+        {
+            base.BuildOptions(context, options);
+            
+            options.Add(new GeneratorOptionBoolean(GenerateAsNested, Strings.UnityDots_GenerateBakerAndAuthoring_GenerateBakerAsNestedClass, true));
+            
+            var (bakerBaseTypeElement, _) = TypeFactory.CreateTypeByCLRName(KnownTypes.Baker, context.PsiModule);
+            var typeElements = new List<ITypeElement>();
+            context.Solution.GetPsiServices().Finder.FindInheritors(bakerBaseTypeElement, typeElements.ConsumeDeclaredElements(),
+                NullProgressIndicator.Instance);
+
+            var availableBakers = new List<string>()
+            {
+                Strings.UnityDots_GenerateBakerAndAuthoring_NewBaker
+            };
+
+            foreach (var typeElement in typeElements)
+            {
+                availableBakers.Add(typeElement.GetClrName().FullName);
+            }
+            
+            options.Add(new GeneratorOptionSelector(SelectedBaker, Strings.UnityDots_GenerateBakerAndAuthoring_SelectedBaker, availableBakers));
+        }
+
         // Enables/disables the menu item
         protected override bool IsAvailable(CSharpGeneratorContext context)
         {
@@ -58,25 +88,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
         protected override void Process(CSharpGeneratorContext context, IProgressIndicator progress)
         {
             if (!HasUnityBaseType(context)) return;
-            
+            var selectedBaker = context.GetOption(SelectedBaker);
+            var generateAsNested = context.GetBooleanOption(GenerateAsNested);
+
             var componentStructDeclaration = context.ClassDeclaration;
             
             var factory = CSharpElementFactory.GetInstance(componentStructDeclaration);
             var componentName = componentStructDeclaration.DeclaredName;
             var componentToAuthoringFieldNames = new Dictionary<string, string>();
             
-            var declaredAuthoringType = GenerateAuthoringDeclaration(context, componentName, componentStructDeclaration, factory, ref componentToAuthoringFieldNames);
-            GenerateBaker(context, factory, componentName, componentStructDeclaration, declaredAuthoringType, componentToAuthoringFieldNames);
+            var (declaredAuthoringType, authoringDeclaration) = GenerateAuthoringDeclaration(context, componentName, componentStructDeclaration, factory, ref componentToAuthoringFieldNames);
+            Func<IClassLikeDeclaration, IClassLikeDeclaration> insertionFunc = generateAsNested
+                ? declaration => authoringDeclaration.AddClassMemberDeclaration(declaration)
+                : declaration => ModificationUtil.AddChildAfter(componentStructDeclaration, declaration);
+            
+            Func<string, string> bakerNameGenerator = generateAsNested
+                ? bakerClassName => $"{authoringDeclaration.CLRName}+{bakerClassName}"
+                : bakerClassName => componentStructDeclaration.CLRName.Replace(componentStructDeclaration.DeclaredName, bakerClassName);
+
+            GenerateBaker(context, factory, componentName, componentStructDeclaration, declaredAuthoringType, componentToAuthoringFieldNames, bakerNameGenerator, insertionFunc);
         }
 
         private static void GenerateBaker(CSharpGeneratorContext context, CSharpElementFactory factory,
             string componentName,
             IClassLikeDeclaration componentStructDeclaration,
-            IDeclaredType declaredAuthoringType, Dictionary<string, string> componentToAuthoringFieldNames)
+            IDeclaredType declaredAuthoringType, Dictionary<string, string> componentToAuthoringFieldNames,
+            Func<string, string> bakerNameGenerator,
+            Func<IClassLikeDeclaration, IClassLikeDeclaration> insertionDelegate)
         {
             var componentDeclaredType = componentStructDeclaration.DeclaredElement;// TypeFactory.CreateType(componentStructDeclaration.DeclaredElement);
 
-            var bakerClassDeclaration = GetOrCreateBakerClassDeclaration(context, factory, componentName, componentStructDeclaration, declaredAuthoringType);
+            var bakerClassDeclaration = GetOrCreateBakerClassDeclaration(context, factory, componentName, componentStructDeclaration, declaredAuthoringType, bakerNameGenerator, insertionDelegate);
             var bakeMethodExpression = GetOrCreateBakeMethodExpression(bakerClassDeclaration, factory, declaredAuthoringType, out var authoringParameterName);
             var componentCreationExpression = GetOrCreateComponentCreationExpression(factory, bakeMethodExpression, componentDeclaredType);
             var creationExpressionInitializer = GetOrCreateInitializer(componentCreationExpression, factory);
@@ -112,9 +154,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             componentCreationExpression.FormatNode(CodeFormatProfile.COMPACT);
         }
 
-        private static IClassDeclaration GetOrCreateBakerClassDeclaration(CSharpGeneratorContext context,
+        private static IClassLikeDeclaration GetOrCreateBakerClassDeclaration(CSharpGeneratorContext context,
             CSharpElementFactory factory, string componentName, IClassLikeDeclaration componentStructDeclaration,
-            IDeclaredType declaredAuthoringType)
+            IDeclaredType declaredAuthoringType, Func<string, string> bakerDeclaredName, Func<IClassLikeDeclaration, IClassLikeDeclaration> insertionFunc)
         {
             // get parent class 'bakerTypeWithSubstitution' : Baker<ComponentNameAuthoring>
             var bakerGenericBaseClass = TypeFactory.CreateTypeByCLRName(KnownTypes.Baker, NullableAnnotation.NotAnnotated, context.PsiModule);
@@ -124,13 +166,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
             //Create class 'ComponentDataBaker : Baker<ComponentNameAuthoring>'
             var bakerClassName = $"{componentName}Baker";
-
-            var declaredName =
-                componentStructDeclaration.CLRName.Replace(componentStructDeclaration.DeclaredName, bakerClassName);
+            var declaredName = bakerDeclaredName.Invoke(bakerClassName);
             
             var (existingBakerTypeElement, _) = TypeFactory.CreateTypeByCLRName(declaredName, context.PsiModule);
 
-            IClassDeclaration bakerClassDeclaration;
+            IClassLikeDeclaration bakerClassDeclaration;
             //Must be derived from bakerTypeWithSubstitution
             if (existingBakerTypeElement != null && existingBakerTypeElement.IsDescendantOf(bakerTypeWithSubstitution.GetTypeElement()))
             {
@@ -146,7 +186,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
                 using (WriteLockCookie.Create())
                 {
-                    bakerClassDeclaration = ModificationUtil.AddChildAfter(componentStructDeclaration, bakerClassDeclaration);
+
+                    bakerClassDeclaration = insertionFunc(bakerClassDeclaration);// ModificationUtil.AddChildAfter(insertionFunc, bakerClassDeclaration);
                     bakerClassDeclaration.FormatNode(CodeFormatProfile.DEFAULT);
                 }
             }
@@ -154,7 +195,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             return bakerClassDeclaration;
         }
 
-        private static IMethodDeclaration GetOrCreateBakeMethodExpression(IClassDeclaration bakerClassDeclaration,
+        private static IMethodDeclaration GetOrCreateBakeMethodExpression(IClassLikeDeclaration bakerClassDeclaration,
             CSharpElementFactory factory,
             IDeclaredType declaredAuthoringType, out string authoringParameterName)
         {
@@ -214,7 +255,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             return (IObjectInitializer)objectCreationExpression.SetInitializer(elementFactory.CreateObjectInitializer());
         }
 
-        private static IDeclaredType GenerateAuthoringDeclaration(CSharpGeneratorContext context, string componentName,
+        private static (IDeclaredType, IClassLikeDeclaration) GenerateAuthoringDeclaration(CSharpGeneratorContext context, string componentName,
             IClassLikeDeclaration componentStructDeclaration,
             CSharpElementFactory factory,
             ref Dictionary<string, string> componentToAuthoringFieldNames)
@@ -259,7 +300,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 authoringDeclaration.AddClassMemberDeclaration(fieldDeclaration);
             }
             
-            return TypeFactory.CreateType(authoringDeclaration!.DeclaredElement);
+            return (TypeFactory.CreateType(authoringDeclaration!.DeclaredElement), authoringDeclaration);
         }
 
         private static IClassDeclaration GetOrCreateAuthoringClassDeclaration(CSharpGeneratorContext context, string componentName, IClassLikeDeclaration componentStructDeclaration, CSharpElementFactory factory)

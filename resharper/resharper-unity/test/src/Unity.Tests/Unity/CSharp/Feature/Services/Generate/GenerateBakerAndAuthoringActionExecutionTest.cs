@@ -19,21 +19,21 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
             base.CheckProjectFile(projectItem, test);
         }
 
-        [Test] public void GenerateBaker01()
+        [Test] public void GenerateNewBakerNotNested()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
         
-        [Test] public void GenerateBaker02()
+        [Test] public void GenerateNewBakerNested()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
         
-        [Test] public void GenerateBaker03()
+        [Test] public void UpdateExistingNestedBaker()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
-
+        
         [Test] public void AuthoringInOtherFile01()
         {
             DoNamedTest($"../{DotsClassesFileName}", $"{TestMethod!.Name}_Authoring.cs");

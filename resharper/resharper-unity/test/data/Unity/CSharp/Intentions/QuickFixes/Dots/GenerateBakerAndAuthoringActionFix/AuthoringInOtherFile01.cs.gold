@@ -20,17 +20,4 @@ namespace ComponentsAndTags
         public int NumberTombstonesToSpawn;
         public Entity TombstonePrefab;
     }
-
-    public class GraveyardPropertiesBaker : Baker<GraveyardPropertiesAuthoring>
-    {
-      public override void Bake(GraveyardPropertiesAuthoring authoring)
-      {
-        AddComponent(new GraveyardProperties
-        {
-          FieldDimensions = authoring.FieldDimensions,
-          TombstonePrefab = GetEntity(authoring.TombstonePrefab),
-          NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn
-        });
-      }
-    }
 }
