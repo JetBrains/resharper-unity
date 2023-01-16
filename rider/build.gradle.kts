@@ -88,9 +88,9 @@ val debuggerDllFiles = files(
 )
 
 val helperExeFiles = files(
-    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net5.0/JetBrains.Rider.Unity.ListIosUsbDevices.dll",
-    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net5.0/JetBrains.Rider.Unity.ListIosUsbDevices.pdb",
-    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net5.0/JetBrains.Rider.Unity.ListIosUsbDevices.runtimeconfig.json"
+    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net7.0/JetBrains.Rider.Unity.ListIosUsbDevices.dll",
+    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net7.0/JetBrains.Rider.Unity.ListIosUsbDevices.pdb",
+    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net7.0/JetBrains.Rider.Unity.ListIosUsbDevices.runtimeconfig.json"
 )
 
 val helperExeNetFxFiles = files(
@@ -298,7 +298,7 @@ tasks {
             val backendCsOutDir =
                 if (monorepo) monorepoPreGeneratedBackendDir.resolve("resharper/ModelLib")
                 else File(repoRoot, "resharper/build/generated/Model/Lib")
-            val unityEditorCsOutDir = 
+            val unityEditorCsOutDir =
                 if (monorepo) monorepoPreGeneratedUnityDir.resolve("unity/ModelLib")
                 else File(repoRoot, "unity/build/generated/Model/Lib")
             val frontendKtOutLayout = "src/main/rdgen/kotlin/com/jetbrains/rider/plugins/unity/model/lib"
@@ -345,7 +345,7 @@ tasks {
                 root = "model.lib.Library"
                 directory = unityEditorCsOutDir.canonicalPath
                 if (monorepo) generatedFileSuffix = ".Pregenerated"
-            }   
+            }
             // Library is used as frontend in frontendBackendModel, so has same perspective. Generate as-is
             generator {
                 language = "kotlin"
