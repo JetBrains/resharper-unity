@@ -219,7 +219,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
         // called from MT
         private SynchronizedList<Data> myStatistics = new();
         
-
         public void AddStatistic(FileType fileType, long externalFileLength, bool externalFileIsUserEditable)
         {
             if (IsReady.Value)

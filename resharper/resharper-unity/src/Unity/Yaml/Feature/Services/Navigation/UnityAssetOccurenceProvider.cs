@@ -1,8 +1,12 @@
 using JetBrains.Annotations;
+using JetBrains.DocumentModel;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Search;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
@@ -19,10 +23,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
                     unityEventFindResult.AttachedElementLocation, unityEventFindResult.IsPrefabModification);
             }
 
-            if (findResult is UnityAnimationEventFindResults animationEventFindResult)
+            if (findResult is AnimExplicitFindResults animationEventFindResult)
             {
-                return new UnityAnimationEventOccurence(animationEventFindResult.SourceFile,
+                return new AnimExplicitEventOccurence(animationEventFindResult.SourceFile,
                     animationEventFindResult.DeclaredElementPointer, animationEventFindResult.Usage);
+            }
+            
+            if (findResult is AnimImplicitFindResult animImplicitFindResult)
+            {
+                var persistentIndexManager = animImplicitFindResult.DeclaredElement.GetSolution().GetComponent<IPersistentIndexManager>();
+                var sourceFile = persistentIndexManager[animImplicitFindResult.Usage.TextRangeOwner];
+                if (sourceFile == null) return null;
+                var range = new DocumentRange(sourceFile.Document,
+                    animImplicitFindResult.Usage.TextRangeOwnerPsiPersistentIndex);
+                return new AnimImplicitOccurence(sourceFile, range, OccurrencePresentationOptions.DefaultOptions);
             }
             
             if (findResult is UnityScriptsFindResults scriptFindResult) return CreateScriptOccurence(scriptFindResult);
@@ -30,13 +44,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             if (findResult is UnityInspectorFindResult unityInspectorFindResults)
             {
                 return new UnityInspectorValuesOccurrence(unityInspectorFindResults.SourceFile, unityInspectorFindResults.InspectorVariableUsage,
-                    unityInspectorFindResults.DeclaredElementPointer, unityInspectorFindResults.OwningElemetLocation, unityInspectorFindResults.IsPrefabModification); 
+                    unityInspectorFindResults.DeclaredElementPointer, unityInspectorFindResults.OwningElementLocation, unityInspectorFindResults.IsPrefabModification); 
             }
             
             if (findResult is UnityEventHandlerFindResult unityMethodsFindResult)
             {
                 return new UnityEventHandlerOccurrence(unityMethodsFindResult.SourceFile, unityMethodsFindResult.DeclaredElementPointer,
-                    unityMethodsFindResult.OwningElemetLocation, unityMethodsFindResult.AssetMethodUsages, unityMethodsFindResult.IsPrefabModification); 
+                    unityMethodsFindResult.OwningElementLocation, unityMethodsFindResult.AssetMethodUsages, unityMethodsFindResult.IsPrefabModification); 
             }
             
             return null;
@@ -53,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             {
                 case AssetScriptUsage assetScriptUsage:
                     var guid = assetScriptUsage.UsageTarget.ExternalAssetGuid;
-                    var owningElementLocation = unityScriptsFindResults.OwningElemetLocation;
+                    var owningElementLocation = unityScriptsFindResults.OwningElementLocation;
                     return new UnityScriptsOccurrence(file, declaredElementPointer, owningElementLocation, guid);
                 case AnimatorStateScriptUsage animatorStateUsage:
                     return new UnityAnimatorScriptOccurence(file, declaredElementPointer, animatorStateUsage);

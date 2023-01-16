@@ -132,7 +132,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
 
             if (!UnityInputActionsReferenceUsageSearchFactory.IsInterestingElement(el))
                 return Array.Empty<InputActionsDeclaredElement>();
-            var method = (IMethod)el;
+            if (el is not IMethod method) return Array.Empty<InputActionsDeclaredElement>();
             var strippedMethodName = method.ShortName.Substring(2);
             var type = method.ContainingType;
             if (type is not IClass classType) return Array.Empty<InputActionsDeclaredElement>();

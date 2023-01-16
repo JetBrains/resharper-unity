@@ -231,12 +231,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
 
             public FindExecution Merge(UnityAssetFindResult data)
             {
-                var sourceFile = myPersistentIndexManager[data.OwningElemetLocation.OwningPsiPersistentIndex];
+                var sourceFile = myPersistentIndexManager[data.OwningElementLocation.OwningPsiPersistentIndex];
                 if (sourceFile == null)
                     return FindExecution.Continue;
 
                 var request = CreateRequest(myPackageManager, myLogger, mySolutionDirectoryPath, myAssetHierarchyProcessor, myAnimatorContainer,
-                    data.OwningElemetLocation, sourceFile, myDeclaredElement);
+                    data.OwningElementLocation, sourceFile, myDeclaredElement);
                 if (request != null)
                     Result.Add(request);
 

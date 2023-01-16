@@ -117,7 +117,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
 
         public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor)
         {
-            if (!(occurrence is UnityAnimationEventOccurence animationEventOccurence)) return EmptyModel();
+            if (!(occurrence is AnimExplicitEventOccurence animationEventOccurence)) return EmptyModel();
             var text = animationEventOccurence.GetDisplayText()?.Text;
             return text != null ? CreateModel(text) : EmptyModel();
         }

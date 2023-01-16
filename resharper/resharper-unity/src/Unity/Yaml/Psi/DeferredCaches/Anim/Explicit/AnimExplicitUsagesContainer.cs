@@ -10,32 +10,27 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Explicit
 {
     [SolutionComponent]
-    public class AnimationEventUsagesContainer : IUnityAssetDataElementContainer
+    public class AnimExplicitUsagesContainer : IUnityAssetDataElementContainer
     {
         [NotNull] private readonly MetaFileGuidCache myMetaFileGuidCache;
 
         [NotNull] private readonly ISolution mySolution;
 
-        [NotNull] private readonly Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myPointers =
-            new Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer>();
+        [NotNull] private readonly Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myPointers = new();
 
         [NotNull] private readonly IShellLocks myShellLocks;
 
-        [NotNull] private readonly OneToCompactCountingSet<string, Guid> myNameToGuids =
-            new OneToCompactCountingSet<string, Guid>();
+        [NotNull] private readonly OneToCompactCountingSet<string, Guid> myNameToGuids = new();
 
-        [NotNull] private readonly OneToCompactCountingSet<Pair<string, Guid>, IPsiSourceFile> myUsageToSourceFiles =
-            new OneToCompactCountingSet<Pair<string, Guid>, IPsiSourceFile>();
+        [NotNull] private readonly OneToCompactCountingSet<Pair<string, Guid>, IPsiSourceFile> myUsageToSourceFiles = new();
 
-        public AnimationEventUsagesContainer([NotNull] IPersistentIndexManager manager,
-                                             [NotNull] IShellLocks shellLocks,
+        public AnimExplicitUsagesContainer([NotNull] IShellLocks shellLocks,
                                              [NotNull] MetaFileGuidCache metaFileGuidCache,
                                              [NotNull] ISolution solution)
         {
@@ -46,11 +41,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
 
         public int Order => 0;
 
-        public string Id => nameof(AnimationEventUsagesContainer);
+        public string Id => nameof(AnimExplicitUsagesContainer);
 
         public IUnityAssetDataElement CreateDataElement(IPsiSourceFile sourceFile)
         {
-            return new AnimationUsagesDataElement(mySolution, myMetaFileGuidCache);
+            return new AnimExplicitUsagesDataElement();
         }
 
         public bool IsApplicable(IPsiSourceFile currentAssetSourceFile)
@@ -61,14 +56,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
         public object Build(IPsiSourceFile file,
                             AssetDocument assetDocument)
         {
-            return new AnimationExtractor(file, assetDocument).TryExtractEventUsage();
+            return new AnimExtractor(file, assetDocument).TryExtractEventUsage();
         }
 
         public void Drop(IPsiSourceFile currentAssetSourceFile,
                          AssetDocumentHierarchyElement assetDocumentHierarchyElement,
-                         IUnityAssetDataElement element)
+                         IUnityAssetDataElement unityAssetDataElement)
         {
-            if (!(element is AnimationUsagesDataElement animationElement)) return;
+            var animationElement = (AnimExplicitUsagesDataElement)unityAssetDataElement;
             foreach (var @event in animationElement.Events)
             {
                 var functionName = @event.FunctionName;
@@ -86,8 +81,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
                           IUnityAssetDataElementPointer unityAssetDataElementPointer,
                           IUnityAssetDataElement unityAssetDataElement)
         {
+            var animationElement = (AnimExplicitUsagesDataElement)unityAssetDataElement;
             myPointers[currentAssetSourceFile] = unityAssetDataElementPointer;
-            if (!(unityAssetDataElement is AnimationUsagesDataElement animationElement)) return;
             foreach (var @event in animationElement.Events)
             {
                 myNameToGuids.Add(@event.FunctionName, @event.Guid);
@@ -109,18 +104,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
 
         [NotNull]
         [ItemNotNull]
-        public IEnumerable<AnimationUsage> GetEventUsagesFor([NotNull] IPsiSourceFile sourceFile,
+        public IEnumerable<AnimExplicitUsage> GetUsagesFor([NotNull] IPsiSourceFile sourceFile,
                                                              [NotNull] IDeclaredElement declaredElement)
         {
             AssertShellLocks();
             if (!(declaredElement is IClrDeclaredElement clrDeclaredElement))
-                return EmptyList<AnimationUsage>.Enumerable;
+                return EmptyList<AnimExplicitUsage>.Enumerable;
             var boxedGuid = FindGuidOf(clrDeclaredElement);
-            if (!boxedGuid.HasValue) return Enumerable.Empty<AnimationUsage>();
+            if (!boxedGuid.HasValue) return Enumerable.Empty<AnimExplicitUsage>();
             var pointer = myPointers[sourceFile];
-            if (pointer is null) return Enumerable.Empty<AnimationUsage>();
+            if (pointer is null) return Enumerable.Empty<AnimExplicitUsage>();
             var element = pointer.GetElement(sourceFile, Id);
-            if (!(element is AnimationUsagesDataElement animatorElement)) return Enumerable.Empty<AnimationUsage>();
+            if (!(element is AnimExplicitUsagesDataElement animatorElement)) return Enumerable.Empty<AnimExplicitUsage>();
             var name = declaredElement.ShortName;
             var containingType = clrDeclaredElement.GetContainingType();
             var solution = mySolution;
