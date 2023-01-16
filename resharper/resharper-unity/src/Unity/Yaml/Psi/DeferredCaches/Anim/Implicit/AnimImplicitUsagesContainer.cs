@@ -78,13 +78,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
             {
                 if (@event?.Value is not IBlockMappingNode functionRecord) continue;
                 var functionName = AnimExtractor.ExtractEventFunctionNameFrom(functionRecord);
-                var functionNameNode = functionRecord.GetMapEntry("functionName");
                 var guid = AnimExtractor.ExtractEventFunctionGuidFrom(functionRecord);
                 
                 if (functionName != null && guid == null) // the case opposite to what does `JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages.AnimationExtractor.AddEvent`
                 {
-                    var nodeRange = functionNameNode!.GetTreeTextRange();
-                    result.Add(new AnimImplicitUsage(new TextRange(assetDocument.StartOffset + nodeRange.StartOffset.Offset, assetDocument.StartOffset + nodeRange.EndOffset.Offset), file.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), functionName));
+                    var functionNameNode = functionRecord.GetMapEntry("functionName");
+                    var contentOffset = functionNameNode!.Content.Value.GetTreeTextRange().StartOffset.Offset;
+                    result.Add(new AnimImplicitUsage(new TextRange(assetDocument.StartOffset + contentOffset, assetDocument.StartOffset + contentOffset), file.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), functionName));
                 }
             }
             
@@ -167,7 +167,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
                     {
                         if (anims.Contains(fileToEvent.Key.GetLocation()))
                         {
-                            result.AddRange(fileToEvent.Value);
+                            foreach (var usage in fileToEvent.Value)
+                            {
+                                if (usage.FunctionName != shortName) continue;
+                                result.Add(usage);
+                            }
                         }
                     }
                 }
