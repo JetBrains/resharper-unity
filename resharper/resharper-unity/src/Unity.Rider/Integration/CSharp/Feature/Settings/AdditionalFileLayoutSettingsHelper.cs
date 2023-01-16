@@ -1,10 +1,11 @@
+#nullable enable
+
 using System;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
-using JetBrains.Rider.Backend.Features.Dialog;
 using JetBrains.Rider.Backend.Features.Settings.OptionsPage.CSharpFileLayout;
 using JetBrains.Util;
 
@@ -17,17 +18,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Set
                                             "    \n" +
                                             "</Patterns>";
 
-        private static readonly object ourLocalChangeToken = new object();
+        private static readonly object ourLocalChangeToken = new();
 
-        private readonly RiderDialogHost myDialogHost;
         private readonly string myDefaultWithRegions;
         private readonly string myDefaultWithoutRegions;
 
-        public AdditionalFileLayoutSettingsHelper(in Lifetime lifetime, IContextBoundSettingsStore settingsContext,
-            RiderDialogHost dialogHost)
+        public AdditionalFileLayoutSettingsHelper(in Lifetime lifetime, IContextBoundSettingsStore settingsContext)
         {
-            myDialogHost = dialogHost;
-
             myDefaultWithoutRegions = AdditionalFileLayoutResources.DefaultAdditionalFileLayoutPatterns.ReplaceNewLines("\n");
             myDefaultWithRegions = AdditionalFileLayoutResources.DefaultAdditionalFileLayoutPatternsWithRegions.ReplaceNewLines("\n");
 
@@ -35,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Set
             if (initialText.IsNullOrEmpty()) initialText = AdditionalFileLayoutResources.DefaultAdditionalFileLayoutPatterns;
             initialText = initialText.ReplaceNewLines("\n");
 
-            Text = new Property<string>(lifetime, "AdditionalFileLayoutSettingsHelper.Text", initialText);
+            Text = new Property<string>("AdditionalFileLayoutSettingsHelper.Text", initialText);
 
             Text.Change.Advise_NoAcknowledgement(lifetime, args =>
             {

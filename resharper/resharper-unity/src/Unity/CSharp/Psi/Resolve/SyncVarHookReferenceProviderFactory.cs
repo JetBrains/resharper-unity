@@ -1,5 +1,6 @@
-﻿using JetBrains.DataFlow;
-using JetBrains.Lifetimes;
+﻿#nullable enable
+
+using JetBrains.DataFlow;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
@@ -12,12 +13,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
     [ReferenceProviderFactory]
     public class SyncVarHookReferenceProviderFactory : IReferenceProviderFactory
     {
-        public SyncVarHookReferenceProviderFactory(Lifetime lifetime)
+        public SyncVarHookReferenceProviderFactory()
         {
-            Changed = new Signal<IReferenceProviderFactory>(lifetime, GetType().FullName);
+            Changed = new Signal<IReferenceProviderFactory>(GetType().FullName!);
         }
 
-        public IReferenceFactory CreateFactory(IPsiSourceFile sourceFile, IFile file, IWordIndex wordIndexForChecks)
+        public IReferenceFactory? CreateFactory(IPsiSourceFile sourceFile, IFile file, IWordIndex? wordIndexForChecks)
         {
             var project = sourceFile.GetProject();
             if (project == null || !project.IsUnityProject())

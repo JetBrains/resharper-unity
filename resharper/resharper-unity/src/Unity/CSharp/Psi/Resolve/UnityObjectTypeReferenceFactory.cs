@@ -1,3 +1,5 @@
+#nullable enable
+
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
@@ -13,11 +15,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
     {
         public override bool HasReference(ITreeNode element, IReferenceNameContainer names)
         {
-            if (element is ILiteralExpression literal && literal.ConstantValue.IsString())
+            if (element is ILiteralExpression literal && literal.ConstantValue.IsNotNullString(out var literalText))
             {
                 // Note that this is case insensitive. I don't think it really matters, as resolving will handle case
                 // insensitivity correctly
-                return names.HasAnyNameIn((string) literal.ConstantValue.Value);
+                return names.HasAnyNameIn(literalText);
             }
 
             return false;
@@ -83,13 +85,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
         private ReferenceCollection CreateTypeNameReferences(ICSharpLiteralExpression literal,
                                                              ExpectedObjectTypeReferenceKind kind)
         {
-            var literalValue = (string) literal.ConstantValue.Value;
-            if (literalValue == null)
+            if (!literal.ConstantValue.IsNotNullString(out var literalValue))
                 return ReferenceCollection.Empty;
 
             var symbolCache = literal.GetPsiServices().Symbols;
 
-            IQualifier qualifier = null;
+            IQualifier? qualifier = null;
             var references = new LocalList<IReference>();
             var startIndex = 0;
             var nextDotIndex = literalValue.IndexOf('.');

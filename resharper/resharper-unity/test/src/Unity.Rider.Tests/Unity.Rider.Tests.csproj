@@ -41,6 +41,7 @@
     <ProjectReference Include="..\..\..\src\Unity.Shaders\Unity.Shaders.csproj" />
     <ProjectReference Include="..\..\..\src\Unity.Rider\Unity.Rider.csproj" />
     <Reference Include="System" />
+    <Reference Include="WindowsBase" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
   </ItemGroup>

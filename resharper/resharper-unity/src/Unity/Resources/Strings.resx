@@ -942,6 +942,9 @@
     <data name="Unity_Internal_DumpSpellCheckWordLists_Text" xml:space="preserve">
         <value>Dump Spell Check Word Lists</value>
     </data>
+    <data name="Unity_Internal_SerializeReferencesDump_Text" xml:space="preserve">
+        <value>Dump SerializeReference Cache</value>
+    </data>
     <data name="UnityAssetsFolder_Text" xml:space="preserve">
         <value>Unity Assets folder</value>
     </data>

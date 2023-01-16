@@ -2273,4 +2273,3 @@ For ReSharper 9.2. Initial release
 ### Added
 - Marks `MonoBehaviour` classes, fields and methods as in use
 - Adds _Generate Code_ provider for `MonoBehaviour` message handlers
-

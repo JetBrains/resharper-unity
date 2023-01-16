@@ -38,11 +38,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
                 {
                     var fieldDeclarationDeclaredElement = fieldDeclaration.DeclaredElement;
 
-                    var isComponentLookup = fieldDeclarationDeclaredElement != null &&
-                                            UnityApi.IsComponentLookup(fieldDeclarationDeclaredElement.Type
-                                                .GetTypeElement());
-
-                    if (isComponentLookup)
+                    var isComponentLookup =
+                        UnityApi.IsComponentLookup(fieldDeclarationDeclaredElement?.Type.GetTypeElement());
+                    if (isComponentLookup && fieldDeclarationDeclaredElement != null)
                     {
                         queryLookupFields.Add(fieldDeclarationDeclaredElement);
                         dictionary.Add(fieldDeclarationDeclaredElement, fieldDeclaration);
@@ -55,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
 
             var methodDeclarations = DotsUtils.GetMethodsFromAllDeclarations(typeElement);
 
-            IMethodDeclaration onUpdate = null;
+            IMethodDeclaration? onUpdate = null;
 
             foreach (var methodDeclaration in methodDeclarations)
             {
@@ -71,8 +69,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
             }
 
             foreach (var field in queryLookupFields)
+            {
                 consumer.AddHighlighting(
                     new NotUpdatedComponentLookupWarning(dictionary[field], element, onUpdate, field.ShortName));
+            }
         }
 
         private class VisitorDotsMethods : IRecursiveElementProcessor

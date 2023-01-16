@@ -1,11 +1,13 @@
+#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.Rd.Tasks;
 using JetBrains.RdBackend.Common.Features.Documents;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Psi;
@@ -16,6 +18,7 @@ using JetBrains.Rider.Backend.Env;
 using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
+using RdTask = JetBrains.Rd.Tasks.RdTask;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport
 {
@@ -30,12 +33,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
         private readonly ShaderContextCache myShaderContextCache;
         private readonly ShaderContextDataPresentationCache myShaderContextDataPresentationCache;
 
-        public ShaderContextHost(Lifetime lifetime, ISolution solution, IPsiFiles psiFiles,
+        public ShaderContextHost(Lifetime lifetime, ILogger logger, ISolution solution,
+                                 IPsiFiles psiFiles,
                                  IDocumentHost documentHost,
                                  CppGlobalSymbolCache cppGlobalSymbolCache,
                                  ShaderContextCache shaderContextCache,
-                                 ShaderContextDataPresentationCache shaderContextDataPresentationCache, ILogger logger,
-                                 [CanBeNull] FrontendBackendHost frontendBackendHost = null)
+                                 ShaderContextDataPresentationCache shaderContextDataPresentationCache,
+                                 FrontendBackendHost? frontendBackendHost = null)
         {
             mySolution = solution;
             myPsiFiles = psiFiles;
@@ -44,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             myShaderContextCache = shaderContextCache;
             myShaderContextDataPresentationCache = shaderContextDataPresentationCache;
 
-            if (frontendBackendHost == null || myDocumentHost == null)
+            if (frontendBackendHost == null)
                 return;
 
             frontendBackendHost.Do(t =>
@@ -56,9 +60,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
                     {
                         var sourceFile = GetSourceFile(id);
                         if (sourceFile == null)
-                            return Rd.Tasks.RdTask<List<ShaderContextDataBase>>.Successful(
-                                new List<ShaderContextDataBase>());
-                        var task = new Rd.Tasks.RdTask<List<ShaderContextDataBase>>();
+                            return RdTask.Successful(new List<ShaderContextDataBase>());
+
+                        var task = new RdTask<List<ShaderContextDataBase>>();
                         RequestShaderContexts(lt, sourceFile, task);
 
                         return task;
@@ -70,7 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
                     logger.Verbose("Setting new shader context for file");
                     using (ReadLockCookie.Create())
                     {
-                        IPsiSourceFile sourceFile = GetSourceFile(c.Target);
+                        IPsiSourceFile? sourceFile = GetSourceFile(c.Target);
                         if (sourceFile == null)
                             return;
 
@@ -84,7 +88,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
                 {
                     using (ReadLockCookie.Create())
                     {
-                        IPsiSourceFile sourceFile = GetSourceFile(id);
+                        IPsiSourceFile? sourceFile = GetSourceFile(id);
                         if (sourceFile == null)
                             return;
                         shaderContextCache.SetContext(sourceFile, null);
@@ -99,9 +103,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
                     {
                         var sourceFile = GetSourceFile(id);
                         if (sourceFile == null)
-                            return Rd.Tasks.RdTask<ShaderContextDataBase>.Successful(new AutoShaderContextData());
+                            return RdTask.Successful<ShaderContextDataBase>(new AutoShaderContextData());
 
-                        var task = new Rd.Tasks.RdTask<ShaderContextDataBase>();
+                        var task = new RdTask<ShaderContextDataBase>();
                         RequestCurrentContext(lt, sourceFile, task);
                         return task;
                     }
@@ -110,13 +114,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
         }
 
 
-        private IPsiSourceFile GetSourceFile(RdDocumentId id)
+        private IPsiSourceFile? GetSourceFile(RdDocumentId id)
         {
             var document = myDocumentHost.TryGetDocument(id);
             return document?.GetPsiSourceFile(mySolution);
         }
 
-        private void RequestCurrentContext(Lifetime lt, IPsiSourceFile sourceFile, Rd.Tasks.RdTask<ShaderContextDataBase> task)
+        private void RequestCurrentContext(Lifetime lt, IPsiSourceFile sourceFile, RdTask<ShaderContextDataBase> task)
         {
             var currentRoot = myShaderContextCache.GetPreferredRootFile(new CppFileLocation(sourceFile));
             if (!currentRoot.IsValid())
@@ -134,7 +138,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
                     {
                         mySolution.Locks.ExecuteOrQueueReadLockEx(lt, "SetCurrentContext", () =>
                         {
-                            task.Set(GetContextDataFor(currentRoot));
+                            var shaderContextData = GetContextDataFor(currentRoot) ??
+                                                    (ShaderContextDataBase) new AutoShaderContextData();
+                            task.Set(shaderContextData);
                         });
                     }
                     else
@@ -148,7 +154,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             });
         }
 
-        private void RequestShaderContexts(Lifetime lt, IPsiSourceFile sourceFile, Rd.Tasks.RdTask<List<ShaderContextDataBase>> task)
+        private void RequestShaderContexts(Lifetime lt, IPsiSourceFile sourceFile, RdTask<List<ShaderContextDataBase>> task)
         {
             if (!lt.IsAlive)
             {
@@ -173,7 +179,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             }, () => RequestShaderContexts(lt, sourceFile, task));
         }
 
-        private ShaderContextData GetContextDataFor(CppFileLocation root)
+        private ShaderContextData? GetContextDataFor(CppFileLocation root)
         {
             var range = myShaderContextDataPresentationCache.GetRangeForShaderProgram(root.GetRandomSourceFile(mySolution), root.RootRange);
             if (!range.HasValue)

@@ -356,6 +356,7 @@
     public static string TypeParameterMustBeUnmanagedIsNotMessage => ResourceManager.GetString("TypeParameterMustBeUnmanagedIsNotMessage");
     public static string Unity_Internal_DumpDuplicateTypeNames_Text => ResourceManager.GetString("Unity_Internal_DumpDuplicateTypeNames_Text");
     public static string Unity_Internal_DumpSpellCheckWordLists_Text => ResourceManager.GetString("Unity_Internal_DumpSpellCheckWordLists_Text");
+    public static string Unity_Internal_SerializeReferencesDump_Text => ResourceManager.GetString("Unity_Internal_SerializeReferencesDump_Text");
     public static string UnityAssetsFolder_Text => ResourceManager.GetString("UnityAssetsFolder_Text");
     public static string UnityAssetSpecificOccurrenceKinds_ComponentUsage_Unity_component_usage => ResourceManager.GetString("UnityAssetSpecificOccurrenceKinds_ComponentUsage_Unity_component_usage");
     public static string UnityAssetSpecificOccurrenceKinds_EventHandler_Unity_event_handler => ResourceManager.GetString("UnityAssetSpecificOccurrenceKinds_EventHandler_Unity_event_handler");

@@ -36,8 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             NewName = newName;
         }
 
-        public override IRefactoringPage CreateRenamesConfirmationPage(IRenameWorkflow renameWorkflow,
-            IProgressIndicator pi)
+        public override IRefactoringPage? CreateRenamesConfirmationPage(IRenameWorkflow renameWorkflow,
+                                                                        IProgressIndicator pi)
         {
             // hide confirmation page only, refactoring should update shared document too otherwise
             // we will get inconsistent change modification message box
@@ -80,14 +80,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             return null;
         }
 
-        public override IDeclaredElement NewDeclaredElement =>
-            myPointer.FindDeclaredElement().NotNull("myPointer.FindDeclaredElement() != null");
+        public override IDeclaredElement NewDeclaredElement => myPointer.FindDeclaredElement().NotNull();
 
         public override string NewName { get; }
         public override string OldName { get; }
 
-        public override IDeclaredElement PrimaryDeclaredElement =>
-            myPointer.FindDeclaredElement().NotNull("myPointer.FindDeclaredElement() != null");
+        public override IDeclaredElement PrimaryDeclaredElement => myPointer.FindDeclaredElement().NotNull();
 
         public override IList<IDeclaredElement>? SecondaryDeclaredElements => null;
 
@@ -119,7 +117,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
                     var attributeInstance = attribute.GetAttributeInstance();
                     var nameParameter = attributeInstance.PositionParameter(0);
                     if (nameParameter.IsConstant && nameParameter.ConstantValue.IsString() &&
-                        (string) nameParameter.ConstantValue.Value! == nameArgument)
+                        nameParameter.ConstantValue.StringValue == nameArgument)
                     {
                         list.Add(attribute);
                     }
