@@ -80,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             }
 
 
-            var selector = new GeneratorOptionSelector(SelectedBaker, Strings.UnityDots_GenerateBakerAndAuthoring_SelectedBaker, availableBakers)
+            var selector = new GeneratorOptionSelector(SelectedBaker, Strings.UnityDots_GenerateBakerAndAuthoring_Baker, availableBakers)
                 {
                     Value = Strings.UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested
                 };

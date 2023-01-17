@@ -115,14 +115,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                             PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
                         .ToBulbMenuItem(Solution, textControl));
                 }
-
-                if (UnityApi.IsDerivesFromIComponentData(classLikeDeclaration.DeclaredElement))
-                {
-                    var fix = new GenerateBakerAndAuthoringActionFix(classLikeDeclaration);
-                    result.Add(new IntentionAction(fix, Strings.UnityDots_GenerateBakerAndAuthoring_Name,
-                            PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
-                        .ToBulbMenuItem(Solution, textControl));
-                }
             }
 
             return result;

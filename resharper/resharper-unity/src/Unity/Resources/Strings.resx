@@ -1316,14 +1316,20 @@ a plugin to be installed to a project.</value>
     <data name="UnityDots_GenerateBakerAndAuthoring_Description" xml:space="preserve">
         <value>Generate Baker and Authoring script inside this file</value>
     </data>
-    <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields" xml:space="preserve">
-        <value>Component fields for baking</value>
+    <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Title" xml:space="preserve">
+        <value>Baker Generation (DOTS)</value>
     </data>
-    <data name="UnityDots_GenerateBakerAndAuthoring_SelectedBaker" xml:space="preserve">
-        <value>Selected Baker</value>
+    <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle" xml:space="preserve">
+        <value>Baker Generation</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Description" xml:space="preserve">
+        <value>Select fields for baking</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndAuthoring_Baker" xml:space="preserve">
+        <value>Baker</value>
     </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested" xml:space="preserve">
-        <value>New Baker as nested class of Authoring</value>
+        <value>New Baker (Nested)</value>
     </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_NewBaker" xml:space="preserve">
         <value>New Baker</value>

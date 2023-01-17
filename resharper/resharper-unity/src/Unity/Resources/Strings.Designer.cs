@@ -464,8 +464,10 @@
     public static string UnityDots_AddComponentLookupScoped_Update_Text => ResourceManager.GetString("UnityDots_AddComponentLookupScoped_Update_Text");
     public static string UnityDots_GenerateBakerAndAuthoring_Name => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Name");
     public static string UnityDots_GenerateBakerAndAuthoring_Description => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Description");
-    public static string UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields");
-    public static string UnityDots_GenerateBakerAndAuthoring_SelectedBaker => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_SelectedBaker");
+    public static string UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Title => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Title");
+    public static string UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle");
+    public static string UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Description => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Description");
+    public static string UnityDots_GenerateBakerAndAuthoring_Baker => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Baker");
     public static string UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested");
     public static string UnityDots_GenerateBakerAndAuthoring_NewBaker => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_NewBaker");
     public static string UnityDots_GenerateBakerAndAuthoring_GenerateBakerAsNestedClass => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_GenerateBakerAsNestedClass");
