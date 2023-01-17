@@ -11,7 +11,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotifications
 import com.intellij.ui.HyperlinkLabel
-import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
 import com.intellij.util.text.VersionComparatorUtil
 import com.jetbrains.rd.framework.RdTaskResult
@@ -29,6 +28,7 @@ import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Paths
+import kotlin.io.path.notExists
 
 class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNotificationPanel>() {
 
@@ -77,7 +77,7 @@ class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNo
             }
 
             val schemasFolder = Paths.get(project.projectDir.canonicalPath!!, "UIElementsSchema")
-            if (!schemasFolder.exists() || !schemasFolder.isDirectory()) {
+            if (schemasFolder.notExists() || !schemasFolder.isDirectory()) {
                 val panel = EditorNotificationPanel()
                 panel.text(UnityUIBundle.message("label.generate.uielements.schema.to.get.validation.code.completion"))
 
