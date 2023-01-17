@@ -70,11 +70,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                 return result;
             }
             // todo: support prefab modification
-//            else if (AssetUtils.IsPrefabModification(assetDocument.Buffer))
-//            {
-//                var result = new LocalList<AssetScriptUsage>();
-//                return result;
-//            }
+            else if (AssetUtils.IsPrefabModification(assetDocument.Buffer))
+            {
+                // Dict<currentAssetSourceFile, >
+                var result = new LocalList<AssetScriptUsage>();
+                
+                return result;
+            }
 
             return null;
         }

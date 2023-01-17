@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Threading;
 using JetBrains.ProjectModel;
@@ -9,8 +8,6 @@ using JetBrains.ReSharper.Plugins.Unity.InputActions.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
@@ -29,16 +26,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
         private const string PlayerInputGuid = "62899f850307741f2a39c98a8b639597";
 
         private readonly IShellLocks myShellLocks;
-        private readonly ILogger myLogger; 
         private readonly OneToListMap<IPsiSourceFile, PlayerInputUsage> myElementsWithPlayerInputReference = new();
 
         public string Id => nameof(InputActionsElementContainer);
         public int Order => 0;
 
-        public InputActionsElementContainer(IShellLocks shellLocks, ILogger logger)
+        public InputActionsElementContainer(IShellLocks shellLocks)
         {
             myShellLocks = shellLocks;
-            myLogger = logger;
         }
         
         public IUnityAssetDataElement CreateDataElement(IPsiSourceFile sourceFile)
@@ -149,8 +144,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
                 .Where(usage => usage.InputActionsFileGuid == inputActionsFileGuid)
                 .SelectMany(a =>
             {
-                var results = new List<LocalReference>();
-                GetSelfAndOriginalGameObjects(a.Location, hierarchyElementContainer, results);
+                var results = AssetHierarchyUtil.GetSelfAndOriginalGameObjects(a.Location, hierarchyElementContainer);
                 return results.Select(item => new PlayerInputUsage(item, a.InputActionsFileGuid));
             }).ToArray();
 
@@ -158,8 +152,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
                 .SelectMany(a => container.GetScriptUsagesFor(a, classType)).ToArray()
                 .SelectMany(a =>
                 {
-                    var results = new List<LocalReference>();
-                    GetSelfAndOriginalGameObjects(a.Location, hierarchyElementContainer, results);
+                    var results = AssetHierarchyUtil.GetSelfAndOriginalGameObjects(a.Location, hierarchyElementContainer);
                     return results;
                 }).ToArray();
 
@@ -172,21 +165,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
                     metaFileGuidCache.GetAssetFilePathsFromGuid(a.InputActionsFileGuid).SelectMany(path =>
                         inputActionsCache.GetDeclaredElements(path, strippedMethodName))).ToArray();
             }).ToArray();
-        }
-        
-        private static void GetSelfAndOriginalGameObjects(LocalReference reference, AssetDocumentHierarchyElementContainer hierarchyElementContainer, ICollection<LocalReference> results)
-        {
-            var he = hierarchyElementContainer.GetHierarchyElement(reference, true);
-            if (he is ImportedGameObjectHierarchy importedGameObjectHierarchy)
-            {
-                GetSelfAndOriginalGameObjects(importedGameObjectHierarchy.OriginalGameObject.Location, hierarchyElementContainer, results);
-            }
-            else if (he is ScriptComponentHierarchy scriptComponentHierarchy)
-            {
-                GetSelfAndOriginalGameObjects(scriptComponentHierarchy.OwningGameObject, hierarchyElementContainer, results);
-            }
-
-            results.Add(reference);
         }
     }
 }

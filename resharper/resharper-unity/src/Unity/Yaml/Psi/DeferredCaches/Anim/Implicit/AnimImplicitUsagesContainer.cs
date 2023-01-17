@@ -5,10 +5,10 @@ using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
@@ -37,6 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
         private readonly MetaFileGuidCache myMetaFileGuidCache;
         private readonly AnimatorScriptUsagesElementContainer myAnimatorScriptUsagesElementContainer;
         private readonly AnimatorGameObjectUsagesContainer myAnimatorGameObjectUsagesContainer;
+        private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
         public int Order => 0;
 
         public string Id => nameof(AnimImplicitUsagesContainer);
@@ -45,12 +46,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
             [NotNull] IShellLocks locks,
             MetaFileGuidCache metaFileGuidCache, 
             AnimatorScriptUsagesElementContainer animatorScriptUsagesElementContainer,
-            AnimatorGameObjectUsagesContainer animatorGameObjectUsagesContainer)
+            AnimatorGameObjectUsagesContainer animatorGameObjectUsagesContainer,
+            AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer)
         {
             myShellLocks = locks;
             myMetaFileGuidCache = metaFileGuidCache;
             myAnimatorScriptUsagesElementContainer = animatorScriptUsagesElementContainer;
             myAnimatorGameObjectUsagesContainer = animatorGameObjectUsagesContainer;
+            myAssetDocumentHierarchyElementContainer = assetDocumentHierarchyElementContainer;
         }
 
         public IUnityAssetDataElement CreateDataElement(IPsiSourceFile sourceFile)
@@ -137,49 +140,42 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
         public LocalList<AnimImplicitUsage> GetUsagesFor(IPsiSourceFile sourceFile, IDeclaredElement element)
         {
             myShellLocks.AssertReadAccessAllowed();
-            
             var result = new LocalList<AnimImplicitUsage>();
-            if (element is not IMethod method) return result;
 
+            if (element is not IMethod method) return result;
             var shortName = method.ShortName;
-            if (!myFunctionNames.Contains(shortName)) return result;
-            
             var type = method.ContainingType;
             if (type is not IClass classType) return result;
+            if (!classType.DerivesFromMonoBehaviour()) return result;
+            if (!myFileToEvents[sourceFile].Any(a=>a.FunctionName == shortName)) return result;
 
             var solution = element.GetSolution();
             var container = solution.GetComponent<AssetScriptUsagesElementContainer>();
-            var hierarchyElementContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
             var scriptUsages = container.GetScriptUsagesFor(classType).ToArray(); // GO-s with script attached
             foreach (var scriptUsage in scriptUsages)
             {
-                var he =  hierarchyElementContainer.GetHierarchyElement(scriptUsage.Location, true) as IComponentHierarchy; // GO
+                var results = AssetHierarchyUtil.GetSelfAndOriginalGameObjects(scriptUsage.Location,
+                    myAssetDocumentHierarchyElementContainer);
 
-                // get Animators from that GameObject
-                var controllerGuids =  myAnimatorGameObjectUsagesContainer.GetAnimatorsFromGameObject(he.OwningGameObject);
+                var controllerGuids = results.SelectMany(a => myAnimatorGameObjectUsagesContainer.GetAnimatorsFromGameObject(a));
+                // here also ask for modifications
+
                 var controllers = controllerGuids.SelectMany(a => myMetaFileGuidCache.GetAssetFilePathsFromGuid(a)).ToArray();
-
-                foreach (var file in controllers)
-                {
-                    var anims = myAnimatorScriptUsagesElementContainer.GetAnimReferences(file).SelectMany(a=>myMetaFileGuidCache.GetAssetFilePathsFromGuid(a)).ToArray();
-
-                    foreach (var fileToEvent in myFileToEvents)
+                if (controllers.Any(controller =>
                     {
-                        if (anims.Contains(fileToEvent.Key.GetLocation()))
-                        {
-                            foreach (var usage in fileToEvent.Value)
-                            {
-                                if (usage.FunctionName != shortName) continue;
-                                result.Add(usage);
-                            }
-                        }
-                    }
+                        return myAnimatorScriptUsagesElementContainer.GetAnimReferences(controller)
+                            .SelectMany(a => myMetaFileGuidCache.GetAssetFilePathsFromGuid(a))
+                            .Any(b => b.Equals(sourceFile.GetLocation()));
+                    }))
+                {
+                    var animImplicitUsages = myFileToEvents[sourceFile].ToArray().Where(a => a.FunctionName == shortName);
+                    result.AddRange(animImplicitUsages);
                 }
             }
 
             return result;
         }
-
+        
         public int GetEventUsagesCountFor(IDeclaredElement element, out bool expected)
         {
             myShellLocks.AssertReadAccessAllowed();
