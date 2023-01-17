@@ -69,6 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             IsDerivesFromSystemBase(typeElement) 
             || IsDerivesFromISystem(typeElement)
             || IsDerivesFromIAspect(typeElement)
+            || IsDerivesFromIComponentData(typeElement)
             || typeElement.DerivesFrom(KnownTypes.IBaker);
 
         public static bool IsDerivesFromIAspect(ITypeElement? typeElement)
@@ -85,6 +86,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         {
             return typeElement.DerivesFrom(KnownTypes.ISystem);
         }
+     
+        public static bool IsDerivesFromIComponentData(ITypeElement? typeElement)
+        {
+            return typeElement.DerivesFrom(KnownTypes.IComponentData);
+        }
 
         public static bool IsComponentLookup(ITypeElement? typeElement)
         {
@@ -94,6 +100,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static bool IsSystemStateType(ITypeElement? typeElement)
         {
             return typeElement?.GetClrName().Equals(KnownTypes.SystemState) ?? false;
+        }
+        
+        public static bool IsSystemAPI(ITypeElement? typeElement)
+        {
+            return typeElement?.GetClrName().Equals(KnownTypes.SystemAPI) ?? false;
         }
 
         // A serialised field cannot be abstract or generic, but a type declaration that will be serialised can be. This

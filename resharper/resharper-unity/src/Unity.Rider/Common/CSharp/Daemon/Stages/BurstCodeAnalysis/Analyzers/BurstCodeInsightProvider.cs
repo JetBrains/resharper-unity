@@ -20,13 +20,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Bu
             : base(frontendBackendHost, bulbMenu)
         {
             RelativeOrderings = tracker.IsUnityProject.HasTrueValue()
-                ? new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingBefore(ReferencesCodeInsightsProvider.Id)}
-                : new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingLast()};
+                ? new CodeVisionRelativeOrdering[] {new CodeVisionRelativeOrderingBefore(ReferencesCodeInsightsProvider.Id)}
+                : new CodeVisionRelativeOrdering[] {new CodeVisionRelativeOrderingLast()};
         }
 
         public override string ProviderId => "Burst compiled code";
         public override string DisplayName => BurstCodeAnalysisUtil.BurstDisplayName;
-        public override CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Top;
-        public override ICollection<CodeLensRelativeOrdering> RelativeOrderings { get; }
+        public override CodeVisionAnchorKind DefaultAnchor => CodeVisionAnchorKind.Top;
+        public override ICollection<CodeVisionRelativeOrdering> RelativeOrderings { get; }
     }
 }
