@@ -1,12 +1,7 @@
-﻿Provided elements:
- 0: FieldDimensions:Unity.Mathematics.float2
- 1: NumberTombstonesToSpawn:System.Int32
- 2: TombstonePrefab:Unity.Entities.Entity
-
 // ${KIND:Unity.GenerateBakerAndAuthoring}
 // ${SELECT0:FieldDimensions:Unity.Mathematics.float2}
 // ${SELECT1:TombstonePrefab:Unity.Entities.Entity}
-// ${GLOBAL0:SelectedBaker=ComponentsAndTags.GraveyardPropertiesAuthoring+GraveyardPropertiesBaker}
+// ${GLOBAL0:SelectedBaker=New Baker as nested class of Authoring}
 
 using Unity.Entities;
 using Unity.Mathematics;
@@ -25,8 +20,6 @@ namespace ComponentsAndTags
     {
         public string TombstonePrefab; //Field with existing name in component
         public int NumberTombstonesToSpawn;
-        public float2 FieldDimensions;
-        public GameObject Prefab;
 
         public class GraveyardPropertiesBaker : Baker<GraveyardPropertiesAuthoring>
         {
@@ -34,7 +27,7 @@ namespace ComponentsAndTags
             {
                 AddComponent(new GraveyardProperties
                 {
-                  FieldDimensions = authoring.FieldDimensions, TombstonePrefab = GetEntity(authoring.Prefab)
+                    NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn,
                 });
             }
         }

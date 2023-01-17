@@ -6,7 +6,7 @@
 // ${KIND:Unity.GenerateBakerAndAuthoring}
 // ${SELECT0:NumberTombstonesToSpawn:System.Int32}
 // ${SELECT1:TombstonePrefab:Unity.Entities.Entity}
-// ${GLOBAL0:GenerateAsNested=False}
+// ${GLOBAL0:SelectedBaker=New Baker}
 
 using Unity.Entities;
 using Unity.Mathematics;
@@ -21,6 +21,12 @@ namespace ComponentsAndTags
         public Entity TombstonePrefab;
     }
 
+    public class GraveyardPropertiesAuthoring : MonoBehaviour
+    {
+      public int NumberTombstonesToSpawn;
+      public GameObject TombstonePrefab;
+    }
+
     public class GraveyardPropertiesBaker : Baker<GraveyardPropertiesAuthoring>
     {
       public override void Bake(GraveyardPropertiesAuthoring authoring)
@@ -31,11 +37,5 @@ namespace ComponentsAndTags
           TombstonePrefab = GetEntity(authoring.TombstonePrefab)
         });
       }
-    }
-
-    public class GraveyardPropertiesAuthoring : MonoBehaviour
-    {
-      public int NumberTombstonesToSpawn;
-      public GameObject TombstonePrefab;
     }
 }

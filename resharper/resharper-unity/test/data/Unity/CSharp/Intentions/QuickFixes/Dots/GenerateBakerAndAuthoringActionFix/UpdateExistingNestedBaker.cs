@@ -1,7 +1,7 @@
 // ${KIND:Unity.GenerateBakerAndAuthoring}
 // ${SELECT0:FieldDimensions:Unity.Mathematics.float2}
 // ${SELECT1:TombstonePrefab:Unity.Entities.Entity}
-// ${GLOBAL0:GenerateAsNested=True}
+// ${GLOBAL0:SelectedBaker=ComponentsAndTags.GraveyardPropertiesAuthoring+GraveyardPropertiesBaker}
 
 using Unity.Entities;
 using Unity.Mathematics;

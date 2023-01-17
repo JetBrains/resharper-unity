@@ -29,14 +29,19 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
             DoNamedTest($"../{DotsClassesFileName}");
         }
         
+        [Test] public void AddNewComponentToBaker()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
+        
         [Test] public void UpdateExistingNestedBaker()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
         
-        [Test] public void AuthoringInOtherFile01()
+        [Test] public void CreateNewWithExistingBaker()
         {
-            DoNamedTest($"../{DotsClassesFileName}", $"{TestMethod!.Name}_Authoring.cs");
+            DoNamedTest($"../{DotsClassesFileName}");
         }
         
         [Test] public void AuthoringAndBakerInOtherFiles()

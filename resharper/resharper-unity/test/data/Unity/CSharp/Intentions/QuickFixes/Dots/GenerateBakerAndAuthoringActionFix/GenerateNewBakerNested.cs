@@ -1,7 +1,7 @@
 // ${KIND:Unity.GenerateBakerAndAuthoring}
 // ${SELECT0:NumberTombstonesToSpawn:System.Int32}
 // ${SELECT1:TombstonePrefab:Unity.Entities.Entity}
-// ${GLOBAL0:GenerateAsNested=True}
+// ${GLOBAL0:SelectedBaker=New Baker as nested class of Authoring}
 
 using Unity.Entities;
 using Unity.Mathematics;

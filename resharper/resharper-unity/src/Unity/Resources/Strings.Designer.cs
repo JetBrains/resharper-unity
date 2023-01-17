@@ -466,6 +466,7 @@
     public static string UnityDots_GenerateBakerAndAuthoring_Description => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Description");
     public static string UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields");
     public static string UnityDots_GenerateBakerAndAuthoring_SelectedBaker => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_SelectedBaker");
+    public static string UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested");
     public static string UnityDots_GenerateBakerAndAuthoring_NewBaker => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_NewBaker");
     public static string UnityDots_GenerateBakerAndAuthoring_GenerateBakerAsNestedClass => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_GenerateBakerAsNestedClass");
     public static string UnityDots_projects => ResourceManager.GetString("UnityDots_projects");

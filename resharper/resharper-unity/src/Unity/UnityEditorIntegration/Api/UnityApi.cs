@@ -91,7 +91,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         {
             return typeElement?.GetClrName().Equals(KnownTypes.ComponentLookup) ?? false;
         }
-        
+        public static bool IsBaker(ITypeElement? typeElement)
+        {
+            return typeElement?.GetClrName().Equals(KnownTypes.Baker) ?? false;
+        }
         public static bool IsSystemStateType(ITypeElement? typeElement)
         {
             return typeElement?.GetClrName().Equals(KnownTypes.SystemState) ?? false;
