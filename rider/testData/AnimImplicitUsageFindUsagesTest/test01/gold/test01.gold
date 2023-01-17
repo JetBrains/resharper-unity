@@ -1,0 +1,5 @@
+Search target
+    AnimEventHolder.AnimEvent():void
+Found usages  (2 usages found)
+    [1460, Assets/Anim/Animation.anim] (62: 17)  functionName: AnimEvent
+    [1303, Assets/Anim/Animation.anim] (55: 17)  functionName: AnimEvent
