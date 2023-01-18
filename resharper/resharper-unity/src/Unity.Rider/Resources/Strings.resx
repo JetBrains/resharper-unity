@@ -181,4 +181,16 @@
     <data name="UnityEditorFindUsageResultCreator_CreateRequestToUnity_Finding_usages_in_Unity_for__" xml:space="preserve">
         <value>Finding usages in Unity for: </value>
     </data>
+    <data name="UnityUsagesCodeVisionProvider_GetText_No_asset_usages" xml:space="preserve">
+        <value>No asset usages</value>
+    </data>
+    <data name="AssetUsage_Text" xml:space="preserve">
+        <value>asset usage</value>
+    </data>
+    <data name="AssetUsages_Text" xml:space="preserve">
+        <value>asset usages</value>
+    </data>
+    <data name="UnityAssetsUsage_Text" xml:space="preserve">
+        <value>Unity assets usage</value>
+    </data>
 </root>

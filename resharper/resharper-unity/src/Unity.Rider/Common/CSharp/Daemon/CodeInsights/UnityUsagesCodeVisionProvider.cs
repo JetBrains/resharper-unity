@@ -19,6 +19,7 @@ using JetBrains.ReSharper.Feature.Services.Navigation.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.ReSharper.Psi.Tree;
@@ -40,7 +41,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             myContexts = shell.GetComponent<DataContexts>();
         }
 
-        protected string Noun(int count, bool estimatedResult) => "asset usage" + (count == 1 && !estimatedResult ? "" : "s");
+        protected string Noun(int count, bool estimatedResult) =>
+            count == 1 && !estimatedResult ? Strings.AssetUsage_Text : Strings.AssetUsages_Text;
 
         public bool IsAvailableIn(ISolution solution)
         {
@@ -81,7 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
         }
 
         public string ProviderId => "Unity Assets Usage";
-        public string DisplayName => "Unity assets usage";
+        public string DisplayName => Strings.UnityAssetsUsage_Text;
         public CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Top;
 
         public ICollection<CodeLensRelativeOrdering> RelativeOrderings =>
@@ -99,7 +101,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
         private string GetText(int count, bool estimatedResult)
         {
             if (count == 0 && !estimatedResult)
-                return "No asset usages";
+                return Strings.UnityUsagesCodeVisionProvider_GetText_No_asset_usages;
 
             var countText = count + (estimatedResult ? "+" : "");
             return $"{countText} {Noun(count, estimatedResult)}";
