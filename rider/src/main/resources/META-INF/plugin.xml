@@ -22,6 +22,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.UnityUIMinimizer"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService"/>
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater"
                     preload="true" />
 
