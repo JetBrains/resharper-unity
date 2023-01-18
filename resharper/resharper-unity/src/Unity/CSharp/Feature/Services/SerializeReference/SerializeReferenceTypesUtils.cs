@@ -283,7 +283,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                     if (typeParameters.Length == 0)
                         return metadataClassType;
 
-                    if (metadataClassType.Type.FullyQualifiedName == "System.Collections.Generic.List`1") //List<>
+                    if (metadataClassType.Type.IsList()) //List<>
                         return typeParameters[0];
 
                     break;
