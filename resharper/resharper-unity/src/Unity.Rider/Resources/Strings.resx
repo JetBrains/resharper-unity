@@ -176,4 +176,16 @@
     <data name="UsagesInAssetsAreNotAvailableDuring_Text" xml:space="preserve">
         <value>Usages in assets are not available during asset indexing</value>
     </data>
+    <data name="UnityUsagesCodeVisionProvider_DisplayName_Unity_assets_usage" xml:space="preserve">
+        <value>Unity assets usage</value>
+    </data>
+    <data name="UnityUsagesCodeVisionProvider_GetText_No_asset_usages" xml:space="preserve">
+        <value>No asset usages</value>
+    </data>
+    <data name="UnityUsagesCodeVisionProvider_Noun_asset_usage" xml:space="preserve">
+        <value>asset usage</value>
+    </data>
+    <data name="UnityUsagesCodeVisionProvider_Noun_asset_usages" xml:space="preserve">
+        <value>asset usages</value>
+    </data>
 </root>
