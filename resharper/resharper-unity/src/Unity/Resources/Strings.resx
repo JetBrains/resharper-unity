@@ -1310,6 +1310,17 @@ a plugin to be installed to a project.</value>
         <value>Add missing 'Update' call for all QueryLookups</value>
         <comment>ShortName</comment>
     </data>
+    <data name="UnityDots_GetSingletonMustBeRequested" xml:space="preserve">
+        <value>To use the result of a 'GetSingleton&lt;{0}&gt;' call in the function, 'OnCreate' must include a 'RequireForUpdate' call.</value>
+    </data>
+    <data name="UnityDots_Add_RequireForUpdate_SingletonQuickFix" xml:space="preserve">
+        <value>Add missing 'RequireForUpdate&lt;{0}&gt;' call.</value>
+        <comment>ShortName</comment>
+    </data>
+    <data name="UnityDots_Add_RequireForUpdate_SingletonQuickFix_For_All" xml:space="preserve">
+        <value>Add all missing 'RequireForUpdate' calls.</value>
+        <comment>ShortName</comment>
+    </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_Name" xml:space="preserve">
         <value>Generate Baker and Authoring script</value>
     </data>

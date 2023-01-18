@@ -462,6 +462,9 @@
     public static string UnityDots_CurrentComponentLookupMustBeUpdated => ResourceManager.GetString("UnityDots_CurrentComponentLookupMustBeUpdated");
     public static string UnityDots_AddComponentLookup_Update_Text => ResourceManager.GetString("UnityDots_AddComponentLookup_Update_Text");
     public static string UnityDots_AddComponentLookupScoped_Update_Text => ResourceManager.GetString("UnityDots_AddComponentLookupScoped_Update_Text");
+    public static string UnityDots_GetSingletonMustBeRequested => ResourceManager.GetString("UnityDots_GetSingletonMustBeRequested");
+    public static string UnityDots_Add_RequireForUpdate_SingletonQuickFix => ResourceManager.GetString("UnityDots_Add_RequireForUpdate_SingletonQuickFix");
+    public static string UnityDots_Add_RequireForUpdate_SingletonQuickFix_For_All => ResourceManager.GetString("UnityDots_Add_RequireForUpdate_SingletonQuickFix_For_All");
     public static string UnityDots_GenerateBakerAndAuthoring_Name => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Name");
     public static string UnityDots_GenerateBakerAndAuthoring_Description => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Description");
     public static string UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Title => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Title");
