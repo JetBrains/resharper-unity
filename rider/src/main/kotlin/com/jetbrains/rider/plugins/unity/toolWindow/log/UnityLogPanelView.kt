@@ -135,10 +135,6 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
     }
 
     private val searchTextField = LogSmartSearchField().apply {
-        focusGained = {
-            eventList.clearSelection()
-            logModel.selectedItem = null
-        }
         goToList = {
             if (eventList.model.size > 0) {
                 eventList.selectedIndex = 0
