@@ -345,14 +345,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 }
             }
         
-            // example: [SerializeField] public unsafe fixed byte MyByteBuff[3];
-            if (property.IsFixedSizeBufferField()
-                && property.Type is IPointerType pointerType
-                && IsUnitySimplePredefined(pointerType.ElementType))
-            {
-                return SerializedFieldStatus.SerializedField;
-            }
-            
             var hasSerializeReference = property.HasFieldAttribute(KnownTypes.SerializeReference);
 
             if (property.GetAccessRights() != AccessRights.PUBLIC
