@@ -67,6 +67,21 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
             DoSolutionTestWithGold(testSolutionAbsolutePath);
         }
            
+        [Test]
+        public void ListArrayFixedBufferTest()
+        {
+            var testSolutionAbsolutePath = GetTestDataFilePath2(@"Solutions\ListArrayFixedBufferTest\ListArrayFixedBufferTest.sln");
+            DoSolutionTestWithGold(testSolutionAbsolutePath);
+        }
+        
+        [Test]
+        public void ListArrayFixedBufferAssemblyTest()
+        {
+            var testSolutionAbsolutePath = GetTestDataFilePath2(@"Solutions\ListArrayFixedBufferAssemblyTest\ListArrayFixedBufferAssemblyTest.sln");
+            SolutionBuilderHelper.PrepareDependencies(BaseTestDataPath, testSolutionAbsolutePath, "ListArrayFixedBufferTest", AssembliesDirectory);
+            DoSolutionTestWithGold(testSolutionAbsolutePath);
+        }
+        
         private void DoSolutionTestWithGold(string solutionPath)
         {
             DoSolutionTestWithGold(GetTestDataFilePath2(solutionPath));

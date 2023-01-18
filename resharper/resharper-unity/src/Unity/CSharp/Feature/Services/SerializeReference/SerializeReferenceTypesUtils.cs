@@ -83,7 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             var substitution = declaredType.GetSubstitution();
 
             if (declaredType.IsGenericList()) //List<>
-                return substitution.Apply(typeParameters[0]) as IDeclaredType;
+                return substitution[typeParameters[0]] as IDeclaredType;
 
             return null;
         }
@@ -247,7 +247,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             if (!isValid)
                 return FieldAdapter.InValidFieldAdapter;
             
-            var metadataFieldType = metadataField.Type;
+            var metadataFieldType = GetUnityFieldType(metadataField);
 
             var isUnityFieldType = metadataFieldType != null;
             var isObjectTypeField = metadataFieldType != null &&
@@ -263,6 +263,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                 isTypeParameterType, fieldName);
         }
 
+        private static IMetadataType? GetUnityFieldType(IMetadataField? metadataField)
+        {
+            if (metadataField == null)
+                return null;
+
+            var fieldType = metadataField.Type;
+
+            switch (fieldType)
+            {
+                case IMetadataTypeParameterReferenceType:
+                    return fieldType;
+                case IMetadataArrayType { Rank: 1 } metadataArrayType:
+                    return metadataArrayType.ElementType;
+                case IMetadataClassType metadataClassType:
+                {
+                    var typeParameters = metadataClassType.Arguments;
+
+                    if (typeParameters.Length == 0)
+                        return metadataClassType;
+
+                    if (metadataClassType.Type.FullyQualifiedName == "System.Collections.Generic.List`1") //List<>
+                        return typeParameters[0];
+
+                    break;
+                }
+            }
+
+            return null;
+        }
 
         public static bool HasFieldAttribute(this IProperty property, IClrTypeName clrTypeName)
         {
@@ -301,13 +330,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             if (!isValid)
                 return FieldAdapter.InValidFieldAdapter;
 
-            var fieldDeclaredType = typeOwner?.Type;
-            var declaredType = typeOwner != null ? GetUnityTypeOwnerType(typeOwner) : null;
+            var declaredType = GetUnityTypeOwnerType(typeOwner);
             var isUnityFieldType = declaredType != null;
             var isObjectTypeField =
                 declaredType != null && Equals(declaredType.GetClrName(), PredefinedType.OBJECT_FQN);
-            var elementId = fieldDeclaredType != null
-                ? provider.GetElementId(fieldDeclaredType.GetTypeElement(), ownerTypeElement)
+            var elementId = declaredType != null
+                ? provider.GetElementId(declaredType.GetTypeElement(), ownerTypeElement)
                 : null;
             var typeFullName = GetTypeFullNameDescription(declaredType);
             var fieldName = GetFieldNameDescription(typeOwner);
@@ -329,7 +357,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
             var superClasses =
                 metadataSuperClassTypes
-                    .Where(t => !t.IsObject() && !t.Type.IsArray() && !t.Type.IsList())
+                    .Where(t => t != null && !t.IsObject() && !t.Type.IsArray() && !t.Type.IsList())
                     .Select(t => provider.GetElementId(t!.Type, assemblyFile))
                     .Select(id => new KeyValuePair<ElementId, int>(id!.Value, 1));
 
@@ -537,7 +565,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             return string.Empty;
         }
 
-        private static string GetMetadataFieldNameDescription(IMetadataField metadataField)
+        private static string GetMetadataFieldNameDescription(IMetadataField? metadataField)
         {
             if (IsDetailedInfoEnabled())
                 return metadataField?.Name ?? string.Empty;
