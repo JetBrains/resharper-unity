@@ -45,9 +45,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
             AddToQuickList(mountPoint, myProjectMainPoint, "ScriptableObject", ++pos, "1404A333-DA7C-47AC-8CB5-7C944DD1422D");
             AddToQuickList(mountPoint, myProjectMainPoint, "StateMachineBehaviour", ++pos, "AFA01340-773E-488A-93D6-E19540AE2F1B");
             AddToQuickList(mountPoint, myProjectMainPoint, "PlayModeTest", ++pos, "0bcdbc13-d26e-4512-9750-fb930f532e88");
-            AddToQuickList(mountPoint, myProjectMainPoint, "CustomEditor", ++pos, "2E5D288C-A209-41EE-93B2-7CACDCAE18C6");
-            AddToQuickList(mountPoint, myProjectMainPoint, "EditorWindow", ++pos, "CA9DFEEA-D5B5-4DDC-933F-8D618D71538E");
-            AddToQuickList(mountPoint, myProjectMainPoint, "PropertyDrawer", ++pos, "7901AA8B-4060-4763-8FD5-B7B5384FABAA");
+            AddToQuickList(mountPoint, myProjectMainPoint, "CustomEditor (IMGUI)", ++pos, "2E5D288C-A209-41EE-93B2-7CACDCAE18C6");
+            AddToQuickList(mountPoint, myProjectMainPoint, "EditorWindow (IMGUI)", ++pos, "CA9DFEEA-D5B5-4DDC-933F-8D618D71538E");
+            AddToQuickList(mountPoint, myProjectMainPoint, "PropertyDrawer (IMGUI)", ++pos, "7901AA8B-4060-4763-8FD5-B7B5384FABAA");
+            AddToQuickList(mountPoint, myProjectMainPoint, "CustomEditor", ++pos, "D4BC1DCD-C297-4DA9-8072-03CCBA27C34C");
+            AddToQuickList(mountPoint, myProjectMainPoint, "EditorWindow", ++pos, "3B84E43F-9A0B-42DA-AF15-8A17239F969B");
+            AddToQuickList(mountPoint, myProjectMainPoint, "PropertyDrawer", ++pos, "C04349FF-EFAC-4468-B3CA-0D1159DC8482");
+
             AddToQuickList(mountPoint, myProjectMainPoint, "ScriptableWizard", ++pos, "E1BD73A0-0145-4A1A-B4AA-7744144744AF");
             AddToQuickList(mountPoint, myProjectMainPoint, "AssetPostprocessor", ++pos, "B669492E-B3A6-4F98-9998-9AF480374340");
             AddToQuickList(mountPoint, myProjectMainPoint, "EditModeTest", ++pos, "7b7fa2c7-0ee5-4d4f-bb1f-ddbeacdbfc94");

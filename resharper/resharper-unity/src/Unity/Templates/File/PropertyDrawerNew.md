@@ -1,12 +1,12 @@
 ---
-guid: 7901AA8B-4060-4763-8FD5-B7B5384FABAA
+guid: C04349FF-EFAC-4468-B3CA-0D1159DC8482
 image: UnityCSharp
 type: File
 reformat: True
 shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=PropertyDrawer, ValidateFileName=True
-scopes: UnityFileTemplateSectionMarker;InUnityCSharpEditorFolder;MustBeInProjectWithMaximumUnityVersion(version=2022.1)
+scopes: UnityFileTemplateSectionMarker;InUnityCSharpEditorFolder;MustBeInProjectWithUnityVersion(version=2022.2)
 uitag: Unity Script
 parameterOrder: HEADER, (CLASS), (NAMESPACE), TYPE
 HEADER-expression: fileheader()
@@ -15,21 +15,17 @@ NAMESPACE-expression: fileDefaultNamespace()
 TYPE-expression: complete()
 ---
 
-# Property Drawer (IMGUI)
+# Property Drawer
 
 ```
 $HEADER$namespace $NAMESPACE$ {
   [UnityEditor.CustomPropertyDrawer(typeof($TYPE$))]
   public class $CLASS$ : UnityEditor.PropertyDrawer
   {
-    public override void OnGUI(UnityEngine.Rect position, UnityEditor.SerializedProperty property, UnityEngine.GUIContent label)
+    public override UnityEngine.UIElements.VisualElement CreatePropertyGUI(UnityEditor.SerializedProperty property)
     {
       $END$
-    }
-
-    public override float GetPropertyHeight(UnityEditor.SerializedProperty property, UnityEngine.GUIContent label)
-    {
-      return base.GetPropertyHeight(property, label);
+      return base.CreatePropertyGUI(property);
     }
   }
 }

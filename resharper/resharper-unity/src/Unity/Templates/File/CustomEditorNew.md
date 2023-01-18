@@ -1,12 +1,12 @@
 ---
-guid: 2E5D288C-A209-41EE-93B2-7CACDCAE18C6
+guid: D4BC1DCD-C297-4DA9-8072-03CCBA27C34C
 image: UnityCSharp
 type: File
 reformat: True
 shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=CustomEditor, ValidateFileName=True
-scopes: UnityFileTemplateSectionMarker;InUnityCSharpEditorFolder;MustBeInProjectWithMaximumUnityVersion(version=2022.1)
+scopes: UnityFileTemplateSectionMarker;InUnityCSharpEditorFolder;MustBeInProjectWithUnityVersion(version=2022.2)
 uitag: Unity Script
 parameterOrder: HEADER, (CLASS), (NAMESPACE), TYPE
 HEADER-expression: fileheader()
@@ -15,17 +15,17 @@ NAMESPACE-expression: fileDefaultNamespace()
 TYPE-expression: complete()
 ---
 
-# Custom Editor (IMGUI)
+# Custom Editor
 
 ```
 $HEADER$namespace $NAMESPACE$ {
   [UnityEditor.CustomEditor(typeof($TYPE$))]
   public class $CLASS$ : UnityEditor.Editor
   {
-    public override void OnInspectorGUI()
+    public override UnityEngine.UIElements.VisualElement CreateInspectorGUI()
     {
       $END$
-      base.OnInspectorGUI();
+      return base.CreateInspectorGUI();
     }
   }
 }
