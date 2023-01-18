@@ -56,10 +56,9 @@ namespace JetBrains.ReSharper.Plugins.Json.Util
                 }
                 else
                 {
-                    string charResult;
                     var presentation = value.Substring(i, presentationLength);
                     if (!TryConvertPresentationToValue(presentation, presentationForm,
-                        out charResult))
+                        out var charResult))
                         return null;
 
                     builder.Append(charResult);
@@ -153,9 +152,8 @@ namespace JetBrains.ReSharper.Plugins.Json.Util
             if (charPresentation.StartsWith(@"\x", StringComparison.Ordinal) ||
                 charPresentation.StartsWith(@"\u", StringComparison.Ordinal))
             {
-                int utf;
                 charPresentation = charPresentation.Substring(2);
-                if (int.TryParse(charPresentation, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out utf))
+                if (int.TryParse(charPresentation, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out var utf))
                 {
                     if (utf < 0x000000 || utf > 0x10ffff) goto Fail;
                     if (utf >= 0x00d800 && utf <= 0x00dfff)
