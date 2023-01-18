@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -16,86 +16,14 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="UnityEditorPluginUpdatedUpToDate_Text" xml:space="preserve">
-        <value>Unity Editor plugin updated (up to date)</value>
-    </data>
-    <data name="PleaseSwitchToTheUnityEditorToReload_Text" xml:space="preserve">
-        <value>$@"Please switch to the Unity Editor to reload the plugin.
-                            Rider plugin v{0} can be found at:
-                            {1}.</value>
-        <comment>{0} &lt;- 'myCurrentVersion'; 
-            {1} &lt;- 'installedPath.MakeRelativeTo(mySolution.SolutionDirectory)'; 
-        </comment>
-    </data>
-    <data name="UnityEditorPluginUpdatedDebugBuild_Text" xml:space="preserve">
-        <value>Unity Editor plugin updated (debug build)</value>
-    </data>
-    <data name="UnityEditorPluginUpdated_Text" xml:space="preserve">
-        <value>Unity Editor plugin updated</value>
-    </data>
-    <data name="UnityEditorPluginInstalled_Text" xml:space="preserve">
-        <value>Unity Editor plugin installed</value>
-    </data>
-    <data name="PleaseSwitchToUnityEditorToLoadThePlugin_Text" xml:space="preserve">
-        <value>$@"Please switch to Unity Editor to load the plugin.
-                            Rider plugin v{0} can be found at:
-                            {1}.</value>
-        <comment>{0} &lt;- 'myCurrentVersion'; 
-            {1} &lt;- 'installedPath.MakeRelativeTo(mySolution.SolutionDirectory)'; 
-        </comment>
-    </data>
-    <data name="UnityEditorPluginUpdateRequired_Text" xml:space="preserve">
-        <value>Unity editor plugin update required</value>
-    </data>
-    <data name="TheUnityEditorPluginIsOutOfDateAndAutomatic_Text" xml:space="preserve">
-        <value>The Unity editor plugin is out of date and automatic plugin updates are disabled. Advanced Unity integration features are unavailable until the plugin is updated.</value>
-    </data>
-    <data name="DoNotShowForThisSolution_Text" xml:space="preserve">
-        <value>Do not show for this solution</value>
+    <data name="AdditionalFileLayoutSettingsHelper_LoadDefaultPattern_You_are_about_to_replace_the_set_of_patterns_with_a_default_one___0_This_will_remove_all_changes_you_might_have_made__1_Do_you_want_to_proceed_" xml:space="preserve">
+        <value>You are about to replace the set of patterns with a default one.{0}This will remove all changes you might have made.{0}Do you want to proceed?</value>
     </data>
     <data name="AdvancedUnityIntegrationIsUnavailable_Text" xml:space="preserve">
         <value>Advanced Unity integration is unavailable</value>
     </data>
-    <data name="MakeSureRider_IsSetAsTheExternalEditor_Text" xml:space="preserve">
-        <value>Make sure Rider {0} is set as the External Editor in Unity preferences.</value>
-        <comment>{0} &lt;- 'myHostProductInfo.VersionMarketingString'; 
-        </comment>
-    </data>
-    <data name="RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Do_not_show_for_this_solution" xml:space="preserve">
+    <data name="DoNotShowForThisSolution_Text" xml:space="preserve">
         <value>Do not show for this solution</value>
-    </data>
-    <data name="RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Update_available___JetBrains_Rider_package_" xml:space="preserve">
-        <value>Update available - JetBrains Rider package.</value>
-    </data>
-    <data name="RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__Version__in_Unity_Package_Manager_" xml:space="preserve">
-        <value>Check for JetBrains Rider package {0} in Unity Package Manager.</value>
-    </data>
-    <data name="UsagesInAssetsAreNotAvailableDuring_Text" xml:space="preserve">
-        <value>Usages in assets are not available during asset indexing</value>
-    </data>
-    <data name="UnityImplicitUsage_Text" xml:space="preserve">
-        <value>Unity implicit usage</value>
-    </data>
-    <data name="UnityCodeInsightFieldUsageProvider_DisplayName_Unity_serialized_field" xml:space="preserve">
-        <value>Unity serialized field</value>
-    </data>
-    <data name="RiderEventHandlerDetector_AddEventsHighlighting_Click_to_view_usages_in_assets" xml:space="preserve">
-        <value>Click to view usages in assets</value>
-    </data>
-    <data name="RiderEventHandlerDetector_AddEventsHighlighting_Assets_usages" xml:space="preserve">
-        <value>Assets usages</value>
-    </data>
-    <data name="RiderFieldDetector_AddMonoBehaviourHighlighting_Inspector_values_are_not_available_during_asset_indexing" xml:space="preserve">
-        <value>Inspector values are not available during asset indexing</value>
-    </data>
-    <data name="UnityIsNotRunning_Text" xml:space="preserve">
-        <value>Unity is not running</value>
-    </data>
-    <data name="RiderIconProviderUtil_GetExtraActions_Start_Unity_Editor" xml:space="preserve">
-        <value>Start Unity Editor</value>
-    </data>
-    <data name="RiderTypeDetector_AddMonoBehaviourHighlighting_Usages_in_assets_are_not_available_during_asset_indexing" xml:space="preserve">
-        <value>Usages in assets are not available during asset indexing</value>
     </data>
     <data name="GeneratedFileNotification_GeneratedFileNotification_Edit_corresponding__asmdef_in_Unity" xml:space="preserve">
         <value>Edit corresponding .asmdef in Unity</value>
@@ -103,21 +31,123 @@
     <data name="GeneratedFileNotification_GeneratedFileNotification_This_file_is_generated_by_Unity__Any_changes_made_will_be_lost_" xml:space="preserve">
         <value>This file is generated by Unity. Any changes made will be lost.</value>
     </data>
-    <data name="RiderTypeDetector_AddScriptUsagesHighlighting_Click_to_view_usages_in_assets" xml:space="preserve">
-        <value>Click to view usages in assets</value>
+    <data name="ImmutablePackageNotification_ImmutablePackageNotification_This_file_is_part_of_the_BuildIn_Unity_Package_Cache__Any_changes_made_will_be_lost_" xml:space="preserve">
+        <value>This file is part of the BuildIn Unity Package Cache. Any changes made will be lost.</value>
     </data>
-    <data name="RiderTypeDetector_AddScriptUsagesHighlighting_Assets_usages" xml:space="preserve">
-        <value>Assets usages</value>
+    <data name="ImmutablePackageNotification_ImmutablePackageNotification_This_file_is_part_of_the_Global_Unity_Package_Cache__Any_changes_made_will_be_lost_" xml:space="preserve">
+        <value>This file is part of the Global Unity Package Cache. Any changes made will be lost.</value>
     </data>
-    <data name="RiderDeferredCacheProgressBar_Start_Processing_assets" xml:space="preserve">
-        <value>Processing assets</value>
+    <data name="ImmutablePackageNotification_ImmutablePackageNotification_This_file_is_part_of_the_Unity_Package_Cache__Any_changes_made_will_be_lost_" xml:space="preserve">
+        <value>This file is part of the Unity Package Cache. Any changes made will be lost.</value>
+    </data>
+    <data name="LoadSceneFixBulbAction_Text_Add___SceneName___to_build_settings" xml:space="preserve">
+        <value>Add &apos;{0}&apos; to build settings</value>
+    </data>
+    <data name="MakeSureRider_IsSetAsTheExternalEditor_Text" xml:space="preserve">
+        <value>Make sure Rider {0} is set as the External Editor in Unity preferences.</value>
+    </data>
+    <data name="PerformanceCriticalLineMarker_RiderPresentableName" xml:space="preserve">
+        <value>Performance critical line marker</value>
+    </data>
+    <data name="PleaseSwitchToTheUnityEditorToReload_Text" xml:space="preserve">
+        <value>$@&quot;Please switch to the Unity Editor to reload the plugin.
+                            Rider plugin v{0} can be found at:
+                            {1}.</value>
+    </data>
+    <data name="PleaseSwitchToUnityEditorToLoadThePlugin_Text" xml:space="preserve">
+        <value>$@&quot;Please switch to Unity Editor to load the plugin.
+                            Rider plugin v{0} can be found at:
+                            {1}.</value>
     </data>
     <data name="RiderDeferredCacheProgressBar_Start_Calculating_asset_index" xml:space="preserve">
         <value>Calculating asset index</value>
     </data>
+    <data name="RiderDeferredCacheProgressBar_Start_Processing_assets" xml:space="preserve">
+        <value>Processing assets</value>
+    </data>
     <data name="RiderDeferredCacheProgressBar_Start_Processing_FileName" xml:space="preserve">
         <value>Processing {0}</value>
-        <comment>Processing fileName</comment>
+    </data>
+    <data name="RiderEventHandlerDetector_AddEventsHighlighting_Assets_usages" xml:space="preserve">
+        <value>Assets usages</value>
+    </data>
+    <data name="RiderEventHandlerDetector_AddEventsHighlighting_Click_to_view_usages_in_assets" xml:space="preserve">
+        <value>Click to view usages in assets</value>
+    </data>
+    <data name="RiderFieldDetector_AddMonoBehaviourHighlighting_Inspector_values_are_not_available_during_asset_indexing" xml:space="preserve">
+        <value>Inspector values are not available during asset indexing</value>
+    </data>
+    <data name="RiderIconProviderUtil_GetExtraActions_Start_Unity_Editor" xml:space="preserve">
+        <value>Start Unity Editor</value>
+    </data>
+    <data name="RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__Version__in_Unity_Package_Manager_" xml:space="preserve">
+        <value>Check for JetBrains Rider package {0} in Unity Package Manager.</value>
+    </data>
+    <data name="RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Do_not_show_for_this_solution" xml:space="preserve">
+        <value>Do not show for this solution</value>
+    </data>
+    <data name="RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Update_available___JetBrains_Rider_package_" xml:space="preserve">
+        <value>Update available - JetBrains Rider package.</value>
+    </data>
+    <data name="RiderTypeDetector_AddMonoBehaviourHighlighting_Usages_in_assets_are_not_available_during_asset_indexing" xml:space="preserve">
+        <value>Usages in assets are not available during asset indexing</value>
+    </data>
+    <data name="RiderTypeDetector_AddScriptUsagesHighlighting_Assets_usages" xml:space="preserve">
+        <value>Assets usages</value>
+    </data>
+    <data name="RiderTypeDetector_AddScriptUsagesHighlighting_Click_to_view_usages_in_assets" xml:space="preserve">
+        <value>Click to view usages in assets</value>
+    </data>
+    <data name="RiderUnityAssetOccurrenceNavigator_Navigate_Start_the_Unity_Editor_to_view_results" xml:space="preserve">
+        <value>Start Unity Editor to view results</value>
+    </data>
+    <data name="SceneManagerLoadSceneEnableQuickFix_Text_Enable_scene_in_build_settings" xml:space="preserve">
+        <value>Enable scene in build settings</value>
+    </data>
+    <data name="TheUnityEditorPluginIsOutOfDateAndAutomatic_Text" xml:space="preserve">
+        <value>The Unity editor plugin is out of date and automatic plugin updates are disabled. Advanced Unity integration features are unavailable until the plugin is updated.</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_DisplayName_Unity_serialized_field" xml:space="preserve">
+        <value>Unity serialized field</value>
+    </data>
+    <data name="UnityController_StartUnityInternal_Start_Unity_Editor" xml:space="preserve">
+        <value>Start Unity Editor</value>
+    </data>
+    <data name="UnityEditorFindUsageResultCreator_CreateRequestToUnity_Finding_usages_in_Unity_for__" xml:space="preserve">
+        <value>Finding usages in Unity for: </value>
+    </data>
+    <data name="UnityEditorPluginInstalled_Text" xml:space="preserve">
+        <value>Unity Editor plugin installed</value>
+    </data>
+    <data name="UnityEditorPluginUpdated_Text" xml:space="preserve">
+        <value>Unity Editor plugin updated</value>
+    </data>
+    <data name="UnityEditorPluginUpdatedDebugBuild_Text" xml:space="preserve">
+        <value>Unity Editor plugin updated (debug build)</value>
+    </data>
+    <data name="UnityEditorPluginUpdatedUpToDate_Text" xml:space="preserve">
+        <value>Unity Editor plugin updated (up to date)</value>
+    </data>
+    <data name="UnityEditorPluginUpdateRequired_Text" xml:space="preserve">
+        <value>Unity editor plugin update required</value>
+    </data>
+    <data name="UnityFileLayoutPageTab_Create_Default" xml:space="preserve">
+        <value>Default</value>
+    </data>
+    <data name="UnityFileLayoutPageTab_Create_Default_with_regions" xml:space="preserve">
+        <value>Default with regions</value>
+    </data>
+    <data name="UnityFileLayoutPageTab_Create_Empty" xml:space="preserve">
+        <value>Empty</value>
+    </data>
+    <data name="UnityFileLayoutPageTab_Create_Load_patterns_" xml:space="preserve">
+        <value>Load patterns:</value>
+    </data>
+    <data name="UnityImplicitUsage_Text" xml:space="preserve">
+        <value>Unity implicit usage</value>
+    </data>
+    <data name="UnityIsNotRunning_Text" xml:space="preserve">
+        <value>Unity is not running</value>
     </data>
     <data name="UnityPathTemplateParameter_CreateContent_Custom" xml:space="preserve">
         <value>Custom</value>
@@ -128,57 +158,19 @@
     <data name="UnityPathTemplateParameter_CreateContent_Custom_path" xml:space="preserve">
         <value>Custom path</value>
     </data>
+    <data name="UnityRefresher_RefreshInternal_Refreshing_solution_in_Unity_Editor___" xml:space="preserve">
+        <value>Refreshing solution in Unity Editor…</value>
+    </data>
     <data name="UnitySettingsCategoryProvider_myCategoryToKeys_Unity_plugin_settings" xml:space="preserve">
         <value>Unity plugin settings</value>
-    </data>
-    <data name="UnityController_StartUnityInternal_Start_Unity_Editor" xml:space="preserve">
-        <value>Start Unity Editor</value>
-    </data>
-    <data name="UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_No_connection_to_Unity" xml:space="preserve">
-        <value>No connection to Unity</value>
     </data>
     <data name="UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_Make_sure_Unity_is_running_" xml:space="preserve">
         <value>Make sure Unity is running.</value>
     </data>
-    <data name="SceneManagerLoadSceneEnableQuickFix_Text_Enable_scene_in_build_settings" xml:space="preserve">
-        <value>Enable scene in build settings</value>
+    <data name="UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_No_connection_to_Unity" xml:space="preserve">
+        <value>No connection to Unity</value>
     </data>
-    <data name="LoadSceneFixBulbAction_Text_Add___SceneName___to_build_settings" xml:space="preserve">
-        <value>Add '{0}' to build settings</value>
-        <comment>Add sceneName to build settings</comment>
-    </data>
-    <data name="AdditionalFileLayoutSettingsHelper_LoadDefaultPattern_You_are_about_to_replace_the_set_of_patterns_with_a_default_one___0_This_will_remove_all_changes_you_might_have_made__1_Do_you_want_to_proceed_" xml:space="preserve">
-        <value>You are about to replace the set of patterns with a default one.{0}This will remove all changes you might have made.{0}Do you want to proceed?</value>
-        <comment>Just a NewLine is inserted here</comment>
-    </data>
-    <data name="UnityFileLayoutPageTab_Create_Empty" xml:space="preserve">
-        <value>Empty</value>
-    </data>
-    <data name="UnityFileLayoutPageTab_Create_Default" xml:space="preserve">
-        <value>Default</value>
-    </data>
-    <data name="UnityFileLayoutPageTab_Create_Default_with_regions" xml:space="preserve">
-        <value>Default with regions</value>
-    </data>
-    <data name="UnityFileLayoutPageTab_Create_Load_patterns_" xml:space="preserve">
-        <value>Load patterns:</value>
-    </data>
-    <data name="ImmutablePackageNotification_ImmutablePackageNotification_This_file_is_part_of_the_Unity_Package_Cache__Any_changes_made_will_be_lost_" xml:space="preserve">
-        <value>This file is part of the Unity Package Cache. Any changes made will be lost.</value>
-    </data>
-    <data name="ImmutablePackageNotification_ImmutablePackageNotification_This_file_is_part_of_the_Global_Unity_Package_Cache__Any_changes_made_will_be_lost_" xml:space="preserve">
-        <value>This file is part of the Global Unity Package Cache. Any changes made will be lost.</value>
-    </data>
-    <data name="ImmutablePackageNotification_ImmutablePackageNotification_This_file_is_part_of_the_BuildIn_Unity_Package_Cache__Any_changes_made_will_be_lost_" xml:space="preserve">
-        <value>This file is part of the BuildIn Unity Package Cache. Any changes made will be lost.</value>
-    </data>
-    <data name="UnityRefresher_RefreshInternal_Refreshing_solution_in_Unity_Editor___" xml:space="preserve">
-        <value>Refreshing solution in Unity Editor…</value>
-    </data>
-    <data name="RiderUnityAssetOccurrenceNavigator_Navigate_Start_the_Unity_Editor_to_view_results" xml:space="preserve">
-        <value>Start Unity Editor to view results</value>
-    </data>
-    <data name="UnityEditorFindUsageResultCreator_CreateRequestToUnity_Finding_usages_in_Unity_for__" xml:space="preserve">
-        <value>Finding usages in Unity for: </value>
+    <data name="UsagesInAssetsAreNotAvailableDuring_Text" xml:space="preserve">
+        <value>Usages in assets are not available during asset indexing</value>
     </data>
 </root>
