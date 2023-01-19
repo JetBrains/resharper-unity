@@ -173,4 +173,7 @@
     <data name="UsagesInAssetsAreNotAvailableDuring_Text" xml:space="preserve">
         <value>Usages in assets are not available during asset indexing</value>
     </data>
+    <data name="UnityAssetsUsage_Text" xml:space="preserve">
+        <value>Unity assets usage</value>
+    </data>
 </root>
