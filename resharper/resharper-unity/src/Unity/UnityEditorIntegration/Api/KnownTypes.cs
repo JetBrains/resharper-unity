@@ -115,6 +115,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static readonly IClrTypeName SystemAPI = new ClrTypeName("Unity.Entities.SystemAPI");
         public static readonly IClrTypeName Entity = new ClrTypeName("Unity.Entities.Entity");
 
+        //Unity.Mathematics
+        public static readonly IClrTypeName Random = new ClrTypeName("Unity.Mathematics.Random");
+
         // Burst
         public static readonly IClrTypeName BurstCompiler = new ClrTypeName("Unity.Burst.BurstCompiler");
         public static readonly IClrTypeName BurstCompileAttribute = new ClrTypeName("Unity.Burst.BurstCompileAttribute");

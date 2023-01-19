@@ -196,6 +196,10 @@
         <Title resourceName="UnityDots_CurrentComponentLookupMustBeUpdated" resourceType="Strings" />
         <Description resourceName="UnityDots_CurrentComponentLookupMustBeUpdated" resourceType="Strings" />
       </Tag>
+      <Tag externalName="SingletonMustBeRequestedWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="UnityDots_GetSingletonMustBeRequested" resourceType="Strings" />
+        <Description resourceName="UnityDots_GetSingletonMustBeRequested" resourceType="Strings" />
+      </Tag>
     </Group>
   </SeverityConfiguration>
   
@@ -589,6 +593,19 @@
       <Argument>componentLookupName</Argument>
     </Message>
     <Range>QueryLookupFieldDeclaration.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+
+  <Warning name="SingletonMustBeRequested" configurableSeverity="Unity.Entities.SingletonMustBeRequested">
+    <Parameter type="IClassLikeDeclaration" name="classLikeDeclaration" />
+    <Parameter type="ICSharpExpression" name="availableUpdateMethod" />
+    <Parameter type="IType" name="requestedType" />
+    <Parameter type="string" name="requestedTypeName" />
+    <Message resourceName="UnityDots_GetSingletonMustBeRequested" resourceType="Strings">
+      <Argument>requestedTypeName</Argument>
+    </Message>
+    <Range>AvailableUpdateMethod.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 

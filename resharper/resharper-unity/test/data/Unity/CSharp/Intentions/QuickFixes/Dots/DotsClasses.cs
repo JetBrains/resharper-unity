@@ -45,4 +45,11 @@ namespace Unity.Entities
 namespace Unity.Mathematics
 {
     public struct float2 { }
+    public struct Random
+    {
+        public static Random CreateFromIndex(uint index)
+        {
+            return new Random();
+        }
+    }
 }
