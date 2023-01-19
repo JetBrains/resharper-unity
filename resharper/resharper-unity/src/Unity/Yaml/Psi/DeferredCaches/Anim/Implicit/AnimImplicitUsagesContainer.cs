@@ -35,6 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
 
         [NotNull] private readonly IShellLocks myShellLocks;
         private readonly MetaFileGuidCache myMetaFileGuidCache;
+        private readonly AssetScriptUsagesElementContainer myAssetScriptUsagesElementContainer;
         private readonly AnimatorScriptUsagesElementContainer myAnimatorScriptUsagesElementContainer;
         private readonly AnimatorGameObjectUsagesContainer myAnimatorGameObjectUsagesContainer;
         private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
@@ -45,12 +46,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
         public AnimImplicitUsagesContainer(
             [NotNull] IShellLocks locks,
             MetaFileGuidCache metaFileGuidCache, 
+            AssetScriptUsagesElementContainer assetScriptUsagesElementContainer,
             AnimatorScriptUsagesElementContainer animatorScriptUsagesElementContainer,
             AnimatorGameObjectUsagesContainer animatorGameObjectUsagesContainer,
             AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer)
         {
             myShellLocks = locks;
             myMetaFileGuidCache = metaFileGuidCache;
+            myAssetScriptUsagesElementContainer = assetScriptUsagesElementContainer;
             myAnimatorScriptUsagesElementContainer = animatorScriptUsagesElementContainer;
             myAnimatorGameObjectUsagesContainer = animatorGameObjectUsagesContainer;
             myAssetDocumentHierarchyElementContainer = assetDocumentHierarchyElementContainer;
@@ -137,6 +140,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
             return false;
         }
 
+        public LocalList<AnimImplicitUsage> GetUsagesForReversed(IPsiSourceFile sourceFile, IDeclaredElement element)
+        {
+            var result = new LocalList<AnimImplicitUsage>();
+
+            if (element is not IMethod method) return result;
+            var shortName = method.ShortName;
+            var type = method.ContainingType;
+            if (type is not IClass classType) return result;
+            if (!classType.DerivesFromMonoBehaviour()) return result;
+            if (!myFileToEvents[sourceFile].Any(a=>a.FunctionName == shortName)) return result;
+
+            var animGuid = myMetaFileGuidCache.GetAssetGuid(sourceFile);
+            if (!animGuid.HasValue) return result;
+            var controllerFiles = myAnimatorScriptUsagesElementContainer.GetControllerFileByAnimGuid(animGuid.Value);
+            var controllerGuids = controllerFiles.Select(controllerFile=>myMetaFileGuidCache.GetAssetGuid(controllerFile)).ToArray();
+            var references = controllerGuids
+                .SelectMany(controllerGuid=> myAnimatorGameObjectUsagesContainer.GetGameObjectReferencesByControllerGuid(controllerGuid)).ToArray();
+            var gameObjects = references.SelectMany(reference=> AssetHierarchyUtil.GetSelfAndOriginalGameObjects(reference,
+                myAssetDocumentHierarchyElementContainer)).ToArray();
+            
+            var scriptUsages = myAssetScriptUsagesElementContainer.GetScriptUsagesFor(classType).ToArray();
+            var gameObjectsFromScript = scriptUsages.SelectMany(scriptUsage => AssetHierarchyUtil.GetSelfAndOriginalGameObjects(
+                scriptUsage.Location,
+                myAssetDocumentHierarchyElementContainer));
+
+            if (gameObjects.Any(go => gameObjectsFromScript.Contains(go)))
+            {
+                var animImplicitUsages = myFileToEvents[sourceFile].ToArray().Where(a => a.FunctionName == shortName);
+                result.AddRange(animImplicitUsages);
+            }
+
+            return result;
+        }
+
         public LocalList<AnimImplicitUsage> GetUsagesFor(IPsiSourceFile sourceFile, IDeclaredElement element)
         {
             myShellLocks.AssertReadAccessAllowed();
@@ -148,19 +185,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
             if (type is not IClass classType) return result;
             if (!classType.DerivesFromMonoBehaviour()) return result;
             if (!myFileToEvents[sourceFile].Any(a=>a.FunctionName == shortName)) return result;
-
-            var solution = element.GetSolution();
-            var container = solution.GetComponent<AssetScriptUsagesElementContainer>();
-            var scriptUsages = container.GetScriptUsagesFor(classType).ToArray(); // GO-s with script attached
+            
+            var scriptUsages = myAssetScriptUsagesElementContainer.GetScriptUsagesFor(classType).ToArray(); // GO-s with script attached
             foreach (var scriptUsage in scriptUsages)
             {
-                var results = AssetHierarchyUtil.GetSelfAndOriginalGameObjects(scriptUsage.Location,
+                var gameObjects = AssetHierarchyUtil.GetSelfAndOriginalGameObjects(scriptUsage.Location,
                     myAssetDocumentHierarchyElementContainer);
 
-                var controllerGuids = results.SelectMany(a => myAnimatorGameObjectUsagesContainer.GetAnimatorsFromGameObject(a));
-                // here also ask for modifications
-
-                var controllers = controllerGuids.SelectMany(a => myMetaFileGuidCache.GetAssetFilePathsFromGuid(a)).ToArray();
+                var controllerGuids = myAnimatorGameObjectUsagesContainer.GetAnimatorsFromGameObject(gameObjects).Distinct();
+                var controllers = controllerGuids.SelectMany(a => myMetaFileGuidCache.GetAssetFilePathsFromGuid(a)).Distinct().ToArray();
                 if (controllers.Any(controller =>
                     {
                         return myAnimatorScriptUsagesElementContainer.GetAnimReferences(controller)

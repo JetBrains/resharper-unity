@@ -89,6 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                             continue;
                         
                         var animImplicitUsages = myAnimImplicitUsagesContainer.GetUsagesFor(sourceFile, element);
+                        animImplicitUsages.AddRange(myAnimImplicitUsagesContainer.GetUsagesForReversed(sourceFile, element));
                         foreach (var usage in animImplicitUsages)
                         {
                             var occurence = new AnimImplicitFindResult(sourceFile, element, usage);

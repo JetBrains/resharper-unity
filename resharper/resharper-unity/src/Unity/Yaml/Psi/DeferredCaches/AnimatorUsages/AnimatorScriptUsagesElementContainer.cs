@@ -140,6 +140,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             return result;
         }
 
+
+        public IPsiSourceFile[] GetControllerFileByAnimGuid(Guid animGuid)
+        {
+            return myAnimPointers.Where(a => a.Value.Contains(animGuid))
+                .Select(a => a.Key).ToArray();
+        }
+
         public LocalList<IPsiSourceFile> GetPossibleFilesWithScriptUsages(IClass scriptClass)
         {
             var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, scriptClass);
