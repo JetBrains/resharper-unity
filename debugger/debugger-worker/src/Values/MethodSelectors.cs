@@ -1,7 +1,7 @@
-using MetadataLite.API;
-using MetadataLite.API.Selectors;
-
 // ReSharper disable InconsistentNaming
+
+using Mono.Debugging.MetadataLite.API;
+using Mono.Debugging.MetadataLite.API.Selectors;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values
 {

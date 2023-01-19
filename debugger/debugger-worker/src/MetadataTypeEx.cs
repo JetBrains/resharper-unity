@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using MetadataLite.API;
+using Mono.Debugging.MetadataLite.API;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity
 {
