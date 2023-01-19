@@ -5,8 +5,6 @@ using System.Threading;
 using JetBrains.Annotations;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
-using MetadataLite.API;
-using MetadataLite.API.Selectors;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend.Values;
 using Mono.Debugging.Backend.Values.ValueReferences;
@@ -16,8 +14,10 @@ using Mono.Debugging.Client.CallStacks;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Evaluation;
+using Mono.Debugging.MetadataLite.API;
+using Mono.Debugging.MetadataLite.API.Selectors;
 using Mono.Debugging.Soft;
-using TypeSystem;
+using Mono.Debugging.TypeSystem;
 
 // ReSharper disable StaticMemberInGenericType
 

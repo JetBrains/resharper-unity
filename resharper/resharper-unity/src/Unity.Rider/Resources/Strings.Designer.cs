@@ -100,5 +100,6 @@
     public static string UnityRefresher_RefreshInternal_Refreshing_solution_in_Unity_Editor___ => ResourceManager.GetString("UnityRefresher_RefreshInternal_Refreshing_solution_in_Unity_Editor___");
     public static string RiderUnityAssetOccurrenceNavigator_Navigate_Start_the_Unity_Editor_to_view_results => ResourceManager.GetString("RiderUnityAssetOccurrenceNavigator_Navigate_Start_the_Unity_Editor_to_view_results");
     public static string UnityEditorFindUsageResultCreator_CreateRequestToUnity_Finding_usages_in_Unity_for__ => ResourceManager.GetString("UnityEditorFindUsageResultCreator_CreateRequestToUnity_Finding_usages_in_Unity_for__");
+    public static string UnityAssetsUsage_Text => ResourceManager.GetString("UnityAssetsUsage_Text");
   }
 }
