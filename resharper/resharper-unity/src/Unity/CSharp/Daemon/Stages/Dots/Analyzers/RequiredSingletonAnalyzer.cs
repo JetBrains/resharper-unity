@@ -105,7 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
                 if (method == null)
                     return false;
 
-                if (method.ShortName != "GetSingleton")
+                if (method.ShortName != "GetSingleton" && method.ShortName != "GetSingletonEntity")
                     return false;
 
                 if (!UnityApi.IsSystemAPI(method.ContainingType))
