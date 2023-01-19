@@ -4,7 +4,7 @@ using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.CallStacks;
 using Mono.Debugging.Client.Values.Render;
-using TypeSystem;
+using Mono.Debugging.TypeSystem;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values
 {
