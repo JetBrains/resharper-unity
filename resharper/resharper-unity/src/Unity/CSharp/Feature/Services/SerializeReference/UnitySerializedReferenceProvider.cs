@@ -45,9 +45,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         private readonly IPsiAssemblyFileLoader myPsiAssemblyFileLoader;
         private readonly IPsiModules myPsiModules;
         private readonly UnitySolutionTracker myUnitySolutionTracker;
-        private readonly SolutionAnalysisConfiguration mySolutionAnalysisConfiguration;
 
-        
+
         private readonly OptimizedPersistentSortedMap<FullAssemblyId, UnitySerializationReferenceElementInfo> myShellDataMap;
         private readonly OptimizedPersistentSortedMap<FullAssemblyId, long> myShellTimestampMap;
 
@@ -68,8 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             myPsiAssemblyFileLoader = psiAssemblyFileLoader;
             myPsiModules = psiModules;
             myUnitySolutionTracker = unitySolutionTracker;
-            mySolutionAnalysisConfiguration = solutionAnalysisConfiguration;
-            myIndex = new UnitySerializedReferenceInfoIndex(mySolutionAnalysisConfiguration, ourLogger);
+            myIndex = new UnitySerializedReferenceInfoIndex(solutionAnalysisConfiguration, ourLogger);
             GetCaches(lifetime, shellCaches.Db, out myShellDataMap, out myShellTimestampMap);
             GetCaches(lifetime, solutionCaches.Db, out mySolutionDataMap, out mySolutionTimestampMap);
         }
