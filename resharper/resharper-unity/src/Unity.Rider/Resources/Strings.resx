@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -107,6 +107,9 @@
     <data name="TheUnityEditorPluginIsOutOfDateAndAutomatic_Text" xml:space="preserve">
         <value>The Unity editor plugin is out of date and automatic plugin updates are disabled. Advanced Unity integration features are unavailable until the plugin is updated.</value>
     </data>
+    <data name="UnityAssetsUsage_Text" xml:space="preserve">
+        <value>Unity assets usage</value>
+    </data>
     <data name="UnityCodeInsightFieldUsageProvider_DisplayName_Unity_serialized_field" xml:space="preserve">
         <value>Unity serialized field</value>
     </data>
@@ -172,8 +175,5 @@
     </data>
     <data name="UsagesInAssetsAreNotAvailableDuring_Text" xml:space="preserve">
         <value>Usages in assets are not available during asset indexing</value>
-    </data>
-    <data name="UnityAssetsUsage_Text" xml:space="preserve">
-        <value>Unity assets usage</value>
     </data>
 </root>
