@@ -1191,8 +1191,8 @@ a plugin to be installed to a project.</value>
     <data name="TypeDetector_AddDeclarationHighlighting_Custom_Unity_type" xml:space="preserve">
         <value>Custom Unity type</value>
     </data>
-    <data name="TypeDetector_AddDeclarationHighlighting_ECS_system" xml:space="preserve">
-        <value>ECS system</value>
+    <data name="TypeDetector_AddDeclarationHighlighting_DOTS" xml:space="preserve">
+        <value>DOTS</value>
     </data>
     <data name="TypeDetector_AddDeclarationHighlighting_Unity_entities_system" xml:space="preserve">
         <value>Unity entities system</value>

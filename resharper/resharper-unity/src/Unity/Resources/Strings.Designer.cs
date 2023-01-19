@@ -423,7 +423,7 @@
     public static string TypeDetector_AddDeclarationHighlighting_Unity_scriptable_object => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_scriptable_object");
     public static string TypeDetector_AddDeclarationHighlighting_Unity_type => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_type");
     public static string TypeDetector_AddDeclarationHighlighting_Custom_Unity_type => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Custom_Unity_type");
-    public static string TypeDetector_AddDeclarationHighlighting_ECS_system => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_ECS_system");
+    public static string TypeDetector_AddDeclarationHighlighting_DOTS => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_DOTS");
     public static string TypeDetector_AddDeclarationHighlighting_Unity_entities_system => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_entities_system");
     public static string EventHandlerDetector_AddEventHandlerHighlighting_Text => ResourceManager.GetString("EventHandlerDetector_AddEventHandlerHighlighting_Text");
     public static string EventHandlerDetector_AddEventHandlerHighlighting_Tooltip => ResourceManager.GetString("EventHandlerDetector_AddEventHandlerHighlighting_Tooltip");
