@@ -61,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
 
         public override Guid GetDefaultUID() => ourDefaultUID;
 
-        public override string PresentableShortName => $"Before Unity {ActualVersion}";
+        public override string PresentableShortName => $"Unity {ActualVersion} and earlier projects";
 
         // The real scope point is called, and passed in the allowed scope point from the template definition
         public override bool IsSubsetOf(ITemplateScopePoint allowed)
@@ -96,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
 
         public override Guid GetDefaultUID() => ourDefaultUID;
 
-        public override string PresentableShortName => $"Current Unity {ActualVersion}";
+        public override string PresentableShortName => $"Unity {ActualVersion} projects";
 
         public override bool IsSubsetOf(ITemplateScopePoint allowed)
         {
