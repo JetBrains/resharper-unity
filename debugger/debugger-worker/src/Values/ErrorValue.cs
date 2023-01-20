@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Threading;
-using MetadataLite.API;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
+using Mono.Debugging.MetadataLite.API;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values
 {

@@ -21,7 +21,6 @@ using JetBrains.ReSharper.Daemon.CodeInsights;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Navigation.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
-using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Common.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
@@ -60,8 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
         public override ICollection<CodeVisionRelativeOrdering> RelativeOrderings =>
             new[] {new CodeVisionRelativeOrderingLast()};
 
-        public UnityCodeInsightFieldUsageProvider(UnitySolutionTracker unitySolutionTracker,
-                                                  IFrontendBackendHost frontendBackendHost, BulbMenuComponent bulbMenu,
+        public UnityCodeInsightFieldUsageProvider(IFrontendBackendHost frontendBackendHost, BulbMenuComponent bulbMenu,
                                                   DeferredCacheController deferredCacheController,
                                                   AssetInspectorValuesContainer inspectorValuesContainer,
                                                   UnityEventsElementContainer unityEventsElementContainer)
@@ -78,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
         {
             Assertion.Assert(solution.Locks.IsReadAccessAllowed(), "ReadLock required");
 
-            var containingType = declaredElement.GetContainingType();
+            var containingType = declaredElement.ContainingType;
             if (containingType == null)
                 return (null, Array.Empty<string>());
 
@@ -104,7 +102,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
 
                 rules.AddRule("DocumentEditorContext", DocumentModelDataConstants.EDITOR_CONTEXT, new DocumentEditorContext(highlightInfo.CodeInsightsHighlighting.Range));
                 rules.AddRule("PopupWindowSourceOverride", UIDataConstants.PopupWindowContextSource,
-                    new PopupWindowContextSource(lt => new RiderEditorOffsetPopupWindowContext(highlightInfo.CodeInsightsHighlighting.Range.StartOffset.Offset)));
+                    new PopupWindowContextSource(_ => new RiderEditorOffsetPopupWindowContext(highlightInfo.CodeInsightsHighlighting.Range.StartOffset.Offset)));
 
                 rules.AddRule("DontNavigateImmediatelyToSingleUsage", NavigationSettings.DONT_NAVIGATE_IMMEDIATELY_TO_SINGLE_USAGE, new object());
 
@@ -126,7 +124,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
 
             var field = (declaredElement as IField).NotNull();
             var type = field.Type;
-            var containingType = field.GetContainingType();
+            var containingType = field.ContainingType;
             if (containingType == null)
             {
                 base.AddHighlighting(consumer, element, field, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);

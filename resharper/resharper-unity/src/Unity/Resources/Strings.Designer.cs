@@ -423,7 +423,7 @@
     public static string TypeDetector_AddDeclarationHighlighting_Unity_scriptable_object => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_scriptable_object");
     public static string TypeDetector_AddDeclarationHighlighting_Unity_type => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_type");
     public static string TypeDetector_AddDeclarationHighlighting_Custom_Unity_type => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Custom_Unity_type");
-    public static string TypeDetector_AddDeclarationHighlighting_ECS_system => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_ECS_system");
+    public static string TypeDetector_AddDeclarationHighlighting_DOTS => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_DOTS");
     public static string TypeDetector_AddDeclarationHighlighting_Unity_entities_system => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_entities_system");
     public static string EventHandlerDetector_AddEventHandlerHighlighting_Text => ResourceManager.GetString("EventHandlerDetector_AddEventHandlerHighlighting_Text");
     public static string EventHandlerDetector_AddEventHandlerHighlighting_Tooltip => ResourceManager.GetString("EventHandlerDetector_AddEventHandlerHighlighting_Tooltip");
@@ -462,9 +462,18 @@
     public static string UnityDots_CurrentComponentLookupMustBeUpdated => ResourceManager.GetString("UnityDots_CurrentComponentLookupMustBeUpdated");
     public static string UnityDots_AddComponentLookup_Update_Text => ResourceManager.GetString("UnityDots_AddComponentLookup_Update_Text");
     public static string UnityDots_AddComponentLookupScoped_Update_Text => ResourceManager.GetString("UnityDots_AddComponentLookupScoped_Update_Text");
+    public static string UnityDots_GetSingletonMustBeRequested => ResourceManager.GetString("UnityDots_GetSingletonMustBeRequested");
+    public static string UnityDots_Add_RequireForUpdate_SingletonQuickFix => ResourceManager.GetString("UnityDots_Add_RequireForUpdate_SingletonQuickFix");
+    public static string UnityDots_Add_RequireForUpdate_SingletonQuickFix_For_All => ResourceManager.GetString("UnityDots_Add_RequireForUpdate_SingletonQuickFix_For_All");
     public static string UnityDots_GenerateBakerAndAuthoring_Name => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Name");
     public static string UnityDots_GenerateBakerAndAuthoring_Description => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Description");
-    public static string UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields");
+    public static string UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Title => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Title");
+    public static string UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle");
+    public static string UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Description => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Description");
+    public static string UnityDots_GenerateBakerAndAuthoring_Baker => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Baker");
+    public static string UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested");
+    public static string UnityDots_GenerateBakerAndAuthoring_NewBaker => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_NewBaker");
+    public static string UnityDots_GenerateBakerAndAuthoring_GenerateBakerAsNestedClass => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_GenerateBakerAsNestedClass");
     public static string UnityDots_projects => ResourceManager.GetString("UnityDots_projects");
   }
 }

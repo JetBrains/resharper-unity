@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Collections.Viewable;
 using Mono.Debugging.Client.DebuggerOptions;
-using Mono.Debugging.Client.HotReload;
+using Mono.Debugging.HotReload;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 {

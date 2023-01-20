@@ -96,7 +96,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         {
             return typeElement?.GetClrName().Equals(KnownTypes.ComponentLookup) ?? false;
         }
-        
+        public static bool IsBaker(ITypeElement? typeElement)
+        {
+            return typeElement?.GetClrName().Equals(KnownTypes.Baker) ?? false;
+        }
         public static bool IsSystemStateType(ITypeElement? typeElement)
         {
             return typeElement?.GetClrName().Equals(KnownTypes.SystemState) ?? false;
@@ -345,14 +348,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 }
             }
         
-            // example: [SerializeField] public unsafe fixed byte MyByteBuff[3];
-            if (property.IsFixedSizeBufferField()
-                && property.Type is IPointerType pointerType
-                && IsUnitySimplePredefined(pointerType.ElementType))
-            {
-                return SerializedFieldStatus.SerializedField;
-            }
-            
             var hasSerializeReference = property.HasFieldAttribute(KnownTypes.SerializeReference);
 
             if (property.GetAccessRights() != AccessRights.PUBLIC
