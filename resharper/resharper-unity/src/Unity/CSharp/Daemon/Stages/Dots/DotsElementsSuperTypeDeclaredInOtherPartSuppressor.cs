@@ -30,6 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
         {
             return UnityApi.IsDerivesFromSystemBase(typeElement)
                    || UnityApi.IsDerivesFromISystem(typeElement)
+                   || UnityApi.IsDerivesFromIJobEntity(typeElement)
                    || UnityApi.IsDerivesFromIAspect(typeElement);
         }
     }
