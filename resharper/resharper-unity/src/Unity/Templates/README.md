@@ -60,7 +60,8 @@ Description |
 ------------|
 [Assembly Definition File](File/AsmDef.md) |
 [Asset Postprocessor](File/AssetPostprocessor.md) |
-[Custom Editor](File/CustomEditor.md) |
+[Custom Editor](File/CustomEditorNew.md) |
+[Custom Editor (IMGUI)](File/CustomEditor.md) |
 [Edit Mode Test](File/EditModeTest.md) |
 [Editor EntryPoint C# script](File/EditorEntryPoint.md) |
 [Editor Window](File/EditorWindowNew.md) |
