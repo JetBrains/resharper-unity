@@ -1,3 +1,5 @@
+﻿using Strings = JetBrains.ReSharper.Plugins.Unity.Rider.Resources.Strings;
+
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.TextControl.DocumentMarkup;
@@ -12,7 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Pe
         EffectType = EffectType.LINE_MARKER,
         ForegroundColor = "#ff7526",
         DarkForegroundColor = "#ff7526",
-        RiderPresentableName = "Performance critical line marker",
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.PerformanceCriticalLineMarker_RiderPresentableName),
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX,
         TransmitUpdates = true)]
     public class PerformanceHighlightingAttributeIdsRegistrar
