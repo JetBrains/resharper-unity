@@ -320,6 +320,15 @@ tasks {
             hashFolder = "$hashBaseDir/lib"
             packages = "model.lib"
 
+            if (!monorepo) {
+                // rdgen has a hash file that will handle rebuilds, but we still pay for launching rdgen
+                inputs.files(modelSrcDir.resolve("lib/Library.kt"))
+                outputs.files(frontendKtOutDir.resolve("Library.Generated.kt"),
+                        backendCsOutDir.resolve("Library.Generated.cs"),
+                        unityEditorCsOutDir.resolve("Library.Generated.cs"),
+                        "$hashFolder/lib/.rdgen")
+            }
+
             // Library is used as backend in backendUnityModel and backend in frontendBackendModel, so needs to be both
             // asis and reversed. I.e. symmetric
             generator {
@@ -390,6 +399,16 @@ tasks {
             hashFolder = "$hashBaseDir/frontendBackend"
             packages = "model.frontendBackend"
 
+            if (!monorepo) {
+                // rdgen has a hash file that will handle rebuilds, but we still pay for launching rdgen
+                inputs.files(modelSrcDir.resolve("lib/Library.kt"),
+                        modelSrcDir.resolve("frontendBackend/FrontendBackendModel.kt"))
+                outputs.files(frontendKtOutDir.resolve("FrontendBackendModel.Generated.kt"),
+                        backendCsOutDir.resolve("FrontendBackendModel.Generated.cs"),
+                        "$hashFolder/lib/.rdgen",
+                        "$hashFolder/frontendBackend/.rdgen")
+            }
+
             generator {
                 language = "kotlin"
                 transform = "asis"
@@ -449,6 +468,16 @@ tasks {
             hashFolder = "$hashBaseDir/backendUnity"
             packages = "model.backendUnity"
 
+            if (!monorepo) {
+                // rdgen has a hash file that will handle rebuilds, but we still pay for launching rdgen
+                inputs.files(modelSrcDir.resolve("lib/Library.kt"),
+                        modelSrcDir.resolve("backendUnity/BackendUnityModel.kt"))
+                outputs.files(backendCsOutDir.resolve("BackendUnityModel.Generated.cs"),
+                        unityEditorCsOutDir.resolve("BackendUnityModel.Generated.cs"),
+                        "$hashFolder/lib/.rdgen",
+                        "$hashFolder/backendUnity/.rdgen")
+            }
+
             generator {
                 language = "csharp"
                 transform = "asis"
@@ -505,6 +534,14 @@ tasks {
 
             hashFolder = "$hashBaseDir/debuggerWorker"
             packages = "model.debuggerWorker"
+
+            if (!monorepo) {
+                // rdgen has a hash file that will handle rebuilds, but we still pay for launching rdgen
+                inputs.files(modelSrcDir.resolve("debuggerWorker/UnityDebuggerWorkerModel.kt"))
+                outputs.files(frontendKtOutDir.resolve("UnityDebuggerWorkerModel.Generated.kt"),
+                        backendCsOutDir.resolve("UnityDebuggerWorkerModel.Generated.cs"),
+                        "$hashFolder/debuggerWorker/.rdgen")
+            }
 
             generator {
                 language = "kotlin"
