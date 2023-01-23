@@ -10,11 +10,67 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ## 2023.1.0
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net223...net231)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/58?closed=1)
+
+### Added
+
+- Add context action and Generate menu item to generate baker and authoring classes from DOTS component data ([RIDER-85175](https://youtrack.jetbrains.com/issue/RIDER-85175))
+- Add file templates for DOTS component data, systems, aspects and entity jobs ([RIDER-85180](https://youtrack.jetbrains.com/issue/RIDER-85180))
+- Add inspection to check that `ComponentLookup` is updated in a system ([RIDER-85179](https://youtrack.jetbrains.com/issue/RIDER-85179))
+- Add quick fix to add a call to `ComponentLookup.Update` in a system's `OnUpdate` method ([RIDER-85179](https://youtrack.jetbrains.com/issue/RIDER-85179))
+- Add inspection and quick fix to ensure that a system calling `GetSingleton` has a corresponding call to `RequireForUpdate` ([RIDER-85181](https://youtrack.jetbrains.com/issue/RIDER-85181))
+- Add Find Usages support for methods used implicitly in animation clips ([RIDER-77030](https://youtrack.jetbrains.com/issue/RIDER-77030))
+- Add custom formatting rules to keep `[Header]` attribute on separate line ([RIDER-71840](https://youtrack.jetbrains.com/issue/RIDER-71840))
+- Rider: Provide link to online help for types and type members in Unity packages ([RIDER-86917](https://youtrack.jetbrains.com/issue/RIDER-86917))
+
+### Changed
+
+- Serialised fields are now accurately recognised in any class, not just known Unity types ([RIDER-79871](https://youtrack.jetbrains.com/issue/RIDER-79871), [RIDER-72838](https://youtrack.jetbrains.com/issue/RIDER-72838))
+- Re-evaluate resource warnings when a resource file is updated or deleted
+- Improve support for prefab modifications and event handlers
+- Rider: Allow static methods for `EventTrigger` usages
+- Rider: Update icons for `.asmdef`, `.asmref` and `.inputactions` files ([RIDER-68006](https://youtrack.jetbrains.com/issue/RIDER-68006))
+- Rider: Update Unity Explorer UI for new search experience ([RIDER-82417](https://youtrack.jetbrains.com/issue/RIDER-82417))
+- Rider: "ECS system" Code Vision lens renamed to "DOTS" ([RIDER-87790](https://youtrack.jetbrains.com/issue/RIDER-87790))
+
+### Fixed
+
+- Fix asset usages for package scripts and assets ([RIDER-85431](https://youtrack.jetbrains.com/issue/RIDER-85431))
+- Fix method usage inside `EventTrigger` prefab modification ([RIDER-47693](https://youtrack.jetbrains.com/issue/RIDER-47693))
+- Fix warning when a partial DOTS class and its generated part both declare the same base class ([RIDER-87055](https://youtrack.jetbrains.com/issue/RIDER-87055))
+- Fix exception when adding performance indicators ([RIDER-87523](https://youtrack.jetbrains.com/issue/RIDER-87523))
+- Fix memory leak when showing usages of code in Unity editor tool window ([RIDER-87538](https://youtrack.jetbrains.com/issue/RIDER-87538))
+- Fix indexing project settings and assembly definitions when asset indexing is disabled ([RIDER-87363](https://youtrack.jetbrains.com/issue/RIDER-87363))
+- Rider: Fix unable to find usages or `.asmdef` files when player projects generated ([RIDER-71238](https://youtrack.jetbrains.com/issue/RIDER-71238))
+- Rider: Fix completion list showing duplicate entries when player projects generated ([RIDER-75500](https://youtrack.jetbrains.com/issue/RIDER-75500))
+- Rider: Fix "Attach to Unity" run configuration form to resize gracefully ([RIDER-84643](https://youtrack.jetbrains.com/issue/RIDER-75500))
+- Rider: Fix online documentation URL for nested classes
+- Rider: Fix Unity Log view losing selected item when search field is cleared ([#2381](https://github.com/JetBrains/resharper-unity/issues/2381))
+- Rider: Fix issue with UnityYamlMerge not being called ([RIDER-87413](https://youtrack.jetbrains.com/issue/RIDER-87413))
+
+
+
+## 2022.3.1
+* Released: [2022-12-21](https://blog.jetbrains.com/dotnet/2022/12/21/resharper-and-rider-2022-3-1-bug-fixes/)
+* Build: 2022.3.0.191
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net223-rtm-2022.3.0...net223-rtm-2022.3.1)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/57?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net223-rtm-2022.3.1)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2022.3.0.191)
+
+### Fixed
+
+- Rider: Stop ranking resource string literals with ML completion ([RIDER-85858](https://youtrack.jetbrains.com/issue/RIDER-85858))
+
+
 
 ## 2022.3.0
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net222...net223)
+* Released: [2022-12-07](https://blog.jetbrains.com/dotnet/2022/12/07/rider-2022-3/)
+* Build: 2022.3.0.183
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net222...net223-rtm-2022.3.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/55?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net223-rtm-2022.3.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2022.3.0.183)
 
 ### Added
 
@@ -63,6 +119,15 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix issue reading packages with up-to-date but disabled `packages-lock.json` ([RIDER-81728](https://youtrack.jetbrains.com/issue/RIDER-81728), [#2355](https://github.com/JetBrains/resharper-unity/pull/2355))
 - Rider: Reduce overhead of checking for Android functionality
 - Rider: Improve startup time for very large projects when asset indexing disabled ([RIDER-83398](https://youtrack.jetbrains.com/issue/RIDER-83398))
+- Rider: Fix error when trying to invoke "Start Unity" action ([RIDER-85383](https://youtrack.jetbrains.com/issue/RIDER-85383))
+- Rider: Fix error starting Unity from toolbar if Android plugin is installed ([RIDER-85695](https://youtrack.jetbrains.com/issue/RIDER-85695))
+
+
+
+## 2022.2.4
+* Released: [2022-11-08](https://blog.jetbrains.com/dotnet/2022/11/08/resharper-and-rider-2022-2-4-bug-fix/)
+* Build: 2022.2.3.184
+* No code changes
 
 
 
@@ -2273,3 +2338,4 @@ For ReSharper 9.2. Initial release
 ### Added
 - Marks `MonoBehaviour` classes, fields and methods as in use
 - Adds _Generate Code_ provider for `MonoBehaviour` message handlers
+
