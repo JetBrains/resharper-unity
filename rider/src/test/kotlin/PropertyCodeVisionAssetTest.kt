@@ -1,4 +1,3 @@
-import base.SettingsHelper
 import base.integrationTests.prepareAssemblies
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.jetbrains.rd.platform.util.lifetime
@@ -10,6 +9,7 @@ import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.CodeLensTestBase
 import com.jetbrains.rider.test.enums.CoreVersion
 import com.jetbrains.rider.test.enums.ToolsetVersion
+import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
@@ -21,10 +21,15 @@ import java.time.Duration
 @TestEnvironment(toolset = ToolsetVersion.TOOLSET_17_CORE, coreVersion = CoreVersion.DOT_NET_6)
 class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
+    private val disableYamlDotSettingsContents = """<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	        <s:Boolean x:Key="/Default/CodeEditing/Unity/IsAssetIndexingEnabled/@EntryValue">False</s:Boolean>
+            </wpf:ResourceDictionary>"""
+
     override fun preprocessTempDirectory(tempDir: File) {
         prepareAssemblies(activeSolutionDirectory)
         if (testMethod.name.contains("YamlOff")) {
-            SettingsHelper.disableIsAssetIndexingEnabledSetting(activeSolution, activeSolutionDirectory)
+            val dotSettingsFile = activeSolutionDirectory.combine("$activeSolution.sln.DotSettings.user")
+            dotSettingsFile.writeText(disableYamlDotSettingsContents)
         }
     }
 
