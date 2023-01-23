@@ -245,7 +245,7 @@ tasks {
             if (rawBytes.isEmpty()) throw GradleException("plugin.xml cannot be empty")
             if (rawBytes.any { it < 0 }) throw GradleException("plugin.xml cannot contain invalid bytes")
 
-            logger.lifecycle("$pluginXml.path is valid XML and contains only US-ASCII symbols, bytes: $rawBytes.length")
+            logger.lifecycle("$pluginXml.path is valid XML and contains only US-ASCII symbols, bytes: ${rawBytes.size}")
         }
     }
 
