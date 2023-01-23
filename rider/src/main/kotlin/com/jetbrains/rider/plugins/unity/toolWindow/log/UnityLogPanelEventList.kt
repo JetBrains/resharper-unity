@@ -19,7 +19,6 @@ import com.intellij.ui.components.JBList
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rdclient.util.idea.toVirtualFile
-import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.projectView.solutionDirectory
 import java.awt.Font
 import java.awt.datatransfer.StringSelection
@@ -33,7 +32,7 @@ class UnityLogPanelEventList(lifetime: Lifetime) : JBList<LogPanelItem>(emptyLis
     init {
         cellRenderer = UnityLogPanelEventRenderer()
         selectionMode = ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
-        emptyText.text = UnityBundle.message("log.is.empty")
+        emptyText.text = "Log is empty"
         TreeUIHelper.getInstance().installListSpeedSearch(this)
 
         val disposable = lifetime.createNestedDisposable()
