@@ -57,7 +57,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             myElements = elements;
             myReferenceSearcherParameters = referenceSearcherParameters;
 
-            var originalElements = myReferenceSearcherParameters.OriginalElements ?? myElements.ToList();
+            var originalElements = myReferenceSearcherParameters.OriginalElements?.
+                SelectNotNull(t => t.GetValidDeclaredElement()).ToList() ?? myElements.ToList();
             myOriginalElements = new HashSet<IDeclaredElement>();
 
             foreach (var originalElement in originalElements)

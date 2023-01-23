@@ -132,18 +132,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
             var newFiles = new ExternalFiles(mySolution, myLogger);
 
-            foreach (var metaFile in files.MetaFiles)
-            {
-                var path = metaFile.Path;
-                if (IsIndexedFileWithDisabledAssetSupport(path))
-                {
-                    newFiles.AssetFiles.Add(metaFile);
-                }
-            }
+            FilterFiles(files.MetaFiles, newFiles.MetaFiles);
+            FilterFiles(files.AssetFiles, newFiles.AssetFiles);
+            FilterFiles(files.AsmDefFiles, newFiles.AsmDefFiles);
+            FilterFiles(files.AsmRefFiles, newFiles.AsmRefFiles);
 
             newFiles.Directories.AddRange(files.Directories);
             
             return newFiles;
+        }
+
+        private void FilterFiles(List<ExternalFile> files, List<ExternalFile> newFiles)
+        {
+            foreach (var metaFile in files)
+            {
+                var path = metaFile.Path;
+                if (IsIndexedFileWithDisabledAssetSupport(path))
+                {
+                    newFiles.Add(metaFile);
+                }
+            }
         }
 
 

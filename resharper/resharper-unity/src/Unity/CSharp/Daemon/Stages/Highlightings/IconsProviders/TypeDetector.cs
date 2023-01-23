@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 else if (UnityApi.IsDotsImplicitlyUsedType(typeElement))
                 {
                     //TODO obsolete
-                    AddUnityECSHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_ECS_system, Strings.TypeDetector_AddDeclarationHighlighting_Unity_entities_system,
+                    AddUnityECSHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_DOTS, Strings.TypeDetector_AddDeclarationHighlighting_Unity_entities_system,
                         context);
                 }
 
@@ -106,13 +106,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             var result = new List<BulbMenuItem>();
             var textControl = Solution.GetComponent<ITextControlManager>().LastFocusedTextControlPerClient
                 .ForCurrentClient();
-            if (declaration is IClassLikeDeclaration classLikeDeclaration &&
-                textControl != null && myUnityApi.IsUnityType(classLikeDeclaration.DeclaredElement))
+            if (declaration is IClassLikeDeclaration classLikeDeclaration && textControl != null)
             {
-                var fix = new GenerateUnityEventFunctionsFix(classLikeDeclaration);
-                result.Add(new IntentionAction(fix, Strings.TypeDetector_GetActions_Generate_Unity_event_functions,
-                        PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
-                    .ToBulbMenuItem(Solution, textControl));
+                if (myUnityApi.IsUnityType(classLikeDeclaration.DeclaredElement))
+                {
+                    var fix = new GenerateUnityEventFunctionsFix(classLikeDeclaration);
+                    result.Add(new IntentionAction(fix, Strings.TypeDetector_GetActions_Generate_Unity_event_functions,
+                            PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
+                        .ToBulbMenuItem(Solution, textControl));
+                }
             }
 
             return result;

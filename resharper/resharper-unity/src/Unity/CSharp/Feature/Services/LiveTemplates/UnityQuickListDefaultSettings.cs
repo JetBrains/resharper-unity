@@ -24,8 +24,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         private readonly IMainScopePoint myFilesMainPoint;
 
         public UnityQuickListDefaultSettings(ILogger logger, ISettingsSchema settingsSchema,
-                                             UnityProjectScopeCategoryUIProvider projectScopeProvider,
-                                             UnityScopeCategoryUIProvider filesScopeProvider)
+            UnityProjectScopeCategoryUIProvider projectScopeProvider,
+            UnityScopeCategoryUIProvider filesScopeProvider)
             : base(settingsSchema, logger)
         {
             myLogger = logger;
@@ -56,6 +56,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
             AddToQuickList(mountPoint, myProjectMainPoint, "ImageEffectShader", ++pos, "7b10542b-0a61-4bd8-ba91-e5bad4d39f5b");
             AddToQuickList(mountPoint, myProjectMainPoint, "AsmDef", ++pos, "bf263f0d-4315-42f7-8813-d7afe13fcdeb");
             AddToQuickList(mountPoint, myProjectMainPoint, "EditorEntryPoint", ++pos, "DA24767F-E6BB-4463-ACB4-799D7CE68822");
+            AddToQuickList(mountPoint, myProjectMainPoint, "ComponentData", ++pos, "B0D13301-16C0-4271-B12A-4CDB03708E76");
+            AddToQuickList(mountPoint, myProjectMainPoint, "Aspect", ++pos, "276DC9DD-51D2-41F9-A312-D9BD2AE3C225");
+            AddToQuickList(mountPoint, myProjectMainPoint, "System", ++pos, "3A8DDF9A-86ED-4877-8721-6D064DF61D77");
+            AddToQuickList(mountPoint, myProjectMainPoint, "SystemBase", ++pos, "9C5472EF-F807-4BB4-8E39-56D5B38C96B5");
         }
 
         private void InitialiseQuickList(ISettingsStorageMountPoint mountPoint, IMainScopePoint quickList)
