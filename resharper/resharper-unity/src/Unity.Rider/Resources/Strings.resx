@@ -173,9 +173,6 @@
     <data name="UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_No_connection_to_Unity" xml:space="preserve">
         <value>No connection to Unity</value>
     </data>
-    <data name="UsagesInAssetsAreNotAvailableDuring_Text" xml:space="preserve">
-        <value>Usages in assets are not available during asset indexing</value>
-    </data>
     <data name="UnityUsagesCodeVisionProvider_DisplayName_Unity_assets_usage" xml:space="preserve">
         <value>Unity assets usage</value>
     </data>
@@ -187,5 +184,8 @@
     </data>
     <data name="UnityUsagesCodeVisionProvider_Noun_asset_usages" xml:space="preserve">
         <value>asset usages</value>
+    </data>
+    <data name="UsagesInAssetsAreNotAvailableDuring_Text" xml:space="preserve">
+        <value>Usages in assets are not available during asset indexing</value>
     </data>
 </root>
