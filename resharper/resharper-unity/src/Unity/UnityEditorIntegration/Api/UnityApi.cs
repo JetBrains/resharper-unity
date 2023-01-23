@@ -70,7 +70,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             || IsDerivesFromISystem(typeElement)
             || IsDerivesFromIAspect(typeElement)
             || IsDerivesFromIComponentData(typeElement)
+            || IsDerivesFromIJobEntity(typeElement)
             || typeElement.DerivesFrom(KnownTypes.IBaker);
+
+        public static bool IsDerivesFromIJobEntity(ITypeElement? typeElement)
+        {
+            return typeElement.DerivesFrom(KnownTypes.IJobEntity);
+        }
 
         public static bool IsDerivesFromIAspect(ITypeElement? typeElement)
         {
@@ -104,7 +110,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         {
             return typeElement?.GetClrName().Equals(KnownTypes.SystemState) ?? false;
         }
-        
         public static bool IsSystemAPI(ITypeElement? typeElement)
         {
             return typeElement?.GetClrName().Equals(KnownTypes.SystemAPI) ?? false;

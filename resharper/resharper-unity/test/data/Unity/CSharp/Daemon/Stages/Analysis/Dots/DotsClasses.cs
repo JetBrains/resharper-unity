@@ -9,7 +9,7 @@ namespace Unity.Entities
 
     public abstract class IBaker { }
     public abstract class Baker<TAuthoringType> : IBaker {}
-
+    public interface IJobEntity { }
     public interface IAspect { }
     public interface IQueryTypeParameter { }
     public interface IComponentData : IQueryTypeParameter { }

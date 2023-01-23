@@ -18,6 +18,7 @@ Description |
 [Editor Window](File/EditorWindow.md) |
 [IAspect](File/Aspect.md) |
 [IComponentData](File/ComponentData.md) |
+[IJobEntity](File/JobEntity.md) |
 [Image Effect Shader](File/ImageEffectShader.md) |
 [ISystem](File/System.md) |
 [Mono Behaviour](File/MonoBehaviour.md) |
@@ -62,6 +63,7 @@ Description |
 [Editor Window](File/EditorWindow.md) |
 [IAspect](File/Aspect.md) |
 [IComponentData](File/ComponentData.md) |
+[IJobEntity](File/JobEntity.md) |
 [Image Effect Shader](File/ImageEffectShader.md) |
 [ISystem](File/System.md) |
 [Mono Behaviour](File/MonoBehaviour.md) |
