@@ -68,5 +68,11 @@
     public static string RemoveSwallowedToken_Text_Insert_new_line => ResourceManager.GetString("RemoveSwallowedToken_Text_Insert_new_line");
     public static string RemoveToken_Text_Remove_invalid_parameters => ResourceManager.GetString("RemoveToken_Text_Remove_invalid_parameters");
     public static string ThereIsAlreadyAPropertyNamedDeclaredMessage => ResourceManager.GetString("ThereIsAlreadyAPropertyNamedDeclaredMessage");
+    public static string IntellisenseEnabledSettingShaderLab_s_Override_VS_IntelliSense_for_ShaderLab => ResourceManager.GetString("IntellisenseEnabledSettingShaderLab_s_Override_VS_IntelliSense_for_ShaderLab");
+    public static string IntellisenseEnabledSettingShaderLab_s_ShaderLab__Unity__shader_files_ => ResourceManager.GetString("IntellisenseEnabledSettingShaderLab_s_ShaderLab__Unity__shader_files_");
+    public static string ShaderLabAutopopupEnabledSettingsKey_s_In_variable_references => ResourceManager.GetString("ShaderLabAutopopupEnabledSettingsKey_s_In_variable_references");
+    public static string ShaderLabAutopopupEnabledSettingsKey_s_ShaderLab => ResourceManager.GetString("ShaderLabAutopopupEnabledSettingsKey_s_ShaderLab");
+    public static string ShaderLabFormatSettingsKey_s_Code_formatting_in_ShaderLab => ResourceManager.GetString("ShaderLabFormatSettingsKey_s_Code_formatting_in_ShaderLab");
+    public static string ShaderLabFormatSettingsKey_s_BraceStyle => ResourceManager.GetString("ShaderLabFormatSettingsKey_s_BraceStyle");
   }
 }
