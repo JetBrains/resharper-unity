@@ -141,6 +141,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptU
         public IEnumerable<IScriptUsage> GetScriptUsagesFor(IPsiSourceFile sourceFile, ITypeElement declaredElement)
         {
             myShellLocks.AssertReadAccessAllowed();
+            if (!IsApplicable(sourceFile)) return Enumerable.Empty<IScriptUsage>();
             if (myPointers[sourceFile].GetElement(sourceFile, Id) is not AssetScriptUsagesDataElement element) return Enumerable.Empty<IScriptUsage>();
             var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
             if (guid == null) return Enumerable.Empty<IScriptUsage>();
