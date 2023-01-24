@@ -171,7 +171,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                                                             ITypeElement declaredElement)
         {
             AssertShellLocks();
-            if (!sourceFile.IsController()) return EmptyList<IScriptUsage>.Enumerable;
+            if (!IsApplicable(sourceFile)) return EmptyList<IScriptUsage>.Enumerable;
             var boxedGuid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
             if (!boxedGuid.HasValue) return Enumerable.Empty<IScriptUsage>();
             var unityAssetDataElementPointer = myPointers[sourceFile];
