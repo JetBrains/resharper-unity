@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using System.Threading;
 using JetBrains.Annotations;
 using JetBrains.Util;
-using MetadataLite.API;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
+using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.Soft;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderers

@@ -1,4 +1,6 @@
-﻿using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
+﻿using Strings = JetBrains.ReSharper.Plugins.Unity.Shaders.Resources.Strings;
+
+using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Psi;
 using JetBrains.TextControl.DocumentMarkup;
 
@@ -45,13 +47,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.Cg.Daemon
     [RegisterHighlighter(LINE_COMMENT,
         GroupId = GROUP_ID,
         FallbackAttributeId = DefaultLanguageAttributeIds.LINE_COMMENT,
-        RiderPresentableName = "Comments//Line comment",
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.CommentsLineComment_RiderPresentableName),
         EffectType = EffectType.TEXT,
         Layer = HighlighterLayer.SYNTAX)]
     [RegisterHighlighter(DELIMITED_COMMENT,
         GroupId = GROUP_ID,
         FallbackAttributeId = DefaultLanguageAttributeIds.BLOCK_COMMENT,
-        RiderPresentableName = "Comments//Block comment",
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.CommentsBlockComment_RiderPresentableName),
         EffectType = EffectType.TEXT,
         Layer = HighlighterLayer.SYNTAX)]
     [RegisterHighlighter(PREPROCESSOR_LINE_CONTENT,

@@ -17,6 +17,7 @@
     <DefineConstants Condition="!$(InternalBuild)">INDEPENDENT_BUILD</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">

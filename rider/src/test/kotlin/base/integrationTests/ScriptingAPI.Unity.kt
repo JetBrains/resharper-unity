@@ -63,11 +63,11 @@ val unityActionsTimeout: Duration = Duration.ofSeconds(30)
 //region UnityDll
 
 private fun downloadUnityDll(): File {
-    return downloadAndExtractArchiveArtifactIntoPersistentCache("https://repo.labs.intellij.net/dotnet-rider-test-data/UnityEngine-2018.3-08-01-2019.dll.tar.gz").combine("UnityEngine.dll")
+    return downloadAndExtractArchiveArtifactIntoPersistentCache("https://packages.jetbrains.team/files/p/net/test-data/UnityEngine-2018.3-08-01-2019.dll.tar.gz").combine("UnityEngine.dll")
 }
 
 private fun downloadMsCorLib():File{
-    return downloadAndExtractArchiveArtifactIntoPersistentCache("https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_mscorlib_2018.4.tar.gz").combine("mscorlib.dll")
+    return downloadAndExtractArchiveArtifactIntoPersistentCache("https://packages.jetbrains.team/files/p/net/test-data/Unity_mscorlib_2018.4.tar.gz").combine("mscorlib.dll")
 }
 
 fun prepareAssemblies(project: Project, activeSolutionDirectory: File) {

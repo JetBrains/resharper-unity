@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.TextControl.DocumentMarkup.LineMarkers;
+using JetBrains.Util.DataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings
 {
@@ -44,9 +45,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         public override IHighlighter CreateHighlighter(IDocumentMarkup markup)
         {
-            var highlighter = base.CreateHighlighter(markup);
-            highlighter.UserData = new UnityPerformanceCriticalCodeLineMarker(DocumentRange);
-            return highlighter;
+            return markup.AddHighlighterRegistered(null, DocumentRange.TextRange, AreaType, Layer,
+                AttributeId, new ErrorStripeAttributes?(),
+                null, userdata: new UserDataWrapper(new UnityPerformanceCriticalCodeLineMarker(DocumentRange)));
         }
     }
 }

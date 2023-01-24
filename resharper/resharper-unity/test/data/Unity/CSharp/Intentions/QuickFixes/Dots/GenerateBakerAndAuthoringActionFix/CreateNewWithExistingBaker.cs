@@ -1,6 +1,7 @@
 // ${KIND:Unity.GenerateBakerAndAuthoring}
 // ${SELECT0:FieldDimensions:Unity.Mathematics.float2}
 // ${SELECT1:TombstonePrefab:Unity.Entities.Entity}
+// ${GLOBAL0:SelectedBaker=New Baker (Nested)}
 
 using Unity.Entities;
 using Unity.Mathematics;
@@ -15,20 +16,20 @@ namespace ComponentsAndTags
         public Entity TombstonePrefab;
     }
 
-    public class GraveyardPropertiesBaker : Baker<GraveyardPropertiesAuthoring>
-    {
-        public override void Bake(GraveyardPropertiesAuthoring authoring)
-        {
-            AddComponent(new GraveyardProperties
-            {
-                NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn,
-            });
-        }
-    }
-
     public class GraveyardPropertiesAuthoring : MonoBehaviour
     {
         public string TombstonePrefab; //Field with existing name in component
         public int NumberTombstonesToSpawn;
+
+        public class GraveyardPropertiesBaker : Baker<GraveyardPropertiesAuthoring>
+        {
+            public override void Bake(GraveyardPropertiesAuthoring authoring)
+            {
+                AddComponent(new GraveyardProperties
+                {
+                    NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn,
+                });
+            }
+        }
     }
 }
