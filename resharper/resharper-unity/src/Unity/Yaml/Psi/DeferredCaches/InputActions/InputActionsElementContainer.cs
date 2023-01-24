@@ -124,7 +124,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
         public InputActionsDeclaredElement[] GetUsagesFor(IPsiSourceFile inputActionsFile, IDeclaredElement el)
         {
             myShellLocks.AssertReadAccessAllowed();
-
+            
             if (!UnityInputActionsReferenceUsageSearchFactory.IsInterestingElement(el))
                 return Array.Empty<InputActionsDeclaredElement>();
             if (el is not IMethod method) return Array.Empty<InputActionsDeclaredElement>();

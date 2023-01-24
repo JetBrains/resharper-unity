@@ -108,6 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Explici
                                                              [NotNull] IDeclaredElement declaredElement)
         {
             AssertShellLocks();
+            if (!sourceFile.IsAnim()) return EmptyList<AnimExplicitUsage>.Enumerable;
             if (!(declaredElement is IClrDeclaredElement clrDeclaredElement))
                 return EmptyList<AnimExplicitUsage>.Enumerable;
             var boxedGuid = FindGuidOf(clrDeclaredElement);

@@ -24,12 +24,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
     [SolutionComponent]
     public class AnimImplicitUsagesContainer : IUnityAssetDataElementContainer
     {
-        /*
-        1. FindUsages on the methodname -> get script -> get gameobject -> get .controller-s attached to GO -> controller has cache of anim-s -> get anim-s -> anims should have cache of function-names.
-        2. Suppress unused -> get all function names from all anims?
-        3. Usages count?                    
-        */
-
         [NotNull] private readonly Dictionary<IPsiSourceFile, LocalList<AnimImplicitUsage>> myFileToEvents = new();
         [NotNull] private readonly CountingSet<string> myFunctionNames = new();
 
@@ -116,8 +110,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
             IUnityAssetDataElement unityAssetDataElement)
         {
             var dataElement = (AnimImplicitUsagesDataElement)unityAssetDataElement;
-
-            if (!dataElement.Events.Any()) return;
             myFileToEvents[currentAssetSourceFile] = new LocalList<AnimImplicitUsage>(dataElement.Events); 
             foreach (var usage in dataElement.Events)
             {
@@ -138,10 +130,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
             return false;
         }
 
-        public LocalList<AnimImplicitUsage> GetUsagesForReversed(IPsiSourceFile sourceFile, IDeclaredElement element)
+        // sourceFile (one of the anims workIndex) -> guid -> controller -> gameobject -> script -> method by name
+        public HashSet<AnimImplicitUsage> GetUsagesForReversed(IPsiSourceFile sourceFile, IDeclaredElement element)
         {
-            var result = new LocalList<AnimImplicitUsage>();
-
+            var result = new HashSet<AnimImplicitUsage>();
+            if (!IsApplicable(sourceFile)) return result;
+            
             if (element is not IMethod method) return result;
             var shortName = method.ShortName;
             var type = method.ContainingType;
@@ -172,10 +166,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
             return result;
         }
 
-        public LocalList<AnimImplicitUsage> GetUsagesFor(IPsiSourceFile sourceFile, IDeclaredElement element)
+        // methodname -> get script -> get gameobject -> get .controller-s attached to GO -> controller has cache of anim-s -> get anim-s -> anims should have cache of function-names.
+        public HashSet<AnimImplicitUsage> GetUsagesFor(IPsiSourceFile sourceFile, IDeclaredElement element)
         {
             myShellLocks.AssertReadAccessAllowed();
-            var result = new LocalList<AnimImplicitUsage>();
+            var result = new HashSet<AnimImplicitUsage>();
+            if (!IsApplicable(sourceFile)) return result;
 
             if (element is not IMethod method) return result;
             var shortName = method.ShortName;

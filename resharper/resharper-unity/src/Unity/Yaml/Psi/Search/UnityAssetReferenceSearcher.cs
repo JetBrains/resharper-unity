@@ -82,9 +82,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                         if (!myOriginalElements.Contains(element))
                             continue;
                         
+                        // we are using both strait and reversed to support more prefab modification cases 
                         var animImplicitUsages = myAnimImplicitUsagesContainer.GetUsagesFor(sourceFile, element);
-                        animImplicitUsages.AddRange(myAnimImplicitUsagesContainer.GetUsagesForReversed(sourceFile, element));
-                        foreach (var usage in animImplicitUsages)
+                        var reversedUsages = myAnimImplicitUsagesContainer.GetUsagesForReversed(sourceFile, element);
+                        var merged = animImplicitUsages.Union(reversedUsages);
+                        foreach (var usage in merged)
                         {
                             var occurence = new AnimImplicitFindResult(sourceFile,
                                 new DocumentRange(sourceFile.Document, usage.TextRangeOwnerPsiPersistentIndex));

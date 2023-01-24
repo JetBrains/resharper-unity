@@ -39,6 +39,11 @@ class AnimImplicitUsageFindUsagesTest : BaseTestWithSolution() {
         doFindUsagesTest("Assets/AnimEventHolder.cs", "void AnimEvent")
     }
 
+    @Test(enabled = false) // RIDER-88306 Sorting FindUsages results for non-ProjectFiles
+    fun testSorting() {
+        doFindUsagesTest("Assets/AnimEventHolder.cs", "void AnimEventDouble")
+    }
+
     @Test()
     fun testAnimEventWithControllerMod() {
         doFindUsagesTest("Assets/AnimEventHolder.cs", "void AnimEventWithControllerMod")

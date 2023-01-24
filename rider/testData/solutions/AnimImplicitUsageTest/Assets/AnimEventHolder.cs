@@ -12,9 +12,9 @@ public class AnimEventHolder : MonoBehaviour
         Debug.Log("AnimEventHolder.AnimEvent");
     }
     
-    void AnimEvent2()
+    void AnimEventDouble()
     {
-        Debug.Log("AnimEventHolder.AnimEvent");
+        Debug.Log("AnimEventHolder.AnimEventDouble");
     }
     
     void AnimEventWithControllerMod()
