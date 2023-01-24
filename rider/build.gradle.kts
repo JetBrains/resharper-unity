@@ -20,11 +20,11 @@ plugins {
     // Version is configured in gradle.properties
     id("com.jetbrains.rdgen")
     id("com.ullink.nuget") version "2.23"
-    id("com.ullink.nunit") version "2.4"
+    id("com.ullink.nunit") version "2.8"
     id("me.filippov.gradle.jvm.wrapper") version "0.14.0"
-    id("org.jetbrains.changelog") version "1.3.1"
+    id("org.jetbrains.changelog") version "2.0.0"
     id("org.jetbrains.intellij") // version in rider/buildSrc/build.gradle.kts
-    id("org.jetbrains.grammarkit") version "2021.2.2"
+    id("org.jetbrains.grammarkit") version "2022.3"
     kotlin("jvm")
 }
 
@@ -221,7 +221,7 @@ tasks {
         <body>
         <p><b>New in $pluginVersion</b></p>
         <p>
-        ${getChangelogItem().toHTML()}
+        ${changelog.renderItem(getChangelogItem(), Changelog.OutputType.HTML)}
         </p>
         <p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/net221/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
         </body>""".trimIndent()
@@ -620,9 +620,9 @@ tasks {
         description = "Packs resulting DLLs into a NuGet package which is an R# extension."
         dependsOn(buildReSharperHostPlugin)
 
-        val changelogNotes = getChangelogItem().withFilter { line ->
+        val changelogNotes = changelog.renderItem(getChangelogItem().withFilter { line ->
             !line.startsWith("- Rider:") && !line.startsWith("- Unity editor:")
-        }.toPlainText().trim().let {
+        }, Changelog.OutputType.PLAIN_TEXT).trim().let {
             // There's a bug in the changelog plugin that adds extra newlines on Windows, possibly
             // due to Unix/Windows line ending mismatch.
             // Remove this hack once JetBrains/gradle-changelog-plugin#8 is fixed
