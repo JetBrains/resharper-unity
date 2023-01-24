@@ -57,9 +57,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             var assetValuesContainer = solution.GetComponent<AssetInspectorValuesContainer>();
             var controller = solution.GetComponent<DeferredCacheController>();
 
-            return new UnityAssetReferenceSearcher(controller, hierarchyContainer, scriptsUsagesContainers,
+            return new UnityAssetReferenceSearcher(controller, scriptsUsagesContainers,
                 methodsContainer, animExplicitUsagesContainer, animImplicitUsagesContainer,
-                assetValuesContainer, metaFileGuidCache, elements,
+                assetValuesContainer, elements,
                 referenceSearcherParameters);
         }
 

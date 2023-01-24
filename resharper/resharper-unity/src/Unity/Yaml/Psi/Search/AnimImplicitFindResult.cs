@@ -1,31 +1,54 @@
-using JetBrains.Annotations;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implicit;
+using System.Text;
+using JetBrains.Application.UI.Controls.JetPopupMenu;
+using JetBrains.Diagnostics;
+using JetBrains.DocumentModel;
+using JetBrains.ReSharper.Feature.Services.Occurrences;
+using JetBrains.ReSharper.Feature.Services.Presentation;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Search;
+using JetBrains.UI.RichText;
+using JetBrains.Util.Media;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
-    public class AnimImplicitFindResult : FindResult
+    internal class AnimImplicitFindResult : FindResultText
     {
-        [NotNull] public IDeclaredElement DeclaredElement { get; }
-        [NotNull] public readonly AnimImplicitUsage Usage;
-
-        public AnimImplicitFindResult([NotNull] IPsiSourceFile sourceFile,
-            [NotNull] IDeclaredElement declaredElement,
-            [NotNull] AnimImplicitUsage animImplicitUsage)
+        public AnimImplicitFindResult(IPsiSourceFile sourceFile, DocumentRange documentRange) : base(
+            sourceFile, documentRange)
         {
-            DeclaredElement = declaredElement;
-            Usage = animImplicitUsage;
         }
-
-        public override bool Equals(object obj)
+    }
+    
+    
+    [OccurrencePresenter(Priority = 10.0)]
+    internal class AnimImplicitTextOccurencePresenter : RangeOccurrencePresenter
+    {
+        public override bool Present(IMenuItemDescriptor descriptor, IOccurrence occurrence,
+            OccurrencePresentationOptions occurrencePresentationOptions)
         {
-            return obj is AnimImplicitFindResult findResult && findResult.Usage.Equals(Usage);
+            var result = base.Present(descriptor, occurrence, occurrencePresentationOptions);
+            var animImplicitOccurence = (occurrence as AnimImplicitOccurence).NotNull("occurrence as AnimImplicitOccurence != null");
+            AppendRelatedFolder(descriptor, animImplicitOccurence.GetRelatedFolderPresentation());
+            descriptor.Icon = animImplicitOccurence.GetIcon();
+            return result;
         }
-
-        public override int GetHashCode()
+        
+        public static void AppendRelatedFolder(IMenuItemDescriptor descriptor, string relatedFolderPresentation)
         {
-            return Usage.GetHashCode();
+            var sb = new StringBuilder();
+            
+            if (relatedFolderPresentation != null)
+            {
+                sb.Append($"in {relatedFolderPresentation}");
+            }
+            
+            descriptor.ShortcutText = new RichText(sb.ToString(), TextStyle.FromForeColor(JetRgbaColors.DarkGray));
+        }
+        
+        public override bool IsApplicable(IOccurrence occurrence)
+        {
+            return occurrence is AnimImplicitOccurence;
         }
     }
 }

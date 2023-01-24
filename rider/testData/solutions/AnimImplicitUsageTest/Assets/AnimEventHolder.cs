@@ -16,5 +16,10 @@ public class AnimEventHolder : MonoBehaviour
     {
         Debug.Log("AnimEventHolder.AnimEvent");
     }
+    
+    void AnimEventWithControllerMod()
+    {
+        Debug.Log("AnimEventHolder.AnimEventWithControllerMod");
+    }
 }
 

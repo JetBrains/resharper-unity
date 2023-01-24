@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
@@ -23,13 +24,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
     [SolutionComponent]
     public class AnimImplicitUsagesContainer : IUnityAssetDataElementContainer
     {
-         /*
-         1. FindUsages on the methodname -> get script -> get gameobject -> get .controller-s attached to GO -> controller has cache of anim-s -> get anim-s -> anims should have cache of function-names.
-         2. Suppress unused -> get all function names from all anims?
-         3. Usages count?                    
-         */
-                
-//        [NotNull] private readonly Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myPointers = new();
+        /*
+        1. FindUsages on the methodname -> get script -> get gameobject -> get .controller-s attached to GO -> controller has cache of anim-s -> get anim-s -> anims should have cache of function-names.
+        2. Suppress unused -> get all function names from all anims?
+        3. Usages count?                    
+        */
+
         [NotNull] private readonly Dictionary<IPsiSourceFile, LocalList<AnimImplicitUsage>> myFileToEvents = new();
         [NotNull] private readonly CountingSet<string> myFunctionNames = new();
 
@@ -90,7 +90,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
                 {
                     var functionNameNode = functionRecord.GetMapEntry("functionName");
                     var contentOffset = functionNameNode!.Content.Value.GetTreeTextRange().StartOffset.Offset;
-                    result.Add(new AnimImplicitUsage(new TextRange(assetDocument.StartOffset + contentOffset, assetDocument.StartOffset + contentOffset), file.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), functionName));
+                    // we don't actually use LocalReference
+                    result.Add(new AnimImplicitUsage(LocalReference.Null, new TextRange(assetDocument.StartOffset + contentOffset, assetDocument.StartOffset + contentOffset), file.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), functionName));
                 }
             }
             
@@ -103,7 +104,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
         {
             var dataElement = (AnimImplicitUsagesDataElement)unityAssetDataElement;
             myFileToEvents.Remove(currentAssetSourceFile);
-//            myPointers.Remove(currentAssetSourceFile);
             foreach (var usage in dataElement.Events)
             {
                 myFunctionNames.Remove(usage.FunctionName);
@@ -116,7 +116,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
             IUnityAssetDataElement unityAssetDataElement)
         {
             var dataElement = (AnimImplicitUsagesDataElement)unityAssetDataElement;
-//            myPointers[currentAssetSourceFile] = unityAssetDataElementPointer;
 
             if (!dataElement.Events.Any()) return;
             myFileToEvents[currentAssetSourceFile] = new LocalList<AnimImplicitUsage>(dataElement.Events); 
@@ -128,7 +127,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
 
         public void Invalidate()
         {
-//            myPointers.Clear();
             myFileToEvents.Clear();
             myFunctionNames.Clear();
         }

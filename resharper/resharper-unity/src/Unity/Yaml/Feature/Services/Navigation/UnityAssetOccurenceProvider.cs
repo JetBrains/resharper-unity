@@ -1,12 +1,8 @@
 using JetBrains.Annotations;
-using JetBrains.DocumentModel;
-using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
-using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Search;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
@@ -16,7 +12,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
     {
         public IOccurrence MakeOccurrence(FindResult findResult)
         {
-
             if (findResult is UnityEventSubscriptionFindResult unityEventFindResult)
             {
                 return new UnityEventSubscriptionOccurrence(unityEventFindResult.SourceFile, unityEventFindResult.DeclaredElement,
@@ -29,14 +24,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
                     animationEventFindResult.DeclaredElementPointer, animationEventFindResult.Usage);
             }
             
-            if (findResult is AnimImplicitFindResult animImplicitFindResult)
+            if (findResult is AnimImplicitFindResult result)
             {
-                var persistentIndexManager = animImplicitFindResult.DeclaredElement.GetSolution().GetComponent<IPersistentIndexManager>();
-                var sourceFile = persistentIndexManager[animImplicitFindResult.Usage.TextRangeOwner];
-                if (sourceFile == null) return null;
-                var range = new DocumentRange(sourceFile.Document,
-                    animImplicitFindResult.Usage.TextRangeOwnerPsiPersistentIndex);
-                return new AnimImplicitOccurence(sourceFile, range, OccurrencePresentationOptions.DefaultOptions);
+                return new AnimImplicitOccurence(result.SourceFile,
+                    result.DocumentRange, OccurrencePresentationOptions.DefaultOptions);
             }
             
             if (findResult is UnityScriptsFindResults scriptFindResult) return CreateScriptOccurence(scriptFindResult);

@@ -363,12 +363,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 788507972145722060, guid: 15b19b7287c276fd3bed43b3d944bf63, type: 3}
       propertyPath: m_Name
-      value: Cube
+      value: WithControllerMod
       objectReference: {fileID: 0}
     - target: {fileID: 788507972145722063, guid: 15b19b7287c276fd3bed43b3d944bf63, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: e0296c43c142c9681a51e323066db9ce, type: 2}
+      objectReference: {fileID: 9100000, guid: 0fd70e00933f49faa02d73425bf2d45b, type: 2}
     m_RemovedComponents:
     - {fileID: 788507972145722062, guid: 15b19b7287c276fd3bed43b3d944bf63, type: 3}
     m_RemovedGameObjects: []
@@ -392,6 +392,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 788507972894748986}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7aa3832511c14b3da1beed7cc2dc99c4, type: 3}
+  m_Script: {fileID: 11500000, guid: 2b577ea3bbab469ca1ea59fb78cd56df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

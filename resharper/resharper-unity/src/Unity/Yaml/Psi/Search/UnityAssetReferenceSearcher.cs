@@ -2,13 +2,12 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using System;
 using System.Linq;
+using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Explicit;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implicit;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
@@ -26,38 +25,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         private static readonly ILogger ourLogger = Logger.GetLogger(nameof(UnityAssetReferenceSearcher));
         
         private readonly DeferredCacheController myDeferredCacheController;
-        private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
         [NotNull, ItemNotNull] private readonly IEnumerable<IScriptUsagesElementContainer> myScriptsUsagesElementContainers;
         private readonly UnityEventsElementContainer myUnityEventsElementContainer;
         private readonly AssetInspectorValuesContainer myAssetInspectorValuesContainer;
         private readonly IDeclaredElementsSet myElements;
-        private readonly ReferenceSearcherParameters myReferenceSearcherParameters;
         private readonly AnimExplicitUsagesContainer myAnimExplicitUsagesContainer;
         [NotNull] private readonly AnimImplicitUsagesContainer myAnimImplicitUsagesContainer;
         private readonly HashSet<IDeclaredElement> myOriginalElements;
 
         public UnityAssetReferenceSearcher(DeferredCacheController deferredCacheController,
-                                           AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer,
                                            [NotNull, ItemNotNull] IEnumerable<IScriptUsagesElementContainer> scriptsUsagesElementContainers,
                                            UnityEventsElementContainer unityEventsElementContainer,
                                            [NotNull] AnimExplicitUsagesContainer animExplicitUsagesContainer,
                                            [NotNull] AnimImplicitUsagesContainer animImplicitUsagesContainer,
                                            AssetInspectorValuesContainer assetInspectorValuesContainer,
-                                           MetaFileGuidCache metaFileGuidCache,
                                            IDeclaredElementsSet elements,
                                            ReferenceSearcherParameters referenceSearcherParameters)
         {
             myDeferredCacheController = deferredCacheController;
-            myAssetDocumentHierarchyElementContainer = assetDocumentHierarchyElementContainer;
             myScriptsUsagesElementContainers = scriptsUsagesElementContainers;
             myUnityEventsElementContainer = unityEventsElementContainer;
             myAnimExplicitUsagesContainer = animExplicitUsagesContainer;
             myAnimImplicitUsagesContainer = animImplicitUsagesContainer;
             myAssetInspectorValuesContainer = assetInspectorValuesContainer;
             myElements = elements;
-            myReferenceSearcherParameters = referenceSearcherParameters;
 
-            var originalElements = myReferenceSearcherParameters.OriginalElements?.
+            var originalElements = referenceSearcherParameters.OriginalElements?.
                 SelectNotNull(t => t.GetValidDeclaredElement()).ToList() ?? myElements.ToList();
             myOriginalElements = new HashSet<IDeclaredElement>();
 
@@ -93,7 +86,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                         animImplicitUsages.AddRange(myAnimImplicitUsagesContainer.GetUsagesForReversed(sourceFile, element));
                         foreach (var usage in animImplicitUsages)
                         {
-                            var occurence = new AnimImplicitFindResult(sourceFile, element, usage);
+                            var occurence = new AnimImplicitFindResult(sourceFile,
+                                new DocumentRange(sourceFile.Document, usage.TextRangeOwnerPsiPersistentIndex));
                             consumer.Accept(occurence);
                         }
 
