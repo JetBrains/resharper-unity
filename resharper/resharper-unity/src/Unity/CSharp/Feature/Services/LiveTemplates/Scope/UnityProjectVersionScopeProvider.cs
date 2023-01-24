@@ -25,23 +25,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
                 : context.Solution.GetComponent<UnityVersion>().ActualVersionForSolution.Value;
 
             if (version.Major != 0)
-                yield return new MustBeInProjectWithUnityVersion(version);
+                yield return new MustBeInProjectWithCurrentUnityVersion(version);
         }
 
-        public ITemplateScopePoint CreateScope(Guid scopeGuid, string typeName,
-            IEnumerable<Pair<string, string>> customProperties)
+        public ITemplateScopePoint CreateScope(Guid scopeGuid, string typeName, IEnumerable<Pair<string, string>> customProperties)
         {
-            if (typeName != MustBeInProjectWithUnityVersion.TypeName)
-                return null;
+            if (typeName == MustBeInProjectWithMinimumUnityVersion.TypeName)
+            {
+                var versionString = customProperties.Where(p => p.First == MustBeInProjectWithMinimumUnityVersion.VersionProperty)
+                    .Select(p => p.Second)
+                    .FirstOrDefault();
+                if (versionString == null)
+                    return null;
 
-            var versionString = customProperties.Where(p => p.First == MustBeInProjectWithUnityVersion.VersionProperty)
-                .Select(p => p.Second)
-                .FirstOrDefault();
-            if (versionString == null)
-                return null;
+                var version = Version.Parse(versionString);
+                return new MustBeInProjectWithMinimumUnityVersion(version) {UID = scopeGuid};
+            }
 
-            var version = Version.Parse(versionString);
-            return new MustBeInProjectWithUnityVersion(version) {UID = scopeGuid};
+            if (typeName == MustBeInProjectWithMaximumUnityVersion.TypeName)
+            {
+                var versionString = customProperties.Where(p => p.First == MustBeInProjectWithMaximumUnityVersion.VersionProperty)
+                    .Select(p => p.Second)
+                    .FirstOrDefault();
+                if (versionString == null)
+                    return null;
+
+                var version = Version.Parse(versionString);
+                return new MustBeInProjectWithMaximumUnityVersion(version) {UID = scopeGuid};
+            }
+
+            return null;
         }
     }
 }

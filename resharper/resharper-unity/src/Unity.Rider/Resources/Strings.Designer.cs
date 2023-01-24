@@ -101,10 +101,10 @@
     public static string UnitySettingsCategoryProvider_myCategoryToKeys_Unity_plugin_settings => ResourceManager.GetString("UnitySettingsCategoryProvider_myCategoryToKeys_Unity_plugin_settings");
     public static string UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_Make_sure_Unity_is_running_ => ResourceManager.GetString("UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_Make_sure_Unity_is_running_");
     public static string UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_No_connection_to_Unity => ResourceManager.GetString("UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_No_connection_to_Unity");
-    public static string UsagesInAssetsAreNotAvailableDuring_Text => ResourceManager.GetString("UsagesInAssetsAreNotAvailableDuring_Text");
     public static string UnityUsagesCodeVisionProvider_DisplayName_Unity_assets_usage => ResourceManager.GetString("UnityUsagesCodeVisionProvider_DisplayName_Unity_assets_usage");
     public static string UnityUsagesCodeVisionProvider_GetText_No_asset_usages => ResourceManager.GetString("UnityUsagesCodeVisionProvider_GetText_No_asset_usages");
     public static string UnityUsagesCodeVisionProvider_Noun_asset_usage => ResourceManager.GetString("UnityUsagesCodeVisionProvider_Noun_asset_usage");
     public static string UnityUsagesCodeVisionProvider_Noun_asset_usages => ResourceManager.GetString("UnityUsagesCodeVisionProvider_Noun_asset_usages");
+    public static string UsagesInAssetsAreNotAvailableDuring_Text => ResourceManager.GetString("UsagesInAssetsAreNotAvailableDuring_Text");
   }
 }
