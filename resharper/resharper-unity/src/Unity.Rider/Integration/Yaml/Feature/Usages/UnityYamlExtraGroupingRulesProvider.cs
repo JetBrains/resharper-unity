@@ -51,9 +51,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
     {
         [CanBeNull] private readonly IconHost myIconHost;
 
-        protected UnityYamlUsageGroupingRuleBase(string name, IconId iconId, [CanBeNull] IconHost iconHost,
+        protected UnityYamlUsageGroupingRuleBase(string ruleId, string name, IconId iconId, [CanBeNull] IconHost iconHost,
             double sortingPriority)
         {
+            RuleId = ruleId;
             Name = name;
             IconId = iconId;
             SortingPriority = sortingPriority;
@@ -62,12 +63,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
 
         protected RdUsageGroup CreateModel(string text)
         {
-            return new RdUsageGroup(Name, text, myIconHost?.Transform(IconId));
+            return new RdUsageGroup(RuleId, text, myIconHost?.Transform(IconId));
         }
 
         protected RdUsageGroup EmptyModel()
         {
-            return new RdUsageGroup(Name, string.Empty, null);
+            return new RdUsageGroup(RuleId, string.Empty, null);
         }
 
         public abstract RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor);
@@ -89,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
     public class AnimatorGroupingRule : UnityYamlUsageGroupingRuleBase
     {
         public AnimatorGroupingRule([NotNull] IconHost iconHost)
-            : base("Animator", UnityFileTypeThemedIcons.FileAnimatorController.Id, iconHost, 10.0)
+            : base("Animator", "Animator", UnityFileTypeThemedIcons.FileAnimatorController.Id, iconHost, 10.0)
         {
         }
 
@@ -112,7 +113,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
     public class AnimationEventGroupingRule : UnityYamlUsageGroupingRuleBase
     {
         public AnimationEventGroupingRule([NotNull] IconHost iconHost)
-            : base("AnimationEvent", UnityFileTypeThemedIcons.FileAnimationClip.Id, iconHost, 9.0)
+            : base("AnimationEvent", "AnimationEvent", UnityFileTypeThemedIcons.FileAnimationClip.Id, iconHost, 9.0)
         {
         }
 
@@ -136,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
     {
         // Note that the name is in CamelCase and spaces are added in the frontend
         public GameObjectUsageGroupingRule([NotNull] IconHost iconHost)
-            : base("UnityGameObject", UnityObjectTypeThemedIcons.UnityGameObject.Id, iconHost, 7.0)
+            : base("UnityGameObject", "UnityGameObject", UnityObjectTypeThemedIcons.UnityGameObject.Id, iconHost, 7.0)
         {
         }
 
@@ -181,7 +182,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
 
         // Note that the name is in CamelCase and spaces are added in the frontend
         public ComponentUsageGroupingRule(MetaFileGuidCache metaFileGuidCache, [NotNull] IconHost iconHost)
-            : base("UnityComponent", UnityObjectTypeThemedIcons.UnityComponent.Id, iconHost, 8.0)
+            : base("UnityComponent", "UnityComponent", UnityObjectTypeThemedIcons.UnityComponent.Id, iconHost, 8.0)
         {
             myMetaFileGuidCache = metaFileGuidCache;
         }
