@@ -12,10 +12,12 @@ Description |
 ------------|
 [Assembly Definition File](File/AsmDef.md) |
 [Asset Postprocessor](File/AssetPostprocessor.md) |
-[Custom Editor](File/CustomEditor.md) |
+[Custom Editor](File/CustomEditorNew.md) |
+[Custom Editor (IMGUI)](File/CustomEditor.md) |
 [Edit Mode Test](File/EditModeTest.md) |
 [Editor EntryPoint C# script](File/EditorEntryPoint.md) |
-[Editor Window](File/EditorWindow.md) |
+[Editor Window](File/EditorWindowNew.md) |
+[Editor Window (IMGUI)](File/EditorWindow.md) |
 [IAspect](File/Aspect.md) |
 [IComponentData](File/ComponentData.md) |
 [IJobEntity](File/JobEntity.md) |
@@ -23,7 +25,8 @@ Description |
 [ISystem](File/System.md) |
 [Mono Behaviour](File/MonoBehaviour.md) |
 [Play Mode Test](File/PlayModeTest.md) |
-[Property Drawer](File/PropertyDrawer.md) |
+[Property Drawer](File/PropertyDrawerNew.md) |
+[Property Drawer (IMGUI)](File/PropertyDrawer.md) |
 [Scriptable Object](File/ScriptableObject.md) |
 [Scriptable Wizard](File/ScriptableWizard.md) |
 [Standard Surface Shader](File/StandardSurfaceShader.md) |
@@ -57,10 +60,12 @@ Description |
 ------------|
 [Assembly Definition File](File/AsmDef.md) |
 [Asset Postprocessor](File/AssetPostprocessor.md) |
-[Custom Editor](File/CustomEditor.md) |
+[Custom Editor](File/CustomEditorNew.md) |
+[Custom Editor (IMGUI)](File/CustomEditor.md) |
 [Edit Mode Test](File/EditModeTest.md) |
 [Editor EntryPoint C# script](File/EditorEntryPoint.md) |
-[Editor Window](File/EditorWindow.md) |
+[Editor Window](File/EditorWindowNew.md) |
+[Editor Window (IMGUI)](File/EditorWindow.md) |
 [IAspect](File/Aspect.md) |
 [IComponentData](File/ComponentData.md) |
 [IJobEntity](File/JobEntity.md) |
@@ -68,7 +73,8 @@ Description |
 [ISystem](File/System.md) |
 [Mono Behaviour](File/MonoBehaviour.md) |
 [Play Mode Test](File/PlayModeTest.md) |
-[Property Drawer](File/PropertyDrawer.md) |
+[Property Drawer](File/PropertyDrawerNew.md) |
+[Property Drawer (IMGUI)](File/PropertyDrawer.md) |
 [Scriptable Object](File/ScriptableObject.md) |
 [Scriptable Wizard](File/ScriptableWizard.md) |
 [Standard Surface Shader](File/StandardSurfaceShader.md) |
