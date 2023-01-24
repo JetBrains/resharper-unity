@@ -1,3 +1,4 @@
+import base.SettingsHelper
 import base.integrationTests.prepareAssemblies
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
@@ -5,6 +6,7 @@ import com.intellij.testFramework.TestModeFlags
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
 import com.jetbrains.rider.inTests.TestHost
 import com.jetbrains.rider.protocol.protocolHost
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.enums.CoreVersion
@@ -19,6 +21,11 @@ import java.io.File
 @TestEnvironment(toolset = ToolsetVersion.TOOLSET_17_CORE, coreVersion = CoreVersion.DOT_NET_6)
 class ProjectSettingsCompletionTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String = "ProjectSettingsTestData"
+    override fun preprocessTempDirectory(tempDir: File) {
+        if (testMethod.name.contains("YamlOff")) {
+            SettingsHelper.disableIsAssetIndexingEnabledSetting(activeSolution, activeSolutionDirectory)
+        }
+    }
 
     override val traceCategories: List<String>
         get() = listOf(
@@ -104,6 +111,15 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
     }
 
     @Test
+    fun testLayer_PrimitiveCompletion_YamlOff() {
+        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
+            typeWithLatency("\"")
+            assertLookupContains(*basicLayers, checkFocus = false)
+        }
+    }
+
+    @Test
+    @Mute("RIDER-84785")
     fun testLayer_CompletionAfterModification() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
             typeWithLatency("\"")

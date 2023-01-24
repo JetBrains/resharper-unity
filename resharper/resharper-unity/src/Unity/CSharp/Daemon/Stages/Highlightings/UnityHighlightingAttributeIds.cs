@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using Strings = JetBrains.ReSharper.Plugins.Unity.Resources.Strings;
+
+using System.Drawing;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.TextControl.DocumentMarkup;
 
@@ -24,7 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
         FontStyle = FontStyle.Bold,
-        RiderPresentableName = "Implicitly used identifier",
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.ImplicitlyUsedIdentifier_RiderPresentableName),
         Layer = HighlighterLayer.SYNTAX + 1)]
     public static class UnityHighlightingAttributeIds
     {

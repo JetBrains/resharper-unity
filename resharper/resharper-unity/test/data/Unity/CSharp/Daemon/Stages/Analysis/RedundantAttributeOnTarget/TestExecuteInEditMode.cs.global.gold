@@ -1,0 +1,73 @@
+﻿using System;
+using UnityEngine;
+using UnityEditor;
+
+[assembly: |ExecuteInEditMode|(0)]
+
+[ExecuteInEditMode]
+public class Foo
+{
+    [|ExecuteInEditMode|(1)]
+    public Foo()
+    {
+    }
+
+    [|ExecuteInEditMode|(2)]
+    public string Field;
+
+    [|ExecuteInEditMode|(3)]
+    public const string ConstField = "Hello world";
+
+    [|ExecuteInEditMode|(4)]
+    public string Property { get; set; }
+
+    [|ExecuteInEditMode|(5)]
+    [return: |ExecuteInEditMode|(6)]
+    public string Method<[|ExecuteInEditMode|(7)] T>([|ExecuteInEditMode|(8)] int param1)
+    {
+        return null;
+    }
+
+    [|ExecuteInEditMode|(9)]
+    public event EventHandler MyEvent;
+
+    [field: |ExecuteInEditMode|(10)]
+    public event EventHandler MyEvent2;
+}
+
+[|ExecuteInEditMode|(11)]
+public delegate void MyEventHandler(object sender, EventArgs e);
+
+[|ExecuteInEditMode|(12)]
+public struct Bar
+{
+}
+
+[|ExecuteInEditMode|(13)]
+public enum Baz
+{
+    One,
+    Two
+}
+
+[|ExecuteInEditMode|(14)]
+public interface Quux
+{
+}
+
+---------------------------------------------------------
+(0): ReSharper Dead Code: Attribute 'UnityEngine.ExecuteInEditMode' is redundant on this declaration type. It is only used when applied to 'Class' declarations.
+(1): ReSharper Dead Code: Attribute 'UnityEngine.ExecuteInEditMode' is redundant on this declaration type. It is only used when applied to 'Class' declarations.
+(2): ReSharper Dead Code: Attribute 'UnityEngine.ExecuteInEditMode' is redundant on this declaration type. It is only used when applied to 'Class' declarations.
+(3): ReSharper Dead Code: Attribute 'UnityEngine.ExecuteInEditMode' is redundant on this declaration type. It is only used when applied to 'Class' declarations.
+(4): ReSharper Dead Code: Attribute 'UnityEngine.ExecuteInEditMode' is redundant on this declaration type. It is only used when applied to 'Class' declarations.
+(5): ReSharper Dead Code: Attribute 'UnityEngine.ExecuteInEditMode' is redundant on this declaration type. It is only used when applied to 'Class' declarations.
+(6): ReSharper Dead Code: Attribute 'UnityEngine.ExecuteInEditMode' is redundant on this declaration type. It is only used when applied to 'Class' declarations.
+(7): ReSharper Dead Code: Attribute 'UnityEngine.ExecuteInEditMode' is redundant on this declaration type. It is only used when applied to 'Class' declarations.
+(8): ReSharper Dead Code: Attribute 'UnityEngine.ExecuteInEditMode' is redundant on this declaration type. It is only used when applied to 'Class' declarations.
+(9): ReSharper Dead Code: Attribute 'UnityEngine.ExecuteInEditMode' is redundant on this declaration type. It is only used when applied to 'Class' declarations.
+(10): ReSharper Dead Code: Attribute 'UnityEngine.ExecuteInEditMode' is redundant on this declaration type. It is only used when applied to 'Class' declarations.
+(11): ReSharper Dead Code: Attribute 'UnityEngine.ExecuteInEditMode' is redundant on this declaration type. It is only used when applied to 'Class' declarations.
+(12): ReSharper Dead Code: Attribute 'UnityEngine.ExecuteInEditMode' is redundant on this declaration type. It is only used when applied to 'Class' declarations.
+(13): ReSharper Dead Code: Attribute 'UnityEngine.ExecuteInEditMode' is redundant on this declaration type. It is only used when applied to 'Class' declarations.
+(14): ReSharper Dead Code: Attribute 'UnityEngine.ExecuteInEditMode' is redundant on this declaration type. It is only used when applied to 'Class' declarations.

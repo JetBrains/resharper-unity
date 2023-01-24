@@ -8,7 +8,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
 import com.jetbrains.rider.AssemblyExecutionContext
 import com.jetbrains.rider.RiderEnvironment
@@ -17,6 +16,7 @@ import java.io.PrintWriter
 import java.nio.file.Path
 import java.util.regex.Pattern
 import kotlin.concurrent.thread
+import kotlin.io.path.exists
 
 class AppleDeviceListener(project: Project,
                           private val onDeviceAdded: (UnityProcess) -> Unit,

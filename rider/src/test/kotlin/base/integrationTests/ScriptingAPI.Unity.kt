@@ -6,7 +6,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
-import com.intellij.util.io.exists
 import com.intellij.util.text.VersionComparatorUtil
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
@@ -49,6 +48,7 @@ import java.io.PrintStream
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.Duration
+import kotlin.io.path.notExists
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -63,11 +63,11 @@ val unityActionsTimeout: Duration = Duration.ofSeconds(30)
 //region UnityDll
 
 private fun downloadUnityDll(): File {
-    return downloadAndExtractArchiveArtifactIntoPersistentCache("https://repo.labs.intellij.net/dotnet-rider-test-data/UnityEngine-2018.3-08-01-2019.dll.tar.gz").combine("UnityEngine.dll")
+    return downloadAndExtractArchiveArtifactIntoPersistentCache("https://packages.jetbrains.team/files/p/net/test-data/UnityEngine-2018.3-08-01-2019.dll.tar.gz").combine("UnityEngine.dll")
 }
 
 private fun downloadMsCorLib():File{
-    return downloadAndExtractArchiveArtifactIntoPersistentCache("https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_mscorlib_2018.4.tar.gz").combine("mscorlib.dll")
+    return downloadAndExtractArchiveArtifactIntoPersistentCache("https://packages.jetbrains.team/files/p/net/test-data/Unity_mscorlib_2018.4.tar.gz").combine("mscorlib.dll")
 }
 
 fun prepareAssemblies(project: Project, activeSolutionDirectory: File) {
@@ -90,7 +90,7 @@ fun createLibraryFolderIfNotExist(solutionDirectory: File) {
     // Needed, because com.jetbrains.rider.plugins.unity.ProtocolInstanceWatcher
     //  isn't initialized without correct unity file structure
     val libraryFolder = Paths.get(solutionDirectory.toString(), "Library")
-    if (!libraryFolder.exists()) {
+    if (libraryFolder.notExists()) {
         Files.createDirectory(libraryFolder)
     }
 }

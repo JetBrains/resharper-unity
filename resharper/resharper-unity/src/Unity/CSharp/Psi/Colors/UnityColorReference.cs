@@ -76,8 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
             }
 
             var newColor = colorElement.RGBColor;
-            float h, s, v;
-            ColorUtils.ColorToHSV(newColor, out h, out s, out v);
+            ColorUtils.ColorToHSV(newColor, out var h, out var s, out var v);
 
             // Round to 2 decimal places to match the values shown in the colour palette quick fix
             h = (float) Math.Round(h, 2);

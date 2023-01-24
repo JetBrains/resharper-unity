@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Elements
 
             var solution = declaredElement.GetSolution();
             var unityApi = solution.GetComponent<UnityApi>();
-            return unityApi.IsSerialisedField(field);
+            return unityApi.IsSerialisedField(field) == SerializedFieldStatus.SerializedField;
         }
     }
 }

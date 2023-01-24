@@ -1,0 +1,380 @@
+﻿// ${RUN:2}
+using System;
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEditor;
+
+[assembly: |SerializeField|(0)]
+
+[|SerializeField|(1)]
+public class Foo : MonoBehaviour
+{
+    [|CustomEditor(typeof(Material))|(2)]
+    private int myField;
+
+    [|FormerlySerializedAs("Foo")|(3)] public static int Value1;
+    [|FormerlySerializedAs("Bar")|(4)] [NonSerialized] public int Value2;
+    [|FormerlySerializedAs("RedundantValue")|(5)] public int RedundantValue;
+    [|FormerlySerializedAs("RedundantValue2")|(6), |FormerlySerializedAs("RedundantValue2")|(7)] public int RedundantValue2;
+
+    [|HideInInspector|(8)] [NonSerialized] public int Value1;
+    [|HideInInspector|(9)] private int Value2;
+    [|HideInInspector|(10)] public const int Value3 = 42;
+
+    [|SerializeField|(11)] [NonSerialized] public int Value1;
+    [|SerializeField|(12)] [NonSerialized] public int Value2;
+    [|SerializeField|(13)] [NonSerialized] public int Value3;
+    [|SerializeField|(14)] [NonSerialized] public int Value4;
+}
+
+public class Test2 : MonoBehaviour
+{
+    [|FormerlySerializedAs("RedundantValue")|(15)] [NonSerialized] public int RedundantValue;
+
+    [|HideInInspector|(16)] public static int Value1 = 42;
+    [|HideInInspector|(17)] public readonly int Value2 = 42;
+}
+
+public struct Tes3
+{
+    [|SerializeField|(18), |FormerlySerializedAs("Foo")|(19)] public int Bar;
+
+    [|SerializeField|(20)] [NonSerialized] public int Value1;
+    [|SerializeField|(21)] [NonSerialized] public int Value2;
+    [|SerializeField|(22)] [NonSerialized] public int Value3;
+    [|SerializeField|(23)] [NonSerialized] public int Value4;
+}
+
+[|HideInInspector|(24)]
+public delegate void MyEventHandler(object sender, EventArgs e);
+
+[|InitializeOnLoad|(25)]
+public class MissingConstructor
+{
+}
+
+[|InitializeOnLoad|(26)]
+public class MissingConstructor2
+{
+}
+
+[|InitializeOnLoad|(27)]
+public class MissingConstructor3
+{
+}
+
+------------------------------------------------
+0: Attribute 'UnityEngine.SerializeField' is redundant on this declaration type. It is only used when applied to 'Field' declarations.
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+1: Attribute 'UnityEngine.SerializeField' is redundant on this declaration type. It is only used when applied to 'Field' declarations.
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Foo'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Foo'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+2: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations.
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Foo'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Foo'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+3: Redundant 'FormerlySerializedAs' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Foo'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Foo'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+4: Redundant 'FormerlySerializedAs' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Foo'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Foo'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+5: Redundant 'FormerlySerializedAs' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Foo'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Foo'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+6: Redundant 'FormerlySerializedAs' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Foo'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Foo'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+7: Redundant 'FormerlySerializedAs' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Foo'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Foo'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+8: Redundant 'HideInInspector' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Foo'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Foo'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+9: Redundant 'HideInInspector' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Foo'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Foo'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+10: Redundant 'HideInInspector' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Foo'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Foo'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+11: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Foo'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Foo'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+12: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Foo'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Foo'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+13: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Foo'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Foo'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+14: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Foo'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Foo'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+15: Redundant 'FormerlySerializedAs' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test2'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test2'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+16: Redundant 'HideInInspector' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test2'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test2'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+17: Redundant 'HideInInspector' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test2'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test2'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+18: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Make type 'Tes3' serializable
+Remove redundant attribute
+--Remove redundant Unity attributes in struct 'Tes3'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in struct 'Tes3'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+19: Redundant 'FormerlySerializedAs' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in struct 'Tes3'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in struct 'Tes3'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+20: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Make type 'Tes3' serializable
+Remove redundant attribute
+--Remove redundant Unity attributes in struct 'Tes3'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in struct 'Tes3'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+21: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Make type 'Tes3' serializable
+Remove redundant attribute
+--Remove redundant Unity attributes in struct 'Tes3'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in struct 'Tes3'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+22: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Make type 'Tes3' serializable
+Remove redundant attribute
+--Remove redundant Unity attributes in struct 'Tes3'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in struct 'Tes3'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+23: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Make type 'Tes3' serializable
+Remove redundant attribute
+--Remove redundant Unity attributes in struct 'Tes3'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in struct 'Tes3'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+24: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations.
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in delegate 'MyEventHandler'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in delegate 'MyEventHandler'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+25: 'InitializeOnLoad' attribute is redundant when static constructor is missing
+QUICKFIXES:
+Create static constructor 'MissingConstructor'
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'MissingConstructor'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'MissingConstructor'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+26: 'InitializeOnLoad' attribute is redundant when static constructor is missing
+QUICKFIXES:
+Create static constructor 'MissingConstructor2'
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'MissingConstructor2'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'MissingConstructor2'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+27: 'InitializeOnLoad' attribute is redundant when static constructor is missing
+QUICKFIXES:
+Create static constructor 'MissingConstructor3'
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'MissingConstructor3'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'MissingConstructor3'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution

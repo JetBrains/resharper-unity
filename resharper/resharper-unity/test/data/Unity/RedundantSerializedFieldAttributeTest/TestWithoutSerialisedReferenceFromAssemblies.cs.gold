@@ -1,0 +1,12 @@
+﻿using AssemblyWithoutSerializeRef;
+using UnityEngine;
+
+namespace Test003
+{
+    public class B : A
+    {
+        [|SerializeField|(0)] private int x; // This attribute is greyed out.
+    }
+}
+---------------------------------------------------------
+(0): ReSharper Dead Code: Redundant 'SerializeField' attribute

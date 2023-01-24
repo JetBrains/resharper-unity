@@ -1,4 +1,7 @@
 Search target
     NewBehaviourScript3.OnJump1WithPrefab3():void
 Found usages  (1 usage found)
-    [219, Assets/MyInputForPrefab3.inputactions] (9: 30)  "name": "Jump1WithPrefab3",
+    Other  (1 usage found)
+        Assets  (1 usage found)
+            MyInputForPrefab3.inputactions  (1 usage found)
+                [219, Assets/MyInputForPrefab3.inputactions] (9: 30)  "name": "Jump1WithPrefab3",

@@ -134,18 +134,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
             var newFiles = new ExternalFiles(mySolution, myLogger);
 
-            foreach (var metaFile in files.MetaFiles)
-            {
-                var path = metaFile.Path;
-                if (IsIndexedFileWithDisabledAssetSupport(path))
-                {
-                    newFiles.AssetFiles.Add(metaFile);
-                }
-            }
+            FilterFiles(files.MetaFiles, newFiles.MetaFiles);
+            FilterFiles(files.AssetFiles, newFiles.AssetFiles);
+            FilterFiles(files.AsmDefFiles, newFiles.AsmDefFiles);
+            FilterFiles(files.AsmRefFiles, newFiles.AsmRefFiles);
 
             newFiles.Directories.AddRange(files.Directories);
             
             return newFiles;
+        }
+
+        private void FilterFiles(List<ExternalFile> files, List<ExternalFile> newFiles)
+        {
+            foreach (var metaFile in files)
+            {
+                var path = metaFile.Path;
+                if (IsIndexedFileWithDisabledAssetSupport(path))
+                {
+                    newFiles.Add(metaFile);
+                }
+            }
         }
 
 
@@ -387,11 +395,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     // (which would lead to an infinite loop).
                     // Note that GetOldProject returns the project the file is being added to, or the project it has
                     // just been removed from
+                    // Warning: Removing .Player project should not cause adding file to the ExternalModule 
                     if (itemChange.ProjectItem is IProjectFile projectFile
-                        && !itemChange.GetOldProject().IsMiscFilesProject()
                         && IsIndexedExternalFile(projectFile.Location))
                     {
-                        if (itemChange.IsAdded || itemChange.IsMovedIn)
+                        if ((itemChange.IsAdded || itemChange.IsMovedIn) && !itemChange.ProjectItem.IsMiscProjectItem())
                         {
                             myLogger.Trace(
                                 "External Unity file added to project {0}. Removing from external files module: {1}",
@@ -399,7 +407,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
                             RemoveExternalPsiSourceFile(builder, projectFile.Location);
                         }
-                        else if ((itemChange.IsRemoved || itemChange.IsMovedOut) && itemChange.OldLocation.ExistsFile)
+                        else if ((itemChange.IsRemoved || itemChange.IsMovedOut) && itemChange.OldLocation.ExistsFile 
+                                 && mySolution.FindProjectItemsByLocation(itemChange.OldLocation).All(t => t.IsMiscProjectItem()))
                         {
                             myLogger.Trace(
                                 "External Unity file removed from project {0}. Adding to external files module: {1}",

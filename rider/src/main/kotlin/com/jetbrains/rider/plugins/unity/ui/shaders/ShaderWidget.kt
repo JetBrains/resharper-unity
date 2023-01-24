@@ -36,7 +36,7 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 
 
-class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusBarWidget, Multiframe {
+class ShaderWidget(project: Project) : EditorBasedWidget(project), FileEditorManagerListener, CustomStatusBarWidget, Multiframe {
 
     private val statusBarComponent = JPanel(BorderLayout())
     private val label = JLabel(UnityIcons.FileTypes.ShaderLab)
@@ -91,7 +91,7 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
 
     override fun selectionChanged(event: FileEditorManagerEvent) {
         if (UnityProjectDiscoverer.getInstance(project).isUnityProject)
-            updateState((editor as? EditorImpl)?.virtualFile)
+            updateState((getEditor() as? EditorImpl)?.virtualFile)
     }
 
     private fun updateState(file: VirtualFile?) {
@@ -104,12 +104,12 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
             return
         }
 
-        if (editor == null) {
+        if (getEditor() == null) {
             statusBarComponent.isVisible = false
             return
         }
 
-        val id = editor?.document?.getFirstDocumentId(project)
+        val id = getEditor()?.document?.getFirstDocumentId(project)
         if (id == null) {
             statusBarComponent.isVisible = false
             return
@@ -138,7 +138,7 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
 
     fun showPopup(label: JLabel) {
         val lt: Lifetime = Lifetime.Eternal
-        val id = editor?.document?.getFirstDocumentId(project) ?: return
+        val id = getEditor()?.document?.getFirstDocumentId(project) ?: return
         val host = FrontendBackendHost.getInstance(project)
         host.model.requestShaderContexts.start(lt, id).result.advise(lt) {
             val items = it.unwrap()

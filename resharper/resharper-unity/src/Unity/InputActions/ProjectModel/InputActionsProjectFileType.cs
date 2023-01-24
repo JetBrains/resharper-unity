@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Json.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.InputActions.ProjectModel
 {
@@ -14,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.InputActions.ProjectModel
         public new static InputActionsProjectFileType Instance { get; private set; }
 
         public InputActionsProjectFileType()
-            : base(Name, "InputActions (Unity)", new[] { INPUTACTIONS_EXTENSION })
+            : base(Name, Strings.InputActionsProjectFileType_InputActionsProjectFileType_InputActions__Unity_, new[] { INPUTACTIONS_EXTENSION })
         {
         }
     }

@@ -3,12 +3,12 @@ using System.Linq;
 using System.Threading;
 using JetBrains.Annotations;
 using JetBrains.Util;
-using MetadataLite.API;
 using Mono.Debugging.Backend.Values.Render.ChildrenRenderers;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
+using Mono.Debugging.MetadataLite.API;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderers
 {

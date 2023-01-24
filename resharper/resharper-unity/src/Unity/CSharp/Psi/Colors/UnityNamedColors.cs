@@ -25,8 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
 
         public static JetRgbaColor? Get(string name)
         {
-            uint value;
-            if (name != null && NamedColors.TryGetValue(name, out value))
+            if (name != null && NamedColors.TryGetValue(name, out var value))
                 return ToColor(value);
             return null;
         }

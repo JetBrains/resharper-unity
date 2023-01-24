@@ -12,11 +12,11 @@ public class Test : MonoBehaviour
 
 public class Boring
 {
-    [|HideInInspector|(8)] public int Redundant1;
-    [|HideInInspector|(9)] private int Redundant2;
-    [|HideInInspector|(10)] private static int Redundant3;
-    [|HideInInspector|(11)] [|SerializeField|(12)] private const int Redundant4 = 42;
-    [|HideInInspector|(13)] [|SerializeField|(14)] private readonly int Redundant3 = 42;
+    [HideInInspector] public int Redundant1;
+    [|HideInInspector|(8)] private int Redundant2;
+    [|HideInInspector|(9)] private static int Redundant3;
+    [|HideInInspector|(10)] [|SerializeField|(11)] private const int Redundant4 = 42;
+    [|HideInInspector|(12)] [|SerializeField|(13)] private readonly int Redundant3 = 42;
 }
 
 ---------------------------------------------------------
@@ -31,7 +31,6 @@ public class Boring
 (8): ReSharper Dead Code: Redundant 'HideInInspector' attribute
 (9): ReSharper Dead Code: Redundant 'HideInInspector' attribute
 (10): ReSharper Dead Code: Redundant 'HideInInspector' attribute
-(11): ReSharper Dead Code: Redundant 'HideInInspector' attribute
-(12): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(13): ReSharper Dead Code: Redundant 'HideInInspector' attribute
-(14): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(11): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(12): ReSharper Dead Code: Redundant 'HideInInspector' attribute
+(13): ReSharper Dead Code: Redundant 'SerializeField' attribute
