@@ -19,8 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         {
         }
     }
-    
-    
+
     [OccurrencePresenter(Priority = 10.0)]
     internal class AnimImplicitTextOccurencePresenter : RangeOccurrencePresenter
     {

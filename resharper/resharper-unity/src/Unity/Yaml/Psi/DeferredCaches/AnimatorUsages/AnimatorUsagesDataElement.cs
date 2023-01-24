@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         [NotNull] public readonly OneToListMap<long, AnimatorStateMachineScriptUsage> ScriptAnchorToStateMachineUsages;
         [NotNull] public readonly OneToListMap<long, AnimatorStateScriptUsage> ScriptAnchorToStateUsages;
         [NotNull] public readonly IDictionary<long, AnimatorStateMachineScriptUsage> StateMachineAnchorToUsage;
-        public LocalList<Guid> AnimReferences;
+        public HashSet<Guid> AnimReferences;
         [NotNull] public readonly ICollection<string> StateNames;
 
         public AnimatorUsagesDataElement()
@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             StateMachineAnchorToUsage = new Dictionary<long, AnimatorStateMachineScriptUsage>();
             ChildToParent = new Dictionary<long, long>();
             StateNames = new List<string>();
-            AnimReferences = new LocalList<Guid>();
+            AnimReferences = new HashSet<Guid>();
         }
 
         private AnimatorUsagesDataElement([NotNull] OneToListMap<Guid, long> guidToAnchors,
@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             StateMachineAnchorToUsage = stateMachineAnchorToUsage;
             ChildToParent = childToParent;
             StateNames = stateNames;
-            AnimReferences = new LocalList<Guid>(animReferences);
+            AnimReferences = new HashSet<Guid>(animReferences);
         }
 
         public string ContainerId => nameof(AnimatorScriptUsagesElementContainer);
@@ -235,7 +235,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             WriteAnimReferences(writer, value.AnimReferences);
         }
 
-        private static void WriteAnimReferences(UnsafeWriter writer, LocalList<Guid> list)
+        private static void WriteAnimReferences(UnsafeWriter writer, HashSet<Guid> list)
         {
             writer.Write(list.Count);
             foreach (var animReference in list)

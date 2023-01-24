@@ -14,7 +14,6 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.JavaScript.Impl.Caches;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
 
@@ -27,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         [NotNull] private readonly MetaFileGuidCache myMetaFileGuidCache;
 
         [NotNull] private readonly Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myPointers = new();
-        [NotNull] private readonly CompactOneToHashSetMap<IPsiSourceFile, Guid> myAnimPointers = new(); // from controller to anims
+        [NotNull] private readonly Dictionary<IPsiSourceFile, HashSet<Guid>> myAnimPointers = new(); // from controller to anims
 
         [NotNull] private readonly IShellLocks myShellLocks;
         [NotNull] private readonly CountingSet<string> myStateNamesCount = new();
@@ -87,7 +86,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             }
 
             myPointers.Remove(currentAssetSourceFile);
-            myAnimPointers.RemoveKey(currentAssetSourceFile);
+            myAnimPointers.Remove(currentAssetSourceFile);
             foreach (var stateName in animatorElement.StateNames) myStateNamesCount.Remove(stateName);
         }
 
@@ -108,11 +107,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             var stateNames = animatorElement.StateNames;
             if (stateNames.Count == 0) return;
             foreach (var stateName in stateNames) myStateNamesCount.Add(stateName);
-
-            foreach (var guid in animatorElement.AnimReferences)
-            {
-                myAnimPointers.Add(currentAssetSourceFile, guid);
-            }
+            
+            myAnimPointers.Add(currentAssetSourceFile, animatorElement.AnimReferences);
         }
 
         public string Id => nameof(AnimatorScriptUsagesElementContainer);
