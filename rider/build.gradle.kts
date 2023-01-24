@@ -211,7 +211,7 @@ tasks {
     }
 
     named<Wrapper>("wrapper") {
-        gradleVersion = "7.4"
+        gradleVersion = "7.6"
         distributionType = Wrapper.DistributionType.BIN
     }
 
