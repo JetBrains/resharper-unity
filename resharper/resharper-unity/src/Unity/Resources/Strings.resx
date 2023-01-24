@@ -1247,7 +1247,7 @@ a plugin to be installed to a project.</value>
         <value>Enables the Unity icon for Burst compiled code</value>
     </data>
     <data name="UnitySettings_t_Enables_syntax_error_highlighting__brace_matching_and_more_of_ShaderLab_files_" xml:space="preserve">
-        <value>Enables syntax error highlighting, brace matching, and more of ShaderLab files</value>
+        <value>Enables syntax error highlighting, brace matching, and more in ShaderLab files</value>
     </data>
     <data name="UnitySettings_t_Enables_syntax_error_highlighting_of_CG_blocks_in_ShaderLab_files_" xml:space="preserve">
         <value>Enables syntax error highlighting of CG blocks in ShaderLab files</value>
