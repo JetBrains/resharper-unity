@@ -190,7 +190,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
                 var gameObjects = AssetHierarchyUtil.GetSelfAndOriginalGameObjects(scriptUsage.Location,
                     myAssetDocumentHierarchyElementContainer);
 
-                var controllerGuids = myAnimatorGameObjectUsagesContainer.GetAnimatorsFromGameObject(gameObjects).Distinct();
+                var controllerGuids = myAnimatorGameObjectUsagesContainer.GetAnimatorsByGameObjectReference(gameObjects).Distinct();
                 var controllers = controllerGuids.SelectMany(a => myMetaFileGuidCache.GetAssetFilePathsFromGuid(a)).Distinct().ToArray();
                 if (controllers.Any(controller =>
                     {

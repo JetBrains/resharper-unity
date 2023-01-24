@@ -7,7 +7,6 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
@@ -96,52 +95,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             myGameObjectReferenceToControllerGuid.Clear();
         }
 
-        public Guid[] GetAnimatorsFromGameObject(List<LocalReference> gameObjectReferences)
+        public Guid[] GetAnimatorsByGameObjectReference(List<LocalReference> gameObjectReferences)
         {
             myShellLocks.AssertReadAccessAllowed();
-            var result = new List<Guid>();
-
-            foreach (var gameObjectReference in gameObjectReferences)
+            var guids = gameObjectReferences.SelectMany(gameObjectReference =>
             {
-                if (myAssetDocumentHierarchyElementContainer.GetHierarchyElement(gameObjectReference, true) is
-                    IComponentHierarchy he)
-                {
-                    var gameObjectHierarchy = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(he.OwningGameObject, true);
-                    if (gameObjectHierarchy is ImportedGameObjectHierarchy importedGameObjectHierarchy)
-                    {
-                        var importedGuids = importedGameObjectHierarchy.GetPrefabInstanceHierarchy().PrefabModifications
-                            .Where(a => a.PropertyPath == UnityYamlConstants.ControllerProperty)
-                            .Select(modification=> modification.ObjectReference)
-                            .OfType<ExternalReference>()
-                            .Select(objectReference => objectReference.ExternalAssetGuid)
-                            .Distinct();
-                        
-                        result.AddRange(importedGuids);
-                    }
-                }
+                return myGameObjectReferenceToControllerGuid.Where(a => myAssetDocumentHierarchyElementContainer.GetHierarchyElement(a.Key, true) is
+                    IComponentHierarchy h && h.OwningGameObject.Equals(gameObjectReference)).Select(a=>a.Value);
+            }).Distinct().ToArray();
 
-                var guids = myGameObjectReferenceToControllerGuid.Where(a => myAssetDocumentHierarchyElementContainer.GetHierarchyElement(a.Key, true) is
-                    IComponentHierarchy h && h.OwningGameObject.Equals(gameObjectReference)).Select(a=>a.Value).Distinct();
-                result.AddRange(guids);
-            }
-
-            return result.ToArray();
+            return guids;
         }
 
         public LocalReference[] GetGameObjectReferencesByControllerGuid(Guid? controllerGuid)
         {
             if (!controllerGuid.HasValue) return EmptyArray<LocalReference>.Instance;
-            
-            //var gameObjectHierarchy = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(he.OwningGameObject, true);
-            // controllerGuid is just mentioned in one of the propertyPath: m_Controller of --- !u!1001 &788507972894748985, which we don't know
-            
-            var controllerReferences = myGameObjectReferenceToControllerGuid.Where(a => a.Value == controllerGuid).Select(a => a.Key);
-            var t =  controllerReferences
-                .Select(controllerReference => myAssetDocumentHierarchyElementContainer.GetHierarchyElement(controllerReference, true)).ToArray();
-                return 
-                    t
-                .OfType<IComponentHierarchy>()
-                .Select(h=>h.OwningGameObject).ToArray();
+            var controllerReferences = myGameObjectReferenceToControllerGuid.Where(a => a.Value == controllerGuid).Select(a => a.Key).ToArray();
+            return controllerReferences
+                    .Select(controllerReference => myAssetDocumentHierarchyElementContainer.GetHierarchyElement(controllerReference, true))
+                    .OfType<IComponentHierarchy>()
+                    .Select(h => h.OwningGameObject).ToArray();
         }
     }
 }
