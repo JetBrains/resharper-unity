@@ -73,6 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
         public abstract RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor);
         public abstract void Navigate(IOccurrence occurrence);
 
+        public string RuleId { get; }
         public string Name { get; }
         public IconId IconId { get; }
         public bool IsSeparable => true;
