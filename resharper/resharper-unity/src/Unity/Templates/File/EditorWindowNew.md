@@ -1,12 +1,12 @@
 ---
-guid: CA9DFEEA-D5B5-4DDC-933F-8D618D71538E
+guid: 3B84E43F-9A0B-42DA-AF15-8A17239F969B
 image: UnityCSharp
 type: File
 reformat: True
 shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=EditorWindow, ValidateFileName=True
-scopes: UnityFileTemplateSectionMarker;InUnityCSharpEditorFolder;MustBeInProjectWithMaximumUnityVersion(version=2022.1)
+scopes: UnityFileTemplateSectionMarker;InUnityCSharpEditorFolder;MustBeInProjectWithUnityVersion(version=2022.2)
 uitag: Unity Script
 parameterOrder: HEADER, (CLASS), (NAMESPACE), MENUITEM, MENUITEMCOMMAND, TITLE
 HEADER-expression: fileheader()
@@ -14,7 +14,7 @@ CLASS-expression: getAlphaNumericFileNameWithoutExtension
 NAMESPACE-expression: fileDefaultNamespace()
 ---
 
-# Editor Window (IMGUI)
+# Editor Window
 
 ```
 $HEADER$namespace $NAMESPACE$ {
@@ -28,9 +28,9 @@ $HEADER$namespace $NAMESPACE$ {
       window.Show();
     }
 
-    private void OnGUI()
+    private void CreateGUI()
     {
-      $END$
+       $END$
     }
   }
 }

@@ -45,9 +45,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
             AddToQuickList(mountPoint, myProjectMainPoint, "ScriptableObject", ++pos, "1404A333-DA7C-47AC-8CB5-7C944DD1422D");
             AddToQuickList(mountPoint, myProjectMainPoint, "StateMachineBehaviour", ++pos, "AFA01340-773E-488A-93D6-E19540AE2F1B");
             AddToQuickList(mountPoint, myProjectMainPoint, "PlayModeTest", ++pos, "0bcdbc13-d26e-4512-9750-fb930f532e88");
-            AddToQuickList(mountPoint, myProjectMainPoint, "CustomEditor", ++pos, "2E5D288C-A209-41EE-93B2-7CACDCAE18C6");
-            AddToQuickList(mountPoint, myProjectMainPoint, "EditorWindow", ++pos, "CA9DFEEA-D5B5-4DDC-933F-8D618D71538E");
-            AddToQuickList(mountPoint, myProjectMainPoint, "PropertyDrawer", ++pos, "7901AA8B-4060-4763-8FD5-B7B5384FABAA");
+            AddToQuickList(mountPoint, myProjectMainPoint, "CustomEditor (IMGUI)", ++pos, "2E5D288C-A209-41EE-93B2-7CACDCAE18C6");
+            AddToQuickList(mountPoint, myProjectMainPoint, "EditorWindow (IMGUI)", ++pos, "CA9DFEEA-D5B5-4DDC-933F-8D618D71538E");
+            AddToQuickList(mountPoint, myProjectMainPoint, "PropertyDrawer (IMGUI)", ++pos, "7901AA8B-4060-4763-8FD5-B7B5384FABAA");
+            AddToQuickList(mountPoint, myProjectMainPoint, "CustomEditor", ++pos, "D4BC1DCD-C297-4DA9-8072-03CCBA27C34C");
+            AddToQuickList(mountPoint, myProjectMainPoint, "EditorWindow", ++pos, "3B84E43F-9A0B-42DA-AF15-8A17239F969B");
+            AddToQuickList(mountPoint, myProjectMainPoint, "PropertyDrawer", ++pos, "C04349FF-EFAC-4468-B3CA-0D1159DC8482");
+
             AddToQuickList(mountPoint, myProjectMainPoint, "ScriptableWizard", ++pos, "E1BD73A0-0145-4A1A-B4AA-7744144744AF");
             AddToQuickList(mountPoint, myProjectMainPoint, "AssetPostprocessor", ++pos, "B669492E-B3A6-4F98-9998-9AF480374340");
             AddToQuickList(mountPoint, myProjectMainPoint, "EditModeTest", ++pos, "7b7fa2c7-0ee5-4d4f-bb1f-ddbeacdbfc94");
@@ -60,6 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
             AddToQuickList(mountPoint, myProjectMainPoint, "Aspect", ++pos, "276DC9DD-51D2-41F9-A312-D9BD2AE3C225");
             AddToQuickList(mountPoint, myProjectMainPoint, "System", ++pos, "3A8DDF9A-86ED-4877-8721-6D064DF61D77");
             AddToQuickList(mountPoint, myProjectMainPoint, "SystemBase", ++pos, "9C5472EF-F807-4BB4-8E39-56D5B38C96B5");
+            AddToQuickList(mountPoint, myProjectMainPoint, "IJobEntity", ++pos, "60A9DD1A-9237-49A8-BFAA-D8510DF7FAE0");
         }
 
         private void InitialiseQuickList(ISettingsStorageMountPoint mountPoint, IMainScopePoint quickList)
