@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.Serialization;
@@ -9,22 +10,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
     {
         public AnimatorStateScriptUsage(LocalReference location, 
                                         [NotNull] string name, 
-                                        LocalList<long> scriptsAnchors)
+                                        LocalList<long> scriptsAnchors,
+                                        Guid? animReference)
         {
             Location = location;
             Name = name;
             ScriptsAnchors = scriptsAnchors;
+            AnimReference = animReference;
         }
         
         public string Name { get; }
         public LocalList<long> ScriptsAnchors { get; }
         public LocalReference Location { get; }
+        
+        public Guid? AnimReference { get; }
 
         public void WriteTo(UnsafeWriter writer)
         {
             Location.WriteTo(writer);
             writer.Write(Name);
             WriteStateMachineBehavioursAnchors(writer);
+            if (writer.WriteNullness(AnimReference)) writer.Write(AnimReference.Value);
         }
 
         private void WriteStateMachineBehavioursAnchors([NotNull] UnsafeWriter writer)
@@ -39,8 +45,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             var animatorStateReference = HierarchyReferenceUtil.ReadLocalReferenceFrom(reader);
             var animatorStateName = reader.ReadString();
             var stateMachineBehavioursAnchors = ReadStateMachineBehavioursAnchors(reader);
+            var animExternalReference = reader.ReadNullness() ? reader.ReadGuid().ToNullable() : null;
             return new AnimatorStateScriptUsage(animatorStateReference, animatorStateName ?? "",
-                stateMachineBehavioursAnchors);
+                stateMachineBehavioursAnchors, animExternalReference);
         }
 
         private static LocalList<long> ReadStateMachineBehavioursAnchors([NotNull] UnsafeReader reader)
