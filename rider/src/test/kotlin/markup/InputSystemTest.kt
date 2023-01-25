@@ -1,3 +1,4 @@
+import base.doFindUsagesTest
 import base.integrationTests.prepareAssemblies
 import com.jetbrains.rd.ide.model.findUsagesHost
 import com.jetbrains.rd.platform.util.lifetime
@@ -70,23 +71,6 @@ class InputSystemTest : BaseTestWithSolution() {
     @Test(enabled = false) // broadcast support is not yet implemented
     fun findUsagesBroadcastScriptTest() {
         doFindUsagesTest("Assets/BroadcastScript1.cs", "OnBroadcastScript1")
-    }
-
-    private fun doFindUsagesTest(relPath:String, word:String) {
-        // PlayerInput is attached to Cube
-        // NewBehaviourScript is attached Cube
-        val projectLifetime = project.lifetime
-        val model = project.solution.frontendBackendModel
-        runSwea(project) // otherwise public methods are never marked unused
-        waitAndPump(projectLifetime, { model.isDeferredCachesCompletedOnce.valueOrDefault(false) }, Duration.ofSeconds(10),
-                    { "Deferred caches are not completed" })
-        withOpenedEditor(relPath) {
-            setCaretAfterWord(word)
-            val text = requestFindUsages(activeSolutionDirectory, true)
-            executeWithGold(testGoldFile) { printStream ->
-                printStream.print(text)
-            }
-        }
     }
 
     private fun doUsedCodeTest(relPath:String) {

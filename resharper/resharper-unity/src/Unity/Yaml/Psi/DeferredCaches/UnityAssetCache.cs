@@ -93,6 +93,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             
             foreach (var container in myOrderedContainers)
             {
+                if (!container.IsApplicable(sourceFile)) continue;
+                
                 if (data.UnityAssetDataElements.TryGetValue(container.Id, out var element))
                 {
                     Assertion.Assert(container != null, "container != null");

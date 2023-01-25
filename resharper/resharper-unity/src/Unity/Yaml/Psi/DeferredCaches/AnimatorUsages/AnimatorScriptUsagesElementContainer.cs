@@ -25,16 +25,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         [NotNull] private readonly IPersistentIndexManager myManager;
         [NotNull] private readonly MetaFileGuidCache myMetaFileGuidCache;
 
-        [NotNull] private readonly Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myPointers =
-            new Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer>();
+        [NotNull] private readonly Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myPointers = new();
+        [NotNull] private readonly Dictionary<IPsiSourceFile, HashSet<Guid>> myAnimPointers = new(); // from controller to anims
 
         [NotNull] private readonly IShellLocks myShellLocks;
-        [NotNull] private readonly CountingSet<string> myStateNamesCount = new CountingSet<string>();
+        [NotNull] private readonly CountingSet<string> myStateNamesCount = new();
 
-        [NotNull] private readonly CountingSet<Guid> myUsagesCount = new CountingSet<Guid>();
+        [NotNull] private readonly CountingSet<Guid> myUsagesCount = new();
 
-        [NotNull] private readonly OneToCompactCountingSet<Guid, IPsiSourceFile> myUsageToSourceFiles =
-            new OneToCompactCountingSet<Guid, IPsiSourceFile>();
+        [NotNull] private readonly OneToCompactCountingSet<Guid, IPsiSourceFile> myUsageToSourceFiles = new();
 
         public AnimatorScriptUsagesElementContainer([NotNull] IPersistentIndexManager manager,
                                                     [NotNull] IShellLocks shellLocks,
@@ -61,14 +60,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                 return ExtractStateMachineBehaviour(document, file);
             var animatorExtractor = new AnimatorExtractor(file, document);
             if (AssetUtils.IsAnimatorStateMachine(document.Buffer)) return animatorExtractor.TryExtractStateMachine();
-            return AssetUtils.IsAnimatorState(document.Buffer) ? animatorExtractor.TryExtractUsage() : null;
+            if (AssetUtils.IsAnimatorState(document.Buffer))
+            {
+                var usage = animatorExtractor.TryExtractUsage();
+                if (usage != null) 
+                    return usage;
+            }
+            return null;
         }
 
         public void Drop(IPsiSourceFile currentAssetSourceFile,
                          AssetDocumentHierarchyElement assetDocumentHierarchyElement,
-                         IUnityAssetDataElement element)
+                         IUnityAssetDataElement unityAssetDataElement)
         {
-            if (!(element is AnimatorUsagesDataElement animatorElement)) return;
+            var animatorElement = (AnimatorUsagesDataElement)unityAssetDataElement;
             var usagesCount = myUsagesCount;
             var usageToSourceFiles = myUsageToSourceFiles;
             foreach (var (guid, anchors) in animatorElement.GuidToAnchors)
@@ -81,6 +86,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             }
 
             myPointers.Remove(currentAssetSourceFile);
+            myAnimPointers.Remove(currentAssetSourceFile);
             foreach (var stateName in animatorElement.StateNames) myStateNamesCount.Remove(stateName);
         }
 
@@ -89,12 +95,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                           IUnityAssetDataElementPointer unityAssetDataElementPointer,
                           IUnityAssetDataElement unityAssetDataElement)
         {
+            var animatorElement = (AnimatorUsagesDataElement)unityAssetDataElement;
             myPointers[currentAssetSourceFile] = unityAssetDataElementPointer;
-            if (!(unityAssetDataElement is AnimatorUsagesDataElement animatorElement)) return;
             foreach (var (guid, anchors) in animatorElement.GuidToAnchors)
             {
                 if (anchors is null) continue;
-                // ReSharper disable once AssignNullToNotNullAttribute
                 myUsagesCount.Add(guid, anchors.Count);
                 myUsageToSourceFiles.Add(guid, currentAssetSourceFile);
             }
@@ -102,6 +107,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             var stateNames = animatorElement.StateNames;
             if (stateNames.Count == 0) return;
             foreach (var stateName in stateNames) myStateNamesCount.Add(stateName);
+            
+            myAnimPointers.Add(currentAssetSourceFile, animatorElement.AnimReferences);
         }
 
         public string Id => nameof(AnimatorScriptUsagesElementContainer);
@@ -114,6 +121,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             myUsagesCount.Clear();
             myPointers.Clear();
             myStateNamesCount.Clear();
+            myAnimPointers.Clear();
+        }
+
+        public List<Guid> GetAnimReferences(VirtualFileSystemPath file)
+        {
+            var result = new List<Guid>();
+            foreach (var animPointer in myAnimPointers)
+            {
+                if (animPointer.Key.GetLocation() == file)
+                    result.AddRange(animPointer.Value);
+            }
+
+            return result;
+        }
+
+
+        public IPsiSourceFile[] GetControllerFileByAnimGuid(Guid animGuid)
+        {
+            return myAnimPointers.Where(a => a.Value.Contains(animGuid))
+                .Select(a => a.Key).ToArray();
         }
 
         public LocalList<IPsiSourceFile> GetPossibleFilesWithScriptUsages(IClass scriptClass)
@@ -140,12 +167,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                                                             ITypeElement declaredElement)
         {
             AssertShellLocks();
+            if (!IsApplicable(sourceFile)) return EmptyList<IScriptUsage>.Enumerable;
             var boxedGuid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
             if (!boxedGuid.HasValue) return Enumerable.Empty<IScriptUsage>();
             var unityAssetDataElementPointer = myPointers[sourceFile];
             if (unityAssetDataElementPointer is null) return Enumerable.Empty<IScriptUsage>();
             var element = unityAssetDataElementPointer.GetElement(sourceFile, Id);
-            if (!(element is AnimatorUsagesDataElement animatorElement)) return Enumerable.Empty<IScriptUsage>();
+            if (element is not AnimatorUsagesDataElement animatorElement) return Enumerable.Empty<IScriptUsage>();
             return GetScriptUsagesFor(animatorElement, boxedGuid.Value);
         }
 
@@ -317,7 +345,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             if (!anchorRaw.HasValue) return null;
             var script = document.Document.GetUnityObjectPropertyValue<INode>(UnityYamlConstants.ScriptProperty);
             var guid = (script.ToHierarchyReference(file) as ExternalReference?)?.ExternalAssetGuid;
-            return guid != null ? new AnimatorScript(guid.Value, anchorRaw.Value) : (AnimatorScript?) null;
+            return guid != null ? new AnimatorScript(guid.Value, anchorRaw.Value) : null;
         }
 
         private void AssertShellLocks()

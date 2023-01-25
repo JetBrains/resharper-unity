@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 var assetMethodDataToModifiedFields = new OneToSetMap<(LocalReference, string, int), string>();
                 foreach (var modification in prefabInstanceHierarchy.PrefabModifications)
                 {
-                    if (!(modification.Target is ExternalReference externalReference))
+                    if (modification.Target is not ExternalReference externalReference)
                         continue;
 
                     if (!modification.PropertyPath.Contains(".m_PersistentCalls."))

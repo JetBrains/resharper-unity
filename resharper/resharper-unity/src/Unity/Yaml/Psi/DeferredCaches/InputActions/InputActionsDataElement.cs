@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions
 
         public void AddData(object data)
         {
-            if (data is not LocalList<PlayerInputUsage> usages) return;
+            var usages = (LocalList<PlayerInputUsage>)data;
             foreach (var usage in usages)
             {
                 if (usage is null) continue;
