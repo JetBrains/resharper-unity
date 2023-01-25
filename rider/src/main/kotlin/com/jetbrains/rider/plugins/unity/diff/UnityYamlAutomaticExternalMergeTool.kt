@@ -56,7 +56,7 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
             }
 
             myLogger.info("PreMerge with $mergeExePath $mergeParameters")
-            val externalTool = ExternalDiffSettings.ExternalTool(mergeExePath, mergeParameters,
+            val externalTool = ExternalDiffSettings.ExternalTool(programPath = mergeExePath, argumentPattern = mergeParameters,
                 isMergeTrustExitCode = isMergeTrustExitCode, groupName = ExternalDiffSettings.ExternalToolGroup.MERGE_TOOL
             )
             if (!tryExecuteMerge(project, externalTool, request as ThreesideMergeRequest)) {

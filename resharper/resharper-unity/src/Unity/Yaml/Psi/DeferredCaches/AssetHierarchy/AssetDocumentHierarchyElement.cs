@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Application;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
@@ -71,6 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         public IHierarchyElement GetHierarchyElement(Guid? ownerGuid, long anchor, PrefabImportCache prefabImportCache)
         {
+            Interruption.Current.CheckAndThrow();
             var result = SearchForAnchor(anchor);
             if (result != null)
             {
@@ -95,6 +97,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
             if (prefabImportCache != null && ownerGuid != null)
             {
+                Interruption.Current.CheckAndThrow();
+                
                 var elements = prefabImportCache.GetImportedElementsFor(ownerGuid.Value, this);
                 
                 if (elements.TryGetValue(anchor, out var importedResult))

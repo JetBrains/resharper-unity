@@ -900,6 +900,9 @@
     <data name="TypeDetector_AddDeclarationHighlighting_Custom_Unity_type" xml:space="preserve">
         <value>Custom Unity type</value>
     </data>
+    <data name="TypeDetector_AddDeclarationHighlighting_DOTS" xml:space="preserve">
+        <value>DOTS</value>
+    </data>
     <data name="TypeDetector_AddDeclarationHighlighting_ECS_system" xml:space="preserve">
         <value>ECS system</value>
     </data>
@@ -957,6 +960,12 @@
     <data name="UnityCommonIconProvider_GetEventFunctionTooltip_Unity_event_function" xml:space="preserve">
         <value>Unity event function</value>
     </data>
+    <data name="UnityDots_Add_RequireForUpdate_SingletonQuickFix" xml:space="preserve">
+        <value>Add missing &apos;RequireForUpdate&lt;{0}&gt;&apos; call.</value>
+    </data>
+    <data name="UnityDots_Add_RequireForUpdate_SingletonQuickFix_For_All" xml:space="preserve">
+        <value>Add all missing &apos;RequireForUpdate&apos; calls.</value>
+    </data>
     <data name="UnityDots_AddComponentLookup_Update_Text" xml:space="preserve">
         <value>Add missing &apos;Update&apos; call for &apos;{0}&apos;</value>
     </data>
@@ -969,14 +978,38 @@
     <data name="UnityDots_CurrentComponentLookupMustBeUpdated" xml:space="preserve">
         <value>Field of &apos;ComponentLookup&apos; type must be updated before being used.</value>
     </data>
+    <data name="UnityDots_GenerateBakerAndAuthoring_Baker" xml:space="preserve">
+        <value>Baker</value>
+    </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_Description" xml:space="preserve">
         <value>Generate Baker and Authoring script inside this file</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndAuthoring_GenerateBakerAsNestedClass" xml:space="preserve">
+        <value>Generate Baker as nested class</value>
     </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_Name" xml:space="preserve">
         <value>Generate Baker and Authoring script</value>
     </data>
+    <data name="UnityDots_GenerateBakerAndAuthoring_NewBaker" xml:space="preserve">
+        <value>New Baker</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested" xml:space="preserve">
+        <value>New Baker (Nested)</value>
+    </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields" xml:space="preserve">
         <value>Component fields for baking</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Description" xml:space="preserve">
+        <value>Select fields for baking</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Title" xml:space="preserve">
+        <value>Baker Generation (DOTS)</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle" xml:space="preserve">
+        <value>Baker Generation</value>
+    </data>
+    <data name="UnityDots_GetSingletonMustBeRequested" xml:space="preserve">
+        <value>To use the result of a &apos;GetSingleton&lt;{0}&gt;&apos; call in the function, &apos;OnCreate&apos; must include a &apos;RequireForUpdate&apos; call.</value>
     </data>
     <data name="UnityDots_projects" xml:space="preserve">
         <value>Unity DOTS projects</value>
@@ -1276,81 +1309,6 @@ a plugin to be installed to a project.</value>
     <data name="UnmetVersionConstraintInfo_Symbol_not_defined__Unmet_version_constraint___0_" xml:space="preserve">
         <value>Symbol not defined. Unmet version constraint: {0}.</value>
     </data>
-    <data name="UnityPerformanceCriticalCodeLineMarker_Performance_critical_context" xml:space="preserve">
-        <value>Performance-critical context</value>
-    </data>
-    <data name="UnityHighlightingProcess_Event_function" xml:space="preserve">
-        <value>Event function</value>
-    </data>
-    <data name="UnityHighlightingProcess_Execute_Frequently_called" xml:space="preserve">
-        <value>Frequently called</value>
-    </data>
-    <data name="UnityHighlightingProcess_Execute_Frequently_called_code" xml:space="preserve">
-        <value>Frequently called code</value>
-    </data>
-    <data name="GenerateUnityEventFunctionsWorkflow_Unity_Event_Functions" xml:space="preserve">
-        <value>Unity Event Functions</value>
-    </data>
-    <data name="TypeDetector_GetActions_Generate_Unity_event_functions" xml:space="preserve">
-        <value>Generate Unity event functions</value>
-    </data>
-    <data name="TypeDetector_AddDeclarationHighlighting_Custom_Unity_editor" xml:space="preserve">
-        <value>Custom Unity editor</value>
-    </data>
-    <data name="TypeDetector_AddDeclarationHighlighting_Script" xml:space="preserve">
-        <value>Script</value>
-    </data>
-    <data name="TypeDetector_AddDeclarationHighlighting_Unity_script" xml:space="preserve">
-        <value>Unity script</value>
-    </data>
-    <data name="TypeDetector_AddDeclarationHighlighting_Editor" xml:space="preserve">
-        <value>Editor</value>
-    </data>
-    <data name="TypeDetector_AddDeclarationHighlighting_Scriptable_object" xml:space="preserve">
-        <value>Scriptable object</value>
-    </data>
-    <data name="TypeDetector_AddDeclarationHighlighting_Unity_scriptable_object" xml:space="preserve">
-        <value>Unity scriptable object</value>
-    </data>
-    <data name="TypeDetector_AddDeclarationHighlighting_Unity_type" xml:space="preserve">
-        <value>Unity type</value>
-    </data>
-    <data name="TypeDetector_AddDeclarationHighlighting_Custom_Unity_type" xml:space="preserve">
-        <value>Custom Unity type</value>
-    </data>
-    <data name="TypeDetector_AddDeclarationHighlighting_DOTS" xml:space="preserve">
-        <value>DOTS</value>
-    </data>
-    <data name="TypeDetector_AddDeclarationHighlighting_Unity_entities_system" xml:space="preserve">
-        <value>Unity entities system</value>
-    </data>
-    <data name="EventHandlerDetector_AddEventHandlerHighlighting_Text" xml:space="preserve">
-        <value>Event handler</value>
-    </data>
-    <data name="EventHandlerDetector_AddEventHandlerHighlighting_Tooltip" xml:space="preserve">
-        <value>Unity event handler</value>
-    </data>
-    <data name="EventHandlerDetector_AddAnimationEventHighlighting_Text" xml:space="preserve">
-        <value>Animation event</value>
-    </data>
-    <data name="EventHandlerDetector_AddAnimationEventHighlighting_Tooltip" xml:space="preserve">
-        <value>Unity animation event</value>
-    </data>
-    <data name="FieldDetector_AddDeclarationHighlighting_This_field_is_initialized_from_Inspector" xml:space="preserve">
-        <value>This field is initialized from Inspector</value>
-    </data>
-    <data name="FieldDetector_AddDeclarationHighlighting_Serializable" xml:space="preserve">
-        <value>Serializable</value>
-    </data>
-    <data name="FieldDetector_AddDeclarationHighlighting_Tooltip" xml:space="preserve">
-        <value>This field is serialized by Unity</value>
-    </data>
-    <data name="InitialiseOnLoadCctorDetector_AddDeclarationHighlighting_Text" xml:space="preserve">
-        <value>Used implicitly</value>
-    </data>
-    <data name="InitialiseOnLoadCctorDetector_AddDeclarationHighlighting_Tooltip" xml:space="preserve">
-        <value>Called when Unity first launches the editor, the player, or recompiles scripts</value>
-    </data>
     <data name="UseCompareTagInsteadOfExplicitStringComparison" xml:space="preserve">
         <value>Use &apos;CompareTag&apos; instead of explicit string comparison</value>
     </data>
@@ -1372,110 +1330,19 @@ a plugin to be installed to a project.</value>
     <data name="WritingToAStaticFieldIsNotSupported" xml:space="preserve">
         <value>Writing to a static field is not supported</value>
     </data>
-    <data name="CurrentFileNameWithoutWhitespaceCharacters_Text" xml:space="preserve">
-        <value>Current file name without whitespace characters</value>
+    <data name="UnityCSharpFormattingSettingsKey_s_Force_a_line_break_after_any__Header__annotations" xml:space="preserve">
+        <value>Force a line break after any [Header] annotations</value>
     </data>
-    <data name="EvaluatesCurrentFileNameWithoutWhitespace_Text" xml:space="preserve">
-        <value>Evaluates current file name without whitespace characters</value>
+    <data name="UnityCSharpFormattingSettingsKey_s_Blank_lines_after_the__Header__annotations" xml:space="preserve">
+        <value>Blank lines after the [Header] annotations</value>
     </data>
-    <data name="UnityCommonIconProvider_GetEventFunctionTooltip_Unity_event_function" xml:space="preserve">
-        <value>Unity event function</value>
+    <data name="UnityCSharpFormattingSettingsKey_s_Settings_for_Unity_specific_C__formatting" xml:space="preserve">
+        <value>Settings for Unity-specific C# formatting</value>
     </data>
-    <data name="UnityCommonIconProvider_GetEventFunctionTooltip_This_function_can_be_a_coroutine_" xml:space="preserve">
-        <value>This function can be a coroutine.</value>
+    <data name="AdditionalFileLayoutSettings_s_Additional_Unity_C__file_layout_pattern" xml:space="preserve">
+        <value>Additional Unity C# file layout pattern</value>
     </data>
-    <data name="UnityEventFunctionInheritanceMarkOnGutter_KindName_Unity_event_function" xml:space="preserve">
-        <value>Unity event function</value>
-    </data>
-        <data name="UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property" xml:space="preserve">
-        <value>Always add 'FormerlySerializedAs' when renaming serialized fields</value>
-    </data>
-    <data name="UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property" xml:space="preserve">
-        <value>Ask whether to add 'FormerlySerializedAs' when renaming serialized fields</value>
-    </data>
-    <data name="UnitySettings_Refactoring_Dont_shot_popup_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property" xml:space="preserve">
-        <value>Don't show this dialog next time</value>
-    </data>
-    <data name="UnitySettings_Refactoring_Refactoring_Settings_Header" xml:space="preserve">
-        <value>Refactoring</value>
-    </data>
-    <data name="UnityAssetsFolder_Text" xml:space="preserve">
-        <value>Unity Assets folder</value>
-    </data>
-    <data name="UnityEditorFolder_Text" xml:space="preserve">
-        <value>Unity Editor folder</value>
-    </data>
-    <data name="UnityRuntimeFolder_Text" xml:space="preserve">
-        <value>Unity runtime folder</value>
-    </data>
-    <data name="UnityFirstpassFolder_Text" xml:space="preserve">
-        <value>Unity firstpass folder</value>
-    </data>
-    <data name="UnityFirstpassEditorFolder_Text" xml:space="preserve">
-        <value>Unity firstpass Editor folder</value>
-    </data>
-    <data name="UnityFirstpassRuntimeFolder_Text" xml:space="preserve">
-        <value>Unity firstpass runtime folder</value>
-    </data>
-    <data name="UnityProjects_Text" xml:space="preserve">
-        <value>Unity projects</value>
-    </data>
-    <data name="InputActionsProjectFileType_InputActionsProjectFileType_InputActions__Unity_" xml:space="preserve">
-        <value>InputActions (Unity)</value>
-    </data>
-    <data name="UnityDots_ComponentLookupFieldMustBeUpdated" xml:space="preserve">
-        <value>Component lookup '{0}' must be updated</value>
-    </data>
-    <data name="UnityDots_CurrentComponentLookupMustBeUpdated" xml:space="preserve">
-        <value>Field of 'ComponentLookup' type must be updated before being used.</value>
-    </data>
-    <data name="UnityDots_AddComponentLookup_Update_Text" xml:space="preserve">
-        <value>Add missing 'Update' call for '{0}'</value>
-        <comment>ShortName</comment>
-    </data>
-    <data name="UnityDots_AddComponentLookupScoped_Update_Text" xml:space="preserve">
-        <value>Add missing 'Update' call for all QueryLookups</value>
-        <comment>ShortName</comment>
-    </data>
-    <data name="UnityDots_GetSingletonMustBeRequested" xml:space="preserve">
-        <value>To use the result of a 'GetSingleton&lt;{0}&gt;' call in the function, 'OnCreate' must include a 'RequireForUpdate' call.</value>
-    </data>
-    <data name="UnityDots_Add_RequireForUpdate_SingletonQuickFix" xml:space="preserve">
-        <value>Add missing 'RequireForUpdate&lt;{0}&gt;' call.</value>
-        <comment>ShortName</comment>
-    </data>
-    <data name="UnityDots_Add_RequireForUpdate_SingletonQuickFix_For_All" xml:space="preserve">
-        <value>Add all missing 'RequireForUpdate' calls.</value>
-        <comment>ShortName</comment>
-    </data>
-    <data name="UnityDots_GenerateBakerAndAuthoring_Name" xml:space="preserve">
-        <value>Generate Baker and Authoring script</value>
-    </data>
-    <data name="UnityDots_GenerateBakerAndAuthoring_Description" xml:space="preserve">
-        <value>Generate Baker and Authoring script inside this file</value>
-    </data>
-    <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Title" xml:space="preserve">
-        <value>Baker Generation (DOTS)</value>
-    </data>
-    <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle" xml:space="preserve">
-        <value>Baker Generation</value>
-    </data>
-    <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Description" xml:space="preserve">
-        <value>Select fields for baking</value>
-    </data>
-    <data name="UnityDots_GenerateBakerAndAuthoring_Baker" xml:space="preserve">
-        <value>Baker</value>
-    </data>
-    <data name="UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested" xml:space="preserve">
-        <value>New Baker (Nested)</value>
-    </data>
-    <data name="UnityDots_GenerateBakerAndAuthoring_NewBaker" xml:space="preserve">
-        <value>New Baker</value>
-    </data>
-    <data name="UnityDots_GenerateBakerAndAuthoring_GenerateBakerAsNestedClass" xml:space="preserve">
-        <value>Generate Baker as nested class</value>
-    </data>
-    <data name="UnityDots_projects" xml:space="preserve">
-        <value>Unity DOTS projects</value>
+    <data name="AdditionalFileLayoutSettings_s_File_Layout_Pattern" xml:space="preserve">
+        <value>File Layout Pattern</value>
     </data>
 </root>

@@ -6,7 +6,7 @@ using JetBrains.IDE;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Presentation;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Explicit;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.ReSharper.Resources.Shell;
@@ -16,13 +16,13 @@ using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
-    public class UnityAnimationEventOccurence : UnityAssetOccurrence
+    public class AnimExplicitEventOccurence : UnityAssetOccurrence
     {
-        [NotNull] private AnimationUsage Usage { get; }
+        [NotNull] private AnimExplicitUsage Usage { get; }
 
-        public UnityAnimationEventOccurence([NotNull] IPsiSourceFile sourceFile,
+        public AnimExplicitEventOccurence([NotNull] IPsiSourceFile sourceFile,
                                             [NotNull] IDeclaredElementPointer<IDeclaredElement> declaredElement,
-                                            [NotNull] AnimationUsage usage)
+                                            [NotNull] AnimExplicitUsage usage)
             : base(sourceFile, declaredElement, usage.Location, false)
         {
             Usage = usage;

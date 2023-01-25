@@ -1,0 +1,9 @@
+Search target
+    AnimEventHolderWithControllerAndScriptMod.AnimEventWithControllerAndScriptMod():void
+Found usages  (1 usage found)
+    Other  (1 usage found)
+        Assets  (1 usage found)
+            Anim  (1 usage found)
+                WithControllerAndScriptMod  (1 usage found)
+                    WithControllerAndScriptMod.anim  (1 usage found)
+                        [1339, Assets/Anim/WithControllerAndScriptMod/WithControllerAndScriptMod.anim] (55: 17)  functionName: AnimEventWithControllerAndScriptMod

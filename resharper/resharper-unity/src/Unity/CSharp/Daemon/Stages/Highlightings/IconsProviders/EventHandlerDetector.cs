@@ -7,7 +7,8 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Explicit;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implicit;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -21,16 +22,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     public class EventHandlerDetector : UnityDeclarationHighlightingProviderBase
     {
         protected readonly UnityEventsElementContainer UnityEventsElementContainer;
-        private readonly AnimationEventUsagesContainer myAnimationEventUsagesContainer;
-        
+        private readonly AnimExplicitUsagesContainer myAnimExplicitUsagesContainer;
+        [NotNull] private readonly AnimImplicitUsagesContainer myAnimImplicitUsagesContainer;
+
         public EventHandlerDetector(ISolution solution, IApplicationWideContextBoundSettingStore settingsStore,
                                     UnityEventsElementContainer unityEventsElementContainer,
                                     PerformanceCriticalContextProvider contextProvider,
-                                    [NotNull] AnimationEventUsagesContainer animationEventUsagesContainer)
+                                    [NotNull] AnimExplicitUsagesContainer animExplicitUsagesContainer,
+                                    [NotNull] AnimImplicitUsagesContainer animImplicitUsagesContainer)
             : base(solution, settingsStore, contextProvider)
         {
             UnityEventsElementContainer = unityEventsElementContainer;
-            myAnimationEventUsagesContainer = animationEventUsagesContainer;
+            myAnimExplicitUsagesContainer = animExplicitUsagesContainer;
+            myAnimImplicitUsagesContainer = animImplicitUsagesContainer;
         }
 
         public override bool AddDeclarationHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer,
@@ -55,7 +59,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                                                                        IReadOnlyCallGraphContext context,
                                                                        IDeclaredElement method)
         {
-            var isAnimationEvent = myAnimationEventUsagesContainer.GetEventUsagesCountFor(method, out _) > 0;
+            var isAnimationEvent = myAnimExplicitUsagesContainer.GetEventUsagesCountFor(method, out _) > 0 || 
+                                   myAnimImplicitUsagesContainer.GetEventUsagesCountFor(method, out var expected) > 0 || expected;
             if (isAnimationEvent) AddAnimationEventHighlighting(treeNode, consumer, context);
             return isAnimationEvent;
         }
@@ -66,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                                                                        IProperty property)
         {
             var getter = property.Getter;
-            if (getter != null && myAnimationEventUsagesContainer.GetEventUsagesCountFor(getter, out _) > 0)
+            if (getter != null && myAnimExplicitUsagesContainer.GetEventUsagesCountFor(getter, out _) > 0)
             {
                 AddAnimationEventHighlighting(treeNode, consumer, context);
             }
@@ -76,10 +81,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                                               IMethod method)
         {
             var eventHandlersCount = UnityEventsElementContainer.GetAssetUsagesCount(method, out var estimated);
-            var animationEventsCount = myAnimationEventUsagesContainer.GetEventUsagesCountFor(method, out var estimated2);
-            if (eventHandlersCount == 0 && animationEventsCount != 0)
+            var animExplicitCount = myAnimExplicitUsagesContainer.GetEventUsagesCountFor(method, out var estimated2);
+            var animImplicitCount = myAnimImplicitUsagesContainer.GetEventUsagesCountFor(method, out var estimated3);
+            if (eventHandlersCount == 0 && (animExplicitCount != 0 || animImplicitCount != 0))
                 AddAnimationEventHighlighting(treeNode, consumer, context);
-            else if (estimated || estimated2 || animationEventsCount + eventHandlersCount > 0)
+            else if (estimated || estimated2 || estimated3 || animExplicitCount + eventHandlersCount + animImplicitCount > 0)
                 AddEventHandlerHighlighting(treeNode, consumer, context);
             
             return true;
