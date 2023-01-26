@@ -81,11 +81,13 @@
     </data>
     <data name="ShaderLabAutopopupEnabledSettingsKey_s_ShaderLab" xml:space="preserve">
         <value>ShaderLab</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="ShaderLabFormatSettingsKey_s_Code_formatting_in_ShaderLab" xml:space="preserve">
         <value>Code formatting in ShaderLab</value>
     </data>
     <data name="ShaderLabFormatSettingsKey_s_BraceStyle" xml:space="preserve">
         <value>BraceStyle</value>
+        <comment>Don't localize</comment>
     </data>
 </root>
