@@ -6,42 +6,38 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Naming.Impl;
 using JetBrains.ReSharper.Psi.Naming.Interfaces;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Dots
 {
     [Language(typeof(CSharpLanguage))]
     public class UnityDotsNamingSuggestionAdviser : IClrNamingSuggestionAdviser
     {
-        public bool SuggestRoots(IType type, INamingPolicyProvider namingPolicyProvider,
-            Func<IType, IEnumerable<NameRoot>> nameProvider, IList<NameRoot> outputNameRoots)
+        public IReadOnlyList<NameRoot> SuggestRoots(IType type, Func<IType, IEnumerable<NameRoot>> nameProvider)
         {
             var typeElement = type.GetTypeElement();
             if (typeElement == null)
-                return false;
+                return Array.Empty<NameRoot>();
 
-            if (UnityApi.IsRefRW(typeElement) || UnityApi.IsRefRO(typeElement))
+            var isRefRw = UnityApi.IsRefRW(typeElement);
+            var isRefRo = UnityApi.IsRefRO(typeElement);
+            
+            if (isRefRw || isRefRo)
             {
                 if (type is IDeclaredType declaredType)
                 {
                     var typeParameters = typeElement.TypeParameters;
                     var internalType = declaredType.GetSubstitution()[typeParameters[0]];
 
-                    var namingManager = declaredType.GetPsiServices().Naming;
-                    var name = namingManager.Parsing.GetName(typeElement, "unknown", namingPolicyProvider);
-                    var originalTypeRoot = name.GetRoot();
-
+                    var outputNameRoots = new List<NameRoot>();
                     foreach (var nameRoot in nameProvider.Invoke(internalType))
-                    {
                         outputNameRoots.Add(nameRoot);
-                        if (originalTypeRoot != null)
-                            outputNameRoots.Add(nameRoot.AppendRoot(originalTypeRoot));
-                    }
 
-                    return true;
+                    return outputNameRoots;
                 }
             }
 
-            return false;
+            return Array.Empty<NameRoot>();
         }
     }
 }

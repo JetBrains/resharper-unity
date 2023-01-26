@@ -1,14 +1,6 @@
-﻿# 12 ITEMS #
+﻿# 4 ITEMS #
 
 + AnimationComponent
-+ AnimationComponentRefRo
 + Component
-+ ComponentRefRo
-+ RefRo
-+ Ro
 + myAnimationComponent
-+ myAnimationComponentRefRo
 + myComponent
-+ myComponentRefRo
-+ myRefRo
-+ myRo
