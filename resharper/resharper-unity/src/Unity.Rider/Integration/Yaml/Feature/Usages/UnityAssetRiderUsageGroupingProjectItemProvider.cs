@@ -46,6 +46,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
                         break;
                 }
             }
+            else if (occurrence is AnimImplicitOccurence animImplicitOccurence)
+            {
+                {
+                    switch (kind)
+                    {
+                        case ProjectItemKind.PROJECT:
+                            return new RdUsageGroupTextAndIcon("", null);
+                        case ProjectItemKind.PHYSICAL_FILE:
+                            var filePath = GetPresentablePath(animImplicitOccurence.SourceFile.GetLocation(), mySolution.SolutionDirectory);
+                            if (filePath != null)
+                                return new RdUsageGroupTextAndIcon(filePath.FullPath, myIconHost.Transform(GetIcon(animImplicitOccurence.SourceFile)));
+                            break;
+
+                        case ProjectItemKind.PHYSICAL_DIRECTORY:
+                            var directoryPath = GetPresentablePath(animImplicitOccurence.SourceFile.GetLocation().Directory, mySolution.SolutionDirectory);
+                            if (directoryPath != null)
+                                return new RdUsageGroupTextAndIcon(directoryPath.FullPath, myIconHost.Transform(myProjectModelIcons.DirectoryIcon));
+                            break;
+                    }
+                }
+            }
 
             return null;
         }

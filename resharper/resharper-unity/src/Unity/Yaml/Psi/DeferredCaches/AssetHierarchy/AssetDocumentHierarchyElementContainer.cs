@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         private readonly IEnumerable<IAssetInspectorValueDeserializer> myAssetInspectorValueDeserializers;
 
         private readonly ConcurrentDictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myAssetDocumentsHierarchy =
-            new ConcurrentDictionary<IPsiSourceFile, IUnityAssetDataElementPointer>();
+            new();
 
         public AssetDocumentHierarchyElementContainer(IPersistentIndexManager manager, PrefabImportCache prefabImportCache, IShellLocks shellLocks,
             UnityExternalFilesModuleFactory psiModuleProvider, MetaFileGuidCache metaFileGuidCache, IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializers)
