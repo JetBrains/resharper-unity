@@ -72,7 +72,7 @@
 
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory"/>
 
-    <rider.defaultVcsRootPolicyExtension implementation="com.jetbrains.rider.plugins.unity.vcs.UnityDefaultVcsRootPolicyExtension" />
+    <rider.externalDirectoryProvider implementation="com.jetbrains.rider.plugins.unity.workspace.UnityExternalDirectoryProvider" />
 
     <!-- Options pages -->
     <applicationConfigurable groupId="language" instance="com.jetbrains.rider.plugins.unity.settings.UnityPluginOptionsPage" id="preferences.build.unityPlugin" />
