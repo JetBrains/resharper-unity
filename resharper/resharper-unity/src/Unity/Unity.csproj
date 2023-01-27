@@ -56,8 +56,6 @@
     <Compile Update="CSharp\Daemon\Errors\GutterMarkInfos.generated.cs">
       <DependentUpon>GutterMarkInfos.xml</DependentUpon>
     </Compile>
-    <Compile Remove="AsmDef\ZoneMarker.cs" />
-    <Compile Remove="Core\Application\UI\Options\ZoneMarker.cs" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="AsmDef">
