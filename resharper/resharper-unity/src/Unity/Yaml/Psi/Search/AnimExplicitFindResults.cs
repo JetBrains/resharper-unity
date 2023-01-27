@@ -1,15 +1,15 @@
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Explicit;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
-    public class UnityAnimationEventFindResults : UnityAssetFindResult
+    public class AnimExplicitFindResults : UnityAssetFindResult
     {
-        public UnityAnimationEventFindResults([NotNull] IPsiSourceFile sourceFile,
+        public AnimExplicitFindResults([NotNull] IPsiSourceFile sourceFile,
                                               [NotNull] IDeclaredElement declaredElement,
-                                              [NotNull] AnimationUsage usage,
+                                              [NotNull] AnimExplicitUsage usage,
                                               LocalReference owningElementLocation)
             : base(sourceFile, declaredElement, owningElementLocation)
         {
@@ -17,17 +17,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         }
 
         [NotNull]
-        public AnimationUsage Usage { get; }
+        public AnimExplicitUsage Usage { get; }
 
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == GetType() && Equals((UnityAnimationEventFindResults) obj);
+            return obj.GetType() == GetType() && Equals((AnimExplicitFindResults) obj);
         }
 
-        private bool Equals([NotNull] UnityAnimationEventFindResults other)
+        private bool Equals([NotNull] AnimExplicitFindResults other)
         {
             return base.Equals(other) && Usage.Equals(other.Usage);
         }

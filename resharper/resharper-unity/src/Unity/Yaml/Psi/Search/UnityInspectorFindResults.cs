@@ -10,8 +10,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         public bool IsPrefabModification { get; }
 
         public UnityInspectorFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, InspectorVariableUsage inspectorVariableUsage, 
-            LocalReference owningElemetLocation, bool isPrefabModification)
-            : base(sourceFile, declaredElement, owningElemetLocation)
+            LocalReference owningElementLocation, bool isPrefabModification)
+            : base(sourceFile, declaredElement, owningElementLocation)
         {
             InspectorVariableUsage = inspectorVariableUsage;
             IsPrefabModification = isPrefabModification;

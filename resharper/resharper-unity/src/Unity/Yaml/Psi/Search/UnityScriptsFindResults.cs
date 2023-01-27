@@ -11,8 +11,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         public UnityScriptsFindResults(IPsiSourceFile sourceFile,
                                        IDeclaredElement declaredElement,
                                        IScriptUsage scriptUsage, 
-                                       LocalReference owningElemetLocation)
-            : base(sourceFile, declaredElement, owningElemetLocation)
+                                       LocalReference owningElementLocation)
+            : base(sourceFile, declaredElement, owningElementLocation)
         {
             ScriptUsage = scriptUsage;
         }
