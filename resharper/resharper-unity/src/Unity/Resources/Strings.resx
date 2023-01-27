@@ -735,7 +735,7 @@
         <value>The &apos;FormerlySerializedAs&apos; attribute is only valid on Unity serialized fields. It can also be redundant if the name argument matches the current name of the field.</value>
     </data>
     <data name="TheHideInInspectorAttributeOnlyAppliesToSerialisedFields" xml:space="preserve">
-        <value>The &apos;HideInInspector&apos; attribute only applies to serialised fields.</value>
+        <value>The &apos;HideInInspector&apos; attribute only applies to serialized fields</value>
     </data>
     <data name="TheIndexIsMissingInTheBuildSettings" xml:space="preserve">
         <value>The index is missing in the build settings</value>
