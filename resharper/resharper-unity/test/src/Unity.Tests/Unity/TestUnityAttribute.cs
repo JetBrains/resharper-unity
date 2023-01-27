@@ -95,12 +95,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
             return new[] {UnityProjectFlavor.UnityProjectFlavorGuid};
         }
 
-        public IEnumerable<string> GetReferences(TargetFrameworkId targetFrameworkId, FileSystemPath testDataPath,
-            NuGetPackageCache nugetPackagesCache)
+        public IEnumerable<string> GetReferences(BaseTestNoShell test, TargetFrameworkId targetFrameworkId,
+            FileSystemPath testDataPath, NuGetPackageCache nugetPackagesCache)
         {
             var names = GetPackageNames().ToArray();
             var attribute = new TestPackagesAttribute(names);
-            return attribute.GetReferences(targetFrameworkId, testDataPath, nugetPackagesCache);
+            return attribute.GetReferences(test, targetFrameworkId, testDataPath, nugetPackagesCache);
         }
 
         public bool Inherits => false;
