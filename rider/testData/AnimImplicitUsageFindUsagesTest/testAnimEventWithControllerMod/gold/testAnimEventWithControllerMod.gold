@@ -1,0 +1,9 @@
+Search target
+    AnimEventHolder.AnimEventWithControllerMod():void
+Found usages  (1 usage found)
+    Other  (1 usage found)
+        Assets  (1 usage found)
+            Anim  (1 usage found)
+                WithControllerMod  (1 usage found)
+                    WithControllerMod.anim  (1 usage found)
+                        [1330, Assets/Anim/WithControllerMod/WithControllerMod.anim] (55: 17)  functionName: AnimEventWithControllerMod

@@ -500,9 +500,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
             foreach (var (reference, modification) in dataElement.ImportedInspectorValues.Modifications)
             {
-                var hierearchyElement = myHierarchyElementContainer.GetHierarchyElement(reference.LocalReference, true);
-                Assertion.Assert(hierearchyElement != null, "hierearchyElement != null");
-                if (!(hierearchyElement is IScriptComponentHierarchy scriptElement))
+                var hierarchyElement = myHierarchyElementContainer.GetHierarchyElement(reference.LocalReference, true);
+                Assertion.Assert(hierarchyElement != null, "hierearchyElement != null");
+                if (!(hierarchyElement is IScriptComponentHierarchy scriptElement))
                     continue;
                 yield return (new InspectorVariableUsage(reference.LocalReference, scriptElement.ScriptReference, reference.Name, modification.value ?? modification.objectReference), true);
             }

@@ -1,21 +1,30 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Explicit;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
+using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Parsing;
+using JetBrains.Text;
+using JetBrains.Util;
 using JetBrains.Util.Maths;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim
 {
-    internal class AnimationExtractor
+    internal class AnimExtractor
     {
         [NotNull] private readonly AssetDocument myDocument;
         [NotNull] private readonly IPsiSourceFile myFile;
-
-        public AnimationExtractor([NotNull] IPsiSourceFile file,
+        
+        private static readonly StringSearcher ourAnimEventsSearcher = new($"  {UnityYamlConstants.EventsProperty}:", false);
+        private static readonly StringSearcher ourNameSearcher = new("m_Name", false);
+        private static readonly StringSearcher ourSampleRateSearcher = new("m_SampleRate", false);
+        
+        public AnimExtractor([NotNull] IPsiSourceFile file,
                                   [NotNull] AssetDocument document)
         {
             myFile = file;
@@ -23,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
         }
 
         [CanBeNull]
-        public List<AnimationUsage> TryExtractEventUsage()
+        public List<AnimExplicitUsage> TryExtractEventUsage()
         {
             try
             {
@@ -36,39 +45,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
         }
 
         [NotNull, ItemNotNull]
-        private List<AnimationUsage> ExtractEventUsage()
+        private List<AnimExplicitUsage> ExtractEventUsage()
         {
-            var root = GetUnityObjectProperties();
             var location = CreateReferenceToAnimationClip();
-            var animationName = ExtractAnimationClipNameFrom(root);
-            var sampleRate = ExtractSampleRateFrom(root);
-            var timesAndNamesAndGuids = ExtractEventsFrom(root);
-            var usages = new List<AnimationUsage>();
+            var animationName = ExtractAnimationClipNameFrom();
+            var sampleRate = ExtractSampleRateFrom();
+            var timesAndNamesAndGuids = ExtractEvents();
+            var usages = new List<AnimExplicitUsage>();
             foreach (var (time, functionName, guid) in timesAndNamesAndGuids)
             {
                 if (functionName is null) continue;
-                usages.Add(new AnimationUsage(location, animationName, sampleRate, functionName, time, guid));
+                usages.Add(new AnimExplicitUsage(location, animationName, sampleRate, functionName, time, guid));
             }
             return usages;
         }
 
-        private static int ExtractSampleRateFrom([NotNull] IBlockMappingNode root)
+        private int ExtractSampleRateFrom()
         {
-            var sampleRateText = root.GetMapEntryPlainScalarText("m_SampleRate");
+            var sampleRateText = AssetUtils.GetPlainScalarValue(myDocument.Buffer, ourSampleRateSearcher) ??
+                                 throw new AnimationExtractorException();
             var foundSampleRate = int.TryParse(sampleRateText, out var sampleRate);
             return foundSampleRate ? sampleRate : throw new AnimationExtractorException();
         }
 
         [NotNull]
-        private IBlockMappingNode GetUnityObjectProperties()
+        private IEnumerable<Tuple<double, string, Guid>> ExtractEvents()
         {
-            return myDocument.Document.GetUnityObjectProperties() ?? throw new AnimationExtractorException();
-        }
-
-        [NotNull]
-        private static IEnumerable<Tuple<double, string, Guid>> ExtractEventsFrom([NotNull] in IBlockMappingNode root)
-        {
-            var events = ExtractAnimationEventsFrom(root);
+            var assetDocument = GetAnimationEventsDocument(myDocument)?? throw new AnimationExtractorException();
+            var events = GetAnimationEventsNode(assetDocument) ?? throw new AnimationExtractorException();
             var list = new List<Tuple<double, string, Guid>>();
             foreach (var @event in events.Entries) AddEvent(@event, list);
             return list;
@@ -86,17 +90,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
         }
 
         [NotNull]
-        private static string ExtractAnimationClipNameFrom([NotNull] IBlockMappingNode root)
+        private string ExtractAnimationClipNameFrom()
         {
-            return root.GetMapEntryPlainScalarText("m_Name") ?? throw new AnimationExtractorException();
+            return AssetUtils.GetPlainScalarValue(myDocument.Buffer, ourNameSearcher) ?? throw new AnimationExtractorException();
         }
 
         [CanBeNull]
-        private static Guid? ExtractEventFunctionGuidFrom([NotNull] IBlockMappingNode record)
+        public static Guid? ExtractEventFunctionGuidFrom([NotNull] IBlockMappingNode record)
         {
             var guidText = record.GetMapEntryValue<IFlowMappingNode>("objectReferenceParameter")
                 ?.GetMapEntryPlainScalarText("guid");
-            return guidText != null ? new Guid(guidText) : (Guid?) null;
+            return guidText != null ? new Guid(guidText) : null;
         }
 
         private static double ExtractEventFunctionTimeFrom([NotNull] IBlockMappingNode record)
@@ -106,16 +110,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
         }
 
         [CanBeNull]
-        private static string ExtractEventFunctionNameFrom([NotNull] IBlockMappingNode record)
+        public static string ExtractEventFunctionNameFrom([NotNull] IBlockMappingNode record)
         {
             return record.GetMapEntryPlainScalarText("functionName");
         }
 
-        [NotNull]
-        private static IBlockSequenceNode ExtractAnimationEventsFrom([NotNull] IBlockMappingNode root)
+        [CanBeNull]
+        public static AssetDocument GetAnimationEventsDocument(AssetDocument assetDocument)
         {
-            return root.GetMapEntryValue<IBlockSequenceNode>("m_Events") ??
-                   throw new AnimationExtractorException();
+            var eventOffset = ourAnimEventsSearcher.Find(assetDocument.Buffer);
+            if (eventOffset < 0)
+                return null;
+            
+            var assetDocumentBuffer = assetDocument.Buffer;
+            var buffer = ProjectedBuffer.Create(assetDocumentBuffer, new TextRange(eventOffset, assetDocumentBuffer.Length));
+            var eventDocument = new AssetDocument(assetDocument.StartOffset + eventOffset, buffer, assetDocument.HierarchyElement);
+            return eventDocument;
+        }
+
+        [CanBeNull]
+        public static IBlockSequenceNode GetAnimationEventsNode(AssetDocument assetDocument)
+        {
+            var lexer = new YamlLexer(assetDocument.Buffer, false, false);
+            var parser = new YamlParser(lexer.ToCachingLexer());
+            var document = parser.ParseDocument();
+
+            var eventsNode = (document.Body.BlockNode as IBlockMappingNode).GetMapEntryValue<IBlockSequenceNode>(UnityYamlConstants.EventsProperty);
+            return eventsNode;
         }
 
         private LocalReference CreateReferenceToAnimationClip()

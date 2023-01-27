@@ -70,4 +70,22 @@
     <data name="ThereIsAlreadyAPropertyNamedDeclaredMessage" xml:space="preserve">
         <value>The property named &apos;{0}&apos; is already declared</value>
     </data>
+    <data name="IntellisenseEnabledSettingShaderLab_s_Override_VS_IntelliSense_for_ShaderLab" xml:space="preserve">
+        <value>Override VS IntelliSense for ShaderLab</value>
+    </data>
+    <data name="IntellisenseEnabledSettingShaderLab_s_ShaderLab__Unity__shader_files_" xml:space="preserve">
+        <value>ShaderLab (Unity .shader files)</value>
+    </data>
+    <data name="ShaderLabAutopopupEnabledSettingsKey_s_In_variable_references" xml:space="preserve">
+        <value>In variable references</value>
+    </data>
+    <data name="ShaderLabAutopopupEnabledSettingsKey_s_ShaderLab" xml:space="preserve">
+        <value>ShaderLab</value>
+    </data>
+    <data name="ShaderLabFormatSettingsKey_s_Code_formatting_in_ShaderLab" xml:space="preserve">
+        <value>Code formatting in ShaderLab</value>
+    </data>
+    <data name="ShaderLabFormatSettingsKey_s_BraceStyle" xml:space="preserve">
+        <value>BraceStyle</value>
+    </data>
 </root>

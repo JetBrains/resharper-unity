@@ -7,7 +7,8 @@ using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Explicit;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implicit;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
@@ -51,12 +52,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             var methodsContainer = solution.GetComponent<UnityEventsElementContainer>();
             var metaFileGuidCache = solution.GetComponent<MetaFileGuidCache>();
             var scriptsUsagesContainers = solution.GetComponent<IEnumerable<IScriptUsagesElementContainer>>();
-            var animationEventUsagesContainer = solution.GetComponent<AnimationEventUsagesContainer>();
+            var animExplicitUsagesContainer = solution.GetComponent<AnimExplicitUsagesContainer>();
+            var animImplicitUsagesContainer = solution.GetComponent<AnimImplicitUsagesContainer>();
             var assetValuesContainer = solution.GetComponent<AssetInspectorValuesContainer>();
             var controller = solution.GetComponent<DeferredCacheController>();
 
-            return new UnityAssetReferenceSearcher(controller, hierarchyContainer, scriptsUsagesContainers,
-                methodsContainer, animationEventUsagesContainer, assetValuesContainer, metaFileGuidCache, elements,
+            return new UnityAssetReferenceSearcher(controller, scriptsUsagesContainers,
+                methodsContainer, animExplicitUsagesContainer, animImplicitUsagesContainer,
+                assetValuesContainer, elements,
                 referenceSearcherParameters);
         }
 
@@ -110,10 +113,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                         .GetComponent<UnityEventsElementContainer>()
                         .GetAssetUsagesCount(element, out var unityEventsEstimatedResult);
                     var animationEventsCount = solution
-                        .GetComponent<AnimationEventUsagesContainer>()
+                        .GetComponent<AnimExplicitUsagesContainer>()
                         .GetEventUsagesCountFor(element, out var animationEventsEstimatedResult);
-                    var count = eventsCount + animationEventsCount;
-                    return count > 0 || unityEventsEstimatedResult || animationEventsEstimatedResult;
+                    var animationImplicitEventsCount = solution
+                        .GetComponent<AnimImplicitUsagesContainer>()
+                        .GetEventUsagesCountFor(element, out var animationImplicitEventsEstimatedResult);
+                    var count = eventsCount + animationEventsCount + animationImplicitEventsCount;
+                    return count > 0 || unityEventsEstimatedResult || animationEventsEstimatedResult || animationImplicitEventsEstimatedResult;
 
                 case IField field:
                     return unityApi.IsSerialisedField(field) == SerializedFieldStatus.SerializedField;
