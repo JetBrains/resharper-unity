@@ -4,7 +4,6 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Naming.Impl;
-using JetBrains.ReSharper.Psi.Naming.Interfaces;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
@@ -17,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Dots
         {
             var typeElement = type.GetTypeElement();
             if (typeElement == null)
-                return Array.Empty<NameRoot>();
+                return EmptyList<NameRoot>.Instance;
 
             var isRefRw = UnityApi.IsRefRW(typeElement);
             var isRefRo = UnityApi.IsRefRO(typeElement);
@@ -37,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Dots
                 }
             }
 
-            return Array.Empty<NameRoot>();
+            return EmptyList<NameRoot>.Instance;
         }
     }
 }
