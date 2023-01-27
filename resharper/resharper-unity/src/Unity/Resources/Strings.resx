@@ -908,6 +908,7 @@
     </data>
     <data name="TypeDetector_AddDeclarationHighlighting_DOTS" xml:space="preserve">
         <value>DOTS</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="TypeDetector_AddDeclarationHighlighting_ECS_system" xml:space="preserve">
         <value>ECS system</value>
@@ -979,10 +980,10 @@
         <value>Settings for Unity-specific C# formatting</value>
     </data>
     <data name="UnityDots_Add_RequireForUpdate_SingletonQuickFix" xml:space="preserve">
-        <value>Add missing &apos;RequireForUpdate&lt;{0}&gt;&apos; call.</value>
+        <value>Add missing &apos;RequireForUpdate&lt;{0}&gt;&apos; call</value>
     </data>
     <data name="UnityDots_Add_RequireForUpdate_SingletonQuickFix_For_All" xml:space="preserve">
-        <value>Add all missing &apos;RequireForUpdate&apos; calls.</value>
+        <value>Add all missing &apos;RequireForUpdate&apos; calls</value>
     </data>
     <data name="UnityDots_AddComponentLookup_Update_Text" xml:space="preserve">
         <value>Add missing &apos;Update&apos; call for &apos;{0}&apos;</value>
@@ -1027,7 +1028,7 @@
         <value>Baker Generation</value>
     </data>
     <data name="UnityDots_GetSingletonMustBeRequested" xml:space="preserve">
-        <value>To use the result of a &apos;GetSingleton&lt;{0}&gt;&apos; call in the function, &apos;OnCreate&apos; must include a &apos;RequireForUpdate&apos; call.</value>
+        <value>To use the result of a &apos;GetSingleton&lt;{0}&gt;&apos; call in the function, &apos;OnCreate&apos; must include a &apos;RequireForUpdate&apos; call</value>
     </data>
     <data name="UnityDots_projects" xml:space="preserve">
         <value>Unity DOTS projects</value>
@@ -1265,7 +1266,7 @@ a plugin to be installed to a project.</value>
         <value>Enables the Unity icon for Burst compiled code</value>
     </data>
     <data name="UnitySettings_t_Enables_syntax_error_highlighting__brace_matching_and_more_of_ShaderLab_files_" xml:space="preserve">
-        <value>Enables syntax error highlighting, brace matching, and more of ShaderLab files</value>
+        <value>Enables syntax error highlighting, brace matching, and more in ShaderLab files</value>
     </data>
     <data name="UnitySettings_t_Enables_syntax_error_highlighting_of_CG_blocks_in_ShaderLab_files_" xml:space="preserve">
         <value>Enables syntax error highlighting of CG blocks in ShaderLab files</value>
