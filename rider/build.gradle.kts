@@ -87,15 +87,10 @@ val debuggerDllFiles = files(
     "../resharper/build/debugger/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.pdb"
 )
 
-val helperExeFiles = files(
+val listIosUsbDevicesFiles = files(
     "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net7.0/JetBrains.Rider.Unity.ListIosUsbDevices.dll",
     "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net7.0/JetBrains.Rider.Unity.ListIosUsbDevices.pdb",
     "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net7.0/JetBrains.Rider.Unity.ListIosUsbDevices.runtimeconfig.json"
-)
-
-val helperExeNetFxFiles = files(
-    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net472/JetBrains.Rider.Unity.ListIosUsbDevices.exe",
-    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net472/JetBrains.Rider.Unity.ListIosUsbDevices.pdb"
 )
 
 val unityEditorDllFiles = files(
@@ -765,8 +760,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         doLast {
             dotnetDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
             debuggerDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
-            helperExeFiles.forEach { if (!it.exists()) error("File $it does not exist") }
-            helperExeNetFxFiles.forEach { if (!it.exists()) error("File $it does not exist") }
+            listIosUsbDevicesFiles.forEach { if (!it.exists()) error("File $it does not exist") }
             unityEditorDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
         }
 
@@ -774,13 +768,8 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
 
         dotnetDllFiles.forEach { from(it) { into("${pluginName}/dotnet") } }
         debuggerDllFiles.forEach { from(it) { into("${pluginName}/dotnetDebuggerWorker") } }
+        listIosUsbDevicesFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
         unityEditorDllFiles.forEach { from(it) { into("${pluginName}/EditorPlugin") } }
-
-        // This folder name allows RiderEnvironment.getBundledFile(file, pluginClass = this.class) to work
-        // Helper apps must be net5.0 for Mac/Linux, but we don't yet bundle netcore for Windows, so fall back to
-        // netfx. Get rid of the netfx folder as soon as we can
-        helperExeFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
-        helperExeNetFxFiles.forEach { from(it) { into("${pluginName}/DotFiles/netfx") } }
 
         from("../resharper/resharper-unity/src/Unity/annotations") {
             into("${pluginName}/dotnet/Extensions/com.intellij.resharper.unity/annotations")
