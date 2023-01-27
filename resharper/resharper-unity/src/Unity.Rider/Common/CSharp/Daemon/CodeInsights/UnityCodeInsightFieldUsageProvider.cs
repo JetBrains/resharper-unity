@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,7 +61,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
         public override ICollection<CodeVisionRelativeOrdering> RelativeOrderings =>
             new[] {new CodeVisionRelativeOrderingLast()};
 
-        public UnityCodeInsightFieldUsageProvider(IFrontendBackendHost frontendBackendHost, BulbMenuComponent bulbMenu,
+        public UnityCodeInsightFieldUsageProvider(IFrontendBackendHost frontendBackendHost,
+                                                  BulbMenuComponent bulbMenu,
                                                   DeferredCacheController deferredCacheController,
                                                   AssetInspectorValuesContainer inspectorValuesContainer,
                                                   UnityEventsElementContainer unityEventsElementContainer)
@@ -117,7 +120,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             IDeclaredElement declaredElement, string baseDisplayName, string baseTooltip, string moreText, IconModel iconModel,
             IEnumerable<BulbMenuItem> items, List<CodeVisionEntryExtraActionModel> extraActions)
         {
-            string displayName = null;
+            string? displayName = null;
 
             var solution = element.GetSolution();
             Assertion.Assert(solution.Locks.IsReadAccessAllowed(), "ReadLock required");
@@ -174,8 +177,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             }
 
 
-            var initializer = (element as IFieldDeclaration).NotNull("element as IFieldDeclaration != null").Initial;
-            var initValue = (initializer as IExpressionInitializer)?.Value?.ConstantValue.Value;
+            var initializer = (element as IFieldDeclaration).NotNull().Initial;
+            var initValue = (initializer as IExpressionInitializer)?.Value?.ConstantValue;
 
             var initValueUnityPresentation = GetUnitySerializedPresentation(presentationType, initValue);
 
@@ -246,24 +249,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             return $"Changed in {changesCount} assets" + (isEstimated ? " + possible indirect changes" : "");
         }
 
-        private IAssetValue GetUnitySerializedPresentation(UnityPresentationType presentationType, object value)
+        private IAssetValue GetUnitySerializedPresentation(UnityPresentationType presentationType, ConstantValue? value)
         {
-            if (presentationType == UnityPresentationType.Bool && value is bool b)
+            var b = false;
+            if (presentationType == UnityPresentationType.Bool && (value == null || value.IsBoolean(out b)))
                 return b ? new AssetSimpleValue("1") : new AssetSimpleValue("0");
 
-            if (presentationType == UnityPresentationType.ScriptableObject && value == null)
+            if (presentationType == UnityPresentationType.ScriptableObject && (value == null || value.IsNull()))
                 return new AssetReferenceValue(new LocalReference(0, 0));
 
-            if (presentationType == UnityPresentationType.FileId && value == null)
+            if (presentationType == UnityPresentationType.FileId && (value == null || value.IsNull()))
                 return new AssetReferenceValue(new LocalReference(0, 0));
 
-            if ((presentationType == UnityPresentationType.OtherSimple  || presentationType == UnityPresentationType.Bool) && value == null)
+            if (presentationType is UnityPresentationType.OtherSimple or UnityPresentationType.Bool &&
+                (value == null || value.IsNull()))
+            {
                 return new AssetSimpleValue("0");
+            }
 
-            if (value == null)
+            if (value == null || value.IsNull())
                 return new AssetSimpleValue(string.Empty);
 
-            return new AssetSimpleValue(value.ToString());
+#pragma warning disable CS0618
+            return new AssetSimpleValue(value.Value?.ToString());
+#pragma warning restore CS0618
         }
 
         private UnityPresentationType GetUnityPresentationType(IType type)

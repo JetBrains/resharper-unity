@@ -14,7 +14,7 @@ ASPECT-expression: getAlphaNumericFileNameWithoutExtension
 NAMESPACE-expression: fileDefaultNamespace()
 ---
 
-# IAspect
+# IJobEntity
 
 ```
 $HEADER$namespace $NAMESPACE$ 

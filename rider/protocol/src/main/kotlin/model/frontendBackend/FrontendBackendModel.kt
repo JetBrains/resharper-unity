@@ -1,13 +1,12 @@
 package model.frontendBackend
 
-import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
 import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
+import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rider.model.nova.ide.SolutionModel.RdDocumentId
 import model.lib.Library
-import model.lib.Library.ProfilingData
 
 // frontend <-> backend model, from point of view of frontend, meaning:
 // Sink is a one-way signal the frontend subscribes to

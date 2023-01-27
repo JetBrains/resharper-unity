@@ -1,4 +1,5 @@
-using JetBrains.Annotations;
+#nullable enable
+
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
@@ -27,9 +28,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             myAssetSerializationMode = assetSerializationMode;
         }
 
-        protected override void Analyze([NotNull] IInvocationExpression invocation,
+        protected override void Analyze(IInvocationExpression invocation,
                                         ElementProblemAnalyzerData data,
-                                        [NotNull] IHighlightingConsumer consumer)
+                                        IHighlightingConsumer consumer)
         {
             if (!myAssetSerializationMode.IsForceText || !myAssetIndexingSupport.IsEnabled.Value) return;
 
@@ -38,13 +39,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 !invocation.InvocationExpressionReference.IsAnimatorPlayMethod()) return;
             var container = invocation.GetSolution().TryGetComponent<AnimatorScriptUsagesElementContainer>();
             if (container == null ||
-                !(literal.ConstantValue.Value is string stateName) ||
+                !literal.ConstantValue.IsNotNullString(out var stateName) ||
                 container.ContainsStateName(stateName)) return;
             consumer.AddHighlighting(new UnknownAnimatorStateNameWarning(argument));
         }
 
-        [CanBeNull]
-        private static ICSharpArgument GetStateNameArgumentFrom([NotNull] IInvocationExpression invocationExpression)
+        private static ICSharpArgument? GetStateNameArgumentFrom(IInvocationExpression invocationExpression)
         {
             return invocationExpression
                 .ArgumentList?

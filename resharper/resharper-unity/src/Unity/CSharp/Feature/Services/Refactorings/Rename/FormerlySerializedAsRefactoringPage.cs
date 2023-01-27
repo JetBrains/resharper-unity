@@ -1,4 +1,6 @@
-﻿using JetBrains.DataFlow;
+﻿#nullable enable
+
+using JetBrains.DataFlow;
 using JetBrains.IDE.UI.Extensions;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
@@ -18,10 +20,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             : base(lifetime)
         {
             myModel = model;
-            myShouldAddFormerlySerializedAs = new Property<bool>(lifetime, Strings.UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property, myModel.ShouldAddFormerlySerializedAs);
+            myShouldAddFormerlySerializedAs = new Property<bool>(Strings.UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property, myModel.ShouldAddFormerlySerializedAs);
             myContent = myShouldAddFormerlySerializedAs.GetBeCheckBox(lifetime, Strings.UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property).InAutoGrid();
-            
-            myDontShowPopup = new Property<bool>(lifetime, Strings.UnitySettings_Refactoring_Dont_shot_popup_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property, myModel.DontShowPopup);
+
+            myDontShowPopup = new Property<bool>(Strings.UnitySettings_Refactoring_Dont_shot_popup_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property, myModel.DontShowPopup);
             myContent.AddElement(myDontShowPopup
                 .GetBeCheckBox(lifetime, Strings.UnitySettings_Refactoring_Dont_shot_popup_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property));
         }
