@@ -1,13 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Environment;
-using JetBrains.ReSharper.Plugins.Json;
 using JetBrains.ReSharper.Plugins.Unity;
 using JetBrains.ReSharper.Plugins.Unity.Shaders;
-using JetBrains.ReSharper.Plugins.Yaml;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;
 using JetBrains.TestFramework.Application.Zones;
@@ -40,14 +38,14 @@ namespace JetBrains.ReSharper.Plugins.Tests
     public interface IUnityTestsEnvZone : ITestsEnvZone
     {
     }
-    
+
     [ZoneDefinition]
     public interface IUnityTestsZone : IZone, IRequire<IUnityPluginZone>, IRequire<PsiFeatureTestZone>
     {
-        
+
     }
-    
-    
+
+
     // Activate the zones we require for shell/solution containers. This is normally handled by product specific zone
     // activators. But we don't have any product environment zones, so these activators aren't loaded, and we need to
     // activate pretty much everything we need.
@@ -92,9 +90,11 @@ namespace JetBrains.ReSharper.Plugins.Tests
         // The default logger outputs to $TMPDIR/JetLogs/ReSharperTests/resharper.log, which is not very helpful when
         // we're testing more than one assembly. This sets up an environment variable to output the log to
         // /resharper/build/{project}/logs
+        [Conditional("INDEPENDENT_BUILD")]
         private static void ConfigureLoggingFolderPath()
         {
-            Environment.SetEnvironmentVariable(Logger.JETLOGS_DIRECTORY_ENV_VARIABLE, GetLogsFolder().FullPath);
+            if (Environment.GetEnvironmentVariable(Logger.JETLOGS_DIRECTORY_ENV_VARIABLE) == null)
+                Environment.SetEnvironmentVariable(Logger.JETLOGS_DIRECTORY_ENV_VARIABLE, GetLogsFolder().FullPath);
         }
 
         private static FileSystemPath GetLogsFolder()

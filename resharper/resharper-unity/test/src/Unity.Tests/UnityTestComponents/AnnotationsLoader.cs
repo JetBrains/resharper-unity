@@ -11,7 +11,6 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 {
     [ShellComponent]
-    [ZoneMarker]
     public class AnnotationsLoader : IExternalAnnotationsFileProvider
     {
         private readonly OneToSetMap<string, VirtualFileSystemPath> myAnnotations;
