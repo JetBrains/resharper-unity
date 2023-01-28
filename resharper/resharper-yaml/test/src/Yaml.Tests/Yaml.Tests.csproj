@@ -16,6 +16,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <JetTestProject>True</JetTestProject>
     <SignAssembly>False</SignAssembly>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
