@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using JetBrains.Application.BuildScript.Application.Zones;
@@ -23,7 +24,11 @@ using NUnit.Framework;
 // TODO: This makes things work when building as part of the Unity project, but breaks standalone
 // Maybe it should be using product/subplatform markers?
 #pragma warning disable 618
+#if INDEPENDENT_BUILD
 [assembly: TestDataPathBase("resharper-yaml/test/data")]
+#else
+[assembly: TestDataPathBase("Plugins/ReSharperUnity/resharper/resharper-yaml/test/data")]
+#endif
 #pragma warning restore 618
 
 namespace JetBrains.ReSharper.Plugins.Tests
@@ -75,9 +80,11 @@ namespace JetBrains.ReSharper.Plugins.Tests
     // The default logger outputs to $TMPDIR/JetLogs/ReSharperTests/resharper.log, which is not very helpful when
     // we're testing more than one assembly. This sets up an environment variable to output the log to
     // /resharper/build/{project}/logs
+    [Conditional("INDEPENDENT_BUILD")]
     private static void ConfigureLoggingFolderPath()
     {
-      Environment.SetEnvironmentVariable(Logger.JETLOGS_DIRECTORY_ENV_VARIABLE, GetLogsFolder().FullPath);
+      if (Environment.GetEnvironmentVariable(Logger.JETLOGS_DIRECTORY_ENV_VARIABLE) == null)
+        Environment.SetEnvironmentVariable(Logger.JETLOGS_DIRECTORY_ENV_VARIABLE, GetLogsFolder().FullPath);
     }
 
     private static FileSystemPath GetLogsFolder()
