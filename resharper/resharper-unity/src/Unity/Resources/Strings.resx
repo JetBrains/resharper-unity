@@ -945,12 +945,15 @@
     </data>
     <data name="Unity_Internal_DumpDuplicateTypeNames_Text" xml:space="preserve">
         <value>Dump Duplicate Type Names</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="Unity_Internal_DumpSpellCheckWordLists_Text" xml:space="preserve">
         <value>Dump Spell Check Word Lists</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="Unity_Internal_SerializeReferencesDump_Text" xml:space="preserve">
         <value>Dump SerializeReference Cache</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="UnityAssetsFolder_Text" xml:space="preserve">
         <value>Unity Assets folder</value>
