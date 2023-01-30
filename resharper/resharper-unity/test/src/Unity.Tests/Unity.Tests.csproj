@@ -15,6 +15,7 @@
     <NoWarn>CS8002</NoWarn>
     <JetTestProject>True</JetTestProject>
     <DefineConstants Condition="!$(InternalBuild)">INDEPENDENT_BUILD</DefineConstants>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Xml" />

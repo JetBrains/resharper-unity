@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Application;
-using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Diagnostics;
 using JetBrains.Metadata.Utils;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.ExternalAnnotations;
@@ -28,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
             }
         }
 
-        public IEnumerable<VirtualFileSystemPath> GetAnnotationsFiles(AssemblyNameInfo assemblyName = null, VirtualFileSystemPath assemblyLocation = null)
+        public IEnumerable<VirtualFileSystemPath> GetAnnotationsFiles(AssemblyNameInfo? assemblyName = null, VirtualFileSystemPath? assemblyLocation = null)
         {
             if (assemblyName == null)
                 return myAnnotations.Values;

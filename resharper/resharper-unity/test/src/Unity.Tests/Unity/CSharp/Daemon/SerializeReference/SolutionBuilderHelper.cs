@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
                 }
             };
         }
-        
+
         public static void PrepareDependencies(FileSystemPath baseTestDataPath, FileSystemPath testSolutionAbsolutePath, string dependencySolutionName, string outputDirectoryName)
         {
             const string DotNetSdkCmdBootstrapperFileName = "dotnet-sdk.cmd";
@@ -46,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
             var commandLineBuilderJet = new CommandLineBuilderJet();
             if (PlatformUtil.IsRunningUnderWindows)
                 commandLineBuilderJet.AppendSwitch("/C");
-                
+
             commandLineBuilderJet.AppendFileName(fileName)
                 .AppendSwitch("build")
                 .AppendSwitch("--force")
@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
             var shellName = PlatformUtil.IsRunningUnderWindows
                 ? FileSystemPath.Parse("C:\\Windows\\System32\\cmd.exe")
                 : FileSystemPath.Parse("/bin/sh");
-            
+
             var result = InvokeChildProcess.InvokeSync(shellName, commandLineBuilderJet, InvokeChildProcess.PipeStreams.Custom(collector.Collect));
             Assertion.Require(result == 0, $"Building dependencies '{dependencySolutionName}' failed, exit code: {result}.\nSTDERR: {collector.StdErr}");
         }

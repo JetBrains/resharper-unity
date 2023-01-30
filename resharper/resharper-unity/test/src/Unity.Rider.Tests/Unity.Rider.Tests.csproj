@@ -20,6 +20,7 @@
          should be a 32 bit assembly. Unfortunately, 32 bit processes aren't supported on Mac, and the tests fail.
          Any test project that uses the Rider SDK will require this -->
     <PlatformTarget Condition="'$([MSBuild]::IsOsPlatform(Windows))' != 'True'">x64</PlatformTarget>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\UnityGlobalHighlightingsStageTestBase.cs">

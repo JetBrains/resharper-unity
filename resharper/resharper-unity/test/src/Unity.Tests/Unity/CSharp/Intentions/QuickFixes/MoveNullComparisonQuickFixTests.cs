@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
             IContextBoundSettingsStore boundSettingsStore)
         {
-            IHighlightingTestBehaviour highlightingTestBehaviour = highlighting as IHighlightingTestBehaviour;
+            IHighlightingTestBehaviour? highlightingTestBehaviour = highlighting as IHighlightingTestBehaviour;
             return (highlightingTestBehaviour == null || !highlightingTestBehaviour.IsSuppressed) && highlighting is UnityPerformanceNullComparisonWarning;
         }
     }

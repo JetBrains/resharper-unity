@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using JetBrains.Application.Environment;
-using JetBrains.ReSharper.Plugins.Unity;
 using JetBrains.ReSharper.Plugins.Unity.Shaders;
 using JetBrains.ReSharper.Resources.Shell;
 using NUnit.Framework;

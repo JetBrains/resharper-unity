@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
             {
                 foreach (var file in swea.GetFilesToAnalyze())
                     swea.AnalyzeInvisibleFile(file);
-                
+
                 swea.AllFilesAnalyzed();
                 using (SyncReanalyzeCookie.Create(Solution.Locks, SolutionAnalysisManager.GetInstance(Solution)))
                     base.DoTest(lifetime, testProject);

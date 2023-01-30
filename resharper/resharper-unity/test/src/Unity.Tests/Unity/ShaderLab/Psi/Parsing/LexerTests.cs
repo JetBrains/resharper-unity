@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.TestFramework;
@@ -33,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
         protected override void WriteToken(TextWriter writer, ILexer lexer)
         {
             string str1 = lexer.GetTokenText().Replace("\r", "\\r").Replace("\n", "\\n").Replace("\t", "\\t");
-            string str2 = string.Format("{0:D4}: {1} '{2}'", lexer.TokenStart, lexer.TokenType, str1);
+            string str2 = $"{lexer.TokenStart:D4}: {lexer.TokenType} '{str1}'";
             writer.WriteLine(str2);
 //            Console.WriteLine(str2);
         }

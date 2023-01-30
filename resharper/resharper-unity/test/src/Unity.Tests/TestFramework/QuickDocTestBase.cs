@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework
 
             var context = CreateDataContext(textControl);
             var declaredElement = TextControlToPsi.GetDeclaredElements(Solution, textControl).SingleOrDefault();
-            Exception exception = null;
+            Exception? exception = null;
             if (declaredElement != null)
             {
                 try
@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework
             {
                 var text = presenter.GetHtml(language).Text?.Text;
                 Assert.NotNull(text);
-                var startIdx = text.IndexOf("  <head>", StringComparison.Ordinal);
+                var startIdx = text!.IndexOf("  <head>", StringComparison.Ordinal);
                 var endIdx = text.IndexOf("</head>", StringComparison.Ordinal) + "</head>".Length;
                 Assert.AreEqual(string.CompareOrdinal(text, endIdx, "\n<body>", 0, "\n<body>".Length), 0);
                 writer.Write(text.Remove(startIdx, endIdx - startIdx + 1));

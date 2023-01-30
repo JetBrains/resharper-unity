@@ -1,5 +1,4 @@
 using JetBrains.Application.BuildScript.Application.Zones;
-using JetBrains.ReSharper.Plugins.Unity;
 using JetBrains.TestFramework.Application.Zones;
 
 namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
