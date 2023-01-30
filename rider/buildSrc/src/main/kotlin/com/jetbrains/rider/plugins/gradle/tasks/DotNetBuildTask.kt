@@ -8,7 +8,7 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.extra
+import org.jetbrains.kotlin.gradle.plugin.extraProperties
 import java.io.File
 
 open class DotNetBuildTask: DefaultTask() {
@@ -17,8 +17,8 @@ open class DotNetBuildTask: DefaultTask() {
 
     @TaskAction
     fun build() {
-        val buildConfiguration = project.extra["BuildConfiguration"] as String
-        val warningsAsErrors = project.extra["warningsAsErrors"] as String
+        val buildConfiguration = project.extraProperties["BuildConfiguration"] as String
+        val warningsAsErrors = project.extraProperties["warningsAsErrors"] as String
         val file = buildFile.asFile.get()
 
         project.buildServer.progress("Building $file ($buildConfiguration)")
@@ -37,15 +37,15 @@ open class DotNetBuildTask: DefaultTask() {
 
         logger.info("dotnet call: '$dotNetCliPath' '$buildArguments' in '$slnDir'")
         project.exec {
-            executable = dotNetCliPath
-            args = buildArguments
-            workingDir = file.parentFile
+            it.executable = dotNetCliPath
+            it.args = buildArguments
+            it.workingDir = file.parentFile
         }
     }
 
     private fun findDotNetCliPath(): String {
-        if (project.extra.has("dotNetCliPath")) {
-            val dotNetCliPath = project.extra["dotNetCliPath"] as String
+        if (project.extraProperties.has("dotNetCliPath")) {
+            val dotNetCliPath = project.extraProperties["dotNetCliPath"] as String
             logger.info("dotNetCliPath (cached): $dotNetCliPath")
             return dotNetCliPath
         }
@@ -59,7 +59,7 @@ open class DotNetBuildTask: DefaultTask() {
             })
             if (dotNetCliFile.exists()) {
                 logger.info("dotNetCliPath: ${dotNetCliFile.canonicalPath}")
-                project.extra["dotNetCliPath"] = dotNetCliFile.canonicalPath
+                project.extraProperties["dotNetCliPath"] = dotNetCliFile.canonicalPath
                 return dotNetCliFile.canonicalPath
             }
         }
@@ -68,7 +68,7 @@ open class DotNetBuildTask: DefaultTask() {
 
     private val verbosity: String
         get() {
-            if ((project.extra["buildServer"] as BuildServer).isAutomatedBuild) {
+            if ((project.extraProperties["buildServer"] as BuildServer).isAutomatedBuild) {
                 return "normal"
             }
 
