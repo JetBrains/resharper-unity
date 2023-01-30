@@ -13,6 +13,7 @@
     <RootNamespace>JetBrains.Debugger.Worker.Plugins.Unity</RootNamespace>
     <LangVersion>9</LangVersion>
     <AssemblyOriginatorKeyFile>..\..\..\sign.snk</AssemblyOriginatorKeyFile>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\..\resharper\build\generated\Model\DebuggerWorker\**\*" LinkBase="Model" Condition="!$(InternalBuild)" />

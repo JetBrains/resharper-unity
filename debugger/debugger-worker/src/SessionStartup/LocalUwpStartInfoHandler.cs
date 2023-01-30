@@ -88,8 +88,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
                         WindowStyle = ProcessWindowStyle.Minimized
                     };
                     var process = Process.Start(processStartInfo);
-
-                    myLifetime.OnTermination(() => StopCheckNetIsolation(process));
+                    if (process != null)
+                        myLifetime.OnTermination(() => StopCheckNetIsolation(process));
                 }
                 catch (Exception e)
                 {

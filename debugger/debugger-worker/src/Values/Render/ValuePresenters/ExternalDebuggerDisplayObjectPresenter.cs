@@ -78,7 +78,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
         }
 
         [Injected]
-        public IExpressionEvaluators<TValue> ExpressionEvaluators { get; protected internal set; }
+        public IExpressionEvaluators<TValue> ExpressionEvaluators { get; protected internal set; } = null!;
 
         public override int Priority => UnityRendererUtil.ValuePresenterPriority;
 
@@ -94,11 +94,11 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
         // Return null to allow other providers a chance. If we throw EvaluatorException, it will be presented to the
         // user. OperationCancelledException will be logged and we move on to the next presenter. Any other exception
         // will leak
-        public override IValuePresentation PresentValue(IObjectValueRole<TValue> valueRole,
-                                                        IMetadataTypeLite instanceType,
-                                                        IPresentationOptions options,
-                                                        IUserDataHolder dataHolder,
-                                                        CancellationToken token)
+        public override IValuePresentation? PresentValue(IObjectValueRole<TValue> valueRole,
+                                                         IMetadataTypeLite instanceType,
+                                                         IPresentationOptions options,
+                                                         IUserDataHolder dataHolder,
+                                                         CancellationToken token)
         {
             var debuggerDisplayString = dataHolder.GetData(ourDebuggerDisplayStringKey);
             try
@@ -181,9 +181,9 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
 
             public ImmutableArray<ValuePresentationPart> Value => myValuePresentationImplementation.Value;
             public string DisplayValue => myValuePresentationImplementation.DisplayValue;
-            public IMetadataTypeLite Type => myValuePresentationImplementation.Type;
+            public IMetadataTypeLite? Type => myValuePresentationImplementation.Type;
             public ValueResultKind ResultKind => myValuePresentationImplementation.ResultKind;
-            public object PrimitiveValue => myValuePresentationImplementation.PrimitiveValue;
+            public object? PrimitiveValue => myValuePresentationImplementation.PrimitiveValue;
         }
     }
 }
