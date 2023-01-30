@@ -1,14 +1,14 @@
-@file:Suppress("UnstableApiUsage")
-
 package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.command.CommandEvent
+import com.intellij.openapi.command.CommandListener
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.command.undo.UndoManager
 import com.intellij.openapi.components.serviceIfCreated
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
-import com.intellij.openapi.vcs.VcsBundle
+import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
@@ -18,7 +18,8 @@ import com.intellij.util.PathUtil
 import com.intellij.util.application
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.jetbrains.rd.platform.util.getLogger
-import com.jetbrains.rider.plugins.unity.explorer.UnityExplorerFileSystemNode.Companion.isHiddenAsset
+import com.jetbrains.rd.platform.util.lifetime
+import com.jetbrains.rd.util.addUnique
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
 import com.jetbrains.rider.plugins.unity.workspace.getPackages
 import com.jetbrains.rider.projectDir
@@ -31,22 +32,22 @@ import java.time.ZoneOffset
 import java.util.*
 import kotlin.io.path.name
 
-class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
-    companion object {
+class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {    companion object {
         private val logger = getLogger<MetaTracker>()
     }
 
+    private val actionsPerProject = mutableMapOf<Project, MetaActionList>()
+
     override fun after(events: MutableList<out VFileEvent>) {
-        if (!isValidCommand()) return
         val projectManager = serviceIfCreated<ProjectManager>() ?: return
         val openedUnityProjects = projectManager.openProjects.filter { !it.isDisposed && it.isUnityProjectFolder() && !isUndoRedoInProgress(it)}.toList()
-        val actions = MetaActionList()
 
         for (event in events) {
             if (!isValidEvent(event)) continue
             for (project in openedUnityProjects) {
                 if (isApplicableForProject(event, project)) {
-                    if (isMetaFile(event)) // Collect modified meta files at first (usually there is no such files, but still)
+                    val actions = getOrCreate(project)
+                    if (isMetaFile(event)) // Collect modified meta files at first (LocalHistory or git or something else)
                         actions.addInitialSetOfChangedMetaFiles(Paths.get(event.path))
                     else {
                         try {
@@ -102,17 +103,16 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
                 }
             }
         }
-
-        if (actions.isEmpty()) return
-        actions.execute()
     }
 
-    private fun isValidCommand():Boolean {
-        val currentCommandName = CommandProcessor.getInstance().currentCommandName
-        val res = currentCommandName == VcsBundle.message("patch.apply.command")
-        if (res)
-            logger.trace("Avoid MetaTracker functionality for the $currentCommandName. See RIDER-77123.")
-        return !res
+    private fun getOrCreate(project: Project): MetaActionList {
+        var actions = actionsPerProject[project]
+        if (actions == null)
+        {
+            actions = MetaActionList(project)
+            actionsPerProject.addUnique(project.lifetime, project, actions)
+        }
+        return actions
     }
 
     private fun isValidEvent(event: VFileEvent):Boolean{
@@ -155,17 +155,37 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
     private fun getMetaFileName(fileName: String) = "$fileName.meta"
 
     private fun createMetaFile(assetFile: VirtualFile?, parent: VirtualFile, metaFileName: String, ls: String) {
-        if (assetFile != null && isHiddenAsset(assetFile)) return // not that children of a hidden folder (like `Documentation~`), would still pass this check. I think it is fine.
+        if (assetFile != null && UnityExplorerFileSystemNode.isHiddenAsset(assetFile)) return // not that children of a hidden folder (like `Documentation~`), would still pass this check. I think it is fine.
         val metaFile = parent.createChildData(this, metaFileName)
         val guid = UUID.randomUUID().toString().replace("-", "").substring(0, 32)
         val timestamp = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC).toEpochSecond() // LocalDateTime to epoch seconds
         val content = "fileFormatVersion: 2${ls}guid: ${guid}${ls}timeCreated: $timestamp"
-        VfsUtil.saveText(metaFile, content)
+      VfsUtil.saveText(metaFile, content)
     }
 
     override fun dispose() = Unit
 
-    private class MetaActionList {
+    private class MetaActionList(project: Project) {
+
+        init {
+            val connection = project.messageBus.connect(project.lifetime.createNestedDisposable())
+            connection.subscribe(CommandListener.TOPIC, object : CommandListener {
+                override fun beforeCommandFinished(event: CommandEvent) {
+                    // apply all changes from Map<Runnable, List<Path>> and add our changes to meta files
+
+                    execute(event)
+                    clear()
+
+                    super.beforeCommandFinished(event)
+                }
+            })
+        }
+
+        private fun clear() {
+            changedMetaFiles.clear()
+            actions.clear()
+        }
+
         private val changedMetaFiles = HashSet<Path>()
         private val actions = mutableListOf<MetaAction>()
 
@@ -175,29 +195,29 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
             changedMetaFiles.add(path)
         }
 
-        fun add(metaFile: Path, project:Project, action: () -> Unit) {
+        fun add(metaFile: Path, project: Project, action: () -> Unit) {
             if (changedMetaFiles.contains(metaFile)) return
             actions.add(MetaAction(metaFile, project, action))
         }
 
-        fun isEmpty() = actions.isEmpty()
+        fun execute(event: CommandEvent) {
+            if (actions.isEmpty()) return
 
-        fun execute() {
             val commandProcessor = CommandProcessor.getInstance()
             var groupId = commandProcessor.currentCommandGroupId
             if (groupId == null) {
                 groupId = MetaGroupId(nextGroupIdIndex++)
                 commandProcessor.currentCommandGroupId = groupId
             }
-            application.invokeLater {
-                commandProcessor.allowMergeGlobalCommands {
-                    actions.forEach {
-                        commandProcessor.executeCommand(it.project, {
-                            application.runWriteAction {
+
+            commandProcessor.allowMergeGlobalCommands {
+                actions.forEach {
+                    commandProcessor.executeCommand(it.project, {
+                        application.runWriteAction {
+                            if (!changedMetaFiles.contains(it.metaFile)) // the meta file got restored by LocalHistory or git or maybe undo
                                 it.execute()
-                            }
-                        }, getCommandName(), groupId)
-                    }
+                        }
+                    }, getCommandName(), groupId)
                 }
             }
         }
@@ -205,13 +225,13 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
         @Nls
         fun getCommandName(): String {
             return if (actions.count() == 1)
-                UnityPluginExplorerBundle.message("process.one.meta.file", actions.single().metaFile.name)
+              UnityPluginExplorerBundle.message("process.one.meta.file", actions.single().metaFile.name)
             else
-                UnityPluginExplorerBundle.message("process.several.meta.files", actions.count())
+              UnityPluginExplorerBundle.message("process.several.meta.files", actions.count())
         }
     }
 
-    private class MetaAction(val metaFile: Path, val project:Project, private val action: () -> Unit) {
+    private class MetaAction(val metaFile: Path, val project: Project, private val action: () -> Unit) {
         fun execute() {
             try {
                 action()
