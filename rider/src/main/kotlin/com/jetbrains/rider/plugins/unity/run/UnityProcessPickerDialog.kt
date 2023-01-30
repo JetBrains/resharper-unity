@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.run
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
+import com.intellij.openapi.ui.panel.ComponentPanelBuilder
 import com.intellij.ui.*
 import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.panel
@@ -88,8 +89,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             row {
                 button(UnityBundle.message("button.add.player.address.manually"), actionListener = { enterCustomIp() })
             }
-            commentRow(
-                UnityBundle.message("please.ensure.both.the.development.build.and.script.debugging.options.are.checked.in.unity.build.settings.dialog"))
+            ComponentPanelBuilder.createCommentComponent(UnityBundle.message("please.ensure.both.the.development.build.and.script.debugging.options.are.checked.in.unity.build.settings.dialog"), true, -1, true)
         }.apply { preferredSize = Dimension(650, 450) }
 
         isOKActionEnabled = false

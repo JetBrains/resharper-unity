@@ -1,12 +1,13 @@
 ﻿using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.CodeCompletion.Settings
 {
-    [SettingsKey(typeof(AutopopupEnabledSettingsKey), "ShaderLab")]
+    [SettingsKey(typeof(AutopopupEnabledSettingsKey), DescriptionResourceType: typeof (Strings), DescriptionResourceName:nameof(Strings.ShaderLabAutopopupEnabledSettingsKey_s_ShaderLab))]
     public class ShaderLabAutopopupEnabledSettingsKey
     {
-        [SettingsEntry(AutopopupType.HardAutopopup, "In variable references")]
+        [SettingsEntry(AutopopupType.HardAutopopup, DescriptionResourceType: typeof(Strings), DescriptionResourceName:nameof(Strings.ShaderLabAutopopupEnabledSettingsKey_s_In_variable_references))]
         public AutopopupType InVariableReferences;
     }
 }

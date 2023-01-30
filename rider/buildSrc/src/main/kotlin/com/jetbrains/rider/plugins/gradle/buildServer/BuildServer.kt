@@ -5,7 +5,7 @@ import org.gradle.api.Task
 import org.gradle.api.execution.TaskExecutionListener
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.tasks.TaskState
-import org.gradle.kotlin.dsl.extra
+import org.jetbrains.kotlin.gradle.plugin.extraProperties
 import java.io.File
 
 fun initBuildServer(gradle: Gradle): BuildServer {
@@ -14,7 +14,7 @@ fun initBuildServer(gradle: Gradle): BuildServer {
         else -> NullBuildServer()
     }
     gradle.taskGraph.addTaskExecutionListener(BuildServerEventLogger(server))
-    gradle.rootProject.project.extra["buildServer"] = server
+    gradle.rootProject.project.extraProperties["buildServer"] = server
     return server
 }
 
@@ -61,4 +61,4 @@ class BuildServerEventLogger(private val server: BuildServer): TaskExecutionList
 }
 
 val Project.buildServer : BuildServer
-    get() { return this.extra["buildServer"] as BuildServer }
+    get() { return this.extraProperties["buildServer"] as BuildServer }

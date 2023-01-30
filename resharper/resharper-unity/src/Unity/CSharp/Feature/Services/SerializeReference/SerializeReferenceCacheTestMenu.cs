@@ -4,28 +4,20 @@ using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.DataContext;
 using JetBrains.Application.Diagnostics;
 using JetBrains.Application.UI.Actions;
-using JetBrains.Application.UI.Actions.InternalMenu;
 using JetBrains.Application.UI.ActionsRevised.Menu;
 using JetBrains.Application.UI.ActionSystem.ActionsRevised.Menu;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Internal;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi.Files;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeReference
 {
     [ZoneMarker(typeof(IInternalVisibilityZone))]
-    [ActionGroup(ActionGroupInsertStyles.Submenu | ActionGroupInsertStyles.Separated, Text = "Unity Serialization")]
-    public class SerializeReferenceCacheTestMenu : IAction, IInsertAfter<IntoInternalMenu, InternalProjectsMenu>
-    {
-        public SerializeReferenceCacheTestMenu(SerializeReferenceDumpAction serializeReferenceDumpAction)
-        {
-        }
-    }
-
-    [ZoneMarker(typeof(IInternalVisibilityZone))]
-    [Action(nameof(SerializeReferenceDumpAction), nameof(SerializeReferenceDumpAction))]
-    public class SerializeReferenceDumpAction : IExecutableAction
+    [Action(typeof(Strings), nameof(Strings.Unity_Internal_SerializeReferencesDump_Text))]
+    public class SerializeReferenceDumpAction : IExecutableAction, IInsertLast<UnityInternalActionGroup>
     {
         public bool Update(IDataContext context, ActionPresentation presentation, DelegateUpdate nextUpdate)
         {

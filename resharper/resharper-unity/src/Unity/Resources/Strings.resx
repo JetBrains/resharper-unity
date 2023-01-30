@@ -49,6 +49,12 @@
     <data name="AddHeaderAttributeAction_Name" xml:space="preserve">
         <value>Add &apos;Header&apos; attribute</value>
     </data>
+    <data name="AdditionalFileLayoutSettings_s_Additional_Unity_C__file_layout_pattern" xml:space="preserve">
+        <value>Additional Unity C# file layout pattern</value>
+    </data>
+    <data name="AdditionalFileLayoutSettings_s_File_Layout_Pattern" xml:space="preserve">
+        <value>File Layout Pattern</value>
+    </data>
     <data name="AddPerformanceAnalysisDisableCommentContextAction_Name" xml:space="preserve">
         <value>Disable performance analysis for method</value>
     </data>
@@ -735,7 +741,7 @@
         <value>The &apos;FormerlySerializedAs&apos; attribute is only valid on Unity serialized fields. It can also be redundant if the name argument matches the current name of the field.</value>
     </data>
     <data name="TheHideInInspectorAttributeOnlyAppliesToSerialisedFields" xml:space="preserve">
-        <value>The &apos;HideInInspector&apos; attribute only applies to serialised fields.</value>
+        <value>The &apos;HideInInspector&apos; attribute only applies to serialized fields</value>
     </data>
     <data name="TheIndexIsMissingInTheBuildSettings" xml:space="preserve">
         <value>The index is missing in the build settings</value>
@@ -902,6 +908,7 @@
     </data>
     <data name="TypeDetector_AddDeclarationHighlighting_DOTS" xml:space="preserve">
         <value>DOTS</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="TypeDetector_AddDeclarationHighlighting_ECS_system" xml:space="preserve">
         <value>ECS system</value>
@@ -938,9 +945,15 @@
     </data>
     <data name="Unity_Internal_DumpDuplicateTypeNames_Text" xml:space="preserve">
         <value>Dump Duplicate Type Names</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="Unity_Internal_DumpSpellCheckWordLists_Text" xml:space="preserve">
         <value>Dump Spell Check Word Lists</value>
+        <comment>Don't localize</comment>
+    </data>
+    <data name="Unity_Internal_SerializeReferencesDump_Text" xml:space="preserve">
+        <value>Dump SerializeReference Cache</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="UnityAssetsFolder_Text" xml:space="preserve">
         <value>Unity Assets folder</value>
@@ -960,11 +973,20 @@
     <data name="UnityCommonIconProvider_GetEventFunctionTooltip_Unity_event_function" xml:space="preserve">
         <value>Unity event function</value>
     </data>
+    <data name="UnityCSharpFormattingSettingsKey_s_Blank_lines_after_the__Header__annotations" xml:space="preserve">
+        <value>Blank lines after the [Header] annotations</value>
+    </data>
+    <data name="UnityCSharpFormattingSettingsKey_s_Force_a_line_break_after_any__Header__annotations" xml:space="preserve">
+        <value>Force a line break after any [Header] annotations</value>
+    </data>
+    <data name="UnityCSharpFormattingSettingsKey_s_Settings_for_Unity_specific_C__formatting" xml:space="preserve">
+        <value>Settings for Unity-specific C# formatting</value>
+    </data>
     <data name="UnityDots_Add_RequireForUpdate_SingletonQuickFix" xml:space="preserve">
-        <value>Add missing &apos;RequireForUpdate&lt;{0}&gt;&apos; call.</value>
+        <value>Add missing &apos;RequireForUpdate&lt;{0}&gt;&apos; call</value>
     </data>
     <data name="UnityDots_Add_RequireForUpdate_SingletonQuickFix_For_All" xml:space="preserve">
-        <value>Add all missing &apos;RequireForUpdate&apos; calls.</value>
+        <value>Add all missing &apos;RequireForUpdate&apos; calls</value>
     </data>
     <data name="UnityDots_AddComponentLookup_Update_Text" xml:space="preserve">
         <value>Add missing &apos;Update&apos; call for &apos;{0}&apos;</value>
@@ -1009,7 +1031,7 @@
         <value>Baker Generation</value>
     </data>
     <data name="UnityDots_GetSingletonMustBeRequested" xml:space="preserve">
-        <value>To use the result of a &apos;GetSingleton&lt;{0}&gt;&apos; call in the function, &apos;OnCreate&apos; must include a &apos;RequireForUpdate&apos; call.</value>
+        <value>To use the result of a &apos;GetSingleton&lt;{0}&gt;&apos; call in the function, &apos;OnCreate&apos; must include a &apos;RequireForUpdate&apos; call</value>
     </data>
     <data name="UnityDots_projects" xml:space="preserve">
         <value>Unity DOTS projects</value>
@@ -1247,7 +1269,7 @@ a plugin to be installed to a project.</value>
         <value>Enables the Unity icon for Burst compiled code</value>
     </data>
     <data name="UnitySettings_t_Enables_syntax_error_highlighting__brace_matching_and_more_of_ShaderLab_files_" xml:space="preserve">
-        <value>Enables syntax error highlighting, brace matching, and more of ShaderLab files</value>
+        <value>Enables syntax error highlighting, brace matching, and more in ShaderLab files</value>
     </data>
     <data name="UnitySettings_t_Enables_syntax_error_highlighting_of_CG_blocks_in_ShaderLab_files_" xml:space="preserve">
         <value>Enables syntax error highlighting of CG blocks in ShaderLab files</value>

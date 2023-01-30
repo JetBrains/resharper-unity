@@ -41,5 +41,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         {
             return TransformHierarchy;
         }
+
+        public IPrefabInstanceHierarchy GetPrefabInstanceHierarchy()
+        {
+            return myPrefabInstanceHierarchy;
+        } 
     }
 }

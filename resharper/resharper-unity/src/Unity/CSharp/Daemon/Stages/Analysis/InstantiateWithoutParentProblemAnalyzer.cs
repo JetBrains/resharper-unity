@@ -1,6 +1,7 @@
+#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -12,15 +13,13 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
-using QualifierEqualityComparer = JetBrains.ReSharper.Psi.CSharp.Impl.ControlFlow.ControlFlowWeakVariableInfo.QualifierEqualityComparer;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes = new[] { typeof(InstantiateWithoutParentWarning) })]
     public class InstantiateWithoutParentProblemAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
-        private static readonly string ourKnownMethod = "Instantiate";
-        private static readonly QualifierEqualityComparer ourComparer = new QualifierEqualityComparer();
+        private const string KnownMethod = "Instantiate";
 
         public InstantiateWithoutParentProblemAnalyzer(UnityApi unityApi)
             : base(unityApi)
@@ -38,15 +37,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 return;
 
             var method = info.DeclaredElement as IMethod;
-            if (method == null)
+            if (method is not { ShortName: KnownMethod })
                 return;
 
-            if (!method.ShortName.Equals(ourKnownMethod))
+            if (method.ContainingType?.GetClrName().Equals(KnownTypes.Object) != true)
                 return;
-
-            if (method.GetContainingType()?.GetClrName().Equals(KnownTypes.Object) != true)
-                return;
-
 
             var parameters = method.Parameters;
             if (parameters.Count != 1)
@@ -56,8 +51,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (scope == null)
                 return;
 
-            IEnumerable<ITreeNode> usages = null;
-            ITreeNode storage = null;
+            IEnumerable<ITreeNode>? usages;
+            ITreeNode? storage;
             var containingParenthesizedExpression = expression.GetContainingParenthesizedExpression();
             var castExpression = CastExpressionNavigator.GetByOp(containingParenthesizedExpression);
             var asExpression = AsExpressionNavigator.GetByOperand(containingParenthesizedExpression);
@@ -76,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 var assignment = AssignmentExpressionNavigator.GetBySource(castExpression ?? asExpression ?? containingParenthesizedExpression);
                 var dest = assignment?.Dest as IReferenceExpression;
                 var destInfo = dest?.Reference.Resolve();
-                if (destInfo != null && destInfo.ResolveErrorType == ResolveErrorType.OK)
+                if (dest != null && destInfo != null && destInfo.ResolveErrorType == ResolveErrorType.OK)
                 {
                     usages = usageProvider.GetUsages(destInfo.DeclaredElement.NotNull(), scope).Where(t => IsSameReferenceUsed(t, dest));
                     storage = dest;
@@ -95,9 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     if (IsUsageSetTransformParent(fullReferenceExpression, out var stayInWorldCoords, out var transform))
                     {
                         if (!InSameBlock(fullReferenceExpression, storage))
-                        {
                             return;
-                        }
                         var finder = new TransformParentRelatedReferenceFinder(referenceExpression);
                         var relatedExpressions = finder.GetRelatedExpressions(scope, expression).FirstOrDefault();
                         if (relatedExpressions == null || relatedExpressions.GetTreeStartOffset() >= fullReferenceExpression.GetTreeStartOffset())
@@ -110,7 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         private bool IsSameReferenceUsed(ITreeNode treeNode, IReferenceExpression dest)
         {
-            if (!(treeNode is IReferenceExpression referenceExpression))
+            if (treeNode is not IReferenceExpression referenceExpression)
                 return false;
 
             while (true)
@@ -132,16 +125,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 if (firstParent == null && secondParent == null)
                     return true;
 
-                if (firstParent is IThisExpression && !(secondParent is IThisExpression) ||
-                    !(firstParent is IThisExpression) && secondParent is IThisExpression)
+                if ((firstParent is IThisExpression && secondParent is not IThisExpression) ||
+                    (firstParent is not IThisExpression && secondParent is IThisExpression))
                 {
                     return false;
                 }
 
-                referenceExpression = firstParent as IReferenceExpression;
-                dest = secondParent as IReferenceExpression;
-                if (referenceExpression == null || dest == null)
+                if (firstParent is not IReferenceExpression firstParentExpression
+                    || secondParent is not IReferenceExpression secondParentExpression)
+                {
                     return false;
+                }
+
+                referenceExpression = firstParentExpression;
+                dest = secondParentExpression;
             }
         }
 
@@ -154,7 +151,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             return firstStatement.Parent == secondStatement.Parent;
         }
 
-        private bool IsUsageSetTransformParent([NotNull]IReferenceExpression referenceExpression, out bool stayInWorldCoords,[CanBeNull] out ICSharpExpression expression)
+        private bool IsUsageSetTransformParent(IReferenceExpression referenceExpression, out bool stayInWorldCoords,out ICSharpExpression? expression)
         {
             stayInWorldCoords = true;
             expression = null;
@@ -181,25 +178,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 expression = invocation.Arguments[0].Value;
                 if (setParentMethod.Parameters.Count == 2)
                 {
+                    // TODO: Use conditional access when the monorepo build uses a more modern C# compiler
+                    // Currently (as of 01/2023) the monorepo build for Unity uses C#9 compiler, which will complain
+                    // that the out variable is uninitialised when we use conditional access
+                    // See also https://youtrack.jetbrains.com/issue/RSRP-489147
                     var argument = invocation.Arguments[1].Value;
-                    if (argument?.ConstantValue.Value is bool constantValue)
-                    {
+                    if (argument != null && argument.ConstantValue.IsBoolean(out var constantValue))
                         stayInWorldCoords = constantValue;
-                    }
                     else
-                    {
                         return false;
-                    }
                 }
             }
 
             var containingType = declaredElement.GetContainingType();
-            if (containingType != null && containingType.GetClrName().Equals(KnownTypes.Transform))
-            {
-                return true;
-            }
-
-            return false;
+            return containingType != null && containingType.GetClrName().Equals(KnownTypes.Transform);
         }
     }
 }

@@ -1,11 +1,11 @@
+#nullable enable
+
 using JetBrains.Application.UI.Options;
 using JetBrains.Application.UI.Options.OptionsDialog;
 using JetBrains.IDE.UI.Extensions;
 using JetBrains.IDE.UI.Extensions.Properties;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
-using JetBrains.Rider.Backend.Features.Dialog;
 using JetBrains.Rider.Backend.Features.Settings.OptionsPage.CSharpFileLayout;
 using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.UIAutomation;
@@ -15,22 +15,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Set
     [OptionsComponent]
     public class UnityFileLayoutPageTab : IFileLayoutPageTab
     {
-        private readonly RiderDialogHost myDialogHost;
-        private readonly RdLanguage myFileLayoutLanguage = new RdLanguage("XML");
+        private readonly RdLanguage myFileLayoutLanguage = new("XML");
 
         private const string DummyFileName = "Dummy.filelayout";
-
-        public UnityFileLayoutPageTab(RiderDialogHost dialogHost)
-        {
-            myDialogHost = dialogHost;
-        }
 
         public string Title => "Unity";
 
         public BeControl Create(Lifetime lifetime, OptionsPageContext optionsPageContext,
                                 OptionsSettingsSmartContext optionsSettingsSmartContext)
         {
-            var fileLayoutSettings = new AdditionalFileLayoutSettingsHelper(lifetime, optionsSettingsSmartContext, myDialogHost);
+            var fileLayoutSettings = new AdditionalFileLayoutSettingsHelper(lifetime, optionsSettingsSmartContext);
             var textControl = BeControls.GetLanguageTextControl(fileLayoutSettings.Text, lifetime, false, myFileLayoutLanguage, DummyFileName, true);
             var toolbar = BeControls.GetToolbar(textControl);
 

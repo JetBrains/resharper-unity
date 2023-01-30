@@ -1,4 +1,5 @@
 #nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,6 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         private static IDeclaredType? GetUnityTypeOwnerType(ITypeOwner typeOwner)
         {
             Assertion.Require(typeOwner is IProperty or IField);
-            
+
             var typeOwnerType = typeOwner.Type;
 
             if (typeOwnerType is IArrayType { Rank: 1 } arrayType) //array
@@ -243,10 +243,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         {
             //Property with backing field will be represented as IMetadataField
             var isValid = metadataField is { IsStatic: false, IsLiteral: false, IsInitOnly: false, NotSerialized: false };
-
             if (!isValid)
                 return FieldAdapter.InValidFieldAdapter;
-            
+
             var metadataFieldType = GetUnityFieldType(metadataField);
 
             var isUnityFieldType = metadataFieldType != null;
@@ -315,7 +314,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
             return false;
         }
-        
+
         private static FieldAdapter ToAdapter(this ITypeOwner? typeOwner, ITypeElement ownerTypeElement,
             IUnityElementIdProvider provider)
         {
@@ -324,9 +323,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             var isValid = typeOwner is IProperty { IsStatic: false, IsReadonly: false, IsAuto: true, IsWritable: true } property
                           && !property.HasFieldAttribute(PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS)
                           ||
-                          typeOwner is IField { IsStatic: false, IsConstant: false, IsReadonly: false } field 
+                          typeOwner is IField { IsStatic: false, IsConstant: false, IsReadonly: false } field
                           && !field.HasAttributeInstance(PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS, false);
-            
+
             if (!isValid)
                 return FieldAdapter.InValidFieldAdapter;
 
@@ -436,8 +435,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             var superClassesEnumerable = superTypes
                 .Select(i => i.GetTypeElement())
                 .Where(i => i != null
-                            && !i.IsObjectClass() 
-                            && i.Type() is not IArrayType { Rank: 1 } 
+                            && !i.IsObjectClass()
+                            && i.Type() is not IArrayType { Rank: 1 }
                             && !i.Type().IsGenericList())
                 .Select(i => provider.GetElementId(i))
                 .Select(id => new KeyValuePair<ElementId, int>(id!.Value, 1));
@@ -506,13 +505,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             return typeResolves;
         }
 
-        #region Additiona debug info 
+        #region Additiona debug info
 
         private static bool IsDetailedInfoEnabled()
         {
             return ourLogger.IsEnabled(LoggingLevel.TRACE);
         }
-        
+
         private static string GetResolutionDescription(ITypeParameter typeParameter, ITypeElement declaredElement)
         {
             if (IsDetailedInfoEnabled())
