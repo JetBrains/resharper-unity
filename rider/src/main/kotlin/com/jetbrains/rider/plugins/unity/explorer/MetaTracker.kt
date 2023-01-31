@@ -32,7 +32,8 @@ import java.time.ZoneOffset
 import java.util.*
 import kotlin.io.path.name
 
-class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {    companion object {
+class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
+    companion object {
         private val logger = getLogger<MetaTracker>()
     }
 
@@ -56,7 +57,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {    compa
                                     val metaFileName = getMetaFileName(event.childName)
                                     val metaFile = event.parent.toNioPath().resolve(metaFileName)
                                     val ls = event.file?.detectedLineSeparator
-                                        ?: "\n" // from what I see, Unity 2020.3 always uses "\n", but lets use same as the main file.
+                                             ?: "\n" // from what I see, Unity 2020.3 always uses "\n", but lets use same as the main file.
                                     actions.add(metaFile, project) {
                                         createMetaFile(event.file, event.parent, metaFileName, ls)
                                     }
@@ -95,7 +96,8 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {    compa
                                     }
                                 }
                             }
-                        } catch (t: Throwable) {
+                        }
+                        catch (t: Throwable) {
                             logger.error(t)
                             continue
                         }
@@ -107,15 +109,14 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {    compa
 
     private fun getOrCreate(project: Project): MetaActionList {
         var actions = actionsPerProject[project]
-        if (actions == null)
-        {
+        if (actions == null) {
             actions = MetaActionList(project)
             actionsPerProject.addUnique(project.lifetime, project, actions)
         }
         return actions
     }
 
-    private fun isValidEvent(event: VFileEvent):Boolean{
+    private fun isValidEvent(event: VFileEvent): Boolean {
         if (event.isFromRefresh) return false
         if (event.fileSystem !is LocalFileSystem) return false
         return CommandProcessor.getInstance().currentCommand != null
@@ -155,12 +156,13 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {    compa
     private fun getMetaFileName(fileName: String) = "$fileName.meta"
 
     private fun createMetaFile(assetFile: VirtualFile?, parent: VirtualFile, metaFileName: String, ls: String) {
-        if (assetFile != null && UnityExplorerFileSystemNode.isHiddenAsset(assetFile)) return // not that children of a hidden folder (like `Documentation~`), would still pass this check. I think it is fine.
+        if (assetFile != null && UnityExplorerFileSystemNode.isHiddenAsset(
+                assetFile)) return // not that children of a hidden folder (like `Documentation~`), would still pass this check. I think it is fine.
         val metaFile = parent.createChildData(this, metaFileName)
         val guid = UUID.randomUUID().toString().replace("-", "").substring(0, 32)
         val timestamp = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC).toEpochSecond() // LocalDateTime to epoch seconds
         val content = "fileFormatVersion: 2${ls}guid: ${guid}${ls}timeCreated: $timestamp"
-      VfsUtil.saveText(metaFile, content)
+        VfsUtil.saveText(metaFile, content)
     }
 
     override fun dispose() = Unit
@@ -182,6 +184,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {    compa
         }
 
         private fun clear() {
+            application.assertIsDispatchThread()
             changedMetaFiles.clear()
             actions.clear()
         }
@@ -225,9 +228,9 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {    compa
         @Nls
         fun getCommandName(): String {
             return if (actions.count() == 1)
-              UnityPluginExplorerBundle.message("process.one.meta.file", actions.single().metaFile.name)
+                UnityPluginExplorerBundle.message("process.one.meta.file", actions.single().metaFile.name)
             else
-              UnityPluginExplorerBundle.message("process.several.meta.files", actions.count())
+                UnityPluginExplorerBundle.message("process.several.meta.files", actions.count())
         }
     }
 
