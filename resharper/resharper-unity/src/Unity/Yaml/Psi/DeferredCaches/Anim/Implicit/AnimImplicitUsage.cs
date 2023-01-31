@@ -10,19 +10,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
     {
         public AnimImplicitUsage(
             LocalReference location,
-            TextRange textRangeOwnerPsiPersistentIndex, 
-            OWORD textRangeOwner, 
+            TextRange range, 
+            OWORD owningPsiPersistentIndex, 
             [NotNull] string functionName)
         {
             Location = location;
-            TextRangeOwnerPsiPersistentIndex = textRangeOwnerPsiPersistentIndex;
-            TextRangeOwner = textRangeOwner;
+            Range = range;
+            OwningPsiPersistentIndex = owningPsiPersistentIndex;
             FunctionName = functionName;
         }
 
         public LocalReference Location { get; }
-        public TextRange TextRangeOwnerPsiPersistentIndex { get; }
-        public OWORD TextRangeOwner { get; }
+        public TextRange Range { get; }
+        public OWORD OwningPsiPersistentIndex { get; }
         
         [NotNull]
         public string FunctionName { get; }
@@ -40,9 +40,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implici
         {
             Location.WriteTo(writer);
             writer.Write(FunctionName);
-            writer.Write(TextRangeOwnerPsiPersistentIndex.StartOffset);
-            writer.Write(TextRangeOwnerPsiPersistentIndex.EndOffset);
-            AssetUtils.WriteOWORD(TextRangeOwner, writer);
+            writer.Write(Range.StartOffset);
+            writer.Write(Range.EndOffset);
+            AssetUtils.WriteOWORD(OwningPsiPersistentIndex, writer);
         }
     }
 }
