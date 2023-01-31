@@ -28,6 +28,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Serialised fields are now accurately recognised in any class, not just known Unity types ([RIDER-79871](https://youtrack.jetbrains.com/issue/RIDER-79871), [RIDER-72838](https://youtrack.jetbrains.com/issue/RIDER-72838))
 - Re-evaluate resource warnings when a resource file is updated or deleted
 - Improve support for prefab modifications and event handlers
+- Provide more appropriate naming suggestions for `RefRW` or `RefRO` variables ([RIDER-85192](https://youtrack.jetbrains.com/issue/RIDER-85192))
 - Rider: Allow static methods for `EventTrigger` usages
 - Rider: Update icons for `.asmdef`, `.asmref` and `.inputactions` files ([RIDER-68006](https://youtrack.jetbrains.com/issue/RIDER-68006))
 - Rider: Update Unity Explorer UI for new search experience ([RIDER-82417](https://youtrack.jetbrains.com/issue/RIDER-82417))
@@ -47,6 +48,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix online documentation URL for nested classes
 - Rider: Fix Unity Log view losing selected item when search field is cleared ([#2381](https://github.com/JetBrains/resharper-unity/issues/2381))
 - Rider: Fix issue with UnityYamlMerge not being called ([RIDER-87413](https://youtrack.jetbrains.com/issue/RIDER-87413))
+- Rider: Fix issues with recreating meta files that exist, due to being restored from Local History ([RIDER-84724](https://youtrack.jetbrains.com/issue/RIDER-84724))
 
 
 
