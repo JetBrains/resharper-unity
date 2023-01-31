@@ -31,35 +31,41 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests
 {
-    // Define the zone that should be active in the environment container, pre-startup. We can use this to implement
-    // components that should be available in the environment container. Any required zones will be automatically added
-    // to the environment zone (and therefore automatically activated)
+    // Encapsulates the set of requirements for the host/environment zone (not to be confused with the environment
+    // container). It is the root product zone that is used to bootstrap and activate the other zones. It is
+    // automatically activated by ExtensionTestEnvironmentAssembly and is used to mark and therefore include the zone
+    // activator for the required product zones.
+    // This should only be used for bootstrapping the appropriate product zones, and not used to mark components.
     [ZoneDefinition]
     public interface IUnityTestsEnvZone : ITestsEnvZone
     {
     }
 
+    // Encapsulates the set of required product zones needed to run the tests. PsiFeatureTestZone handles most of this,
+    // adding requirements for zones such as DaemonZone, NavigationZone and ICodeEditingZone, as well as the majority of
+    // bundled languages. This zone should require or inherit from any custom plugin zones, and explicitly require
+    // custom languages (PsiFeaturesTestZone does not require IPsiLanguageZone, which would activate all languages via
+    // inheritance).
+    // Use this zone for all custom or overriding components in the tests.
     [ZoneDefinition]
-    public interface IUnityTestsZone : IZone, IRequire<IUnityPluginZone>, IRequire<PsiFeatureTestZone>
+    public interface IUnityTestsZone : IZone,
+        IRequire<PsiFeatureTestZone>,
+        IRequire<IUnityPluginZone>,
+        IRequire<IUnityShaderZone>
     {
-
     }
 
-
-    // Activate the zones we require for shell/solution containers. This is normally handled by product specific zone
-    // activators. But we don't have any product environment zones, so these activators aren't loaded, and we need to
-    // activate pretty much everything we need.
-    // We need to explicitly activate the language zones, since PsiFeatureTestZone activates leaf languages, rather
-    // than IPsiLanguageZone (which would activate all other languages due to inheritance). But we can't activate HLSL
-    // on Mono, as the managed C++ Cpp PSI doesn't work on Mono
-
-    // Note that not all Rider components can be tested, as many of them require the protocol. It appears that we can't
-    // activate IResharperHost* zones
+    // Activates the product zones required for tests. It is invoked before any containers are created, so can be used
+    // to activate zones used to filter the environment, shell, solution and any other containers. If it has a zone
+    // marker, or requires a zone, that zone must be active (be careful about ZoneMarkers in namespaces!)
+    // Strictly speaking, this activator doesn't need a zone marker - if there isn't one, it's automatically active,
+    // and will be used to provide active zones for filtering. Furthermore, the derived ITestsEnvZone could be used to
+    // require all product zones instead of introducing a specific tests zone and related activator. However, this
+    // explicit marking, and separation of concerns in zone definitions is conceptually cleaner.
     [ZoneActivator]
     [ZoneMarker(typeof(IUnityTestsEnvZone))]
-    public class UnityTestZonesActivator : IActivate<IUnityTestsZone>, IActivateDynamic<IUnityShaderZone>
+    public class UnityTestZonesActivator : IActivate<IUnityTestsZone>
     {
-        bool IActivateDynamic<IUnityShaderZone>.ActivatorEnabled() => !PlatformUtil.IsRunningOnMono;
     }
 
     [SetUpFixture]
@@ -127,21 +133,36 @@ namespace JetBrains.ReSharper.Plugins.Tests
             if (logfile.ExistsFile)
                 logfile.DeleteFile();
 
-            // Set to TRACE to get logging on basically everything (including component containers)
-            // Set to VERBOSE for most useful logging, but beware perf impact
-            File.WriteAllText(configFile.FullPath,
+            // Set to VERBOSE to get logging on basically everything (including component containers)
+            // Set to TRACE to get more logging, but beware of perf impact
+            // lang=xml
+            var contents =
                 $@"<?xml version=""1.0"" encoding=""UTF-8"" ?>
-         <configuration>
-           <appender name=""file"" class=""JetBrains.Util.Logging.FileLogEventListener"" pattern=""%d{{HH:mm:ss.fff}} |%l| %-30c{
-                        1
-                    }| %M%n"">
-             <arg>{logfile.FullPath}</arg>
-           </appender>
-           <root level=""VERBOSE"">
-             <appender-ref>file</appender-ref>
-           </root>
-         </configuration>
-         ");
+                   <configuration>
+                     <appender name=""file"" class=""JetBrains.Util.Logging.FileLogEventListener"" pattern=""%d{{HH:mm:ss.fff}} |%l| %-30c{{1}}| %M%n"">
+                       <arg>{logfile.FullPath}</arg>
+                     </appender>
+                     <root level=""VERBOSE"">
+                       <appender-ref>file</appender-ref>
+                     </root>
+
+                     <!-- Useful trace categories for zone details. (Uncomment, but don't commit!) -->
+
+                     <!-- Trace all known components in EnvironmentPartCatalogSet (lots of output!) -->
+                     <!-- Trace components which were in FullPartCatalogSet but did not make it into EnvironmentPartCatalogSet -->
+                     <!-- <logger name=""JetBrains.Application.Environment.JetEnvironment"" level=""TRACE"">
+                       <appender-ref>file</appender-ref>
+                     </logger> -->
+                     <!-- Trace eligible component sets for CatalogComponentSource (lots of output!) -->
+                     <!-- <logger name=""JetBrains.Application.Extensibility.CatalogComponentSource"" level=""TRACE"">
+                       <appender-ref>file</appender-ref>
+                     </logger> -->
+                     <!-- To see negative zones by propagation -->
+                     <!-- <logger name=""JetBrains.Application.Environment.RunsProducts"" level=""TRACE"">
+                       <appender-ref>file</appender-ref>
+                     </logger> -->
+                   </configuration>";
+            File.WriteAllText(configFile.FullPath, contents);
             Environment.SetEnvironmentVariable("RESHARPER_LOG_CONF", configFile.FullPath);
         }
 
