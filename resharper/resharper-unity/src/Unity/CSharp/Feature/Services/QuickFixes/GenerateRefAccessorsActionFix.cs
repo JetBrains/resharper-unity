@@ -1,5 +1,4 @@
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Feature.Services.CSharp.Generate;
 using JetBrains.ReSharper.Feature.Services.Generate;
 using JetBrains.ReSharper.Intentions.CSharp.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dots;
@@ -9,22 +8,19 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
-    public class GenerateBakerAndAuthoringActionFix :
-        WorkflowDrivenImplementMembersFix<GenerateBakerAndAuthoringActionWorkflow>
+    public class GenerateRefAccessorsActionFix : WorkflowDrivenImplementMembersFix<GenerateRefFieldsAccessorsWorkflow>
     {
-        [CanBeNull] private readonly ITreeNode myAnchor;
-
-        public GenerateBakerAndAuthoringActionFix(IClassLikeDeclaration typeDeclaration, ITreeNode anchor = null)
-            : base(typeDeclaration)
+        public GenerateRefAccessorsActionFix(IClassLikeDeclaration typeDeclaration,
+            [CanBeNull] ITreeNode anchor) 
+            : base(typeDeclaration, anchor)
         {
-            myAnchor = anchor;
         }
 
-        public override string Text => Strings.UnityDots_GenerateBakerAndAuthoring_Name;
+        public override string Text => Strings.UnityDots_GenerateRefAccessors_Name;
 
-        protected override GenerateBakerAndAuthoringActionWorkflow TryCreateWorkflow()
+        protected override GenerateRefFieldsAccessorsWorkflow TryCreateWorkflow()
         {
-            return new GenerateBakerAndAuthoringActionWorkflow();
+            return new GenerateRefFieldsAccessorsWorkflow();
         }
 
         protected override void ConfigureContext(IGeneratorContext context)
@@ -32,8 +28,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             // Don't call base. This will add all values into InputEvents which means all items are checked in the list.
             // This is useful for a Quick Fix that is implementing missing members, but we're more of a Context Action.
             // Try and set the anchor for where we want to generate the new members, if we have one
-            if (context is CSharpGeneratorContext csharpContext)
-                csharpContext.Anchor = myAnchor;
         }
     }
 }

@@ -386,6 +386,12 @@
     public static string UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle");
     public static string UnityDots_GetSingletonMustBeRequested => ResourceManager.GetString("UnityDots_GetSingletonMustBeRequested");
     public static string UnityDots_projects => ResourceManager.GetString("UnityDots_projects");
+    public static string UnityDots_GenerateRefAccessors_Name => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Name");
+    public static string UnityDots_GenerateRefAccessors_Description => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Description");
+    public static string UnityDots_GenerateRefAccessors_Unity_Component_Fields_Title => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Unity_Component_Fields_Title");
+    public static string UnityDots_GenerateRefAccessors_Unity_Component_Fields_WindowTitle => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Unity_Component_Fields_WindowTitle");
+    public static string UnityDots_GenerateRefAccessors_Unity_Component_Fields_Description => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Unity_Component_Fields_Description");
+    public static string UnityDots_GenerateRefAccessors_Generate_Setters => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Generate_Setters");
     public static string UnityEditorFolder_Text => ResourceManager.GetString("UnityEditorFolder_Text");
     public static string UnityEventFunctionInheritanceMarkOnGutter_KindName_Unity_event_function => ResourceManager.GetString("UnityEventFunctionInheritanceMarkOnGutter_KindName_Unity_event_function");
     public static string UnityFindUsagesProvider_GetNotFoundMessage__are_only_implicit_ => ResourceManager.GetString("UnityFindUsagesProvider_GetNotFoundMessage__are_only_implicit_");
