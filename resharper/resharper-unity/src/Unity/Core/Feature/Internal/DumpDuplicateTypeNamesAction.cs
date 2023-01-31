@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Internal
 {
     // Simple internal action to dump any clashing APIs in the given project's references. Useful for finding extra
     // candidates for values to add to AutoImportSolutionSettingsProvider
-    [Action("Unity_Internal_DumpDuplicateTypeNames", typeof(Strings), nameof(Strings.Unity_Internal_DumpDuplicateTypeNames_Text))]
+    [Action(typeof(Strings), nameof(Strings.Unity_Internal_DumpDuplicateTypeNames_Text))]
     public class DumpDuplicateTypeNamesAction : IExecutableAction
     {
         public bool Update(IDataContext context, ActionPresentation presentation, DelegateUpdate nextUpdate)

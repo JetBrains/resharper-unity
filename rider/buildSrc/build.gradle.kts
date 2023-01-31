@@ -11,9 +11,9 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.intellij", "org.jetbrains.intellij.gradle.plugin", "1.11.0")
+    implementation("org.jetbrains.intellij", "org.jetbrains.intellij.gradle.plugin", "1.12.0")
 }
 
 plugins {
-    `kotlin-dsl`
+    kotlin("jvm") version "1.8.0"
 }

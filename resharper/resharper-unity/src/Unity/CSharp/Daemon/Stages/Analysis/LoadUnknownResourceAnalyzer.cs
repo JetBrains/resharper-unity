@@ -1,4 +1,5 @@
 #nullable enable
+
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
@@ -16,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     public class LoadUnknownResourceAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         private readonly ResourceLoadCache myResourceLoadCache;
-        
+
         public LoadUnknownResourceAnalyzer(UnityApi unityApi,
             ResourceLoadCache resourceLoadCache)
             : base(unityApi)
@@ -24,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             myResourceLoadCache = resourceLoadCache;
         }
 
-        internal static ICSharpArgument? FindArgument(TreeNodeCollection<ICSharpArgument> arguments, string argumentName, int possibleArgumentIndex = 0)
+        private static ICSharpArgument? FindArgument(TreeNodeCollection<ICSharpArgument> arguments, string argumentName, int possibleArgumentIndex = 0)
         {
             foreach (ICSharpArgument? argument in arguments)
             {
@@ -33,33 +34,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
                 if (arguments.Count > possibleArgumentIndex && arguments[possibleArgumentIndex] == argument)
                     return argument;
-                
             }
-            
+
             return null;
         }
-        
+
         protected override void Analyze(IInvocationExpression element, ElementProblemAnalyzerData data,
             IHighlightingConsumer consumer)
         {
-            if (!element.IsResourcesLoadMethod()) 
-                return;
-            
-            var argument = FindArgument(element.Arguments, "path", 0);
-                
-            var literal = (argument?.Value as ICSharpLiteralExpression)?.ConstantValue.Value as string;
-            if (literal == null)
+            if (!element.IsResourcesLoadMethod())
                 return;
 
-            var psiSourceFile = element.GetSourceFile();
-            var dependencyStore = psiSourceFile.GetPsiServices().DependencyStore;
-            if (dependencyStore.HasDependencySet)
+            var argument = FindArgument(element.Arguments, "path");
+
+            if (argument?.Value is ICSharpLiteralExpression literalExpression &&
+                literalExpression.ConstantValue.IsNotNullString(out var literal))
             {
-                dependencyStore.AddDependency(ResourceLoadCache.CreateDependency(psiSourceFile, literal));
+                var psiSourceFile = element.GetSourceFile();
+                if (psiSourceFile == null)
+                    return;
+
+                var dependencyStore = psiSourceFile.GetPsiServices().DependencyStore;
+                if (dependencyStore.HasDependencySet)
+                    dependencyStore.AddDependency(ResourceLoadCache.CreateDependency(psiSourceFile, literal));
+
+                if (!myResourceLoadCache.HasResource(literal))
+                    consumer.AddHighlighting(new UnknownResourceWarning(argument, literal));
             }
-            
-            if (!myResourceLoadCache.HasResource(literal))
-                consumer.AddHighlighting(new UnknownResourceWarning(argument, literal));
         }
     }
 }

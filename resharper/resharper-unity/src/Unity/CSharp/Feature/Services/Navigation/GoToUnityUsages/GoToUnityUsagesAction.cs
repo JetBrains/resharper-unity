@@ -4,9 +4,8 @@ using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages
 {
-    [Action("FindUnityUsages", typeof(Strings), nameof(Strings.FindUnityUsagesText), Id = 9000)]
+    [Action(typeof(Strings), nameof(Strings.FindUnityUsagesText), Id = 9000)]
     public class GoToUnityUsagesAction : ContextNavigationActionBase<GoToUnityUsagesProvider>
     {
-    
     }
 }

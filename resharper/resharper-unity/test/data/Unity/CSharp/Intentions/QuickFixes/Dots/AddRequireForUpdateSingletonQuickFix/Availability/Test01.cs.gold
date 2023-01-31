@@ -40,15 +40,15 @@ partial struct Foo : ISystem
 }
 
 ------------------------------------------------
-0: To use the result of a 'GetSingleton<Killa>' call in the function, 'OnCreate' must include a 'RequireForUpdate' call.
+0: To use the result of a 'GetSingleton<Killa>' call in the function, 'OnCreate' must include a 'RequireForUpdate' call
 QUICKFIXES:
-Add missing 'RequireForUpdate<Killa>' call.
---Add all missing 'RequireForUpdate' calls. in file
---Add all missing 'RequireForUpdate' calls. in project
---Add all missing 'RequireForUpdate' calls. in solution
-1: To use the result of a 'GetSingleton<Tagilla>' call in the function, 'OnCreate' must include a 'RequireForUpdate' call.
+Add missing 'RequireForUpdate<Killa>' call
+--Add all missing 'RequireForUpdate' calls in file
+--Add all missing 'RequireForUpdate' calls in project
+--Add all missing 'RequireForUpdate' calls in solution
+1: To use the result of a 'GetSingleton<Tagilla>' call in the function, 'OnCreate' must include a 'RequireForUpdate' call
 QUICKFIXES:
-Add missing 'RequireForUpdate<Tagilla>' call.
---Add all missing 'RequireForUpdate' calls. in file
---Add all missing 'RequireForUpdate' calls. in project
---Add all missing 'RequireForUpdate' calls. in solution
+Add missing 'RequireForUpdate<Tagilla>' call
+--Add all missing 'RequireForUpdate' calls in file
+--Add all missing 'RequireForUpdate' calls in project
+--Add all missing 'RequireForUpdate' calls in solution
