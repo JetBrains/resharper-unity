@@ -4,6 +4,8 @@ using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Calculated.Interface;
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatting;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeStyle;
@@ -63,10 +65,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatter
         private void HeaderAttributeRules()
         {
             var singleHeaderAttributeSection = Node().In(ElementType.ATTRIBUTE_SECTION).Satisfies((node, _) =>
-                myPossibleHeaderNames.Contains(GetSingleAttributeSectionName(node.Node))).Obj;
+                myPossibleHeaderNames.Contains(GetSingleAttributeSectionName(node.Node)) && node.Node.GetProject().HasUnityFlavour()).Obj;
 
             var singleHeaderAttributeSectionList = Node().In(ElementType.ATTRIBUTE_SECTION_LIST).Satisfies((node, _) =>
-                myPossibleHeaderNames.Contains(GetSingleSectionAttributeListName(node.Node))).Obj;
+                myPossibleHeaderNames.Contains(GetSingleSectionAttributeListName(node.Node)) && node.Node.GetProject().HasUnityFlavour()).Obj;
 
             var multipleFieldDeclaration = Node().In(ElementBitsets.MULTIPLE_DECLARATION_BIT_SET
                 .Except(ElementType.MULTIPLE_EVENT_DECLARATION)
@@ -80,7 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatter
                     return true;
 
                 var previousSection = node.GetPreviousMeaningfulSibling();
-                return myPossibleHeaderNames.Contains(GetSingleAttributeSectionName(previousSection.Node));
+                return previousSection != null && myPossibleHeaderNames.Contains(GetSingleAttributeSectionName(previousSection.Node)) && previousSection.Node.GetProject().HasUnityFlavour();
             }).Obj;
 
             // Blank lines after [Header]
@@ -127,7 +129,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatter
                     Left().Is(singleHeaderAttributeSection)
                 )
                 .SwitchOnExternalKey(x => x.ENFORCE_CUSTOM_HEADER_FORMATTING,
-                    
                     When(true).Return(IntervalFormatType.NewLine)
                 )
                 .Priority(UnityPriority)

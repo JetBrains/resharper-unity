@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
@@ -123,6 +124,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             var result = new Dictionary<long, IHierarchyElement>();
             foreach (var prefabInstanceHierarchy in assetDocumentHierarchyElement.GetPrefabInstanceHierarchies())
             {
+                Interruption.Current.CheckAndThrow();
+
                 var guid = prefabInstanceHierarchy.SourcePrefabGuid;
                 var sourceFilePath = myMetaFileGuidCache.GetAssetFilePathsFromGuid(guid).FirstOrDefault();
                 if (sourceFilePath == null)

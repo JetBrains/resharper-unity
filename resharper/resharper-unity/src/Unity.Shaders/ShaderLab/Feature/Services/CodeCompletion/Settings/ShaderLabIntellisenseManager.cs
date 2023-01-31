@@ -8,16 +8,16 @@ using JetBrains.ReSharper.Psi;
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.CodeCompletion.Settings
 {
     [ShellComponent]
-    public class ShaderLabIntellisenseManager : LanguageSpecificIntellisenseManager
+    public class ShaderLabIntellisenseManager : LanguageSpecificCodeCompletionManager
     {
-        public ShaderLabIntellisenseManager([NotNull] ISettingsStore settingsStore, IntellisenseSettingsService intellisenseSettingsService)
-            : base(settingsStore, intellisenseSettingsService)
+        public ShaderLabIntellisenseManager(CodeCompletionSettingsService settingsService)
+            : base(settingsService)
         {
         }
 
-        public override SettingsScalarEntry GetSettingsEntry()
+        public override SettingsScalarEntry GetSettingsEntry(ISettingsSchema settingsSchema)
         {
-            return SettingsStore.Schema.GetScalarEntry((IntellisenseEnabledSettingShaderLab setting) =>
+            return settingsSchema.GetScalarEntry((IntellisenseEnabledSettingShaderLab setting) =>
                 setting.IntellisenseEnabled);
         }
 

@@ -66,20 +66,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             type != null && myUnityTypeCache.IsUnityType(type);
 
         public static bool IsDotsImplicitlyUsedType([NotNullWhen(true)] ITypeElement? typeElement) =>
-            typeElement.DerivesFrom(KnownTypes.ComponentSystemBase) 
+            IsDerivesFromSystemBase(typeElement) 
             || IsDerivesFromISystem(typeElement)
             || IsDerivesFromIAspect(typeElement)
             || IsDerivesFromIComponentData(typeElement)
+            || IsDerivesFromIJobEntity(typeElement)
             || typeElement.DerivesFrom(KnownTypes.IBaker);
+
+        public static bool IsDerivesFromIJobEntity(ITypeElement? typeElement)
+        {
+            return typeElement.DerivesFrom(KnownTypes.IJobEntity);
+        }
+
+        public static bool IsDerivesFromIAspect(ITypeElement? typeElement)
+        {
+            return typeElement.DerivesFrom(KnownTypes.IAspect);
+        }
+
+        public static bool IsDerivesFromSystemBase(ITypeElement? typeElement)
+        {
+            return typeElement.DerivesFrom(KnownTypes.ComponentSystemBase);
+        }
 
         public static bool IsDerivesFromISystem(ITypeElement? typeElement)
         {
             return typeElement.DerivesFrom(KnownTypes.ISystem);
-        }
-        
-        public static bool IsDerivesFromIAspect(ITypeElement? typeElement)
-        {
-            return typeElement.DerivesFrom(KnownTypes.IAspect);
         }
      
         public static bool IsDerivesFromIComponentData(ITypeElement? typeElement)
@@ -91,15 +102,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         {
             return typeElement?.GetClrName().Equals(KnownTypes.ComponentLookup) ?? false;
         }
-        
+        public static bool IsBaker(ITypeElement? typeElement)
+        {
+            return typeElement?.GetClrName().Equals(KnownTypes.Baker) ?? false;
+        }
         public static bool IsSystemStateType(ITypeElement? typeElement)
         {
             return typeElement?.GetClrName().Equals(KnownTypes.SystemState) ?? false;
         }
-        
         public static bool IsSystemAPI(ITypeElement? typeElement)
         {
             return typeElement?.GetClrName().Equals(KnownTypes.SystemAPI) ?? false;
+        }
+
+        public static bool IsRefRO(ITypeElement? typeElement)
+        {
+            return typeElement?.GetClrName().Equals(KnownTypes.RefRO) ?? false;
+        }
+
+        public static bool IsRefRW(ITypeElement? typeElement)
+        {
+            return typeElement?.GetClrName().Equals(KnownTypes.RefRW) ?? false;
         }
 
         // A serialised field cannot be abstract or generic, but a type declaration that will be serialised can be. This
@@ -129,7 +152,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 
         // NOTE: This method assumes that the type is not a descendant of UnityEngine.Object!
         private bool IsSerializableTypeSimpleCheck([NotNullWhen(true)] ITypeElement? type, IProject project, bool isTypeUsage,
-                                        bool hasSerializeReference = false)
+            bool hasSerializeReference = false)
         {
             if (type is not (IStruct or IClass))
                 return false;
@@ -328,7 +351,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             if (property is not { IsAuto: true, IsWritable: true, IsStatic: false }
                 || attribute.Target != AttributeTarget.Field 
                 || attribute.Name == null
-                )
+               )
                 return SerializedFieldStatus.NonSerializedField;
 
             var result = attribute.Name.Reference.Resolve();
@@ -340,14 +363,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 }
             }
         
-            // example: [SerializeField] public unsafe fixed byte MyByteBuff[3];
-            if (property.IsFixedSizeBufferField()
-                && property.Type is IPointerType pointerType
-                && IsUnitySimplePredefined(pointerType.ElementType))
-            {
-                return SerializedFieldStatus.SerializedField;
-            }
-            
             var hasSerializeReference = property.HasFieldAttribute(KnownTypes.SerializeReference);
 
             if (property.GetAccessRights() != AccessRights.PUBLIC
@@ -420,7 +435,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         }
 
         public UnityEventFunction? GetUnityEventFunction(IMethod method, Version unityVersion,
-                                                         out MethodSignatureMatch match)
+            out MethodSignatureMatch match)
         {
             match = MethodSignatureMatch.NoMatch;
 

@@ -45,16 +45,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         private readonly IPsiAssemblyFileLoader myPsiAssemblyFileLoader;
         private readonly IPsiModules myPsiModules;
         private readonly UnitySolutionTracker myUnitySolutionTracker;
-        private readonly SolutionAnalysisConfiguration mySolutionAnalysisConfiguration;
 
-        
+
         private readonly OptimizedPersistentSortedMap<FullAssemblyId, UnitySerializationReferenceElementInfo> myShellDataMap;
         private readonly OptimizedPersistentSortedMap<FullAssemblyId, long> myShellTimestampMap;
 
         private readonly OptimizedPersistentSortedMap<FullAssemblyId, UnitySerializationReferenceElementInfo> mySolutionDataMap;
         private readonly OptimizedPersistentSortedMap<FullAssemblyId, long> mySolutionTimestampMap;
 
-        
         public UnitySerializedReferenceProvider(Lifetime lifetime,
             IUnityElementIdProvider provider,
             IPsiAssemblyFileLoader psiAssemblyFileLoader,
@@ -68,8 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             myPsiAssemblyFileLoader = psiAssemblyFileLoader;
             myPsiModules = psiModules;
             myUnitySolutionTracker = unitySolutionTracker;
-            mySolutionAnalysisConfiguration = solutionAnalysisConfiguration;
-            myIndex = new UnitySerializedReferenceInfoIndex(mySolutionAnalysisConfiguration, ourLogger);
+            myIndex = new UnitySerializedReferenceInfoIndex(solutionAnalysisConfiguration, ourLogger);
             GetCaches(lifetime, shellCaches.Db, out myShellDataMap, out myShellTimestampMap);
             GetCaches(lifetime, solutionCaches.Db, out mySolutionDataMap, out mySolutionTimestampMap);
         }
@@ -80,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             myUnitySolutionTracker.IsUnityProject.Value; //virtual - to overload for testValue.ClassNames
 
         private void GetCaches(Lifetime lifetime, IKeyValueDb db,
-            out OptimizedPersistentSortedMap<FullAssemblyId, UnitySerializationReferenceElementInfo> dataMap, 
+            out OptimizedPersistentSortedMap<FullAssemblyId, UnitySerializationReferenceElementInfo> dataMap,
             out OptimizedPersistentSortedMap<FullAssemblyId, long> timestampMap)
         {
             var map = db.GetMap(PersistentId, FullAssemblyId.AssemblyIdMarshaller, UnitySerializationReferenceElementInfo.SerializeRefInfoMarshaller);
@@ -98,7 +95,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             };
         }
 
-        object ICache.Load(IProgressIndicator progress, bool enablePersistence) => null;
+        object? ICache.Load(IProgressIndicator progress, bool enablePersistence) => null;
 
         void ICache.MergeLoaded(object data) { }
 
@@ -114,7 +111,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         private AssemblyCache ShellCache => new AssemblyCache(myShellDataMap, myShellTimestampMap);
         private AssemblyCache SolutionCache =>  new AssemblyCache(mySolutionDataMap, mySolutionTimestampMap);
         private AssemblyCache GetAssemblyCache(IPsiAssembly assembly) => assembly.IsFrameworkAssembly ? ShellCache : SolutionCache;
-        object IAssemblyCache.Build(IPsiAssembly assembly)
+        object? IAssemblyCache.Build(IPsiAssembly assembly)
         {
             if (!IsUnitySolution)
                 return null;
@@ -123,9 +120,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
             if (myPsiModules.HasSourceProject(assembly))
                 return null;
-            
-            UnitySerializationReferenceElementInfo result = null!;
-            
+
+            UnitySerializationReferenceElementInfo? result = null;
+
             myPsiAssemblyFileLoader.GetOrLoadAssembly(assembly, true,
                 (_, assemblyFile, metadataAssembly) =>
                 {
@@ -136,7 +133,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                     else
                     {
                         var currentTimestamp = assemblyFile.Timestamp.Ticks;
-                    
+
                         var fullAssemblyId = new FullAssemblyId(assembly);
                         var (dataMap, timestampMap) = GetAssemblyCache(assembly);
                         if (timestampMap.TryGetValue(fullAssemblyId, out var cachedTimestamp) &&
@@ -144,7 +141,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                         {
                             dataMap.TryGetValue(fullAssemblyId, out result);
                         }
-                        
+
                         if(result == null)
                         {
                             result = ProcessAssemblyFile(assemblyFile, metadataAssembly);
@@ -162,7 +159,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             if (!IsUnitySolution) return;
             if (part is not UnitySerializationReferenceElementInfo referenceElementInfo)
                 return;
-            
+
             if (referenceElementInfo.IsEmpty())
             {
                 return;
@@ -211,12 +208,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             lock (myLockObject)
                 return myIndex.IsTypeSerializable(elementId.Value, useSwea);
         }
-       
+
         protected virtual bool IsValidAssembly(IPsiAssembly assembly)
         {
             return true;
         }
-        
+
         public override ISwaExtensionData CreateUsageDataElement(UsageData owner)
         {
             return new UnitySerializationReferenceElementData(myProvider);
@@ -254,7 +251,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             {
                 if (metadataTypeInfo.IsModuleType())
                     continue;
-                
+
                 var classInfoAdapter = metadataTypeInfo.ToAdapter(assemblyFile, myProvider);
                 SerializeReferenceTypesUtils.CollectClassData(classInfoAdapter, result.TypeToInterfaces,
                     result.TypeParameterResolves);

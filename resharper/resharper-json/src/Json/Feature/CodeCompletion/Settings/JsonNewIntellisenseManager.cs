@@ -8,16 +8,16 @@ using JetBrains.ReSharper.Psi;
 namespace JetBrains.ReSharper.Plugins.Json.Feature.CodeCompletion.Settings
 {
     [ShellComponent]
-    public class JsonNewIntellisenseManager : LanguageSpecificIntellisenseManager
+    public class JsonNewIntellisenseManager : LanguageSpecificCodeCompletionManager
     {
-        public JsonNewIntellisenseManager([NotNull] ISettingsStore settingsStore, IntellisenseSettingsService intellisenseSettingsService)
-            : base(settingsStore, intellisenseSettingsService)
+        public JsonNewIntellisenseManager(CodeCompletionSettingsService settingsService)
+            : base(settingsService)
         {
         }
 
-        public override SettingsScalarEntry GetSettingsEntry()
+        public override SettingsScalarEntry GetSettingsEntry(ISettingsSchema settingsSchema)
         {
-            return SettingsStore.Schema.GetScalarEntry((IntellisenseEnabledSettingJsonNew setting) =>
+            return settingsSchema.GetScalarEntry((IntellisenseEnabledSettingJsonNew setting) =>
                 setting.IntellisenseEnabled);
         }
 

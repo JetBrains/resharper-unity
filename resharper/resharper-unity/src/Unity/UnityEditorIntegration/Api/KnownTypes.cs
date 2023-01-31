@@ -109,11 +109,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static readonly IClrTypeName IBaker = new ClrTypeName("Unity.Entities.IBaker");
         public static readonly IClrTypeName Baker = new ClrTypeName("Unity.Entities.Baker`1");
         public static readonly IClrTypeName IAspect = new ClrTypeName("Unity.Entities.IAspect");
+        public static readonly IClrTypeName IJobEntity = new ClrTypeName("Unity.Entities.IJobEntity");
         public static readonly IClrTypeName IComponentData = new ClrTypeName("Unity.Entities.IComponentData");
         public static readonly IClrTypeName ComponentLookup = new ClrTypeName("Unity.Entities.ComponentLookup`1");
         public static readonly IClrTypeName SystemState = new ClrTypeName("Unity.Entities.SystemState");
         public static readonly IClrTypeName SystemAPI = new ClrTypeName("Unity.Entities.SystemAPI");
         public static readonly IClrTypeName Entity = new ClrTypeName("Unity.Entities.Entity");
+        public static readonly IClrTypeName RefRO = new ClrTypeName("Unity.Entities.RefRO`1");
+        public static readonly IClrTypeName RefRW = new ClrTypeName("Unity.Entities.RefRW`1");
+        //Unity.Mathematics
+        public static readonly IClrTypeName Random = new ClrTypeName("Unity.Mathematics.Random");
 
         // Burst
         public static readonly IClrTypeName BurstCompiler = new ClrTypeName("Unity.Burst.BurstCompiler");

@@ -34,6 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
                 || assembly.AssemblyName.Name.Contains("AssemblyWithSerializedRef")
                 || assembly.AssemblyName.Name.Contains("AssemblyWithoutSerializedRef")
                 || assembly.AssemblyName.Name.Contains("PropertyWithBackingField")
+                || assembly.AssemblyName.Name.Contains("ListArrayFixedBufferTest")
                     )
                 return true;
             return false;
