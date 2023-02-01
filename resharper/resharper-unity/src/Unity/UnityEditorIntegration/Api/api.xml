@@ -1,5 +1,5 @@
 ﻿<!--This file is auto-generated-->
-<api minimumVersion="5.0" maximumVersion="2022.2">
+<api minimumVersion="5.0" maximumVersion="2023.1">
   <type kind="class" name="AssetModificationProcessor" ns="UnityEditor" path="Documentation/en/ScriptReference/AssetModificationProcessor.html">
     <message name="CanOpenForEdit" static="True" minimumVersion="2020.2" description="This is called by Unity when inspecting assets to determine if they can potentially be opened for editing." path="Documentation/en/ScriptReference/AssetModificationProcessor.CanOpenForEdit.html">
       <parameters>
