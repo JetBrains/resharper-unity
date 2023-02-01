@@ -21,6 +21,7 @@ using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dots
 {
@@ -62,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             var finder = context.Solution.GetPsiServices().Finder;
             finder.FindInheritors(bakerBaseTypeElement, typeElements.ConsumeDeclaredElements(), NullProgressIndicator.Create());
 
-            var availableBakers = new List<string>
+            var availableBakers = new HashSet<string>
             {
                 Strings.UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested,
                 Strings.UnityDots_GenerateBakerAndAuthoring_NewBaker
@@ -75,12 +76,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 {
                     var name = typeElement.GetClrName().FullName;
                     availableBakers.Add(name);
-                    myExistedBakers.Add(name, typeElement);
+                    myExistedBakers[name] = typeElement;
                 }
             }
 
-
-            var selector = new GeneratorOptionSelector(SelectedBaker, Strings.UnityDots_GenerateBakerAndAuthoring_Baker, availableBakers)
+            var selector = new GeneratorOptionSelector(SelectedBaker, Strings.UnityDots_GenerateBakerAndAuthoring_Baker, availableBakers.ToIReadOnlyList())
                 {
                     Value = Strings.UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested
                 };
