@@ -100,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             myManifestPath = myPackagesFolder.Combine("manifest.json");
             myLocalPackageCacheFolder = UnityCachesFinder.GetLocalPackageCacheFolder(mySolution.SolutionDirectory);
 
-            Updating = new Property<bool?>("PackageManger::Update");
+            Updating = new Property<bool?>("PackageManager::Update");
 
             // use IsUnityProjectFolder, otherwise frontend would not have packages information, when folder is opened
             // and incorrect notification text might be displayed
@@ -261,7 +261,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 // Remove any left overs
                 foreach (var id in existingPackages)
                     RemovePackage(id);
-
             }
             finally
             {
@@ -304,7 +303,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                     }
 
                     return GetPackagesFromPackagesLockJson() ?? GetPackagesFromManifestJson(projectManifest);
-
                 },
                 p => p != null ? $"{p.Count} packages" : "Null list of packages. Something went wrong");
         }
@@ -334,7 +332,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             return myLogger.CatchSilent(() =>
             {
                 var packageLockJson = myPackagesLockPath.ReadAllText2().Text;
-                myLogger.Trace($"package json text:\n{packageLockJson}");
+                myLogger.Trace("package json test:\n{0}", packageLockJson);
                 var packagesLockJson = PackagesLockJson.FromJson(packageLockJson);
 
                 var packages = new List<PackageData>();
@@ -828,11 +826,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             // Some package types take precedence over any requests for another version. Basically any package that is
             // built in or pointing at actual files
             return resolvedPackages.TryGetValue(id, out var packageData) &&
-                   (packageData.Source == PackageSource.Embedded
-                   || packageData.Source == PackageSource.BuiltIn
-                   || packageData.Source == PackageSource.Git
-                   || packageData.Source == PackageSource.Local
-                   || packageData.Source == PackageSource.LocalTarball);
+                   packageData.Source is PackageSource.Embedded or PackageSource.BuiltIn or PackageSource.Git
+                       or PackageSource.Local or PackageSource.LocalTarball;
         }
 
         private static JetSemanticVersion GetCurrentMaxVersion(
