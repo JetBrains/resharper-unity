@@ -23,6 +23,8 @@ public class MyMonoBehaviour : MonoBehaviour
 
   [Header("Something else")] public string AaaaaField2; // Serialised field
 
+  [field: SerializeField] public int MyAutoPropertyWithSerializedBackingField;
+
   public readonly int CccccField;
   private string QqqqqField;
 
