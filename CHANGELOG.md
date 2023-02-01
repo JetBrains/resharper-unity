@@ -77,7 +77,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 ### Added
 
 - Add completion and analysis of assets for resource load methods ([RIDER-79879](https://youtrack.jetbrains.com/issue/RIDER-79879), [#2217](https://github.com/JetBrains/resharper-unity/issues/2217))
-- Add completion and analysis of tags in `GameObject.FindWithTag` methods
+- Add completion and analysis of tags in `GameObject.FindWithTag` methods ([#2308](https://github.com/JetBrains/resharper-unity/issues/2308))
 - Add Find Usages of methods used by the new Input System ([RIDER-71588](https://youtrack.jetbrains.com/issue/RIDER-71588))
 - Add suppression of unused class warning for classes that implement `IBaker` and `IAspect` ([RIDER-84159](https://youtrack.jetbrains.com/issue/RIDER-84159), [#2370](https://github.com/JetBrains/resharper-unity/pull/2370))
 - Add suppression of warning for redundant super type declared in generated partial class ([RIDER-84182](https://youtrack.jetbrains.com/issue/RIDER-84182))
