@@ -20,7 +20,15 @@
          should be a 32 bit assembly. Unfortunately, 32 bit processes aren't supported on Mac, and the tests fail.
          Any test project that uses the Rider SDK will require this -->
     <PlatformTarget Condition="'$([MSBuild]::IsOsPlatform(Windows))' != 'True'">x64</PlatformTarget>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
+  <!-- ********** -->
+  <!-- TODO: This should come from JetBrains.NET.Sdk, or Directory.Build.props -->
+  <PropertyGroup Condition="$(InternalBuild)">
+    <DefineConstants>$(DefineConstants);JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS</DefineConstants>
+  </PropertyGroup>
+  <Import Project="$(JetSdkProjectParameterFilePath)" Condition="Exists('$(JetSdkProjectParameterFilePath)')" />
+  <!-- ********** -->
   <ItemGroup>
     <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\UnityGlobalHighlightingsStageTestBase.cs">
       <Link>UnityRider\CSharp\Daemon\Stages\UnityGlobalHighlightingsStageTestBase.cs</Link>

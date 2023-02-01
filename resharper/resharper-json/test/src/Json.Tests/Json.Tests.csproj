@@ -14,7 +14,15 @@
     <!-- LibHarmony is not signed -->
     <NoWarn>CS8002</NoWarn>
     <JetTestProject>True</JetTestProject>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
+  <!-- ********** -->
+  <!-- TODO: This should come from JetBrains.NET.Sdk, or Directory.Build.props -->
+  <PropertyGroup Condition="$(InternalBuild)">
+    <DefineConstants>$(DefineConstants);JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS</DefineConstants>
+  </PropertyGroup>
+  <Import Project="$(JetSdkProjectParameterFilePath)" Condition="Exists('$(JetSdkProjectParameterFilePath)')" />
+  <!-- ********** -->
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">

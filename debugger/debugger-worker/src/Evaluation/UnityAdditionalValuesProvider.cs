@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values;
 using JetBrains.Util;
 using Mono.Debugger.Soft;
@@ -67,10 +66,9 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                 yield return thisGameObject.ToValue(myValueServices);
         }
 
-        [CanBeNull]
-        private IValueReference<TValue> GetActiveScene(IStackFrame frame)
+        private IValueReference<TValue>? GetActiveScene(IStackFrame frame)
         {
-            return myLogger.CatchEvaluatorException<TValue, IValueReference<TValue>>(() =>
+            return myLogger.CatchEvaluatorException<TValue, IValueReference<TValue>?>(() =>
                 {
                     var sceneManagerType = myValueServices.GetReifiedType(frame,
                                                "UnityEngine.SceneManagement.SceneManager, UnityEngine.CoreModule")
@@ -109,10 +107,9 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                 exception => myLogger.LogThrownUnityException(exception, frame, myValueServices, mySession.EvaluationOptions));
         }
 
-        [CanBeNull]
-        private IValueReference<TValue> GetThisGameObjectForMonoBehaviour(IStackFrame frame)
+        private IValueReference<TValue>? GetThisGameObjectForMonoBehaviour(IStackFrame frame)
         {
-            return myLogger.CatchEvaluatorException<TValue, IValueReference<TValue>>(() =>
+            return myLogger.CatchEvaluatorException<TValue, IValueReference<TValue>?>(() =>
                 {
                     var thisObj = frame.GetThis(mySession.EvaluationOptions);
                     if (thisObj?.DeclaredType?.FindTypeThroughHierarchy("UnityEngine.MonoBehaviour") == null)

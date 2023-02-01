@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
             return TargetFrameworkId.Create(FrameworkIdentifier.NetFramework, new Version(4, 0));
         }
 
-        public IEnumerable<PackageDependency> GetPackages(TargetFrameworkId targetFrameworkId)
+        public IEnumerable<PackageDependency> GetPackages(TargetFrameworkId? targetFrameworkId)
         {
             // There isn't an official nuget for Unity, sadly, so add this feed to test/data/nuget.config
             // <add key="unity-testlibs" value="https://myget.org/F/resharper-unity/api/v2/" />

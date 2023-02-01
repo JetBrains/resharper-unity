@@ -14,6 +14,12 @@
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
   <!-- ********** -->
+  <!-- TODO: This should come from JetBrains.NET.Sdk, or Directory.Build.props -->
+  <PropertyGroup Condition="$(InternalBuild)">
+    <DefineConstants>$(DefineConstants);JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS</DefineConstants>
+  </PropertyGroup>
+  <Import Project="$(JetSdkProjectParameterFilePath)" Condition="Exists('$(JetSdkProjectParameterFilePath)')" />
+  <!-- ********** -->
   <ItemGroup Label="JsonNew">
     <PsiLanguageNames Include="JsonNew">
       <Visible>False</Visible>

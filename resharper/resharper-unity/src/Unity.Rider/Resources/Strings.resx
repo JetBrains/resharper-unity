@@ -50,12 +50,12 @@
         <value>Performance critical line marker</value>
     </data>
     <data name="PleaseSwitchToTheUnityEditorToReload_Text" xml:space="preserve">
-        <value>$@&quot;Please switch to the Unity Editor to reload the plugin.
+        <value>Please switch to the Unity Editor to reload the plugin.
                             Rider plugin v{0} can be found at:
                             {1}.</value>
     </data>
     <data name="PleaseSwitchToUnityEditorToLoadThePlugin_Text" xml:space="preserve">
-        <value>$@&quot;Please switch to Unity Editor to load the plugin.
+        <value>Please switch to Unity Editor to load the plugin.
                             Rider plugin v{0} can be found at:
                             {1}.</value>
     </data>

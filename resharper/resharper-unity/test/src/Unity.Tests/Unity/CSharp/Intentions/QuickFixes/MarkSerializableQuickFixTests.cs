@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }
     }
-    
+
     [TestUnity]
     public class MarkSerializableQuickFixAvailabilityGlobalStageTests : QuickFixAfterSwaAvailabilityTestBase
     {
@@ -30,10 +30,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
             IContextBoundSettingsStore boundSettingsStore)
         {
-            return highlighting is RedundantSerializeFieldAttributeWarning 
+            return highlighting is RedundantSerializeFieldAttributeWarning
                    && base.HighlightingPredicate(highlighting, psiSourceFile, boundSettingsStore);
         }
-        
+
         protected override string GetGoldTestDataPath(string fileName)
         {
             return base.GetGoldTestDataPath(fileName + ".global");
@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
     }
 
     [TestUnity]
-    public class MarkSerializableQuickFixTests : CSharpQuickFixAfterSwaTestBase<MarkSerializableQuickFix> 
+    public class MarkSerializableQuickFixTests : CSharpQuickFixAfterSwaTestBase<MarkSerializableQuickFix>
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MarkSerializable";
 

@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
     [TestCase("BinarySerialization")]
     [TestFileExtension(".asset")]
     public void TestBinarySerialization(string name) => DoOneTest(name);
-    
+
     [TestCase("TagManager")]
     [TestFileExtension(".asset")]
     public void TestUnityTagManager(string name) => DoOneTest(name);

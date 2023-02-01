@@ -31,8 +31,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
             return myUnityOptions.ExtensionsEnabled && role.ValueReference is TextValueReference<TValue>;
         }
 
-        public override IValuePresentation PresentValue(IStringValueRole<TValue> valueRole, IMetadataTypeLite instanceType,
-                                                        IPresentationOptions options, IUserDataHolder dataHolder, CancellationToken token)
+        public override IValuePresentation? PresentValue(IStringValueRole<TValue> valueRole, IMetadataTypeLite instanceType,
+                                                         IPresentationOptions options, IUserDataHolder dataHolder, CancellationToken token)
         {
             // Present the value's string as plain text, without any syntax highlighting or quote handling. Don't use
             // ValueFlags.IsString, as it will add an unnecessary "View" link - our text is always short
