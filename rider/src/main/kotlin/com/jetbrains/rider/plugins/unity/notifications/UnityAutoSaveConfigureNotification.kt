@@ -14,23 +14,23 @@ import com.intellij.openapi.util.Key
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.LightColors
 import com.intellij.util.application
-import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
+import com.jetbrains.rd.platform.util.idea.LifetimedService
+import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.isAlive
-import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rd.util.reactive.*
-import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 import com.jetbrains.rider.document.getFirstEditor
 import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.model.ScriptCompilationDuringPlay
 import com.jetbrains.rider.plugins.unity.model.UnityEditorState
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
 import com.jetbrains.rider.projectView.solution
 
-class UnityAutoSaveConfigureNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
+class UnityAutoSaveConfigureNotification(project: Project) : LifetimedService() {
     private val propertiesComponent: PropertiesComponent = PropertiesComponent.getInstance()
-    private var lifetimeDefinition = projectComponentLifetime.createNested()
+    private var lifetimeDefinition = project.lifetime.createNested()
     private val KEY = Key.create<Any>("PromoteAutoSave")
 
     companion object {
@@ -38,7 +38,7 @@ class UnityAutoSaveConfigureNotification(project: Project) : ProtocolSubscribedP
     }
 
     init {
-        SolutionLifecycleHost.getInstance(project).isBackendLoaded.whenTrue(projectComponentLifetime) {
+        SolutionLifecycleHost.getInstance(project).isBackendLoaded.whenTrue(project.lifetime) {
             if (!propertiesComponent.getBoolean(settingName) && UnityProjectDiscoverer.getInstance(project).isUnityProject) {
 
                 val eventMulticaster = EditorFactory.getInstance().eventMulticaster

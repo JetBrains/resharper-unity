@@ -2,6 +2,7 @@
 
 package com.jetbrains.rider.plugins.unity.workspace
 
+import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
@@ -12,13 +13,15 @@ import com.intellij.workspaceModel.ide.impl.toVirtualFileUrl
 import com.intellij.workspaceModel.storage.MutableEntityStorage
 import com.intellij.workspaceModel.storage.bridgeEntities.addContentRootEntity
 import com.intellij.workspaceModel.storage.url.VirtualFileUrlManager
+import com.jetbrains.rd.ide.model.Solution
 import com.jetbrains.rd.platform.util.idea.LifetimedService
+import com.jetbrains.rd.protocol.ProtocolExtListener
+import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.adviseUntil
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
 import com.jetbrains.rider.projectView.workspace.getOrCreateRiderModuleEntity
 import java.nio.file.Paths
@@ -27,23 +30,23 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
 
     companion object {
         private val logger = Logger.getInstance(UnityWorkspacePackageUpdater::class.java)
+        fun getInstance(project: Project): UnityWorkspacePackageUpdater = project.service()
     }
 
     private var initialEntityStorage: MutableEntityStorage? = MutableEntityStorage.create()
 
-    init {
-        application.invokeLater {
-            val model = project.solution.frontendBackendModel
+    class ProtocolListener : ProtocolExtListener<Solution, FrontendBackendModel> {
+        override fun extensionCreated(lifetime: Lifetime, project: Project, parent: Solution, model: FrontendBackendModel) {
 
             // Subscribe to package changes. If we subscribe after the backend has loaded the initial list of packages,
             // this map will already be populated, and we'll be called for each item. If we subscribe before the list
             // is loaded, updateWorkspaceModel will cache the changes until the packagesUpdating flag is reset. At this
             // point, we sync the cached changes, and switch to updating the workspace model directly. We then expect
             // Unity to only add/remove a single package at a time.
-            model.packages.adviseAddRemove(serviceLifetime) { action, _, unityPackage ->
+            model.packages.adviseAddRemove(lifetime) { action, _, unityPackage ->
                 when (action) {
-                    AddRemove.Add -> updateWorkspaceModel { entityStorage -> addPackage(unityPackage, entityStorage) }
-                    AddRemove.Remove -> updateWorkspaceModel { entityStorage -> removePackage(unityPackage, entityStorage) }
+                    AddRemove.Add -> getInstance(project).updateWorkspaceModel { entityStorage -> getInstance(project).addPackage(unityPackage, entityStorage) }
+                    AddRemove.Remove -> getInstance(project).updateWorkspaceModel { entityStorage -> getInstance(project).removePackage(unityPackage, entityStorage) }
                 }
             }
 
@@ -51,9 +54,9 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
             // calculating the packages, and then set to false. Depending on when we subscribe, we might not see all
             // states, but as long as it's false, we know it's done the initial bulk update and isn't working right now,
             // so we can flush the cached changes from the initial update.
-            model.packagesUpdating.adviseUntil(serviceLifetime) { updating ->
+            model.packagesUpdating.adviseUntil(lifetime) { updating ->
                 if (updating == false) {
-                    syncInitialEntityStorage()
+                    getInstance(project).syncInitialEntityStorage()
                     return@adviseUntil true
                 }
                 return@adviseUntil false

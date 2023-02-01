@@ -16,7 +16,8 @@ import com.intellij.util.ui.EdtInvocationManager
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.ide.model.RdVirtualSolution
-import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
+import com.jetbrains.rd.platform.util.idea.LifetimedService
+import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rd.util.reactive.whenTrue
@@ -39,14 +40,14 @@ import com.jetbrains.rider.projectView.workspace.ProjectModelEntityVisitor
 import com.jetbrains.rider.projectView.workspace.getSolutionEntity
 import org.jetbrains.annotations.Nls
 
-class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
+class OpenUnityProjectAsFolderNotification(project: Project) : LifetimedService() {
 
     companion object {
         private val notificationGroupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity project open")
     }
 
     init {
-        project.solution.isLoaded.whenTrue(projectComponentLifetime) {
+        project.solution.isLoaded.whenTrue(project.lifetime) {
             if (!UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder)
                 return@whenTrue
 

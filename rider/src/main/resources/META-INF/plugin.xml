@@ -23,8 +23,53 @@
   <extensions defaultExtensionNs="com.intellij">
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.UnityUIMinimizer"/>
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService"/>
-    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater"
-                    preload="true" />
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.settings.RiderUnitySettings"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.notifications.OpenUnityProjectAsFolderNotification" preload="true" />
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.notifications.UnityAutoSaveConfigureNotification" preload="true" />
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ProtocolInstanceWatcher" preload="true" />
+
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater"/>
+    <rd.extListener endpoint="IDE Frontend"
+                    location="SolutionModel.solutions.frontendBackendModel"
+                    extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
+                    handler="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater$ProtocolListener"/>
+
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.notifications.UpdateMonoNotification"/>
+    <rd.extListener endpoint="IDE Frontend"
+                    location="SolutionModel.solutions.frontendBackendModel"
+                    extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
+                    handler="com.jetbrains.rider.plugins.unity.notifications.UpdateMonoNotification$ProtocolListener"/>
+
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.FrontendBackendHost"/>
+    <rd.extListener endpoint="IDE Frontend"
+                    location="SolutionModel.solutions.frontendBackendModel"
+                    extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
+                    handler="com.jetbrains.rider.plugins.unity.FrontendBackendHost$ProtocolListener"/>
+
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.notifications.AssetModeForceTextNotification"/>
+    <rd.extListener endpoint="IDE Frontend"
+                    location="SolutionModel.solutions.frontendBackendModel"
+                    extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
+                    handler="com.jetbrains.rider.plugins.unity.notifications.AssetModeForceTextNotification$ProtocolListener"/>
+
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.notifications.DeferredCachesInProgressNotification"/>
+    <rd.extListener endpoint="IDE Frontend"
+                    location="SolutionModel.solutions.frontendBackendModel"
+                    extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
+                    handler="com.jetbrains.rider.plugins.unity.notifications.DeferredCachesInProgressNotification$ProtocolListener"/>
+
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator"/>
+    <rd.extListener endpoint="IDE Frontend"
+                    location="SolutionModel.solutions.frontendBackendModel"
+                    extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
+                    handler="com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator$ProtocolListener"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowManager"/>
+    <rd.extListener endpoint="IDE Frontend"
+                    location="SolutionModel.solutions.frontendBackendModel"
+                    extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
+                    handler="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowManager$ProtocolListener"/>
+
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory"/>
 
     <rider.defaultVcsRootPolicyExtension implementation="com.jetbrains.rider.plugins.unity.vcs.UnityDefaultVcsRootPolicyExtension" />
 
@@ -171,19 +216,6 @@
 
   <project-components>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.unitTesting.UnitTestLauncherState</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.AssetModeForceTextNotification</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.settings.RiderUnitySettings</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.FrontendBackendHost</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.UnityAutoSaveConfigureNotification</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowManager</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.DeferredCachesInProgressNotification</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.OpenUnityProjectAsFolderNotification</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.UpdateMonoNotification</implementation-class></component>
-    <component>
-      <implementation-class>com.jetbrains.rider.plugins.unity.ProtocolInstanceWatcher</implementation-class>
-    </component>
   </project-components>
 
   <applicationListeners>
