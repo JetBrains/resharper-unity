@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using JetBrains.Application.DataContext;
 using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Actions.ActionManager;
@@ -154,24 +153,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             if (presentationType == UnityPresentationType.UnityEvent)
             {
                 var count = myUnityEventsElementContainer.GetUsageCountForEvent(field, out var estimated);
-                var sb = new StringBuilder();
-                if (count == 0 && !estimated)
-                {
-                    sb.Append("No methods");
-                }
-                else
-                {
-                    sb.Append(count);
-                    if (estimated)
-                        sb.Append('+');
-                    sb.Append(" ");
-                    sb.Append("method");
-                    if (estimated || count > 1)
-                        sb.Append("s");
-                }
+                var text = NounUtilEx.ToEmptyPluralOrSingularQuick(count, estimated,
+                    Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_No_methods,
+                    Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_method,
+                    Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_methods);
 
                 consumer.AddHighlighting(new UnityInspectorCodeInsightsHighlighting(element.GetNameDocumentRange(),
-                    sb.ToString(), GetTooltip(count, estimated, false), "Methods", this,
+                    text, GetTooltip(count, estimated, false), Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_CapitalChar_Method, this,
                     declaredElement, iconModel, presentationType));
                 return;
             }
@@ -188,7 +176,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             if (myInspectorValuesContainer.IsIndexResultEstimated(guid, containingType, propertyNames))
             {
                 changesCount = myInspectorValuesContainer.GetAffectedFiles(guid, propertyNames) -  myInspectorValuesContainer.GetAffectedFilesWithSpecificValue(guid, propertyNames, initValueUnityPresentation);
-                displayName = $"Changed in {changesCount}+ assets";
+                displayName = string.Format(Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Changed_in__0___assets, changesCount);
                 isEstimated = true;
             }
             else
@@ -217,36 +205,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
                                        initValueUnityPresentation);
                     if (changesCount == 0)
                     {
-                        displayName = "Unchanged";
+                        displayName = Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Unchanged;
                     }
                     else
                     {
-                        var word = NounUtil.ToPluralOrSingularQuick(changesCount, "asset", "assets");
-                        displayName = $"Changed in {changesCount} {word}";
+                        var word = NounUtil.ToPluralOrSingularQuick(changesCount, Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_asset, Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_assets);
+                        displayName = string.Format(Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Changed_in__0___1_, changesCount, word);
                     }
                 }
             }
 
             consumer.AddHighlighting(new UnityInspectorCodeInsightsHighlighting(element.GetNameDocumentRange(),
-                displayName, GetTooltip(changesCount, isEstimated, isUniqueChange), "Property Inspector values", this,
+                displayName, GetTooltip(changesCount, isEstimated, isUniqueChange), Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Property_Inspector_values, this,
                 declaredElement, iconModel, presentationType));
         }
 
         private string GetTooltip(int changesCount, bool isEstimated, bool isUniqueChange)
         {
             if (isUniqueChange)
-                return "Unique change";
+                return Strings.UnityCodeInsightFieldUsageProvider_GetTooltip_Unique_change;
 
             if (changesCount == 0 && !isEstimated)
-                return "No changes in assets";
+                return Strings.UnityCodeInsightFieldUsageProvider_GetTooltip_No_changes_in_assets;
 
             if (changesCount == 0 && isEstimated)
-                return "Possible indirect changes";
+                return Strings.UnityCodeInsightFieldUsageProvider_GetTooltip_Possible_indirect_changes;
 
             if (changesCount == 1 && isEstimated)
-                return "Changed in 1 asset + possible indirect changes";
+                return Strings.UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in_1_asset___possible_indirect_changes;
 
-            return $"Changed in {changesCount} assets" + (isEstimated ? " + possible indirect changes" : "");
+            return isEstimated ? string.Format(Strings.UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in__0__assets___possible_indirect_changes, changesCount) : string.Format(Strings.UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in__0__assets, changesCount);
         }
 
         private IAssetValue GetUnitySerializedPresentation(UnityPresentationType presentationType, ConstantValue? value)

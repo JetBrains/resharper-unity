@@ -188,4 +188,54 @@
     <data name="UsagesInAssetsAreNotAvailableDuring_Text" xml:space="preserve">
         <value>Usages in assets are not available during asset indexing</value>
     </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Changed_in__0___assets" xml:space="preserve">
+        <value>Changed in {0}+ assets}</value>
+        <comment>"Changed in 0+ assets" or "Changed in 1+ assets"  and so on</comment>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Unchanged" xml:space="preserve">
+        <value>Unchanged</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_asset" xml:space="preserve">
+        <value>asset</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_assets" xml:space="preserve">
+        <value>assets</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Changed_in__0___1_" xml:space="preserve">
+        <value>Changed in {0} {1}</value>
+        <comment>"Changed in 1 asset" or "Changed in 2 assets"</comment>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Property_Inspector_values" xml:space="preserve">
+        <value>Property Inspector values</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_GetTooltip_Unique_change" xml:space="preserve">
+        <value>Unique change</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_GetTooltip_No_changes_in_assets" xml:space="preserve">
+        <value>No changes in assets</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_GetTooltip_Possible_indirect_changes" xml:space="preserve">
+        <value>Possible indirect changes</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in_1_asset___possible_indirect_changes" xml:space="preserve">
+        <value>Changed in 1 asset + possible indirect changes</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in__0__assets___possible_indirect_changes" xml:space="preserve">
+        <value>Changed in {0} assets + possible indirect changes</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in__0__assets" xml:space="preserve">
+        <value>Changed in {0} assets</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_No_methods" xml:space="preserve">
+        <value>No methods</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_method" xml:space="preserve">
+        <value>method</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_CapitalChar_Method" xml:space="preserve">
+        <value>Method</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_methods" xml:space="preserve">
+        <value>methods</value>
+    </data>
 </root>
