@@ -20,13 +20,13 @@
         <value>Ambiguous reference:{0}{1}match</value>
     </data>
     <data name="CannotResolveSymbolMessage" xml:space="preserve">
-        <value>Cannot resolve symbol &apos;{0}&apos;</value>
+        <value>Cannot resolve symbol '{0}'</value>
     </data>
     <data name="CgBuiltInTypeTokenNodeType_TokenRepresentation_built_in_type" xml:space="preserve">
         <value>built-in type</value>
     </data>
     <data name="CgLanguageSpecificDaemonBehaviour_InitialErrorStripe_File_s_primary_language_in_not_Cg" xml:space="preserve">
-        <value>File&apos;s primary language in not Cg</value>
+        <value>File's primary language in not Cg</value>
     </data>
     <data name="CgSyntaxHighlightingProcess_VisitSemanticNode_Semantic__packoffset_or_register_expected" xml:space="preserve">
         <value>Semantic, packoffset, or register expected</value>
@@ -38,7 +38,7 @@
         <value>Comments//Line comment</value>
     </data>
     <data name="ConflictingPropertyIsDefinedBelowMessage" xml:space="preserve">
-        <value>Conflicting property &apos;{0}&apos; is defined below</value>
+        <value>Conflicting property '{0}' is defined below</value>
     </data>
     <data name="IgnoredCharacterConsiderInsertingNewLineForClarityMessage" xml:space="preserve">
         <value>Ignored character. Consider inserting new line for clarity.</value>
@@ -56,7 +56,7 @@
         <value>Parameters are not valid in this location</value>
     </data>
     <data name="PossibleUnintendedUseOfUndeclaredPropertyPropertyMayBeSetFromCodeMessage" xml:space="preserve">
-        <value>Possible unintended use of undeclared property &apos;{0}&apos;. Property may be set from code.</value>
+        <value>Possible unintended use of undeclared property '{0}'. Property may be set from code.</value>
     </data>
     <data name="ReformatCode_Text" xml:space="preserve">
         <value>Reformat code</value>
@@ -68,7 +68,7 @@
         <value>Remove invalid parameters</value>
     </data>
     <data name="ThereIsAlreadyAPropertyNamedDeclaredMessage" xml:space="preserve">
-        <value>The property named &apos;{0}&apos; is already declared</value>
+        <value>The property named '{0}' is already declared</value>
     </data>
     <data name="IntellisenseEnabledSettingShaderLab_s_Override_VS_IntelliSense_for_ShaderLab" xml:space="preserve">
         <value>Override VS IntelliSense for ShaderLab</value>
