@@ -122,7 +122,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             Packages.AddRemove.Advise(lifetime, args =>
             {
                 var packageData = args.Value.Value;
-
                 if(packageData.PackageFolder.IsNullOrEmpty())
                     return;
 
@@ -145,16 +144,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         public PackageData? GetPackageById(string id) =>
             myPackagesById.TryGetValue(id, out var packageData) ? packageData : null;
 
-        public PackageData? GetOwningPackage(VirtualFileSystemPath path)
-        {
-            foreach (var packageData in myPackagesById.Values)
-            {
-                if (packageData.PackageFolder != null && packageData.PackageFolder.IsPrefixOf(path))
-                    return packageData;
-            }
+        public bool HasPackage(string id) => GetPackageById(id) != null;
 
-            return null;
-        }
+        public PackageData? GetOwningPackage(VirtualFileSystemPath path) =>
+            myFileSystemPathTrie.FindLongestPrefix(path);
 
         public void RefreshPackages() => ScheduleRefresh();
 
@@ -863,15 +856,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         }
 
         private static JetSemanticVersion Max(JetSemanticVersion v1, JetSemanticVersion v2) => v1 > v2 ? v1 : v2;
-
-        public PackageData? GetPackageByAssetPath(VirtualFileSystemPath possibleResource)
-        {
-            return myFileSystemPathTrie.FindLongestPrefix(possibleResource);
-        }
-
-        public bool HasPackage(string packageName)
-        {
-            return Packages.Any(p => p.Key.Equals(packageName));
-        }
     }
 }
