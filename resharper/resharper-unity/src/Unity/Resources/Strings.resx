@@ -23,22 +23,22 @@
         <value>Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead.</value>
     </data>
     <data name="AddAttributeAction_Text_Add___0__" xml:space="preserve">
-        <value>Add &apos;{0}&apos;</value>
+        <value>Add '{0}'</value>
     </data>
     <data name="AddAttributeAction_Text_Add___0___before_all_fields" xml:space="preserve">
-        <value>Add &apos;{0}&apos; before all fields</value>
+        <value>Add '{0}' before all fields</value>
     </data>
     <data name="AddAttributeAction_Text_Add___0___before_SelectedField" xml:space="preserve">
-        <value>Add &apos;{0}&apos; before &apos;{1}&apos;</value>
+        <value>Add '{0}' before '{1}'</value>
     </data>
     <data name="AddAttributeAction_Text_Add___0___to_all_fields" xml:space="preserve">
-        <value>Add &apos;{0}&apos; to all fields</value>
+        <value>Add '{0}' to all fields</value>
     </data>
     <data name="AddAttributeAction_Text_Add___0___to_SelectedField" xml:space="preserve">
-        <value>Add &apos;{0}&apos; to &apos;{1}&apos;</value>
+        <value>Add '{0}' to '{1}'</value>
     </data>
     <data name="AddDiscardAttributeContextAction_Name" xml:space="preserve">
-        <value>Add &apos;BurstDiscard&apos; attribute</value>
+        <value>Add 'BurstDiscard' attribute</value>
     </data>
     <data name="AddExpensiveCommentContextAction_Name" xml:space="preserve">
         <value>Mark function expensive</value>
@@ -47,7 +47,7 @@
         <value>Add header for this property in the Unity Editor Inspector</value>
     </data>
     <data name="AddHeaderAttributeAction_Name" xml:space="preserve">
-        <value>Add &apos;Header&apos; attribute</value>
+        <value>Add 'Header' attribute</value>
     </data>
     <data name="AdditionalFileLayoutSettings_s_Additional_Unity_C__file_layout_pattern" xml:space="preserve">
         <value>Additional Unity C# file layout pattern</value>
@@ -62,34 +62,34 @@
         <value>Add range for this property in the Unity Editor Inspector</value>
     </data>
     <data name="AddRangeAttributeAction_Name" xml:space="preserve">
-        <value>Add &apos;Range&apos; attribute</value>
+        <value>Add 'Range' attribute</value>
     </data>
     <data name="AddRequireComponentBulbActionBase_Text_Add__RequireComponent_" xml:space="preserve">
-        <value>Add &apos;RequireComponent&apos;</value>
+        <value>Add 'RequireComponent'</value>
     </data>
     <data name="AddSpaceAttributeAction_Description" xml:space="preserve">
         <value>Add space before this property in the Unity Editor Inspector</value>
     </data>
     <data name="AddSpaceAttributeAction_Name" xml:space="preserve">
-        <value>Add &apos;Space&apos; attribute</value>
+        <value>Add 'Space' attribute</value>
     </data>
     <data name="AddTooltipAttributeAction_Description" xml:space="preserve">
         <value>Add tooltip for this property in the Unity Editor Inspector</value>
     </data>
     <data name="AddTooltipAttributeAction_Name" xml:space="preserve">
-        <value>Add &apos;Tooltip&apos; attribute</value>
+        <value>Add 'Tooltip' attribute</value>
     </data>
     <data name="AddTooltipAttributeAction_Text_Add__Tooltip__attribute" xml:space="preserve">
-        <value>Add &apos;Tooltip&apos; attribute</value>
+        <value>Add 'Tooltip' attribute</value>
     </data>
     <data name="AddTooltipAttributeAction_Text_Add__Tooltip__attribute_from_XML_doc" xml:space="preserve">
-        <value>Add &apos;Tooltip&apos; attribute from XML doc</value>
+        <value>Add 'Tooltip' attribute from XML doc</value>
     </data>
     <data name="AddTooltipAttributeAction_Text_Convert_to__Tooltip__attribute" xml:space="preserve">
-        <value>Convert to &apos;Tooltip&apos; attribute</value>
+        <value>Convert to 'Tooltip' attribute</value>
     </data>
     <data name="AddTooltipAttributeAction_Text_Convert_XML_doc_to__Tooltip__attribute" xml:space="preserve">
-        <value>Convert XML doc to &apos;Tooltip&apos; attribute</value>
+        <value>Convert XML doc to 'Tooltip' attribute</value>
     </data>
     <data name="AlternativeNonAllocatingMethodAvailable" xml:space="preserve">
         <value>Alternative non-allocating method available</value>
@@ -98,7 +98,7 @@
         <value>An alternative method is available that avoids allocation and reuses an existing buffer.</value>
     </data>
     <data name="ApplyingAnAttributeToASingleDeclarationContainingMultipleFieldsWillApplyTheAttributeToEachFieldTheHighlightedAttributeEGFormerlySerializedAsIsIntendedToBeAppliedOnlyToASingleFieldPreferAnExplicitApplicationToASingleFieldInASingleDeclaration" xml:space="preserve">
-        <value>Applying an attribute to a single declaration containing multiple fields will apply the attribute to each field. The highlighted attribute (e.g. &apos;FormerlySerializedAs&apos;) is intended to be applied only to a single field. Prefer an explicit application to a single field in a single declaration.</value>
+        <value>Applying an attribute to a single declaration containing multiple fields will apply the attribute to each field. The highlighted attribute (e.g. 'FormerlySerializedAs') is intended to be applied only to a single field. Prefer an explicit application to a single field in a single declaration.</value>
     </data>
     <data name="AsmDefGuidReferenceInlayHintHighlighting_ContextMenuTitle_GUID_Reference_Hints" xml:space="preserve">
         <value>GUID Reference Hints</value>
@@ -119,13 +119,13 @@
         <value>Assembly Definition Reference (Unity)</value>
     </data>
     <data name="AttributeIsRedundantOnThisDeclarationTypeItIsOnlyUsedWhenAppliedToDeclarationsMessage" xml:space="preserve">
-        <value>Attribute &apos;{0}&apos; is redundant on this declaration type. It is only used when applied to &apos;{1}&apos; declarations.</value>
+        <value>Attribute '{0}' is redundant on this declaration type. It is only used when applied to '{1}' declarations.</value>
     </data>
     <data name="AttributeIsRedundantWhenAppliedToThisDeclarationType" xml:space="preserve">
         <value>Attribute is redundant when applied to this declaration type</value>
     </data>
     <data name="AutoPropertyToSerializedBackingFieldAction_Description" xml:space="preserve">
-        <value>Replaces an auto-property in a Unity type with a property that utilizes a backing field that is marked with the &apos;UnityEngine.SerializeField&apos; attribute</value>
+        <value>Replaces an auto-property in a Unity type with a property that utilizes a backing field that is marked with the 'UnityEngine.SerializeField' attribute</value>
     </data>
     <data name="AutoPropertyToSerializedBackingFieldAction_Name" xml:space="preserve">
         <value>Replace auto-property with property and serialized backing field</value>
@@ -134,40 +134,40 @@
         <value>To property with serialized backing field</value>
     </data>
     <data name="AvoidbaseOnGUIInClassesDerivedFromPropertyDrawer" xml:space="preserve">
-        <value>Avoid &apos;base.OnGUI()&apos; in classes derived from &apos;PropertyDrawer&apos;</value>
+        <value>Avoid 'base.OnGUI()' in classes derived from 'PropertyDrawer'</value>
     </data>
     <data name="baseOnGUIWillPrintNoGUIImplementedInTheUnityInspectorMessage" xml:space="preserve">
-        <value>&apos;base.OnGUI()&apos; will print &apos;No GUI Implemented&apos; in the Unity inspector</value>
+        <value>'base.OnGUI()' will print 'No GUI Implemented' in the Unity inspector</value>
     </data>
     <data name="BoxingIsNotSupported" xml:space="preserve">
         <value>Boxing is not supported</value>
     </data>
     <data name="BurstAccessingManagedMethodFromTypeIsNotSupportedMessage" xml:space="preserve">
-        <value>Burst: Accessing managed method &apos;{0}&apos; from type &apos;{1}&apos; is not supported</value>
+        <value>Burst: Accessing managed method '{0}' from type '{1}' is not supported</value>
     </data>
     <data name="BurstBoxingIsNotSupportedMessage" xml:space="preserve">
-        <value>Burst: Boxing &apos;{0}&apos; is not supported</value>
+        <value>Burst: Boxing '{0}' is not supported</value>
     </data>
     <data name="BurstCompiledCode_Text" xml:space="preserve">
         <value>Burst compiled code</value>
     </data>
     <data name="BurstCreatingAManagedTypeIsNotSupportedMessage" xml:space="preserve">
-        <value>Burst: Creating a managed type &apos;{0}&apos; is not supported</value>
+        <value>Burst: Creating a managed type '{0}' is not supported</value>
     </data>
     <data name="BurstDebugLoggingFunctionsAcceptsOnlyStringsMessage" xml:space="preserve">
         <value>Burst: Debug logging functions accepts only strings</value>
     </data>
     <data name="BurstLoadingFromANonReadonlyStaticFieldIsNotSupportedMessage" xml:space="preserve">
-        <value>Burst: Loading from a non-readonly static field &apos;{0}&apos; is not supported</value>
+        <value>Burst: Loading from a non-readonly static field '{0}' is not supported</value>
     </data>
     <data name="BurstLoadingManagedTypeIsNotSupportedMessage" xml:space="preserve">
-        <value>Burst: Loading managed type &apos;{0}&apos; is not supported</value>
+        <value>Burst: Loading managed type '{0}' is not supported</value>
     </data>
     <data name="BurstSignatureContainsManagedTypesMessage" xml:space="preserve">
-        <value>Burst: &apos;{0}&apos; signature contains managed types</value>
+        <value>Burst: '{0}' signature contains managed types</value>
     </data>
     <data name="BurstTheforeachConstructionIsNotSupportedMessage" xml:space="preserve">
-        <value>Burst: The &apos;foreach&apos; construction is not supported</value>
+        <value>Burst: The 'foreach' construction is not supported</value>
     </data>
     <data name="BurstThisMethodIsAvailableInCOnlyNotHPCMessage" xml:space="preserve">
         <value>Burst: this method is available in C# only, not HPC#</value>
@@ -179,19 +179,19 @@
         <value>Burst: Typeof is prohibited</value>
     </data>
     <data name="BurstWritingToAStaticFieldIsNotSupportedMessage" xml:space="preserve">
-        <value>Burst: Writing to a static field &apos;{0}&apos; is not supported</value>
+        <value>Burst: Writing to a static field '{0}' is not supported</value>
     </data>
     <data name="CachePropertyValueQuickFix_Text_Introduce_variable" xml:space="preserve">
         <value>Introduce variable</value>
     </data>
     <data name="CameraMainIsExpensive" xml:space="preserve">
-        <value>&apos;Camera.main&apos; is expensive</value>
+        <value>'Camera.main' is expensive</value>
     </data>
     <data name="CameraMainIsExpensiveMessage" xml:space="preserve">
-        <value>&apos;Camera.main&apos; is expensive</value>
+        <value>'Camera.main' is expensive</value>
     </data>
     <data name="CameraMainIsSlowAndDoesNotCacheItsResultUsingCameraMainInFrequentlyCalledMethodsIsVeryInefficientPreferCachingTheResultInStartOrAwake" xml:space="preserve">
-        <value>&apos;Camera.main&apos; is slow and does not cache its result. Using &apos;Camera.main&apos; in frequently called methods is very inefficient. Prefer caching the result in &apos;Start()&apos; or &apos;Awake()&apos;.</value>
+        <value>'Camera.main' is slow and does not cache its result. Using 'Camera.main' in frequently called methods is very inefficient. Prefer caching the result in 'Start()' or 'Awake()'.</value>
     </data>
     <data name="CannotReferenceSelfMessage" xml:space="preserve">
         <value>Cannot reference self</value>
@@ -200,31 +200,31 @@
         <value>Cannot resolve component or scriptable object</value>
     </data>
     <data name="CannotResolveSymbolMessage" xml:space="preserve">
-        <value>Cannot resolve symbol &apos;{0}&apos;</value>
+        <value>Cannot resolve symbol '{0}'</value>
     </data>
     <data name="ChangeSceneAtArgumentAction_Text_Change_scene_name_to___0__" xml:space="preserve">
-        <value>Change scene name to &apos;{0}&apos;</value>
+        <value>Change scene name to '{0}'</value>
     </data>
     <data name="ChangeSignatureBulbAction_GetText_Change_parameters_to____0___" xml:space="preserve">
-        <value>Change parameters to &apos;({0})&apos;</value>
+        <value>Change parameters to '({0})'</value>
     </data>
     <data name="ChangeSignatureBulbAction_GetText_Change_return_type_to___0__" xml:space="preserve">
-        <value>Change return type to &apos;{0}&apos;</value>
+        <value>Change return type to '{0}'</value>
     </data>
     <data name="ChangeSignatureBulbAction_GetText_Change_signature_to___0__" xml:space="preserve">
-        <value>Change signature to &apos;{0}&apos;</value>
+        <value>Change signature to '{0}'</value>
     </data>
     <data name="ChangeSignatureBulbAction_GetText_Make___0____1_" xml:space="preserve">
-        <value>Make &apos;{0}&apos; {1}</value>
+        <value>Make '{0}' {1}</value>
     </data>
     <data name="ChangeSignatureBulbAction_GetText_Remove___0___modifier" xml:space="preserve">
-        <value>Remove &apos;{0}&apos; modifier</value>
+        <value>Remove '{0}' modifier</value>
     </data>
     <data name="ChangeSignatureBulbAction_GetText_Remove_type_parameters" xml:space="preserve">
         <value>Remove type parameters</value>
     </data>
     <data name="ComparisonTonullIsExpensiveMessage" xml:space="preserve">
-        <value>Comparison to &apos;null&apos; is expensive</value>
+        <value>Comparison to 'null' is expensive</value>
     </data>
     <data name="ConvertCoalescingToConditionalQuickFix_Text_Convert_to_conditional_expression" xml:space="preserve">
         <value>Convert to conditional expression</value>
@@ -233,13 +233,13 @@
         <value>To standard event function</value>
     </data>
     <data name="ConvertToCompareTagQuickFix_Text_Convert_to__CompareTag_" xml:space="preserve">
-        <value>Convert to &apos;CompareTag&apos;</value>
+        <value>Convert to 'CompareTag'</value>
     </data>
     <data name="ConvertToCoroutineBulbAction_Text_To_coroutine" xml:space="preserve">
         <value>To coroutine</value>
     </data>
     <data name="ConvertToGameObjectAddComponentQuickFix_Text_Convert_to__GameObject_AddComponent__0_____" xml:space="preserve">
-        <value>Convert to &apos;GameObject.AddComponent&lt;{0}&gt;()&apos;</value>
+        <value>Convert to 'GameObject.AddComponent&lt;{0}&gt;()'</value>
     </data>
     <data name="ConvertToGuidReferenceQuickFix_Text_To_GUID_reference" xml:space="preserve">
         <value>To GUID reference</value>
@@ -254,28 +254,28 @@
         <value>To named reference</value>
     </data>
     <data name="ConvertToScriptableObjectCreateInstanceQuickFix_Text_Convert_to__ScriptableObject_CreateInstance__0_____" xml:space="preserve">
-        <value>Convert to &apos;ScriptableObject.CreateInstance&lt;{0}&gt;()&apos;</value>
+        <value>Convert to 'ScriptableObject.CreateInstance&lt;{0}&gt;()'</value>
     </data>
     <data name="ConvertXmlDocToTooltipAttributeAction_Description" xml:space="preserve">
         <value>Convert XML documentation to show a tooltip in the Unity Editor Inspector</value>
     </data>
     <data name="ConvertXmlDocToTooltipAttributeAction_Name" xml:space="preserve">
-        <value>Convert XML doc to &apos;Tooltip&apos; attribute</value>
+        <value>Convert XML doc to 'Tooltip' attribute</value>
     </data>
     <data name="CreateAssetMenuAction_Text_Add_to_Unity_s__Assets_Create__menu" xml:space="preserve">
-        <value>Add to Unity&apos;s &apos;Assets/Create&apos; menu</value>
+        <value>Add to Unity's 'Assets/Create' menu</value>
     </data>
     <data name="CreateAssetMenuContextAction_Description" xml:space="preserve">
-        <value>Adds the &apos;CreateAssetMenu&apos; attribute to a scriptable object. This marks a &apos;ScriptableObject&apos;-derived type to be automatically listed in Unity&apos;s &apos;Assets/Create&apos; menu, so that instances of the type can be easily created and stored in the project as &apos;.asset&apos; files.</value>
+        <value>Adds the 'CreateAssetMenu' attribute to a scriptable object. This marks a 'ScriptableObject'-derived type to be automatically listed in Unity's 'Assets/Create' menu, so that instances of the type can be easily created and stored in the project as '.asset' files.</value>
     </data>
     <data name="CreateAssetMenuContextAction_Name" xml:space="preserve">
-        <value>Add &apos;CreateAssetMenu&apos; attribute</value>
+        <value>Add 'CreateAssetMenu' attribute</value>
     </data>
     <data name="CreateSerializedFieldFromUsageAction_Text_Create_Unity_serialized_field___0__" xml:space="preserve">
-        <value>Create Unity serialized field &apos;{0}&apos;</value>
+        <value>Create Unity serialized field '{0}'</value>
     </data>
     <data name="CreateStaticConstructorFromUsageAction_Text_Create_static_constructor___0__" xml:space="preserve">
-        <value>Create static constructor &apos;{0}&apos;</value>
+        <value>Create static constructor '{0}'</value>
     </data>
     <data name="CreatingAManagedTypeIsNotSupported" xml:space="preserve">
         <value>Creating a managed type is not supported</value>
@@ -302,7 +302,7 @@
         <value>Empty Unity event functions are still called from native code, which affects performance.</value>
     </data>
     <data name="EqualityOperationsOnObjectsDerivingFromUnityEngineObjectWillAlsoCheckThatTheUnderlyingNativeObjectHasNotBeenDestroyedThisRequiresACallIntoNativeCodeAndCanHaveAPerformanceImpactWhenUsedInsideFrequentlyCalledMethods" xml:space="preserve">
-        <value>Equality operations on objects deriving from &apos;UnityEngine.Object&apos; will also check that the underlying native object has not been destroyed. This requires a call into native code and can have a performance impact when used inside frequently called methods.</value>
+        <value>Equality operations on objects deriving from 'UnityEngine.Object' will also check that the underlying native object has not been destroyed. This requires a call into native code and can have a performance impact when used inside frequently called methods.</value>
     </data>
     <data name="EvaluatesCurrentFileNameWithoutWhitespace_Text" xml:space="preserve">
         <value>Evaluates current file name without whitespace characters</value>
@@ -329,25 +329,25 @@
         <value>Unity event handler</value>
     </data>
     <data name="ExpectedAMethodWithSignatureMessage" xml:space="preserve">
-        <value>Expected a method with &apos;{0}&apos; signature</value>
+        <value>Expected a method with '{0}' signature</value>
     </data>
     <data name="ExpectedBuiltInTypeDerivedFromComponentOrUserTypeDerivedFromMonoBehaviour" xml:space="preserve">
-        <value>Expected built in type derived from &apos;Component&apos;, or user type derived from &apos;MonoBehaviour&apos;</value>
+        <value>Expected built in type derived from 'Component', or user type derived from 'MonoBehaviour'</value>
     </data>
     <data name="ExpectedTypeDerivedFromComponentOrMonoBehaviour" xml:space="preserve">
-        <value>Expected type derived from &apos;Component&apos; or &apos;MonoBehaviour&apos;</value>
+        <value>Expected type derived from 'Component' or 'MonoBehaviour'</value>
     </data>
     <data name="ExpectedTypeDerivedFromMessage" xml:space="preserve">
-        <value>Expected type derived from &apos;{0}&apos;</value>
+        <value>Expected type derived from '{0}'</value>
     </data>
     <data name="ExpectedTypeDerivedFromScriptableObject" xml:space="preserve">
-        <value>Expected type derived from &apos;ScriptableObject&apos;</value>
+        <value>Expected type derived from 'ScriptableObject'</value>
     </data>
     <data name="ExpectedTypeDerivedFromScriptableObject3" xml:space="preserve">
-        <value>Expected type derived from &apos;ScriptableObject&apos;</value>
+        <value>Expected type derived from 'ScriptableObject'</value>
     </data>
     <data name="ExpectedTypeDerivedFromUnityEngineScriptableObjectMessage" xml:space="preserve">
-        <value>Expected type derived from &apos;UnityEngine.ScriptableObject&apos;</value>
+        <value>Expected type derived from 'UnityEngine.ScriptableObject'</value>
     </data>
     <data name="ExpensiveCameraMainUsage_RiderPresentableName" xml:space="preserve">
         <value>Expensive `Camera.main` usage</value>
@@ -368,10 +368,10 @@
         <value>Expensive null comparison</value>
     </data>
     <data name="ExplicitStringComparisonIsInefficientUseCompareTagInsteadMessage" xml:space="preserve">
-        <value>Explicit string comparison is inefficient, use &apos;CompareTag&apos; instead</value>
+        <value>Explicit string comparison is inefficient, use 'CompareTag' instead</value>
     </data>
     <data name="ExplicitStringComparisonWithGameObjectTagOrComponentTagIsInefficientUseTheCompareTagMethodInstead" xml:space="preserve">
-        <value>Explicit string comparison with &apos;GameObject.tag&apos; or &apos;Component.tag&apos; is inefficient. Use the &apos;CompareTag&apos; method instead.</value>
+        <value>Explicit string comparison with 'GameObject.tag' or 'Component.tag' is inefficient. Use the 'CompareTag' method instead.</value>
     </data>
     <data name="FieldDetector_AddDeclarationHighlighting_Serializable" xml:space="preserve">
         <value>Serializable</value>
@@ -416,19 +416,19 @@
         <value>Implicitly used identifier</value>
     </data>
     <data name="IncorrectMethodParametersExpectedMessage" xml:space="preserve">
-        <value>Incorrect method parameters. Expected &apos;({0})&apos;</value>
+        <value>Incorrect method parameters. Expected '({0})'</value>
     </data>
     <data name="IncorrectMethodSignature" xml:space="preserve">
         <value>Incorrect method signature</value>
     </data>
     <data name="IncorrectMethodSignatureExpectedMessage" xml:space="preserve">
-        <value>Incorrect method signature. Expected &apos;{0}&apos;</value>
+        <value>Incorrect method signature. Expected '{0}'</value>
     </data>
     <data name="IncorrectMethodSignatureMessage" xml:space="preserve">
         <value>Incorrect method signature</value>
     </data>
     <data name="IncorrectReturnTypeExpectedMessage" xml:space="preserve">
-        <value>Incorrect return type. Expected &apos;{0}&apos;</value>
+        <value>Incorrect return type. Expected '{0}'</value>
     </data>
     <data name="IncorrectTypeParametersMessage" xml:space="preserve">
         <value>Incorrect type parameters</value>
@@ -449,19 +449,19 @@
         <value>Called when Unity first launches the editor, the player, or recompiles scripts</value>
     </data>
     <data name="InitializeComponentBulbActionBase_Text_Initialize_in___0__" xml:space="preserve">
-        <value>Initialize in &apos;{0}&apos;</value>
+        <value>Initialize in '{0}'</value>
     </data>
     <data name="InitializeFieldComponentContextAction_Description" xml:space="preserve">
-        <value>Initializes current field in Start or Awake method via calling &apos;GetComponent&apos;</value>
+        <value>Initializes current field in Start or Awake method via calling 'GetComponent'</value>
     </data>
     <data name="InitializeFieldComponentContextAction_Name" xml:space="preserve">
         <value>Initialize field in Start or Awake method</value>
     </data>
     <data name="InitializeOnLoadAttributeIsRedundantWhenStaticConstructorIsMissingMessage" xml:space="preserve">
-        <value>&apos;InitializeOnLoad&apos; attribute is redundant when static constructor is missing</value>
+        <value>'InitializeOnLoad' attribute is redundant when static constructor is missing</value>
     </data>
     <data name="InitializePropertyComponentContextAction_Description" xml:space="preserve">
-        <value>Initializes current property in Start or Awake method via calling &apos;GetComponent&apos;</value>
+        <value>Initializes current property in Start or Awake method via calling 'GetComponent'</value>
     </data>
     <data name="InitializePropertyComponentContextAction_Name" xml:space="preserve">
         <value>Initialize property in Start or Awake method</value>
@@ -470,7 +470,7 @@
         <value>InputActions (Unity)</value>
     </data>
     <data name="InstantiatingAUnityObjectAndSettingTheparentPropertyAsSeparateOperationsIsInefficientAsTheTransformHierarchyIsCreatedAndImmediatelyReplacedCombineSettingTheparentPropertyWithTheCallToInstantiateTheObject" xml:space="preserve">
-        <value>Instantiating a Unity object and setting the &apos;parent&apos; property as separate operations is inefficient, as the transform hierarchy is created and immediately replaced. Combine setting the &apos;parent&apos; property with the call to instantiate the object.</value>
+        <value>Instantiating a Unity object and setting the 'parent' property as separate operations is inefficient, as the transform hierarchy is created and immediately replaced. Combine setting the 'parent' property with the call to instantiate the object.</value>
     </data>
     <data name="InvalidDefineConstraintExpressionMessage" xml:space="preserve">
         <value>Invalid define constraint expression</value>
@@ -488,7 +488,7 @@
         <value>Loading managed type is not supported</value>
     </data>
     <data name="MakeSerializable_Text_Make_type___0___serializable" xml:space="preserve">
-        <value>Make type &apos;{0}&apos; serializable</value>
+        <value>Make type '{0}' serializable</value>
     </data>
     <data name="Message" xml:space="preserve">
         <value>{0}</value>
@@ -506,16 +506,16 @@
         <value>Method referenced in string literal does not have the expected signature.</value>
     </data>
     <data name="MissingAssemblyReferenceAssemblyWillNotBeReferencedDuringCompilationMessage" xml:space="preserve">
-        <value>Missing assembly reference &apos;{0}&apos;. Assembly will not be referenced during compilation.</value>
+        <value>Missing assembly reference '{0}'. Assembly will not be referenced during compilation.</value>
     </data>
     <data name="MonoBehaviourInstancesMustBeInstantiatedWithGameObjectAddComponentTInsteadOfnew" xml:space="preserve">
-        <value>&apos;MonoBehaviour&apos; instances must be instantiated with &apos;GameObject.AddComponent&lt;T&gt;()&apos; instead of &apos;new&apos;</value>
+        <value>'MonoBehaviour' instances must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'</value>
     </data>
     <data name="MonoBehaviourInstancesMustBeInstantiatedWithGameObjectAddComponentTInsteadOfnewMessage" xml:space="preserve">
-        <value>&apos;MonoBehaviour&apos; instances must be instantiated with &apos;GameObject.AddComponent&lt;T&gt;()&apos; instead of &apos;new&apos;</value>
+        <value>'MonoBehaviour' instances must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'</value>
     </data>
     <data name="MoveAction_Text_Introduce_field_and_initialise_in___0__" xml:space="preserve">
-        <value>Introduce field and initialise in &apos;{0}&apos;</value>
+        <value>Introduce field and initialise in '{0}'</value>
     </data>
     <data name="MoveFromLoopAction_Text_Move_outside_of_loop" xml:space="preserve">
         <value>Move outside of loop</value>
@@ -527,16 +527,16 @@
         <value>Reorder multiplication</value>
     </data>
     <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject" xml:space="preserve">
-        <value>&apos;??&apos; on a type deriving from &apos;UnityEngine.Object&apos; bypasses the lifetime check on the underlying Unity engine object</value>
+        <value>'??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
     </data>
     <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObject6" xml:space="preserve">
-        <value>&apos;?.&apos; on a type deriving from &apos;UnityEngine.Object&apos; bypasses the lifetime check on the underlying Unity engine object</value>
+        <value>'?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
     </data>
     <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage" xml:space="preserve">
-        <value>&apos;??&apos; on a type deriving from &apos;UnityEngine.Object&apos; bypasses the lifetime check on the underlying Unity engine object</value>
+        <value>'??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
     </data>
     <data name="OnATypeDerivingFromUnityEngineObjectBypassesTheLifetimeCheckOnTheUnderlyingUnityEngineObjectMessage1" xml:space="preserve">
-        <value>&apos;?.&apos; on a type deriving from &apos;UnityEngine.Object&apos; bypasses the lifetime check on the underlying Unity engine object</value>
+        <value>'?.' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object</value>
     </data>
     <data name="OrderOfMultiplicationOperationsIsInefficient" xml:space="preserve">
         <value>Order of multiplication operations is inefficient</value>
@@ -545,22 +545,22 @@
         <value>Order of multiplication operations is inefficient</value>
     </data>
     <data name="PackageNotInstalledInfo_Symbol_not_defined__Package___0___is_not_installed" xml:space="preserve">
-        <value>Symbol not defined. Package &apos;{0}&apos; is not installed.</value>
+        <value>Symbol not defined. Package '{0}' is not installed.</value>
     </data>
     <data name="ParameterShouldBeDerivedFromComponent" xml:space="preserve">
-        <value>Parameter should be derived from &apos;Component&apos;</value>
+        <value>Parameter should be derived from 'Component'</value>
     </data>
     <data name="ParameterShouldBeDerivedFromComponent4" xml:space="preserve">
-        <value>Parameter should be derived from &apos;Component&apos;.</value>
+        <value>Parameter should be derived from 'Component'.</value>
     </data>
     <data name="ParameterShouldBeDerivedFromComponentMessage" xml:space="preserve">
-        <value>Parameter &apos;{0}&apos; should be derived from &apos;Component&apos;</value>
+        <value>Parameter '{0}' should be derived from 'Component'</value>
     </data>
     <data name="PossibleIncorrectApplicationOfAttributeToMultipleFields" xml:space="preserve">
         <value>Possible incorrect application of attribute to multiple fields</value>
     </data>
     <data name="PossibleIncorrectApplicationOfFormerlySerializedAsAttributeToMultipleFieldsMessage" xml:space="preserve">
-        <value>Possible incorrect application of &apos;FormerlySerializedAs&apos; attribute to multiple fields</value>
+        <value>Possible incorrect application of 'FormerlySerializedAs' attribute to multiple fields</value>
     </data>
     <data name="PossibleUnintendedBypassOfLifetimeCheckOfUnderlyingUnityEngineObject" xml:space="preserve">
         <value>Possible unintended bypass of lifetime check of underlying Unity engine object</value>
@@ -572,7 +572,7 @@
         <value>Use strongly typed overloads</value>
     </data>
     <data name="PreferGenericMethodOverloadQuickFix_Text_Convert_to__MethodName__1__" xml:space="preserve">
-        <value>Convert to &apos;{0}&lt;{1}&gt;()&apos;</value>
+        <value>Convert to '{0}&lt;{1}&gt;()'</value>
     </data>
     <data name="PreferGUIDBasedAssemblyReferences" xml:space="preserve">
         <value>Prefer GUID-based assembly references</value>
@@ -581,7 +581,7 @@
         <value>Prefer GUID reference</value>
     </data>
     <data name="PreferNonAllocApiQuickFix_Text_Convert_to___0__" xml:space="preserve">
-        <value>Convert to &apos;{0}&apos;</value>
+        <value>Convert to '{0}'</value>
     </data>
     <data name="QuickFixRegistrar_Register_Remove_redundant_Unity_event_function" xml:space="preserve">
         <value>Remove redundant Unity event function</value>
@@ -590,25 +590,25 @@
         <value>Redundant attribute usage</value>
     </data>
     <data name="RedundantFormerlySerializedAsAttribute" xml:space="preserve">
-        <value>Redundant &apos;FormerlySerializedAs&apos; attribute</value>
+        <value>Redundant 'FormerlySerializedAs' attribute</value>
     </data>
     <data name="RedundantFormerlySerializedAsAttributeMessage" xml:space="preserve">
-        <value>Redundant &apos;FormerlySerializedAs&apos; attribute</value>
+        <value>Redundant 'FormerlySerializedAs' attribute</value>
     </data>
     <data name="RedundantHideInInspectorAttribute" xml:space="preserve">
-        <value>Redundant &apos;HideInInspector&apos; attribute</value>
+        <value>Redundant 'HideInInspector' attribute</value>
     </data>
     <data name="RedundantHideInInspectorAttributeMessage" xml:space="preserve">
-        <value>Redundant &apos;HideInInspector&apos; attribute</value>
+        <value>Redundant 'HideInInspector' attribute</value>
     </data>
     <data name="RedundantInitializeOnLoadAttribute" xml:space="preserve">
-        <value>Redundant &apos;InitializeOnLoad&apos; attribute</value>
+        <value>Redundant 'InitializeOnLoad' attribute</value>
     </data>
     <data name="RedundantSerializeFieldAttribute" xml:space="preserve">
-        <value>Redundant &apos;SerializeField&apos; attribute</value>
+        <value>Redundant 'SerializeField' attribute</value>
     </data>
     <data name="RedundantSerializeFieldAttributeMessage" xml:space="preserve">
-        <value>Redundant &apos;SerializeField&apos; attribute</value>
+        <value>Redundant 'SerializeField' attribute</value>
     </data>
     <data name="RedundantUnityEventFunction" xml:space="preserve">
         <value>Redundant Unity event function</value>
@@ -626,19 +626,19 @@
         <value>Make field non-readonly</value>
     </data>
     <data name="RemoveAttributeAction_Text_Remove___0__" xml:space="preserve">
-        <value>Remove &apos;{0}&apos;</value>
+        <value>Remove '{0}'</value>
     </data>
     <data name="RemoveAttributeAction_Text_Remove___0___from_all_fields" xml:space="preserve">
-        <value>Remove &apos;{0}&apos; from all fields</value>
+        <value>Remove '{0}' from all fields</value>
     </data>
     <data name="RemoveAttributeAction_Text_Remove___0___from_SelectedField" xml:space="preserve">
-        <value>Remove &apos;{0}&apos; from &apos;{1}&apos;</value>
+        <value>Remove '{0}' from '{1}'</value>
     </data>
     <data name="RemoveInvalidArrayItemQuickFix_Text_Remove_invalid_value" xml:space="preserve">
         <value>Remove invalid value</value>
     </data>
     <data name="RemoveOneReadonly_Text_Make_Field_non_readonly" xml:space="preserve">
-        <value>Make &apos;{0}&apos; non-readonly</value>
+        <value>Make '{0}' non-readonly</value>
     </data>
     <data name="RemoveRedundantAttributeQuickFix_ScopedText_Remove_redundant_Unity_attributes" xml:space="preserve">
         <value>Remove redundant Unity attributes</value>
@@ -647,10 +647,10 @@
         <value>Remove redundant attribute</value>
     </data>
     <data name="RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_Cannot_rename___FileName__" xml:space="preserve">
-        <value>Unable to rename &apos;{0}&apos;</value>
+        <value>Unable to rename '{0}'</value>
     </data>
     <data name="RenameFileToMatchAssemblyNameQuickFix_ExecutePsiTransaction_File___NewFileName___already_exists" xml:space="preserve">
-        <value>File &apos;{0}&apos; already exists</value>
+        <value>File '{0}' already exists</value>
     </data>
     <data name="RenameFileToMatchAssemblyNameQuickFix_Text_Rename_file_to_match_assembly_name" xml:space="preserve">
         <value>Rename file to match assembly name</value>
@@ -683,16 +683,16 @@
         <value>Scene is disabled in the Unity build settings, so it could not be loaded</value>
     </data>
     <data name="ScriptableObjectInstancesMustBeInstantiatedWithScriptableObjectCreateInstanceTInsteadOfnew" xml:space="preserve">
-        <value>&apos;ScriptableObject&apos; instances must be instantiated with &apos;ScriptableObject.CreateInstance&lt;T&gt;()&apos; instead of &apos;new&apos;</value>
+        <value>'ScriptableObject' instances must be instantiated with 'ScriptableObject.CreateInstance&lt;T&gt;()' instead of 'new'</value>
     </data>
     <data name="ScriptableObjectInstancesMustBeInstantiatedWithScriptableObjectCreateInstanceTInsteadOfnewMessage" xml:space="preserve">
-        <value>&apos;ScriptableObject&apos; instances must be instantiated with &apos;ScriptableObject.CreateInstance&lt;T&gt;()&apos; instead of &apos;new&apos;</value>
+        <value>'ScriptableObject' instances must be instantiated with 'ScriptableObject.CreateInstance&lt;T&gt;()' instead of 'new'</value>
     </data>
     <data name="SettingparentPropertyImmediatelyAfterObjectInstantiationIsInefficient" xml:space="preserve">
-        <value>Setting &apos;parent&apos; property immediately after object instantiation is inefficient</value>
+        <value>Setting 'parent' property immediately after object instantiation is inefficient</value>
     </data>
     <data name="SettingparentPropertyImmediatelyAfterObjectInstantiationIsInefficientMessage" xml:space="preserve">
-        <value>Setting &apos;parent&apos; property immediately after object instantiation is inefficient</value>
+        <value>Setting 'parent' property immediately after object instantiation is inefficient</value>
     </data>
     <data name="SharedStaticTypeParameterRequiresTheUnmanagedConstraint" xml:space="preserve">
         <value>Shared static type parameter requires the unmanaged constraint</value>
@@ -722,44 +722,44 @@
         <value>String based type lookup is inefficient, use generic overload</value>
     </data>
     <data name="SyncVarAttributeCanOnlyBeAppliedInAClassThatDerivesFromNetworkBehaviourMessage" xml:space="preserve">
-        <value>&apos;SyncVar&apos; attribute can only be applied in a class that derives from &apos;NetworkBehaviour&apos;</value>
+        <value>'SyncVar' attribute can only be applied in a class that derives from 'NetworkBehaviour'</value>
     </data>
     <data name="TheAttributeDoesNotDefineAnyRestrictionsOnValidTargetsButIsOnlyUsefulWhenAppliedToSpecificDeclarationsEGFieldClassOrMethod" xml:space="preserve">
         <value>The attribute does not define any restrictions on valid targets, but is only useful when applied to specific declarations, e.g. field, class or method.</value>
     </data>
     <data name="TheClassReferredToInTheCallToGetComponentAddComponentOrScriptableObjectCreateInstanceCannotBeFoundInTheCurrentProjectOrReferencedAssembliesTheCallIsLikelyToFailAtRuntimeAndReturnNull" xml:space="preserve">
-        <value>The class referred to in the call to &apos;GetComponent&apos;, &apos;AddComponent&apos; or &apos;ScriptableObject.CreateInstance&apos; cannot
+        <value>The class referred to in the call to 'GetComponent', 'AddComponent' or 'ScriptableObject.CreateInstance' cannot
           be found in the current project or referenced assemblies. The call is likely to fail at runtime and return null.</value>
     </data>
     <data name="TheDefaultImplementationForOnGUIInPropertyDrawerWillPrintNoGUIImplementedInTheUnityInspector" xml:space="preserve">
-        <value>The default implementation for &apos;OnGUI&apos; in &apos;PropertyDrawer&apos; will print &apos;No GUI Implemented&apos; in the Unity inspector.</value>
+        <value>The default implementation for 'OnGUI' in 'PropertyDrawer' will print 'No GUI Implemented' in the Unity inspector.</value>
     </data>
     <data name="TheforeachConstructionIsNotSupported" xml:space="preserve">
-        <value>The &apos;foreach&apos; construction is not supported</value>
+        <value>The 'foreach' construction is not supported</value>
     </data>
     <data name="TheFormerlySerializedAsAttributeIsOnlyValidOnUnitySerializedFieldsItCanAlsoBeRedundantIfTheNameArgumentMatchesTheCurrentNameOfTheField" xml:space="preserve">
-        <value>The &apos;FormerlySerializedAs&apos; attribute is only valid on Unity serialized fields. It can also be redundant if the name argument matches the current name of the field.</value>
+        <value>The 'FormerlySerializedAs' attribute is only valid on Unity serialized fields. It can also be redundant if the name argument matches the current name of the field.</value>
     </data>
     <data name="TheHideInInspectorAttributeOnlyAppliesToSerialisedFields" xml:space="preserve">
-        <value>The &apos;HideInInspector&apos; attribute only applies to serialized fields</value>
+        <value>The 'HideInInspector' attribute only applies to serialized fields</value>
     </data>
     <data name="TheIndexIsMissingInTheBuildSettings" xml:space="preserve">
         <value>The index is missing in the build settings</value>
     </data>
     <data name="TheInitializeOnLoadAttributeIsRedundantWhenTheStaticConstructorIsMissing" xml:space="preserve">
-        <value>The &apos;InitializeOnLoad&apos; attribute is redundant when the static constructor is missing</value>
+        <value>The 'InitializeOnLoad' attribute is redundant when the static constructor is missing</value>
     </data>
     <data name="TheInputNameIsNotDefinedInTheInputManager" xml:space="preserve">
         <value>The input name is not defined in the Input manager</value>
     </data>
     <data name="TheLayerIsNotDefinedInTheTagsLayers" xml:space="preserve">
-        <value>The layer is not defined in the &apos;Tags &amp; Layers&apos;</value>
+        <value>The layer is not defined in the 'Tags &amp; Layers'</value>
     </data>
     <data name="TheLayerIsNotDefinedInTheTagsLayersTheCallIsLikelyToFailAtRuntime" xml:space="preserve">
-        <value>The layer is not defined in the &apos;Tags &amp; Layers&apos;. The call is likely to fail at runtime.</value>
+        <value>The layer is not defined in the 'Tags &amp; Layers'. The call is likely to fail at runtime.</value>
     </data>
     <data name="TheLayerIsNotDefinedInTheTagsLayersTheCallIsLikelyToFailAtRuntimeMessage" xml:space="preserve">
-        <value>The layer is not defined in the &apos;Tags &amp; Layers&apos;. The call is likely to fail at runtime.</value>
+        <value>The layer is not defined in the 'Tags &amp; Layers'. The call is likely to fail at runtime.</value>
     </data>
     <data name="TheNameIsNotDefinedInTheInputManagerTheCallIsLikelyToFailAtRuntime" xml:space="preserve">
         <value>The name is not defined in the Input manager. The call is likely to fail at runtime.</value>
@@ -768,15 +768,15 @@
         <value>The name is not defined in the Input manager. The call is likely to fail at runtime.</value>
     </data>
     <data name="TheNullCoalescingOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" xml:space="preserve">
-        <value>The null coalescing operator does not call the custom equality operators defined on &apos;UnityEngine.Object&apos;,
+        <value>The null coalescing operator does not call the custom equality operators defined on 'UnityEngine.Object',
           which will check to see if the underlying Unity engine object has been destroyed. Prefer an explicit null
-          comparison or implicit bool comparison if the lifetime check is intended, or explicitly use &apos;object.ReferenceEquals()&apos;
+          comparison or implicit bool comparison if the lifetime check is intended, or explicitly use 'object.ReferenceEquals()'
           for a standard (and quicker) CLR null check.</value>
     </data>
     <data name="TheNullPropagatingOperatorDoesNotCallTheCustomEqualityOperatorsDefinedOnUnityEngineObjectWhichWillCheckToSeeIfTheUnderlyingUnityEngineObjectHasBeenDestroyedPreferAnExplicitNullComparisonOrImplicitBoolComparisonIfTheLifetimeCheckIsIntendedOrExplicitlyUseobjectReferenceEqualsForAStandardAndQuickerCLRNullCheck" xml:space="preserve">
-        <value>The null propagating operator does not call the custom equality operators defined on &apos;UnityEngine.Object&apos;,
+        <value>The null propagating operator does not call the custom equality operators defined on 'UnityEngine.Object',
           which will check to see if the underlying Unity engine object has been destroyed. Prefer an explicit null
-          comparison or implicit bool comparison if the lifetime check is intended, or explicitly use &apos;object.ReferenceEquals()&apos;
+          comparison or implicit bool comparison if the lifetime check is intended, or explicitly use 'object.ReferenceEquals()'
           for a standard (and quicker) CLR null check.</value>
     </data>
     <data name="ThereAreSeveralScenesWithSameNameInTheUnityBuildSettingsOnlySceneWithSmallestIndexWillBeUsedMessage" xml:space="preserve">
@@ -811,10 +811,10 @@
         <value>The resource is not defined in the project</value>
     </data>
     <data name="TheResourceIsNotDefinedInTheProjectExpressionWillReturnnull" xml:space="preserve">
-        <value>The resource is not defined in the project. Expression will return &apos;null&apos;.</value>
+        <value>The resource is not defined in the project. Expression will return 'null'.</value>
     </data>
     <data name="TheResourceIsNotDefinedInTheProjectExpressionWillReturnnullMessage" xml:space="preserve">
-        <value>The resource &apos;{0}&apos; is not defined in the project. Expression will return &apos;null&apos;.</value>
+        <value>The resource '{0}' is not defined in the project. Expression will return 'null'.</value>
     </data>
     <data name="TheSameShortcutIsDefinedForAnotherMenuItem" xml:space="preserve">
         <value>The same shortcut is defined for another menu item</value>
@@ -829,13 +829,13 @@
         <value>The scene is missing in the Unity build settings.</value>
     </data>
     <data name="TheTagIsNotDefinedInTheTagsLayers" xml:space="preserve">
-        <value>The tag is not defined in the &apos;Tags &amp; Layers&apos;</value>
+        <value>The tag is not defined in the 'Tags &amp; Layers'</value>
     </data>
     <data name="TheTagIsNotDefinedInTheTagsLayersExpressionWillReturnfalse" xml:space="preserve">
-        <value>The tag is not defined in the &apos;Tags &amp; Layers&apos;. Expression will return &apos;false&apos;.</value>
+        <value>The tag is not defined in the 'Tags &amp; Layers'. Expression will return 'false'.</value>
     </data>
     <data name="TheTagIsNotDefinedInTheTagsLayersExpressionWillReturnfalseMessage" xml:space="preserve">
-        <value>The tag is not defined in the &apos;Tags &amp; Layers&apos;. Expression will return &apos;false&apos;.</value>
+        <value>The tag is not defined in the 'Tags &amp; Layers'. Expression will return 'false'.</value>
     </data>
     <data name="ThisMethodCallIsInefficientWhenCalledInsideAPerformanceCriticalContext" xml:space="preserve">
         <value>This method call is inefficient when called inside a performance critical context.</value>
@@ -844,16 +844,16 @@
         <value>To avoid confusion, the name of the assembly definition file should match the name of the assembly being defined.</value>
     </data>
     <data name="ToggleHideInInspectorAttributeAction_Description" xml:space="preserve">
-        <value>Adds or removes the &apos;HideInInspector&apos; attribute on a Unity serialized field, removing the field from the Inspector window</value>
+        <value>Adds or removes the 'HideInInspector' attribute on a Unity serialized field, removing the field from the Inspector window</value>
     </data>
     <data name="ToggleHideInInspectorAttributeAction_Name" xml:space="preserve">
-        <value>Toggle &apos;HideInInspector&apos; attribute on fields</value>
+        <value>Toggle 'HideInInspector' attribute on fields</value>
     </data>
     <data name="ToggleSerializedFieldAction_Description" xml:space="preserve">
-        <value>Toggles a field in a Unity type between serialized and non-serialized. If the field is non-public, the &apos;UnityEngine.SerializeField&apos; attribute is added. If the field is already serialized, the attribute is removed, and for public fields, the &apos;NonSerialized&apos; field is added.</value>
+        <value>Toggles a field in a Unity type between serialized and non-serialized. If the field is non-public, the 'UnityEngine.SerializeField' attribute is added. If the field is already serialized, the attribute is removed, and for public fields, the 'NonSerialized' field is added.</value>
     </data>
     <data name="ToggleSerializedFieldAction_Name" xml:space="preserve">
-        <value>Toggle &apos;SerializeField&apos; and &apos;NonSerialized&apos; attributes on fields</value>
+        <value>Toggle 'SerializeField' and 'NonSerialized' attributes on fields</value>
     </data>
     <data name="ToggleSerializedFieldAll_Text_all_fields" xml:space="preserve">
         <value>all fields</value>
@@ -880,19 +880,19 @@
         <value>To serialized field</value>
     </data>
     <data name="ToggleSerializedFieldOne_Text_Make_field___0___non_serialized" xml:space="preserve">
-        <value>Make field &apos;{0}&apos; non-serialized</value>
+        <value>Make field '{0}' non-serialized</value>
     </data>
     <data name="ToggleSerializedFieldOne_Text_Make_field___0___serialized" xml:space="preserve">
-        <value>Make field &apos;{0}&apos; serialized</value>
+        <value>Make field '{0}' serialized</value>
     </data>
     <data name="ToggleSerializedFieldOne_Text_Make_field___0___serialized__remove_readonly_" xml:space="preserve">
-        <value>Make field &apos;{0}&apos; serialized (remove readonly)</value>
+        <value>Make field '{0}' serialized (remove readonly)</value>
     </data>
     <data name="ToggleSerializedFieldOne_Text_Make_field___0___serialized__remove_static_" xml:space="preserve">
-        <value>Make field &apos;{0}&apos; serialized (remove static)</value>
+        <value>Make field '{0}' serialized (remove static)</value>
     </data>
     <data name="ToggleSerializedFieldOne_Text_Make_field___0___serialized__remove_static_and_readonly_" xml:space="preserve">
-        <value>Make field &apos;{0}&apos; serialized (remove static and readonly)</value>
+        <value>Make field '{0}' serialized (remove static and readonly)</value>
     </data>
     <data name="TryStatementIsNotSupported" xml:space="preserve">
         <value>Try statement is not supported</value>
@@ -941,7 +941,7 @@
         <value>Typeof is prohibited in Burst</value>
     </data>
     <data name="TypeParameterMustBeUnmanagedIsNotMessage" xml:space="preserve">
-        <value>Type parameter must be unmanaged, &apos;{0}&apos; is not</value>
+        <value>Type parameter must be unmanaged, '{0}' is not</value>
     </data>
     <data name="Unity_Internal_DumpDuplicateTypeNames_Text" xml:space="preserve">
         <value>Dump Duplicate Type Names</value>
@@ -983,22 +983,22 @@
         <value>Settings for Unity-specific C# formatting</value>
     </data>
     <data name="UnityDots_Add_RequireForUpdate_SingletonQuickFix" xml:space="preserve">
-        <value>Add missing &apos;RequireForUpdate&lt;{0}&gt;&apos; call</value>
+        <value>Add missing 'RequireForUpdate&lt;{0}&gt;' call</value>
     </data>
     <data name="UnityDots_Add_RequireForUpdate_SingletonQuickFix_For_All" xml:space="preserve">
-        <value>Add all missing &apos;RequireForUpdate&apos; calls</value>
+        <value>Add all missing 'RequireForUpdate' calls</value>
     </data>
     <data name="UnityDots_AddComponentLookup_Update_Text" xml:space="preserve">
-        <value>Add missing &apos;Update&apos; call for &apos;{0}&apos;</value>
+        <value>Add missing 'Update' call for '{0}'</value>
     </data>
     <data name="UnityDots_AddComponentLookupScoped_Update_Text" xml:space="preserve">
-        <value>Add missing &apos;Update&apos; call for all QueryLookups</value>
+        <value>Add missing 'Update' call for all QueryLookups</value>
     </data>
     <data name="UnityDots_ComponentLookupFieldMustBeUpdated" xml:space="preserve">
-        <value>Component lookup &apos;{0}&apos; must be updated</value>
+        <value>Component lookup '{0}' must be updated</value>
     </data>
     <data name="UnityDots_CurrentComponentLookupMustBeUpdated" xml:space="preserve">
-        <value>Field of &apos;ComponentLookup&apos; type must be updated before being used.</value>
+        <value>Field of 'ComponentLookup' type must be updated before being used.</value>
     </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_Baker" xml:space="preserve">
         <value>Baker</value>
@@ -1031,7 +1031,7 @@
         <value>Baker Generation</value>
     </data>
     <data name="UnityDots_GetSingletonMustBeRequested" xml:space="preserve">
-        <value>To use the result of a &apos;GetSingleton&lt;{0}&gt;&apos; call in the function, &apos;OnCreate&apos; must include a &apos;RequireForUpdate&apos; call</value>
+        <value>To use the result of a 'GetSingleton&lt;{0}&gt;' call in the function, 'OnCreate' must include a 'RequireForUpdate' call</value>
     </data>
     <data name="UnityDots_projects" xml:space="preserve">
         <value>Unity DOTS projects</value>
@@ -1100,7 +1100,7 @@
         <value>When Code Vision is disabled</value>
     </data>
     <data name="UnityOptionsPage_AddDebuggingSection_Break_on_unhandled_exceptions__setting_for_IL2CPP_players_Comment" xml:space="preserve">
-        <value>Unity&apos;s Mono 4.x runtime ignores the &apos;Break on unhandled exceptions&apos; setting.
+        <value>Unity's Mono 4.x runtime ignores the 'Break on unhandled exceptions' setting.
 This option applies the same behaviour to IL2CPP players.</value>
     </data>
     <data name="UnityOptionsPage_AddDebuggingSection_Debugging" xml:space="preserve">
@@ -1116,7 +1116,7 @@ Rendering of summary values is also improved, such as showing Vector3
 float values with full precision.</value>
     </data>
     <data name="UnityOptionsPage_AddDebuggingSection_Ignore__Break_on_unhandled_exceptions__setting_for_IL2CPP_players" xml:space="preserve">
-        <value>Ignore &apos;Break on unhandled exceptions&apos; setting for IL2CPP players</value>
+        <value>Ignore 'Break on unhandled exceptions' setting for IL2CPP players</value>
     </data>
     <data name="UnityOptionsPage_AddGeneralSection_" xml:space="preserve">
         <value>Recommended. Integration features such as play/pause, log view and
@@ -1125,7 +1125,7 @@ the Rider package in Unity 2019.2 and newer. Earlier versions require
 a plugin to be installed to a project.</value>
     </data>
     <data name="UnityOptionsPage_AddGeneralSection_Automatically_install_and_update_Rider_s_Unity_editor_plugin" xml:space="preserve">
-        <value>Automatically install and update Rider&apos;s Unity editor plugin</value>
+        <value>Automatically install and update Rider's Unity editor plugin</value>
     </data>
     <data name="UnityOptionsPage_AddGeneralSection_Automatically_refresh_assets_in_Unity" xml:space="preserve">
         <value>Automatically refresh assets in Unity</value>
@@ -1236,13 +1236,13 @@ a plugin to be installed to a project.</value>
         <value>Unity runtime folder</value>
     </data>
     <data name="UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property" xml:space="preserve">
-        <value>Add &apos;FormerlySerializedAs&apos; when renaming serialized fields</value>
+        <value>Always add 'FormerlySerializedAs' when renaming serialized fields</value>
     </data>
     <data name="UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property" xml:space="preserve">
-        <value>Ask whether to add &apos;FormerlySerializedAs&apos; when renaming serialized fields</value>
+        <value>Ask whether to add 'FormerlySerializedAs' when renaming serialized fields</value>
     </data>
     <data name="UnitySettings_Refactoring_Dont_shot_popup_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property" xml:space="preserve">
-        <value>Don&apos;t show this dialog next time</value>
+        <value>Don't show this dialog next time</value>
     </data>
     <data name="UnitySettings_Refactoring_Refactoring_Settings_Header" xml:space="preserve">
         <value>Refactoring</value>
@@ -1263,7 +1263,7 @@ a plugin to be installed to a project.</value>
         <value>Enables performance analysis in frequently called code</value>
     </data>
     <data name="UnitySettings_t_Enables_showing_hot_icon_for_frequently_called_code" xml:space="preserve">
-        <value>Enables the &apos;hot spot&apos; icon for frequently called code</value>
+        <value>Enables the 'hot spot' icon for frequently called code</value>
     </data>
     <data name="UnitySettings_t_Enables_showing_Unity_icon_for_Burst_compiled_code" xml:space="preserve">
         <value>Enables the Unity icon for Burst compiled code</value>
@@ -1290,7 +1290,7 @@ a plugin to be installed to a project.</value>
         <value>If this option is enabled, UnityYamlMerge would be used to merge YAML files</value>
     </data>
     <data name="UnitySettings_t_Ignore__Break_on_Unhandled_Exceptions__for_IL2CPP_players" xml:space="preserve">
-        <value>Ignore &apos;Break on Unhandled Exceptions&apos; for IL2CPP players</value>
+        <value>Ignore 'Break on Unhandled Exceptions' for IL2CPP players</value>
     </data>
     <data name="UnitySettings_t_Merge_parameters" xml:space="preserve">
         <value>Merge parameters</value>
@@ -1317,7 +1317,7 @@ a plugin to be installed to a project.</value>
         <value>Unity plugin settings</value>
     </data>
     <data name="UnityWillIgnoreTheSerializeFieldAttributeIfAFieldIsAlsoMarkedWithTheNonSerializedAttribute" xml:space="preserve">
-        <value>Unity will ignore the &apos;SerializeField&apos; attribute if a field is also marked with the &apos;NonSerialized&apos; attribute</value>
+        <value>Unity will ignore the 'SerializeField' attribute if a field is also marked with the 'NonSerialized' attribute</value>
     </data>
     <data name="UnityYamlProjectFileType_UnityYamlProjectFileType_Unity_Yaml" xml:space="preserve">
         <value>Unity YAML File</value>
@@ -1332,22 +1332,22 @@ a plugin to be installed to a project.</value>
         <value>Symbol not defined. Unmet version constraint: {0}.</value>
     </data>
     <data name="UseCompareTagInsteadOfExplicitStringComparison" xml:space="preserve">
-        <value>Use &apos;CompareTag&apos; instead of explicit string comparison</value>
+        <value>Use 'CompareTag' instead of explicit string comparison</value>
     </data>
     <data name="UseJaggedOrOneDimensionalArrayInsteadOfMultidimensionalArray" xml:space="preserve">
         <value>Use jagged or one-dimensional array instead of multidimensional array</value>
     </data>
     <data name="UseNonAllocatingMethodMessage" xml:space="preserve">
-        <value>Use non-allocating method &apos;{0}&apos;</value>
+        <value>Use non-allocating method '{0}'</value>
     </data>
     <data name="UsingAStringTypeNameToLookUpAComponentIsSlowerThanSpecifyingTheTypeAsAGenericTypeParameter" xml:space="preserve">
         <value>Using a string type name to look up a component is slower than specifying the type as a generic type parameter</value>
     </data>
     <data name="UsingnewToInstantiateAClassDerivedFromMonoBehaviourWillNotAttachItToAGameObjectInstanceAndUnityWillNotCallAnyEventFunctionsCreateANewInstanceUsingGameObjectAddComponentT" xml:space="preserve">
-        <value>Using &apos;new&apos; to instantiate a class derived from &apos;MonoBehaviour&apos; will not attach it to a &apos;GameObject&apos; instance, and Unity will not call any event functions. Create a new instance using &apos;GameObject.AddComponent&lt;T&gt;()&apos;.</value>
+        <value>Using 'new' to instantiate a class derived from 'MonoBehaviour' will not attach it to a 'GameObject' instance, and Unity will not call any event functions. Create a new instance using 'GameObject.AddComponent&lt;T&gt;()'.</value>
     </data>
     <data name="UsingnewToInstantiateAClassDerivedFromScriptableObjectMeansThatUnityWillNotCallAnyEventFunctionsCreateANewInstanceUsingGameObjectAddComponentT" xml:space="preserve">
-        <value>Using &apos;new&apos; to instantiate a class derived from &apos;ScriptableObject&apos; means that Unity will not call any event functions. Create a new instance using &apos;GameObject.AddComponent&lt;T&gt;()&apos;.</value>
+        <value>Using 'new' to instantiate a class derived from 'ScriptableObject' means that Unity will not call any event functions. Create a new instance using 'GameObject.AddComponent&lt;T&gt;()'.</value>
     </data>
     <data name="WritingToAStaticFieldIsNotSupported" xml:space="preserve">
         <value>Writing to a static field is not supported</value>
