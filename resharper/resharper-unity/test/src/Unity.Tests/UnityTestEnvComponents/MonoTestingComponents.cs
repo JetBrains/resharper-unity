@@ -1,8 +1,9 @@
+using System;
 using JetBrains.Application.Environment;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Tests.YamlTestComponents
+namespace JetBrains.ReSharper.Plugins.Tests.UnityTestEnvComponents
 {
     // The Unix file system watcher appears to be much slower to initialise than Windows. It's enabled by default, and
     // disabled/re-enabled at the start and end of each test. But re-enabling reinitialises the watchers, which is very
