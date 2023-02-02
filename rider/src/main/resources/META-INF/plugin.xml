@@ -22,11 +22,12 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.UnityUIMinimizer"/>
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.notifications.UnityAutoSaveConfigureNotification"/>
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.notifications.OpenUnityProjectAsFolderNotification"/>
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ProtocolInstanceWatcher"/>
+
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService"/>
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.settings.RiderUnitySettings"/>
-    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.notifications.OpenUnityProjectAsFolderNotification" preload="true" />
-    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.notifications.UnityAutoSaveConfigureNotification" preload="true" />
-    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ProtocolInstanceWatcher" preload="true" />
 
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater"/>
     <rd.extListener endpoint="IDE Frontend"
