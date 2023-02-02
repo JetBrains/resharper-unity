@@ -34,31 +34,26 @@
                     location="SolutionModel.solutions.frontendBackendModel"
                     extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
                     handler="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater$ProtocolListener"/>
-
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.notifications.UpdateMonoNotification"/>
     <rd.extListener endpoint="IDE Frontend"
                     location="SolutionModel.solutions.frontendBackendModel"
                     extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
                     handler="com.jetbrains.rider.plugins.unity.notifications.UpdateMonoNotification$ProtocolListener"/>
-
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.FrontendBackendHost"/>
     <rd.extListener endpoint="IDE Frontend"
                     location="SolutionModel.solutions.frontendBackendModel"
                     extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
                     handler="com.jetbrains.rider.plugins.unity.FrontendBackendHost$ProtocolListener"/>
-
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.notifications.AssetModeForceTextNotification"/>
     <rd.extListener endpoint="IDE Frontend"
                     location="SolutionModel.solutions.frontendBackendModel"
                     extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
                     handler="com.jetbrains.rider.plugins.unity.notifications.AssetModeForceTextNotification$ProtocolListener"/>
-
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.notifications.DeferredCachesInProgressNotification"/>
     <rd.extListener endpoint="IDE Frontend"
                     location="SolutionModel.solutions.frontendBackendModel"
                     extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
                     handler="com.jetbrains.rider.plugins.unity.notifications.DeferredCachesInProgressNotification$ProtocolListener"/>
-
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator"/>
     <rd.extListener endpoint="IDE Frontend"
                     location="SolutionModel.solutions.frontendBackendModel"
@@ -69,6 +64,11 @@
                     location="SolutionModel.solutions.frontendBackendModel"
                     extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
                     handler="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowManager$ProtocolListener"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.unitTesting.UnitTestLauncherState"/>
+    <rd.extListener endpoint="IDE Frontend"
+                    location="SolutionModel.solutions.frontendBackendModel"
+                    extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
+                    handler="com.jetbrains.rider.plugins.unity.ui.unitTesting.UnitTestLauncherState$ProtocolListener"/>
 
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory"/>
 
@@ -214,10 +214,6 @@
 
     <rider.action.technical.support.info.provider implementation="com.jetbrains.rider.plugins.unity.actions.UnityVersionRiderTechnicalSupportInfoProvider" />
   </extensions>
-
-  <project-components>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.unitTesting.UnitTestLauncherState</implementation-class></component>
-  </project-components>
 
   <applicationListeners>
     <listener class="com.jetbrains.rider.plugins.unity.SaveAllTracker" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
