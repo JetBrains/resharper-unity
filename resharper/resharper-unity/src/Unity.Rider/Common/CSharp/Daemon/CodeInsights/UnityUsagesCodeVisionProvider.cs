@@ -100,8 +100,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
         {
             return NounUtilEx.ToEmptyPluralOrSingularQuick(count, estimatedResult,
                 Strings.UnityUsagesCodeVisionProvider_GetText_No_asset_usages,
-                Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_asset,
-                Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_assets);
+                Strings.UnityUsagesCodeVisionProvider_Noun_asset_usage,
+                Strings.UnityUsagesCodeVisionProvider_Noun_asset_usages);
         }
     }
 }

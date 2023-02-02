@@ -189,7 +189,7 @@
         <value>Usages in assets are not available during asset indexing</value>
     </data>
     <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Changed_in__0___assets" xml:space="preserve">
-        <value>Changed in {0}+ assets}</value>
+        <value>Changed in {0}+ assets</value>
         <comment>"Changed in 0+ assets" or "Changed in 1+ assets"  and so on</comment>
     </data>
     <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Unchanged" xml:space="preserve">
