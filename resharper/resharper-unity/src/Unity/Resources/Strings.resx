@@ -1236,7 +1236,7 @@ a plugin to be installed to a project.</value>
         <value>Unity runtime folder</value>
     </data>
     <data name="UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property" xml:space="preserve">
-        <value>Always add 'FormerlySerializedAs' when renaming serialized fields</value>
+        <value>Add 'FormerlySerializedAs' when renaming serialized fields</value>
     </data>
     <data name="UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property" xml:space="preserve">
         <value>Ask whether to add 'FormerlySerializedAs' when renaming serialized fields</value>
