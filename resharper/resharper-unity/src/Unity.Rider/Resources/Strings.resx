@@ -41,7 +41,7 @@
         <value>This file is part of the Unity Package Cache. Any changes made will be lost.</value>
     </data>
     <data name="LoadSceneFixBulbAction_Text_Add___SceneName___to_build_settings" xml:space="preserve">
-        <value>Add &apos;{0}&apos; to build settings</value>
+        <value>Add '{0}' to build settings</value>
     </data>
     <data name="MakeSureRider_IsSetAsTheExternalEditor_Text" xml:space="preserve">
         <value>Make sure Rider {0} is set as the External Editor in Unity preferences.</value>
