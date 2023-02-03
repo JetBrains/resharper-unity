@@ -1,53 +1,53 @@
 package com.jetbrains.rider.plugins.unity.ui.unitTesting
 
-import com.intellij.ide.util.PropertiesComponent
-import com.intellij.openapi.components.PersistentStateComponent
-import com.intellij.openapi.components.State
-import com.intellij.openapi.components.Storage
-import com.intellij.openapi.components.StoragePathMacros
+import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
-import com.jetbrains.rd.platform.util.lifetime
-import com.jetbrains.rd.util.reactive.whenTrue
+import com.jetbrains.rd.ide.model.Solution
+import com.jetbrains.rd.protocol.ProtocolExtListener
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.Property
+import com.jetbrains.rd.util.reactive.adviseNotNull
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnitTestLaunchPreference
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.projectView.solution
 import org.jdom.Element
 
 @State(name = "UnityUnitTestConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
-class UnitTestLauncherState(val project: Project) : PersistentStateComponent<Element> {
+class UnitTestLauncherState : PersistentStateComponent<Element> {
 
     companion object {
-        const val discoverLaunchViaUnity = "Discover.Launch.Via.Unity"
         const val currentTestLauncher = "currentTestLauncher"
 
         private const val NUnit = "NUnit"
         private const val EditMode = "EditMode"
         private const val PlayMode = "PlayMode"
         private const val Both = "Both"
+
+        fun getInstance(project: Project): UnitTestLauncherState =  project.service()
     }
 
-    init {
-        val propertiesComponent: PropertiesComponent = PropertiesComponent.getInstance(project)
-        if (!propertiesComponent.getBoolean(discoverLaunchViaUnity)) {
-            val nestedLifetime = project.lifetime.createNested()
-            project.solution.frontendBackendModel.unityEditorConnected.whenTrue(nestedLifetime) {
-                project.solution.frontendBackendModel.unitTestPreference.value = UnitTestLaunchPreference.EditMode
-                propertiesComponent.setValue(discoverLaunchViaUnity, true)
-                nestedLifetime.terminate()
+    val currentTestLauncherProperty: Property<UnitTestLaunchPreference?> = Property(null) // null means undef
+
+    class ProtocolListener : ProtocolExtListener<Solution, FrontendBackendModel> {
+        override fun extensionCreated(lifetime: Lifetime, project: Project, parent: Solution, model: FrontendBackendModel) {
+            getInstance(project).currentTestLauncherProperty.adviseNotNull(lifetime){
+                model.unitTestPreference.value = it
             }
         }
     }
 
     override fun getState(): Element {
         val element = Element("state")
-        val value = getLauncherId(project.solution.frontendBackendModel.unitTestPreference.value)
-        element.setAttribute(currentTestLauncher, value)
+        val value = currentTestLauncherProperty.value
+        if (value != null)
+            element.setAttribute(currentTestLauncher, getLauncherId(value))
         return element
     }
 
     override fun loadState(element: Element) {
-        val attributeValue = element.getAttributeValue(currentTestLauncher, "") ?: return
-        project.solution.frontendBackendModel.unitTestPreference.value = getLauncherType(attributeValue)
+        val attributeValue = element.getAttributeValue(currentTestLauncher, "")
+        if (attributeValue != null && attributeValue.isNotEmpty()) {
+            currentTestLauncherProperty.value = getLauncherType(attributeValue)
+        }
     }
 
     private fun getLauncherId(currentPreference: UnitTestLaunchPreference?): String {
