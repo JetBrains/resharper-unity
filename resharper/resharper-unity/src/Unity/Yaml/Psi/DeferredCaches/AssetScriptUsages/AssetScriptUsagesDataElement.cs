@@ -61,10 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptU
         [NotNull]
         public IEnumerable<AssetScriptUsage> EnumerateAssetUsages()
         {
-            foreach (var assetUsage in myAssetUsages)
-            {
-                yield return assetUsage;
-            }
+            return myAssetUsages;
         }
     }
 }

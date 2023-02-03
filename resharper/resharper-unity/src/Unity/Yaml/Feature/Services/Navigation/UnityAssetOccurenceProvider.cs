@@ -12,17 +12,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
     {
         public IOccurrence MakeOccurrence(FindResult findResult)
         {
-
             if (findResult is UnityEventSubscriptionFindResult unityEventFindResult)
             {
                 return new UnityEventSubscriptionOccurrence(unityEventFindResult.SourceFile, unityEventFindResult.DeclaredElement,
                     unityEventFindResult.AttachedElementLocation, unityEventFindResult.IsPrefabModification);
             }
 
-            if (findResult is UnityAnimationEventFindResults animationEventFindResult)
+            if (findResult is AnimExplicitFindResults animationEventFindResult)
             {
-                return new UnityAnimationEventOccurence(animationEventFindResult.SourceFile,
+                return new AnimExplicitEventOccurence(animationEventFindResult.SourceFile,
                     animationEventFindResult.DeclaredElementPointer, animationEventFindResult.Usage);
+            }
+            
+            if (findResult is AnimImplicitFindResult result)
+            {
+                return new AnimImplicitOccurence(result.SourceFile,
+                    result.DocumentRange, OccurrencePresentationOptions.DefaultOptions);
             }
             
             if (findResult is UnityScriptsFindResults scriptFindResult) return CreateScriptOccurence(scriptFindResult);
@@ -30,13 +35,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             if (findResult is UnityInspectorFindResult unityInspectorFindResults)
             {
                 return new UnityInspectorValuesOccurrence(unityInspectorFindResults.SourceFile, unityInspectorFindResults.InspectorVariableUsage,
-                    unityInspectorFindResults.DeclaredElementPointer, unityInspectorFindResults.OwningElemetLocation, unityInspectorFindResults.IsPrefabModification); 
+                    unityInspectorFindResults.DeclaredElementPointer, unityInspectorFindResults.OwningElementLocation, unityInspectorFindResults.IsPrefabModification); 
             }
             
             if (findResult is UnityEventHandlerFindResult unityMethodsFindResult)
             {
                 return new UnityEventHandlerOccurrence(unityMethodsFindResult.SourceFile, unityMethodsFindResult.DeclaredElementPointer,
-                    unityMethodsFindResult.OwningElemetLocation, unityMethodsFindResult.AssetMethodUsages, unityMethodsFindResult.IsPrefabModification); 
+                    unityMethodsFindResult.OwningElementLocation, unityMethodsFindResult.AssetMethodUsages, unityMethodsFindResult.IsPrefabModification); 
             }
             
             return null;
@@ -53,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             {
                 case AssetScriptUsage assetScriptUsage:
                     var guid = assetScriptUsage.UsageTarget.ExternalAssetGuid;
-                    var owningElementLocation = unityScriptsFindResults.OwningElemetLocation;
+                    var owningElementLocation = unityScriptsFindResults.OwningElementLocation;
                     return new UnityScriptsOccurrence(file, declaredElementPointer, owningElementLocation, guid);
                 case AnimatorStateScriptUsage animatorStateUsage:
                     return new UnityAnimatorScriptOccurence(file, declaredElementPointer, animatorStateUsage);

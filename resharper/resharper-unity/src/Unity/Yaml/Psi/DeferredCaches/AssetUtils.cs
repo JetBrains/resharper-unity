@@ -36,9 +36,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private static readonly StringSearcher ourGameObjectSearcher = new StringSearcher("!u!1 ", true);
         private static readonly StringSearcher ourAnimatorStateSearcher = new StringSearcher("!u!1102", true);
         private static readonly StringSearcher ourAnimatorStateMachineSearcher = new StringSearcher("!u!1107", true);
+        private static readonly StringSearcher ourAnimatorSearcher = new StringSearcher("!u!95 ", true);
         private static readonly StringSearcher ourStrippedSearcher = new StringSearcher(" stripped", true);
         private static readonly StringSearcher ourGameObjectFieldSearcher = new StringSearcher("m_GameObject:", true);
         private static readonly StringSearcher ourActionsSearcher = new StringSearcher("m_Actions:", true);
+        private static readonly StringSearcher ourMotionSearcher = new StringSearcher("m_Motion:", true);
         private static readonly StringSearcher ourGameObjectNameSearcher = new StringSearcher("m_Name:", true);
         private static readonly StringSearcher ourRootIndexSearcher = new StringSearcher("m_RootOrder:", true);
         private static readonly StringSearcher ourPrefabInstanceSearcher = new StringSearcher("m_PrefabInstance:", true);
@@ -78,6 +80,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         public static bool IsAnimatorStateMachine(IBuffer buffer) =>
             ourAnimatorStateMachineSearcher.Find(buffer, 0, Math.Min(buffer.Length, 30)) >= 0;
 
+        public static bool IsAnimator(IBuffer buffer) =>
+            ourAnimatorSearcher.Find(buffer, 0, Math.Min(buffer.Length, 30)) >= 0;
+
         public static long? GetAnchorFromBuffer(IBuffer buffer)
         {
             var index = 0;
@@ -114,6 +119,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         [CanBeNull]
         public static IHierarchyReference GetInputActionsReference(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourActionsSearcher);
+        
+        [CanBeNull]
+        public static IHierarchyReference GetAnimReference(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
+            GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourMotionSearcher);
         
         [CanBeNull]
         public static IHierarchyReference GetTransformFather(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
@@ -159,7 +168,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         [CanBeNull]
         public static string GetGameObjectName(IBuffer buffer)
         {
-            var start = ourGameObjectNameSearcher.Find(buffer, 0, buffer.Length);
+            return GetPlainScalarValue(buffer, ourGameObjectNameSearcher);
+        }
+        
+        [CanBeNull]
+        public static string GetPlainScalarValue(IBuffer buffer, StringSearcher searcher)
+        {
+            var start = searcher.Find(buffer, 0, buffer.Length);
             if (start < 0)
                 return null;
 
@@ -228,11 +243,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         public static string GetRawComponentName(IBuffer assetDocumentBuffer)
         {
-            var pos = ourColumnSearcher.Find(assetDocumentBuffer) - 1;
+            var pos = ourColumnSearcher.Find(assetDocumentBuffer);
             if (pos < 0)
                 return null;
 
-            var startPos = pos--;
+            var startPos = pos;
             while (startPos >= 0)
             {
                 if (assetDocumentBuffer[startPos] == '\r')
@@ -243,7 +258,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 startPos--;
             }
 
-            return assetDocumentBuffer.GetText(new TextRange(startPos, pos));
+            return assetDocumentBuffer.GetText(new TextRange(startPos + 1, pos));
         }
 
         public static string GetComponentName(MetaFileGuidCache metaFileGuidCache, IComponentHierarchy componentHierarchy)
@@ -307,7 +322,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 var sourceFile = declaration.GetSourceFile();
                 if (sourceFile == null || !sourceFile.IsValid())
                     continue;
-
+                
+                // this might be problematic - RIDER-87515 Support multiple MonoBehaviors classes in file
                 if (!typeElement.ShortName.Equals(sourceFile.GetLocation().NameWithoutExtension))
                     continue;
 
