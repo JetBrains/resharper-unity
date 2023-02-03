@@ -93,8 +93,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
                         long metaSize = 0;
                         long readonlyMetaSize = 0;
 
-                        var maxFileSizes = new Dictionary<string, long>();
-                        var readonlyMaxFileSizes = new Dictionary<string, long>();
+                        var maxFileSizes = new Dictionary<FileType, long>();
+                        var readonlyMaxFileSizes = new Dictionary<FileType, long>();
 
                         int metaCount = 0;
                         int assetCount = 0;
@@ -119,13 +119,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
                             {
                                 if (statistic.IsUserEditable)
                                 {
-                                    if (maxFileSizes.TryGetValue(statistic.FileType.ToString()) < statistic.Length)
-                                        maxFileSizes[statistic.FileType.ToString()] = statistic.Length;    
+                                    if (maxFileSizes.TryGetValue(statistic.FileType) < statistic.Length)
+                                        maxFileSizes[statistic.FileType] = statistic.Length;    
                                 }
                                 else
                                 {
-                                    if (readonlyMaxFileSizes.TryGetValue(statistic.FileType.ToString()) < statistic.Length)
-                                        readonlyMaxFileSizes[statistic.FileType.ToString()] = statistic.Length;    
+                                    if (readonlyMaxFileSizes.TryGetValue(statistic.FileType) < statistic.Length)
+                                        readonlyMaxFileSizes[statistic.FileType] = statistic.Length;    
                                 }
                                     
                                 totalSize += statistic.Length;
@@ -139,13 +139,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
 
                         foreach (var fileType in maxFileSizes.Keys)
                         {
-                            hashSet.Add(myFileSizeMax.Metric((FileType)Enum.Parse(typeof(FileType), fileType), 
+                            hashSet.Add(myFileSizeMax.Metric(fileType, 
                                 StatisticsUtil.GetNextPowerOfTwo(maxFileSizes[fileType]), false));
                         }
                         
                         foreach (var fileType in readonlyMaxFileSizes.Keys)
                         {
-                            hashSet.Add(myFileSizeMax.Metric((FileType)Enum.Parse(typeof(FileType), fileType), 
+                            hashSet.Add(myFileSizeMax.Metric(fileType, 
                                 StatisticsUtil.GetNextPowerOfTwo(readonlyMaxFileSizes[fileType]), true));
                         }
                         

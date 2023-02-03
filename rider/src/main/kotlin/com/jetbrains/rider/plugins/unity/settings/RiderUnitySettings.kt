@@ -1,15 +1,14 @@
 package com.jetbrains.rider.plugins.unity.settings
 
 import com.intellij.ide.util.PropertiesComponent
-import com.intellij.openapi.project.Project
+import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Signal
-import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 
 // todo: it has no init {}, stores no state apart from properties = PropertiesComponent.getInstance() which is also bad.
 // There's no need for this class, it has no payload BooleanViewProperty does.
 // BooleanViewProperty can be renamed to something matching its meaning like PropertiesBackedViewableBooleanSetting. But I'd not recommend using this as a pattern. As it doesn't react to changes in PropertiesComponent or external modifications in xml PropertiesComponent uses for storage.
-class RiderUnitySettings(project: Project) : LifetimedProjectComponent(project) {
+class RiderUnitySettings : LifetimedService() {
     companion object {
         private val properties = PropertiesComponent.getInstance()
         private const val propertiesPrefix = "RiderUnitySettings."
