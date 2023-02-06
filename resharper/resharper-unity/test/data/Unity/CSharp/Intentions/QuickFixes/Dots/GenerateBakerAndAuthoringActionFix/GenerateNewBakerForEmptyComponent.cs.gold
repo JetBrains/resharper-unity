@@ -1,0 +1,25 @@
+﻿// ${KIND:Unity.GenerateBakerAndAuthoring}
+// ${GLOBAL0:SelectedBaker=New Baker}
+
+using Unity.Entities;
+using Unity.Mathematics;
+using UnityEngine;
+
+namespace ComponentsAndTags
+{
+    struct Graveyard{caret}Properties : IComponentData
+    {
+    }
+
+    public class GraveyardPropertiesAuthoring : MonoBehaviour
+    {
+    }
+
+    public class GraveyardPropertiesBaker : Baker<GraveyardPropertiesAuthoring>
+    {
+      public override void Bake(GraveyardPropertiesAuthoring authoring)
+      {
+        AddComponent(new GraveyardProperties { });
+      }
+    }
+}

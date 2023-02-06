@@ -29,12 +29,22 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
+        [Test] public void GenerateNewBakerForEmptyComponent()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
+
         [Test] public void AddNewComponentToBaker()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
         [Test] public void UpdateExistingNestedBaker()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
+        
+        [Test] public void UpdateExistingPartialBaker()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
