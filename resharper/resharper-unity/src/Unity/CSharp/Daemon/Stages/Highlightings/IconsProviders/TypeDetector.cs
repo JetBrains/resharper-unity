@@ -7,10 +7,12 @@ using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dots;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
@@ -125,6 +127,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                     result.Add(new IntentionAction(fix, Strings.UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle,
                             PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
                         .ToBulbMenuItem(Solution, textControl));
+                }
+                
+                if (classLikeDeclaration.IsPartial && UnityApi.IsDotsImplicitlyUsedType(classLikeDeclaration.DeclaredElement) && 
+                    classLikeDeclaration.GetSourceFile().IsSourceGeneratedFile())
+                {
+                    var bulbAction = new OpenDotsSourceGeneratedFileBulbAction(Strings.UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode, classLikeDeclaration);
+                    result.Add(new IntentionAction(bulbAction,
+                        Strings.UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode, PsiFeaturesUnsortedThemedIcons.Navigate.Id,
+                        BulbMenuAnchors.FirstClassContextItems).ToBulbMenuItem(Solution, textControl));
                 }
             }
 
