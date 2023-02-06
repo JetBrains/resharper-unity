@@ -99,8 +99,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
         {
             foreach (var result in targets)
             {
-                if (!IsDotsRelatedCodeGeneratedDeclaration(result))
-                    return targets.Where(IsDotsRelatedCodeGeneratedDeclaration).ToList();
+                if (IsDotsRelatedCodeGeneratedDeclaration(result))
+                    return targets.Where(t => !IsDotsRelatedCodeGeneratedDeclaration(t)).ToList();
             }
 
             return null;
@@ -108,16 +108,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
 
         private static bool IsDotsRelatedCodeGeneratedDeclaration(FindResult result)
         {
-            if (result is not FindResultDeclaration { Declaration: IClassLikeDeclaration classLikeDeclaration } resultDeclaration)
+            if (result is not FindResultDeclaration { Declaration: IClassLikeDeclaration {IsPartial: true } classLikeDeclaration } resultDeclaration)
                 return false;
-
+            
             if (!UnityApi.IsDotsImplicitlyUsedType(classLikeDeclaration.DeclaredElement))
                 return false;
 
-            if (!resultDeclaration.SourceFile.IsSourceGeneratedFile())
-                return false;
-            
-            return true;
+            return resultDeclaration.SourceFile.IsSourceGeneratedFile();
         }
 
         public ISearchDomain GetDeclaredElementSearchDomain(IDeclaredElement declaredElement)
