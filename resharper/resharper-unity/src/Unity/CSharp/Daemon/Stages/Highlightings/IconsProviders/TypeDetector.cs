@@ -129,8 +129,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                         .ToBulbMenuItem(Solution, textControl));
                 }
                 
-                if (classLikeDeclaration.IsPartial && UnityApi.IsDotsImplicitlyUsedType(classLikeDeclaration.DeclaredElement) && 
-                    classLikeDeclaration.GetSourceFile().IsSourceGeneratedFile())
+                if (classLikeDeclaration.IsPartial
+                    && UnityApi.IsDotsImplicitlyUsedType(classLikeDeclaration.DeclaredElement)
+                    && !classLikeDeclaration.GetSourceFile().IsSourceGeneratedFile()
+                    && classLikeDeclaration.DeclaredElement.GetDeclarations().Count > 1)
                 {
                     var bulbAction = new OpenDotsSourceGeneratedFileBulbAction(Strings.UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode, classLikeDeclaration);
                     result.Add(new IntentionAction(bulbAction,
