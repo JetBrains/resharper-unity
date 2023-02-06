@@ -1,5 +1,4 @@
 using System;
-using JetBrains.Annotations;
 using JetBrains.Util;
 using Mono.Debugging.Backend.Values;
 using Mono.Debugging.Backend.Values.ValueReferences;
@@ -12,12 +11,11 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 {
     public static class EvaluatorExceptionThrownExceptionHelper
     {
-        [CanBeNull]
-        public static string GetThrownExceptionMessage<TValue>(EvaluatorExceptionThrownException<TValue> exception,
-                                                               IStackFrame frame,
-                                                               IValueServicesFacade<TValue> valueServices,
-                                                               IValueFetchOptions valueFetchOptions,
-                                                               ILogger logger)
+        public static string? GetThrownExceptionMessage<TValue>(EvaluatorExceptionThrownException<TValue> exception,
+                                                                IStackFrame frame,
+                                                                IValueServicesFacade<TValue> valueServices,
+                                                                IValueFetchOptions valueFetchOptions,
+                                                                ILogger logger)
             where TValue : class
         {
             try

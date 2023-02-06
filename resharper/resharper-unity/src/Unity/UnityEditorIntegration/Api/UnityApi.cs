@@ -115,6 +115,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             return typeElement?.GetClrName().Equals(KnownTypes.SystemAPI) ?? false;
         }
 
+        public static bool IsRefRO(ITypeElement? typeElement)
+        {
+            return typeElement?.GetClrName().Equals(KnownTypes.RefRO) ?? false;
+        }
+
+        public static bool IsRefRW(ITypeElement? typeElement)
+        {
+            return typeElement?.GetClrName().Equals(KnownTypes.RefRW) ?? false;
+        }
+
         // A serialised field cannot be abstract or generic, but a type declaration that will be serialised can be. This
         // method differentiates between a type declaration and a type usage. Consider renaming if we ever need to
         // expose stricter checking publicly

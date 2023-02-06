@@ -1,5 +1,4 @@
 ﻿using JetBrains.Collections.Viewable;
-using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
@@ -18,11 +17,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
     {
         private readonly UnitySolutionTracker myUnitySolutionTracker;
 
-        public AsmRefNameReferenceProviderFactory(Lifetime lifetime, UnitySolutionTracker unitySolutionTracker)
+        public AsmRefNameReferenceProviderFactory(UnitySolutionTracker unitySolutionTracker)
         {
             myUnitySolutionTracker = unitySolutionTracker;
 
-            Changed = new DataFlow.Signal<IReferenceProviderFactory>(lifetime, GetType().FullName);
+            Changed = new DataFlow.Signal<IReferenceProviderFactory>(GetType().FullName);
         }
 
         public IReferenceFactory? CreateFactory(IPsiSourceFile sourceFile, IFile file, IWordIndex? wordIndexForChecks)

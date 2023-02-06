@@ -26,9 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         }
 
         [Test] public void Test01() { DoNamedTest(); }
-        
-        
     }
+
     [TestUnity]
     public class AddRequireForUpdateSingletonQuickFixTest : QuickFixTestBase<AddRequireForUpdateSingletonQuickFix>
     {
@@ -39,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
             var files = otherFiles.Concat(new []{"../DotsClasses.cs"}).ToArray();
             base.DoNamedTest(files);
         }
-        
+
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }
         [Test, ExecuteScopedActionInFile] public void Test03() { DoNamedTest(); }

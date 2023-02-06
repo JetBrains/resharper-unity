@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
@@ -29,18 +30,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
             if (!isDotsImplicitlyUsedType)
                 return;
 
-  
             //possibly costly call: n*m calls - n - classes declarations, m - number of all methods
             var currentElementVisitor = new VisitorDotsMethods();
             ProcessMethods(element.MethodDeclarations, currentElementVisitor);
-            
+
             var otherDeclarationsVisitor = new VisitorDotsMethods();
             var otherMethodDeclarations = DotsUtils.GetMethodsFromAllDeclarations(typeElement, declaration => declaration != element);
             ProcessMethods(otherMethodDeclarations, otherDeclarationsVisitor);
-            
-            
+
             currentElementVisitor.RequireForUpdateCalls.AddRange(otherDeclarationsVisitor.RequireForUpdateCalls);
-            
+
             currentElementVisitor.GetSingletonCalls.ExceptWith(currentElementVisitor.RequireForUpdateCalls);
 
             foreach (var singletonCall in currentElementVisitor.GetSingletonCalls)
@@ -96,7 +95,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
                 }
             }
 
-            private static bool TryGetTypeFromGetSingletonCall(IInvocationExpression expression, out IType singletonType)
+            private static bool TryGetTypeFromGetSingletonCall(IInvocationExpression expression,
+                                                               [MaybeNullWhen(false)] out IType singletonType)
             {
                 singletonType = null;
                 var resolveResultWithInfo = expression.Reference.Resolve();
@@ -119,7 +119,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
                 return true;
             }
 
-            private static bool TryGetTypeFromRequireForUpdateCall(IInvocationExpression expression, out IType singletonType)
+            private static bool TryGetTypeFromRequireForUpdateCall(IInvocationExpression expression,
+                                                                   [MaybeNullWhen(false)] out IType singletonType)
             {
                 singletonType = null;
                 var resolveResultWithInfo = expression.Reference.Resolve();
@@ -142,12 +143,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
                 return true;
             }
 
-            
+
             public void ProcessAfterInterior(ITreeNode element)
             {
             }
 
-            public bool ProcessingIsFinished { get; private set; }
+            public bool ProcessingIsFinished => false;
         }
     }
 }

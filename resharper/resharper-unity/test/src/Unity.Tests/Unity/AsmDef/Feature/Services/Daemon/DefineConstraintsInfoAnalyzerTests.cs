@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Daemon
     [TestCompilationSymbols("RESHARPER_UNITY_TEST_DEFINED_SYMBOL")]
     public class DefineConstraintsInfoAnalyzerTests : JsonNewHighlightingTestBase<UnmetDefineConstraintInfo>
     {
-        protected override PsiLanguageType CompilerIdsLanguage => JsonNewLanguage.Instance;
+        protected override PsiLanguageType? CompilerIdsLanguage => JsonNewLanguage.Instance;
         protected override string RelativeTestDataPath => @"AsmDef\Daemon\Stages\Analysis\UnmetDefineConstraints";
 
         protected override string ProjectName => "Assembly-CSharp";

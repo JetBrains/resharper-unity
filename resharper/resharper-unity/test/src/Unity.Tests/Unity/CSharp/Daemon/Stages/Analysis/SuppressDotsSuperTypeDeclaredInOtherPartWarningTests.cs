@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
         {
             DoNamedTest2($"{TestMethodName2}.Generated.cs", "DotsClasses.cs");
         }
-        
+
         [Test]
         public void TestIJobEntityPartialClassRedundantBaseClass()
         {

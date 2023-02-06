@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using JetBrains.Annotations;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
@@ -72,7 +71,6 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values
             }
         }
 
-        [NotNull]
         protected abstract IValue GetElementValueAt(TRole collection, int index, IValueFetchOptions options);
     }
 }

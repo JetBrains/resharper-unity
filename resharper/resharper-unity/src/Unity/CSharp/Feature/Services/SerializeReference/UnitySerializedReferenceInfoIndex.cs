@@ -137,17 +137,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             }
         }
 
-        public SerializedFieldStatus IsTypeSerializable(ElementId elementId, bool useSwea, HashSet<ElementId> visitedNodes = null)
+        public SerializedFieldStatus IsTypeSerializable(ElementId elementId, bool useSwea, HashSet<ElementId>? visitedNodes = null)
         {
             if(!elementId.IsCompiledElementId)
             {
                 if(!useSwea || !mySolutionAnalysisConfiguration.Completed.Value)
                     return SerializedFieldStatus.Unknown; //if swea is not completed
             }
-            
+
             if (visitedNodes != null && visitedNodes.Contains(elementId))
                 return SerializedFieldStatus.NonSerializedField;
-            
+
             if (ClassInfoDictionary.TryGetValue(elementId, out var info))
             {
                 visitedNodes ??= new HashSet<ElementId>();
@@ -156,7 +156,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                     return SerializedFieldStatus.SerializedField;
 
                 visitedNodes.Add(elementId);
-                
+
                 foreach (var (id, _) in info.SuperClasses)
                 {
                     if (IsTypeSerializable(id, useSwea, visitedNodes) == SerializedFieldStatus.SerializedField)
@@ -178,36 +178,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
     internal readonly struct FullAssemblyId
     {
-        private readonly string myPSIAssemblyLocation;
-        private readonly TargetFrameworkId myPSIModuleTargetFrameworkId;
-        private readonly AssemblyId myPSIAssemblyId;
+        private readonly string myPsiAssemblyLocation;
+        private readonly TargetFrameworkId myPsiModuleTargetFrameworkId;
+        private readonly AssemblyId myPsiAssemblyId;
 
 
         private FullAssemblyId(string psiAssemblyLocation, TargetFrameworkId psiModuleTargetFrameworkId, AssemblyId psiAssemblyId)
         {
-            myPSIAssemblyLocation = psiAssemblyLocation;
-            myPSIModuleTargetFrameworkId = psiModuleTargetFrameworkId;
-            myPSIAssemblyId = psiAssemblyId;
+            myPsiAssemblyLocation = psiAssemblyLocation;
+            myPsiModuleTargetFrameworkId = psiModuleTargetFrameworkId;
+            myPsiAssemblyId = psiAssemblyId;
         }
 
         public FullAssemblyId(IPsiAssembly assembly)
         {
-            myPSIAssemblyLocation = assembly.Location!.Name;
-            myPSIAssemblyId = assembly.Id;
-            myPSIModuleTargetFrameworkId = assembly.PsiModule.TargetFrameworkId;
+            myPsiAssemblyLocation = assembly.Location!.Name;
+            myPsiAssemblyId = assembly.Id;
+            myPsiModuleTargetFrameworkId = assembly.PsiModule.TargetFrameworkId;
         }
 
         public override string ToString()
         {
             return
-                $"{nameof(myPSIAssemblyLocation)}: {myPSIAssemblyLocation}, {nameof(myPSIModuleTargetFrameworkId)}: {myPSIModuleTargetFrameworkId}, {nameof(myPSIAssemblyId)}: {myPSIAssemblyId}";
+                $"{nameof(myPsiAssemblyLocation)}: {myPsiAssemblyLocation}, {nameof(myPsiModuleTargetFrameworkId)}: {myPsiModuleTargetFrameworkId}, {nameof(myPsiAssemblyId)}: {myPsiAssemblyId}";
         }
 
         public bool Equals(FullAssemblyId other)
         {
-            return myPSIAssemblyLocation.Equals(other.myPSIAssemblyLocation) &&
-                   myPSIModuleTargetFrameworkId.Equals(other.myPSIModuleTargetFrameworkId) &&
-                   myPSIAssemblyId.Equals(other.myPSIAssemblyId);
+            return myPsiAssemblyLocation.Equals(other.myPsiAssemblyLocation) &&
+                   myPsiModuleTargetFrameworkId.Equals(other.myPsiModuleTargetFrameworkId) &&
+                   myPsiAssemblyId.Equals(other.myPsiAssemblyId);
         }
 
         public override bool Equals(object? obj)
@@ -219,18 +219,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         {
             unchecked
             {
-                var hashCode = myPSIAssemblyLocation.GetHashCode();
-                hashCode = (hashCode * 397) ^ myPSIModuleTargetFrameworkId.GetHashCode();
-                hashCode = (hashCode * 397) ^ myPSIAssemblyId.GetHashCode();
+                var hashCode = myPsiAssemblyLocation.GetHashCode();
+                hashCode = (hashCode * 397) ^ myPsiModuleTargetFrameworkId.GetHashCode();
+                hashCode = (hashCode * 397) ^ myPsiAssemblyId.GetHashCode();
                 return hashCode;
             }
         }
-        
+
         public static readonly IUnsafeMarshaller<FullAssemblyId> AssemblyIdMarshaller = new UniversalMarshaller<FullAssemblyId>(Read, Write);
 
         private static FullAssemblyId Read(UnsafeReader reader)
         {
-            var locationName = reader.ReadString();
+            var locationName = reader.ReadString() ?? string.Empty;
             var targetFrameworkId = TargetFrameworkId.Read(reader);
             var assemblyId = AssemblyId.AssemblyIdMarshaller.Unmarshal(reader);
             return new FullAssemblyId(locationName, targetFrameworkId, assemblyId);
@@ -238,9 +238,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
         private static void Write(UnsafeWriter writer, FullAssemblyId id)
         {
-            writer.Write(id.myPSIAssemblyLocation);
-            id.myPSIModuleTargetFrameworkId.Write(writer);
-            AssemblyId.AssemblyIdMarshaller.Marshal(writer, id.myPSIAssemblyId);
+            writer.Write(id.myPsiAssemblyLocation);
+            id.myPsiModuleTargetFrameworkId.Write(writer);
+            AssemblyId.AssemblyIdMarshaller.Marshal(writer, id.myPsiAssemblyId);
         }
     }
 }
