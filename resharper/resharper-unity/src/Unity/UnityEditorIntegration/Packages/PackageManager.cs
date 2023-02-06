@@ -873,5 +873,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         {
             return myFileSystemPathTrie.FindLongestPrefix(possibleResource);
         }
+
+        public bool HasPackage(string packageName)
+        {
+            return Packages.Any(p => p.Key.Equals(packageName));
+        }
     }
 }
