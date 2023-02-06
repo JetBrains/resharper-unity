@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 else if (UnityApi.IsDotsImplicitlyUsedType(typeElement))
                 {
                     //TODO obsolete
-                    AddUnityECSHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_DOTS, Strings.TypeDetector_AddDeclarationHighlighting_Unity_entities_system,
+                    AddUnityDOTSHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_DOTS, Strings.TypeDetector_AddDeclarationHighlighting_Unity_entities_system,
                         context);
                 }
 
@@ -85,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             AddHighlighting(consumer, declaration, text, tooltip, context);
         }
 
-        protected virtual void AddUnityECSHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, IReadOnlyCallGraphContext context)
+        protected virtual void AddUnityDOTSHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, IReadOnlyCallGraphContext context)
         {
             AddHighlighting(consumer, declaration, text, tooltip, context);
         }
@@ -110,6 +110,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             {
                 if (myUnityApi.IsUnityType(classLikeDeclaration.DeclaredElement))
                 {
+                    var fix = new GenerateUnityEventFunctionsFix(classLikeDeclaration);
+                    result.Add(new IntentionAction(fix, Strings.TypeDetector_GetActions_Generate_Unity_event_functions,
+                            PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
+                        .ToBulbMenuItem(Solution, textControl));
+                }
+
+                if (classLikeDeclaration.IsPartial && UnityApi.IsDotsImplicitlyUsedType(classLikeDeclaration.DeclaredElement))
+                {
+                //TODO WIP
                     var fix = new GenerateUnityEventFunctionsFix(classLikeDeclaration);
                     result.Add(new IntentionAction(fix, Strings.TypeDetector_GetActions_Generate_Unity_event_functions,
                             PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
