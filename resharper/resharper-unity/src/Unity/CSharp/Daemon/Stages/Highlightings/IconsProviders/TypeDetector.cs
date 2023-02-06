@@ -116,11 +116,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                         .ToBulbMenuItem(Solution, textControl));
                 }
 
-                if (classLikeDeclaration.IsPartial && UnityApi.IsDotsImplicitlyUsedType(classLikeDeclaration.DeclaredElement))
+                if (classLikeDeclaration.GetContainingNode<IMethodDeclaration>() == null &&
+                    classLikeDeclaration.GetContainingNode<IPropertyDeclaration>() == null &&
+                    UnityApi.IsDerivesFromIComponentData(classLikeDeclaration.DeclaredElement))
                 {
-                //TODO WIP
-                    var fix = new GenerateUnityEventFunctionsFix(classLikeDeclaration);
-                    result.Add(new IntentionAction(fix, Strings.TypeDetector_GetActions_Generate_Unity_event_functions,
+                    
+                    var fix = new GenerateBakerAndAuthoringActionFix(classLikeDeclaration);
+                    result.Add(new IntentionAction(fix, Strings.UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle,
                             PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
                         .ToBulbMenuItem(Solution, textControl));
                 }
