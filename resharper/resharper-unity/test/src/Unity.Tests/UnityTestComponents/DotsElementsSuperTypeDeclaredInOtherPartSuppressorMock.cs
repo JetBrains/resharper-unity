@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
         public override bool SuppressInspections(IDeclaredType superType, IClassLikeDeclaration declaration,
             ITypeDeclaration otherPartDeclaration)
         {
-            if (otherPartDeclaration.GetSourceFile().Name.Contains("Generated"))
+            if (otherPartDeclaration.GetSourceFile()!.Name.Contains("Generated"))
                 otherPartDeclaration = new ClassLikeDeclarationFromGeneratedFileMock(otherPartDeclaration);
             return base.SuppressInspections(superType, declaration, otherPartDeclaration);
         }
@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 
             public void PutData<T>(Key<T> key, T? value) where T : class
             {
-                mySourceFile.PutData(key, value);
+                mySourceFile.PutData(key, value!);
             }
 
             public T GetOrCreateDataUnderLock<T>(Key<T> key, Func<T> factory) where T : class
@@ -52,19 +52,18 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
             public T GetOrCreateDataUnderLock<T, TState>(Key<T> key, TState state, Func<TState, T> factory)
                 where T : class
             {
-                return default;
+                return factory(state);
             }
-            
 
             public IEnumerable<KeyValuePair<object, object>> EnumerateData()
             {
-                return default;
+                return EmptyList<KeyValuePair<object, object>>.Enumerable;
             }
 
-            public IPsiModule PsiModule { get; }
-            public IDocument Document { get; }
-            public string Name { get; }
-            public string DisplayName { get; }
+            public IPsiModule PsiModule => mySourceFile.PsiModule;
+            public IDocument Document => mySourceFile.Document;
+            public string Name => mySourceFile.Name;
+            public string DisplayName => mySourceFile.DisplayName;
 
             public bool IsValid()
             {
@@ -76,15 +75,15 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
                 return default;
             }
 
-            public ProjectFileType LanguageType { get; }
-            public PsiLanguageType PrimaryPsiLanguage { get; }
-            public IPsiSourceFileProperties Properties { get; }
-            public IModuleReferenceResolveContext ResolveContext { get; }
-            public IPsiSourceFileStorage PsiStorage { get; }
-            public ModificationStamp? InMemoryModificationStamp { get; }
-            public ModificationStamp? ExternalModificationStamp { get; }
-            public DateTime LastWriteTimeUtc { get; }
-            public VirtualFileSystemPath NavigationPath { get; }
+            public ProjectFileType LanguageType => mySourceFile.LanguageType;
+            public PsiLanguageType PrimaryPsiLanguage => mySourceFile.PrimaryPsiLanguage;
+            public IPsiSourceFileProperties Properties => mySourceFile.Properties;
+            public IModuleReferenceResolveContext ResolveContext => mySourceFile.ResolveContext;
+            public IPsiSourceFileStorage PsiStorage => mySourceFile.PsiStorage;
+            public ModificationStamp? InMemoryModificationStamp => mySourceFile.InMemoryModificationStamp;
+            public ModificationStamp? ExternalModificationStamp => mySourceFile.ExternalModificationStamp;
+            public DateTime LastWriteTimeUtc => mySourceFile.LastWriteTimeUtc;
+            public VirtualFileSystemPath NavigationPath => mySourceFile.GetLocation();
 
             public void BindToProjectFile(IProjectFile projectFile)
             {
@@ -94,12 +93,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
             {
             }
 
-            public Guid CacheId { get; }
-            public IDocument? AssociatedEditorDocument { get; }
-            public IDocument? AssociatedEmbeddedSourceDocument { get; }
-            public string RelativePath { get; }
+            public Guid CacheId { get; } = Guid.Empty;
+            public IDocument? AssociatedEditorDocument { get; } = null;
+            public IDocument? AssociatedEmbeddedSourceDocument { get; } = null;
+            public string RelativePath { get; } = string.Empty;
             public int CodePage { get; set; }
-            public string? AnalyzerReferencePath { get; }
+            public string? AnalyzerReferencePath { get; } = null;
 
             public void BindToEmbeddedSourceProjectFile(IProjectFile projectFile)
             {

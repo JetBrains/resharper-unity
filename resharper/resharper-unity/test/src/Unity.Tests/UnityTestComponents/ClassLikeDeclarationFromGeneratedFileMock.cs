@@ -1,3 +1,5 @@
+#nullable disable
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,14 +23,14 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 
             public ClassLikeDeclarationFromGeneratedFileMock(ITypeDeclaration declaration)
             {
-                myPsiSourceFile = new SourceGeneratedFileMock(declaration.GetSourceFile());
+                myPsiSourceFile = new SourceGeneratedFileMock(declaration.GetSourceFile()!);
             }
 
-            public ITreeNode? Parent { get; }
-            public ITreeNode? FirstChild { get; }
-            public ITreeNode? LastChild { get; }
-            public ITreeNode? NextSibling { get; }
-            public ITreeNode? PrevSibling { get; }
+            public ITreeNode Parent { get; }
+            public ITreeNode FirstChild { get; }
+            public ITreeNode LastChild { get; }
+            public ITreeNode NextSibling { get; }
+            public ITreeNode PrevSibling { get; }
             public NodeType NodeType { get; }
             public PsiLanguageType Language { get; }
             public IPsiServices GetPsiServices()
@@ -41,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
                 throw new NotImplementedException();
             }
 
-            public IPsiSourceFile? GetSourceFile()
+            public IPsiSourceFile GetSourceFile()
             {
 
                 return myPsiSourceFile;
@@ -57,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
                 throw new NotImplementedException();
             }
 
-            public TTreeNode? GetContainingNode<TTreeNode>(bool returnThis = false) where TTreeNode : ITreeNode
+            public TTreeNode GetContainingNode<TTreeNode>(bool returnThis = false) where TTreeNode : ITreeNode
             {
                 throw new NotImplementedException();
             }
@@ -112,7 +114,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
                 throw new NotImplementedException();
             }
 
-            public ITreeNode? FindNodeAt(TreeTextRange treeRange)
+            public ITreeNode FindNodeAt(TreeTextRange treeRange)
             {
                 throw new NotImplementedException();
             }
@@ -122,26 +124,26 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
                 throw new NotImplementedException();
             }
 
-            public ITreeNode? FindTokenAt(TreeOffset treeTextOffset)
+            public ITreeNode FindTokenAt(TreeOffset treeTextOffset)
             {
                 throw new NotImplementedException();
             }
 
             public NodeUserData UserData { get; }
             public NodeUserData PersistentUserData { get; }
-            public XmlNode? GetXMLDoc(bool inherit)
+            public XmlNode GetXMLDoc(bool inherit)
             {
                 throw new NotImplementedException();
             }
 
             public string CLRName { get; }
             public IEnumerable<IDeclaredType> SuperTypes { get; }
-            public ITypeElement? DeclaredElement { get; }
+            public ITypeElement DeclaredElement { get; }
             public IReadOnlyList<ITypeDeclaration> NestedTypeDeclarations { get; }
             public IEnumerable<ITypeDeclaration> NestedTypeDeclarationsEnumerable { get; }
             public IReadOnlyList<ITypeMemberDeclaration> MemberDeclarations { get; }
 
-            IDeclaredElement? IDeclaration.DeclaredElement => DeclaredElement;
+            IDeclaredElement IDeclaration.DeclaredElement => DeclaredElement;
 
             public string DeclaredName { get; }
             public void SetName(string name)
