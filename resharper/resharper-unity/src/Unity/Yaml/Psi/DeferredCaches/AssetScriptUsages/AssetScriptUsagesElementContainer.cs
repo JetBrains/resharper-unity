@@ -125,25 +125,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptU
             myPointers.Clear();
         }
         
-        public IEnumerable<IScriptUsage> GetScriptUsagesFor(ITypeElement declaredElement)
+        public IEnumerable<IScriptUsage> GetScriptUsagesFor(ITypeElement classElement)
         {
             myShellLocks.AssertReadAccessAllowed();
-            var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
-            return myPointers.SelectMany(pointer =>
+            var files = GetPossibleFilesWithScriptUsages(classElement);
+            foreach (var file in files)
             {
-                var element = (AssetScriptUsagesDataElement)pointer.Value.GetElement(pointer.Key, Id);
-                return element.EnumerateAssetUsages()
-                    .Where(t => t.UsageTarget.ExternalAssetGuid == guid)
-                    .Cast<IScriptUsage>();
-            });
+                foreach (var scriptUsage in GetScriptUsagesFor(file, classElement))
+                {
+                    yield return scriptUsage;
+                }
+            }
         }
 
-        public IEnumerable<IScriptUsage> GetScriptUsagesFor(IPsiSourceFile sourceFile, ITypeElement declaredElement)
+        public IEnumerable<IScriptUsage> GetScriptUsagesFor(IPsiSourceFile sourceFile, ITypeElement typeElement)
         {
             myShellLocks.AssertReadAccessAllowed();
             if (!IsApplicable(sourceFile)) return Enumerable.Empty<IScriptUsage>();
             if (myPointers[sourceFile].GetElement(sourceFile, Id) is not AssetScriptUsagesDataElement element) return Enumerable.Empty<IScriptUsage>();
-            var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
+            var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, typeElement);
             if (guid == null) return Enumerable.Empty<IScriptUsage>();
             return element
                 .EnumerateAssetUsages()
@@ -151,9 +151,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetScriptU
                 .Cast<IScriptUsage>();
         }
 
-        public LocalList<IPsiSourceFile> GetPossibleFilesWithScriptUsages(IClass scriptClass)
+        public LocalList<IPsiSourceFile> GetPossibleFilesWithScriptUsages(ITypeElement typeElement)
         {
-            var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, scriptClass);
+            var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, typeElement);
             if (guid == null)
                 return new LocalList<IPsiSourceFile>();
 
