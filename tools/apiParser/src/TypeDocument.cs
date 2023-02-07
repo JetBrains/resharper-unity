@@ -49,7 +49,7 @@ namespace ApiParser
                             @"//div.content/div.section/div.mb20.clear/div[@class='message message-error mb20']");
                     var isRemoved = removedDiv != null && removedDiv.Text.StartsWith("Removed");
 
-                    return new TypeDocument(fileName, shortName, ns, kind, isRemoved, messages);
+                    return new TypeDocument(fileName, shortName, ns, kind, isRemoved, messages, langCode);
                 }
 
                 return null;
@@ -62,7 +62,7 @@ namespace ApiParser
         }
 
         private TypeDocument([NotNull] string docPath, [NotNull] string shortName, [NotNull] string ns,
-            [NotNull] string kind, bool isRemoved, [NotNull] SimpleHtmlNode[] messages)
+            [NotNull] string kind, bool isRemoved, [NotNull] SimpleHtmlNode[] messages, string langCode)
         {
             DocPath = docPath;
             ShortName = shortName;
@@ -70,6 +70,7 @@ namespace ApiParser
             Kind = kind;
             IsRemoved = isRemoved;
             Messages = messages;
+            LangCode = langCode;
         }
 
         [NotNull] public string DocPath { get; private set; }
@@ -80,5 +81,6 @@ namespace ApiParser
         [NotNull] public string Kind { get; private set; }
         public bool IsRemoved { get; private set; }
         [NotNull] public SimpleHtmlNode[] Messages { get; private set; }
+        [NotNull] public string LangCode { get; }
     }
 }
