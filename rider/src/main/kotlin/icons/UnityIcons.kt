@@ -16,7 +16,7 @@ import javax.swing.Icon
 class UnityIcons {
     class Icons {
         companion object {
-            val UnityLogo = Toolbar.Toolbar
+            val UnityLogo = IconLoader.getIcon("/resharper/Logo/Unity.svg", UnityIcons::class.java)
         }
     }
 
