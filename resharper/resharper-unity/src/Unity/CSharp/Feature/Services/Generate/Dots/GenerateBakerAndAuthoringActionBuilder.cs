@@ -21,6 +21,7 @@ using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dots
 {
@@ -62,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             var finder = context.Solution.GetPsiServices().Finder;
             finder.FindInheritors(bakerBaseTypeElement, typeElements.ConsumeDeclaredElements(), NullProgressIndicator.Create());
 
-            var availableBakers = new List<string>
+            var availableBakers = new HashSet<string>
             {
                 Strings.UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested,
                 Strings.UnityDots_GenerateBakerAndAuthoring_NewBaker
@@ -75,12 +76,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 {
                     var name = typeElement.GetClrName().FullName;
                     availableBakers.Add(name);
-                    myExistedBakers.Add(name, typeElement);
+                    myExistedBakers[name] = typeElement;
                 }
             }
 
-
-            var selector = new GeneratorOptionSelector(SelectedBaker, Strings.UnityDots_GenerateBakerAndAuthoring_Baker, availableBakers)
+            var selector = new GeneratorOptionSelector(SelectedBaker, Strings.UnityDots_GenerateBakerAndAuthoring_Baker, availableBakers.ToIReadOnlyList())
                 {
                     Value = Strings.UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested
                 };
@@ -91,6 +91,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
         protected override bool IsAvailable(CSharpGeneratorContext context)
         {
             return context.ClassDeclaration.IsFromUnityProject() && HasUnityBaseType(context) && base.IsAvailable(context);
+        }
+
+        // provides baker generation for empty Component
+        protected override bool HasProcessableElements(CSharpGeneratorContext context, IEnumerable<IGeneratorElement> elements)
+        {
+            return true;
         }
 
         protected override void Process(CSharpGeneratorContext context, IProgressIndicator progress)
@@ -147,11 +153,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
         private static void GenerateBaker(CSharpGeneratorContext context, Dictionary<string, string> componentToAuthoringFieldNames, BakerGenerationInfo generationInfo)
         {
-            var bakerClassDeclaration = generationInfo.ExistedBaker != null 
-                ? (IClassLikeDeclaration) generationInfo.ExistedBaker.GetDeclarations()[0]
+            var bakerClassDeclarations = generationInfo.ExistedBaker != null 
+                ? generationInfo.ExistedBaker.GetDeclarations().OfType<IClassLikeDeclaration>().ToArray()
                 : GetOrCreateBakerClassDeclaration(generationInfo);
             
-            var bakeMethodExpression = GetOrCreateBakeMethodExpression(bakerClassDeclaration, generationInfo.Factory, generationInfo, out var authoringParameterName);
+            var bakeMethodExpression = GetOrCreateBakeMethodExpression(bakerClassDeclarations, generationInfo.Factory, generationInfo, out var authoringParameterName);
             var componentCreationExpression = GetOrCreateComponentCreationExpression(generationInfo.Factory, bakeMethodExpression, generationInfo.ComponentStructDeclaration.DeclaredElement!);
             var creationExpressionInitializer = GetOrCreateInitializer(componentCreationExpression, generationInfo.Factory);
 
@@ -186,7 +192,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             componentCreationExpression.FormatNode(CodeFormatProfile.COMPACT);
         }
 
-        private static IClassLikeDeclaration GetOrCreateBakerClassDeclaration(BakerGenerationInfo generationInfo)
+        private static IClassLikeDeclaration[] GetOrCreateBakerClassDeclaration(BakerGenerationInfo generationInfo)
         {
             // get parent class 'bakerTypeWithSubstitution' : Baker<ComponentNameAuthoring>
             var bakerGenericBaseClass = TypeFactory.CreateTypeByCLRName(KnownTypes.Baker, NullableAnnotation.NotAnnotated, generationInfo.Module);
@@ -198,28 +204,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             
             var (existingBakerTypeElement, _) = TypeFactory.CreateTypeByCLRName(generationInfo.BakerFullName, generationInfo.Module);
 
-            IClassLikeDeclaration? bakerClassDeclaration;
+            IClassLikeDeclaration[] bakerClassDeclarations;
             //Must be derived from bakerTypeWithSubstitution
             if (existingBakerTypeElement != null && existingBakerTypeElement.IsDescendantOf(bakerTypeWithSubstitution.GetTypeElement()))
             {
-                bakerClassDeclaration = existingBakerTypeElement.GetDeclarations().FirstOrDefault() as IClassDeclaration;
-                Assertion.AssertNotNull(bakerClassDeclaration);
-                return bakerClassDeclaration;
+                bakerClassDeclarations = existingBakerTypeElement.GetDeclarations().OfType<IClassLikeDeclaration>().ToArray();
+                Assertion.Require(bakerClassDeclarations.Length > 0);
+                return bakerClassDeclarations ;
             }
 
-            bakerClassDeclaration = (IClassDeclaration)generationInfo.Factory
-                .CreateTypeMemberDeclaration("public class $0 : $1 { }", generationInfo.BakerUniqueClassName, bakerTypeWithSubstitution);
+            bakerClassDeclarations = new[]
+            {
+                (IClassDeclaration)generationInfo.Factory
+                    .CreateTypeMemberDeclaration("public class $0 : $1 { }", generationInfo.BakerUniqueClassName,
+                        bakerTypeWithSubstitution)
+            };
 
             using (WriteLockCookie.Create())
             {
+                var bakerClassDeclaration = bakerClassDeclarations[0];
                 bakerClassDeclaration = generationInfo.InsertionHelper.Insert(bakerClassDeclaration);
                 bakerClassDeclaration.FormatNode(CodeFormatProfile.COMPACT);
+                bakerClassDeclarations[0] = bakerClassDeclaration;
             }
 
-            return bakerClassDeclaration;
+            return bakerClassDeclarations;
         }
 
-        private static IMethodDeclaration GetOrCreateBakeMethodExpression(IClassLikeDeclaration bakerClassDeclaration,
+        private static IMethodDeclaration GetOrCreateBakeMethodExpression(IClassLikeDeclaration[] bakerClassDeclarations,
             CSharpElementFactory factory,
             BakerGenerationInfo generationInfo, out string authoringParameterName)
         {
@@ -228,15 +240,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             authoringParameterName = "authoring";
 
             //TODO: maybe check if implements void Baker<T>::Bake(T) 
-            var existingBakeMethodDeclaration = bakerClassDeclaration.MethodDeclarations.FirstOrDefault(m => m.DeclaredName.Equals(bakeMethodName));
-            if(existingBakeMethodDeclaration is { IsOverride: true } && existingBakeMethodDeclaration.Type.IsVoid())
+            foreach (var bakerClassDeclaration in bakerClassDeclarations)
             {
-                var parameters = existingBakeMethodDeclaration.DeclaredElement.NotNull().Parameters;
-                if (parameters.Count == 1 &&
-                    (parameters[0].Type.GetTypeElement()?.Equals(generationInfo.DeclaredAuthoringType.GetTypeElement()) ?? false))
+                var existingBakeMethodDeclaration =
+                    bakerClassDeclaration.MethodDeclarations.FirstOrDefault(m => m.DeclaredName.Equals(bakeMethodName));
+                if (existingBakeMethodDeclaration is { IsOverride: true } &&
+                    existingBakeMethodDeclaration.Type.IsVoid())
                 {
-                    authoringParameterName = parameters[0].ShortName;
-                    return existingBakeMethodDeclaration;
+                    var parameters = existingBakeMethodDeclaration.DeclaredElement.NotNull().Parameters;
+                    if (parameters.Count == 1 &&
+                        (parameters[0].Type.GetTypeElement()
+                            ?.Equals(generationInfo.DeclaredAuthoringType.GetTypeElement()) ?? false))
+                    {
+                        authoringParameterName = parameters[0].ShortName;
+                        return existingBakeMethodDeclaration;
+                    }
                 }
             }
             
@@ -245,7 +263,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                     authoringParameterName);
             bakeMethodExpression.SetOverride(true);
             bakeMethodExpression.SetAccessRights(AccessRights.PUBLIC);
-            bakeMethodExpression = bakerClassDeclaration.AddClassMemberDeclaration(bakeMethodExpression);
+            bakeMethodExpression = bakerClassDeclarations[0].AddClassMemberDeclaration(bakeMethodExpression);
             return bakeMethodExpression;
         }
 

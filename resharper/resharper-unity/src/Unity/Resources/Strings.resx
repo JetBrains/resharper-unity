@@ -1236,7 +1236,7 @@ a plugin to be installed to a project.</value>
         <value>Unity runtime folder</value>
     </data>
     <data name="UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property" xml:space="preserve">
-        <value>Always add 'FormerlySerializedAs' when renaming serialized fields</value>
+        <value>Add 'FormerlySerializedAs' when renaming serialized fields</value>
     </data>
     <data name="UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property" xml:space="preserve">
         <value>Ask whether to add 'FormerlySerializedAs' when renaming serialized fields</value>
@@ -1351,5 +1351,11 @@ a plugin to be installed to a project.</value>
     </data>
     <data name="WritingToAStaticFieldIsNotSupported" xml:space="preserve">
         <value>Writing to a static field is not supported</value>
+    </data>
+    <data name="ShowExpensiveCallsBulbAction_Text_Show_outgoing_Expensive_calls" xml:space="preserve">
+        <value>Show outgoing Expensive calls</value>
+    </data>
+    <data name="ShowExpensiveCallsBulbAction_Text_Show_incoming_Expensive_calls" xml:space="preserve">
+        <value>Show incoming Expensive calls</value>
     </data>
 </root>
