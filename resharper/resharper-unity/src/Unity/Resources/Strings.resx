@@ -1352,6 +1352,12 @@ a plugin to be installed to a project.</value>
     <data name="WritingToAStaticFieldIsNotSupported" xml:space="preserve">
         <value>Writing to a static field is not supported</value>
     </data>
+    <data name="ShowExpensiveCallsBulbAction_Text_Show_outgoing_Expensive_calls" xml:space="preserve">
+        <value>Show outgoing Expensive calls</value>
+    </data>
+    <data name="ShowExpensiveCallsBulbAction_Text_Show_incoming_Expensive_calls" xml:space="preserve">
+        <value>Show incoming Expensive calls</value>
+    </data>
     <data name="UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode" xml:space="preserve">
         <value>Show generated code</value>
     </data>
