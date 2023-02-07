@@ -11,8 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
     public class GenerateBakerAndAuthoringActionWorkflow : GenerateCodeWorkflowBase
     {
         public GenerateBakerAndAuthoringActionWorkflow()
-            : base(
-                GeneratorUnityKinds.UnityGenerateBakerAndAuthoring, LogoIcons.Unity.Id, Strings.UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Title, GenerateActionGroup.CLR_LANGUAGE,
+            : base(GeneratorUnityKinds.UnityGenerateBakerAndAuthoring, LogoIcons.Unity.Id, Strings.UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Title, GenerateActionGroup.CLR_LANGUAGE,
                 Strings.UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle, Strings.UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Description, "Generate.BakerAndAuthoring")
         {
         }
@@ -22,9 +21,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
         // Hides the menu item if it's not a Unity project
         public override bool IsAvailable(IDataContext dataContext)
         {
-            var project = dataContext.GetData(ProjectModelDataConstants.PROJECT);
-            if (project == null || !project.IsUnityProject())
+            var solution = dataContext.GetData(ProjectModelDataConstants.SOLUTION);
+            if (solution == null || !solution.HasUnityReference())
                 return false;
+
+            var project = dataContext.GetData(ProjectModelDataConstants.PROJECT);
+            if (project != null && !project.IsUnityProject())
+                return false;
+
             return base.IsAvailable(dataContext);
         }
     }

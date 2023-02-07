@@ -1,6 +1,5 @@
 using System;
 using System.Threading;
-using JetBrains.Annotations;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
 using Mono.Debugging.Autofac;
@@ -37,11 +36,11 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
             return myUnityOptions.ExtensionsEnabled && instanceType.Is("UnityEditor.SerializedProperty");
         }
 
-        public override IValuePresentation PresentValue(IObjectValueRole<TValue> valueRole,
-                                                        IMetadataTypeLite instanceType,
-                                                        IPresentationOptions options,
-                                                        IUserDataHolder dataHolder,
-                                                        CancellationToken token)
+        public override IValuePresentation? PresentValue(IObjectValueRole<TValue> valueRole,
+                                                         IMetadataTypeLite instanceType,
+                                                         IPresentationOptions options,
+                                                         IUserDataHolder dataHolder,
+                                                         CancellationToken token)
         {
             return myLogger.CatchEvaluatorException<TValue, IValuePresentation>(
                 () =>
@@ -59,12 +58,12 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
 
                     var propertyTypeEnumValueObject =
                         propertyTypeReference?.AsObjectSafe(options)?.GetEnumValue(options);
-                    var propertyType = (SerializedPropertyKind) Enum.ToObject(typeof(SerializedPropertyKind),
+                    var propertyType = (SerializedPropertyKind)Enum.ToObject(typeof(SerializedPropertyKind),
                         propertyTypeEnumValueObject ?? SerializedPropertyKind.Generic);
 
                     int? arraySize = null;
-                    string arrayElementType = null;
-                    string genericType = null;
+                    string? arrayElementType = null;
+                    string? genericType = null;
                     if (propertyType == SerializedPropertyKind.Generic)
                     {
                         if (Util.TryEvaluatePrimitiveProperty(valueRole, "isArray", options, out bool isArray)
@@ -133,37 +132,45 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
                     return SimplePresentation.Create(parts.Result(), ValueResultKind.Success, ValueFlags.None | flags,
                         instanceType);
                 },
-                exception => myLogger.LogThrownUnityException(exception, null, null, options));
+                exception =>
+                {
+                    myLogger.LogThrownUnityException(exception, valueRole.ValueReference.OriginatingFrame,
+                        ValueServices, options);
+                });
         }
 
-        [CanBeNull]
-        private IValuePresentation GetValuePresentation(IObjectValueRole<TValue> serializedPropertyRole,
-                                                        SerializedPropertyKind propertyType,
-                                                        IPresentationOptions options,
-                                                        out string extraDetail)
+        private IValuePresentation? GetValuePresentation(IObjectValueRole<TValue> serializedPropertyRole,
+                                                         SerializedPropertyKind propertyType,
+                                                         IPresentationOptions options,
+                                                         out string? extraDetail)
         {
             extraDetail = null;
 
             var valueProperty = GetValueFieldName(propertyType);
             var valueReference = valueProperty == null ? null : serializedPropertyRole.GetInstancePropertyReference(valueProperty);
 
-            if (propertyType == SerializedPropertyKind.Enum)
-                extraDetail = SerializedPropertyHelper.GetEnumValueIndexAsEnumName(serializedPropertyRole, valueReference, options);
-            else if (propertyType == SerializedPropertyKind.Character)
-                extraDetail = SerializedPropertyHelper.GetIntValueAsPrintableChar(valueReference, options);
-            else if (propertyType == SerializedPropertyKind.Integer)
+            if (valueReference != null)
             {
-                var type = serializedPropertyRole.GetInstancePropertyReference("type")?.AsStringSafe(options)
-                    ?.GetString();
-                if (type == "char")
+                if (propertyType == SerializedPropertyKind.Enum)
+                {
+                    extraDetail = SerializedPropertyHelper.GetEnumValueIndexAsEnumName(serializedPropertyRole,
+                        valueReference, options);
+                }
+                else if (propertyType == SerializedPropertyKind.Character)
                     extraDetail = SerializedPropertyHelper.GetIntValueAsPrintableChar(valueReference, options);
+                else if (propertyType == SerializedPropertyKind.Integer)
+                {
+                    var type = serializedPropertyRole.GetInstancePropertyReference("type")?.AsStringSafe(options)
+                        ?.GetString();
+                    if (type == "char")
+                        extraDetail = SerializedPropertyHelper.GetIntValueAsPrintableChar(valueReference, options);
+                }
             }
 
             return valueReference?.ToValue(ValueServices)?.GetValuePresentation(options);
         }
 
-        [CanBeNull]
-        private static string GetValueFieldName(SerializedPropertyKind propertyType)
+        private static string? GetValueFieldName(SerializedPropertyKind propertyType)
         {
             switch (propertyType)
             {

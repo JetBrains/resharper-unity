@@ -11,9 +11,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
 {
     public static class LoggerHelper
     {
-        [CanBeNull]
-        public static T CatchEvaluatorException<TValue, T>(this ILogger logger, [InstantHandle] Func<T> action,
-                                                           Action<EvaluatorExceptionThrownException<TValue>> onEvaluatorException)
+        public static T? CatchEvaluatorException<TValue, T>(this ILogger logger, [InstantHandle] Func<T> action,
+                                                            Action<EvaluatorExceptionThrownException<TValue>> onEvaluatorException)
             where TValue : class
         {
             try
@@ -51,10 +50,10 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
         {
             var message = EvaluatorExceptionThrownExceptionHelper.GetThrownExceptionMessage(exception, frame,
                 valueServices, valueFetchOptions.WithOverridden(o => o.AllowTargetInvoke = true), logger);
-            if (exception.ExceptionTypeName == "UnityEngine.UnityException"
-                || exception.ExceptionTypeName == "UnityEngine.MissingComponentException"
-                || exception.ExceptionTypeName == "UnityEngine.MissingReferenceException"
-                || exception.ExceptionTypeName == "UnityEngine.UnassignedReferenceException")
+            if (exception.ExceptionTypeName is "UnityEngine.UnityException"
+                or "UnityEngine.MissingComponentException"
+                or "UnityEngine.MissingReferenceException"
+                or "UnityEngine.UnassignedReferenceException")
             {
                 // These exceptions are possible while we evaluate our extra data. They are (mostly) expected and can be
                 // handled gracefully. Log silently and fall back.

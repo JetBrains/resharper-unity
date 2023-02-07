@@ -9,8 +9,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
-    public class GenerateBakerAndAuthoringActionFix :
-        WorkflowDrivenImplementMembersFix<GenerateBakerAndAuthoringActionWorkflow>
+    public class GenerateBakerAndAuthoringActionFix : WorkflowDrivenImplementMembersFix<GenerateBakerAndAuthoringActionWorkflow>
     {
         [CanBeNull] private readonly ITreeNode myAnchor;
 

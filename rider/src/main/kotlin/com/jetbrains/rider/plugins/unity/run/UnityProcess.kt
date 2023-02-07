@@ -3,7 +3,7 @@ package com.jetbrains.rider.plugins.unity.run
 import com.intellij.openapi.util.NlsSafe
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 
-sealed class UnityProcess(val displayName: String, val allowDebugging: Boolean, @NlsSafe val projectName: String? = null)
+sealed class UnityProcess(@NlsSafe val displayName: String, val allowDebugging: Boolean, @NlsSafe val projectName: String? = null)
 
 interface UnityRemoteConnectionDetails {
     val host: String

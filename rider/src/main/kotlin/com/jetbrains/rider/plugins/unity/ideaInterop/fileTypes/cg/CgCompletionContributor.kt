@@ -22,6 +22,11 @@ class CgCompletionContributor : WordCompletionContributor() {
         val completion = CompletionService.getCompletionService().currentCompletion
 
         val indicatorDisposable = completion as? Disposable ?: return
+
+        // Disposer.isDisposed is deprecated, because it relies on short-lived data. We'll suppress this warning because
+        // a. the current completion will be short-lived
+        // and b. this subsystem isn't really used anymore, so we won't encounter this at runtime
+        @Suppress("DEPRECATION")
         if (Disposer.isDisposed(indicatorDisposable)) return
 
         if (!completion.isAutopopupCompletion)

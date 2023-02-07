@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -15,10 +14,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
     [SolutionComponent]
     public class UnitySerializedReferenceProviderMock : UnitySerializedReferenceProvider
     {
-        public UnitySerializedReferenceProviderMock(Lifetime lifetime, [NotNull] IUnityElementIdProvider provider,
-            [NotNull] IPsiAssemblyFileLoader psiAssemblyFileLoader, [NotNull] IPsiModules psiModules,
-            [NotNull] UnitySolutionTracker unitySolutionTracker,
-            [NotNull] SolutionAnalysisConfiguration solutionAnalysisConfiguration,
+        public UnitySerializedReferenceProviderMock(Lifetime lifetime, IUnityElementIdProvider provider,
+            IPsiAssemblyFileLoader psiAssemblyFileLoader, IPsiModules psiModules,
+            UnitySolutionTracker unitySolutionTracker,
+            SolutionAnalysisConfiguration solutionAnalysisConfiguration,
             ShellCaches shellCaches,
             ISolutionCaches solutionCaches)
             : base(lifetime, provider, psiAssemblyFileLoader, psiModules, unitySolutionTracker, solutionAnalysisConfiguration, shellCaches, solutionCaches)

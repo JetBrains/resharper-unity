@@ -101,7 +101,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             // User could use "myScene", "Scenes/myScene" and "Assets/Scenes/myScene.unity" to load scene
             // Internally, we work only with first and second format (see UnityProjectSettingsCache)
 
-            if (literalExpression.ConstantValue.IsString(out var constantValue) || constantValue == null)
+            if (!literalExpression.ConstantValue.IsString(out var constantValue) || constantValue == null)
                 return null;
 
             var sceneName = constantValue;

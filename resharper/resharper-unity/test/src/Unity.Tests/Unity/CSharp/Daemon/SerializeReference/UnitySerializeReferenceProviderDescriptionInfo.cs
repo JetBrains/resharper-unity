@@ -12,9 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
 
         public static void CreateLifetimeCookie(Lifetime testLifetime)
         {
-            if(!ourLogger.IsTraceEnabled())    
+            if(!ourLogger.IsTraceEnabled())
                 Logger.IncreaseCategoriesLevel(testLifetime, LoggingLevel.TRACE, ourLogger.Category);
-
         }
     }
 }

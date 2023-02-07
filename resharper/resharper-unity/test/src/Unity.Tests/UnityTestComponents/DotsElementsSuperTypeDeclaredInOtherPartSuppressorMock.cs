@@ -34,12 +34,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
                 mySourceFile = sourceFile;
             }
 
-            public T GetData<T>(Key<T> key) where T : class
+            public T? GetData<T>(Key<T> key) where T : class
             {
                 return mySourceFile.GetData(key);
             }
 
-            public void PutData<T>(Key<T> key, T value) where T : class
+            public void PutData<T>(Key<T> key, T? value) where T : class
             {
                 mySourceFile.PutData(key, value);
             }
@@ -71,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
                 return default;
             }
 
-            public string GetPersistentID()
+            public string? GetPersistentID()
             {
                 return default;
             }
@@ -95,11 +95,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
             }
 
             public Guid CacheId { get; }
-            public IDocument AssociatedEditorDocument { get; }
-            public IDocument AssociatedEmbeddedSourceDocument { get; }
+            public IDocument? AssociatedEditorDocument { get; }
+            public IDocument? AssociatedEmbeddedSourceDocument { get; }
             public string RelativePath { get; }
             public int CodePage { get; set; }
-            public string AnalyzerReferencePath { get; }
+            public string? AnalyzerReferencePath { get; }
 
             public void BindToEmbeddedSourceProjectFile(IProjectFile projectFile)
             {

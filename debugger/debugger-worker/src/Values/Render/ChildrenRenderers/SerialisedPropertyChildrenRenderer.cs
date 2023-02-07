@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using JetBrains.Annotations;
@@ -330,7 +331,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
             private readonly MethodSelector myGetMethodElementSelector;
             private readonly IValueServicesFacade<TValue> myValueServices;
             private readonly ILogger myLogger;
-            private IMetadataMethodLite myGetElementMethod;
+            private IMetadataMethodLite? myGetElementMethod;
 
             public ArrayElementsGroup(IObjectValueRole<TValue> serializedPropertyRole, int arraySize,
                                       MethodSelector getMethodElementSelector,
@@ -389,7 +390,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                 {
                     var frame = mySerializedPropertyRole.ValueReference.OriginatingFrame;
                     var indexValue = myValueServices.ValueFactory.CreatePrimitive(frame, options, index);
-                    var childSerializedPropertyValue = collection.CallInstanceMethod(myGetElementMethod, indexValue);
+                    var childSerializedPropertyValue = collection.CallInstanceMethod(myGetElementMethod!, indexValue);
                     var valueReference = new SimpleValueReference<TValue>(childSerializedPropertyValue,
                         mySerializedPropertyRole.ReifiedType.MetadataType, name, ValueOriginKind.ArrayElement,
                         ValueFlags.None | ValueFlags.IsReadOnly, frame, myValueServices.RoleFactory);
@@ -519,7 +520,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
             [ContractAnnotation("false <= copiedSerializedPropertyRole:null")]
             private bool TryCopySerializedProperty(IObjectValueRole<TValue> serializedPropertyRole,
                                                    IValueFetchOptions options,
-                                                   out IObjectValueRole<TValue> copiedSerializedPropertyRole)
+                                                   [NotNullWhen(true)] out IObjectValueRole<TValue>? copiedSerializedPropertyRole)
             {
                 copiedSerializedPropertyRole = null;
 

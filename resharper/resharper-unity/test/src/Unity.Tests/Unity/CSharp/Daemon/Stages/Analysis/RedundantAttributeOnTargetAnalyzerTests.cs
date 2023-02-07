@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
         [Test] public void TestPostProcessBuildAttribute() { DoNamedTest2(); }
         [Test] public void TestPostProcessSceneAttribute() { DoNamedTest2(); }
     }
-    
+
     [TestUnity]
     public class RedundantAttributeOnTargetGlobalStageAnalyzerTests : UnitySerializationGlobalStageTestBase<IUnityAnalyzerHighlighting>
     {

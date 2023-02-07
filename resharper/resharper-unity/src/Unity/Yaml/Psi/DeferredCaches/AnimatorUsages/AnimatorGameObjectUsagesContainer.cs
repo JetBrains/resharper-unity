@@ -84,9 +84,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         public void Merge(IPsiSourceFile currentAssetSourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElementPointer unityAssetDataElementPointer, IUnityAssetDataElement unityAssetDataElement)
         {
             var dataElement = (AnimatorGameObjectDataElement)unityAssetDataElement; 
-            foreach (var assetUsagePointer in dataElement.EnumerateAssetUsages())
+            foreach (var assetScriptUsage in dataElement.EnumerateAssetUsages())
             {
-                myGameObjectReferenceToControllerGuid.Add(assetUsagePointer.Location, assetUsagePointer.UsageTarget.ExternalAssetGuid);
+                // consider the case, when similar line
+                //   m_Controller: {fileID: 9100000, guid: aeedfac2876cb93459de4d7f14e1570b, type: 2}
+                // is presented more than once due to copy-paste or merge conflict
+                // we can just use to the last occurence
+                myGameObjectReferenceToControllerGuid[assetScriptUsage.Location] = assetScriptUsage.UsageTarget.ExternalAssetGuid;
             }
         }
 

@@ -1,5 +1,4 @@
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -32,12 +31,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
             {
                 swea.ReanalyzeAll();
                 var files = swea.GetFilesToAnalyze().OrderBy(f => f.Name).ToList();
-                
-                foreach (var file in files) 
+
+                foreach (var file in files)
                     swea.AnalyzeInvisibleFile(file);
 
                 swea.AllFilesAnalyzed();
-                
+
                 ExecuteWithGold(GetTestDataFilePath2(TestName), writer =>
                 {
                     foreach (var file in files)
@@ -59,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
             return file.Name == TestName2;
         }
 
-        protected virtual bool HighlightingPredicate([NotNull] IHighlighting highlighting, IPsiSourceFile sourceFile,
+        protected virtual bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
             IContextBoundSettingsStore settingsStore)
         {
             return highlighting is TUnityHighlighting;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
@@ -100,7 +101,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
 
             private bool TryInvokeGetIterator(IObjectValueRole<TValue> serializedObjectRole,
                                               IValueFetchOptions options,
-                                              out IObjectValueRole<TValue> returnedSerializedPropertyRole)
+                                              [NotNullWhen(true)] out IObjectValueRole<TValue>? returnedSerializedPropertyRole)
             {
                 returnedSerializedPropertyRole = null;
 
