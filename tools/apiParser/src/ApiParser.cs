@@ -23,7 +23,7 @@ namespace ApiParser
             new Regex(@"^(?:[\w.]+)?\.(?:\w+)(?:\((?<args>.*)\)|(?<args>.*))$", RegexOptions.Compiled);
 
         private static readonly string ScriptReferenceRelativePath =
-            Path.Combine("Documentation", "en", "ScriptReference");
+            Path.Combine("ScriptReference");
 
         private readonly UnityApi myApi;
         private readonly TypeResolver myTypeResolver;
@@ -39,7 +39,7 @@ namespace ApiParser
             myApi.ExportTo(writer);
         }
 
-        public void ParseFolder(string path, Version apiVersion)
+        public void ParseFolder(string path, Version apiVersion, string langCode)
         {
             var currentDirectory = Directory.GetCurrentDirectory();
             try
@@ -63,7 +63,7 @@ namespace ApiParser
                         continue;
                     }
 
-                    var document = TypeDocument.Load(links[i].file, links[i].fullName);
+                    var document = TypeDocument.Load(links[i].file, links[i].fullName, langCode);
                     progress++;
                     if (document != null)
                     {
@@ -95,7 +95,7 @@ namespace ApiParser
                     foreach (var message in document.Messages)
                     {
                         var eventFunction =
-                            ParseMessage(document.ShortName, message, apiVersion, document.Namespace);
+                            ParseMessage(document.ShortName, message, apiVersion, document.Namespace, langCode);
                         if (eventFunction == null)
                             continue;
 
@@ -170,7 +170,7 @@ namespace ApiParser
 
         [CanBeNull]
         private UnityApiEventFunction ParseMessage(string className, SimpleHtmlNode message, Version apiVersion,
-            string hintNamespace)
+            string hintNamespace, string langCode)
         {
             var link = message.SelectOne(@"td.lbl/a");
             var desc = message.SelectOne(@"td.desc");

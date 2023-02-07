@@ -11,7 +11,7 @@ namespace ApiParser
         private static readonly Regex CaptureKindAndNamespaceRegex = new Regex(@"^(((?<type>class|struct|interface) in|Namespace:)\W*(?<namespace>\w+(?:\.\w+)*)|(?<type>enumeration))$", RegexOptions.Compiled);
 
         [CanBeNull]
-        internal static TypeDocument Load(string fileName, string fullName)
+        internal static TypeDocument Load(string fileName, string fullName, string langCode)
         {
             try
             {
@@ -40,8 +40,9 @@ namespace ApiParser
                         ns = fullName.Substring(0, index);
                     }
 
+                    var messagesText = LocalizationUtil.GetMessagesDivTextByLangCode(langCode);
                     var messages = documentNode.SelectMany(
-                        @"//div.content/div.section/div.subsection[h2='Messages' or h3='Messages']/table.list//tr");
+                        $@"//div.content/div.section/div.subsection[h2='{messagesText}' or h3='{messagesText}']/table.list//tr");
 
                     var removedDiv =
                         documentNode.SelectOne(

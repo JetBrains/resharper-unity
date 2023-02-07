@@ -14,16 +14,17 @@ namespace ApiParser
     {
         public static void Main(string[] args)
         {
-            if (args.Length != 1 && args.Length != 2)
+            if (args.Length != 1 && args.Length != 2 && args.Length != 3)
             {
                 Console.WriteLine("Usage: ApiParser.exe docsFolder");
                 Console.WriteLine("       ApiParser.exe apiXmlPath version");
+                Console.WriteLine("       ApiParser.exe docsFolder apiXmlPath version");
                 Console.WriteLine();
                 Console.WriteLine("ApiParser.exe docsFolder");
                 Console.WriteLine("  Parse all documentation installed by Unity Hub, as well as everything in the docsFolder and create a new api.xml");
                 Console.WriteLine();
                 Console.WriteLine("  docsFolder - folder that contains multiple versions of Unity docs");
-                Console.WriteLine("               Contents should be in the format Documentation-X.Y.ZfA/Documentation/en/ScriptReference");
+                Console.WriteLine("               Contents should be in the format Documentation-X.Y.ZfA/Documentation/CountryCode/ScriptReference");
                 Console.WriteLine();
                 Console.WriteLine("ApiParser.exe apiXmlPath version");
                 Console.WriteLine("  Parse the installed documentation corresponding to version and merge into an existing api.xml file");
@@ -31,58 +32,82 @@ namespace ApiParser
                 Console.WriteLine("  apiXmlPath - location of api.xml to read and merge into");
                 Console.WriteLine("  version - version of Unity to read docs from. Must be installed in standard Unity Hub location");
                 Console.WriteLine();
+                Console.WriteLine("ApiParser.exe docsFolder apiXmlPath version");
+                Console.WriteLine("  Parse the installed documentation corresponding to version and merge into an existing api.xml file");
+                Console.WriteLine();
+                Console.WriteLine("  docsFolder - folder that contains multiple versions of Unity docs");
+                Console.WriteLine("               Contents should be in the format Documentation-X.Y.ZfA/Documentation/CountryCode/ScriptReference");
+                Console.WriteLine("  apiXmlPath - location of api.xml to read and merge into");
+                Console.WriteLine("  version - version of Unity to read docs from.");
+                Console.WriteLine();
                 Console.WriteLine("Note that the output file is written to the current directory");
                 return;
             }
 
             var stopwatch = Stopwatch.StartNew();
             var apiXml = FileSystemPath.Parse("api.xml");
-
-            var docVersions = new List<(string, Version)>();
+            
+            var docFolders = new List<FileSystemPath>();
             if (args.Length == 1)
             {
                 Directory.SetCurrentDirectory(args[0]);
-                foreach (var directory in Directory.EnumerateDirectories(Directory.GetCurrentDirectory()))
-                {
-                    var docFolder = Path.Combine(Directory.GetCurrentDirectory(), directory);
-                    var version = Regex.Match(directory, @"Documentation-(\d+.\d+)").Groups[1].Value;
-                    docVersions.Add((docFolder, Version.Parse(version)));
-                }
+                docFolders.AddRange(FileSystemPath.Parse(args[0]).GetDirectoryEntries("*", PathSearchFlags.ExcludeFiles).Select(a=>a.GetAbsolutePath()));
 
-                foreach (var directory in Directory.EnumerateDirectories(Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Unity", "Hub", "Editor")))
-                {
-                    var docFolder = GetDocumentationRoot(directory).FullPath;
-                    var version = Regex.Match(directory, @"(\d+.\d+)").Groups[1].Value;
-                    docVersions.Add((docFolder, Version.Parse(version)));
-                }
-
-                docVersions = docVersions.OrderBy(v => v.Item2).ToList();
+                var unityPathInProgramFiles = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Unity", "Hub", "Editor");
+                if (Directory.Exists(unityPathInProgramFiles))
+                    docFolders.AddRange(Directory.EnumerateDirectories(unityPathInProgramFiles)
+                        .Select(GetDocumentationRoot));
             }
-            else
+            else if (args.Length == 2)
             {
                 apiXml = FileSystemPath.ParseRelativelyTo(args[0], FileSystemPath.Parse(Directory.GetCurrentDirectory()));
                 if (!apiXml.ExistsFile)
                     throw new InvalidOperationException("api.xml path does not exist");
 
                 var requiredVersion = args[1];
-                var docRoot = GetDocumentationRoot(requiredVersion);
-                if (!docRoot.ExistsDirectory)
-                    throw new InvalidOperationException($"Cannot find locally installed docs: {docRoot}");
-                var parseableVersion = Regex.Match(requiredVersion, @"^(\d+\.\d+)").Groups[1].Value;
-                docVersions.Add((docRoot.FullPath, Version.Parse(parseableVersion)));
+                var docFolder = GetDocumentationRoot(requiredVersion);
+                if (!docFolder.ExistsDirectory)
+                    throw new InvalidOperationException($"Cannot find locally installed docs: {docFolder}");
+                docFolders.Add(docFolder);
+            }
+            else
+            {
+                Directory.SetCurrentDirectory(args[0]);
+                docFolders.AddRange(FileSystemPath.Parse(args[0]).GetDirectoryEntries("*", PathSearchFlags.ExcludeFiles).Select(a=>a.GetAbsolutePath()));
+                
+                apiXml = FileSystemPath.ParseRelativelyTo(args[1], FileSystemPath.Parse(Directory.GetCurrentDirectory()));
+                if (!apiXml.ExistsFile)
+                    throw new InvalidOperationException("api.xml path does not exist");
+
+                var requiredVersion = args[2];
+                // todo: search requiredVersion among GetDocumentationRoot(requiredVersion);
             }
 
+            var docVersions = new List<(FileSystemPath, Version, string)>();
+            foreach (var docFolder in docFolders)
+            {
+                var directoryName = docFolder.Name;
+                var version = Regex.Match(directoryName, @"Documentation-(\d+.\d+)").Groups[1].Value;
+                var langFolders = docFolder.Combine("Documentation").GetChildren();
+                foreach (var langFolder in langFolders)
+                {
+                    docVersions.Add((langFolder.GetAbsolutePath(), Version.Parse(version), langFolder.GetAbsolutePath().Name));    
+                }
+            }
+                
+            docVersions = docVersions.OrderBy(v => v.Item2).ToList();
+            
             var unityApi = new UnityApi();
             if (apiXml.ExistsFile)
                 unityApi = UnityApi.ImportFrom(apiXml);
             var typeResolver = new TypeResolver();
             var parser = new ApiParser(unityApi, typeResolver);
 
-            foreach (var (name, version) in docVersions)
+            foreach (var (name, version, langCode) in docVersions)
             {
-                Console.WriteLine($"{name} ({version})");
-                parser.ParseFolder(name, version);
+                Console.WriteLine($"{name} ({version}) {langCode}");
+                parser.ParseFolder(name.FullPath, version, langCode);
 
                 AddUndocumentedApis(unityApi, version);
             }
@@ -284,7 +309,7 @@ namespace ApiParser
                     var functions = type.FindEventFunctions("OnPostprocessAllAssets");
                     eventFunction = new UnityApiEventFunction("OnPostprocessAllAssets",
                         true, false, ApiType.Void, apiVersion, description,
-                        "Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessAllAssets.html");
+                        "ScriptReference/AssetPostprocessor.OnPostprocessAllAssets.html");
                     eventFunction.AddParameter("importedAssets", ApiType.StringArray);
                     eventFunction.AddParameter("deletedAssets", ApiType.StringArray);
                     eventFunction.AddParameter("movedAssets", ApiType.StringArray);
