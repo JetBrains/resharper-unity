@@ -2,7 +2,6 @@ using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.CSharp.Generate;
 using JetBrains.ReSharper.Feature.Services.Generate;
 using JetBrains.ReSharper.Intentions.CSharp.QuickFixes;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dots;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -10,8 +9,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
-    public class GenerateBakerAndAuthoringActionFix :
-        WorkflowDrivenImplementMembersFix<GenerateBakerAndAuthoringActionWorkflow>
+    public class GenerateBakerAndAuthoringActionFix : WorkflowDrivenImplementMembersFix<GenerateBakerAndAuthoringActionWorkflow>
     {
         [CanBeNull] private readonly ITreeNode myAnchor;
 

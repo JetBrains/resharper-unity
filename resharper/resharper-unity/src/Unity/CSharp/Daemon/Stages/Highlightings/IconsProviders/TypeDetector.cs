@@ -7,10 +7,12 @@ using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dots;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
@@ -60,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 else if (UnityApi.IsDotsImplicitlyUsedType(typeElement))
                 {
                     //TODO obsolete
-                    AddUnityECSHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_DOTS, Strings.TypeDetector_AddDeclarationHighlighting_Unity_entities_system,
+                    AddUnityDOTSHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_DOTS, Strings.TypeDetector_AddDeclarationHighlighting_Unity_entities_system,
                         context);
                 }
 
@@ -85,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             AddHighlighting(consumer, declaration, text, tooltip, context);
         }
 
-        protected virtual void AddUnityECSHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, IReadOnlyCallGraphContext context)
+        protected virtual void AddUnityDOTSHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, IReadOnlyCallGraphContext context)
         {
             AddHighlighting(consumer, declaration, text, tooltip, context);
         }
@@ -114,6 +116,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                     result.Add(new IntentionAction(fix, Strings.TypeDetector_GetActions_Generate_Unity_event_functions,
                             PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
                         .ToBulbMenuItem(Solution, textControl));
+                }
+
+                if (classLikeDeclaration.GetContainingNode<IMethodDeclaration>() == null &&
+                    classLikeDeclaration.GetContainingNode<IPropertyDeclaration>() == null &&
+                    UnityApi.IsDerivesFromIComponentData(classLikeDeclaration.DeclaredElement))
+                {
+                    
+                    var fix = new GenerateBakerAndAuthoringActionFix(classLikeDeclaration);
+                    result.Add(new IntentionAction(fix, Strings.UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle,
+                            PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
+                        .ToBulbMenuItem(Solution, textControl));
+                }
+                
+                if (classLikeDeclaration.IsPartial
+                    && UnityApi.IsDotsImplicitlyUsedType(classLikeDeclaration.DeclaredElement)
+                    && !classLikeDeclaration.GetSourceFile().IsSourceGeneratedFile()
+                    && classLikeDeclaration.DeclaredElement.GetDeclarations().Count > 1)
+                {
+                    var bulbAction = new OpenDotsSourceGeneratedFileBulbAction(Strings.UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode, classLikeDeclaration);
+                    result.Add(new IntentionAction(bulbAction,
+                        Strings.UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode, PsiFeaturesUnsortedThemedIcons.Navigate.Id,
+                        BulbMenuAnchors.FirstClassContextItems).ToBulbMenuItem(Solution, textControl));
                 }
             }
 

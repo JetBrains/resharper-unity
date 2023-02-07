@@ -491,5 +491,6 @@
     public static string WritingToAStaticFieldIsNotSupported => ResourceManager.GetString("WritingToAStaticFieldIsNotSupported");
     public static string ShowExpensiveCallsBulbAction_Text_Show_outgoing_Expensive_calls => ResourceManager.GetString("ShowExpensiveCallsBulbAction_Text_Show_outgoing_Expensive_calls");
     public static string ShowExpensiveCallsBulbAction_Text_Show_incoming_Expensive_calls => ResourceManager.GetString("ShowExpensiveCallsBulbAction_Text_Show_incoming_Expensive_calls");
+    public static string UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode => ResourceManager.GetString("UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode");
   }
 }
