@@ -34,7 +34,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests
     // container). It is the root product zone that is used to bootstrap and activate the other zones. It is
     // automatically activated by ExtensionTestEnvironmentAssembly and is used to mark and therefore include the zone
     // activator for the required product zones.
-    // This should only be used for bootstrapping the appropriate product zones, and not used to mark components.
+    // This should be used only for environment components, as it is one of the only zones active during environment
+    // container composition.
     [ZoneDefinition]
     public interface IRiderUnityTestsEnvZone : ITestsEnvZone
     {
@@ -54,13 +55,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests
     {
     }
 
-    // Activates the product zones required for tests. It is invoked before any containers are created, so can be used
-    // to activate zones used to filter the environment, shell, solution and any other containers. If it has a zone
-    // marker, or requires a zone, that zone must be active (be careful about ZoneMarkers in namespaces!)
-    // Strictly speaking, this activator doesn't need a zone marker - if there isn't one, it's automatically active,
-    // and will be used to provide active zones for filtering. Furthermore, the derived ITestsEnvZone could be used to
-    // require all product zones instead of introducing a specific tests zone and related activator. However, this
-    // explicit marking, and separation of concerns in zone definitions is conceptually cleaner.
+    // Activates the product zones required for tests. It is an environment component, and invoked while the environment
+    // container is being composed. As such, it must be in a zone that is already active - i.e. a host environment zone,
+    // such as the test env zone. (A completely missing zone marker will also include it in the environment container.)
+    // It activates the tests zone, which is the set of all zones required to run the tests, including both production
+    // components and test components, and will be used to filter the shell and solution containers.
 
     // Note that not all Rider components can be tested, as many of them require the protocol. It appears that we can't
     // activate IResharperHost* zones
@@ -161,6 +160,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Tests
                      </logger> -->
                      <!-- To see negative zones by propagation -->
                      <!-- <logger name=""JetBrains.Application.Environment.RunsProducts"" level=""TRACE"">
+                       <appender-ref>file</appender-ref>
+                     </logger> -->
+                     <!-- Trace out the part catalog zone mapping - what zones are mapped to which namespaces and types -->
+                     <!-- <logger name=""JetBrains.Application.BuildScript.Application.Catalogs.PartCatalogZoneMapping"" level=""TRACE"">
                        <appender-ref>file</appender-ref>
                      </logger> -->
                    </configuration>";

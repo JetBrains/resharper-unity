@@ -6,7 +6,7 @@ reformat: True
 shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=PropertyDrawer, ValidateFileName=True
-scopes: UnityFileTemplateSectionMarker;InUnityCSharpEditorFolder;MustBeInProjectWithMaximumUnityVersion(version=2022.1)
+scopes: InUnityCSharpEditorFolder;MustBeInProjectWithMaximumUnityVersion(version=2022.1)
 uitag: Unity Script
 parameterOrder: HEADER, (CLASS), (NAMESPACE), TYPE
 HEADER-expression: fileheader()
