@@ -1,5 +1,4 @@
 using JetBrains.ReSharper.FeaturesTestFramework.CodeCleanup;
-using JetBrains.Util;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.CodeStyle
@@ -21,8 +20,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Psi.CodeStyle
             // and ReSharper has two attributes to map a XAML namespaces to the JetBrains.Application.Src.UI.Icons CLR
             // namespace. The System.Xaml shipping with Rider uses a dictionary indexer instead of the Add method,
             // so it works, although last write wins
-            if (PlatformUtil.IsRunningOnMono)
+            // It does work when run as part of the monorepo, presumably because it picks up a working version of
+            // System.Xaml.dll from the product bin folder
+#if !INDEPENDENT_BUILD
+            if (Util.PlatformUtil.IsRunningOnMono)
                 Assert.Ignore("Test not supported on Mono");
+#endif
             DoNamedTest2();
         }
     }
