@@ -126,13 +126,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             return typeElement?.GetClrName().Equals(KnownTypes.RefRW) ?? false;
         }
 
-        public static (ITypeElement?, bool) GetReferencedType(ITreeNode? node)
+        public static (ITypeElement?, bool) GetReferencedType(IFieldDeclaration? fieldDeclaration)
         {
-            if (node == null)
+            if (fieldDeclaration == null)
                 return (null, false);
 
-            var fieldDeclaration = node.GetContainingNode<IFieldDeclaration>();
-            var (fieldTypeElement, substitution) = fieldDeclaration?.DeclaredElement?.Type as IDeclaredType;
+            var (fieldTypeElement, substitution) = fieldDeclaration.DeclaredElement?.Type as IDeclaredType;
 
             if (fieldTypeElement == null)
                 return (null, false);

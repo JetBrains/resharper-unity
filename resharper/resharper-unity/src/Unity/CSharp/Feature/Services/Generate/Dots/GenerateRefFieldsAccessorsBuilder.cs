@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             if (node == null)
                return; 
             
-            var (referencedType, isReadOnly) = UnityApi.GetReferencedType(node);
+            var (referencedType, isReadOnly) = UnityApi.GetReferencedType(node.GetContainingNode<IFieldDeclaration>());
             if (referencedType == null)
                 return;
 
@@ -57,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             if (fieldDeclaration == null)
                 return;
 
-            var (referencedType, isReadOnly) = UnityApi.GetReferencedType(node);
+            var (referencedType, isReadOnly) = UnityApi.GetReferencedType(fieldDeclaration);
             if (referencedType == null)
                 return;
 

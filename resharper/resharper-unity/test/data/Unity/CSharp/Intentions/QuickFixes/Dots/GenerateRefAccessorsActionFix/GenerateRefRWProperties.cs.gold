@@ -2,6 +2,9 @@
  0: ExitCoordinates:Unity.Mathematics.float2
  1: ScavsCount:System.Int32
 
+Preselected elements:
+ 0: ScavsCount:System.Int32
+
 // ${KIND:Unity.GenerateRefAccessors}
 // ${SELECT0:ScavsCount:System.Int32}
 // ${GLOBAL0:GenerateSetters=True}
