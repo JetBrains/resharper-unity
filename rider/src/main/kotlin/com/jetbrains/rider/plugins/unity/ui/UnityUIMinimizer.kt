@@ -1,13 +1,13 @@
 package com.jetbrains.rider.plugins.unity.ui
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.ProjectPostStartupActivity
+import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.util.application
 import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 
-class UnityUIMinimizer : ProjectPostStartupActivity {
+class UnityUIMinimizer : ProjectActivity {
     companion object {
         fun ensureMinimizedUI(project: Project) {
             application.assertIsDispatchThread()
