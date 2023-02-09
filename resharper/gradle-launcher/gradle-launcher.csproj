@@ -13,13 +13,16 @@
     <ProjectReference Include="..\..\debugger\ios-list-usb-devices\src\ios-list-usb-devices.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\unity\EditorPlugin\EditorPlugin.csproj">
+    <ProjectReference Include="..\..\unity\EditorPlugin\EditorPlugin.SinceUnity.4.7.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\unity\EditorPlugin\EditorPluginFull.csproj">
+    <ProjectReference Include="..\..\unity\EditorPlugin\EditorPlugin.SinceUnity.5.6.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\unity\EditorPlugin\EditorPluginNet46.csproj">
+    <ProjectReference Include="..\..\unity\EditorPlugin\EditorPlugin.SinceUnity.2017.3.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\unity\EditorPlugin\EditorPlugin.SinceUnity.2019.2.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\resharper-unity\src\Unity.Rider\Unity.Rider.csproj">
