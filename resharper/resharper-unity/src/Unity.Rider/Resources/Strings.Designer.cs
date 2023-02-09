@@ -122,5 +122,9 @@
     public static string UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_method => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_method");
     public static string UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_CapitalChar_Method => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_CapitalChar_Method");
     public static string UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_methods => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_methods");
+    public static string AnimatorGroupingRule_AnimatorGroupingRule_Animator => ResourceManager.GetString("AnimatorGroupingRule_AnimatorGroupingRule_Animator");
+    public static string AnimationEventGroupingRule_AnimationEventGroupingRule_AnimationEvent => ResourceManager.GetString("AnimationEventGroupingRule_AnimationEventGroupingRule_AnimationEvent");
+    public static string GameObjectUsageGroupingRule_GameObjectUsageGroupingRule_UnityGameObject => ResourceManager.GetString("GameObjectUsageGroupingRule_GameObjectUsageGroupingRule_UnityGameObject");
+    public static string ComponentUsageGroupingRule_ComponentUsageGroupingRule_UnityComponent => ResourceManager.GetString("ComponentUsageGroupingRule_ComponentUsageGroupingRule_UnityComponent");
   }
 }

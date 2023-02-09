@@ -238,4 +238,16 @@
     <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_methods" xml:space="preserve">
         <value>methods</value>
     </data>
+    <data name="AnimatorGroupingRule_AnimatorGroupingRule_Animator" xml:space="preserve">
+        <value>Animator</value>
+    </data>
+    <data name="AnimationEventGroupingRule_AnimationEventGroupingRule_AnimationEvent" xml:space="preserve">
+        <value>Animation Event</value>
+    </data>
+    <data name="GameObjectUsageGroupingRule_GameObjectUsageGroupingRule_UnityGameObject" xml:space="preserve">
+        <value>Unity GameObject</value>
+    </data>
+    <data name="ComponentUsageGroupingRule_ComponentUsageGroupingRule_UnityComponent" xml:space="preserve">
+        <value>Unity Component</value>
+    </data>
 </root>
