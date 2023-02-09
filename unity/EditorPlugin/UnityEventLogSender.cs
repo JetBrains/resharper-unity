@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using UnityEditor;
@@ -12,7 +13,7 @@ namespace JetBrains.Rider.Unity.Editor
     private static readonly BoundedSynchronizedQueue<LogEvent> ourDelayedLogEvents = new BoundedSynchronizedQueue<LogEvent>(1000);
     private static bool ourLogEventsCollectorEnabled;
 
-    public static void Start()
+    public static void Start(Lifetime lifetime)
     {
       ourLogEventsCollectorEnabled = PluginSettings.LogEventsCollectorEnabled;
       if (!ourLogEventsCollectorEnabled)
@@ -35,10 +36,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         var handler = new Application.LogCallback(ApplicationOnLogMessageReceived);
         eventInfo.AddEventHandler(null, handler);
-        AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
-        {
-          eventInfo.RemoveEventHandler(null, handler);
-        });
+        lifetime.OnTermination(() => eventInfo.RemoveEventHandler(null, handler));
 
         // Introduced in 3.4, obsolete but still working in 2017.2+
         // Should use EditorApplication.playModeStateChanged, introduced in 2017.2

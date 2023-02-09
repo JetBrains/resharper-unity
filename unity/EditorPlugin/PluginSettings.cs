@@ -25,7 +25,7 @@ namespace JetBrains.Rider.Unity.Editor
       set
       {
         EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value);
-        LogInitializer.InitLog(value);
+        LogInitializer.SetLogLevel(value);
       }
     }
 
