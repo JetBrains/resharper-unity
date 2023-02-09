@@ -34,7 +34,6 @@ namespace JetBrains.Rider.Unity.Editor
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathProvider ourRiderPathProvider;
     public static readonly List<ModelWithLifetime> UnityModels = new List<ModelWithLifetime>();
-    private static bool ourInitialized;
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
     internal static string SlnFile;
     private static long ourInitTime = DateTime.UtcNow.Ticks;
@@ -121,9 +120,6 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static void Init()
     {
-      if (ourInitialized)
-        return;
-
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
       var projectName = Path.GetFileName(projectDirectory);
       SlnFile = Path.GetFullPath($"{projectName}.sln");
@@ -170,8 +166,6 @@ namespace JetBrains.Rider.Unity.Editor
       };
 
       PlayModeSavedState = GetPlayModeState();
-
-      ourInitialized = true;
     }
 
     private static void InitializeProtocol(Lifetime lifetime, string protocolInstancePath)
@@ -227,9 +221,6 @@ namespace JetBrains.Rider.Unity.Editor
 
     internal static void InitForPluginLoadedFromAssets()
     {
-      if (ourInitialized)
-        return;
-
       ResetDefaultFileExtensions();
 
       // process csproj files once per Unity process
