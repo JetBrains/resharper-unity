@@ -88,7 +88,7 @@ namespace JetBrains.Rider.Unity.Editor
         EditorPrefs.SetBool(ModificationPostProcessor.ModifiedSource, false);
       }
 
-      var models = PluginEntryPoint.UnityModels.Where(a=>a.Lifetime.IsAlive).ToArray();
+      var models = UnityEditorProtocol.Models.Where(a=>a.Lifetime.IsAlive).ToArray();
       if (models.Any())
       {
         var modelLifetime = models.First();
@@ -134,7 +134,6 @@ namespace JetBrains.Rider.Unity.Editor
         proc.StartInfo.FileName = defaultApp;
         proc.StartInfo.Arguments = args;
       }
-
       proc.StartInfo.UseShellExecute = true; // avoid HandleInheritance
       var message = $"\"{proc.StartInfo.FileName}\" {proc.StartInfo.Arguments}";
       myLogger.Verbose(message);
