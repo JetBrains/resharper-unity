@@ -28,9 +28,8 @@ namespace JetBrains.Rider.Unity.Editor
       };
 
       // Both of these methods were introduced in 5.0+ but EditorPlugin.csproj still targets 4.7
-      var eventInfo = typeof(Application).GetEvent("logMessageReceivedThreaded", BindingFlags.Static | BindingFlags.Public);
-      if (eventInfo == null)
-        eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
+      var eventInfo = typeof(Application).GetEvent("logMessageReceivedThreaded", BindingFlags.Static | BindingFlags.Public) ??
+                      typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
 
       if (eventInfo != null)
       {
@@ -38,11 +37,7 @@ namespace JetBrains.Rider.Unity.Editor
         eventInfo.AddEventHandler(null, handler);
         lifetime.OnTermination(() => eventInfo.RemoveEventHandler(null, handler));
 
-        // Introduced in 3.4, obsolete but still working in 2017.2+
-        // Should use EditorApplication.playModeStateChanged, introduced in 2017.2
-#pragma warning disable 618
-        EditorApplication.playmodeStateChanged += () =>
-#pragma warning restore 618
+        PlayModeStateTracker.Current.Advise(lifetime, _ =>
         {
           // Work around an issue in Unity 2017.1+ that stops sending log messages to the handler when leaving play mode.
           // The issue will not be fixed because it might break compatibility of existing workarounds
@@ -53,7 +48,7 @@ namespace JetBrains.Rider.Unity.Editor
             eventInfo.RemoveEventHandler(null, handler);
             eventInfo.AddEventHandler(null, handler);
           }
-        };
+        });
       }
       else
       {
@@ -84,10 +79,9 @@ namespace JetBrains.Rider.Unity.Editor
           break;
       }
 
-      var mode = LogEventMode.Play;
-      if (PluginEntryPoint.PlayModeSavedState == PluginEntryPoint.PlayModeState.Stopped)
-        mode = LogEventMode.Edit;
-
+      // TODO: How can we tell if the message is from a player?
+      // This mode reflects the editor state, not the fact that it's a play, which is of course in play mode
+      var mode = PlayModeStateTracker.Current.Value == PlayModeState.Stopped ? LogEventMode.Edit : LogEventMode.Play;
       var ticks = DateTime.UtcNow.Ticks;
       var evt = new LogEvent(ticks, eventType, mode, message, stackTrace);
       ourDelayedLogEvents.Enqueue(evt);

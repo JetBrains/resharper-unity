@@ -134,22 +134,11 @@ namespace JetBrains.Rider.Unity.Editor
 
       InitializeEditorInstanceJson(lifetime);
 
-#if UNITY_2017_3_OR_NEWER
-      EditorApplication.playModeStateChanged += state =>
-      {
-        if (state == PlayModeStateChange.EnteredPlayMode)
-        {
-          var time = DateTime.UtcNow.Ticks.ToString();
-          SessionState.SetString("Rider_EnterPlayMode_DateTime", time);
-        }
-      };
-#endif
+      PlayModeStateTracker.Initialise();
 
       InitializeProtocol(lifetime);
 
       OpenAssetHandler = new OnOpenAssetHandler(ourRiderPathProvider, ourPluginSettings, SlnFile);
-
-      PlayModeSavedState = GetPlayModeState();
 
       // Done
       if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
@@ -273,23 +262,6 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    public enum PlayModeState
-    {
-      Stopped,
-      Playing,
-      Paused
-    }
-
-    public static PlayModeState PlayModeSavedState = PlayModeState.Stopped;
-
-    private static PlayModeState GetPlayModeState()
-    {
-      if (EditorApplication.isPaused)
-        return PlayModeState.Paused;
-      if (EditorApplication.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode)
-        return PlayModeState.Playing;
-      return PlayModeState.Stopped;
-    }
 
     private static void SetupAssemblyReloadEvents(Lifetime lifetime)
     {
@@ -297,34 +269,25 @@ namespace JetBrains.Rider.Unity.Editor
       if (UnityUtils.UnityVersion >= new Version(2018, 2))
         return;
 
-      // playmodeStateChanged was marked obsolete in 2017.1. Still working in 2018.3
-#pragma warning disable 618
-      EditorApplication.playmodeStateChanged += () =>
-#pragma warning restore 618
+      PlayModeStateTracker.Current.Advise(lifetime, state =>
       {
         if (PluginSettings.AssemblyReloadSettings == ScriptCompilationDuringPlay.RecompileAfterFinishedPlaying)
         {
           MainThreadDispatcher.Instance.Queue(() =>
           {
-            var newPlayModeState = GetPlayModeState();
-            if (PlayModeSavedState != newPlayModeState)
+            if (state == PlayModeState.Playing)
             {
-              if (newPlayModeState == PlayModeState.Playing)
-              {
-                ourLogger.Info("LockReloadAssemblies");
-                EditorApplication.LockReloadAssemblies();
-              }
-              else if (newPlayModeState == PlayModeState.Stopped)
-              {
-                ourLogger.Info("UnlockReloadAssemblies");
-                EditorApplication.UnlockReloadAssemblies();
-              }
-
-              PlayModeSavedState = newPlayModeState;
+              ourLogger.Info("LockReloadAssemblies");
+              EditorApplication.LockReloadAssemblies();
+            }
+            else if (state == PlayModeState.Stopped)
+            {
+              ourLogger.Info("UnlockReloadAssemblies");
+              EditorApplication.UnlockReloadAssemblies();
             }
           });
         }
-      };
+      });
 
       lifetime.OnTermination(() =>
       {
@@ -380,7 +343,7 @@ namespace JetBrains.Rider.Unity.Editor
           GetBuildLocation(model);
           AdviseRunMethod(model);
           AdviseStartProfiling(model);
-          GetInitTime(model);
+          AdviseLoggingStateChangeTimes(connectionLifetime, model);
 
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
@@ -451,7 +414,7 @@ namespace JetBrains.Rider.Unity.Editor
         });
     }
 
-    private static void GetInitTime(BackendUnityModel model)
+    private static void AdviseLoggingStateChangeTimes(Lifetime modelLifetime, BackendUnityModel model)
     {
         model.ConsoleLogging.LastInitTime.SetValue(ourInitTime);
 
@@ -459,6 +422,11 @@ namespace JetBrains.Rider.Unity.Editor
         var enterPlayTime = long.Parse(SessionState.GetString("Rider_EnterPlayMode_DateTime", "0"));
         model.ConsoleLogging.LastPlayTime.SetValue(enterPlayTime);
 #endif
+        PlayModeStateTracker.Current.Advise(modelLifetime, state =>
+        {
+          if (state == PlayModeState.Playing)
+            model.ConsoleLogging.LastPlayTime.Value = DateTime.UtcNow.Ticks;
+        });
     }
 
     private static void AdviseRunMethod(BackendUnityModel model)
@@ -742,18 +710,7 @@ namespace JetBrains.Rider.Unity.Editor
         MainThreadDispatcher.Instance.Queue(EditorApplication.Step);
       });
 
-      var onPlaymodeStateChanged = new EditorApplication.CallbackFunction(() => syncPlayState());
-
-// left for compatibility with Unity <= 5.5
-#pragma warning disable 618
-      connectionLifetime.AddBracket(() => { EditorApplication.playmodeStateChanged += onPlaymodeStateChanged; },
-        () => { EditorApplication.playmodeStateChanged -= onPlaymodeStateChanged; });
-#pragma warning restore 618
-      // new api - not present in Unity 5.5
-      // private static Action<PauseState> IsPauseStateChanged(UnityModel model)
-      //    {
-      //      return state => model?.Pause.SetValue(state == PauseState.Paused);
-      //    }
+      PlayModeStateTracker.Current.Advise(connectionLifetime, _ => syncPlayState());
     }
 
     private static string[] GetLogPaths()
