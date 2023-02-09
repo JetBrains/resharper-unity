@@ -39,7 +39,7 @@ namespace ApiParser
             myApi.ExportTo(writer);
         }
 
-        public void ParseFolder(string path, Version apiVersion, string langCode)
+        public void ParseFolder(string path, Version apiVersion, RiderSupportedLanguages langCode)
         {
             var currentDirectory = Directory.GetCurrentDirectory();
             try
@@ -170,7 +170,7 @@ namespace ApiParser
 
         [CanBeNull]
         private UnityApiEventFunction ParseMessage(string className, SimpleHtmlNode message, Version apiVersion,
-            string hintNamespace, string langCode)
+            string hintNamespace, RiderSupportedLanguages langCode)
         {
             var link = message.SelectOne(@"td.lbl/a");
             var desc = message.SelectOne(@"td.desc");
@@ -261,8 +261,10 @@ namespace ApiParser
 
             var docPath = Path.Combine(ScriptReferenceRelativePath, detailsPath);
             var eventFunction = new UnityApiEventFunction(messageName, staticNode != null || isStaticFromExample,
-                isCoroutine, returnType, apiVersion, desc.Text, docPath);
+                isCoroutine, returnType, apiVersion, docPath);
 
+            eventFunction.AddDescription(desc.Text, langCode);
+            
             return ParseParameters(eventFunction, signature, details, hintNamespace, argumentNames, apiVersion)
                 ? eventFunction
                 : null;

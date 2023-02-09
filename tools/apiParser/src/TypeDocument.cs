@@ -11,7 +11,7 @@ namespace ApiParser
         private static readonly Regex CaptureKindAndNamespaceRegex = new Regex(@"^(((?<type>class|struct|interface) in|Namespace:)\W*(?<namespace>\w+(?:\.\w+)*)|(?<type>enumeration))$", RegexOptions.Compiled);
 
         [CanBeNull]
-        internal static TypeDocument Load(string fileName, string fullName, string langCode)
+        internal static TypeDocument Load(string fileName, string fullName, RiderSupportedLanguages langCode)
         {
             try
             {
@@ -40,9 +40,9 @@ namespace ApiParser
                         ns = fullName.Substring(0, index);
                     }
 
-                    var messagesText = LocalizationUtil.GetMessagesDivTextByLangCode(langCode);
+                    var headerText = LocalizationUtil.GetMessagesDivTextByLangCode(langCode);
                     var messages = documentNode.SelectMany(
-                        $@"//div.content/div.section/div.subsection[h2='{messagesText}' or h3='{messagesText}']/table.list//tr");
+                        $@"//div.content/div.section/div.subsection[h2='{headerText}' or h3='{headerText}']/table.list//tr");
 
                     var removedDiv =
                         documentNode.SelectOne(
@@ -62,7 +62,7 @@ namespace ApiParser
         }
 
         private TypeDocument([NotNull] string docPath, [NotNull] string shortName, [NotNull] string ns,
-            [NotNull] string kind, bool isRemoved, [NotNull] SimpleHtmlNode[] messages, string langCode)
+            [NotNull] string kind, bool isRemoved, [NotNull] SimpleHtmlNode[] messages, RiderSupportedLanguages langCode)
         {
             DocPath = docPath;
             ShortName = shortName;
@@ -73,14 +73,14 @@ namespace ApiParser
             LangCode = langCode;
         }
 
-        [NotNull] public string DocPath { get; private set; }
-        [NotNull] public string ShortName { get; private set; }
+        [NotNull] public string DocPath { get; }
+        [NotNull] public string ShortName { get; }
         // Namespace is not guaranteed to be 100% correct. Enums are missing the UnityEngine. or UnityEditor. prefix
-        [NotNull] public string Namespace { get; private set; }
+        [NotNull] public string Namespace { get; }
         public string FullName => string.IsNullOrEmpty(Namespace) ? ShortName : Namespace + "." + ShortName;
-        [NotNull] public string Kind { get; private set; }
-        public bool IsRemoved { get; private set; }
-        [NotNull] public SimpleHtmlNode[] Messages { get; private set; }
-        [NotNull] public string LangCode { get; }
+        [NotNull] public string Kind { get; }
+        public bool IsRemoved { get; }
+        [NotNull] public SimpleHtmlNode[] Messages { get; }
+        [NotNull] public RiderSupportedLanguages LangCode { get; }
     }
 }

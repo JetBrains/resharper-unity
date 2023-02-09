@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Xml;
+using JetBrains.DataFlow;
 using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
@@ -22,10 +24,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         private readonly Dictionary<string, Version> myVersions = new();
         private readonly JetHashSet<string> myIdentifiers = new();
         private readonly UnityTypeSpec myDefaultReturnTypeSpec = new(PredefinedType.INT_FQN);
+        private CultureInfo myCultureInfo;
 
-        public UnityTypes LoadTypes()
+        public UnityTypes LoadTypes(CultureInfo instanceCulture)
         {
             var types = new List<UnityType>();
+            myCultureInfo = instanceCulture;
 
             var ns = GetType().Namespace;
             using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(ns + @".api.xml");
@@ -158,7 +162,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 
             Assertion.AssertNotNull(name, "name != null");
 
-            var description = node.Attributes?["description"]?.Value;
+            string? description = null;
+            var descriptionNodes = node.SelectNodes("descriptions/description");
+            if (descriptionNodes != null)
+            {
+                var langCode = myCultureInfo.TwoLetterISOLanguageName;
+
+                var matchingDescription = descriptionNodes.OfType<XmlNode>()
+                    .Where(a => a.Attributes?["langCode"]?.Value == langCode).FirstNotNull();
+                description = matchingDescription?.Attributes?["text"]?.Value;
+                
+                if (description == null && langCode != "iv")
+                {
+                    // fallback to invariant language
+                    description = descriptionNodes.OfType<XmlNode>()
+                        .Where(a => a.Attributes?["langCode"]?.Value == "iv").FirstNotNull()
+                        ?.Attributes?["text"]?.Value;
+                }
+            }
+            
             var isStatic = bool.Parse(node.Attributes?["static"]?.Value ?? "false");
             var canBeCoroutine = bool.Parse(node.Attributes?["coroutine"]?.Value ?? "false");
             var isUndocumented = bool.Parse(node.Attributes?["undocumented"]?.Value ?? "false");
