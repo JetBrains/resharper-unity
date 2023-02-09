@@ -1379,4 +1379,7 @@ a plugin to be installed to a project.</value>
     <data name="UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode" xml:space="preserve">
         <value>Show generated code</value>
     </data>
+    <data name="ModifyInspectorAttributes_Text" xml:space="preserve">
+        <value>Modify Inspector attributes</value>
+    </data>
 </root>
