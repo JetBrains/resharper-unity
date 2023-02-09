@@ -145,6 +145,13 @@ namespace JetBrains.Rider.Unity.Editor
       };
 #endif
 
+      InitializeProtocol(lifetime);
+
+      OpenAssetHandler = new OnOpenAssetHandler(ourRiderPathProvider, ourPluginSettings, SlnFile);
+
+      PlayModeSavedState = GetPlayModeState();
+
+      // Done
       if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
       {
         var executingAssembly = Assembly.GetExecutingAssembly();
@@ -153,68 +160,62 @@ namespace JetBrains.Rider.Unity.Editor
           $"Rider plugin \"{executingAssembly.GetName().Name}\" initialized{(string.IsNullOrEmpty(location) ? "" : " from: " + location)}. " +
           $"LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogInitializer.LogPath}.");
       }
+    }
+
+    private static void InitializeProtocol(Lifetime lifetime)
+    {
+      var currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
+      var solutionNames = new List<string> { currentDirectory.Name };
+
+      ourLogger.Verbose("Initialising protocol. Looking for solution files");
+
+      var solutionFiles = currentDirectory.GetFiles("*.sln", SearchOption.TopDirectoryOnly);
+      foreach (var solutionFile in solutionFiles)
+      {
+        var solutionName = Path.GetFileNameWithoutExtension(solutionFile.FullName);
+        if (!solutionName.Equals(currentDirectory.Name))
+        {
+          solutionNames.Add(solutionName);
+        }
+      }
+
+      var protocols = new List<ProtocolInstance>();
+
+      // If any protocol connection is lost, we will drop all connections and recreate them
+      var allProtocolsLifetimeDefinition = lifetime.CreateNested();
+      foreach (var solutionName in solutionNames)
+      {
+        var port = CreateProtocolForSolution(allProtocolsLifetimeDefinition.Lifetime, solutionName,
+          () => allProtocolsLifetimeDefinition.Terminate());
+
+        if (port == -1)
+          continue;
+
+        protocols.Add(new ProtocolInstance(solutionName, port));
+      }
+
+      allProtocolsLifetimeDefinition.Lifetime.OnTermination(() =>
+      {
+        if (lifetime.IsAlive)
+        {
+          ourLogger.Verbose("Recreating protocol, project lifetime is alive");
+          InitializeProtocol(lifetime);
+        }
+        else
+        {
+          ourLogger.Verbose("Protocol will be recreated on next domain load, plugin lifetime is not alive");
+        }
+      });
 
       ourLogger.Verbose("Writing Library/ProtocolInstance.json");
-      var protocolInstanceJsonPath = Path.GetFullPath("Library/ProtocolInstance.json");
-      InitializeProtocol(lifetime, protocolInstanceJsonPath);
+      var protocolInstancePath = Path.GetFullPath("Library/ProtocolInstance.json");
+      var result = ProtocolInstance.ToJson(protocols);
+      File.WriteAllText(protocolInstancePath, result);
       lifetime.OnTermination(() =>
       {
         ourLogger.Verbose("Deleting Library/ProtocolInstance.json");
-        File.Delete(protocolInstanceJsonPath);
+        File.Delete(protocolInstancePath);
       });
-
-      OpenAssetHandler = new OnOpenAssetHandler(ourRiderPathProvider, ourPluginSettings, SlnFile);
-
-      PlayModeSavedState = GetPlayModeState();
-    }
-
-    private static void InitializeProtocol(Lifetime lifetime, string protocolInstancePath)
-    {
-        var currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
-        var solutionNames = new List<string> { currentDirectory.Name};
-
-        var solutionFiles = currentDirectory.GetFiles("*.sln", SearchOption.TopDirectoryOnly);
-        foreach (var solutionFile in solutionFiles)
-        {
-            var solutionName = Path.GetFileNameWithoutExtension(solutionFile.FullName);
-            if (!solutionName.Equals(currentDirectory.Name))
-            {
-                solutionNames.Add(solutionName);
-            }
-        }
-
-        var protocols = new List<ProtocolInstance>();
-
-        // if any protocol connection is lost, we will drop all connections and recreate them
-        var allProtocolsLifetimeDefinition = lifetime.CreateNested();
-        foreach (var solutionName in solutionNames)
-        {
-            var port = CreateProtocolForSolution(allProtocolsLifetimeDefinition.Lifetime, solutionName, () =>
-            {
-                allProtocolsLifetimeDefinition.Terminate();
-            });
-
-            if (port == -1)
-                continue;
-
-            protocols.Add(new ProtocolInstance(solutionName, port));
-        }
-
-        allProtocolsLifetimeDefinition.Lifetime.OnTermination(() =>
-        {
-            if (lifetime.IsAlive)
-            {
-                ourLogger.Verbose("Recreating protocol, project lifetime is alive");
-                InitializeProtocol(lifetime, protocolInstancePath);
-            }
-            else
-            {
-                ourLogger.Verbose("Protocol will be recreating on next domain load, project lifetime is not alive");
-            }
-        });
-
-        var result = ProtocolInstance.ToJson(protocols);
-        File.WriteAllText(protocolInstancePath, result);
     }
 
     private static void InitForPluginLoadedFromAssets(Lifetime lifetime)
@@ -338,12 +339,12 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static int CreateProtocolForSolution(Lifetime lifetime, string solutionName, Action onDisconnected)
     {
+      ourLogger.Verbose($"Initialising protocol for {solutionName}");
       try
       {
         var dispatcher = MainThreadDispatcher.Instance;
         var currentWireAndProtocolLifetimeDef = lifetime.CreateNested();
         var currentWireAndProtocolLifetime = currentWireAndProtocolLifetimeDef.Lifetime;
-
 
         var riderProtocolController = new RiderProtocolController(dispatcher, currentWireAndProtocolLifetime);
 
