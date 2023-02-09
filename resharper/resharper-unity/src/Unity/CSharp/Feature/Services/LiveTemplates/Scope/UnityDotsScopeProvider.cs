@@ -4,6 +4,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Context;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope
@@ -28,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
                 yield break;
 
             var packageManager = context.Solution.GetComponent<PackageManager>();
-            if (packageManager.HasPackage("com.unity.entities"))
+            if (packageManager.HasPackage(PackageManager.UnityEntitiesPackageName))
                 yield return new UnityDotsScope();
         }
     }
