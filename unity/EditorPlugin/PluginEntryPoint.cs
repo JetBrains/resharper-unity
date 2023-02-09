@@ -61,27 +61,8 @@ namespace JetBrains.Rider.Unity.Editor
       ourPluginSettings = new PluginSettings();
       ourRiderPathProvider = new RiderPathProvider(ourPluginSettings);
 
-      if (IsLoadedFromAssets()) // old mechanism, when EditorPlugin was copied to Assets folder
-      {
-        var riderPath = ourRiderPathProvider.GetActualRider(EditorPrefsWrapper.ExternalScriptEditor,
-        RiderPathLocator.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
-        if (!string.IsNullOrEmpty(riderPath))
-        {
-          AddRiderToRecentlyUsedScriptApp(riderPath);
-          if (IsRiderDefaultEditor() && PluginSettings.UseLatestRiderFromToolbox)
-          {
-            EditorPrefsWrapper.ExternalScriptEditor = riderPath;
-          }
-        }
-
-        if (!PluginSettings.RiderInitializedOnce)
-        {
-          EditorPrefsWrapper.ExternalScriptEditor = riderPath;
-          PluginSettings.RiderInitializedOnce = true;
-        }
-
-        InitForPluginLoadedFromAssets(lifetimeDefinition.Lifetime);
-      }
+      // Old mechanism, when EditorPlugin was copied to Assets folder. Package was introduced with Unity 2019.2
+      AssetsBasedPlugin.Initialise(lifetimeDefinition.Lifetime, ourRiderPathProvider, ourPluginSettings, ourLogger);
 
       Init(lifetimeDefinition.Lifetime);
     }
@@ -204,99 +185,6 @@ namespace JetBrains.Rider.Unity.Editor
       {
         ourLogger.Verbose("Deleting Library/ProtocolInstance.json");
         File.Delete(protocolInstancePath);
-      });
-    }
-
-    private static void InitForPluginLoadedFromAssets(Lifetime lifetime)
-    {
-      ResetDefaultFileExtensions();
-
-      // process csproj files once per Unity process
-      if (!RiderScriptableSingleton.Instance.CsprojProcessedOnce)
-      {
-        // Perform on next editor frame update, so we avoid this exception:
-        // "Must set an output directory through SetCompileScriptsOutputDirectory before compiling"
-        EditorApplication.update += SyncSolutionOnceCallBack;
-      }
-
-      SetupAssemblyReloadEvents(lifetime);
-    }
-
-    private static void SyncSolutionOnceCallBack()
-    {
-      ourLogger.Verbose("Call SyncSolution once per Unity process.");
-      UnityUtils.SyncSolution();
-      RiderScriptableSingleton.Instance.CsprojProcessedOnce = true;
-      EditorApplication.update -= SyncSolutionOnceCallBack;
-    }
-
-    // Unity 2017.3 added "asmdef" to the default list of file extensions used to generate the C# projects, but only for
-    // new projects. Existing projects have this value serialised, and Unity doesn't update or reset it. We need .asmdef
-    // files in the project, so we'll add it if it's missing.
-    // For the record, the default list of file extensions in Unity 2017.4.6f1 is: txt;xml;fnt;cd;asmdef;rsp
-    private static void ResetDefaultFileExtensions()
-    {
-      // ReSharper disable once JoinDeclarationAndInitializer
-      string[] currentValues;
-
-      // EditorSettings.projectGenerationUserExtensions (and projectGenerationBuiltinExtensions) were added in 5.2
-#if UNITY_5_6_OR_NEWER
-      currentValues = EditorSettings.projectGenerationUserExtensions;
-#else
-      var propertyInfo = typeof(EditorSettings)
-        .GetProperty("projectGenerationUserExtensions", BindingFlags.Public | BindingFlags.Static);
-      currentValues = propertyInfo?.GetValue(null, null) as string[];
-#endif
-
-      if (currentValues != null && !currentValues.Contains("asmdef"))
-      {
-        var newValues = new string[currentValues.Length + 1];
-        Array.Copy(currentValues, newValues, currentValues.Length);
-        newValues[currentValues.Length] = "asmdef";
-
-#if UNITY_5_6_OR_NEWER
-        EditorSettings.projectGenerationUserExtensions = newValues;
-#else
-        propertyInfo.SetValue(null, newValues, null);
-#endif
-      }
-    }
-
-
-    private static void SetupAssemblyReloadEvents(Lifetime lifetime)
-    {
-      // Unity supports recompile/reload settings natively for Unity 2018.2+
-      if (UnityUtils.UnityVersion >= new Version(2018, 2))
-        return;
-
-      PlayModeStateTracker.Current.Advise(lifetime, state =>
-      {
-        if (PluginSettings.AssemblyReloadSettings == ScriptCompilationDuringPlay.RecompileAfterFinishedPlaying)
-        {
-          MainThreadDispatcher.Instance.Queue(() =>
-          {
-            if (state == PlayModeState.Playing)
-            {
-              ourLogger.Info("LockReloadAssemblies");
-              EditorApplication.LockReloadAssemblies();
-            }
-            else if (state == PlayModeState.Stopped)
-            {
-              ourLogger.Info("UnlockReloadAssemblies");
-              EditorApplication.UnlockReloadAssemblies();
-            }
-          });
-        }
-      });
-
-      lifetime.OnTermination(() =>
-      {
-        // Make sure the assemblies are unlocked during AppDomain unload
-        if (PluginSettings.AssemblyReloadSettings == ScriptCompilationDuringPlay.StopPlayingAndRecompile &&
-            EditorApplication.isPlaying)
-        {
-          EditorApplication.isPlaying = false;
-        }
       });
     }
 
@@ -796,20 +684,6 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
-    private static void AddRiderToRecentlyUsedScriptApp(string userAppPath)
-    {
-      const string recentAppsKey = "RecentlyUsedScriptApp";
-
-      for (var i = 0; i < 10; ++i)
-      {
-        var path = EditorPrefs.GetString($"{recentAppsKey}{i}");
-        if (File.Exists(path) && Path.GetFileName(path).ToLower().Contains("rider"))
-          return;
-      }
-
-      EditorPrefs.SetString($"{recentAppsKey}{9}", userAppPath);
-    }
-
     /// <summary>
     /// Called when Unity is about to open an asset. This method is for pre-2019.2
     /// </summary>
@@ -822,13 +696,6 @@ namespace JetBrains.Rider.Unity.Editor
       // if (UnityUtils.UnityVersion >= new Version(2019, 2)
       //   return false;
       return OpenAssetHandler.OnOpenedAsset(instanceID, line, 0);
-    }
-
-    public static bool IsLoadedFromAssets()
-    {
-      var currentDir = Directory.GetCurrentDirectory();
-      var location = Assembly.GetExecutingAssembly().Location;
-      return location.StartsWith(currentDir, StringComparison.InvariantCultureIgnoreCase);
     }
   }
 
