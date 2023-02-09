@@ -6,7 +6,6 @@ using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using Microsoft.Win32;
 #if UNITY_4_7
-// ReSharper disable once RedundantUsingDirective
 using Newtonsoft.Json;
 #endif
 using UnityEngine;

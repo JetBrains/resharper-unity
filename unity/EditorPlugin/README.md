@@ -35,13 +35,13 @@ All projects define the `RIDER_EDITOR_PLUGIN` compilation symbol. This is used i
 
 The first version of the plugin, which supports Unity 4.7.2f1 and above (although Rider really only aims to support Unity 5+). It is (optionally) installed into the `Assets` folder by Rider when opening a Unity project in Unity 5.5 or below. It is compiled against Unity 4.7.2f1 references.
 
-The `EditorPlugin.SinceUnity.4.7.csproj` project defines the `UNITY_4_7` compilation symbol.
+The `EditorPlugin.SinceUnity.4.7.csproj` project defines the `UNITY_4_7` and `UNITY_4_7_OR_NEWER` compilation symbols.
 
 ### `JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.dll`
 
 This version is installed into the `Assets` folder by Rider when opening a project that's targeted at Unity editor 5.6 and above, up to and including 2017.2. It is compiled against Unity 5.6.7, and is a superset of the `Plugin.Repacked.dll` version, including additional integration features, primarily support for unit testing.
 
-The `EditorPlugin.SinceUnity.5.6.csproj` project defines the `UNITY_5_6` compilation symbol.
+The `EditorPlugin.SinceUnity.5.6.csproj` project defines the `UNITY_5_6` and `UNITY_5_6_OR_NEWER` compilation symbols, as well as the symbols from `EditorPlugin.4.7.csproj`.
 
 ### `JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll`
 
@@ -49,7 +49,7 @@ Rider will copy this version to the `Assets` folder for Unity 2017.3 and later, 
 
 This assembly is compiled against Unity 2017.3.0f3 and targets the `net35` TFM, like previous versions. These versions require special builds of the RD protocol assemblies, which are merged with the final output.
 
-The `EditorPlugin.SinceUnity.2017.3.csproj` project defines the `UNITY_2017_3` compilation symbol.
+The `EditorPlugin.SinceUnity.2017.3.csproj` project defines the `UNITY_2017_3` and `UNITY_2017_3_OR_NEWER` compilation symbols, as well as the symbols from `EditorPlugin.5.6.csproj`.
 
 ### `JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll`
 
@@ -57,4 +57,4 @@ This version is built using Unity 2019.2.0f1, and targets `net472`, to support U
 
 It is the default version loaded by the editor package. If it doesn't exist (e.g. loading from a version of Rider prior to 2019.3) then the package falls back to `Full.Repacked.dll`. It is never copied to the `Assets` folder.
 
-The `EditorPlugin.SinceUnity.2019.2.csproj` project defines the `UNITY_2019_2_OR_NEWER` compilation symbol.
+The `EditorPlugin.SinceUnity.2019.2.csproj` project defines the `UNITY_2019_2` and `UNITY_2019_2_OR_NEWER` compilation symbols, as well as the symbols from `EditorPlugin.2017.3.csproj`.

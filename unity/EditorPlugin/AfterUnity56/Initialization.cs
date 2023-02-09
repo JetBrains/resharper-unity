@@ -59,12 +59,12 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
                 // Add this script to Assets
                 // Create an instance by `Assets > Create > ScriptableObjects > SpawnManagerScriptableObject`
                 // Change SerializableFields in the UnityEditor
-                /* 
+                /*
                  [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/SpawnManagerScriptableObject", order = 1)]
     public class SpawnManagerScriptableObject : ScriptableObject
     {
         public string prefabName;
-    
+
         public int numberOfPrefabsToCreate;
         public Vector3[] spawnPoints;
     }
@@ -77,7 +77,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
 
                         if (!IsDirty(a))
                             return false;
-                        
+
                         // I don't expect too many of those unsaved user Assets with attached ScriptableObject,
                         // so it feels safer to check them for having a real file on the disk
                         // to avoid false positives
@@ -105,10 +105,10 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
              3. uncheck "Auto Save"
              4. make any change to the prefab
             */
-            
+
             // from 2018.3
             // return UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage().scene.isDirty;
-            
+
             // from 2021.2
             // return UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage().scene.isDirty;
 
@@ -134,7 +134,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
                 var currentPrefabStage = getCurrentPrefabStageMethodInfo.Invoke(null, null);
                 if (currentPrefabStage == null) // there is no active prefab editing
                     return false;
-                
+
                 var sceneProperty = currentPrefabStage.GetType().GetProperty("scene");
                 if (sceneProperty == null)
                 {
@@ -163,14 +163,15 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
 
         private static bool IsDirty(Object unityObject)
         {
+            // EditorUtility.IsDirty is internal until 2019.1
 #if UNITY_2019_2_OR_NEWER
             return EditorUtility.IsDirty(unityObject);
 #else
             try
             {
                 ourIsDirtyMethodInfo = typeof(EditorUtility).GetMethod("IsDirty",
-                    BindingFlags.Static 
-                    | BindingFlags.Public 
+                    BindingFlags.Static
+                    | BindingFlags.Public
                     | BindingFlags.NonPublic, null, new[] { typeof(int)}, null);
                 if (ourIsDirtyMethodInfo == null)
                 {
@@ -184,7 +185,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
             {
                 ourLogger.Error("Failed to invoke EditorUtility.IsDirty method with exception {0}", e);
             }
-            
+
             return false;
 #endif
         }

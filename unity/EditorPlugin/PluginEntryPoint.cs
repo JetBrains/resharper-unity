@@ -138,7 +138,7 @@ namespace JetBrains.Rider.Unity.Editor
         lifetimeDefinition.Terminate();
       });
 
-#if !UNITY_4_7 && !UNITY_5_6
+#if UNITY_2017_3_OR_NEWER
         EditorApplication.playModeStateChanged += state =>
         {
             if (state == PlayModeStateChange.EnteredPlayMode)
@@ -455,7 +455,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
         model.ConsoleLogging.LastInitTime.SetValue(ourInitTime);
 
-#if !UNITY_4_7 && !UNITY_5_6
+#if UNITY_2017_3_OR_NEWER
         var enterPlayTime = long.Parse(SessionState.GetString("Rider_EnterPlayMode_DateTime", "0"));
         model.ConsoleLogging.LastPlayTime.SetValue(enterPlayTime);
 #endif

@@ -13,13 +13,16 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Packages
 {
     public static class Initialization
     {
-#if UNITY_2019_2_OR_NEWER
-        private static string packageId = "com.unity.ide.rider";
-        private static readonly ILog ourLogger = Log.GetLog("Packages.Initialization");
-#endif
+#if !UNITY_2019_2_OR_NEWER
         public static void OnModelInitializationHandler(UnityModelAndLifetime modelAndLifetime)
         {
-#if UNITY_2019_2_OR_NEWER
+        }
+#else
+        private static string packageId = "com.unity.ide.rider";
+        private static readonly ILog ourLogger = Log.GetLog("Packages.Initialization");
+
+        public static void OnModelInitializationHandler(UnityModelAndLifetime modelAndLifetime)
+        {
             var request = Client.Search(packageId);
             var model = modelAndLifetime.Model;
             ourLogger.Verbose($"Client.Search({packageId})");
@@ -39,15 +42,13 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Packages
                 ourLogger.Verbose($"EditorApplication.update -= WaitForResult");
                 EditorApplication.update -= Action;
             });
-#endif
         }
 
-#if UNITY_2019_2_OR_NEWER
         private static void WaitForResult(LifetimeDefinition definition, BackendUnityModel model, SearchRequest request)
         {
             if (definition.Lifetime.IsNotAlive)
                 return;
-            
+
             ourLogger.Trace($"request: {request.Status}");
 
             if (request.Status == StatusCode.Success)
