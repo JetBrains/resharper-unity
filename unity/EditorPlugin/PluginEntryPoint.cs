@@ -30,13 +30,14 @@ namespace JetBrains.Rider.Unity.Editor
   [InitializeOnLoad, PublicAPI]
   public static class PluginEntryPoint
   {
-    public static Lifetime Lifetime;
+    private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathProvider ourRiderPathProvider;
-    public static readonly List<ModelWithLifetime> UnityModels = new List<ModelWithLifetime>();
-    private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
+    private static readonly long ourInitTime = DateTime.UtcNow.Ticks;
+
     internal static string SlnFile;
-    private static long ourInitTime = DateTime.UtcNow.Ticks;
+
+    public static readonly List<ModelWithLifetime> UnityModels = new List<ModelWithLifetime>();
 
     // This an entry point
     static PluginEntryPoint()
@@ -44,8 +45,18 @@ namespace JetBrains.Rider.Unity.Editor
       if (UnityUtils.IsInBatchModeAndNotInRiderTests)
         return;
 
-      LogInitializer.InitLog(PluginSettings.SelectedLoggingLevel); // init log before doing any logging
-      UnityEventLogSender.Start(); // start collecting Unity messages asap
+      var lifetimeDefinition = Lifetime.Define(Lifetime.Eternal);
+      AppDomain.CurrentDomain.DomainUnload += (_, __) =>
+      {
+        ourLogger.Verbose("LifetimeDefinition.Terminate");
+        lifetimeDefinition.Terminate();
+      };
+
+      // Init log before doing any logging (the log above is in a lambda)
+      LogInitializer.InitLog(lifetimeDefinition.Lifetime, PluginSettings.SelectedLoggingLevel);
+
+      // Start collecting Unity messages ASAP
+      UnityEventLogSender.Start(lifetimeDefinition.Lifetime);
 
       ourPluginSettings = new PluginSettings();
       ourRiderPathProvider = new RiderPathProvider(ourPluginSettings);
@@ -69,13 +80,10 @@ namespace JetBrains.Rider.Unity.Editor
           PluginSettings.RiderInitializedOnce = true;
         }
 
-        InitForPluginLoadedFromAssets();
-        Init();
+        InitForPluginLoadedFromAssets(lifetimeDefinition.Lifetime);
       }
-      else
-      {
-        Init();
-      }
+
+      Init(lifetimeDefinition.Lifetime);
     }
 
     public delegate void OnModelInitializationHandler(UnityModelAndLifetime e);
@@ -118,52 +126,43 @@ namespace JetBrains.Rider.Unity.Editor
         return isEnabled;
     }
 
-    public static void Init()
+    private static void Init(Lifetime lifetime)
     {
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
       var projectName = Path.GetFileName(projectDirectory);
       SlnFile = Path.GetFullPath($"{projectName}.sln");
 
-      InitializeEditorInstanceJson();
-
-      var lifetimeDefinition = Lifetime.Define(Lifetime.Eternal);
-      Lifetime = lifetimeDefinition.Lifetime;
-
-      AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
-      {
-        ourLogger.Verbose("lifetimeDefinition.Terminate");
-        lifetimeDefinition.Terminate();
-      });
+      InitializeEditorInstanceJson(lifetime);
 
 #if UNITY_2017_3_OR_NEWER
-        EditorApplication.playModeStateChanged += state =>
+      EditorApplication.playModeStateChanged += state =>
+      {
+        if (state == PlayModeStateChange.EnteredPlayMode)
         {
-            if (state == PlayModeStateChange.EnteredPlayMode)
-            {
-                var time = DateTime.UtcNow.Ticks.ToString();
-                SessionState.SetString("Rider_EnterPlayMode_DateTime", time);
-            }
-        };
+          var time = DateTime.UtcNow.Ticks.ToString();
+          SessionState.SetString("Rider_EnterPlayMode_DateTime", time);
+        }
+      };
 #endif
 
       if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
       {
         var executingAssembly = Assembly.GetExecutingAssembly();
         var location = executingAssembly.Location;
-        Debug.Log($"Rider plugin \"{executingAssembly.GetName().Name}\" initialized{(string.IsNullOrEmpty(location)? "" : " from: " + location )}. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
+        Debug.Log($"Rider plugin \"{executingAssembly.GetName().Name}\" initialized{(string.IsNullOrEmpty(location)? "" : " from: " + location )}. " +
+                  $"LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
       }
 
-      var protocolInstanceJsonPath = Path.GetFullPath("Library/ProtocolInstance.json");
-      InitializeProtocol(Lifetime, protocolInstanceJsonPath);
-
-      OpenAssetHandler = new OnOpenAssetHandler(ourRiderPathProvider, ourPluginSettings, SlnFile);
       ourLogger.Verbose("Writing Library/ProtocolInstance.json");
-
-      AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
+      var protocolInstanceJsonPath = Path.GetFullPath("Library/ProtocolInstance.json");
+      InitializeProtocol(lifetime, protocolInstanceJsonPath);
+      lifetime.OnTermination(() =>
       {
         ourLogger.Verbose("Deleting Library/ProtocolInstance.json");
         File.Delete(protocolInstanceJsonPath);
-      };
+      });
+
+      OpenAssetHandler = new OnOpenAssetHandler(ourRiderPathProvider, ourPluginSettings, SlnFile);
 
       PlayModeSavedState = GetPlayModeState();
     }
@@ -171,7 +170,7 @@ namespace JetBrains.Rider.Unity.Editor
     private static void InitializeProtocol(Lifetime lifetime, string protocolInstancePath)
     {
         var currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
-        var solutionNames = new List<string>() { currentDirectory.Name};
+        var solutionNames = new List<string> { currentDirectory.Name};
 
         var solutionFiles = currentDirectory.GetFiles("*.sln", SearchOption.TopDirectoryOnly);
         foreach (var solutionFile in solutionFiles)
@@ -185,7 +184,7 @@ namespace JetBrains.Rider.Unity.Editor
 
         var protocols = new List<ProtocolInstance>();
 
-        // if any protocol connection losts, we will drop all protocol and recreate them
+        // if any protocol connection is lost, we will drop all connections and recreate them
         var allProtocolsLifetimeDefinition = lifetime.CreateNested();
         foreach (var solutionName in solutionNames)
         {
@@ -202,7 +201,7 @@ namespace JetBrains.Rider.Unity.Editor
 
         allProtocolsLifetimeDefinition.Lifetime.OnTermination(() =>
         {
-            if (Lifetime.IsAlive)
+            if (lifetime.IsAlive)
             {
                 ourLogger.Verbose("Recreating protocol, project lifetime is alive");
                 InitializeProtocol(lifetime, protocolInstancePath);
@@ -213,13 +212,11 @@ namespace JetBrains.Rider.Unity.Editor
             }
         });
 
-
         var result = ProtocolInstance.ToJson(protocols);
         File.WriteAllText(protocolInstancePath, result);
     }
 
-
-    internal static void InitForPluginLoadedFromAssets()
+    private static void InitForPluginLoadedFromAssets(Lifetime lifetime)
     {
       ResetDefaultFileExtensions();
 
@@ -231,7 +228,7 @@ namespace JetBrains.Rider.Unity.Editor
         EditorApplication.update += SyncSolutionOnceCallBack;
       }
 
-      SetupAssemblyReloadEvents();
+      SetupAssemblyReloadEvents(lifetime);
     }
 
     private static void SyncSolutionOnceCallBack()
@@ -248,20 +245,29 @@ namespace JetBrains.Rider.Unity.Editor
     // For the record, the default list of file extensions in Unity 2017.4.6f1 is: txt;xml;fnt;cd;asmdef;rsp
     private static void ResetDefaultFileExtensions()
     {
-      // EditorSettings.projectGenerationUserExtensions (and projectGenerationBuiltinExtensions) were added in 5.2. We
-      // support 5.0+, so yay! reflection
+      // ReSharper disable once JoinDeclarationAndInitializer
+      string[] currentValues;
+
+      // EditorSettings.projectGenerationUserExtensions (and projectGenerationBuiltinExtensions) were added in 5.2
+#if UNITY_5_6_OR_NEWER
+      currentValues = EditorSettings.projectGenerationUserExtensions;
+#else
       var propertyInfo = typeof(EditorSettings)
         .GetProperty("projectGenerationUserExtensions", BindingFlags.Public | BindingFlags.Static);
-      if (propertyInfo?.GetValue(null, null) is string[] currentValues)
-      {
-        if (!currentValues.Contains("asmdef"))
-        {
-          var newValues = new string[currentValues.Length + 1];
-          Array.Copy(currentValues, newValues, currentValues.Length);
-          newValues[currentValues.Length] = "asmdef";
+      currentValues = propertyInfo?.GetValue(null, null) as string[];
+#endif
 
-          propertyInfo.SetValue(null, newValues, null);
-        }
+      if (currentValues != null && !currentValues.Contains("asmdef"))
+      {
+        var newValues = new string[currentValues.Length + 1];
+        Array.Copy(currentValues, newValues, currentValues.Length);
+        newValues[currentValues.Length] = "asmdef";
+
+#if UNITY_5_6_OR_NEWER
+        EditorSettings.projectGenerationUserExtensions = newValues;
+#else
+        propertyInfo.SetValue(null, newValues, null);
+#endif
       }
     }
 
@@ -283,7 +289,7 @@ namespace JetBrains.Rider.Unity.Editor
       return PlayModeState.Stopped;
     }
 
-    private static void SetupAssemblyReloadEvents()
+    private static void SetupAssemblyReloadEvents(Lifetime lifetime)
     {
       // Unity supports recompile/reload settings natively for Unity 2018.2+
       if (UnityUtils.UnityVersion >= new Version(2018, 2))
@@ -311,22 +317,22 @@ namespace JetBrains.Rider.Unity.Editor
                 ourLogger.Info("UnlockReloadAssemblies");
                 EditorApplication.UnlockReloadAssemblies();
               }
+
               PlayModeSavedState = newPlayModeState;
             }
           });
         }
       };
 
-      AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
+      lifetime.OnTermination(() =>
       {
-        if (PluginSettings.AssemblyReloadSettings == ScriptCompilationDuringPlay.StopPlayingAndRecompile)
+        // Make sure the assemblies are unlocked during AppDomain unload
+        if (PluginSettings.AssemblyReloadSettings == ScriptCompilationDuringPlay.StopPlayingAndRecompile &&
+            EditorApplication.isPlaying)
         {
-          if (EditorApplication.isPlaying)
-          {
-            EditorApplication.isPlaying = false;
-          }
+          EditorApplication.isPlaying = false;
         }
-      };
+      });
     }
 
     private static int CreateProtocolForSolution(Lifetime lifetime, string solutionName, Action onDisconnected)
@@ -814,7 +820,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     // Creates and deletes Library/EditorInstance.json containing info about unity instance. Unity 2017.1+ writes this
     // file itself. We'll always overwrite, just to be sure it's up to date. The file contents are exactly the same
-    private static void InitializeEditorInstanceJson()
+    private static void InitializeEditorInstanceJson(Lifetime lifetime)
     {
       if (UnityUtils.UnityVersion >= new Version(2017, 1))
         return;
@@ -828,11 +834,11 @@ namespace JetBrains.Rider.Unity.Editor
   ""version"": ""{UnityUtils.UnityApplicationVersion}""
 }}");
 
-      AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
+      lifetime.OnTermination(() =>
       {
         ourLogger.Verbose("Deleting Library/EditorInstance.json");
         File.Delete(editorInstanceJsonPath);
-      };
+      });
     }
 
     private static void AddRiderToRecentlyUsedScriptApp(string userAppPath)
