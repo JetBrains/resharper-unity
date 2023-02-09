@@ -1,13 +1,12 @@
 package com.jetbrains.rider.plugins.unity
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.ProjectPostStartupActivity
+import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.util.application
 import com.intellij.util.io.isDirectory
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.whenTrue
-import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.model.RdDelta
 import com.jetbrains.rider.model.RdDeltaBatch
 import com.jetbrains.rider.model.RdDeltaType
@@ -23,7 +22,7 @@ import java.nio.file.WatchService
 import kotlin.concurrent.thread
 
 
-class ProtocolInstanceWatcher : ProjectPostStartupActivity {
+class ProtocolInstanceWatcher : ProjectActivity {
     override suspend fun execute(project: Project) {
         application.invokeLater {
             project.solution.isLoaded.whenTrue(project.lifetime) {
@@ -57,7 +56,7 @@ class ProtocolInstanceWatcher : ProjectPostStartupActivity {
                                 key.reset()
                             }
                         }
-                        catch (e: ClosedWatchServiceException) {
+                        catch (_: ClosedWatchServiceException) {
                         } // this is expected on `watchService.close()`
 
                     }
