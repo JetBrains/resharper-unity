@@ -5,7 +5,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using Microsoft.Win32;
-#if UNITY_4_7 || UNITY_5_5
+#if UNITY_4_7
 // ReSharper disable once RedundantUsingDirective
 using Newtonsoft.Json;
 #endif
@@ -15,7 +15,7 @@ namespace JetBrains.Rider.Unity.Editor
 {
   public static class RiderPathLocator
   {
-#if !(UNITY_4_7 || UNITY_5_5)
+#if !UNITY_4_7
     [UsedImplicitly] // Used in com.unity.ide.rider
     public static RiderInfo[] GetAllRiderPaths()
     {
@@ -120,7 +120,7 @@ namespace JetBrains.Rider.Unity.Editor
       var snapInstallPath = "/snap/rider/current/bin/rider.sh";
       if (new FileInfo(snapInstallPath).Exists)
         installInfos.Add(new RiderInfo(snapInstallPath, false));
-      
+
       return installInfos.ToArray();
     }
 
@@ -188,7 +188,7 @@ namespace JetBrains.Rider.Unity.Editor
     internal static string GetBuildNumber(string path)
     {
       var file = new FileInfo(Path.Combine(path, GetRelativePathToBuildTxt()));
-      if (!file.Exists) 
+      if (!file.Exists)
         return string.Empty;
       var text = File.ReadAllText(file.FullName);
       if (text.Length > 3)
@@ -201,7 +201,7 @@ namespace JetBrains.Rider.Unity.Editor
 #if RIDER_EDITOR_PLUGIN
       switch (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily)
       {
-        case OperatingSystemFamilyRider.Windows: 
+        case OperatingSystemFamilyRider.Windows:
         case OperatingSystemFamilyRider.Linux:
           return "../../build.txt";
         case OperatingSystemFamilyRider.MacOSX:
@@ -211,7 +211,7 @@ namespace JetBrains.Rider.Unity.Editor
 #else
       switch (SystemInfo.operatingSystemFamily)
       {
-        case OperatingSystemFamily.Windows: 
+        case OperatingSystemFamily.Windows:
         case OperatingSystemFamily.Linux:
           return "../../build.txt";
         case OperatingSystemFamily.MacOSX:
@@ -220,7 +220,7 @@ namespace JetBrains.Rider.Unity.Editor
       throw new Exception("Unknown OS");
       #endif
     }
-    
+
     private static void CollectPathsFromRegistry(string registryKey, List<string> installPaths)
     {
       using (var key = Registry.CurrentUser.OpenSubKey(registryKey))
@@ -321,19 +321,19 @@ namespace JetBrains.Rider.Unity.Editor
     // Disable the "field is never assigned" compiler warning. We never assign it, but Unity does.
     // Note that Unity disable this warning in the generated C# projects
 #pragma warning disable 0649
-    
+
     [Serializable]
     class SettingsJson
     {
       // ReSharper disable once InconsistentNaming
       public string install_location;
-      
+
       [CanBeNull]
       public static string GetInstallLocationFromJson(string json)
       {
         try
         {
-#if UNITY_4_7 || UNITY_5_5
+#if UNITY_4_7
           return JsonConvert.DeserializeObject<SettingsJson>(json).install_location;
 #else
           return JsonUtility.FromJson<SettingsJson>(json).install_location;
@@ -358,7 +358,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         try
         {
-#if UNITY_4_7 || UNITY_5_5
+#if UNITY_4_7
           return JsonConvert.DeserializeObject<ToolboxHistory>(json).history.LastOrDefault()?.item.build;
 #else
           return JsonUtility.FromJson<ToolboxHistory>(json).history.LastOrDefault()?.item.build;
@@ -397,7 +397,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         try
         {
-#if UNITY_4_7 || UNITY_5_5
+#if UNITY_4_7
           var toolbox = JsonConvert.DeserializeObject<ToolboxInstallData>(json);
 #else
           var toolbox = JsonUtility.FromJson<ToolboxInstallData>(json);
@@ -448,7 +448,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
 #if RIDER_EDITOR_PLUGIN // can't be used in com.unity.ide.rider
         Log.GetLog(nameof(RiderPathLocator)).Warn(message);
-        if (e != null) 
+        if (e != null)
           Log.GetLog(nameof(RiderPathLocator)).Warn(e);
 #else
         Debug.LogError(message);

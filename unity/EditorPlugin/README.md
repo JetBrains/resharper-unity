@@ -18,10 +18,9 @@ The package also provides useful functionality that the editor plugin can take a
 
 ## Versions
 
-There are five projects, but only four distributed assemblies:
+There are four assemblies distributed with Rider:
 
 * `EditorPlugin.csproj`/`JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll`
-* `EditorPlugin.5.5.0f3`
 * `EditorPluginUnity56`/`JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.dll`
 * `EditorPluginFull`/`JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll`
 * `EditorPluginNet46`/`JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll`
@@ -37,10 +36,6 @@ All projects define the `RIDER_EDITOR_PLUGIN` compilation symbol. This is used i
 The first version of the plugin, which supports Unity 4.7.2f1 and above (although Rider really only aims to support Unity 5+). It is (optionally) installed into the `Assets` folder by Rider when opening a Unity project in Unity 5.5 or below. It is compiled against Unity 4.7.2f1 references.
 
 The `EditorPlugin.csproj` project defines the `UNITY_4_7` compilation symbol.
-
-### `EditorPlugin.5.5.0f3.csproj`
-
-The output of this project isn't used, and is only compiled to ensure compatibility with Unity 5.5. It is probably no longer required.
 
 ### `JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.dll`
 

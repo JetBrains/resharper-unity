@@ -138,7 +138,7 @@ namespace JetBrains.Rider.Unity.Editor
         lifetimeDefinition.Terminate();
       });
 
-#if !UNITY_4_7 && !UNITY_5_5 && !UNITY_5_6
+#if !UNITY_4_7 && !UNITY_5_6
         EditorApplication.playModeStateChanged += state =>
         {
             if (state == PlayModeStateChange.EnteredPlayMode)
@@ -402,7 +402,7 @@ namespace JetBrains.Rider.Unity.Editor
         return -1;
       }
     }
-    
+
     private static void AdviseStartProfiling(BackendUnityModel model)
     {
         model.StartProfiling.Set((lifetime, data) =>
@@ -412,7 +412,7 @@ namespace JetBrains.Rider.Unity.Editor
                 try
                 {
                     UnityProfilerApiInterop.StartProfiling(data.UnityProfilerApiPath, data.NeedRestartScripts);
-                
+
                     var current = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
                     if (current != data.EnterPlayMode)
                     {
@@ -422,7 +422,7 @@ namespace JetBrains.Rider.Unity.Editor
                 }
                 catch (Exception e)
                 {
-                    if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE) 
+                    if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
                         Debug.LogError(e);
                     throw;
                 }
@@ -430,7 +430,7 @@ namespace JetBrains.Rider.Unity.Editor
 
             return Unit.Instance;
         });
-        
+
         model.StopProfiling.Set((_, data) =>
         {
             MainThreadDispatcher.Instance.Queue(() =>
@@ -441,7 +441,7 @@ namespace JetBrains.Rider.Unity.Editor
                 }
                 catch (Exception e)
                 {
-                    if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE) 
+                    if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
                         Debug.LogError(e);
                     throw;
                 }
@@ -455,7 +455,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
         model.ConsoleLogging.LastInitTime.SetValue(ourInitTime);
 
-#if !UNITY_4_7 && !UNITY_5_5 && !UNITY_5_6
+#if !UNITY_4_7 && !UNITY_5_6
         var enterPlayTime = long.Parse(SessionState.GetString("Rider_EnterPlayMode_DateTime", "0"));
         model.ConsoleLogging.LastPlayTime.SetValue(enterPlayTime);
 #endif
