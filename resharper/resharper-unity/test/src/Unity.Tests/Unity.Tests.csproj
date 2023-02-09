@@ -15,7 +15,13 @@
     <NoWarn>CS8002</NoWarn>
     <JetTestProject>True</JetTestProject>
     <DefineConstants Condition="!$(InternalBuild)">INDEPENDENT_BUILD</DefineConstants>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
+  <!-- ********** -->
+  <!-- TODO: This should come from JetBrains.NET.Sdk, or Directory.Build.props -->
+  <PropertyGroup Condition="$(InternalBuild)" />
+  <Import Project="$(JetSdkProjectParameterFilePath)" Condition="Exists('$(JetSdkProjectParameterFilePath)')" />
+  <!-- ********** -->
   <ItemGroup>
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />

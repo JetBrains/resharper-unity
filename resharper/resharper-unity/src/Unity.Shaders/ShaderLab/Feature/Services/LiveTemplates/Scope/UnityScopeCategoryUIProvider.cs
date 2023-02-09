@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
+using JetBrains.ReSharper.Feature.Services.LiveTemplates.Templates;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.LiveTemplates.Scope
@@ -10,6 +11,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.L
         // Needs to be less than other priorities in R#'s built in ScopeCategoryUIProvider
         // to push it to the end of the list
         private const int Priority = -200;
+
+        static UnityScopeCategoryUIProvider()
+        {
+            TemplateImage.Register("UnityShaderLab", ShaderFileTypeThemedIcons.FileShader.Id);
+        }
 
         public UnityScopeCategoryUIProvider()
             : base(LogoIcons.Unity.Id)
@@ -22,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.L
             yield return new InUnityShaderLabFile();
         }
 
-        public override string CategoryCaption => "Unity";
+        public override string CategoryCaption => "ShaderLab (Unity)";
 
         public override string Present(ITemplateScopePoint point)
         {

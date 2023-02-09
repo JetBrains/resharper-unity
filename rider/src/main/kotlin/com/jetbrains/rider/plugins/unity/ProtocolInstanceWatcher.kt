@@ -1,8 +1,10 @@
 package com.jetbrains.rider.plugins.unity
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.startup.ProjectPostStartupActivity
 import com.intellij.util.application
 import com.intellij.util.io.isDirectory
+import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
@@ -21,41 +23,44 @@ import java.nio.file.WatchService
 import kotlin.concurrent.thread
 
 
-class ProtocolInstanceWatcher(project: Project) : LifetimedProjectComponent(project) {
-    init {
-        if (project.isUnityProject()) {
-            project.solution.isLoaded.whenTrue(componentLifetime) {
-                thread(name = "ProtocolInstanceWatcher") {
-                    val watchService: WatchService = FileSystems.getDefault().newWatchService()
-                    val libraryPath = project.solutionDirectory.resolve("Library").toPath()
+class ProtocolInstanceWatcher : ProjectPostStartupActivity {
+    override suspend fun execute(project: Project) {
+        application.invokeLater {
+            project.solution.isLoaded.whenTrue(project.lifetime) {
+                if (project.isUnityProject()) {
+                    thread(name = "ProtocolInstanceWatcher") {
+                        val watchService: WatchService = FileSystems.getDefault().newWatchService()
+                        val libraryPath = project.solutionDirectory.resolve("Library").toPath()
 
-                    if (!(libraryPath.isDirectory())) // todo: rethink, see com.jetbrains.rider.UnityProjectDiscoverer.Companion.hasUnityFileStructure
-                        return@thread
+                        if (!(libraryPath.isDirectory())) // todo: rethink, see com.jetbrains.rider.UnityProjectDiscoverer.Companion.hasUnityFileStructure
+                            return@thread
 
-                    libraryPath.register(watchService, ENTRY_CREATE, ENTRY_MODIFY)
+                        libraryPath.register(watchService, ENTRY_CREATE, ENTRY_MODIFY)
 
-                    it.onTerminationIfAlive {
-                        watchService.close() // releases watchService.take()
-                    }
+                        it.onTerminationIfAlive {
+                            watchService.close() // releases watchService.take()
+                        }
 
-                    val watchedFileName = "ProtocolInstance.json"
-                    val delta = RdDelta(libraryPath.resolve(watchedFileName).toString(), RdDeltaType.Changed)
-                    var key: WatchKey
-                    try {
-                        while (watchService.take().also { key = it } != null && it.isAlive) {
-                            for (event in key.pollEvents()) {
-                                val context = event.context() ?: continue
-                                if (context.toString() == watchedFileName) {
-                                    application.invokeLater {
-                                        project.solution.fileSystemModel.change.fire(RdDeltaBatch(listOf(delta)))
+                        val watchedFileName = "ProtocolInstance.json"
+                        val delta = RdDelta(libraryPath.resolve(watchedFileName).toString(), RdDeltaType.Changed)
+                        var key: WatchKey
+                        try {
+                            while (watchService.take().also { key = it } != null && it.isAlive) {
+                                for (event in key.pollEvents()) {
+                                    val context = event.context() ?: continue
+                                    if (context.toString() == watchedFileName) {
+                                        application.invokeLater {
+                                            project.solution.fileSystemModel.change.fire(RdDeltaBatch(listOf(delta)))
+                                        }
                                     }
                                 }
+                                key.reset()
                             }
-                            key.reset()
                         }
-                    }
-                    catch (e: ClosedWatchServiceException){} // this is expected on `watchService.close()`
+                        catch (e: ClosedWatchServiceException) {
+                        } // this is expected on `watchService.close()`
 
+                    }
                 }
             }
         }

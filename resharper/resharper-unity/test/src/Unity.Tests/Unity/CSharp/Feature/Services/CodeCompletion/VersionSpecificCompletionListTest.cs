@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.CodeCo
             CreateProjectDescriptor(string projectName, string outputAssemblyName,
                 ICollection<FileSystemPath> absoluteFileSet,
                 ICollection<KeyValuePair<TargetFrameworkId, IEnumerable<string>>> libraries, Guid projectGuid,
-                FileSystemPath originalLocation = null)
+                FileSystemPath? originalLocation = null)
         {
             var projectDescriptor = base.CreateProjectDescriptor(projectName, outputAssemblyName, absoluteFileSet,
                 libraries, projectGuid, originalLocation);

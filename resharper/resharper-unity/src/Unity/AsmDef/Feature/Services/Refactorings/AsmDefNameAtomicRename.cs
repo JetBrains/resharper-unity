@@ -76,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Refactorings
                     // - other rename refactorings are still using this overload
                     // To check, set a breakpoint and check to see if Interruption.Current.myProviders contains an
                     // instance of ProgressIndicatorInterruptionSource for the passed in progress indicator.
-                    // As of 222, this check is still required
+                    // As of 231, this check is still required
                     InterruptableActivityCookie.CheckAndThrow(pi);
 
                     var referenceRange = sortedReference.GetDocumentRange();

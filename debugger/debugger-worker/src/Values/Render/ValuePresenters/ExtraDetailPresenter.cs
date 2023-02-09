@@ -33,11 +33,11 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ValuePresenters
             return myUnityOptions.ExtensionsEnabled && role.ValueReference is ExtraDetailValueReferenceDecorator<TValue>;
         }
 
-        public override IValuePresentation PresentValue(IValueRole<TValue> valueRole,
-                                                        IMetadataTypeLite instanceType,
-                                                        IPresentationOptions options,
-                                                        IUserDataHolder dataHolder,
-                                                        CancellationToken token)
+        public override IValuePresentation? PresentValue(IValueRole<TValue> valueRole,
+                                                         IMetadataTypeLite instanceType,
+                                                         IPresentationOptions options,
+                                                         IUserDataHolder dataHolder,
+                                                         CancellationToken token)
         {
             var extraDetail = (ExtraDetailValueReferenceDecorator<TValue>) valueRole.ValueReference;
             var presentation = extraDetail.UnderlyingValueReference.ToValue(ValueServices).GetValuePresentation(options, token);

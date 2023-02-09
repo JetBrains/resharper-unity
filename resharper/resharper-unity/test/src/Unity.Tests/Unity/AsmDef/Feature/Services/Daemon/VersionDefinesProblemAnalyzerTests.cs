@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Daemon
     [TestFileExtension(".asmdef")]
     public class VersionDefinesProblemAnalyzerTests : HighlightingTestBase
     {
-        protected override PsiLanguageType CompilerIdsLanguage => JsonNewLanguage.Instance;
+        protected override PsiLanguageType? CompilerIdsLanguage => JsonNewLanguage.Instance;
         protected override string RelativeTestDataPath => @"AsmDef\Daemon\Stages\Analysis\InvalidVersionDefines";
 
         protected override string ProjectName => "Assembly-CSharp";

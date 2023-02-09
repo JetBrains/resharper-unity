@@ -116,7 +116,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
 
         public bool RequiresProjectBuild(IProject project) => false;
         public bool RequiresProjectExplorationAfterBuild(IProject project) => false;
-        public bool RequiresProjectPropertiesRefreshBeforeLaunch(IProject project) => false;
+        public IProject? GetProjectForPropertiesRefreshBeforeLaunch(IUnitTestElement element) => null;
 
         public IRuntimeEnvironment GetRuntimeEnvironment(IUnitTestLaunch launch, IProject project,
                                                          TargetFrameworkId targetFrameworkId,

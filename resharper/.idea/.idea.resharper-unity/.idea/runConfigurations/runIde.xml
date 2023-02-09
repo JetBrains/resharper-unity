@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="runIde" type="DotNetProject" factoryName=".NET Project">
-    <option name="EXE_PATH" value="$PROJECT_DIR$/build/gradle-launcher/bin/Debug/net472/gradle-launcher.exe" />
+    <option name="EXE_PATH" value="$PROJECT_DIR$/build/gradle-launcher/bin/Debug/net7.0/gradle-launcher" />
     <option name="PROGRAM_PARAMETERS" value="../../rider runIde -PskipDotnet=true --console=plain" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/gradle-launcher" />
     <option name="PASS_PARENT_ENVS" value="1" />
@@ -15,7 +15,7 @@
     <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
     <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="0" />
     <option name="PROJECT_KIND" value="DotNetCore" />
-    <option name="PROJECT_TFM" value=".NETFramework,Version=v4.7.2" />
+    <option name="PROJECT_TFM" value="net7.0" />
     <browser url="http://localhost:5000" />
     <method v="2">
       <option name="Build" />

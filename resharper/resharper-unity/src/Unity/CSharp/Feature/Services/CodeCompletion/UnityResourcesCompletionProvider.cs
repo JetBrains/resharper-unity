@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 if (assetsFolderResource.ResourceLocationType is ResourceLocationType.PackageEditor
                     or ResourceLocationType.PackagePlayer)
                 {
-                    var packageData = packageManager.GetPackageByAssetPath(assetsFolderResource.VirtualFileSystemPath);
+                    var packageData = packageManager.GetOwningPackage(assetsFolderResource.VirtualFileSystemPath);
                     if (packageData == null)
                         return  false;
 
@@ -64,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
                 item.InitializeRanges(context.CompletionRanges, context.BasicContext);
                 collector.Add(item);
-                
+
                 return true;
             }
 

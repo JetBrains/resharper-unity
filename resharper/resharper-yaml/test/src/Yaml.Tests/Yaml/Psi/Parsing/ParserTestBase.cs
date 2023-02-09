@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -63,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
       }
     }
 
-    private static void CheckRange([NotNull] string documentText, [NotNull] ITreeNode node)
+    private static void CheckRange(string documentText, ITreeNode node)
     {
       Assert.AreEqual(node.GetText(), documentText.Substring(node.GetTreeStartOffset().Offset, node.GetTextLength()),
         "node range text mismatch");

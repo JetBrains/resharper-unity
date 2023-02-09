@@ -1,11 +1,12 @@
 <Patterns xmlns="urn:schemas-jetbrains-com:member-reordering-patterns"
           xmlns:unity="urn:schemas-jetbrains-com:member-reordering-patterns-unity">
 
-  <!-- Pattern to match classes used by Unity that contain serialised fields and event
-       function methods. Based on the standard "Default Pattern", this will also order
-       event functions before normal methods, and does not reorder serialised fields,
-       as this order is reflected in the Unity editor's Inspector.
-       Additionally, this pattern wraps type members in regions -->
+  <!-- Pattern to match classes used by Unity that contain serialised fields
+       and event function methods. Based on the standard "Default Pattern",
+       this will also order event functions before normal methods, and does
+       not reorder serialised fields, as this order is reflected in the
+       Unity editor's Inspector. Additionally, this pattern wraps type members
+       in regions -->
   <TypePattern DisplayName="Unity classes" Priority="100">
     <TypePattern.Match>
       <unity:SerializableClass />
@@ -66,11 +67,18 @@
       </Entry.SortBy>
     </Entry>
 
-    <!-- The Default Pattern doesn't put fields or methods in a region, but let's call out serialized fields and event functions -->
+    <!-- The Default Pattern doesn't put fields or methods in a region, but let's
+         call out serialized fields and event functions -->
     <Region Name="Serialized Fields">
       <Entry DisplayName="Serialized Fields">
         <Entry.Match>
-          <unity:SerializedField />
+          <!-- Keep serialised fields and auto-properties with serialised backing
+               fields together, unsorted, to maintain order in the Inspector
+               window -->
+          <Or>
+            <unity:SerializedField />
+            <unity:AutoPropertyWithSerializedBackingField />
+          </Or>
         </Entry.Match>
 
         <!-- No sorting -->
@@ -112,7 +120,8 @@
       </Entry.Match>
     </Entry>
 
-    <!-- The Default Pattern doesn't put fields or methods in a region, but let's call out serialized fields and event functions -->
+    <!-- The Default Pattern doesn't put fields or methods in a region, but let's
+         call out serialized fields and event functions -->
     <Region Name="Event Functions">
       <Entry DisplayName="Event Functions">
         <Entry.Match>
@@ -120,7 +129,8 @@
         </Entry.Match>
 
         <Entry.SortBy>
-          <!-- Prioritises common event functions. For alphabetical, replace with <Name /> -->
+          <!-- Prioritises common event functions. For alphabetical, replace with
+               <Name /> -->
           <unity:EventFunctionName />
         </Entry.SortBy>
       </Entry>

@@ -14,7 +14,7 @@ class NewUIUnityToolbarActionsGroup : UnityToolbarActionsGroupBase() {}
 
 open class UnityToolbarActionsGroupBase : DefaultActionGroup() {
     override fun getActionUpdateThread(): ActionUpdateThread {
-        return ActionUpdateThread.BGT
+        return ActionUpdateThread.EDT
     }
 
     override fun update(e: AnActionEvent) {

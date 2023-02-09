@@ -9,9 +9,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
     public interface IScriptUsagesElementContainer : IUnityAssetDataElementContainer
     {
         [NotNull, ItemNotNull]
-        IEnumerable<IScriptUsage> GetScriptUsagesFor([NotNull] IPsiSourceFile sourceFile, [NotNull] ITypeElement declaredElement);
+        IEnumerable<IScriptUsage> GetScriptUsagesFor([NotNull] IPsiSourceFile sourceFile, [NotNull] ITypeElement typeElement);
         
-        LocalList<IPsiSourceFile> GetPossibleFilesWithScriptUsages([NotNull] IClass scriptClass);
+        LocalList<IPsiSourceFile> GetPossibleFilesWithScriptUsages([NotNull] ITypeElement typeElement);
 
         int GetScriptUsagesCount([NotNull] IClassLikeDeclaration classLikeDeclaration, out bool estimatedResult);
     }

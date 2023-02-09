@@ -1,6 +1,9 @@
 {
     "expui": {
         "resharper": {
+            "Logo": {
+                "Unity.svg": "resharper/Logo/Unity.svg"
+            },
             "Toolbar": {
                 "UnityToolbar.svg": "resharper/Toolbar/UnityToolbar.svg",
                 "UnityToolbarConnected.svg": "resharper/Toolbar/UnityToolbarConnected.svg",

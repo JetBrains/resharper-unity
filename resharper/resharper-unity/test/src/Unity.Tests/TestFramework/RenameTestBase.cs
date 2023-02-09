@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework
         }
 
 
-        protected override IRefactoringWorkflow CreateRefactoringWorkflow(ITextControl control, IDataContext context)
+        protected override IRefactoringWorkflow? CreateRefactoringWorkflow(ITextControl control, IDataContext context)
         {
             var workflow = RefactoringsManager.Instance.GetWorkflowProviders<RenameWorkflowProvider>()
                 .SelectMany(x => x.CreateWorkflow(context)).FirstOrDefault(x => x.IsAvailable(context));

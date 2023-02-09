@@ -14,10 +14,15 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Added
 
+- Add localisation of all Unity features - Chinese, Japanese, and Korean
+- Add accurate support for recognising serialised fields in subclasses of serialised classes (RIDER-79871, [RIDER-72838](https://youtrack.jetbrains.com/issue/RIDER-72838))
 - Add context action and Generate menu item to generate baker and authoring classes from DOTS component data ([RIDER-85175](https://youtrack.jetbrains.com/issue/RIDER-85175))
 - Add file templates for DOTS component data, systems, aspects and entity jobs ([RIDER-85180](https://youtrack.jetbrains.com/issue/RIDER-85180))
+- Add support for recognising serialised fields in all classes ([RIDER-79871](https://youtrack.jetbrains.com/issue/RIDER-79871))
 - Add inspection to check that `ComponentLookup` is updated in a system ([RIDER-85179](https://youtrack.jetbrains.com/issue/RIDER-85179))
 - Add quick fix to add a call to `ComponentLookup.Update` in a system's `OnUpdate` method ([RIDER-85179](https://youtrack.jetbrains.com/issue/RIDER-85179))
+- Add context action to generate baker and authoring classes to component data gutter icon
+- Add context action to navigate to source generator code from DOTS type ([RIDER-85189](https://youtrack.jetbrains.com/issue/RIDER-85189))
 - Add inspection and quick fix to ensure that a system calling `GetSingleton` has a corresponding call to `RequireForUpdate` ([RIDER-85181](https://youtrack.jetbrains.com/issue/RIDER-85181))
 - Add Find Usages support for methods used implicitly in animation clips ([RIDER-77030](https://youtrack.jetbrains.com/issue/RIDER-77030))
 - Add custom formatting rules to keep `[Header]` attribute on separate line ([RIDER-71840](https://youtrack.jetbrains.com/issue/RIDER-71840))
@@ -25,9 +30,14 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Changed
 
+- Update API information to Unity 2023.1.0b1
 - Serialised fields are now accurately recognised in any class, not just known Unity types ([RIDER-79871](https://youtrack.jetbrains.com/issue/RIDER-79871), [RIDER-72838](https://youtrack.jetbrains.com/issue/RIDER-72838))
 - Re-evaluate resource warnings when a resource file is updated or deleted
 - Improve support for prefab modifications and event handlers
+- Provide more appropriate naming suggestions for `RefRW` or `RefRO` variables ([RIDER-85192](https://youtrack.jetbrains.com/issue/RIDER-85192))
+- Group auto properties with a serialised backing field with serialised fields in file layout ([RIDER-87809](https://youtrack.jetbrains.com/issue/RIDER-87809))
+- Add FMOD as a known abbreviation ([#2320](https://github.com/JetBrains/resharper-unity/issues/2320))
+- Exclude DOTS related generated code from search results ([RIDER-85189](https://youtrack.jetbrains.com/issue/RIDER-85189))
 - Rider: Allow static methods for `EventTrigger` usages
 - Rider: Update icons for `.asmdef`, `.asmref` and `.inputactions` files ([RIDER-68006](https://youtrack.jetbrains.com/issue/RIDER-68006))
 - Rider: Update Unity Explorer UI for new search experience ([RIDER-82417](https://youtrack.jetbrains.com/issue/RIDER-82417))
@@ -38,15 +48,20 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Fix asset usages for package scripts and assets ([RIDER-85431](https://youtrack.jetbrains.com/issue/RIDER-85431))
 - Fix method usage inside `EventTrigger` prefab modification ([RIDER-47693](https://youtrack.jetbrains.com/issue/RIDER-47693))
 - Fix warning when a partial DOTS class and its generated part both declare the same base class ([RIDER-87055](https://youtrack.jetbrains.com/issue/RIDER-87055))
+- Fix `HideInInspector` analysis on auto properties ([#2341](https://github.com/JetBrains/resharper-unity/issues/2341))
 - Fix exception when adding performance indicators ([RIDER-87523](https://youtrack.jetbrains.com/issue/RIDER-87523))
 - Fix memory leak when showing usages of code in Unity editor tool window ([RIDER-87538](https://youtrack.jetbrains.com/issue/RIDER-87538))
 - Fix indexing project settings and assembly definitions when asset indexing is disabled ([RIDER-87363](https://youtrack.jetbrains.com/issue/RIDER-87363))
+- Fix duplicate "Unity" availability configurations in File Template settings ([RIDER-89065](https://youtrack.jetbrains.com/issue/RIDER-89065))
 - Rider: Fix unable to find usages or `.asmdef` files when player projects generated ([RIDER-71238](https://youtrack.jetbrains.com/issue/RIDER-71238))
 - Rider: Fix completion list showing duplicate entries when player projects generated ([RIDER-75500](https://youtrack.jetbrains.com/issue/RIDER-75500))
 - Rider: Fix "Attach to Unity" run configuration form to resize gracefully ([RIDER-84643](https://youtrack.jetbrains.com/issue/RIDER-75500))
 - Rider: Fix online documentation URL for nested classes
 - Rider: Fix Unity Log view losing selected item when search field is cleared ([#2381](https://github.com/JetBrains/resharper-unity/issues/2381))
 - Rider: Fix issue with UnityYamlMerge not being called ([RIDER-87413](https://youtrack.jetbrains.com/issue/RIDER-87413))
+- Rider: Fix issues with recreating meta files that exist, due to being restored from Local History ([RIDER-84724](https://youtrack.jetbrains.com/issue/RIDER-84724))
+- Rider: Fix exception while generating UIElements schema in newer versions of Unity ([#2386](https://github.com/JetBrains/resharper-unity/issues/2386))
+- Rider: Fix incorrect icons in Unity run configurations ([RIDER-88500](https://youtrack.jetbrains.com/issue/RIDER-84724))
 
 
 
@@ -75,7 +90,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 ### Added
 
 - Add completion and analysis of assets for resource load methods ([RIDER-79879](https://youtrack.jetbrains.com/issue/RIDER-79879), [#2217](https://github.com/JetBrains/resharper-unity/issues/2217))
-- Add completion and analysis of tags in `GameObject.FindWithTag` methods
+- Add completion and analysis of tags in `GameObject.FindWithTag` methods ([#2308](https://github.com/JetBrains/resharper-unity/issues/2308))
 - Add Find Usages of methods used by the new Input System ([RIDER-71588](https://youtrack.jetbrains.com/issue/RIDER-71588))
 - Add suppression of unused class warning for classes that implement `IBaker` and `IAspect` ([RIDER-84159](https://youtrack.jetbrains.com/issue/RIDER-84159), [#2370](https://github.com/JetBrains/resharper-unity/pull/2370))
 - Add suppression of warning for redundant super type declared in generated partial class ([RIDER-84182](https://youtrack.jetbrains.com/issue/RIDER-84182))

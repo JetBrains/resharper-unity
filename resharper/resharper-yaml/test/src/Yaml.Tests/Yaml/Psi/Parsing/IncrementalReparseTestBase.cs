@@ -29,11 +29,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
       return ReferenceEquals(node1.GetType(), node2.GetType());
     }
 
-    private void CompareTrees(ITreeNode tree1, ITreeNode tree2)
+    private void CompareTrees(ITreeNode? tree1, ITreeNode? tree2)
     {
       Assert.IsNotNull(tree1, "tree1 == null");
       Assert.IsNotNull(tree2, "tree2 == null");
-      Assert.AreEqual(tree1.GetText(), tree2.GetText(), "Tree text mismatch");
+      Assert.AreEqual(tree1!.GetText(), tree2!.GetText(), "Tree text mismatch");
       Assert.IsTrue(CompareNodes(tree1, tree2), "Tree element types mismatch: {0} != {1}", tree1.GetType(), tree2.GetType());
 
       var child1 = tree1.FirstChild;
@@ -41,8 +41,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
       while (child1 != null || child2 != null)
       {
         CompareTrees(child1, child2);
-        child1 = child1.NextSibling;
-        child2 = child2.NextSibling;
+        child1 = child1!.NextSibling;
+        child2 = child2!.NextSibling;
       }
     }
 
@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
       ShellInstance.GetComponent<TestIdGenerator>().Reset();
       var psiFiles = Solution.GetPsiServices().Files;
 
-      void PsiChanged(ITreeNode node, PsiChangedElementType type)
+      void PsiChanged(ITreeNode? node, PsiChangedElementType type)
       {
         if (node != null) reparsedNodes.Add(node);
       }
@@ -232,17 +232,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Yaml.Psi.Parsing
       }
     }
 
-    protected virtual IPsiSourceFile GetPsiSourceFile(ITextControl textControl)
-    {
-      return textControl.Document.GetPsiSourceFile(Solution);
-    }
-
     protected virtual bool DoDumpRanges => false;
 
     private static string PresentNodeType(Type type)
     {
       if (!type.IsGenericType)
-        return type.FullName;
+        return type.FullName!;
 
       var sb = new StringBuilder();
       sb.AppendFormat("{0}.{1}", type.Namespace, type.Name);

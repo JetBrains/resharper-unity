@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.CallStacks;
@@ -14,7 +13,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences
         private readonly IValueReference<TValue> myValueReferenceImplementation;
         private readonly IValueRoleFactory<TValue> myRoleFactory;
 
-        protected ValueReferenceDecoratorBase([NotNull] IValueReference<TValue> valueReferenceImplementation,
+        protected ValueReferenceDecoratorBase(IValueReference<TValue> valueReferenceImplementation,
                                               IValueRoleFactory<TValue> roleFactory)
         {
             myValueReferenceImplementation = valueReferenceImplementation;
@@ -23,7 +22,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences
 
         public IValueReference<TValue> UnderlyingValueReference => myValueReferenceImplementation;
 
-        public virtual IDebuggerHierarchyObject Parent => myValueReferenceImplementation.Parent;
+        public virtual IDebuggerHierarchyObject? Parent => myValueReferenceImplementation.Parent;
 
         public virtual IValueRole GetPrimaryRole(IValueFetchOptions options)
         {
@@ -32,7 +31,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences
             return myRoleFactory.GetPrimaryRole(this, options);
         }
 
-        public virtual IMetadataTypeLite DeclaredType => myValueReferenceImplementation.DeclaredType;
+        public virtual IMetadataTypeLite? DeclaredType => myValueReferenceImplementation.DeclaredType;
 
         public virtual string DefaultName => myValueReferenceImplementation.DefaultName;
 

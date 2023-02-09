@@ -1,3 +1,5 @@
+#nullable disable
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 
             public ClassLikeDeclarationFromGeneratedFileMock(ITypeDeclaration declaration)
             {
-                myPsiSourceFile = new SourceGeneratedFileMock(declaration.GetSourceFile());
+                myPsiSourceFile = new SourceGeneratedFileMock(declaration.GetSourceFile()!);
             }
 
             public ITreeNode Parent { get; }
