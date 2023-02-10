@@ -7,7 +7,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace JetBrains.Rider.Unity.Editor.Navigation
+namespace JetBrains.Rider.Unity.Editor.FindUsages
 {
   internal static class ShowUtil
   {
@@ -47,7 +47,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
       {
         var result = EditorUtility.DisplayDialogComplex("Find usages",
           $"Do you want to close the current scene and open scene \"{sceneName}.unity\"?",
-          "Open Scene", 
+          "Open Scene",
           "Cancel",
           "Open Scene Additive");
 
@@ -110,7 +110,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
         EditorGUIUtility.PingObject(elementToSelect);
         Selection.activeObject = elementToSelect;
     }
-    
+
     public static void ShowAnimationEventUsage([NotNull] string animFilePath)
     {
         var asset = AssetDatabase.LoadAssetAtPath(animFilePath, typeof(Object));
@@ -138,7 +138,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
     }
 
     [CanBeNull]
-    private static AnimatorStateMachine FindLayerStateMachine([NotNull] IList<string> pathElements, 
+    private static AnimatorStateMachine FindLayerStateMachine([NotNull] IList<string> pathElements,
                                                               [NotNull] AnimatorController controller)
     {
         var layers = controller.layers;
@@ -152,7 +152,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
         return animatorControllerLayer?.stateMachine;
     }
 
-    private static Object FindChildElementToSelect([NotNull] AnimatorStateMachine currentStateMachine, 
+    private static Object FindChildElementToSelect([NotNull] AnimatorStateMachine currentStateMachine,
                                                    [NotNull] string name)
     {
         Object toSelect;

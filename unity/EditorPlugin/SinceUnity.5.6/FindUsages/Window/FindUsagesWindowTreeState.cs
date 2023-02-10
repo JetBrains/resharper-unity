@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace JetBrains.Rider.Unity.Editor.Navigation.Window
+namespace JetBrains.Rider.Unity.Editor.FindUsages.Window
 {
   // TODO : backend should pass group for each find usage result, frontend (unity) should react for changes and creat grouping nodes per group
   // and add actual result
   [Serializable]
+  [SuppressMessage("ReSharper", "InconsistentNaming")]
   internal class FindUsagesWindowTreeState : TreeViewState
   {
     [SerializeField]
@@ -23,7 +25,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
 
     [SerializeField]
     public List<AnimatorElement> AnimatorElements = new List<AnimatorElement>();
-    
+
     [SerializeField]
     public List<AnimationElement> AnimationElements = new List<AnimationElement>();
 

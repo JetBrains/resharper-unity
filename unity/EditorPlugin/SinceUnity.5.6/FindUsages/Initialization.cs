@@ -6,14 +6,13 @@ using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity.BackendUnity;
-using JetBrains.Rider.Unity.Editor.Navigation;
-using JetBrains.Rider.Unity.Editor.Navigation.Window;
+using JetBrains.Rider.Unity.Editor.FindUsages.Window;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
+namespace JetBrains.Rider.Unity.Editor.FindUsages
 {
   internal static class Initialization
   {

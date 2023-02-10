@@ -34,7 +34,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
       UnityEditorProtocol.Models.View(lifetimeDefinition.Lifetime, (modelLifetime, _, model) =>
       {
         Initialization.Advise(modelLifetime, model);
-        Navigation.Initialization.Advise(modelLifetime, model);
+        FindUsages.Initialization.Advise(modelLifetime, model);
       });
     }
   }

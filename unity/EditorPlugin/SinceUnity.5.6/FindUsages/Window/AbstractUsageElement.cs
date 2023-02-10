@@ -2,15 +2,16 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
-namespace JetBrains.Rider.Unity.Editor.Navigation.Window
+namespace JetBrains.Rider.Unity.Editor.FindUsages.Window
 {
   [Serializable]
   [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
+  [SuppressMessage("ReSharper", "InconsistentNaming")]
   public abstract class AbstractUsageElement
   {
-    [SerializeField] 
+    [SerializeField]
     public string FilePath;
-    [SerializeField] 
+    [SerializeField]
     public string FileName;
     [SerializeField]
     public string[] Path;

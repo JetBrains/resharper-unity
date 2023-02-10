@@ -1,11 +1,12 @@
 using System;
 
-namespace JetBrains.Rider.Unity.Editor.Navigation.Window
+namespace JetBrains.Rider.Unity.Editor.FindUsages.Window
 {
   [Serializable]
   internal class SceneElement : AbstractUsageElement
   {
-    public SceneElement(string scenePath, string fileName, string[] path, int[] rootIndices) : base(scenePath, fileName, path, rootIndices)
+    public SceneElement(string scenePath, string fileName, string[] path, int[] rootIndices)
+      : base(scenePath, fileName, path, rootIndices)
     {
     }
 
