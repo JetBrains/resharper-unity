@@ -1382,4 +1382,16 @@ a plugin to be installed to a project.</value>
     <data name="ModifyInspectorAttributes_Text" xml:space="preserve">
         <value>Modify Inspector attributes</value>
     </data>
+    <data name="ShowBurstCallsBulbAction_Text_Show_incoming_Burst_calls" xml:space="preserve">
+        <value>Show incoming Burst calls</value>
+    </data>
+    <data name="ShowBurstCallsBulbAction_Text_Show_outgoing_Burst_calls" xml:space="preserve">
+        <value>Show outgoing Burst calls</value>
+    </data>
+    <data name="ShowPerformanceCriticalCallsBulbAction_Text_Show_incoming_Performance_Critical_calls" xml:space="preserve">
+        <value>Show incoming Performance Critical calls</value>
+    </data>
+    <data name="ShowPerformanceCriticalCallsBulbAction_Text_Show_outgoing_Performance_Critical_calls" xml:space="preserve">
+        <value>Show outgoing Performance Critical calls</value>
+    </data>
 </root>
