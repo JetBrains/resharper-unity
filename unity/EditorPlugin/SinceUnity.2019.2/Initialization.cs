@@ -1,24 +1,19 @@
+#if UNITY_2019_2_OR_NEWER
+
 using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 
-#if UNITY_2019_2_OR_NEWER
 using System.Linq;
 using JetBrains.Diagnostics;
 using JetBrains.Rd.Base;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
-#endif
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Packages
 {
   public static class Initialization
   {
-#if !UNITY_2019_2_OR_NEWER
-    public static void Advise(Lifetime modelLifetime, BackendUnityModel model)
-    {
-    }
-#else
     private const string PackageId = "com.unity.ide.rider";
     private static readonly ILog ourLogger = Log.GetLog("Packages.Initialization");
 
@@ -64,6 +59,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Packages
         definition.Terminate();
       }
     }
-#endif
   }
 }
+
+#endif
