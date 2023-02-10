@@ -9,24 +9,8 @@ namespace ApiParser
             if (!UnityLanguages.TryParse<UnityLanguages>(countryCode, out var unityLang))
                 throw new Exception($"Unsupported Unity country code {countryCode}");
             
-            if (unityLang == UnityLanguages.en)
-            {
-                return RiderSupportedLanguages.iv; // invariant lang
-            }
-            else if (unityLang == UnityLanguages.ja)
-            {
-                return RiderSupportedLanguages.ja;
-            }
-            else if (unityLang == UnityLanguages.kr)
-            {
-                return RiderSupportedLanguages.ko;
-            }
-            else if (unityLang == UnityLanguages.cn)
-            {
-                return RiderSupportedLanguages.zh;
-            }
-
-            throw new Exception($"Unexpected code {countryCode}");
+            var index = (int)unityLang;
+            return (RiderSupportedLanguages)Enum.ToObject(typeof(RiderSupportedLanguages), index);
         }
         
 
@@ -73,6 +57,8 @@ namespace ApiParser
         }
     }
 
+    // same enums in JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help.LangCodeMap
+    
     public enum UnityLanguages
     {
         en, ja, kr, cn
