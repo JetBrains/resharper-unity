@@ -175,6 +175,10 @@ namespace JetBrains.Rider.Unity.Editor
           AdviseOnStartProfiling(model);
           AdviseLoggingStateChangeTimes(connectionLifetime, model);
 
+#if UNITY_2019_2_OR_NEWER
+          PackageManagerModelHelper.Advise(connectionLifetime, model);
+#endif
+
           Models.AddLifetimed(connectionLifetime, model);
 
           ourLogger.Verbose("UnityModel initialized.");

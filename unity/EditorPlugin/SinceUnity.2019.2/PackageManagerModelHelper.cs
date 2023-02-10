@@ -1,18 +1,17 @@
 #if UNITY_2019_2_OR_NEWER
 
-using JetBrains.Lifetimes;
-using JetBrains.Rider.Model.Unity.BackendUnity;
-
 using System.Linq;
 using JetBrains.Diagnostics;
+using JetBrains.Lifetimes;
 using JetBrains.Rd.Base;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 
-namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Packages
+namespace JetBrains.Rider.Unity.Editor
 {
-  public static class Initialization
+  public static class PackageManagerModelHelper
   {
     private const string PackageId = "com.unity.ide.rider";
     private static readonly ILog ourLogger = Log.GetLog("Packages.Initialization");
