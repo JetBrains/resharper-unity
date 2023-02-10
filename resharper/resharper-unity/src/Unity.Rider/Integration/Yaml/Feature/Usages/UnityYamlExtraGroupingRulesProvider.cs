@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
@@ -90,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
     public class AnimatorGroupingRule : UnityYamlUsageGroupingRuleBase
     {
         public AnimatorGroupingRule([NotNull] IconHost iconHost)
-            : base("Animator", "Animator", UnityFileTypeThemedIcons.FileAnimatorController.Id, iconHost, 10.0)
+            : base("Animator", Strings.AnimatorGroupingRule_AnimatorGroupingRule_Animator, UnityFileTypeThemedIcons.FileAnimatorController.Id, iconHost, 10.0)
         {
         }
 
@@ -113,7 +114,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
     public class AnimationEventGroupingRule : UnityYamlUsageGroupingRuleBase
     {
         public AnimationEventGroupingRule([NotNull] IconHost iconHost)
-            : base("AnimationEvent", "AnimationEvent", UnityFileTypeThemedIcons.FileAnimationClip.Id, iconHost, 9.0)
+            : base("AnimationEvent", Strings.AnimationEventGroupingRule_AnimationEventGroupingRule_AnimationEvent, UnityFileTypeThemedIcons.FileAnimationClip.Id, iconHost, 9.0)
         {
         }
 
@@ -137,7 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
     {
         // Note that the name is in CamelCase and spaces are added in the frontend
         public GameObjectUsageGroupingRule([NotNull] IconHost iconHost)
-            : base("UnityGameObject", "UnityGameObject", UnityObjectTypeThemedIcons.UnityGameObject.Id, iconHost, 7.0)
+            : base("UnityGameObject", Strings.GameObjectUsageGroupingRule_GameObjectUsageGroupingRule_UnityGameObject, UnityObjectTypeThemedIcons.UnityGameObject.Id, iconHost, 7.0)
         {
         }
 
@@ -182,7 +183,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
 
         // Note that the name is in CamelCase and spaces are added in the frontend
         public ComponentUsageGroupingRule(MetaFileGuidCache metaFileGuidCache, [NotNull] IconHost iconHost)
-            : base("UnityComponent", "UnityComponent", UnityObjectTypeThemedIcons.UnityComponent.Id, iconHost, 8.0)
+            : base("UnityComponent", Strings.ComponentUsageGroupingRule_ComponentUsageGroupingRule_UnityComponent, UnityObjectTypeThemedIcons.UnityComponent.Id, iconHost, 8.0)
         {
             myMetaFileGuidCache = metaFileGuidCache;
         }
