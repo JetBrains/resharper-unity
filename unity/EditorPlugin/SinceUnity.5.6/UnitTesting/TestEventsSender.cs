@@ -9,11 +9,11 @@ using TestResult = JetBrains.Rider.Model.Unity.BackendUnity.TestResult;
 
 namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
-  public class TestEventsSender
+  internal class TestEventsSender
   {
     private static readonly ILog ourLogger = Log.GetLog(nameof(TestEventsSender));
 
-    internal TestEventsSender(UnitTestLaunch unitTestLaunch)
+    public TestEventsSender(UnitTestLaunch unitTestLaunch)
     {
       var assembly = RiderPackageInterop.GetAssembly();
       if (assembly == null)
@@ -33,15 +33,11 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
     private static void SubscribeToChanged(Type data, UnitTestLaunch unitTestLaunch)
     {
       var eventInfo = data.GetEvent("Changed");
-
       if (eventInfo != null)
       {
         var handler = new EventHandler((sender, e) => { ProcessQueue(data, unitTestLaunch); });
         eventInfo.AddEventHandler(handler.Target, handler);
-        AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
-        {
-          eventInfo.RemoveEventHandler(handler.Target, handler);
-        });
+        AppDomain.CurrentDomain.DomainUnload += (_, __) => eventInfo.RemoveEventHandler(handler.Target, handler);
       }
       else
       {

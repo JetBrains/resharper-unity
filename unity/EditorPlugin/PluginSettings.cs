@@ -9,12 +9,12 @@ using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  public interface IPluginSettings
+  internal interface IPluginSettings
   {
     OperatingSystemFamilyRider OperatingSystemFamilyRider { get; }
   }
 
-  public class PluginSettings : IPluginSettings
+  internal class PluginSettings : IPluginSettings
   {
     private static readonly ILog ourLogger = Log.GetLog<PluginSettings>();
 

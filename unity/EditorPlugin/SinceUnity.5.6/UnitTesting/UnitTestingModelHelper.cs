@@ -8,7 +8,7 @@ using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
-  public static class UnitTestingModelHelper
+  internal static class UnitTestingModelHelper
   {
     private static readonly ILog ourLogger = Log.GetLog("Initialization");
 
