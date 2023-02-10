@@ -1,14 +1,12 @@
 using System;
-using System.Reflection;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Rd.Tasks;
 using JetBrains.Rider.Model.Unity.BackendUnity;
-using JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting;
 using UnityEditor;
 
-namespace JetBrains.Rider.Unity.Editor.AfterUnity56
+namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
     public static class Initialization
     {

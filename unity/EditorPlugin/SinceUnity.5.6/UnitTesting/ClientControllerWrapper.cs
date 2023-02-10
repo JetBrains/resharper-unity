@@ -4,7 +4,7 @@ using JetBrains.Diagnostics;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;
 
-namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
+namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
   internal class ClientControllerWrapper
   {
