@@ -20,9 +20,9 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
       if (UnityUtils.IsInBatchModeAndNotInRiderTests)
         return;
 
-      // Make sure the PluginEntryPoint class constructor has been called. This used to happen implicitly when this
-      // class accessed fields of PluginEntryPoint. Refactorings mean these fields are no longer there, so let's be
-      // explicit about the dependency.
+      // Make sure the main PluginEntryPoint is initialised. When loaded from the Assets folder, this will happen
+      // automatically, since PluginEntryPoint is [InitializeOnLoad]. When loaded from the package, the package will
+      // explicitly invoke this class constructor, but nothing else.
       PluginEntryPoint.EnsureInitialised();
 
       UnityEditorProtocol.OnModelInitialization += Initialization.OnModelInitializationHandler;

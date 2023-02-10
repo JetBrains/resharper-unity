@@ -22,8 +22,8 @@ namespace JetBrains.Rider.Unity.Editor
   public static class PluginEntryPoint
   {
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
-    private static readonly IPluginSettings ourPluginSettings;
-    private static readonly RiderPathProvider ourRiderPathProvider;
+    private static readonly IPluginSettings ourPluginSettings = new PluginSettings();
+    private static readonly RiderPathProvider ourRiderPathProvider = new RiderPathProvider(ourPluginSettings);
     private static readonly long ourInitTime = DateTime.UtcNow.Ticks;
 
     // DO NOT RENAME OR REFACTOR!
@@ -34,11 +34,10 @@ namespace JetBrains.Rider.Unity.Editor
     // DO NOT RENAME OR REFACTOR!
     // Accessed by package via reflection
     [PublicAPI]
-    internal static OnOpenAssetHandler OpenAssetHandler;
+    internal static readonly OnOpenAssetHandler OpenAssetHandler;
 
-    internal static string SlnFile;
+    internal static readonly string SlnFile;
 
-    // This an entry point
     static PluginEntryPoint()
     {
       if (UnityUtils.IsInBatchModeAndNotInRiderTests)
@@ -51,19 +50,26 @@ namespace JetBrains.Rider.Unity.Editor
         lifetimeDefinition.Terminate();
       };
 
-      // Init log before doing any logging (the log above is in a lambda)
-      LogInitializer.InitLog(lifetimeDefinition.Lifetime, PluginSettings.SelectedLoggingLevel);
+      var appDomainLifetime = lifetimeDefinition.Lifetime;
 
-      // Start collecting Unity messages ASAP
-      UnityEventLogSender.Start(lifetimeDefinition.Lifetime);
-
-      ourPluginSettings = new PluginSettings();
-      ourRiderPathProvider = new RiderPathProvider(ourPluginSettings);
+      // Init log before doing any logging, and start collecting Unity messages ASAP
+      LogInitializer.InitLog(appDomainLifetime, PluginSettings.SelectedLoggingLevel);
+      UnityEventLogSender.Start(appDomainLifetime);
 
       // Old mechanism, when EditorPlugin was copied to Assets folder. Package was introduced with Unity 2019.2
-      AssetsBasedPlugin.Initialise(lifetimeDefinition.Lifetime, ourRiderPathProvider, ourPluginSettings, ourLogger);
+      AssetsBasedPlugin.Initialise(appDomainLifetime, ourRiderPathProvider, ourPluginSettings, ourLogger);
 
-      Init(lifetimeDefinition.Lifetime);
+      // ReSharper disable once PossibleNullReferenceException
+      var projectName = Path.GetFileName(Directory.GetParent(Application.dataPath).FullName);
+      SlnFile = Path.GetFullPath($"{projectName}.sln");
+
+      CreateEditorInstanceJson(appDomainLifetime);
+      PlayModeStateTracker.Initialise();
+      UnityEditorProtocol.Initialise(appDomainLifetime, ourInitTime, ourLogger);
+
+      OpenAssetHandler = new OnOpenAssetHandler(ourRiderPathProvider, ourPluginSettings, SlnFile);
+
+      ReportInitialisationDone();
     }
 
     // DO NOT REMOVE!
@@ -71,7 +77,9 @@ namespace JetBrains.Rider.Unity.Editor
     // executed. Note that the package doesn't call this method. See AfterUnity56.EntryPoint for more details
     internal static void EnsureInitialised()
     {
-      // Do nothing. We just need the class constructor called
+      // Do nothing. Don't move initialisation here - the class constructor is always called, either by InitializeOnLoad
+      // or when EntryPoint calls this method. We either leave initialisation in the class constructor or introduce a
+      // flag to prevent initialising twice. Might as well just leave it in the cctor.
     }
 
     internal static bool CheckConnectedToBackendSync(BackendUnityModel model)
@@ -111,32 +119,9 @@ namespace JetBrains.Rider.Unity.Editor
         return isEnabled;
     }
 
-    private static void Init(Lifetime lifetime)
-    {
-      var projectDirectory = Directory.GetParent(Application.dataPath).NotNull().FullName;
-      var projectName = Path.GetFileName(projectDirectory);
-      SlnFile = Path.GetFullPath($"{projectName}.sln");
-
-      InitializeEditorInstanceJson(lifetime);
-      PlayModeStateTracker.Initialise();
-      UnityEditorProtocol.Initialise(lifetime, ourInitTime, ourLogger);
-
-      OpenAssetHandler = new OnOpenAssetHandler(ourRiderPathProvider, ourPluginSettings, SlnFile);
-
-      // Done
-      if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
-      {
-        var executingAssembly = Assembly.GetExecutingAssembly();
-        var location = executingAssembly.Location;
-        Debug.Log(
-          $"Rider plugin \"{executingAssembly.GetName().Name}\" initialized{(string.IsNullOrEmpty(location) ? "" : " from: " + location)}. " +
-          $"LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogInitializer.LogPath}.");
-      }
-    }
-
     // Creates and deletes Library/EditorInstance.json containing info about unity instance. Unity 2017.1+ writes this
     // file itself. We'll always overwrite, just to be sure it's up to date. The file contents are exactly the same
-    private static void InitializeEditorInstanceJson(Lifetime lifetime)
+    private static void CreateEditorInstanceJson(Lifetime lifetime)
     {
       if (UnityUtils.UnityVersion >= new Version(2017, 1))
         return;
@@ -155,6 +140,18 @@ namespace JetBrains.Rider.Unity.Editor
         ourLogger.Verbose("Deleting Library/EditorInstance.json");
         File.Delete(editorInstanceJsonPath);
       });
+    }
+
+    private static void ReportInitialisationDone()
+    {
+      if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
+      {
+        var executingAssembly = Assembly.GetExecutingAssembly();
+        var location = executingAssembly.Location;
+        Debug.Log(
+          $"Rider plugin \"{executingAssembly.GetName().Name}\" initialized{(string.IsNullOrEmpty(location) ? "" : " from: " + location)}. " +
+          $"LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogInitializer.LogPath}.");
+      }
     }
 
     /// <summary>
