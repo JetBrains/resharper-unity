@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -26,10 +25,8 @@ namespace JetBrains.Rider.Unity.Editor
     [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
     public static bool ValidateMenuOpenProject()
     {
-      var model = UnityEditorProtocol.Models.FirstOrDefault(a => a.Lifetime.IsAlive);
-      if (model == null)
-        return true;
-      return false;
+      // Enable the menu unless we have a protocol connection, which would mean the project is already open in Rider
+      return UnityEditorProtocol.Models.Count == 0;
     }
 
     /// <summary>

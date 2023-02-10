@@ -9,6 +9,7 @@ using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Diagnostics;
+using JetBrains.Lifetimes;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -16,12 +17,17 @@ namespace JetBrains.Rider.Unity.Editor
   public class OnOpenAssetHandler
   {
     private readonly ILog myLogger = Log.GetLog<OnOpenAssetHandler>();
+    private readonly Lifetime myLifetime;
     private readonly RiderPathProvider myRiderPathProvider;
     private readonly IPluginSettings myPluginSettings;
     private readonly string mySlnFile;
 
-    public OnOpenAssetHandler(RiderPathProvider riderPathProvider, IPluginSettings pluginSettings, string slnFile)
+    public OnOpenAssetHandler(Lifetime lifetime,
+                              RiderPathProvider riderPathProvider,
+                              IPluginSettings pluginSettings,
+                              string slnFile)
     {
+      myLifetime = lifetime;
       myRiderPathProvider = riderPathProvider;
       myPluginSettings = pluginSettings;
       mySlnFile = slnFile;
@@ -88,11 +94,9 @@ namespace JetBrains.Rider.Unity.Editor
         EditorPrefs.SetBool(ModificationPostProcessor.ModifiedSource, false);
       }
 
-      var models = UnityEditorProtocol.Models.Where(a=>a.Lifetime.IsAlive).ToArray();
-      if (models.Any())
+      var model = UnityEditorProtocol.Models.FirstOrDefault();
+      if (model != null)
       {
-        var modelLifetime = models.First();
-        var model = modelLifetime.Model;
         if (PluginEntryPoint.CheckConnectedToBackendSync(model))
         {
           myLogger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, column);
@@ -102,7 +106,7 @@ namespace JetBrains.Rider.Unity.Editor
           else
             AllowSetForegroundWindow();
 
-          model.OpenFileLineCol.Start(modelLifetime.Lifetime, new RdOpenFileArgs(assetFilePath, line, column));
+          model.OpenFileLineCol.Start(myLifetime, new RdOpenFileArgs(assetFilePath, line, column));
 
           // todo: maybe fallback to CallRider, if returns false
           return true;

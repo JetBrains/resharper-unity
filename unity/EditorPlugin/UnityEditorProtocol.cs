@@ -26,10 +26,43 @@ namespace JetBrains.Rider.Unity.Editor
     private static ILog ourLogger;
     private static long ourInitTime;
 
+    // We cannot guarantee a valid, connected model.
+    // Model creation, lifetime termination, protocol callbacks and Unity API events are all called on the main thread,
+    // so we know that inside a callback, the model has a lifetime that has not yet been terminated.
+    // But a model can lose its socket connection at any time, even mid-callback. If the connection is closed
+    // gracefully, the Model.Connected property is updated on a background thread. But there is an inherent race
+    // condition here. Even if we check Model.Connected, the connection might disappear before we invoke the protocol
+    // method.
+    // More importantly, we don't get notified about socket connection failing until the model/connection lifetime is
+    // queued for termination on the main thread.
+    // In short: we can assume that a model is valid inside a callback. We cannot assume that it is connected. We can
+    // use Model.Connected to potentially reduce the scope of the race condition, but we will not be notified if the
+    // connection fails.
+#region Details
+    // Details:
+    // * The protocol's Wire creates a background thread for socket communication. It sets/resets the Wire.Connected
+    //   property before/after listening for incoming messages. It uses the given scheduler (MainThreadDispatcher) to
+    //   queue changing the property to the correct thread - the main thread
+    // * The model is created when Wire.Connected becomes true on the scheduled thread
+    // * Protocol messages are received on the background thread and notified via the scheduler, so callbacks happen on
+    //   the main thread
+    // * Unity API events are always called on the main thread
+    // * When the Wire stops receiving incoming events (either gracefully or with a socket exception), Wire.Connected is
+    //   set to false. This is queued with the scheduler and the property is set on the main thread. The existing
+    //   lifetime is terminated and handlers are immediately invoked, still on the main thread
+    // * The model's base class (RdExtBase) sends a handshake when it's created. When the other side responds, the
+    //   Model.Connected property is set to true. This is invoked on the model's default scheduler, which is the
+    //   SynchronousScheduler, so Model.Connected is set (and notified) on a background thread
+    // * If the other side (Rider) is shut down gracefully, it sends a disconnected event. Again, this is invoked on the
+    //   model's default scheduler, which means Model.Connected is set and notified on a background thread
+    // * If the other side does not shut down gracefully, it does not send a disconnected event, and Model.Connected
+    //   remains true. Any access to the socket will throw an exception, causing the protocol's background thread to
+    //   close down, queuing Wire.Connected = false with the scheduler
+#endregion
+    public static readonly List<BackendUnityModel> Models = new List<BackendUnityModel>();
+
     public delegate void OnModelInitializationHandler(UnityModelAndLifetime e);
     public static event OnModelInitializationHandler OnModelInitialization = delegate {};
-
-    public static readonly List<ModelWithLifetime> Models = new List<ModelWithLifetime>();
 
     public static void Initialise(Lifetime lifetime, long initTime, ILog logger)
     {
@@ -147,10 +180,9 @@ namespace JetBrains.Rider.Unity.Editor
 
           OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
 
-          ourLogger.Verbose("UnityModel initialized.");
-          var pair = new ModelWithLifetime(model, connectionLifetime);
-          Models.AddLifetimed(connectionLifetime, pair);
+          Models.AddLifetimed(connectionLifetime, model);
 
+          ourLogger.Verbose("UnityModel initialized.");
           connectionLifetime.OnTermination(() =>
           {
             ourLogger.Verbose($"Connection lifetime is not alive for {solutionName}, destroying protocol");

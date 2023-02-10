@@ -67,7 +67,7 @@ namespace JetBrains.Rider.Unity.Editor
       PlayModeStateTracker.Initialise();
       UnityEditorProtocol.Initialise(appDomainLifetime, ourInitTime, ourLogger);
 
-      OpenAssetHandler = new OnOpenAssetHandler(ourRiderPathProvider, ourPluginSettings, SlnFile);
+      OpenAssetHandler = new OnOpenAssetHandler(appDomainLifetime, ourRiderPathProvider, ourPluginSettings, SlnFile);
 
       ReportInitialisationDone();
     }
