@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 
-namespace JetBrains.Rider.Unity.Editor
+namespace JetBrains.Rider.Unity.Editor.Utils
 {
     internal class CommandLineParser
     {
         public Dictionary<string, string> Options = new Dictionary<string, string>();
-    
+
         public CommandLineParser(string[] args)
         {
             var i = 0;

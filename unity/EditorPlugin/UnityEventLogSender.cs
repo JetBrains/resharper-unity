@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity;
-using JetBrains.Rider.Unity.Editor.NonUnity;
+using JetBrains.Rider.Unity.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
