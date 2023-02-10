@@ -17,12 +17,11 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Add localisation of all Unity features - Chinese, Japanese, and Korean
 - Add accurate support for recognising serialised fields in subclasses of serialised classes (RIDER-79871, [RIDER-72838](https://youtrack.jetbrains.com/issue/RIDER-72838))
 - Add context action and Generate menu item to generate baker and authoring classes from DOTS component data ([RIDER-85175](https://youtrack.jetbrains.com/issue/RIDER-85175))
+- Add context action to navigate to source generator code from DOTS type ([RIDER-85189](https://youtrack.jetbrains.com/issue/RIDER-85189))
 - Add file templates for DOTS component data, systems, aspects and entity jobs ([RIDER-85180](https://youtrack.jetbrains.com/issue/RIDER-85180))
 - Add support for recognising serialised fields in all classes ([RIDER-79871](https://youtrack.jetbrains.com/issue/RIDER-79871))
 - Add inspection to check that `ComponentLookup` is updated in a system ([RIDER-85179](https://youtrack.jetbrains.com/issue/RIDER-85179))
 - Add quick fix to add a call to `ComponentLookup.Update` in a system's `OnUpdate` method ([RIDER-85179](https://youtrack.jetbrains.com/issue/RIDER-85179))
-- Add context action to generate baker and authoring classes to component data gutter icon
-- Add context action to navigate to source generator code from DOTS type ([RIDER-85189](https://youtrack.jetbrains.com/issue/RIDER-85189))
 - Add inspection and quick fix to ensure that a system calling `GetSingleton` has a corresponding call to `RequireForUpdate` ([RIDER-85181](https://youtrack.jetbrains.com/issue/RIDER-85181))
 - Add Find Usages support for methods used implicitly in animation clips ([RIDER-77030](https://youtrack.jetbrains.com/issue/RIDER-77030))
 - Add custom formatting rules to keep `[Header]` attribute on separate line ([RIDER-71840](https://youtrack.jetbrains.com/issue/RIDER-71840))
@@ -62,6 +61,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix issues with recreating meta files that exist, due to being restored from Local History ([RIDER-84724](https://youtrack.jetbrains.com/issue/RIDER-84724))
 - Rider: Fix exception while generating UIElements schema in newer versions of Unity ([#2386](https://github.com/JetBrains/resharper-unity/issues/2386))
 - Rider: Fix incorrect icons in Unity run configurations ([RIDER-88500](https://youtrack.jetbrains.com/issue/RIDER-84724))
+- Rider: Fix incorrect file VCS status colour for hidden assets inside read only packages
 
 
 
