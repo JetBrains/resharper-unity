@@ -92,7 +92,7 @@ namespace JetBrains.Rider.Unity.Editor
       if (UnityEditorProtocol.Models.Count > 0) // maybe worth checking Any( with .Lifetime.IsAlive ), but shows up more expensive in Profiler
       {
         LogEvent element;
-        while ((element  = ourDelayedLogEvents.Dequeue()) != null)
+        while ((element = ourDelayedLogEvents.Dequeue()) != null)
         {
           SendLogEvent(element);
         }
@@ -101,13 +101,8 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void SendLogEvent(LogEvent logEvent)
     {
-      foreach (var modelWithLifetime in UnityEditorProtocol.Models)
-      {
-        if (modelWithLifetime.Lifetime.IsAlive)
-        {
-          modelWithLifetime.Model.ConsoleLogging.OnConsoleLogEvent(logEvent);
-        }
-      }
+      foreach (var model in UnityEditorProtocol.Models)
+        model.ConsoleLogging.OnConsoleLogEvent(logEvent);
     }
   }
 }
