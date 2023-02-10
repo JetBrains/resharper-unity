@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.Rider.Unity.Editor.FindUsages;
+using JetBrains.Rider.Unity.Editor.UnitTesting;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56

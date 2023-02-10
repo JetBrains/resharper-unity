@@ -7,7 +7,7 @@ using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using TestResult = JetBrains.Rider.Model.Unity.BackendUnity.TestResult;
 
-namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
+namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
   public class TestEventsSender
   {
