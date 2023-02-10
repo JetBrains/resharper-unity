@@ -21,10 +21,10 @@ namespace JetBrains.Rider.Unity.Editor
     private readonly IPluginSettings myPluginSettings;
     private readonly string mySlnFile;
 
-    public OnOpenAssetHandler(Lifetime lifetime,
-                              RiderPathProvider riderPathProvider,
-                              IPluginSettings pluginSettings,
-                              string slnFile)
+    internal OnOpenAssetHandler(Lifetime lifetime,
+                                RiderPathProvider riderPathProvider,
+                                IPluginSettings pluginSettings,
+                                string slnFile)
     {
       myLifetime = lifetime;
       myRiderPathProvider = riderPathProvider;

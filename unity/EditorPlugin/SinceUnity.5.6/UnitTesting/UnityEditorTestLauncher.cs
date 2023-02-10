@@ -13,7 +13,7 @@ using TestResult = JetBrains.Rider.Model.Unity.BackendUnity.TestResult;
 
 namespace JetBrains.Rider.Unity.Editor.UnitTesting
 {
-  public class UnityEditorTestLauncher
+  internal class UnityEditorTestLauncher
   {
     private readonly UnitTestLaunch myLaunch;
     private readonly Lifetime myConnectionLifetime;
@@ -197,7 +197,7 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
           return false;
         }
         fieldInfo.SetValue(filter, testNames);
-        
+
         var clientController = ClientControllerWrapper.TryCreate(myLaunch.SessionId.ToString(), myLaunch.ClientControllerInfo);
         clientController?.OnSessionStarted();
 

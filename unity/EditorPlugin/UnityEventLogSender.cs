@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  public static class UnityEventLogSender
+  internal static class UnityEventLogSender
   {
     private static readonly BoundedSynchronizedQueue<LogEvent> ourDelayedLogEvents = new BoundedSynchronizedQueue<LogEvent>(1000);
     private static bool ourLogEventsCollectorEnabled;
