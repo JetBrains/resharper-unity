@@ -8,7 +8,6 @@ using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Rd.Tasks;
-using JetBrains.Rider.Unity.Editor.Logger;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using Application = UnityEngine.Application;
