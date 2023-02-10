@@ -14,6 +14,22 @@ using UnityEditor.Callbacks;
 using Application = UnityEngine.Application;
 using Debug = UnityEngine.Debug;
 
+namespace JetBrains.Rider.Unity.Editor.AfterUnity56
+{
+  // DO NOT CHANGE NAME OR NAMESPACE!
+  // Accessed from the package via reflection
+  // This class is only InitializeOnLoad when the plugin is loaded by Unity from the Assets folder. When the package
+  // explicitly loads the plugin from the product install folder, it will execute this class constructor.
+  [InitializeOnLoad, PublicAPI]
+  public static class EntryPoint
+  {
+    // DO NOT REMOVE OR REFACTOR!
+    // When loaded by Unity from the Assets folder, Unity will automatically run this static class constructor. When the
+    // package loads the type, the package explicitly invokes it via reflection.
+    [PublicAPI] static EntryPoint() => PluginEntryPoint.EnsureInitialised();
+  }
+}
+
 namespace JetBrains.Rider.Unity.Editor
 {
   // DO NOT RENAME!
@@ -25,6 +41,7 @@ namespace JetBrains.Rider.Unity.Editor
     private static readonly IPluginSettings ourPluginSettings = new PluginSettings();
     private static readonly RiderPathProvider ourRiderPathProvider = new RiderPathProvider(ourPluginSettings);
     private static readonly long ourInitTime = DateTime.UtcNow.Ticks;
+    private static bool ourInitialised;
 
     // DO NOT RENAME OR REFACTOR!
     // Accessed by package via reflection
@@ -34,13 +51,18 @@ namespace JetBrains.Rider.Unity.Editor
     // DO NOT RENAME OR REFACTOR!
     // Accessed by package via reflection
     [PublicAPI]
-    internal static readonly OnOpenAssetHandler OpenAssetHandler;
+    internal static OnOpenAssetHandler OpenAssetHandler;
 
-    internal static readonly string SlnFile;
+    internal static string SlnFile;
 
     static PluginEntryPoint()
     {
-      if (UnityUtils.IsInBatchModeAndNotInRiderTests)
+      EnsureInitialised();
+    }
+
+    internal static void EnsureInitialised()
+    {
+      if (ourInitialised || UnityUtils.IsInBatchModeAndNotInRiderTests)
         return;
 
       var lifetimeDefinition = Lifetime.Define(Lifetime.Eternal);
@@ -70,16 +92,8 @@ namespace JetBrains.Rider.Unity.Editor
       OpenAssetHandler = new OnOpenAssetHandler(appDomainLifetime, ourRiderPathProvider, ourPluginSettings, SlnFile);
 
       ReportInitialisationDone();
-    }
 
-    // DO NOT REMOVE!
-    // This is used when the plugin is loaded explicitly by the package to ensure the static class constructor has been
-    // executed. Note that the package doesn't call this method. See AfterUnity56.EntryPoint for more details
-    internal static void EnsureInitialised()
-    {
-      // Do nothing. Don't move initialisation here - the class constructor is always called, either by InitializeOnLoad
-      // or when EntryPoint calls this method. We either leave initialisation in the class constructor or introduce a
-      // flag to prevent initialising twice. Might as well just leave it in the cctor.
+      ourInitialised = true;
     }
 
     internal static bool CheckConnectedToBackendSync(BackendUnityModel model)
@@ -155,7 +169,7 @@ namespace JetBrains.Rider.Unity.Editor
     }
 
     /// <summary>
-    /// Called when Unity is about to open an asset. This method is for pre-2019.2
+    /// Called when Unity is about to open an asset. This method is for pre-2019.2 when loaded from Assets
     /// </summary>
     [OnOpenAsset]
     static bool OnOpenedAsset(int instanceID, int line)
