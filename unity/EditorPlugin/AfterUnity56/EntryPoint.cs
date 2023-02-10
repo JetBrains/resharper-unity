@@ -30,11 +30,14 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
       var lifetimeDefinition = Lifetime.Define(Lifetime.Eternal);
       AppDomain.CurrentDomain.DomainUnload += (_, __) => lifetimeDefinition.Terminate();
 
+      // TODO: Move all of this into PluginEntryPoint
       UnityEditorProtocol.Models.View(lifetimeDefinition.Lifetime, (modelLifetime, _, model) =>
       {
         Initialization.Advise(modelLifetime, model);
         Navigation.Initialization.Advise(modelLifetime, model);
+#if UNITY_2019_2_OR_NEWER
         Packages.Initialization.Advise(modelLifetime, model);
+#endif
       });
     }
   }
