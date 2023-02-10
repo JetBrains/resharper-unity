@@ -1,17 +1,17 @@
 using System;
 using System.IO;
-using JetBrains.Collections.Viewable;
-using JetBrains.Diagnostics;
-using JetBrains.Rd.Tasks;
-using UnityEditor;
-using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Collections.Viewable;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
+using JetBrains.Rd.Tasks;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting;
+using JetBrains.Rider.Unity.Editor.Utils;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56
 {
@@ -162,7 +162,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
             return false;
         }
 
-        private static bool IsDirty(Object unityObject)
+        private static bool IsDirty(UnityEngine.Object unityObject)
         {
             // EditorUtility.IsDirty is internal until 2019.1
 #if UNITY_2019_2_OR_NEWER

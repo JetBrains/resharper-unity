@@ -42,7 +42,6 @@
     <Compile Remove="AssetPostprocessors\CsprojAssetPostprocessor.cs" />
     <Compile Remove="AssetPostprocessors\SlnAssetPostprocessor.cs" />
     <Compile Remove="RiderMenu.cs" />
-    <Compile Remove="AfterUnity56\EnumExtensions.cs" />
   </ItemGroup>
   <Import Project="ILRepack.targets" />
   <Import Project="Model.targets" />
