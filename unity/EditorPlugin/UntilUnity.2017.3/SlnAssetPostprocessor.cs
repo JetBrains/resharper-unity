@@ -1,3 +1,6 @@
+// This class is only required when loaded from assets. 2019.2+ never loads this plugin from assets
+#if CAN_BE_LOADED_FROM_ASSETS
+
 using System;
 using System.IO;
 using System.Linq;
@@ -143,3 +146,5 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     }
   }
 }
+
+#endif

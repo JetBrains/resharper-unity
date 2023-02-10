@@ -5,7 +5,7 @@
     <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>UNITY_4_7;UNITY_4_7_OR_NEWER;RIDER_EDITOR_PLUGIN</DefineConstants>
+    <DefineConstants>UNITY_4_7;UNITY_4_7_OR_NEWER;RIDER_EDITOR_PLUGIN;CAN_BE_LOADED_FROM_ASSETS</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>CS0618</WarningsNotAsErrors>
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>

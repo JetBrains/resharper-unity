@@ -39,8 +39,9 @@
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll"><Visible>false</Visible></ILRepackInputAssemblies>
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="AssetPostprocessors\CsprojAssetPostprocessor.cs" />
-    <Compile Remove="AssetPostprocessors\SlnAssetPostprocessor.cs" />
+    <Compile Remove="UntilUnity.2017.3\**" />
+    <None Remove="UntilUnity.2017.3\**" />
+    <EmbeddedResource Remove="UntilUnity.2017.3\**" />
     <Compile Remove="RiderMenu.cs" />
   </ItemGroup>
   <Import Project="ILRepack.targets" />

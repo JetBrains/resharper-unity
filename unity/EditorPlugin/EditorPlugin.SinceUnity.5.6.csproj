@@ -5,7 +5,7 @@
     <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>UNITY_5_6;UNITY_5_6_OR_NEWER;UNITY_4_7_OR_NEWER;UNITY_5_6_OR_NEWER;RIDER_EDITOR_PLUGIN</DefineConstants>
+    <DefineConstants>UNITY_5_6;UNITY_5_6_OR_NEWER;UNITY_4_7_OR_NEWER;UNITY_5_6_OR_NEWER;RIDER_EDITOR_PLUGIN;CAN_BE_LOADED_FROM_ASSETS</DefineConstants>
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
     <Company>JetBrains.Rider.Unity.Editor.Plugin.Unity56</Company>
     <Product>JetBrains.Rider.Unity.Editor.Plugin.Unity56</Product>
