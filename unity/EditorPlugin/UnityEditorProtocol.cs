@@ -59,10 +59,7 @@ namespace JetBrains.Rider.Unity.Editor
     //   remains true. Any access to the socket will throw an exception, causing the protocol's background thread to
     //   close down, queuing Wire.Connected = false with the scheduler
 #endregion
-    public static readonly List<BackendUnityModel> Models = new List<BackendUnityModel>();
-
-    public delegate void OnModelInitializationHandler(UnityModelAndLifetime e);
-    public static event OnModelInitializationHandler OnModelInitialization = delegate {};
+    public static readonly IViewableList<BackendUnityModel> Models = new ViewableList<BackendUnityModel>();
 
     public static void Initialise(Lifetime lifetime, long initTime, ILog logger)
     {
@@ -177,8 +174,6 @@ namespace JetBrains.Rider.Unity.Editor
           AdviseOnRunMethod(model);
           AdviseOnStartProfiling(model);
           AdviseLoggingStateChangeTimes(connectionLifetime, model);
-
-          OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
 
           Models.AddLifetimed(connectionLifetime, model);
 
@@ -596,18 +591,6 @@ namespace JetBrains.Rider.Unity.Editor
         if (state == PlayModeState.Playing)
           model.ConsoleLogging.LastPlayTime.Value = DateTime.UtcNow.Ticks;
       });
-    }
-  }
-
-  public struct UnityModelAndLifetime
-  {
-    public readonly BackendUnityModel Model;
-    public Lifetime Lifetime;
-
-    public UnityModelAndLifetime(BackendUnityModel model, Lifetime lifetime)
-    {
-      Model = model;
-      Lifetime = lifetime;
     }
   }
 }

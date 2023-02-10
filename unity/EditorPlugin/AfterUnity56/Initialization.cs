@@ -8,6 +8,8 @@ using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Lifetimes;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting;
 using UnityEngine;
 
@@ -19,14 +21,13 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
 #if !UNITY_2019_2_OR_NEWER
         private static MethodInfo ourIsDirtyMethodInfo;
 #endif
-        public static void OnModelInitializationHandler(UnityModelAndLifetime modelAndLifetime)
+
+        public static void Advise(Lifetime modelLifetime, BackendUnityModel model)
         {
             ourLogger.Verbose("AdviseUnitTestLaunch");
-            var model = modelAndLifetime.Model;
-            var connectionLifetime = modelAndLifetime.Lifetime;
 
             model.GetCompilationResult.Set(_ => !EditorUtility.scriptCompilationFailed);
-            model.UnitTestLaunch.Advise(connectionLifetime, launch =>
+            model.UnitTestLaunch.Advise(modelLifetime, launch =>
             {
                 new TestEventsSender(launch);
                 UnityEditorTestLauncher.SupportAbortNew(launch); // TestFramework 1.2.x
@@ -37,16 +38,16 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
                 if (!model.UnitTestLaunch.HasValue()) return false;
                 if (EditorApplication.isPlaying)
                     throw new InvalidOperationException("Running tests during the Play mode is not possible.");
-                var testLauncher = new UnityEditorTestLauncher(model.UnitTestLaunch.Value, connectionLifetime);
+                var testLauncher = new UnityEditorTestLauncher(model.UnitTestLaunch.Value, modelLifetime);
                 return testLauncher.TryLaunchUnitTests();
             });
 
-            HasUnsavedChanges(modelAndLifetime);
+            AdviseOnHasUnsavedChanges(model);
         }
 
-        private static void HasUnsavedChanges(UnityModelAndLifetime modelAndLifetime)
+        private static void AdviseOnHasUnsavedChanges(BackendUnityModel model)
         {
-            modelAndLifetime.Model.HasUnsavedState.Set(rdVoid =>
+            model.HasUnsavedState.Set(rdVoid =>
             {
                 var count = SceneManager.sceneCount;
                 for (var i = 0; i < count; i++)
