@@ -1,9 +1,4 @@
-using System;
 using JetBrains.Annotations;
-using JetBrains.Collections.Viewable;
-using JetBrains.Lifetimes;
-using JetBrains.Rider.Unity.Editor.FindUsages;
-using JetBrains.Rider.Unity.Editor.UnitTesting;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56
@@ -28,15 +23,6 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
       // automatically, since PluginEntryPoint is [InitializeOnLoad]. When loaded from the package, the package will
       // explicitly invoke this class constructor, but nothing else.
       PluginEntryPoint.EnsureInitialised();
-
-      var lifetimeDefinition = Lifetime.Define(Lifetime.Eternal);
-      AppDomain.CurrentDomain.DomainUnload += (_, __) => lifetimeDefinition.Terminate();
-
-      // TODO: Move all of this into PluginEntryPoint/UnityEditorProtocol
-      UnityEditorProtocol.Models.View(lifetimeDefinition.Lifetime, (modelLifetime, _, model) =>
-      {
-        Initialization.Advise(modelLifetime, model);
-      });
     }
   }
 }

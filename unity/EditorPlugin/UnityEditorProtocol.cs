@@ -16,6 +16,7 @@ using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.FindUsages;
 using JetBrains.Rider.Unity.Editor.NonUnity;
+using JetBrains.Rider.Unity.Editor.UnitTesting;
 using JetBrains.Rider.Unity.Editor.Utils;
 using UnityEditor;
 using Debug = UnityEngine.Debug;
@@ -177,6 +178,7 @@ namespace JetBrains.Rider.Unity.Editor
           AdviseLoggingStateChangeTimes(connectionLifetime, model);
 
 #if UNITY_5_6_OR_NEWER
+          UnitTestingModelHelper.Advise(connectionLifetime, model);
           FindUsagesModelHelper.Advise(connectionLifetime, model);
           UnsavedChangesModelHelper.Advise(connectionLifetime, model);
 #endif
@@ -601,6 +603,7 @@ namespace JetBrains.Rider.Unity.Editor
   }
 }
 
-// Empty namespace to avoid #if for Unity 4.7
-// ReSharper disable once EmptyNamespace
+// Empty namespaces to avoid #if for Unity 4.7
+// ReSharper disable EmptyNamespace
 namespace JetBrains.Rider.Unity.Editor.FindUsages {}
+namespace JetBrains.Rider.Unity.Editor.UnitTesting {}
