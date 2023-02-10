@@ -42,7 +42,6 @@
     <Compile Remove="UntilUnity.2017.3\**" />
     <None Remove="UntilUnity.2017.3\**" />
     <EmbeddedResource Remove="UntilUnity.2017.3\**" />
-    <Compile Remove="RiderMenu.cs" />
   </ItemGroup>
   <Import Project="ILRepack.targets" />
   <Import Project="Model.targets" />

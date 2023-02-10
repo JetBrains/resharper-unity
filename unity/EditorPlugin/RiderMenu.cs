@@ -1,3 +1,5 @@
+#if CAN_BE_LOADED_FROM_ASSETS
+
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -45,3 +47,5 @@ namespace JetBrains.Rider.Unity.Editor
     }
   }
 }
+
+#endif
