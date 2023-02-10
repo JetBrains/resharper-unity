@@ -29,6 +29,9 @@
     <Compile Remove="AfterUnity56\**" />
     <None Remove="AfterUnity56\**" />
     <EmbeddedResource Remove="AfterUnity56\**" />
+    <Compile Remove="SinceUnity.5.6\**" />
+    <None Remove="SinceUnity.5.6\**" />
+    <EmbeddedResource Remove="SinceUnity.5.6\**" />
   </ItemGroup>
   <Import Project="ILRepack.targets" />
   <Import Project="Model.targets" />
