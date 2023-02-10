@@ -1,21 +1,23 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace JetBrains.Rider.Unity.Editor.Navigation.Window
+namespace JetBrains.Rider.Unity.Editor.FindUsages.Window
 {
+  [SuppressMessage("ReSharper", "InconsistentNaming")]
   internal class FindUsagesWindow : EditorWindow
   {
     [SerializeField]
     public FindUsagesWindowTreeState myTreeViewState;
 
     [SerializeField]
-    public bool IsDirty = false;
+    public bool IsDirty;
 
     [SerializeField]
-    public string Target = null;
+    public string Target;
 
     [NonSerialized]
     private FindUsagesTreeView myTreeView;
@@ -45,7 +47,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
       myTreeView.Repaint();
     }
 
-    void OnEnable ()
+    void OnEnable()
     {
       if (myTreeViewState == null)
       {

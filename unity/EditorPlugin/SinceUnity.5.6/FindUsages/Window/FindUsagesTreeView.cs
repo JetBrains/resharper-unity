@@ -5,14 +5,13 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace JetBrains.Rider.Unity.Editor.Navigation.Window
+namespace JetBrains.Rider.Unity.Editor.FindUsages.Window
 {
   internal class FindUsagesTreeView : TreeView
   {
-    
-    private Dictionary<int, FindUsagesTreeViewItem> findResultItems = new Dictionary<int, FindUsagesTreeViewItem>();
+    private readonly Dictionary<int, FindUsagesTreeViewItem> myFindResultItems = new Dictionary<int, FindUsagesTreeViewItem>();
     private readonly Dictionary<int, int> myAnimatorItemIdToPathElementsCount = new Dictionary<int, int>();
-    
+
     private readonly FindUsagesWindowTreeState myState;
 
     public FindUsagesTreeView(FindUsagesWindowTreeState state) : base(state)
@@ -30,16 +29,16 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
 
       var prefabNode = CreatePrefabSubTree();
       root.AddChild(prefabNode);
-      
+
       var scriptableObjectNode = CreateScriptableObjectSubTree();
       root.AddChild(scriptableObjectNode);
 
       var animatorSubTree = CreateAnimatorSubTree();
       root.AddChild(animatorSubTree);
-      
+
       var animationSubTree = CreateAnimationEventsSubTree();
       root.AddChild(animationSubTree);
-      
+
       SetupDepthsFromParentsAndChildren(root);
       return root;
     }
@@ -50,14 +49,14 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
       CreateSubTree(scenes, myState.SceneElements.ToArray(), 50_000);
       return scenes;
     }
-    
+
     private TreeViewItem CreatePrefabSubTree()
     {
       var prefabs = new FindUsagePathElement(1) {id = 2, displayName = "Prefabs"};
       CreateSubTree(prefabs, myState.PrefabElements.ToArray(), 100_000);
       return prefabs;
     }
-    
+
     private TreeViewItem CreateScriptableObjectSubTree()
     {
       var scriptableObject = new FindUsagePathElement(2) {id = 3, displayName = "Scriptable Objects"};
@@ -66,18 +65,18 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
       foreach (var usageElement in myState.ScriptableObjectElements.ToArray())
       {
         var id = startId++;
-        findResultItems[id] = new FindUsagesTreeViewItem(-1, usageElement)
+        myFindResultItems[id] = new FindUsagesTreeViewItem(-1, usageElement)
         {
           id = id,
           displayName = usageElement.FilePath,
           icon = (Texture2D) EditorGUIUtility.IconContent(usageElement.TerminalNodeImage).image
         };
-        scriptableObject.AddChild(findResultItems[id]); 
+        scriptableObject.AddChild(myFindResultItems[id]);
       }
 
       return scriptableObject;
     }
-    
+
     private TreeViewItem CreateAnimatorSubTree()
     {
         var animator = new FindUsagePathElement(3) {id = 4, displayName = "Animator"};
@@ -95,8 +94,8 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
         var currentParent = findUsagePathElement;
         for (int i = 0, pathElementsLength = animatorElement.PathElements.Length; i < pathElementsLength; i++)
         {
-            var icon = i == pathElementsLength - 1 
-                ? animatorElement.TerminalNodeImage 
+            var icon = i == pathElementsLength - 1
+                ? animatorElement.TerminalNodeImage
                 : AnimatorElement.AnimatorStateMachineIcon;
             var findUsagesTreeViewItem = new FindUsagesTreeViewItem(id, animatorElement)
             {
@@ -104,7 +103,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
                 displayName = animatorElement.PathElements[i],
                 icon = (Texture2D) EditorGUIUtility.IconContent(icon).image
             };
-            findResultItems[id] = findUsagesTreeViewItem;
+            myFindResultItems[id] = findUsagesTreeViewItem;
             myAnimatorItemIdToPathElementsCount[id] = i + 1;
             currentParent.AddChild(findUsagesTreeViewItem);
             currentParent = findUsagesTreeViewItem;
@@ -133,7 +132,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
             displayName = animationElement.FileName,
             icon = (Texture2D) EditorGUIUtility.IconContent(animationElement.TerminalNodeImage)?.image
         };
-        findResultItems[id] = findUsagesTreeViewItem;
+        myFindResultItems[id] = findUsagesTreeViewItem;
         animationTreeRoot.AddChild(findUsagesTreeViewItem);
         id++;
     }
@@ -152,9 +151,9 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
         {
           current = current.CreateChild(new FindUsagePathElement(curFileNameId++)
           {
-            id = startId++, displayName = dataFileName, 
+            id = startId++, displayName = dataFileName,
             icon = (Texture2D)EditorGUIUtility.IconContent(usageElement.StartNodeImage).image
-          }); 
+          });
           fileNames.Add(filePath, current);
         }
         else
@@ -169,13 +168,13 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
           if (i + 1 == pathLength)
           {
             var id = startId++;
-            findResultItems[id] = new FindUsagesTreeViewItem(usageElement.RootIndices[i], usageElement)
+            myFindResultItems[id] = new FindUsagesTreeViewItem(usageElement.RootIndices[i], usageElement)
             {
               id = id,
               displayName = name,
               icon = (Texture2D) EditorGUIUtility.IconContent(usageElement.TerminalNodeImage).image
             };
-            current.AddChild(findResultItems[id]); 
+            current.AddChild(myFindResultItems[id]);
           }
           else
           {
@@ -196,16 +195,16 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
         }
       }
     }
-    
+
     protected override void DoubleClickedItem(int id)
     {
-      if (!findResultItems.ContainsKey(id))
+      if (!myFindResultItems.ContainsKey(id))
       {
         SetExpanded(id, true);
         return;
       }
 
-      var request = findResultItems[id].UsageElement;
+      var request = myFindResultItems[id].UsageElement;
       switch (request)
       {
           case SceneElement sceneElement:

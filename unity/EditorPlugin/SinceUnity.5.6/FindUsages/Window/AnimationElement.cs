@@ -1,6 +1,7 @@
 using System;
 using JetBrains.Annotations;
-namespace JetBrains.Rider.Unity.Editor.Navigation.Window
+
+namespace JetBrains.Rider.Unity.Editor.FindUsages.Window
 {
     [Serializable]
     internal class AnimationElement : AbstractUsageElement

@@ -1,8 +1,7 @@
 using System;
 
-namespace JetBrains.Rider.Unity.Editor.Navigation.Window
+namespace JetBrains.Rider.Unity.Editor.FindUsages.Window
 {
-  
   [Serializable]
   public class ScriptableObjectElement : AbstractUsageElement
   {
