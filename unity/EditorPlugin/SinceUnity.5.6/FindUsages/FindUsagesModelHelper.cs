@@ -10,11 +10,10 @@ using JetBrains.Rider.Unity.Editor.FindUsages.Window;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace JetBrains.Rider.Unity.Editor.FindUsages
 {
-  internal static class Initialization
+  internal static class FindUsagesModelHelper
   {
     private static readonly ILog ourLogger = Log.GetLog("Navigation.Initialization");
 
@@ -74,7 +73,7 @@ namespace JetBrains.Rider.Unity.Editor.FindUsages
         // only works for Assets folder
         var matchedUnityPath = fullName.Substring(Directory.GetParent(Application.dataPath).FullName.Length + 1);
 
-        var asset = AssetDatabase.LoadAssetAtPath(matchedUnityPath, typeof(Object));
+        var asset = AssetDatabase.LoadAssetAtPath(matchedUnityPath, typeof(UnityEngine.Object));
         if (asset == null)
         {
           // works for any assets including local packages, but might be slow on big projects
@@ -83,7 +82,7 @@ namespace JetBrains.Rider.Unity.Editor.FindUsages
               new FileInfo(Path.GetFullPath(a)).FullName ==
               fullName); // FileInfo normalizes separators (required on Windows)
           if (matchedUnityPath != null)
-            asset = AssetDatabase.LoadAssetAtPath(matchedUnityPath, typeof(Object));
+            asset = AssetDatabase.LoadAssetAtPath(matchedUnityPath, typeof(UnityEngine.Object));
         }
 
         if (asset != null)
