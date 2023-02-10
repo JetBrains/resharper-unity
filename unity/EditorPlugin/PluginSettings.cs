@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Diagnostics;
 using JetBrains.Rider.Model.Unity;
-using JetBrains.Rider.Unity.Editor.Logger;
 using UnityEditor;
 using UnityEngine;
 

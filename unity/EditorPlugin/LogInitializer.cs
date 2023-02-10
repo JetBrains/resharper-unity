@@ -4,7 +4,7 @@ using JetBrains.Diagnostics;
 using JetBrains.Diagnostics.Internal;
 using JetBrains.Lifetimes;
 
-namespace JetBrains.Rider.Unity.Editor.Logger
+namespace JetBrains.Rider.Unity.Editor
 {
   internal static class LogInitializer
   {
