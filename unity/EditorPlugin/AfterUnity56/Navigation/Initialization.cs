@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
+using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.Navigation;
 using JetBrains.Rider.Unity.Editor.Navigation.Window;
@@ -14,15 +15,13 @@ using Object = UnityEngine.Object;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
 {
-  public static class Initialization
+  internal static class Initialization
   {
     private static readonly ILog ourLogger = Log.GetLog("Navigation.Initialization");
 
-    public static void OnModelInitializationHandler(UnityModelAndLifetime modelAndLifetime)
+    public static void Advise(Lifetime modelLifetime, BackendUnityModel model)
     {
-      var modelValue = modelAndLifetime.Model;
-      var connectionLifetime = modelAndLifetime.Lifetime;
-      modelValue.ShowUsagesInUnity.Advise(connectionLifetime, findUsagesResult =>
+      model.ShowUsagesInUnity.Advise(modelLifetime, findUsagesResult =>
       {
         if (findUsagesResult != null)
         {
@@ -53,7 +52,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
         }
       });
 
-      modelValue.SendFindUsagesSessionResult.Advise(connectionLifetime, result =>
+      model.SendFindUsagesSessionResult.Advise(modelLifetime, result =>
       {
         if (result != null)
         {
@@ -69,12 +68,12 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
         }
       });
 
-      modelValue.ShowFileInUnity.AdviseNotNull(connectionLifetime, result =>
+      model.ShowFileInUnity.AdviseNotNull(modelLifetime, result =>
       {
         var fullName = new FileInfo(result).FullName;
         // only works for Assets folder
         var matchedUnityPath = fullName.Substring(Directory.GetParent(Application.dataPath).FullName.Length + 1);
-        
+
         var asset = AssetDatabase.LoadAssetAtPath(matchedUnityPath, typeof(Object));
         if (asset == null)
         {

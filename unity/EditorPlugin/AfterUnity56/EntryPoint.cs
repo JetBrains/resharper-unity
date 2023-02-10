@@ -1,5 +1,7 @@
-﻿using System;
+using System;
 using JetBrains.Annotations;
+using JetBrains.Collections.Viewable;
+using JetBrains.Lifetimes;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56
@@ -25,15 +27,15 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
       // explicitly invoke this class constructor, but nothing else.
       PluginEntryPoint.EnsureInitialised();
 
-      UnityEditorProtocol.OnModelInitialization += Initialization.OnModelInitializationHandler;
-      UnityEditorProtocol.OnModelInitialization += Navigation.Initialization.OnModelInitializationHandler;
-      UnityEditorProtocol.OnModelInitialization += Packages.Initialization.OnModelInitializationHandler;
-      AppDomain.CurrentDomain.DomainUnload += (_, __) =>
+      var lifetimeDefinition = Lifetime.Define(Lifetime.Eternal);
+      AppDomain.CurrentDomain.DomainUnload += (_, __) => lifetimeDefinition.Terminate();
+
+      UnityEditorProtocol.Models.View(lifetimeDefinition.Lifetime, (modelLifetime, _, model) =>
       {
-        UnityEditorProtocol.OnModelInitialization -= Initialization.OnModelInitializationHandler;
-        UnityEditorProtocol.OnModelInitialization -= Navigation.Initialization.OnModelInitializationHandler;
-        UnityEditorProtocol.OnModelInitialization -= Packages.Initialization.OnModelInitializationHandler;
-      };
+        Initialization.Advise(modelLifetime, model);
+        Navigation.Initialization.Advise(modelLifetime, model);
+        Packages.Initialization.Advise(modelLifetime, model);
+      });
     }
   }
 }
