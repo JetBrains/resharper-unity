@@ -9,9 +9,30 @@
         <description text="This is called by Unity when inspecting assets to determine if they can potentially be opened for editing." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="System.String" array="True" name="paths" description="Paths to Assets or their .meta files, relative to the project folder." />
-        <parameter type="System.Collections.Generic.List`1[[System.String]]" array="False" name="outNotEditablePaths" description="Destination list of non-editable Asset paths." />
-        <parameter type="UnityEditor.StatusQueryOptions" array="False" name="statusQueryOptions" description="Specifies how Unity should query the version control system. The default value is StatusQueryOptions.UseCachedIfPossible." />
+        <parameter type="System.String" array="True" name="assetOrMetaFilePaths">
+          <descriptions>
+            <description text="Paths to Assets or their .meta files, relative to the project folder." langCode="iv" />
+            <description text="资源或其 .meta 文件的路径，相对于项目文件夹。" langCode="zh" />
+            <description text="Paths to Assets or their .meta files, relative to the project folder." langCode="ja" />
+            <description text="Paths to Assets or their .meta files, relative to the project folder." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="System.Collections.Generic.List`1[[System.String]]" array="False" name="outNotEditablePaths">
+          <descriptions>
+            <description text="Destination list of non-editable Asset paths." langCode="iv" />
+            <description text="不可编辑的资源路径的目标列表。" langCode="zh" />
+            <description text="Destination list of non-editable Asset paths." langCode="ja" />
+            <description text="Destination list of non-editable Asset paths." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEditor.StatusQueryOptions" array="False" name="statusQueryOptions">
+          <descriptions>
+            <description text="Specifies how Unity should query the version control system. The default value is StatusQueryOptions.UseCachedIfPossible." langCode="iv" />
+            <description text="指定 Unity 应如何查询版本控制系统。默认值为 StatusQueryOptions.UseCachedIfPossible。" langCode="zh" />
+            <description text="Specifies how Unity should query the version control system. The default value is StatusQueryOptions.UseCachedIfPossible." langCode="ja" />
+            <description text="Specifies how Unity should query the version control system. The default value is StatusQueryOptions.UseCachedIfPossible." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Boolean" array="False" />
     </message>
@@ -43,9 +64,30 @@
         <description text="This is called by Unity when inspecting assets to determine if an editor should be disabled." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="System.String" array="True" name="paths" description="Paths to Assets or their .meta files, relative to the project folder." />
-        <parameter type="System.Collections.Generic.List`1[[System.String]]" array="False" name="outNotEditablePaths" description="Destination list of non-editable Asset paths." />
-        <parameter type="UnityEditor.StatusQueryOptions" array="False" name="statusQueryOptions" description="Specifies how Unity should query the version control system. The default value is StatusQueryOptions.UseCachedIfPossible." />
+        <parameter type="System.String" array="True" name="assetOrMetaFilePaths">
+          <descriptions>
+            <description text="Paths to Assets or their .meta files, relative to the project folder." langCode="iv" />
+            <description text="资源或其 .meta 文件的路径，相对于项目文件夹。" langCode="zh" />
+            <description text="Paths to Assets or their .meta files, relative to the project folder." langCode="ja" />
+            <description text="Paths to Assets or their .meta files, relative to the project folder." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="System.Collections.Generic.List`1[[System.String]]" array="False" name="outNotEditablePaths">
+          <descriptions>
+            <description text="Destination list of non-editable Asset paths." langCode="iv" />
+            <description text="不可编辑的资源路径的目标列表。" langCode="zh" />
+            <description text="Destination list of non-editable Asset paths." langCode="ja" />
+            <description text="Destination list of non-editable Asset paths." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEditor.StatusQueryOptions" array="False" name="statusQueryOptions">
+          <descriptions>
+            <description text="Specifies how Unity should query the version control system. The default value is StatusQueryOptions.UseCachedIfPossible." langCode="iv" />
+            <description text="指定 Unity 应如何查询版本控制系统。默认值为 StatusQueryOptions.UseCachedIfPossible。" langCode="zh" />
+            <description text="Specifies how Unity should query the version control system. The default value is StatusQueryOptions.UseCachedIfPossible." langCode="ja" />
+            <description text="Specifies how Unity should query the version control system. The default value is StatusQueryOptions.UseCachedIfPossible." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Boolean" array="False" />
     </message>
@@ -57,9 +99,30 @@
         <description text="Unity calls this method when one or more files need to be opened for editing." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="System.String" array="True" name="paths" description="Specifies an array of file paths relative to the project root." />
-        <parameter type="System.String" array="False" name="prompt" description="Dialog prompt to show to the user, if a version control operation needs to be done. If null (default), no prompt is shown." />
-        <parameter type="System.Collections.Generic.List`1[[System.String]]" array="False" name="outNotEditablePaths" description="Output list of file paths that could not be made editable." />
+        <parameter type="System.String" array="True" name="paths">
+          <descriptions>
+            <description text="Specifies an array of file paths relative to the project root." langCode="iv" />
+            <description text="指定相对于项目根目录的文件路径的数组。" langCode="zh" />
+            <description text="Specifies an array of file paths relative to the project root." langCode="ja" />
+            <description text="Specifies an array of file paths relative to the project root." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="System.String" array="False" name="prompt">
+          <descriptions>
+            <description text="Dialog prompt to show to the user, if a version control operation needs to be done. If null (default), no prompt is shown." langCode="iv" />
+            <description text="要向用户显示的对话框提示（如果需要执行版本控制操作）。如果为 /null/（默认值），则不显示任何提示。" langCode="zh" />
+            <description text="Dialog prompt to show to the user, if a version control operation needs to be done. If null (default), no prompt is shown." langCode="ja" />
+            <description text="Dialog prompt to show to the user, if a version control operation needs to be done. If null (default), no prompt is shown." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="System.Collections.Generic.List`1[[System.String]]" array="False" name="outNotEditablePaths">
+          <descriptions>
+            <description text="Output list of file paths that could not be made editable." langCode="iv" />
+            <description text="无法设为可编辑的文件路径的输出列表。" langCode="zh" />
+            <description text="Output list of file paths that could not be made editable." langCode="ja" />
+            <description text="Output list of file paths that could not be made editable." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Boolean" array="False" />
     </message>
@@ -158,8 +221,22 @@
         <description text="This function is called when an AnimationClip has finished importing." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.GameObject" array="False" name="root" description="The root GameObject of the imported Asset." />
-        <parameter type="UnityEngine.AnimationClip" array="False" name="clip" description="The current animation clip." />
+        <parameter type="UnityEngine.GameObject" array="False" name="root">
+          <descriptions>
+            <description text="The root GameObject of the imported Asset." langCode="iv" />
+            <description text="所导入资源的根游戏对象。" langCode="zh" />
+            <description text="The root GameObject of the imported Asset." langCode="ja" />
+            <description text="The root GameObject of the imported Asset." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEngine.AnimationClip" array="False" name="clip">
+          <descriptions>
+            <description text="The current animation clip." langCode="iv" />
+            <description text="当前的动画剪辑。" langCode="zh" />
+            <description text="The current animation clip." langCode="ja" />
+            <description text="The current animation clip." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -209,8 +286,22 @@
         <description text="This function is called when the animation curves for a custom property are finished importing." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.GameObject" array="False" name="go" description="The GameObject with animated custom properties." />
-        <parameter type="UnityEditor.EditorCurveBinding" array="True" name="bindings" description="The animation curves bound to the custom properties." />
+        <parameter type="UnityEngine.GameObject" array="False" name="gameObject">
+          <descriptions>
+            <description text="The GameObject with animated custom properties." langCode="iv" />
+            <description text="具有动画自定义属性的游戏对象。" langCode="zh" />
+            <description text="The GameObject with animated custom properties." langCode="ja" />
+            <description text="The GameObject with animated custom properties." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEditor.EditorCurveBinding" array="True" name="bindings">
+          <descriptions>
+            <description text="The animation curves bound to the custom properties." langCode="iv" />
+            <description text="绑定到自定义属性的动画曲线。" langCode="zh" />
+            <description text="The animation curves bound to the custom properties." langCode="ja" />
+            <description text="The animation curves bound to the custom properties." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -248,7 +339,14 @@
         <description text="This function is called when a new transform hierarchy has finished importing." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.GameObject" array="False" name="root" description="The root GameObject of the imported Asset." />
+        <parameter type="UnityEngine.GameObject" array="False" name="root">
+          <descriptions>
+            <description text="The root GameObject of the imported Asset." langCode="iv" />
+            <description text="所导入资源的根游戏对象。" langCode="zh" />
+            <description text="The root GameObject of the imported Asset." langCode="ja" />
+            <description text="The root GameObject of the imported Asset." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -376,9 +474,30 @@
         <description text="Add this function to a subclass to recieve a notification when a material is imported from a Model Importer." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEditor.AssetImporters.MaterialDescription" array="False" name="description" description="MaterialDescription structure describing the imported material properties and animations." />
-        <parameter type="UnityEngine.Material" array="False" name="material" description="The material generated by the Model Importer." />
-        <parameter type="UnityEngine.AnimationClip" array="True" name="materialAnimation" description="The animation clips generated by the Model Importer." />
+        <parameter type="UnityEditor.AssetImporters.MaterialDescription" array="False" name="description">
+          <descriptions>
+            <description text="MaterialDescription structure describing the imported material properties and animations." langCode="iv" />
+            <description text="MaterialDescription 结构描述导入的材质属性和动画。" langCode="zh" />
+            <description text="MaterialDescription structure describing the imported material properties and animations." langCode="ja" />
+            <description text="MaterialDescription structure describing the imported material properties and animations." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEngine.Material" array="False" name="material">
+          <descriptions>
+            <description text="The material generated by the Model Importer." langCode="iv" />
+            <description text="Model Importer 生成的材质。" langCode="zh" />
+            <description text="The material generated by the Model Importer." langCode="ja" />
+            <description text="The material generated by the Model Importer." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEngine.AnimationClip" array="True" name="animations">
+          <descriptions>
+            <description text="The animation clips generated by the Model Importer." langCode="iv" />
+            <description text="Model Importer 生成的动画剪辑。" langCode="zh" />
+            <description text="The animation clips generated by the Model Importer." langCode="ja" />
+            <description text="The animation clips generated by the Model Importer." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -472,8 +591,22 @@
         <description text="Event function that Unity calls after a Camera has finished rendering, that allows you to modify the Camera's final image." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.RenderTexture" array="False" name="source" description="A RenderTexture containing the source image." />
-        <parameter type="UnityEngine.RenderTexture" array="False" name="destination" description="The RenderTexture to update with the modified image." />
+        <parameter type="UnityEngine.RenderTexture" array="False" name="source">
+          <descriptions>
+            <description text="A RenderTexture containing the source image." langCode="iv" />
+            <description text="A RenderTexture containing the source image." langCode="zh" />
+            <description text="A RenderTexture containing the source image." langCode="ja" />
+            <description text="A RenderTexture containing the source image." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEngine.RenderTexture" array="False" name="destination">
+          <descriptions>
+            <description text="The RenderTexture to update with the modified image." langCode="iv" />
+            <description text="The RenderTexture to update with the modified image." langCode="zh" />
+            <description text="The RenderTexture to update with the modified image." langCode="ja" />
+            <description text="The RenderTexture to update with the modified image." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -519,7 +652,14 @@
         <description text="OnCollisionEnter is called when this collider/rigidbody has begun touching another rigidbody/collider." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collision" array="False" name="collision" description="The Collision data associated with this collision event." />
+        <parameter type="UnityEngine.Collision" array="False" name="other">
+          <descriptions>
+            <description text="The Collision data associated with this collision event." langCode="iv" />
+            <description text="与该碰撞事件关联的 Collision 数据。" langCode="zh" />
+            <description text="衝突イベントと関連する Collision データ" langCode="ja" />
+            <description text="The Collision data associated with this collision event." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -531,7 +671,14 @@
         <description text="OnCollisionExit is called when this collider/rigidbody has stopped touching another rigidbody/collider." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collision" array="False" name="collisionInfo" description="The Collision data associated with this collision event." />
+        <parameter type="UnityEngine.Collision" array="False" name="other">
+          <descriptions>
+            <description text="The Collision data associated with this collision event." langCode="iv" />
+            <description text="与该碰撞事件关联的 Collision 数据。" langCode="zh" />
+            <description text="衝突イベントと関連する Collision データ" langCode="ja" />
+            <description text="The Collision data associated with this collision event." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -543,7 +690,14 @@
         <description text="OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collision" array="False" name="collisionInfo" description="The Collision data associated with this collision event." />
+        <parameter type="UnityEngine.Collision" array="False" name="other">
+          <descriptions>
+            <description text="The Collision data associated with this collision event." langCode="iv" />
+            <description text="与该碰撞事件关联的 Collision 数据。" langCode="zh" />
+            <description text="衝突イベントと関連する Collision データ" langCode="ja" />
+            <description text="The Collision data associated with this collision event." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -555,7 +709,14 @@
         <description text="When a GameObject collides with another GameObject, Unity calls OnTriggerEnter." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collider" array="False" name="other" description="The other Collider involved in this collision." />
+        <parameter type="UnityEngine.Collider" array="False" name="other">
+          <descriptions>
+            <description text="The other Collider involved in this collision." langCode="iv" />
+            <description text="该碰撞中涉及的其他 Collider。" langCode="zh" />
+            <description text="この衝突に含まれるその他の Collider" langCode="ja" />
+            <description text="The other Collider involved in this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -567,7 +728,14 @@
         <description text="OnTriggerExit is called when the Collider other has stopped touching the trigger." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collider" array="False" name="other" description="The other Collider involved in this collision." />
+        <parameter type="UnityEngine.Collider" array="False" name="other">
+          <descriptions>
+            <description text="The other Collider involved in this collision." langCode="iv" />
+            <description text="该碰撞中涉及的其他 Collider。" langCode="zh" />
+            <description text="この衝突に含まれるその他の Collider" langCode="ja" />
+            <description text="The other Collider involved in this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -579,7 +747,14 @@
         <description text="OnTriggerStay is called almost all the frames for every Collider other that is touching the trigger. The function is on the physics timer so it won't necessarily run every frame." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collider" array="False" name="other" description="The other Collider involved in this collision." />
+        <parameter type="UnityEngine.Collider" array="False" name="other">
+          <descriptions>
+            <description text="The other Collider involved in this collision." langCode="iv" />
+            <description text="该碰撞中涉及的其他 Collider。" langCode="zh" />
+            <description text="この衝突に含まれるその他の Collider" langCode="ja" />
+            <description text="The other Collider involved in this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -593,7 +768,14 @@
         <description text="Sent when an incoming collider makes contact with this object's collider (2D physics only)." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collision2D" array="False" name="collision" description="The Collision2D data associated with this collision." />
+        <parameter type="UnityEngine.Collision2D" array="False" name="other">
+          <descriptions>
+            <description text="The Collision2D data associated with this collision." langCode="iv" />
+            <description text="与该碰撞关联的 Collision2D 数据。" langCode="zh" />
+            <description text="この衝突に関係のある Collision2D データ" langCode="ja" />
+            <description text="The Collision2D data associated with this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -605,7 +787,14 @@
         <description text="Sent when a collider on another object stops touching this object's collider (2D physics only)." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collision2D" array="False" name="collision" description="The Collision2D data associated with this collision." />
+        <parameter type="UnityEngine.Collision2D" array="False" name="other">
+          <descriptions>
+            <description text="The Collision2D data associated with this collision." langCode="iv" />
+            <description text="与该碰撞关联的 Collision2D 数据。" langCode="zh" />
+            <description text="この衝突に関係のある Collision2D データ" langCode="ja" />
+            <description text="The Collision2D data associated with this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -617,7 +806,14 @@
         <description text="Sent each frame where a collider on another object is touching this object's collider (2D physics only)." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collision2D" array="False" name="collision" description="The Collision2D data associated with this collision." />
+        <parameter type="UnityEngine.Collision2D" array="False" name="other">
+          <descriptions>
+            <description text="The Collision2D data associated with this collision." langCode="iv" />
+            <description text="与该碰撞关联的 Collision2D 数据。" langCode="zh" />
+            <description text="この衝突に関係のある Collision2D データ" langCode="ja" />
+            <description text="The Collision2D data associated with this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -629,7 +825,14 @@
         <description text="Sent when another object enters a trigger collider attached to this object (2D physics only)." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collider2D" array="False" name="col" description="The other Collider2D involved in this collision." />
+        <parameter type="UnityEngine.Collider2D" array="False" name="other">
+          <descriptions>
+            <description text="The other Collider2D involved in this collision." langCode="iv" />
+            <description text="该碰撞中涉及的其他 Collider2D。" langCode="zh" />
+            <description text="The other Collider2D involved in this collision." langCode="ja" />
+            <description text="The other Collider2D involved in this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -641,7 +844,14 @@
         <description text="Sent when another object leaves a trigger collider attached to this object (2D physics only)." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collider2D" array="False" name="other" description="The other Collider2D involved in this collision." />
+        <parameter type="UnityEngine.Collider2D" array="False" name="other">
+          <descriptions>
+            <description text="The other Collider2D involved in this collision." langCode="iv" />
+            <description text="该碰撞中涉及的其他 Collider2D。" langCode="zh" />
+            <description text="他の Collider2D がこの衝突に関係しているか。" langCode="ja" />
+            <description text="The other Collider2D involved in this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -653,7 +863,14 @@
         <description text="Sent each frame where another object is within a trigger collider attached to this object (2D physics only)." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collider2D" array="False" name="collider" description="The other Collider2D involved in this collision." />
+        <parameter type="UnityEngine.Collider2D" array="False" name="other">
+          <descriptions>
+            <description text="The other Collider2D involved in this collision." langCode="iv" />
+            <description text="该碰撞中涉及的其他 Collider2D。" langCode="zh" />
+            <description text="他の Collider2D がこの衝突に関係しているか。" langCode="ja" />
+            <description text="The other Collider2D involved in this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -703,8 +920,16 @@
         <description text="Called for each object dragged onto the scene view" langCode="iv" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEditor.SceneView" array="False" name="sceneView" description="The current scene view" />
-        <parameter type="System.Int32" array="False" name="index" description="The index into the DragAndDrop.objectReferences array" />
+        <parameter type="UnityEditor.SceneView" array="False" name="sceneView">
+          <descriptions>
+            <description text="The current scene view" langCode="iv" />
+          </descriptions>
+        </parameter>
+        <parameter type="System.Int32" array="False" name="index">
+          <descriptions>
+            <description text="The index into the DragAndDrop.objectReferences array" langCode="iv" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -862,7 +1087,11 @@
         <description text="Allow Editor panes to show a small button next to the generic menu (e.g. inspector lock icon)" langCode="iv" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Rect" array="False" name="rect" description="Position to draw the button" />
+        <parameter type="UnityEngine.Rect" array="False" name="rect">
+          <descriptions>
+            <description text="Position to draw the button" langCode="iv" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -945,7 +1174,14 @@
         <description text="Callback for setting up animation IK (inverse kinematics)." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="System.Int32" array="False" name="layerIndex" description="The index of the layer on which the IK solver is called." />
+        <parameter type="System.Int32" array="False" name="layerIndex">
+          <descriptions>
+            <description text="The index of the layer on which the IK solver is called." langCode="iv" />
+            <description text="调用反向动力学解算器的层的索引。" langCode="zh" />
+            <description text="IK ソルバーが呼び出されたレイヤーのインデックス" langCode="ja" />
+            <description text="The index of the layer on which the IK solver is called." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -966,7 +1202,14 @@
         <description text="Sent to all GameObjects when the player gets or loses focus." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="System.Boolean" array="False" name="hasFocus" description="True if the GameObjects have focus, else False." />
+        <parameter type="System.Boolean" array="False" name="hasFocus">
+          <descriptions>
+            <description text="True if the GameObjects have focus, else False." langCode="iv" />
+            <description text="如果 GameObject 具有焦点，则为 true，否则为 false。" langCode="zh" />
+            <description text="ゲームオブジェクトにフォーカスがあるときは true、そうでなければ false。" langCode="ja" />
+            <description text="True if the GameObjects have focus, else False." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -978,7 +1221,14 @@
         <description text="Sent to all GameObjects when the application pauses." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="System.Boolean" array="False" name="pauseStatus" description="True if the application is paused, else False." />
+        <parameter type="System.Boolean" array="False" name="pauseStatus">
+          <descriptions>
+            <description text="True if the application is paused, else False." langCode="iv" />
+            <description text="如果应用程序暂停，则为 true，否则为 false。" langCode="zh" />
+            <description text="アプリケーションが起動していれば true、そうでなければ false。" langCode="ja" />
+            <description text="True if the application is paused, else False." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -999,8 +1249,22 @@
         <description text="If OnAudioFilterRead is implemented, Unity will insert a custom filter into the audio DSP chain." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="System.Single" array="True" name="data" description="An array of floats comprising the audio data." />
-        <parameter type="System.Int32" array="False" name="channels" description="An int that stores the number of channels of audio data passed to this delegate." />
+        <parameter type="System.Single" array="True" name="data">
+          <descriptions>
+            <description text="An array of floats comprising the audio data." langCode="iv" />
+            <description text="一个包含音频数据的浮点值数组。" langCode="zh" />
+            <description text="オーディオデータを持つ float 配列" langCode="ja" />
+            <description text="An array of floats comprising the audio data." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="System.Int32" array="False" name="channels">
+          <descriptions>
+            <description text="An int that stores the number of channels of audio data passed to this delegate." langCode="iv" />
+            <description text="一个 int，用于存储传递给该委托的音频数据的声道数。" langCode="zh" />
+            <description text="デリゲートに渡されたオーディオデータのチャネルの数を格納する int" langCode="ja" />
+            <description text="An int that stores the number of channels of audio data passed to this delegate." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1030,7 +1294,14 @@
         <description text="OnCollisionEnter is called when this collider/rigidbody has begun touching another rigidbody/collider." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collision" array="False" name="collision" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision data associated with this collision." />
+        <parameter type="UnityEngine.Collision" array="False" name="other" optional="True" justification="Removing collision parameter avoids unnecessary calculations">
+          <descriptions>
+            <description text="The Collision data associated with this collision." langCode="iv" />
+            <description text="与该碰撞关联的 Collision 数据。" langCode="zh" />
+            <description text="The Collision data associated with this collision." langCode="ja" />
+            <description text="The Collision data associated with this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1042,7 +1313,14 @@
         <description text="Sent when an incoming collider makes contact with this object's collider (2D physics only)." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collision2D" array="False" name="col" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision2D data associated with this collision." />
+        <parameter type="UnityEngine.Collision2D" array="False" name="other" optional="True" justification="Removing collision parameter avoids unnecessary calculations">
+          <descriptions>
+            <description text="The Collision2D data associated with this collision." langCode="iv" />
+            <description text="与该碰撞关联的 Collision2D 数据。" langCode="zh" />
+            <description text="この衝突に関係のある Collision2D データ" langCode="ja" />
+            <description text="The Collision2D data associated with this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1054,7 +1332,14 @@
         <description text="OnCollisionExit is called when this collider/rigidbody has stopped touching another rigidbody/collider." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collision" array="False" name="other" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision data associated with this collision." />
+        <parameter type="UnityEngine.Collision" array="False" name="other" optional="True" justification="Removing collision parameter avoids unnecessary calculations">
+          <descriptions>
+            <description text="The Collision data associated with this collision." langCode="iv" />
+            <description text="与该碰撞关联的碰撞数据。" langCode="zh" />
+            <description text="衝突と関連する Collision データ" langCode="ja" />
+            <description text="The Collision data associated with this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1066,7 +1351,14 @@
         <description text="Sent when a collider on another object stops touching this object's collider (2D physics only)." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collision2D" array="False" name="other" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision2D data associated with this collision." />
+        <parameter type="UnityEngine.Collision2D" array="False" name="other" optional="True" justification="Removing collision parameter avoids unnecessary calculations">
+          <descriptions>
+            <description text="The Collision2D data associated with this collision." langCode="iv" />
+            <description text="与该碰撞关联的 Collision2D 数据。" langCode="zh" />
+            <description text="この衝突に関係のある Collision2D データ" langCode="ja" />
+            <description text="The Collision2D data associated with this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1078,7 +1370,14 @@
         <description text="OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collision" array="False" name="collisionInfo" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision data associated with this collision." />
+        <parameter type="UnityEngine.Collision" array="False" name="other" optional="True" justification="Removing collision parameter avoids unnecessary calculations">
+          <descriptions>
+            <description text="The Collision data associated with this collision." langCode="iv" />
+            <description text="与该碰撞关联的碰撞数据。" langCode="zh" />
+            <description text="衝突と関連する Collision データ" langCode="ja" />
+            <description text="The Collision data associated with this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1090,7 +1389,14 @@
         <description text="Sent each frame where a collider on another object is touching this object's collider (2D physics only)." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collision2D" array="False" name="collision" optional="True" justification="Removing collision parameter avoids unnecessary calculations" description="The Collision2D data associated with this collision." />
+        <parameter type="UnityEngine.Collision2D" array="False" name="other" optional="True" justification="Removing collision parameter avoids unnecessary calculations">
+          <descriptions>
+            <description text="The Collision2D data associated with this collision." langCode="iv" />
+            <description text="与该碰撞关联的 Collision2D 数据。" langCode="zh" />
+            <description text="この衝突に関係のある Collision2D データ" langCode="ja" />
+            <description text="The Collision2D data associated with this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1384,8 +1690,22 @@
         <description text="Event function that Unity calls after a Camera has finished rendering, that allows you to modify the Camera's final image." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.RenderTexture" array="False" name="src" description="A RenderTexture containing the source image." />
-        <parameter type="UnityEngine.RenderTexture" array="False" name="dest" description="The RenderTexture to update with the modified image." />
+        <parameter type="UnityEngine.RenderTexture" array="False" name="source">
+          <descriptions>
+            <description text="A RenderTexture containing the source image." langCode="iv" />
+            <description text="A RenderTexture containing the source image." langCode="zh" />
+            <description text="A RenderTexture containing the source image." langCode="ja" />
+            <description text="A RenderTexture containing the source image." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEngine.RenderTexture" array="False" name="destination">
+          <descriptions>
+            <description text="The RenderTexture to update with the modified image." langCode="iv" />
+            <description text="The RenderTexture to update with the modified image." langCode="zh" />
+            <description text="The RenderTexture to update with the modified image." langCode="ja" />
+            <description text="The RenderTexture to update with the modified image." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1440,7 +1760,14 @@
         <description text="When a GameObject collides with another GameObject, Unity calls OnTriggerEnter." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collider" array="False" name="other" description="A Collider involved in this collision." />
+        <parameter type="UnityEngine.Collider" array="False" name="other">
+          <descriptions>
+            <description text="A Collider involved in this collision." langCode="iv" />
+            <description text="该碰撞中涉及 Collider。" langCode="zh" />
+            <description text="A Collider involved in this collision." langCode="ja" />
+            <description text="A Collider involved in this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1452,7 +1779,14 @@
         <description text="Sent when another object enters a trigger collider attached to this object (2D physics only)." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collider2D" array="False" name="col" description="The other Collider2D involved in this collision." />
+        <parameter type="UnityEngine.Collider2D" array="False" name="other">
+          <descriptions>
+            <description text="The other Collider2D involved in this collision." langCode="iv" />
+            <description text="该碰撞中涉及的其他 Collider2D。" langCode="zh" />
+            <description text="他の Collider2D がこの衝突に関係しているか。" langCode="ja" />
+            <description text="The other Collider2D involved in this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1464,7 +1798,14 @@
         <description text="OnTriggerExit is called when the Collider other has stopped touching the trigger." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collider" array="False" name="other" description="The other Collider involved in this collision." />
+        <parameter type="UnityEngine.Collider" array="False" name="other">
+          <descriptions>
+            <description text="The other Collider involved in this collision." langCode="iv" />
+            <description text="该碰撞中涉及的其他 Collider。" langCode="zh" />
+            <description text="この衝突に含まれるその他の Collider" langCode="ja" />
+            <description text="The other Collider involved in this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1476,7 +1817,14 @@
         <description text="Sent when another object leaves a trigger collider attached to this object (2D physics only)." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collider2D" array="False" name="other" description="The other Collider2D involved in this collision." />
+        <parameter type="UnityEngine.Collider2D" array="False" name="other">
+          <descriptions>
+            <description text="The other Collider2D involved in this collision." langCode="iv" />
+            <description text="该碰撞中涉及的其他 Collider2D。" langCode="zh" />
+            <description text="他の Collider2D がこの衝突に関係しているか。" langCode="ja" />
+            <description text="The other Collider2D involved in this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1488,7 +1836,14 @@
         <description text="OnTriggerStay is called once per physics update for every Collider other that is touching the trigger." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collider" array="False" name="other" description="The other Collider involved in this collision." />
+        <parameter type="UnityEngine.Collider" array="False" name="other">
+          <descriptions>
+            <description text="The other Collider involved in this collision." langCode="iv" />
+            <description text="该碰撞中涉及的其他 Collider。" langCode="zh" />
+            <description text="この衝突に含まれるその他の Collider" langCode="ja" />
+            <description text="The other Collider involved in this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1500,7 +1855,14 @@
         <description text="Sent each frame where another object is within a trigger collider attached to this object (2D physics only)." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="UnityEngine.Collider2D" array="False" name="other" description="The other Collider2D involved in this collision." />
+        <parameter type="UnityEngine.Collider2D" array="False" name="other">
+          <descriptions>
+            <description text="The other Collider2D involved in this collision." langCode="iv" />
+            <description text="该碰撞中涉及的其他 Collider2D。" langCode="zh" />
+            <description text="他の Collider2D がこの衝突に関係しているか。" langCode="ja" />
+            <description text="The other Collider2D involved in this collision." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1616,7 +1978,7 @@
     </message>
     <message name="OnSetPlayState" static="False" minimumVersion="5.4" path="Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetPlayState.html">
       <parameters>
-        <parameter type="UnityEngine.Experimental.Director.PlayState" array="False" name="newState" description="New PlayState" />
+        <parameter type="UnityEngine.Experimental.Director.PlayState" array="False" name="newState" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1625,7 +1987,7 @@
     </message>
     <message name="OnSetTime" static="False" minimumVersion="5.4" path="Documentation/en/ScriptReference/Experimental.Director.Playable.OnSetTime.html">
       <parameters>
-        <parameter type="System.Single" array="False" name="localTime" description="New local time" />
+        <parameter type="System.Single" array="False" name="localTime" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1634,7 +1996,7 @@
     </message>
     <message name="PrepareFrame" static="False" minimumVersion="5.4" path="Documentation/en/ScriptReference/Experimental.Director.Playable.PrepareFrame.html">
       <parameters>
-        <parameter type="UnityEngine.Experimental.Director.FrameData" array="False" name="info" description="Data for the current frame." />
+        <parameter type="UnityEngine.Experimental.Director.FrameData" array="False" name="info" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -1811,7 +2173,14 @@
         <description text="A static callback that you can implement to set up artifact dependencies to other Assets, and optimize the order your assets are imported." langCode="ko" />
       </descriptions>
       <parameters>
-        <parameter type="System.String" array="False" name="path" description="The path of the asset currently being processed by this method." />
+        <parameter type="System.String" array="False" name="path">
+          <descriptions>
+            <description text="The path of the asset currently being processed by this method." langCode="iv" />
+            <description text="The path of the asset currently being processed by this method." langCode="zh" />
+            <description text="The path of the asset currently being processed by this method." langCode="ja" />
+            <description text="The path of the asset currently being processed by this method." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.String" array="True" />
     </message>

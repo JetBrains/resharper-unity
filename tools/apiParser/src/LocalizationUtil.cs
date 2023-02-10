@@ -51,6 +51,26 @@ namespace ApiParser
 
             throw new Exception($"Unexpected lang code {langCode}");
         }
+
+        public static string GetParametersDivTextByLangCode(RiderSupportedLanguages langCode)
+        {
+            if (langCode == RiderSupportedLanguages.iv)
+                return "Parameters";
+            else if (langCode == RiderSupportedLanguages.ja)
+            {
+                return "パラメーター";
+            }
+            else if (langCode == RiderSupportedLanguages.ko)
+            {
+                return "파라미터";
+            }
+            else if (langCode == RiderSupportedLanguages.zh)
+            {
+                return "参数";
+            }
+            
+            throw new Exception($"Unexpected lang code {langCode}");
+        }
     }
 
     public enum UnityLanguages

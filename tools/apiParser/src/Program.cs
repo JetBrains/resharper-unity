@@ -203,9 +203,9 @@ namespace ApiParser
                 {
                     function.SetIsStatic();
                     function.SetReturnType(ApiType.Bool);
-                    var newParameter = new UnityApiParameter("assetPath", ApiType.String, string.Empty);
+                    var newParameter = new UnityApiParameter("assetPath", ApiType.String);
                     function.UpdateParameterIfExists("arg1", newParameter);
-                    newParameter = new UnityApiParameter("message", ApiType.StringByRef, string.Empty);
+                    newParameter = new UnityApiParameter("message", ApiType.StringByRef);
                     function.UpdateParameterIfExists("arg2", newParameter);
                 }
 
@@ -213,9 +213,9 @@ namespace ApiParser
                 {
                     function.SetIsStatic();
                     function.SetReturnType(typeResolver.CreateApiType("UnityEditor.AssetDeleteResult"));
-                    var newParameter = new UnityApiParameter("assetPath", ApiType.String, string.Empty);
+                    var newParameter = new UnityApiParameter("assetPath", ApiType.String);
                     function.UpdateParameterIfExists("arg1", newParameter);
-                    newParameter = new UnityApiParameter("options", new ApiType("UnityEditor.RemoveAssetOptions"), string.Empty);
+                    newParameter = new UnityApiParameter("options", new ApiType("UnityEditor.RemoveAssetOptions"));
                     function.UpdateParameterIfExists("arg2", newParameter);
                 }
 
@@ -223,9 +223,9 @@ namespace ApiParser
                 {
                     function.SetIsStatic();
                     function.SetReturnType(typeResolver.CreateApiType("UnityEditor.AssetMoveResult"));
-                    var newParameter = new UnityApiParameter("sourcePath", ApiType.String, string.Empty);
+                    var newParameter = new UnityApiParameter("sourcePath", ApiType.String);
                     function.UpdateParameterIfExists("arg1", newParameter);
-                    newParameter = new UnityApiParameter("destinationPath", ApiType.String, string.Empty);
+                    newParameter = new UnityApiParameter("destinationPath", ApiType.String);
                     function.UpdateParameterIfExists("arg2", newParameter);
                 }
             }
@@ -399,8 +399,8 @@ namespace ApiParser
                 eventFunction = new UnityApiEventFunction("OnSceneDrag", false, false, ApiType.Void, apiVersion,
                     undocumented: true);
                 eventFunction.AddDescription("Called for each object dragged onto the scene view", RiderSupportedLanguages.iv);
-                eventFunction.AddParameter("sceneView", new ApiType("UnityEditor.SceneView"), "The current scene view");
-                eventFunction.AddParameter("index", ApiType.Int, "The index into the DragAndDrop.objectReferences array");
+                eventFunction.AddParameter("sceneView", new ApiType("UnityEditor.SceneView"), new KeyValuePair<RiderSupportedLanguages, string>(RiderSupportedLanguages.iv, "The current scene view"));
+                eventFunction.AddParameter("index", ApiType.Int, new KeyValuePair<RiderSupportedLanguages, string>(RiderSupportedLanguages.iv, "The index into the DragAndDrop.objectReferences array"));
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 if (apiVersion < new Version(2020, 2))
@@ -443,7 +443,7 @@ namespace ApiParser
                 eventFunction = new UnityApiEventFunction("ShowButton", false, false, ApiType.Void, apiVersion,
                     undocumented: true);
                 eventFunction.AddDescription("Allow Editor panes to show a small button next to the generic menu (e.g. inspector lock icon)", RiderSupportedLanguages.iv);
-                eventFunction.AddParameter("rect", new ApiType("UnityEngine.Rect"), "Position to draw the button");
+                eventFunction.AddParameter("rect", new ApiType("UnityEngine.Rect"), new KeyValuePair<RiderSupportedLanguages, string>(RiderSupportedLanguages.iv, "Position to draw the button"));
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 // EditorWindow.OnBecameVisible has been around since at least 2017.1. Still undocumented as of 2020.2

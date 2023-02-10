@@ -277,9 +277,15 @@ namespace ApiParser
             myDescriptions.Add(langCode, text);
         }
         
-        public void AddParameter(string name, ApiType type, string description = null)
+        public void AddParameter(string name, ApiType type, KeyValuePair<RiderSupportedLanguages, string>? description = null)
         {
             var parameter = new UnityApiParameter(name, type, description);
+            myParameters.Add(parameter);
+        }
+        
+        public void AddParameter(string name, ApiType type, UnityApiDescriptions descriptions)
+        {
+            var parameter = new UnityApiParameter(name, type, descriptions);
             myParameters.Add(parameter);
         }
 
@@ -406,14 +412,11 @@ namespace ApiParser
         }
     }
 
-    public class UnityApiDescriptions
+    public class UnityApiDescriptions : Dictionary<RiderSupportedLanguages, string>
     {
-        private readonly Dictionary<RiderSupportedLanguages, string> descriptions =
-            new Dictionary<RiderSupportedLanguages, string>();
-        
-        public void ExportTo(XmlTextWriter xmlWriter)
+        private void ExportTo(XmlTextWriter xmlWriter)
         {
-            foreach (var description in descriptions)
+            foreach (var description in this)
             {
                 xmlWriter.WriteStartElement("description");
                 xmlWriter.WriteAttributeString("text", description.Value);
@@ -426,8 +429,8 @@ namespace ApiParser
         {
             foreach (var description in xElements)
             {
-                var t = UnityApiDescriptions.ImportFrom(description);
-                descriptions[t.Key] = t.Value;
+                var t = ImportFrom(description);
+                this[t.Key] = t.Value;
             }
         }
     
@@ -443,39 +446,59 @@ namespace ApiParser
     
         public void Update(UnityApiDescriptions newDescriptions)
         {
-                foreach (var newDesc in newDescriptions.descriptions)
+                foreach (var newDesc in newDescriptions)
                 {
                     if (!string.IsNullOrEmpty(newDesc.Value)) 
-                        descriptions[newDesc.Key] = newDesc.Value;
+                        this[newDesc.Key] = newDesc.Value;
                 }
         }
         
         public void Add(RiderSupportedLanguages key, string value)
         {
-            descriptions[key] = value;
+            this[key] = value;
         }
 
         public void WriteDescriptions(XmlTextWriter xmlWriter)
         {
-            if (!descriptions.Any())
+            if (!this.Any())
                 return;
 
             xmlWriter.WriteStartElement("descriptions");
             ExportTo(xmlWriter);
             xmlWriter.WriteEndElement();
         }
+
+        public string GetByLangCode(RiderSupportedLanguages langCode)
+        {
+            return this[langCode];
+        }
     }
 
     public class UnityApiParameter
     {
-        private string myDescription;
+        private readonly UnityApiDescriptions myDescriptions;
         private string myJustification;
 
-        public UnityApiParameter(string name, ApiType type, string description)
+        public UnityApiParameter(string name, ApiType type, KeyValuePair<RiderSupportedLanguages, string>? description = null)
         {
             Name = name;
             Type = type;
-            myDescription = description;
+            myDescriptions = new UnityApiDescriptions();
+            if (description != null)
+                myDescriptions.Add(description.Value.Key, description.Value.Value);
+            myJustification = string.Empty;
+        }
+        
+        public UnityApiParameter(string name, ApiType type, UnityApiDescriptions descriptions)
+        {
+            Name = name;
+            Type = type;
+            myDescriptions = new UnityApiDescriptions();
+            foreach (var description in descriptions)
+            {
+                myDescriptions.Add(description.Key, description.Value);
+            }
+                
             myJustification = string.Empty;
         }
 
@@ -500,8 +523,7 @@ namespace ApiParser
                 xmlWriter.WriteAttributeString("optional", "True");
                 xmlWriter.WriteAttributeString("justification", myJustification);
             }
-            if (!string.IsNullOrEmpty(myDescription))
-                xmlWriter.WriteAttributeString("description", myDescription);
+            myDescriptions.WriteDescriptions(xmlWriter);
             xmlWriter.WriteEndElement();
         }
 
@@ -515,19 +537,12 @@ namespace ApiParser
             var name = parameter.Attribute("name").Value;
             var justification = parameter.Attribute("justification")?.Value;
             var isOptional = justification != null && bool.Parse(parameter.Attribute("optional").Value);
-            var description = parameter.Attribute("description")?.Value;
             var apiType = new ApiType(typeName + (isArray ? "[]" : string.Empty) + (isByRef ? "&" : string.Empty));
-            var p = new UnityApiParameter(name, apiType, description);
+            var p = new UnityApiParameter(name, apiType);
+            p.myDescriptions.ImportFrom(parameter.Descendants("description"));
             if (isOptional)
                 p.SetOptional(justification);
             return p;
-        }
-
-        public bool IsEquivalent(UnityApiParameter other)
-        {
-            if (myDescription != other.myDescription && !string.IsNullOrEmpty(other.myDescription))
-                return false;
-            return Equals(Type, other.Type);
         }
 
         public void Update(UnityApiParameter newParameter, string functionName)
@@ -538,11 +553,8 @@ namespace ApiParser
             {
                 Name = newParameter.Name;
             }
-
-            if (myDescription != newParameter.myDescription && !string.IsNullOrEmpty(newParameter.myDescription))
-            {
-                myDescription = newParameter.myDescription;
-            }
+            
+            myDescriptions.Update(newParameter.myDescriptions);
 
             if (Type.FullName != newParameter.Type.FullName)
                 throw new InvalidOperationException($"Parameter type differences for parameter {Name} of {functionName}! {Type.FullName} != {newParameter.Type.FullName}");
