@@ -14,6 +14,7 @@ using JetBrains.Rd.Impl;
 using JetBrains.Rd.Tasks;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Model.Unity.BackendUnity;
+using JetBrains.Rider.Unity.Editor.FindUsages;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Rider.Unity.Editor.Utils;
 using UnityEditor;
@@ -174,6 +175,10 @@ namespace JetBrains.Rider.Unity.Editor
           AdviseOnRunMethod(model);
           AdviseOnStartProfiling(model);
           AdviseLoggingStateChangeTimes(connectionLifetime, model);
+
+#if UNITY_5_6_OR_NEWER
+          FindUsagesModelHelper.Advise(connectionLifetime, model);
+#endif
 
 #if UNITY_2019_2_OR_NEWER
           PackageManagerModelHelper.Advise(connectionLifetime, model);
@@ -594,3 +599,7 @@ namespace JetBrains.Rider.Unity.Editor
     }
   }
 }
+
+// Empty namespace to avoid #if for Unity 4.7
+// ReSharper disable once EmptyNamespace
+namespace JetBrains.Rider.Unity.Editor.FindUsages {}

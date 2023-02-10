@@ -2,6 +2,7 @@ using System;
 using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
+using JetBrains.Rider.Unity.Editor.FindUsages;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56
@@ -34,7 +35,6 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
       UnityEditorProtocol.Models.View(lifetimeDefinition.Lifetime, (modelLifetime, _, model) =>
       {
         Initialization.Advise(modelLifetime, model);
-        FindUsages.Initialization.Advise(modelLifetime, model);
       });
     }
   }
