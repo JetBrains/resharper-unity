@@ -9,11 +9,11 @@ using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Tests.Unity
+namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
 {
     public static class UnityPackageCookie
     {
-        public static IDisposable RunUnityPacakageCookie(ISolution solution, string packageName)
+        public static IDisposable RunUnityPackageCookie(ISolution solution, string packageName)
         {
             var unityPackageManagerMock = solution.GetComponent<UnityPackageManagerMock>();
             unityPackageManagerMock.RegisterPackage(packageName);

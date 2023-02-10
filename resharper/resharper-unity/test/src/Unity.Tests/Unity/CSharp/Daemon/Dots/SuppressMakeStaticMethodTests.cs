@@ -1,10 +1,11 @@
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
+using JetBrains.ReSharper.Plugins.Tests.UnityTestComponents;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Color
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Dots
 {
     [TestUnity]
     public class SuppressMakeStaticMethodTests : CSharpHighlightingTestBase
@@ -16,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Color
 
         protected override void DoTest(Lifetime lifetime, IProject project)
         {
-            using (UnityPackageCookie.RunUnityPacakageCookie(Solution, PackageManager.UnityEntitiesPackageName))
+            using (UnityPackageCookie.RunUnityPackageCookie(Solution, PackageManager.UnityEntitiesPackageName))
                 base.DoTest(lifetime, project);
         }
     }

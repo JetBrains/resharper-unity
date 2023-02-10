@@ -1,44 +1,50 @@
-using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
+using JetBrains.ReSharper.Feature.Services.CSharp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CSharp;
-using JetBrains.ReSharper.Psi.Files;
-using JetBrains.Util;
+using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Dots
 {
     [DaemonStage(StagesBefore = new[] { typeof(CollectUsagesStage) }, StagesAfter = new[] { typeof(CSharpErrorStage) })]
-    public class DotsFilesStage : IDaemonStage
+    public class DotsFilesStage : CSharpDaemonStageBase
     {
-        public IEnumerable<IDaemonStageProcess> CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings, DaemonProcessKind processKind)
+        protected override bool IsSupported(IPsiSourceFile sourceFile)
         {
-            var solution = process.Solution;
-            if (!solution.HasUnityReference())
-                return EmptyArray<IDaemonStageProcess>.Instance;
+            if (sourceFile == null)
+                return false;
+            
+            var solution = sourceFile.GetSolution();
 
-            var projectFile = process.SourceFile.ToProjectFile();
+            if (!solution.HasUnityReference())
+                return false;
+
+            var projectFile = sourceFile.ToProjectFile();
             var project = projectFile?.GetProject();
             if (project != null && !project.IsUnityProject())
-                return EmptyArray<IDaemonStageProcess>.Instance;
+                return false;
 
             var packageManager = solution.GetComponent<PackageManager>();
             if (!packageManager.HasPackage(PackageManager.UnityEntitiesPackageName))
-                return EmptyArray<IDaemonStageProcess>.Instance;
+                return false;
+            
+            return base.IsSupported(sourceFile);
+        }
 
+        protected override IDaemonStageProcess CreateProcess(IDaemonProcess process,
+            IContextBoundSettingsStore settings,
+            DaemonProcessKind processKind, ICSharpFile file)
+        {
             var typeUsageProcess = process.GetStageProcess<CollectUsagesStageProcess>();
             if (typeUsageProcess == null)
-                return EmptyArray<IDaemonStageProcess>.Instance;
+                return null;
 
-            return process.SourceFile.GetPsiFiles<CSharpLanguage>()
-                .Select(file => new DotsFilesStageProcess(typeUsageProcess, process, file));
+            return new DotsFilesStageProcess(typeUsageProcess, process, file);
         }
     }
 }
