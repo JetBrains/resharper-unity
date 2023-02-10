@@ -55,7 +55,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       // If any protocol connection is lost, we will drop all connections and recreate them
       var allProtocolsLifetimeDefinition = lifetime.CreateNested();
-      foreach (var solutionName in solutionNames)
+      foreach (var solutionName in GetSolutionNames())
       {
         var port = CreateProtocolForSolution(allProtocolsLifetimeDefinition.Lifetime, solutionName,
           () => allProtocolsLifetimeDefinition.Terminate());
@@ -93,6 +93,23 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
+    private static List<string> GetSolutionNames()
+    {
+      // Get a list of all the solutions in the Unity project. We'll have at least the generated solution, but there
+      // might be others, e.g. class libraries. We'll create a protocol connection for all such solutions
+      var currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
+      var solutionNames = new List<string> { currentDirectory.Name };
+
+      var solutionFiles = currentDirectory.GetFiles("*.sln", SearchOption.TopDirectoryOnly);
+      foreach (var solutionFile in solutionFiles)
+      {
+        var solutionName = Path.GetFileNameWithoutExtension(solutionFile.FullName);
+        if (!solutionName.Equals(currentDirectory.Name)) solutionNames.Add(solutionName);
+      }
+
+      return solutionNames;
+    }
+
     private static int CreateProtocolForSolution(Lifetime lifetime, string solutionName, Action onDisconnected)
     {
       ourLogger.Verbose($"Initialising protocol for {solutionName}");
@@ -108,46 +125,36 @@ namespace JetBrains.Rider.Unity.Editor
         var identities = new Identities(IdKind.Server);
 
         MainThreadDispatcher.AssertThread();
-        var protocol = new Protocol("UnityEditorPlugin" + solutionName, serializers, identities, MainThreadDispatcher.Instance, riderProtocolController.Wire, currentWireAndProtocolLifetime);
+        var protocol = new Protocol("UnityEditorPlugin" + solutionName, serializers, identities,
+          MainThreadDispatcher.Instance, riderProtocolController.Wire, currentWireAndProtocolLifetime);
         riderProtocolController.Wire.Connected.WhenTrue(currentWireAndProtocolLifetime, connectionLifetime =>
         {
           ourLogger.Log(LoggingLevel.VERBOSE, "Create UnityModel and advise for new sessions...");
 
           var model = new BackendUnityModel(connectionLifetime, protocol);
 
-          AdviseUnityActions(model, connectionLifetime);
-          AdviseEditorState(model);
-          OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
-          AdviseRefresh(model);
-
-          var paths = GetLogPaths();
-          model.UnityApplicationData.SetValue(new UnityApplicationData(
-              EditorApplication.applicationPath,
-              EditorApplication.applicationContentsPath,
-              UnityUtils.UnityApplicationVersion,
-              paths[0], paths[1],
-              Process.GetCurrentProcess().Id));
-
-          model.UnityApplicationSettings.ScriptCompilationDuringPlay.Set(UnityUtils.SafeScriptCompilationDuringPlay);
-          model.UnityProjectSettings.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
-
+          SetApplicationData(model);
+          SetProjectSettings(model);
+          AdvisePlayControls(model, connectionLifetime);
+          AdviseOnGetEditorState(model);
+          AdviseOnRefresh(model);
           AdviseShowPreferences(model, connectionLifetime, ourLogger);
-          AdviseGenerateUISchema(model);
-          AdviseExitUnity(model);
-          GetBuildLocation(model);
-          AdviseRunMethod(model);
-          AdviseStartProfiling(model);
+          AdviseOnGenerateUIElementsSchema(model);
+          AdviseOnExitUnity(model);
+          AdviseOnRunMethod(model);
+          AdviseOnStartProfiling(model);
           AdviseLoggingStateChangeTimes(connectionLifetime, model);
+
+          OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
 
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
-          connectionLifetime.OnTermination(() => { Models.Remove(pair); });
-          Models.Add(pair);
+          Models.AddLifetimed(connectionLifetime, pair);
 
           connectionLifetime.OnTermination(() =>
           {
-              ourLogger.Verbose($"Connection lifetime is not alive for {solutionName}, destroying protocol");
-              onDisconnected();
+            ourLogger.Verbose($"Connection lifetime is not alive for {solutionName}, destroying protocol");
+            onDisconnected();
           });
         });
 
@@ -160,7 +167,86 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    private static void AdviseUnityActions(BackendUnityModel model, Lifetime connectionLifetime)
+    private static void SetApplicationData(BackendUnityModel model)
+    {
+      var paths = GetLogPaths();
+      model.UnityApplicationData.Value = new UnityApplicationData(
+        EditorApplication.applicationPath,
+        EditorApplication.applicationContentsPath,
+        UnityUtils.UnityApplicationVersion,
+        paths[0], paths[1],
+        Process.GetCurrentProcess().Id);
+
+      model.UnityApplicationSettings.ScriptCompilationDuringPlay.Value = UnityUtils.SafeScriptCompilationDuringPlay;
+    }
+
+    private static string[] GetLogPaths()
+    {
+      // https://docs.unity3d.com/Manual/LogFiles.html
+      //PlayerSettings.productName;
+      //PlayerSettings.companyName;
+      //~/Library/Logs/Unity/Editor.log
+      //C:\Users\username\AppData\Local\Unity\Editor\Editor.log
+      //~/.config/unity3d/Editor.log
+
+      var editorLogPath = string.Empty;
+      var playerLogPath = string.Empty;
+
+      switch (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily)
+      {
+        case OperatingSystemFamilyRider.Windows:
+        {
+          var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+          editorLogPath = Path.Combine(localAppData, @"Unity\Editor\Editor.log");
+          var userProfile = Environment.GetEnvironmentVariable("USERPROFILE");
+          if (!string.IsNullOrEmpty(userProfile))
+          {
+            playerLogPath = Path.Combine(
+              Path.Combine(Path.Combine(Path.Combine(userProfile, @"AppData\LocalLow"), PlayerSettings.companyName),
+                PlayerSettings.productName), "output_log.txt");
+          }
+
+          break;
+        }
+        case OperatingSystemFamilyRider.MacOSX:
+        {
+          var home = Environment.GetEnvironmentVariable("HOME");
+          if (!string.IsNullOrEmpty(home))
+          {
+            editorLogPath = Path.Combine(home, "Library/Logs/Unity/Editor.log");
+            playerLogPath = Path.Combine(home, "Library/Logs/Unity/Player.log");
+          }
+
+          break;
+        }
+        case OperatingSystemFamilyRider.Linux:
+        {
+          var home = Environment.GetEnvironmentVariable("HOME");
+          if (!string.IsNullOrEmpty(home))
+          {
+            editorLogPath = Path.Combine(home, ".config/unity3d/Editor.log");
+            playerLogPath = Path.Combine(home,
+              $".config/unity3d/{PlayerSettings.companyName}/{PlayerSettings.productName}/Player.log");
+          }
+
+          break;
+        }
+      }
+
+      return new[] { editorLogPath, playerLogPath };
+    }
+
+    private static void SetProjectSettings(BackendUnityModel model)
+    {
+      model.UnityProjectSettings.ScriptingRuntime.Value = UnityUtils.ScriptingRuntime;
+      var path = EditorUserBuildSettings.GetBuildLocation(EditorUserBuildSettings.selectedStandaloneTarget);
+      if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX)
+        path = Path.Combine(Path.Combine(Path.Combine(path, "Contents"), "MacOS"), PlayerSettings.productName);
+      if (!string.IsNullOrEmpty(path) && File.Exists(path))
+        model.UnityProjectSettings.BuildLocation.Value = path;
+    }
+
+    private static void AdvisePlayControls(BackendUnityModel model, Lifetime connectionLifetime)
     {
       var syncPlayState = new Action(() =>
       {
@@ -168,14 +254,16 @@ namespace JetBrains.Rider.Unity.Editor
         {
           var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
 
-          if (!model.PlayControls.Play.HasValue() || model.PlayControls.Play.HasValue() && model.PlayControls.Play.Value != isPlaying)
+          if (!model.PlayControls.Play.HasValue() ||
+              model.PlayControls.Play.HasValue() && model.PlayControls.Play.Value != isPlaying)
           {
             ourLogger.Verbose("Reporting play mode change to model: {0}", isPlaying);
             model.PlayControls.Play.SetValue(isPlaying);
           }
 
           var isPaused = EditorApplication.isPaused;
-          if (!model.PlayControls.Pause.HasValue() || model.PlayControls.Pause.HasValue() && model.PlayControls.Pause.Value != isPaused)
+          if (!model.PlayControls.Pause.HasValue() ||
+              model.PlayControls.Pause.HasValue() && model.PlayControls.Pause.Value != isPaused)
           {
             ourLogger.Verbose("Reporting pause mode change to model: {0}", isPaused);
             model.PlayControls.Pause.SetValue(isPaused);
@@ -207,17 +295,15 @@ namespace JetBrains.Rider.Unity.Editor
         });
       });
 
-      model.PlayControls.Step.Advise(connectionLifetime, x =>
-      {
-        MainThreadDispatcher.Instance.Queue(EditorApplication.Step);
-      });
+      model.PlayControls.Step.Advise(connectionLifetime,
+        _ => { MainThreadDispatcher.Instance.Queue(EditorApplication.Step); });
 
       PlayModeStateTracker.Current.Advise(connectionLifetime, _ => syncPlayState());
     }
 
-    private static void AdviseEditorState(BackendUnityModel modelValue)
+    private static void AdviseOnGetEditorState(BackendUnityModel modelValue)
     {
-      modelValue.GetUnityEditorState.Set(rdVoid =>
+      modelValue.GetUnityEditorState.Set(_ =>
       {
         if (EditorApplication.isPaused)
           return UnityEditorState.Pause;
@@ -232,11 +318,12 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
-    private static void AdviseRefresh(BackendUnityModel model)
+    private static void AdviseOnRefresh(BackendUnityModel model)
     {
-      model.Refresh.Set((l, force) =>
+      model.Refresh.Set((_, force) =>
       {
         var refreshTask = new RdTask<Unit>();
+
         void SendResult()
         {
           if (!EditorApplication.isCompiling)
@@ -296,122 +383,56 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
-    private static string[] GetLogPaths()
-    {
-      // https://docs.unity3d.com/Manual/LogFiles.html
-      //PlayerSettings.productName;
-      //PlayerSettings.companyName;
-      //~/Library/Logs/Unity/Editor.log
-      //C:\Users\username\AppData\Local\Unity\Editor\Editor.log
-      //~/.config/unity3d/Editor.log
-
-      var editorLogPath = string.Empty;
-      var playerLogPath = string.Empty;
-
-      switch (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily)
-      {
-        case OperatingSystemFamilyRider.Windows:
-        {
-          var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-          editorLogPath = Path.Combine(localAppData, @"Unity\Editor\Editor.log");
-          var userProfile = Environment.GetEnvironmentVariable("USERPROFILE");
-          if (!string.IsNullOrEmpty(userProfile))
-          {
-            playerLogPath = Path.Combine(
-              Path.Combine(Path.Combine(Path.Combine(userProfile, @"AppData\LocalLow"), PlayerSettings.companyName),
-                PlayerSettings.productName), "output_log.txt");
-          }
-
-          break;
-        }
-        case OperatingSystemFamilyRider.MacOSX:
-        {
-          var home = Environment.GetEnvironmentVariable("HOME");
-          if (!string.IsNullOrEmpty(home))
-          {
-            editorLogPath = Path.Combine(home, "Library/Logs/Unity/Editor.log");
-            playerLogPath = Path.Combine(home, "Library/Logs/Unity/Player.log");
-          }
-
-          break;
-        }
-        case OperatingSystemFamilyRider.Linux:
-        {
-          var home = Environment.GetEnvironmentVariable("HOME");
-          if (!string.IsNullOrEmpty(home))
-          {
-            editorLogPath = Path.Combine(home, ".config/unity3d/Editor.log");
-            playerLogPath = Path.Combine(home,
-              $".config/unity3d/{PlayerSettings.companyName}/{PlayerSettings.productName}/Player.log");
-          }
-
-          break;
-        }
-      }
-
-      return new[] { editorLogPath, playerLogPath };
-    }
-
     private static void AdviseShowPreferences(BackendUnityModel model, Lifetime connectionLifetime, ILog log)
     {
       model.ShowPreferences.Advise(connectionLifetime, result =>
       {
-        if (result != null)
+        if (result == null) return;
+        MainThreadDispatcher.Instance.Queue(() =>
         {
-          MainThreadDispatcher.Instance.Queue(() =>
+          try
           {
-            try
+            var tab = UnityUtils.UnityVersion >= new Version(2018, 2) ? "_General" : "Rider";
+
+            var type = typeof(SceneView).Assembly.GetType("UnityEditor.SettingsService");
+            if (type != null)
             {
-              var tab = UnityUtils.UnityVersion >= new Version(2018, 2) ? "_General" : "Rider";
+              // 2018+
+              var method = type.GetMethod("OpenUserPreferences", BindingFlags.Static | BindingFlags.Public);
 
-              var type = typeof(SceneView).Assembly.GetType("UnityEditor.SettingsService");
-              if (type != null)
-              {
-                // 2018+
-                var method = type.GetMethod("OpenUserPreferences", BindingFlags.Static | BindingFlags.Public);
-
-                if (method == null)
-                {
-                  log.Error("'OpenUserPreferences' was not found");
-                }
-                else
-                {
-                  method.Invoke(null, new object[] {$"Preferences/{tab}"});
-                }
-              }
+              if (method == null)
+                log.Error("'OpenUserPreferences' was not found");
               else
-              {
-                // 5.5, 2017 ...
-                type = typeof(SceneView).Assembly.GetType("UnityEditor.PreferencesWindow");
-                var method = type?.GetMethod("ShowPreferencesWindow", BindingFlags.Static | BindingFlags.NonPublic);
-
-                if (method == null)
-                {
-                  log.Error("'ShowPreferencesWindow' was not found");
-                }
-                else
-                {
-                  method.Invoke(null, null);
-                }
-              }
+                method.Invoke(null, new object[] { $"Preferences/{tab}" });
             }
-            catch (Exception ex)
+            else
             {
-              log.Error("Show preferences " + ex);
+              // 5.5, 2017 ...
+              type = typeof(SceneView).Assembly.GetType("UnityEditor.PreferencesWindow");
+              var method = type?.GetMethod("ShowPreferencesWindow", BindingFlags.Static | BindingFlags.NonPublic);
+
+              if (method == null)
+                log.Error("'ShowPreferencesWindow' was not found");
+              else
+                method.Invoke(null, null);
             }
-          });
-        }
+          }
+          catch (Exception ex)
+          {
+            log.Error("Show preferences " + ex);
+          }
+        });
       });
     }
 
-    private static void AdviseGenerateUISchema(BackendUnityModel model)
+    private static void AdviseOnGenerateUIElementsSchema(BackendUnityModel model)
     {
       model.GenerateUIElementsSchema.Set(_ => UIElementsSupport.GenerateSchema());
     }
 
-    private static void AdviseExitUnity(BackendUnityModel model)
+    private static void AdviseOnExitUnity(BackendUnityModel model)
     {
-      model.ExitUnity.Set((_, rdVoid) =>
+      model.ExitUnity.Set((_, __) =>
       {
         var task = new RdTask<bool>();
         MainThreadDispatcher.Instance.Queue(() =>
@@ -433,124 +454,116 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
-    private static void GetBuildLocation(BackendUnityModel model)
+    private static void AdviseOnRunMethod(BackendUnityModel model)
     {
-        var path = EditorUserBuildSettings.GetBuildLocation(EditorUserBuildSettings.selectedStandaloneTarget);
-        if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX)
-            path = Path.Combine(Path.Combine(Path.Combine(path, "Contents"), "MacOS"), PlayerSettings.productName);
-        if (!string.IsNullOrEmpty(path) && File.Exists(path))
-            model.UnityProjectSettings.BuildLocation.Value = path;
+      model.RunMethodInUnity.Set((lifetime, data) =>
+      {
+        var task = new RdTask<RunMethodResult>();
+        MainThreadDispatcher.Instance.Queue(() =>
+        {
+          if (!lifetime.IsAlive)
+          {
+            task.SetCancelled();
+            return;
+          }
+
+          try
+          {
+            ourLogger.Verbose($"Attempt to execute {data.MethodName}");
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var assembly = assemblies
+              .FirstOrDefault(a => a.GetName().Name.Equals(data.AssemblyName));
+            if (assembly == null)
+              throw new Exception($"Could not find {data.AssemblyName} assembly in current AppDomain");
+
+            var type = assembly.GetType(data.TypeName);
+            if (type == null)
+              throw new Exception($"Could not find {data.TypeName} in assembly {data.AssemblyName}.");
+
+            var method = type.GetMethod(data.MethodName,
+              BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+
+            if (method == null)
+              throw new Exception($"Could not find {data.MethodName} in type {data.TypeName}");
+
+            try
+            {
+              method.Invoke(null, null);
+            }
+            catch (Exception e)
+            {
+              Debug.LogException(e);
+            }
+
+            task.Set(new RunMethodResult(true, string.Empty, string.Empty));
+          }
+          catch (Exception e)
+          {
+            ourLogger.Log(LoggingLevel.WARN, $"Execute {data.MethodName} failed.", e);
+            task.Set(new RunMethodResult(false, e.Message, e.StackTrace));
+          }
+        });
+        return task;
+      });
     }
 
-    private static void AdviseRunMethod(BackendUnityModel model)
+    private static void AdviseOnStartProfiling(BackendUnityModel model)
     {
-        model.RunMethodInUnity.Set((lifetime, data) =>
+      model.StartProfiling.Set((_, data) =>
+      {
+        MainThreadDispatcher.Instance.Queue(() =>
         {
-            var task = new RdTask<RunMethodResult>();
-            MainThreadDispatcher.Instance.Queue(() =>
+          try
+          {
+            UnityProfilerApiInterop.StartProfiling(data.UnityProfilerApiPath, data.NeedRestartScripts);
+
+            var current = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
+            if (current != data.EnterPlayMode)
             {
-                if (!lifetime.IsAlive)
-                {
-                    task.SetCancelled();
-                    return;
-                }
-
-                try
-                {
-                    ourLogger.Verbose($"Attempt to execute {data.MethodName}");
-                    var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                    var assembly = assemblies
-                        .FirstOrDefault(a => a.GetName().Name.Equals(data.AssemblyName));
-                    if (assembly == null)
-                        throw new Exception($"Could not find {data.AssemblyName} assembly in current AppDomain");
-
-                    var type = assembly.GetType(data.TypeName);
-                    if (type == null)
-                        throw new Exception($"Could not find {data.TypeName} in assembly {data.AssemblyName}.");
-
-                    var method = type.GetMethod(data.MethodName,BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
-
-                    if (method == null)
-                        throw new Exception($"Could not find {data.MethodName} in type {data.TypeName}");
-
-                    try
-                    {
-                        method.Invoke(null, null);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogException(e);
-                    }
-
-                    task.Set(new RunMethodResult(true, string.Empty, string.Empty));
-                }
-                catch (Exception e)
-                {
-                    ourLogger.Log(LoggingLevel.WARN, $"Execute {data.MethodName} failed.", e);
-                    task.Set(new RunMethodResult(false, e.Message, e.StackTrace));
-                }
-            });
-            return task;
-        });
-    }
-
-    private static void AdviseStartProfiling(BackendUnityModel model)
-    {
-        model.StartProfiling.Set((lifetime, data) =>
-        {
-            MainThreadDispatcher.Instance.Queue(() =>
-            {
-                try
-                {
-                    UnityProfilerApiInterop.StartProfiling(data.UnityProfilerApiPath, data.NeedRestartScripts);
-
-                    var current = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
-                    if (current != data.EnterPlayMode)
-                    {
-                        ourLogger.Verbose("StartProfiling. Request to change play mode from model: {0}", data.EnterPlayMode);
-                        EditorApplication.isPlaying = data.EnterPlayMode;
-                    }
-                }
-                catch (Exception e)
-                {
-                    if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
-                        Debug.LogError(e);
-                    throw;
-                }
-            });
-
-            return Unit.Instance;
+              ourLogger.Verbose("StartProfiling. Request to change play mode from model: {0}", data.EnterPlayMode);
+              EditorApplication.isPlaying = data.EnterPlayMode;
+            }
+          }
+          catch (Exception e)
+          {
+            if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
+              Debug.LogError(e);
+            throw;
+          }
         });
 
-        model.StopProfiling.Set((_, data) =>
-        {
-            MainThreadDispatcher.Instance.Queue(() =>
-            {
-                try
-                {
-                    UnityProfilerApiInterop.StopProfiling(data.UnityProfilerApiPath);
-                }
-                catch (Exception e)
-                {
-                    if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
-                        Debug.LogError(e);
-                    throw;
-                }
-            });
+        return Unit.Instance;
+      });
 
-            return Unit.Instance;
+      model.StopProfiling.Set((_, data) =>
+      {
+        MainThreadDispatcher.Instance.Queue(() =>
+        {
+          try
+          {
+            UnityProfilerApiInterop.StopProfiling(data.UnityProfilerApiPath);
+          }
+          catch (Exception e)
+          {
+            if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
+              Debug.LogError(e);
+            throw;
+          }
         });
+
+        return Unit.Instance;
+      });
     }
 
     private static void AdviseLoggingStateChangeTimes(Lifetime modelLifetime, BackendUnityModel model)
     {
-        model.ConsoleLogging.LastInitTime.SetValue(ourInitTime);
+      model.ConsoleLogging.LastInitTime.Value = ourInitTime;
 
-        PlayModeStateTracker.Current.Advise(modelLifetime, state =>
-        {
-          if (state == PlayModeState.Playing)
-            model.ConsoleLogging.LastPlayTime.Value = DateTime.UtcNow.Ticks;
-        });
+      PlayModeStateTracker.Current.Advise(modelLifetime, state =>
+      {
+        if (state == PlayModeState.Playing)
+          model.ConsoleLogging.LastPlayTime.Value = DateTime.UtcNow.Ticks;
+      });
     }
   }
 
