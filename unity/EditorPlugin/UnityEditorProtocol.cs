@@ -178,6 +178,7 @@ namespace JetBrains.Rider.Unity.Editor
 
 #if UNITY_5_6_OR_NEWER
           FindUsagesModelHelper.Advise(connectionLifetime, model);
+          UnsavedChangesModelHelper.Advise(connectionLifetime, model);
 #endif
 
 #if UNITY_2019_2_OR_NEWER
