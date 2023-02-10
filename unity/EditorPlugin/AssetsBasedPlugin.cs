@@ -144,19 +144,18 @@ namespace JetBrains.Rider.Unity.Editor
       {
         if (PluginSettings.AssemblyReloadSettings == ScriptCompilationDuringPlay.RecompileAfterFinishedPlaying)
         {
-          MainThreadDispatcher.Instance.Queue(() =>
+          MainThreadDispatcher.AssertThread();
+
+          if (state == PlayModeState.Playing)
           {
-            if (state == PlayModeState.Playing)
-            {
-              logger.Info("LockReloadAssemblies");
-              EditorApplication.LockReloadAssemblies();
-            }
-            else if (state == PlayModeState.Stopped)
-            {
-              logger.Info("UnlockReloadAssemblies");
-              EditorApplication.UnlockReloadAssemblies();
-            }
-          });
+            logger.Info("LockReloadAssemblies");
+            EditorApplication.LockReloadAssemblies();
+          }
+          else if (state == PlayModeState.Stopped)
+          {
+            logger.Info("UnlockReloadAssemblies");
+            EditorApplication.UnlockReloadAssemblies();
+          }
         }
       });
 

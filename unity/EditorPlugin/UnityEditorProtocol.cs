@@ -178,6 +178,7 @@ namespace JetBrains.Rider.Unity.Editor
           Models.AddLifetimed(connectionLifetime, model);
 
           ourLogger.Verbose("UnityModel initialized.");
+
           connectionLifetime.OnTermination(() =>
           {
             ourLogger.Verbose($"Connection lifetime is not alive for {solutionName}, destroying protocol");
@@ -277,54 +278,49 @@ namespace JetBrains.Rider.Unity.Editor
     {
       var syncPlayState = new Action(() =>
       {
-        MainThreadDispatcher.Instance.Queue(() =>
+        MainThreadDispatcher.AssertThread();
+
+        var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
+
+        if (!model.PlayControls.Play.HasValue() ||
+            model.PlayControls.Play.HasValue() && model.PlayControls.Play.Value != isPlaying)
         {
-          var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
+          ourLogger.Verbose("Reporting play mode change to model: {0}", isPlaying);
+          model.PlayControls.Play.SetValue(isPlaying);
+        }
 
-          if (!model.PlayControls.Play.HasValue() ||
-              model.PlayControls.Play.HasValue() && model.PlayControls.Play.Value != isPlaying)
-          {
-            ourLogger.Verbose("Reporting play mode change to model: {0}", isPlaying);
-            model.PlayControls.Play.SetValue(isPlaying);
-          }
-
-          var isPaused = EditorApplication.isPaused;
-          if (!model.PlayControls.Pause.HasValue() ||
-              model.PlayControls.Pause.HasValue() && model.PlayControls.Pause.Value != isPaused)
-          {
-            ourLogger.Verbose("Reporting pause mode change to model: {0}", isPaused);
-            model.PlayControls.Pause.SetValue(isPaused);
-          }
-        });
+        var isPaused = EditorApplication.isPaused;
+        if (!model.PlayControls.Pause.HasValue() ||
+            model.PlayControls.Pause.HasValue() && model.PlayControls.Pause.Value != isPaused)
+        {
+          ourLogger.Verbose("Reporting pause mode change to model: {0}", isPaused);
+          model.PlayControls.Pause.SetValue(isPaused);
+        }
       });
 
       syncPlayState();
 
       model.PlayControls.Play.Advise(connectionLifetime, play =>
       {
-        MainThreadDispatcher.Instance.Queue(() =>
+        MainThreadDispatcher.AssertThread();
+
+        var current = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
+        if (current != play)
         {
-          var current = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
-          if (current != play)
-          {
-            ourLogger.Verbose("Request to change play mode from model: {0}", play);
-            EditorApplication.isPlaying = play;
-          }
-        });
+          ourLogger.Verbose("Request to change play mode from model: {0}", play);
+          EditorApplication.isPlaying = play;
+        }
       });
 
       model.PlayControls.Pause.Advise(connectionLifetime, pause =>
       {
-        MainThreadDispatcher.Instance.Queue(() =>
-        {
-          ourLogger.Verbose("Request to change pause mode from model: {0}", pause);
-          EditorApplication.isPaused = pause;
-        });
+        MainThreadDispatcher.AssertThread();
+
+        ourLogger.Verbose("Request to change pause mode from model: {0}", pause);
+        EditorApplication.isPaused = pause;
       });
 
-      model.PlayControls.Step.Advise(connectionLifetime,
-        _ => { MainThreadDispatcher.Instance.Queue(EditorApplication.Step); });
-
+      model.PlayControls.Step.Advise(connectionLifetime, _ => EditorApplication.Step());
       PlayModeStateTracker.Current.Advise(connectionLifetime, _ => syncPlayState());
     }
 
@@ -362,50 +358,50 @@ namespace JetBrains.Rider.Unity.Editor
           }
         }
 
-        ourLogger.Verbose("Refresh: SyncSolution Enqueue");
-        MainThreadDispatcher.Instance.Queue(() =>
-        {
-          if (!EditorApplication.isPlaying && EditorPrefsWrapper.AutoRefresh || force != RefreshType.Normal)
-          {
-            try
-            {
-              if (force == RefreshType.ForceRequestScriptReload)
-              {
-                ourLogger.Verbose("Refresh: RequestScriptReload");
-                UnityEditorInternal.InternalEditorUtility.RequestScriptReload();
-              }
+        MainThreadDispatcher.AssertThread();
 
-              ourLogger.Verbose("Refresh: SyncSolution Started");
-              RiderPackageInterop.SyncSolution();
-            }
-            catch (Exception e)
+        ourLogger.Verbose("Refresh: SyncSolution Enqueue");
+        if (!EditorApplication.isPlaying && EditorPrefsWrapper.AutoRefresh || force != RefreshType.Normal)
+        {
+          try
+          {
+            if (force == RefreshType.ForceRequestScriptReload)
             {
-              ourLogger.Error(e, "Refresh failed with exception");
+              ourLogger.Verbose("Refresh: RequestScriptReload");
+              UnityEditorInternal.InternalEditorUtility.RequestScriptReload();
             }
-            finally
-            {
-              EditorApplication.update += SendResult;
-            }
+
+            ourLogger.Verbose("Refresh: SyncSolution Started");
+            RiderPackageInterop.SyncSolution();
+          }
+          catch (Exception e)
+          {
+            ourLogger.Error(e, "Refresh failed with exception");
+          }
+          finally
+          {
+            EditorApplication.update += SendResult;
+          }
+        }
+        else
+        {
+          if (EditorApplication.isPlaying)
+          {
+            refreshTask.Set(Unit.Instance);
+            ourLogger.Verbose("Avoid calling Refresh, when EditorApplication.isPlaying.");
+          }
+          else if (!EditorPrefsWrapper.AutoRefresh)
+          {
+            refreshTask.Set(Unit.Instance);
+            ourLogger.Verbose("AutoRefresh is disabled by Unity preferences.");
           }
           else
           {
-            if (EditorApplication.isPlaying)
-            {
-              refreshTask.Set(Unit.Instance);
-              ourLogger.Verbose("Avoid calling Refresh, when EditorApplication.isPlaying.");
-            }
-            else if (!EditorPrefsWrapper.AutoRefresh)
-            {
-              refreshTask.Set(Unit.Instance);
-              ourLogger.Verbose("AutoRefresh is disabled by Unity preferences.");
-            }
-            else
-            {
-              refreshTask.Set(Unit.Instance);
-              ourLogger.Verbose("Avoid calling Refresh, for the unknown reason.");
-            }
+            refreshTask.Set(Unit.Instance);
+            ourLogger.Verbose("Avoid calling Refresh, for the unknown reason.");
           }
-        });
+        }
+
         return refreshTask;
       });
     }
@@ -415,40 +411,40 @@ namespace JetBrains.Rider.Unity.Editor
       model.ShowPreferences.Advise(connectionLifetime, result =>
       {
         if (result == null) return;
-        MainThreadDispatcher.Instance.Queue(() =>
+
+        MainThreadDispatcher.AssertThread();
+
+        try
         {
-          try
+          var tab = UnityUtils.UnityVersion >= new Version(2018, 2) ? "_General" : "Rider";
+
+          var type = typeof(SceneView).Assembly.GetType("UnityEditor.SettingsService");
+          if (type != null)
           {
-            var tab = UnityUtils.UnityVersion >= new Version(2018, 2) ? "_General" : "Rider";
+            // 2018+
+            var method = type.GetMethod("OpenUserPreferences", BindingFlags.Static | BindingFlags.Public);
 
-            var type = typeof(SceneView).Assembly.GetType("UnityEditor.SettingsService");
-            if (type != null)
-            {
-              // 2018+
-              var method = type.GetMethod("OpenUserPreferences", BindingFlags.Static | BindingFlags.Public);
-
-              if (method == null)
-                log.Error("'OpenUserPreferences' was not found");
-              else
-                method.Invoke(null, new object[] { $"Preferences/{tab}" });
-            }
+            if (method == null)
+              log.Error("'OpenUserPreferences' was not found");
             else
-            {
-              // 5.5, 2017 ...
-              type = typeof(SceneView).Assembly.GetType("UnityEditor.PreferencesWindow");
-              var method = type?.GetMethod("ShowPreferencesWindow", BindingFlags.Static | BindingFlags.NonPublic);
-
-              if (method == null)
-                log.Error("'ShowPreferencesWindow' was not found");
-              else
-                method.Invoke(null, null);
-            }
+              method.Invoke(null, new object[] { $"Preferences/{tab}" });
           }
-          catch (Exception ex)
+          else
           {
-            log.Error("Show preferences " + ex);
+            // 5.5, 2017 ...
+            type = typeof(SceneView).Assembly.GetType("UnityEditor.PreferencesWindow");
+            var method = type?.GetMethod("ShowPreferencesWindow", BindingFlags.Static | BindingFlags.NonPublic);
+
+            if (method == null)
+              log.Error("'ShowPreferencesWindow' was not found");
+            else
+              method.Invoke(null, null);
           }
-        });
+        }
+        catch (Exception ex)
+        {
+          log.Error("Show preferences " + ex);
+        }
       });
     }
 
@@ -462,21 +458,22 @@ namespace JetBrains.Rider.Unity.Editor
       model.ExitUnity.Set((_, __) =>
       {
         var task = new RdTask<bool>();
-        MainThreadDispatcher.Instance.Queue(() =>
+
+        MainThreadDispatcher.AssertThread();
+
+        try
         {
-          try
-          {
-            ourLogger.Verbose("ExitUnity: Started");
-            EditorApplication.Exit(0);
-            ourLogger.Verbose("ExitUnity: Completed");
-            task.Set(true);
-          }
-          catch (Exception e)
-          {
-            ourLogger.Log(LoggingLevel.WARN, "EditorApplication.Exit failed.", e);
-            task.Set(false);
-          }
-        });
+          ourLogger.Verbose("ExitUnity: Started");
+          EditorApplication.Exit(0);
+          ourLogger.Verbose("ExitUnity: Completed");
+          task.Set(true);
+        }
+        catch (Exception e)
+        {
+          ourLogger.Log(LoggingLevel.WARN, "EditorApplication.Exit failed.", e);
+          task.Set(false);
+        }
+
         return task;
       });
     }
@@ -486,50 +483,51 @@ namespace JetBrains.Rider.Unity.Editor
       model.RunMethodInUnity.Set((lifetime, data) =>
       {
         var task = new RdTask<RunMethodResult>();
-        MainThreadDispatcher.Instance.Queue(() =>
+
+        MainThreadDispatcher.AssertThread();
+
+        if (!lifetime.IsAlive)
         {
-          if (!lifetime.IsAlive)
-          {
-            task.SetCancelled();
-            return;
-          }
+          task.SetCancelled();
+          return task;
+        }
+
+        try
+        {
+          ourLogger.Verbose($"Attempt to execute {data.MethodName}");
+          var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+          var assembly = assemblies
+            .FirstOrDefault(a => a.GetName().Name.Equals(data.AssemblyName));
+          if (assembly == null)
+            throw new Exception($"Could not find {data.AssemblyName} assembly in current AppDomain");
+
+          var type = assembly.GetType(data.TypeName);
+          if (type == null)
+            throw new Exception($"Could not find {data.TypeName} in assembly {data.AssemblyName}.");
+
+          var method = type.GetMethod(data.MethodName,
+            BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+
+          if (method == null)
+            throw new Exception($"Could not find {data.MethodName} in type {data.TypeName}");
 
           try
           {
-            ourLogger.Verbose($"Attempt to execute {data.MethodName}");
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var assembly = assemblies
-              .FirstOrDefault(a => a.GetName().Name.Equals(data.AssemblyName));
-            if (assembly == null)
-              throw new Exception($"Could not find {data.AssemblyName} assembly in current AppDomain");
-
-            var type = assembly.GetType(data.TypeName);
-            if (type == null)
-              throw new Exception($"Could not find {data.TypeName} in assembly {data.AssemblyName}.");
-
-            var method = type.GetMethod(data.MethodName,
-              BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
-
-            if (method == null)
-              throw new Exception($"Could not find {data.MethodName} in type {data.TypeName}");
-
-            try
-            {
-              method.Invoke(null, null);
-            }
-            catch (Exception e)
-            {
-              Debug.LogException(e);
-            }
-
-            task.Set(new RunMethodResult(true, string.Empty, string.Empty));
+            method.Invoke(null, null);
           }
           catch (Exception e)
           {
-            ourLogger.Log(LoggingLevel.WARN, $"Execute {data.MethodName} failed.", e);
-            task.Set(new RunMethodResult(false, e.Message, e.StackTrace));
+            Debug.LogException(e);
           }
-        });
+
+          task.Set(new RunMethodResult(true, string.Empty, string.Empty));
+        }
+        catch (Exception e)
+        {
+          ourLogger.Log(LoggingLevel.WARN, $"Execute {data.MethodName} failed.", e);
+          task.Set(new RunMethodResult(false, e.Message, e.StackTrace));
+        }
+
         return task;
       });
     }
@@ -538,45 +536,43 @@ namespace JetBrains.Rider.Unity.Editor
     {
       model.StartProfiling.Set((_, data) =>
       {
-        MainThreadDispatcher.Instance.Queue(() =>
-        {
-          try
-          {
-            UnityProfilerApiInterop.StartProfiling(data.UnityProfilerApiPath, data.NeedRestartScripts);
+        MainThreadDispatcher.AssertThread();
 
-            var current = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
-            if (current != data.EnterPlayMode)
-            {
-              ourLogger.Verbose("StartProfiling. Request to change play mode from model: {0}", data.EnterPlayMode);
-              EditorApplication.isPlaying = data.EnterPlayMode;
-            }
-          }
-          catch (Exception e)
+        try
+        {
+          UnityProfilerApiInterop.StartProfiling(data.UnityProfilerApiPath, data.NeedRestartScripts);
+
+          var current = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
+          if (current != data.EnterPlayMode)
           {
-            if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
-              Debug.LogError(e);
-            throw;
+            ourLogger.Verbose("StartProfiling. Request to change play mode from model: {0}", data.EnterPlayMode);
+            EditorApplication.isPlaying = data.EnterPlayMode;
           }
-        });
+        }
+        catch (Exception e)
+        {
+          if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
+            Debug.LogError(e);
+          throw;
+        }
 
         return Unit.Instance;
       });
 
       model.StopProfiling.Set((_, data) =>
       {
-        MainThreadDispatcher.Instance.Queue(() =>
+        MainThreadDispatcher.AssertThread();
+
+        try
         {
-          try
-          {
-            UnityProfilerApiInterop.StopProfiling(data.UnityProfilerApiPath);
-          }
-          catch (Exception e)
-          {
-            if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
-              Debug.LogError(e);
-            throw;
-          }
-        });
+          UnityProfilerApiInterop.StopProfiling(data.UnityProfilerApiPath);
+        }
+        catch (Exception e)
+        {
+          if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
+            Debug.LogError(e);
+          throw;
+        }
 
         return Unit.Instance;
       });

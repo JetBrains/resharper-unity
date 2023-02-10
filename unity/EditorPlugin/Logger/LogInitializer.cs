@@ -36,11 +36,14 @@ namespace JetBrains.Rider.Unity.Editor.Logger
         fileLogFactory.Handlers += message =>
         {
           if (lifetime.IsAlive && (message.Level == LoggingLevel.ERROR || message.Level == LoggingLevel.FATAL))
+          {
+            // We should only be called on the main thread
             MainThreadDispatcher.Instance.Queue(() =>
             {
               if (lifetime.IsAlive)
                 UnityEngine.Debug.LogError(message.FormattedMessage);
             });
+          }
         };
         Log.DefaultFactory = fileLogFactory;
       }

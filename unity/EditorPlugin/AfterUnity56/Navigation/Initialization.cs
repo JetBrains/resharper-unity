@@ -23,48 +23,49 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
     {
       model.ShowUsagesInUnity.Advise(modelLifetime, findUsagesResult =>
       {
-        if (findUsagesResult != null)
-        {
-          MainThreadDispatcher.Instance.Queue(() => // todo: remove MainThreadDispatcher call - not needed
-          {
-            ExpandMinimizedUnityWindow();
+        if (findUsagesResult == null) return;
 
-            EditorUtility.FocusProjectWindow();
-            switch (findUsagesResult)
-            {
-                case AnimatorFindUsagesResult animatorUsage:
-                    ShowUtil.ShowAnimatorUsage(animatorUsage.PathElements, animatorUsage.FilePath);
-                    return;
-                case HierarchyFindUsagesResult _ when findUsagesResult.Extension.Equals(".prefab", StringComparison.OrdinalIgnoreCase):
-                    ShowUtil.ShowFileUsage(findUsagesResult.FilePath);
-                    break;
-                case HierarchyFindUsagesResult hierarchyFindUsagesResult:
-                    ShowUtil.ShowUsageOnScene(findUsagesResult.FilePath,  findUsagesResult.FileName, hierarchyFindUsagesResult.PathElements, hierarchyFindUsagesResult.RootIndices);
-                    break;
-                case AnimationFindUsagesResult animationEventUsage:
-                    ShowUtil.ShowAnimationEventUsage(animationEventUsage.FilePath);
-                    break;
-                default:
-                    ShowUtil.ShowFileUsage(findUsagesResult.FilePath);
-                    break;
-            }
-          });
+        MainThreadDispatcher.AssertThread();
+
+        ExpandMinimizedUnityWindow();
+
+        EditorUtility.FocusProjectWindow();
+        switch (findUsagesResult)
+        {
+          case AnimatorFindUsagesResult animatorUsage:
+            ShowUtil.ShowAnimatorUsage(animatorUsage.PathElements, animatorUsage.FilePath);
+            return;
+          case HierarchyFindUsagesResult _
+            when findUsagesResult.Extension.Equals(".prefab", StringComparison.OrdinalIgnoreCase):
+            ShowUtil.ShowFileUsage(findUsagesResult.FilePath);
+            break;
+          case HierarchyFindUsagesResult hierarchyFindUsagesResult:
+            ShowUtil.ShowUsageOnScene(findUsagesResult.FilePath, findUsagesResult.FileName,
+              hierarchyFindUsagesResult.PathElements, hierarchyFindUsagesResult.RootIndices);
+            break;
+          case AnimationFindUsagesResult animationEventUsage:
+            ShowUtil.ShowAnimationEventUsage(animationEventUsage.FilePath);
+            break;
+          default:
+            ShowUtil.ShowFileUsage(findUsagesResult.FilePath);
+            break;
         }
       });
 
       model.SendFindUsagesSessionResult.Advise(modelLifetime, result =>
       {
+        MainThreadDispatcher.AssertThread();
+
         if (result != null)
         {
-          MainThreadDispatcher.Instance.Queue(() => // todo: remove MainThreadDispatcher call - not needed
-          {
-            GUI.BringWindowToFront(EditorWindow.GetWindow<SceneView>().GetInstanceID());
-            GUI.BringWindowToFront(EditorWindow.GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.SceneHierarchyWindow")).GetInstanceID());
-            GUI.BringWindowToFront(EditorWindow.GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.ProjectBrowser")).GetInstanceID());
+          GUI.BringWindowToFront(EditorWindow.GetWindow<SceneView>().GetInstanceID());
+          GUI.BringWindowToFront(EditorWindow
+            .GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.SceneHierarchyWindow")).GetInstanceID());
+          GUI.BringWindowToFront(EditorWindow
+            .GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.ProjectBrowser")).GetInstanceID());
 
-            var window = FindUsagesWindow.GetWindow(result.Target);
-            window.SetDataToEditor(result.Elements);
-          });
+          var window = FindUsagesWindow.GetWindow(result.Target);
+          window.SetDataToEditor(result.Elements);
         }
       });
 
