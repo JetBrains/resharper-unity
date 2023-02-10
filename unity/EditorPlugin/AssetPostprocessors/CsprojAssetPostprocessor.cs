@@ -6,7 +6,7 @@ using System.Text;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
-using JetBrains.Rider.Unity.Editor.NonUnity;
+using JetBrains.Rider.Unity.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -345,7 +345,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           var f = flag.Trim();
           if (f.Contains(UnityDefineKeyword))
           {
-            var defineEndPos = f.IndexOf(UnityDefineKeyword) + UnityDefineKeyword.Length;
+            var defineEndPos = f.IndexOf(UnityDefineKeyword, StringComparison.Ordinal) + UnityDefineKeyword.Length;
             var definesSubString = f.Substring(defineEndPos, f.Length - defineEndPos);
             definesSubString = definesSubString.Replace(";", ",");
             definesList.AddRange(definesSubString.Split(','));
@@ -456,7 +456,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         var f = flag.Trim();
         if (f.Contains(UnityReferenceKeyword))
         {
-          var defineEndPos = f.IndexOf(UnityReferenceKeyword) + UnityReferenceKeyword.Length;
+          var defineEndPos = f.IndexOf(UnityReferenceKeyword, StringComparison.Ordinal) + UnityReferenceKeyword.Length;
           var definesSubString = f.Substring(defineEndPos, f.Length - defineEndPos);
           definesSubString = definesSubString.Replace(";", ",");
           referenceList.AddRange(definesSubString.Split(','));
