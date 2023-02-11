@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         protected static readonly IAnchorPosition LayoutPosition = AnchorPosition.BeforePosition;
         protected static readonly IAnchorPosition AnnotationPosition = LayoutPosition.GetNext();
         protected static readonly SubmenuAnchor BaseAnchor =
-            new(IntentionsAnchors.LowPriorityContextActionsAnchor, SubmenuBehavior.Static("Modify Inspector attributes"));
+            new(IntentionsAnchors.LowPriorityContextActionsAnchor, SubmenuBehavior.Static(Strings.ModifyInspectorAttributes_Text));
 
         private readonly ICSharpContextActionDataProvider myDataProvider;
         private readonly IAnchor myAnchor;
