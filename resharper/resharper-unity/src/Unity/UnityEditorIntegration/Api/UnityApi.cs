@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Caches;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeReference;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Util;
@@ -121,6 +122,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static bool IsRefRW(ITypeElement? typeElement)
         {
             return typeElement?.GetClrName().Equals(KnownTypes.RefRW) ?? false;
+        }
+
+        public static (ITypeElement?, bool) GetReferencedType(IFieldDeclaration? fieldDeclaration)
+        {
+            if (fieldDeclaration == null)
+                return (null, false);
+
+            var (fieldTypeElement, substitution) = fieldDeclaration.DeclaredElement?.Type as IDeclaredType;
+
+            if (fieldTypeElement == null)
+                return (null, false);
+
+            var isRefRo = IsRefRO(fieldTypeElement);
+            var isRefRw = IsRefRW(fieldTypeElement);
+            var isRef = isRefRo || isRefRw;
+
+            if (!isRef)
+            {
+                if (UnityApi.IsDerivesFromIAspect(fieldTypeElement))
+                    return (fieldTypeElement, false);
+                
+                return (null, false);
+            }
+           
+            var refTypeParameter = fieldTypeElement.TypeParameters[0];
+            var internalType = substitution[refTypeParameter];
+
+            var referencedTypeElement = internalType.GetTypeElement();
+            return (referencedTypeElement, isRefRo);
         }
 
         // A serialised field cannot be abstract or generic, but a type declaration that will be serialised can be. This

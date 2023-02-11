@@ -9,7 +9,7 @@ import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.openapi.rd.util.launchBackground
 import com.intellij.openapi.rd.util.launchNonUrgentBackground
 import com.intellij.openapi.rd.util.withUiContext
-import com.intellij.openapi.startup.ProjectPostStartupActivity
+import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
@@ -41,7 +41,7 @@ import com.jetbrains.rider.projectView.workspace.ProjectModelEntityVisitor
 import com.jetbrains.rider.projectView.workspace.getSolutionEntity
 import org.jetbrains.annotations.Nls
 
-class OpenUnityProjectAsFolderNotification : ProjectPostStartupActivity {
+class OpenUnityProjectAsFolderNotification : ProjectActivity {
 
     companion object {
         private val notificationGroupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity project open")

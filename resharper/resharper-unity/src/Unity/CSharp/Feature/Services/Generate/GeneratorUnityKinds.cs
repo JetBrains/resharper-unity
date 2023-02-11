@@ -4,5 +4,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
     {
         public const string UnityEventFunctions = "Unity.EventFunctions";
         public const string UnityGenerateBakerAndAuthoring = "Unity.GenerateBakerAndAuthoring";
+        public const string UnityGenerateRefAccessors = "Unity.GenerateRefAccessors";
     }
 }

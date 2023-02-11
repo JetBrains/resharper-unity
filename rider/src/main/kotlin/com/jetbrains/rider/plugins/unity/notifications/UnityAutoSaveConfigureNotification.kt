@@ -10,7 +10,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createNestedDisposable
-import com.intellij.openapi.startup.ProjectPostStartupActivity
+import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.util.Key
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.LightColors
@@ -27,7 +27,7 @@ import com.jetbrains.rider.plugins.unity.model.UnityEditorState
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 
-class UnityAutoSaveConfigureNotification : ProjectPostStartupActivity {
+class UnityAutoSaveConfigureNotification : ProjectActivity {
     private val propertiesComponent: PropertiesComponent = PropertiesComponent.getInstance()
     private val KEY = Key.create<Any>("PromoteAutoSave")
 

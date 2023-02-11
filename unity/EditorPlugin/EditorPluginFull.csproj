@@ -7,6 +7,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>UNITY_2017_3;RIDER_EDITOR_PLUGIN</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsNotAsErrors>CS0618</WarningsNotAsErrors>
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>

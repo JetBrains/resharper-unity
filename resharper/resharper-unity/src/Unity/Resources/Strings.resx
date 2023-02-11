@@ -1036,6 +1036,24 @@
     <data name="UnityDots_projects" xml:space="preserve">
         <value>Unity DOTS projects</value>
     </data>
+    <data name="UnityDots_GenerateRefAccessors_Name" xml:space="preserve">
+        <value>Generate accessors properties (DOTS)</value>
+    </data>
+    <data name="UnityDots_GenerateRefAccessors_Description" xml:space="preserve">
+        <value>Generate accessors properties (DOTS)</value>
+    </data>
+    <data name="UnityDots_GenerateRefAccessors_Unity_Component_Fields_Title" xml:space="preserve">
+        <value>Accessors properties (DOTS)</value>
+    </data>
+    <data name="UnityDots_GenerateRefAccessors_Unity_Component_Fields_WindowTitle" xml:space="preserve">
+        <value>Accessors properties (DOTS)</value>
+    </data>    
+    <data name="UnityDots_GenerateRefAccessors_Unity_Component_Fields_Description" xml:space="preserve">
+        <value>Select fields for generation</value>
+    </data>
+    <data name="UnityDots_GenerateRefAccessors_Generate_Setters" xml:space="preserve">
+        <value>Generate Setters</value>
+    </data>
     <data name="UnityEditorFolder_Text" xml:space="preserve">
         <value>Unity Editor folder</value>
     </data>
@@ -1360,5 +1378,8 @@ a plugin to be installed to a project.</value>
     </data>
     <data name="UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode" xml:space="preserve">
         <value>Show generated code</value>
+    </data>
+    <data name="ModifyInspectorAttributes_Text" xml:space="preserve">
+        <value>Modify Inspector attributes</value>
     </data>
 </root>
