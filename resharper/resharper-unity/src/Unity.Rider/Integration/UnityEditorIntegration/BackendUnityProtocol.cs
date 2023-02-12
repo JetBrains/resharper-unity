@@ -11,7 +11,7 @@ using JetBrains.ProjectModel;
 using JetBrains.Rd;
 using JetBrains.Rd.Base;
 using JetBrains.Rd.Impl;
-using JetBrains.RdBackend.Common.Features;
+using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.Rider.Model.Unity.BackendUnity;
@@ -59,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             mySolution = solution;
             mySessionLifetimes = new SequentialLifetimes(lifetime);
 
-            if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
+            if (!solution.HasProtocolSolution())
                 return;
 
             unitySolutionTracker.IsUnityProject.View(lifetime, (lf, args) =>
