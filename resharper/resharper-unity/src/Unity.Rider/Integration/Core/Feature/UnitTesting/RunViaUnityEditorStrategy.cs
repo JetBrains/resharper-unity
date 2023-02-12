@@ -15,7 +15,7 @@ using JetBrains.Metadata.Access;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Features.SolutionBuilders.Prototype.Services.Execution;
 using JetBrains.Rd.Base;
-using JetBrains.RdBackend.Common.Features;
+using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration.Packages;

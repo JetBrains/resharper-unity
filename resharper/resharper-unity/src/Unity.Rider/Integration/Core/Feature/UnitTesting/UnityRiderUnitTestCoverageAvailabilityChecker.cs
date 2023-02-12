@@ -1,7 +1,7 @@
 using System;
 using JetBrains.Application;
 using JetBrains.Application.Components;
-using JetBrains.RdBackend.Common.Features;
+using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.UnitTestFramework.Elements;
