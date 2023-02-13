@@ -26,6 +26,16 @@ namespace JetBrains.Rider.Unity.Editor
     private static readonly RiderPathProvider ourRiderPathProvider;
     private static readonly long ourInitTime = DateTime.UtcNow.Ticks;
 
+    // DO NOT RENAME OR REFACTOR!
+    // Accessed by package via reflection
+    [PublicAPI, Obsolete("Use LogInitializer.LogPath")]
+    internal static readonly string LogPath = LogInitializer.LogPath;
+
+    // DO NOT RENAME OR REFACTOR!
+    // Accessed by package via reflection
+    [PublicAPI]
+    internal static OnOpenAssetHandler OpenAssetHandler;
+
     internal static string SlnFile;
 
     // This an entry point
@@ -123,16 +133,6 @@ namespace JetBrains.Rider.Unity.Editor
           $"LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogInitializer.LogPath}.");
       }
     }
-
-    // DO NOT RENAME OR REFACTOR!
-    // Accessed by package via reflection
-    [PublicAPI, Obsolete("Use LogInitializer.LogPath")]
-    internal static readonly string LogPath = LogInitializer.LogPath;
-
-    // DO NOT RENAME OR REFACTOR!
-    // Accessed by package via reflection
-    [PublicAPI]
-    internal static OnOpenAssetHandler OpenAssetHandler;
 
     // Creates and deletes Library/EditorInstance.json containing info about unity instance. Unity 2017.1+ writes this
     // file itself. We'll always overwrite, just to be sure it's up to date. The file contents are exactly the same
