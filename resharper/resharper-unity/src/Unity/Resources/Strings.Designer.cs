@@ -499,5 +499,9 @@
     public static string ShowExpensiveCallsBulbAction_Text_Show_incoming_Expensive_calls => ResourceManager.GetString("ShowExpensiveCallsBulbAction_Text_Show_incoming_Expensive_calls");
     public static string UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode => ResourceManager.GetString("UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode");
     public static string ModifyInspectorAttributes_Text => ResourceManager.GetString("ModifyInspectorAttributes_Text");
+    public static string ShowBurstCallsBulbAction_Text_Show_incoming_Burst_calls => ResourceManager.GetString("ShowBurstCallsBulbAction_Text_Show_incoming_Burst_calls");
+    public static string ShowBurstCallsBulbAction_Text_Show_outgoing_Burst_calls => ResourceManager.GetString("ShowBurstCallsBulbAction_Text_Show_outgoing_Burst_calls");
+    public static string ShowPerformanceCriticalCallsBulbAction_Text_Show_incoming_Performance_Critical_calls => ResourceManager.GetString("ShowPerformanceCriticalCallsBulbAction_Text_Show_incoming_Performance_Critical_calls");
+    public static string ShowPerformanceCriticalCallsBulbAction_Text_Show_outgoing_Performance_Critical_calls => ResourceManager.GetString("ShowPerformanceCriticalCallsBulbAction_Text_Show_outgoing_Performance_Critical_calls");
   }
 }
