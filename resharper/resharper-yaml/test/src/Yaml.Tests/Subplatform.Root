@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<SubplatformInfo xmlns="urn:schemas-jetbrains-com:build-subplatform-info" CompanyNameHuman="JetBrains" IsGitSubplatform="true">
-    <SubplatformInfo.SubplatformReferences>
-        <SubplatformReference Name="Plugins\ReSharperUnity\resharper\resharper-yaml\src\Yaml"/>
-        <SubplatformReference Name="Psi.Features\test\Framework" />
-        <SubplatformReference Name="Platform\Sdk" />
-    </SubplatformInfo.SubplatformReferences>
-</SubplatformInfo>
