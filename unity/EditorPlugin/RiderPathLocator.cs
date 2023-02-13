@@ -15,6 +15,7 @@ namespace JetBrains.Rider.Unity.Editor
   public static class RiderPathLocator
   {
 #if !UNITY_4_7
+    // TODO: Clarify if still used in package
     [UsedImplicitly] // Used in com.unity.ide.rider
     public static RiderInfo[] GetAllRiderPaths()
     {

@@ -27,7 +27,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
       get
       {
-        if (ourApiCompatibilityLevel == null) 
+        if (ourApiCompatibilityLevel == null)
           ourApiCompatibilityLevel = GetApiCompatibilityLevel();
         return (int) ourApiCompatibilityLevel;
       }
@@ -46,12 +46,12 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     // memory, and Unity will only write to disk if it's different to the existing file. It's safe for pre-2018.1 as it
     // simply won't get called https://github.com/Unity-Technologies/UnityCsReference/blob/2018.1/Editor/Mono/AssetPostprocessor.cs#L76
     // ReSharper disable once InconsistentNaming
-    [UsedImplicitly]
+    [UsedImplicitly]    // by Unity, when loaded from Assets
     public static string OnGeneratedCSProject(string path, string contents)
     {
       if (UnityUtils.IsInBatchModeAndNotInRiderTests)
         return contents;
-      
+
       try
       {
         ourLogger.Verbose("Post-processing {0} (in memory)", path);
@@ -82,7 +82,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
       if (UnityUtils.IsInBatchModeAndNotInRiderTests)
         return;
-      
+
       if (UnityUtils.UnityVersion >= new Version(2018, 1))
         return;
 
@@ -150,7 +150,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
       changed |= SetDisableHandlePackageFileConflicts(projectContentElement, xmlns); // already exists
       changed |= SetGenerateTargetFrameworkAttribute(projectContentElement, xmlns); // no need
-      
+
       return changed;
     }
 
@@ -176,7 +176,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         SetOrUpdateProperty(projectContentElement, xmlns, "NoStdLib", existing => "true");
         SetOrUpdateProperty(projectContentElement, xmlns, "AddAdditionalExplicitAssemblyReferences",existing => "false");
 
-        // Unity 2018.x+ itself adds mscorlib reference 
+        // Unity 2018.x+ itself adds mscorlib reference
         var referenceName = "mscorlib.dll";
         var hintPath = GetHintPath(referenceName);
         AddCustomReference(referenceName, projectContentElement, xmlns, hintPath);
@@ -222,36 +222,36 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     private static bool SetGenerateTargetFrameworkAttribute(XElement projectContentElement, XNamespace xmlns)
     {
       //https://youtrack.jetbrains.com/issue/RIDER-17390
-      
-      if (UnityUtils.ScriptingRuntime > 0)  
+
+      if (UnityUtils.ScriptingRuntime > 0)
         return false;
-      
+
       return SetOrUpdateProperty(projectContentElement, xmlns, "GenerateTargetFrameworkAttribute", existing => "false");
     }
 
     private static bool AddMicrosoftCSharpReference (XElement projectContentElement, XNamespace xmlns)
     {
       string referenceName = "Microsoft.CSharp.dll";
-      
+
       if (UnityUtils.ScriptingRuntime == 0)
         return false;
 
       if (OurApiCompatibilityLevel != APICompatibilityLevelNet46)
         return false;
-      
+
       var hintPath = GetHintPath(referenceName);
       AddCustomReference(referenceName, projectContentElement, xmlns, hintPath);
       return true;
     }
-    
+
     private static bool AvoidGetReferenceAssemblyPathsCall(XElement projectContentElement, XNamespace xmlns)
     {
       // Starting with Unity 2017, dotnet target pack is not required
       if (UnityUtils.UnityVersion.Major < 2017)
         return false;
-      
+
       // Set _TargetFrameworkDirectories and _FullFrameworkReferenceAssemblyPaths to something to avoid GetReferenceAssemblyPaths task being called
-      return SetOrUpdateProperty(projectContentElement, xmlns, "_TargetFrameworkDirectories", 
+      return SetOrUpdateProperty(projectContentElement, xmlns, "_TargetFrameworkDirectories",
                existing => string.IsNullOrEmpty(existing) ? "non_empty_path_generated_by_rider_editor_plugin" : existing)
              &&
              SetOrUpdateProperty(projectContentElement, xmlns, "_FullFrameworkReferenceAssemblyPaths",
@@ -309,14 +309,14 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
     private static bool ApplyManualCompilerSettings([CanBeNull] string configFilePath, XElement projectContentElement, XNamespace xmlns)
     {
-      if (string.IsNullOrEmpty(configFilePath) || !File.Exists(configFilePath)) 
+      if (string.IsNullOrEmpty(configFilePath) || !File.Exists(configFilePath))
         return false;
-      
+
       var configText = File.ReadAllText(configFilePath);
       var isUnity20171OrLater = UnityUtils.UnityVersion >= new Version(2017, 1);
 
       var changed = false;
-      
+
       // Unity sets AllowUnsafeBlocks in 2017.1+ depending on Player settings or asmdef
       // Strictly necessary to compile unsafe code
       // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/VisualStudioIntegration/SolutionSynchronizationSettings.cs#L119
@@ -392,16 +392,16 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       // https://github.com/JetBrains/resharper-unity/issues/841
       // /Applications/Unity/Hub/Editor/2018.2.10f1/PlaybackEngines/iOSSupport/
       var directoryInfo = new FileInfo(EditorApplication.applicationPath).Directory;
-      if (directoryInfo != null) 
+      if (directoryInfo != null)
         folders.Add(directoryInfo.FullName);
 
       var xcodeDllPath = folders
         .Select(folder => Path.Combine(folder, Path.Combine("PlaybackEngines/iOSSupport", name)))
         .Where(File.Exists).FirstOrDefault();
-      
-      if (string.IsNullOrEmpty(xcodeDllPath)) 
+
+      if (string.IsNullOrEmpty(xcodeDllPath))
         return false;
-      
+
       AddCustomReference(Path.GetFileNameWithoutExtension(xcodeDllPath), projectContentElement, xmlns, xcodeDllPath);
       return true;
     }
@@ -411,7 +411,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       // Handled natively by Unity 2018.2+
       if (UnityUtils.UnityVersion >= new Version(2018, 2))
         return false;
-      
+
       var unityAppBaseFolder = Path.GetDirectoryName(EditorApplication.applicationPath);
       if (string.IsNullOrEmpty(unityAppBaseFolder))
       {
@@ -486,7 +486,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
       // Without HintPath non-Unity MSBuild will resolve assembly from DotNetFramework targets path
       string hintPath = null;
-      
+
       var unityAppBaseFolder = Path.GetFullPath(EditorApplication.applicationContentsPath);
       var monoDir = new DirectoryInfo(Path.Combine(unityAppBaseFolder, "MonoBleedingEdge/lib/mono"));
       if (!monoDir.Exists)
@@ -502,7 +502,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
 
       if (!monoDir.Exists)
         return null;
-      
+
       var apiDir = monoDir.GetDirectories(mask).LastOrDefault(); // take newest
       if (apiDir != null)
       {
@@ -607,14 +607,14 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         {
           return PluginSettings.LangVersion;
         }
-        
+
         var expected = GetExpectedLanguageLevel();
         if (string.IsNullOrEmpty(existing))
           return expected;
 
         if (existing == "default")
           return expected;
-        
+
         if (expected == "latest" || existing == "latest")
           return "latest";
 

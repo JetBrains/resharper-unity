@@ -25,7 +25,9 @@ using Debug = UnityEngine.Debug;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  [InitializeOnLoad]
+  // DO NOT RENAME!
+  // Used by package via reflection
+  [InitializeOnLoad, PublicAPI]
   public static class PluginEntryPoint
   {
     public static Lifetime Lifetime;
@@ -78,7 +80,6 @@ namespace JetBrains.Rider.Unity.Editor
     }
 
     public delegate void OnModelInitializationHandler(UnityModelAndLifetime e);
-    [UsedImplicitly]
     public static event OnModelInitializationHandler OnModelInitialization = delegate {};
 
     internal static bool CheckConnectedToBackendSync(BackendUnityModel model)
@@ -810,8 +811,14 @@ namespace JetBrains.Rider.Unity.Editor
         ? Path.GetTempPath()
         : new FileInfo(UnityUtils.UnityEditorLogPath).Directory.FullName;
 
+    // DO NOT RENAME OR REFACTOR!
+    // Accessed by package via reflection
+    [PublicAPI]
     internal static readonly string LogPath = Path.Combine(Path.Combine(ourBaseLogPath, "Unity3dRider"), $"EditorPlugin.{Process.GetCurrentProcess().Id}.log");
-    [UsedImplicitly]
+
+    // DO NOT RENAME OR REFACTOR!
+    // Accessed by package via reflection
+    [PublicAPI]
     internal static OnOpenAssetHandler OpenAssetHandler;
 
     // Creates and deletes Library/EditorInstance.json containing info about unity instance. Unity 2017.1+ writes this

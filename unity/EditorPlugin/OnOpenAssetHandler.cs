@@ -27,6 +27,11 @@ namespace JetBrains.Rider.Unity.Editor
       mySlnFile = slnFile;
     }
 
+    // DO NOT RENAME OR CHANGE SIGNATURE!
+    // Used from package via reflection. Must remain public and non-static.
+    // Note that the package gets the type from PluginEntryPoint.OpenAssetHandler, so name, namespace and visibility of
+    // the class is not important
+    [PublicAPI]
     public bool OnOpenedAsset(int instanceID, int line, int column)
     {
       // determine asset that has been double clicked in the project view
@@ -68,7 +73,9 @@ namespace JetBrains.Rider.Unity.Editor
       return extensionStrings;
     }
 
-    [UsedImplicitly] // https://github.com/JetBrains/resharper-unity/issues/475
+    // DO NOT RENAME OR CHANGE SIGNATURE!
+    // Created as a public API for external users. See https://github.com/JetBrains/resharper-unity/issues/475
+    [PublicAPI]
     public bool OnOpenedAsset(string assetFilePath, int line, int column = 0)
     {
       var modifiedSource = EditorPrefs.GetBool(ModificationPostProcessor.ModifiedSource, false);

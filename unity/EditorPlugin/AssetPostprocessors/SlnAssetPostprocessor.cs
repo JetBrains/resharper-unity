@@ -24,12 +24,12 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     // This method is new for 2018.1. It allows multiple processors to modify the contents of the generated .csproj in
     // memory, and Unity will only write to disk if it's different to the existing file. It's safe for pre-2018.1 as it
     // simply won't get called
-    [UsedImplicitly]
+    [UsedImplicitly]    // by Unity, when loaded from Assets
     public static string OnGeneratedSlnSolution(string path, string content)
     {
       if (UnityUtils.IsInBatchModeAndNotInRiderTests)
         return content;
-      
+
       try
       {
         ourLogger.Verbose("Post-processing {0} (in memory)", path);
@@ -56,7 +56,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
       if (UnityUtils.IsInBatchModeAndNotInRiderTests)
         return;
-      
+
       if (UnityUtils.UnityVersion >= new Version(2018, 1))
         return;
 
