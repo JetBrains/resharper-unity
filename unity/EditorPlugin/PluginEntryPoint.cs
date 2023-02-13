@@ -128,7 +128,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void Init(Lifetime lifetime)
     {
-      var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
+      var projectDirectory = Directory.GetParent(Application.dataPath).NotNull().FullName;
       var projectName = Path.GetFileName(projectDirectory);
       SlnFile = Path.GetFullPath($"{projectName}.sln");
 
@@ -149,8 +149,9 @@ namespace JetBrains.Rider.Unity.Editor
       {
         var executingAssembly = Assembly.GetExecutingAssembly();
         var location = executingAssembly.Location;
-        Debug.Log($"Rider plugin \"{executingAssembly.GetName().Name}\" initialized{(string.IsNullOrEmpty(location)? "" : " from: " + location )}. " +
-                  $"LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
+        Debug.Log(
+          $"Rider plugin \"{executingAssembly.GetName().Name}\" initialized{(string.IsNullOrEmpty(location) ? "" : " from: " + location)}. " +
+          $"LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogInitializer.LogPath}.");
       }
 
       ourLogger.Verbose("Writing Library/ProtocolInstance.json");
@@ -658,7 +659,7 @@ namespace JetBrains.Rider.Unity.Editor
             }
             catch (Exception e)
             {
-              ourLogger.Error("Refresh failed with exception", e);
+              ourLogger.Error(e, "Refresh failed with exception");
             }
             finally
             {
@@ -804,14 +805,10 @@ namespace JetBrains.Rider.Unity.Editor
       return new[] {editorLogpath, playerLogPath};
     }
 
-    private static readonly string ourBaseLogPath = !UnityUtils.IsInRiderTests
-        ? Path.GetTempPath()
-        : new FileInfo(UnityUtils.UnityEditorLogPath).Directory.FullName;
-
     // DO NOT RENAME OR REFACTOR!
     // Accessed by package via reflection
-    [PublicAPI]
-    internal static readonly string LogPath = Path.Combine(Path.Combine(ourBaseLogPath, "Unity3dRider"), $"EditorPlugin.{Process.GetCurrentProcess().Id}.log");
+    [PublicAPI, Obsolete("Use LogInitializer.LogPath")]
+    internal static readonly string LogPath = LogInitializer.LogPath;
 
     // DO NOT RENAME OR REFACTOR!
     // Accessed by package via reflection

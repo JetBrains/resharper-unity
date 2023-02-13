@@ -262,7 +262,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         //UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(PluginEntryPoint.LogPath, 0);
         // works much faster than the commented code, when Rider is already started
-        PluginEntryPoint.OpenAssetHandler.OnOpenedAsset(PluginEntryPoint.LogPath, 0, 0);
+        PluginEntryPoint.OpenAssetHandler.OnOpenedAsset(LogInitializer.LogPath, 0, 0);
       }
       GUI.enabled = previous;
       GUILayout.EndHorizontal();
