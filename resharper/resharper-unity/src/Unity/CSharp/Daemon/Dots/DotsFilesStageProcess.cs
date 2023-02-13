@@ -37,15 +37,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Dots
 
         bool IRecursiveElementProcessor.InteriorShouldBeProcessed(ITreeNode element)
         {
-            if (element is ITypeAndNamespaceHolderDeclaration or INamespaceBody)
+            if (element is ITypeAndNamespaceHolderDeclaration or INamespaceBody or IClassBody)
                 return true;
-
-            if (element is IMethodDeclaration or IPropertyDeclaration)
-                return false;
 
             if (element is not IClassLikeDeclaration classLikeDeclaration) 
-                return true;
-            
+                return false;
             
             var typeElement = classLikeDeclaration.DeclaredElement;
             if (typeElement == null)
