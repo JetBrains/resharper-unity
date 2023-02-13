@@ -8,6 +8,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.util.io.isDirectory
+import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.AssemblyExecutionContext
 import com.jetbrains.rider.RiderEnvironment
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
@@ -18,6 +19,7 @@ import kotlin.concurrent.thread
 import kotlin.io.path.exists
 
 class AppleDeviceListener(project: Project,
+                          lifetime: Lifetime,
                           private val onDeviceAdded: (UnityProcess) -> Unit,
                           private val onDeviceRemoved: (UnityProcess) -> Unit) {
 
@@ -75,9 +77,11 @@ class AppleDeviceListener(project: Project,
         } else {
             null
         }
+
+        lifetime.onTermination { stop() }
     }
 
-    fun stop() {
+    private fun stop() {
         if (thread == null || processHandler == null) {
             return
         }
