@@ -151,7 +151,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             return (null, asNested);
         }
 
-        private static void GenerateBaker(CSharpGeneratorContext context, Dictionary<string, string> componentToAuthoringFieldNames, BakerGenerationInfo generationInfo)
+        private static void GenerateBaker(IGeneratorContext context, Dictionary<string, string> componentToAuthoringFieldNames, BakerGenerationInfo generationInfo)
         {
             var bakerClassDeclarations = generationInfo.ExistedBaker != null 
                 ? generationInfo.ExistedBaker.GetDeclarations().OfType<IClassLikeDeclaration>().ToArray()
@@ -159,36 +159,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             
             var bakeMethodExpression = GetOrCreateBakeMethodExpression(bakerClassDeclarations, generationInfo.Factory, generationInfo, out var authoringParameterName);
             var componentCreationExpression = GetOrCreateComponentCreationExpression(generationInfo.Factory, bakeMethodExpression, generationInfo.ComponentStructDeclaration.DeclaredElement!);
-            var creationExpressionInitializer = GetOrCreateInitializer(componentCreationExpression, generationInfo.Factory);
-
-            //remove all member initialization
-            foreach (var initializer in creationExpressionInitializer.MemberInitializers)
-                creationExpressionInitializer.RemoveMemberInitializer(initializer);
-        
-            var selectedGeneratorElements = context.InputElements.OfType<GeneratorDeclaredElement>();
-            
-            foreach (var generatorElement in selectedGeneratorElements)
+            if(context.InputElements.Count != 0)
             {
-                if (!(generatorElement.DeclaredElement is IField selectedField))
-                    continue;
+                var creationExpressionInitializer = GetOrCreateInitializer(componentCreationExpression, generationInfo.Factory);
 
-                var fieldTypeName = selectedField.Type.GetTypeElement()?.GetClrName();
-                Assertion.AssertNotNull(fieldTypeName);
-                var fieldShortName = selectedField.ShortName;
-                var authoringFieldName = componentToAuthoringFieldNames[fieldShortName];
-                
-                var authoringFieldType = TypeFactory.CreateTypeByCLRName(fieldTypeName, NullableAnnotation.NotAnnotated, selectedField.Module);
+                //remove all member initialization
+                foreach (var initializer in creationExpressionInitializer.MemberInitializers)
+                    creationExpressionInitializer.RemoveMemberInitializer(initializer);
+        
+                var selectedGeneratorElements = context.InputElements.OfType<GeneratorDeclaredElement>();
+                foreach (var generatorElement in selectedGeneratorElements)
+                {
+                    if (generatorElement.DeclaredElement is not IField selectedField)
+                        continue;
 
-                var initializationFormat = "$0.$1";
-                if (ourTypesConversionDictionary.TryGetValue(authoringFieldType.GetClrName(), out var conversionData))
-                    initializationFormat = conversionData.FunctionTemplate;
+                    var fieldTypeName = selectedField.Type.GetTypeElement()?.GetClrName();
+                    Assertion.AssertNotNull(fieldTypeName);
+                    var fieldShortName = selectedField.ShortName;
+                    var authoringFieldName = componentToAuthoringFieldNames[fieldShortName];
                 
-                creationExpressionInitializer.AddMemberInitializerBefore(generationInfo.Factory.CreateObjectPropertyInitializer(
-                    fieldShortName,
-                    generationInfo.Factory.CreateExpression(initializationFormat, authoringParameterName, authoringFieldName)), null);
+                    var authoringFieldType = TypeFactory.CreateTypeByCLRName(fieldTypeName, NullableAnnotation.NotAnnotated, selectedField.Module);
+
+                    var initializationFormat = "$0.$1";
+                    if (ourTypesConversionDictionary.TryGetValue(authoringFieldType.GetClrName(), out var conversionData))
+                        initializationFormat = conversionData.FunctionTemplate;
+                
+                    creationExpressionInitializer.AddMemberInitializerBefore(generationInfo.Factory.CreateObjectPropertyInitializer(
+                        fieldShortName,
+                        generationInfo.Factory.CreateExpression(initializationFormat, authoringParameterName, authoringFieldName)), null);
+                }
+
+                componentCreationExpression.RemoveArgumentList();
             }
-
-            componentCreationExpression.RemoveArgumentList();
+            
             componentCreationExpression.FormatNode(CodeFormatProfile.COMPACT);
         }
 
