@@ -155,7 +155,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
         {
             var bakerClassDeclarations = generationInfo.ExistedBaker != null 
                 ? generationInfo.ExistedBaker.GetDeclarations().OfType<IClassLikeDeclaration>().ToArray()
-                : GetOrCreateBakerClassDeclaration(generationInfo);
+                : CreateBakerClassDeclaration(generationInfo);
             
             var bakeMethodExpression = GetOrCreateBakeMethodExpression(bakerClassDeclarations, generationInfo.Factory, generationInfo, out var authoringParameterName);
             var componentCreationExpression = GetOrCreateComponentCreationExpression(generationInfo.Factory, bakeMethodExpression, generationInfo.ComponentStructDeclaration.DeclaredElement!);
@@ -195,7 +195,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             componentCreationExpression.FormatNode(CodeFormatProfile.COMPACT);
         }
 
-        private static IClassLikeDeclaration[] GetOrCreateBakerClassDeclaration(BakerGenerationInfo generationInfo)
+        private static IClassLikeDeclaration[] CreateBakerClassDeclaration(BakerGenerationInfo generationInfo)
         {
             // get parent class 'bakerTypeWithSubstitution' : Baker<ComponentNameAuthoring>
             var bakerGenericBaseClass = TypeFactory.CreateTypeByCLRName(KnownTypes.Baker, NullableAnnotation.NotAnnotated, generationInfo.Module);
@@ -412,10 +412,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 
                 var componentName = componentStructDeclaration.DeclaredName;
                 var bakerClassName = $"{componentName}Baker";
-                BakerFullName = generateAsNested
-                    ? $"{authoringGenerationResult.AuthoringDeclaration.CLRName}+{bakerClassName}"
-                    : componentStructDeclaration.CLRName.Replace(componentStructDeclaration.DeclaredName, bakerClassName);
-                BakerUniqueClassName = NamingUtil.GetUniqueName(componentStructDeclaration, bakerClassName, NamedElementKinds.TypesAndNamespaces);
+
+                if (ExistedBaker != null)
+                {
+                    BakerFullName = ExistedBaker.GetClrName().FullName;
+                    BakerUniqueClassName = BakerFullName;
+                }
+                else if (generateAsNested)
+                {
+                    BakerFullName = $"{authoringGenerationResult.AuthoringDeclaration.CLRName}+{bakerClassName}";
+                    BakerUniqueClassName = NamingUtil.GetUniqueName(authoringGenerationResult.AuthoringDeclaration, bakerClassName, NamedElementKinds.TypesAndNamespaces);
+
+                }
+                else
+                {
+                    BakerUniqueClassName = NamingUtil.GetUniqueName(componentStructDeclaration, bakerClassName, NamedElementKinds.TypesAndNamespaces);
+                    BakerFullName = $"{authoringGenerationResult.AuthoringDeclaration.CLRName}+{BakerUniqueClassName}";
+                }
+                
                 DeclaredAuthoringType = authoringGenerationResult.AuthoringDeclaredType;
             }
         }
