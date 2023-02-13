@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.IO;
 using JetBrains.Diagnostics;
 using JetBrains.Diagnostics.Internal;
 using JetBrains.Lifetimes;
@@ -7,6 +9,17 @@ namespace JetBrains.Rider.Unity.Editor.Logger
   internal static class LogInitializer
   {
     private static SequentialLifetimes ourLifetimes;
+
+    internal static readonly string LogPath;
+
+    static LogInitializer()
+    {
+      var baseLogPath = UnityUtils.IsInRiderTests
+        ? new FileInfo(UnityUtils.UnityEditorLogPath).Directory.NotNull().FullName
+        : Path.GetTempPath();
+      LogPath = Path.Combine(Path.Combine(baseLogPath, "Unity3dRider"),
+        $"EditorPlugin.{Process.GetCurrentProcess().Id}.log");
+    }
 
     public static void InitLog(Lifetime lifetime, LoggingLevel selectedLoggingLevel)
     {
@@ -19,7 +32,7 @@ namespace JetBrains.Rider.Unity.Editor.Logger
       if (selectedLoggingLevel > LoggingLevel.OFF)
       {
         var lifetime = ourLifetimes.Next();
-        var fileLogFactory = Log.CreateFileLogFactory(lifetime, PluginEntryPoint.LogPath, true, selectedLoggingLevel);
+        var fileLogFactory = Log.CreateFileLogFactory(lifetime, LogPath, true, selectedLoggingLevel);
         fileLogFactory.Handlers += message =>
         {
           if (lifetime.IsAlive && (message.Level == LoggingLevel.ERROR || message.Level == LoggingLevel.FATAL))
