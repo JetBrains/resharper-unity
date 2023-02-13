@@ -1,7 +1,5 @@
 using System;
 using JetBrains.Application.I18n;
-using JetBrains.DataFlow;
-using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Util;
 
@@ -10,25 +8,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
     [SolutionComponent]
     public class UnityTypesProvider
     {
-        private Lazy<UnityTypes> myTypes;
+        private readonly Lazy<UnityTypes> myTypes;
 
-        public UnityTypesProvider()
+        public UnityTypesProvider(CultureContextComponent cultureContextComponent)
         {
-            CultureContextComponent.Instance.WhenNotNull(Lifetime.Eternal, (lifetime, instance) =>
+            myTypes = Lazy.Of(() =>
             {
-                lifetime.Bracket(() =>
-                    {
-                        myTypes = Lazy.Of(() =>
-                        {
-                            var apiXml = new ApiXml();
-                            return apiXml.LoadTypes(instance.Culture.Value);
-                        }, true);
-                    },
-                    () =>
-                    {
-                        myTypes = null;
-                    });
-            });
+                var apiXml = new ApiXml();
+                return apiXml.LoadTypes(cultureContextComponent.Culture.Value);
+            }, true);
         }
 
         public UnityTypes Types => myTypes.Value;
