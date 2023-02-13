@@ -14,16 +14,17 @@ namespace ApiParser
     {
         public static void Main(string[] args)
         {
-            if (args.Length != 1 && args.Length != 2)
+            if (args.Length != 1 && args.Length != 2 && args.Length != 3)
             {
                 Console.WriteLine("Usage: ApiParser.exe docsFolder");
                 Console.WriteLine("       ApiParser.exe apiXmlPath version");
+                Console.WriteLine("       ApiParser.exe docsFolder apiXmlPath version");
                 Console.WriteLine();
                 Console.WriteLine("ApiParser.exe docsFolder");
                 Console.WriteLine("  Parse all documentation installed by Unity Hub, as well as everything in the docsFolder and create a new api.xml");
                 Console.WriteLine();
                 Console.WriteLine("  docsFolder - folder that contains multiple versions of Unity docs");
-                Console.WriteLine("               Contents should be in the format Documentation-X.Y.ZfA/Documentation/en/ScriptReference");
+                Console.WriteLine("               Contents should be in the format Documentation-X.Y.ZfA/Documentation/CountryCode/ScriptReference");
                 Console.WriteLine();
                 Console.WriteLine("ApiParser.exe apiXmlPath version");
                 Console.WriteLine("  Parse the installed documentation corresponding to version and merge into an existing api.xml file");
@@ -31,58 +32,82 @@ namespace ApiParser
                 Console.WriteLine("  apiXmlPath - location of api.xml to read and merge into");
                 Console.WriteLine("  version - version of Unity to read docs from. Must be installed in standard Unity Hub location");
                 Console.WriteLine();
+                Console.WriteLine("ApiParser.exe docsFolder apiXmlPath version");
+                Console.WriteLine("  Parse the installed documentation corresponding to version and merge into an existing api.xml file");
+                Console.WriteLine();
+                Console.WriteLine("  docsFolder - folder that contains multiple versions of Unity docs");
+                Console.WriteLine("               Contents should be in the format Documentation-X.Y.ZfA/Documentation/CountryCode/ScriptReference");
+                Console.WriteLine("  apiXmlPath - location of api.xml to read and merge into");
+                Console.WriteLine("  version - version of Unity to read docs from.");
+                Console.WriteLine();
                 Console.WriteLine("Note that the output file is written to the current directory");
                 return;
             }
 
             var stopwatch = Stopwatch.StartNew();
             var apiXml = FileSystemPath.Parse("api.xml");
-
-            var docVersions = new List<(string, Version)>();
+            
+            var docFolders = new List<FileSystemPath>();
             if (args.Length == 1)
             {
                 Directory.SetCurrentDirectory(args[0]);
-                foreach (var directory in Directory.EnumerateDirectories(Directory.GetCurrentDirectory()))
-                {
-                    var docFolder = Path.Combine(Directory.GetCurrentDirectory(), directory);
-                    var version = Regex.Match(directory, @"Documentation-(\d+.\d+)").Groups[1].Value;
-                    docVersions.Add((docFolder, Version.Parse(version)));
-                }
+                docFolders.AddRange(FileSystemPath.Parse(args[0]).GetDirectoryEntries("*", PathSearchFlags.ExcludeFiles).Select(a=>a.GetAbsolutePath()));
 
-                foreach (var directory in Directory.EnumerateDirectories(Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Unity", "Hub", "Editor")))
-                {
-                    var docFolder = GetDocumentationRoot(directory).FullPath;
-                    var version = Regex.Match(directory, @"(\d+.\d+)").Groups[1].Value;
-                    docVersions.Add((docFolder, Version.Parse(version)));
-                }
-
-                docVersions = docVersions.OrderBy(v => v.Item2).ToList();
+                var unityPathInProgramFiles = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Unity", "Hub", "Editor");
+                if (Directory.Exists(unityPathInProgramFiles))
+                    docFolders.AddRange(Directory.EnumerateDirectories(unityPathInProgramFiles)
+                        .Select(GetDocumentationRoot));
             }
-            else
+            else if (args.Length == 2)
             {
                 apiXml = FileSystemPath.ParseRelativelyTo(args[0], FileSystemPath.Parse(Directory.GetCurrentDirectory()));
                 if (!apiXml.ExistsFile)
                     throw new InvalidOperationException("api.xml path does not exist");
 
                 var requiredVersion = args[1];
-                var docRoot = GetDocumentationRoot(requiredVersion);
-                if (!docRoot.ExistsDirectory)
-                    throw new InvalidOperationException($"Cannot find locally installed docs: {docRoot}");
-                var parseableVersion = Regex.Match(requiredVersion, @"^(\d+\.\d+)").Groups[1].Value;
-                docVersions.Add((docRoot.FullPath, Version.Parse(parseableVersion)));
+                var docFolder = GetDocumentationRoot(requiredVersion);
+                if (!docFolder.ExistsDirectory)
+                    throw new InvalidOperationException($"Cannot find locally installed docs: {docFolder}");
+                docFolders.Add(docFolder);
+            }
+            else
+            {
+                Directory.SetCurrentDirectory(args[0]);
+                docFolders.AddRange(FileSystemPath.Parse(args[0]).GetDirectoryEntries("*", PathSearchFlags.ExcludeFiles).Select(a=>a.GetAbsolutePath()));
+                
+                apiXml = FileSystemPath.ParseRelativelyTo(args[1], FileSystemPath.Parse(Directory.GetCurrentDirectory()));
+                if (!apiXml.ExistsFile)
+                    throw new InvalidOperationException("api.xml path does not exist");
+
+                var requiredVersion = args[2];
+                // todo: search requiredVersion among GetDocumentationRoot(requiredVersion);
             }
 
+            var docVersions = new List<(FileSystemPath, Version, RiderSupportedLanguages)>();
+            foreach (var docFolder in docFolders)
+            {
+                var directoryName = docFolder.Name;
+                var version = Regex.Match(directoryName, @"Documentation-(\d+.\d+)").Groups[1].Value;
+                var langFolders = docFolder.Combine("Documentation").GetChildren();
+                foreach (var folder in langFolders)
+                {
+                    docVersions.Add((folder.GetAbsolutePath(), Version.Parse(version), LocalizationUtil.TranslateCountryCodeIntoLanguageCode(folder.GetAbsolutePath().Name)));    
+                }
+            }
+                
+            docVersions = docVersions.OrderBy(v => v.Item2).ToList();
+            
             var unityApi = new UnityApi();
             if (apiXml.ExistsFile)
                 unityApi = UnityApi.ImportFrom(apiXml);
             var typeResolver = new TypeResolver();
             var parser = new ApiParser(unityApi, typeResolver);
 
-            foreach (var (name, version) in docVersions)
+            foreach (var (name, version, langCode) in docVersions)
             {
-                Console.WriteLine($"{name} ({version})");
-                parser.ParseFolder(name, version);
+                Console.WriteLine($"{name} ({version}) {langCode}");
+                parser.ParseFolder(name.FullPath, version, langCode);
 
                 AddUndocumentedApis(unityApi, version);
             }
@@ -178,9 +203,9 @@ namespace ApiParser
                 {
                     function.SetIsStatic();
                     function.SetReturnType(ApiType.Bool);
-                    var newParameter = new UnityApiParameter("assetPath", ApiType.String, string.Empty);
+                    var newParameter = new UnityApiParameter("assetPath", ApiType.String);
                     function.UpdateParameterIfExists("arg1", newParameter);
-                    newParameter = new UnityApiParameter("message", ApiType.StringByRef, string.Empty);
+                    newParameter = new UnityApiParameter("message", ApiType.StringByRef);
                     function.UpdateParameterIfExists("arg2", newParameter);
                 }
 
@@ -188,9 +213,9 @@ namespace ApiParser
                 {
                     function.SetIsStatic();
                     function.SetReturnType(typeResolver.CreateApiType("UnityEditor.AssetDeleteResult"));
-                    var newParameter = new UnityApiParameter("assetPath", ApiType.String, string.Empty);
+                    var newParameter = new UnityApiParameter("assetPath", ApiType.String);
                     function.UpdateParameterIfExists("arg1", newParameter);
-                    newParameter = new UnityApiParameter("options", new ApiType("UnityEditor.RemoveAssetOptions"), string.Empty);
+                    newParameter = new UnityApiParameter("options", new ApiType("UnityEditor.RemoveAssetOptions"));
                     function.UpdateParameterIfExists("arg2", newParameter);
                 }
 
@@ -198,9 +223,9 @@ namespace ApiParser
                 {
                     function.SetIsStatic();
                     function.SetReturnType(typeResolver.CreateApiType("UnityEditor.AssetMoveResult"));
-                    var newParameter = new UnityApiParameter("sourcePath", ApiType.String, string.Empty);
+                    var newParameter = new UnityApiParameter("sourcePath", ApiType.String);
                     function.UpdateParameterIfExists("arg1", newParameter);
-                    newParameter = new UnityApiParameter("destinationPath", ApiType.String, string.Empty);
+                    newParameter = new UnityApiParameter("destinationPath", ApiType.String);
                     function.UpdateParameterIfExists("arg2", newParameter);
                 }
             }
@@ -283,8 +308,9 @@ namespace ApiParser
                         "This is called after importing of any number of assets is complete (when the Assets progress bar has reached the end).";
                     var functions = type.FindEventFunctions("OnPostprocessAllAssets");
                     eventFunction = new UnityApiEventFunction("OnPostprocessAllAssets",
-                        true, false, ApiType.Void, apiVersion, description,
-                        "Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessAllAssets.html");
+                        true, false, ApiType.Void, apiVersion,
+                        "ScriptReference/AssetPostprocessor.OnPostprocessAllAssets.html");
+                    eventFunction.AddDescription(description, RiderSupportedLanguages.iv);
                     eventFunction.AddParameter("importedAssets", ApiType.StringArray);
                     eventFunction.AddParameter("deletedAssets", ApiType.StringArray);
                     eventFunction.AddParameter("movedAssets", ApiType.StringArray);
@@ -347,15 +373,13 @@ namespace ApiParser
             if (type != null && apiVersion < new Version(2020, 1))
             {
                 // Documented in 2020.1
-                var eventFunction = new UnityApiEventFunction("OnValidate", false, false, ApiType.Void, apiVersion,
-                    description:
-                    "This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only).",
-                    undocumented: true);
+                var eventFunction = new UnityApiEventFunction("OnValidate", false, false, ApiType.Void, apiVersion, undocumented: true);
+                eventFunction.AddDescription("This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only).", RiderSupportedLanguages.iv);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 // Documented in 2020.1
-                eventFunction = new UnityApiEventFunction("Reset", false, false, ApiType.Void, apiVersion,
-                    description: "Reset to default values.", undocumented: true);
+                eventFunction = new UnityApiEventFunction("Reset", false, false, ApiType.Void, apiVersion, undocumented: true);
+                eventFunction.AddDescription("Reset to default values.", RiderSupportedLanguages.iv);
                 type.MergeEventFunction(eventFunction, apiVersion);
             }
 
@@ -366,17 +390,17 @@ namespace ApiParser
                 // Editor.OnPreSceneGUI has been around since at least 2017.1. Still undocumented as of 2020.2
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/SceneView/SceneView.cs#L2436
                 var eventFunction = new UnityApiEventFunction("OnPreSceneGUI", false, false, ApiType.Void, apiVersion,
-                    description: "Called before the Scene view is drawn.",
                     undocumented: true);
+                eventFunction.AddDescription("Called before the Scene view is drawn.", RiderSupportedLanguages.iv);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 // Editor.OnSceneDrag has been around since at least 2017.1. Still undocumented as of 2020.2
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/GUI/EditorCache.cs#L63
                 eventFunction = new UnityApiEventFunction("OnSceneDrag", false, false, ApiType.Void, apiVersion,
-                    description: "Called for each object dragged onto the scene view",
                     undocumented: true);
-                eventFunction.AddParameter("sceneView", new ApiType("UnityEditor.SceneView"), "The current scene view");
-                eventFunction.AddParameter("index", ApiType.Int, "The index into the DragAndDrop.objectReferences array");
+                eventFunction.AddDescription("Called for each object dragged onto the scene view", RiderSupportedLanguages.iv);
+                eventFunction.AddParameter("sceneView", new ApiType("UnityEditor.SceneView"), new KeyValuePair<RiderSupportedLanguages, string>(RiderSupportedLanguages.iv, "The current scene view"));
+                eventFunction.AddParameter("index", ApiType.Int, new KeyValuePair<RiderSupportedLanguages, string>(RiderSupportedLanguages.iv, "The index into the DragAndDrop.objectReferences array"));
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 if (apiVersion < new Version(2020, 2))
@@ -386,8 +410,8 @@ namespace ApiParser
                     // https://docs.unity3d.com/2020.2/Documentation/ScriptReference/Editor.HasFrameBounds.html
                     eventFunction = new UnityApiEventFunction("HasFrameBounds", false, false, ApiType.Bool,
                         apiVersion,
-                        description: "Validates whether custom bounds can be calculated for this editor.",
                         undocumented: true);
+                    eventFunction.AddDescription("Validates whether custom bounds can be calculated for this editor.", RiderSupportedLanguages.iv);
                     type.MergeEventFunction(eventFunction, apiVersion);
 
                     // Editor.OnGetFrameBounds has been around since at least 2017.1. First documented in 2020.2
@@ -395,8 +419,8 @@ namespace ApiParser
                     // https://docs.unity3d.com/2020.2/Documentation/ScriptReference/Editor.OnGetFrameBounds.html
                     eventFunction = new UnityApiEventFunction("OnGetFrameBounds", false, false,
                         new ApiType("UnityEngine.Bounds"), apiVersion,
-                        description: "Gets custom bounds for the target of this editor.",
                         undocumented: true);
+                    eventFunction.AddDescription("Gets custom bounds for the target of this editor.", RiderSupportedLanguages.iv);
                     type.MergeEventFunction(eventFunction, apiVersion);
                 }
             }
@@ -409,38 +433,38 @@ namespace ApiParser
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/HostView.cs#L290
                 // http://www.improck.com/2014/11/editorwindow-modifier-keys/
                 var eventFunction = new UnityApiEventFunction("ModifierKeysChanged", false, false, ApiType.Void, apiVersion,
-                    description: "Called when the modifier keys are changed. Automatically registers and de-registers the EditorApplication.modifierKeysChanged event",
                     undocumented: true);
+                eventFunction.AddDescription("Called when the modifier keys are changed. Automatically registers and de-registers the EditorApplication.modifierKeysChanged event", RiderSupportedLanguages.iv);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 // EditorWindow.ShowButton has been around since at least 2017.1. Still undocumented as of 2020.2
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/HostView.cs#L356
                 // http://www.improck.com/2014/11/editorwindow-inspector-lock-icon/
                 eventFunction = new UnityApiEventFunction("ShowButton", false, false, ApiType.Void, apiVersion,
-                    description: "Allow Editor panes to show a small button next to the generic menu (e.g. inspector lock icon)",
                     undocumented: true);
-                eventFunction.AddParameter("rect", new ApiType("UnityEngine.Rect"), "Position to draw the button");
+                eventFunction.AddDescription("Allow Editor panes to show a small button next to the generic menu (e.g. inspector lock icon)", RiderSupportedLanguages.iv);
+                eventFunction.AddParameter("rect", new ApiType("UnityEngine.Rect"), new KeyValuePair<RiderSupportedLanguages, string>(RiderSupportedLanguages.iv, "Position to draw the button"));
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 // EditorWindow.OnBecameVisible has been around since at least 2017.1. Still undocumented as of 2020.2
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/HostView.cs#L302
                 eventFunction = new UnityApiEventFunction("OnBecameVisible", false, false, ApiType.Void, apiVersion,
-                    description: "Called when an editor window has been opened",
                     undocumented: true);
+                eventFunction.AddDescription("Called when an editor window has been opened", RiderSupportedLanguages.iv);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 // EditorWindow.OnBecameInvisible has been around since at least 2017.1. Still undocumented as of 2020.2
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/HostView.cs#L337
                 eventFunction = new UnityApiEventFunction("OnBecameInvisible", false, false, ApiType.Void, apiVersion,
-                    description: "Called when an editor window has been closed",
                     undocumented: true);
+                eventFunction.AddDescription("Called when an editor window has been closed", RiderSupportedLanguages.iv);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 // EditorWindow.OnDidOpenScene has been around since at least 2017.1. Still undocumented as of 2020.2
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/HostView.cs#L163
                 eventFunction = new UnityApiEventFunction("OnDidOpenScene", false, false, ApiType.Void, apiVersion,
-                    description: "Called when a scene has been opened",
                     undocumented: true);
+                eventFunction.AddDescription("Called when a scene has been opened", RiderSupportedLanguages.iv);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 if (apiVersion >= new Version(2019, 1))
@@ -448,15 +472,16 @@ namespace ApiParser
                     // EditorWindow.OnAddedAsTab was introduced in 2019.1. Still undocumented as of 2020.2
                     // https://github.com/Unity-Technologies/UnityCsReference/blob/2019.1/Editor/Mono/GUI/DockArea.cs#L188
                     eventFunction = new UnityApiEventFunction("OnAddedAsTab", false, false, ApiType.Void, apiVersion,
-                        description: "Called when the editor window is added as a tab",
                         undocumented: true);
+                    eventFunction.AddDescription("Called when the editor window is added as a tab", RiderSupportedLanguages.iv);
                     type.MergeEventFunction(eventFunction, apiVersion);
 
                     // EditorWindow.OnBeforeRemovedAsTab was introduced in 2019.1
                     // https://github.com/Unity-Technologies/UnityCsReference/blob/2019.1/Editor/Mono/GUI/DockArea.cs#L195
                     eventFunction = new UnityApiEventFunction("OnBeforeRemovedAsTab", false, false, ApiType.Void, apiVersion,
-                        description: "Called before an editor window is removed as a tab",
                         undocumented: true);
+                    eventFunction.AddDescription("Called before an editor window is removed as a tab", RiderSupportedLanguages.iv);
+                    type.MergeEventFunction(eventFunction, apiVersion);
                 }
 
                 if (apiVersion >= new Version(2019, 3))
@@ -464,8 +489,8 @@ namespace ApiParser
                     // EditorWindow.OnTabDetached was introduced in 2019.3
                     // https://github.com/Unity-Technologies/UnityCsReference/blob/2019.3/Editor/Mono/GUI/DockArea.cs#L940
                     eventFunction = new UnityApiEventFunction("OnTabDetached", false, false, ApiType.Void, apiVersion,
-                        description: "Called during drag and drop, when an editor window tab is detached",
                         undocumented: true);
+                    eventFunction.AddDescription("Called during drag and drop, when an editor window tab is detached", RiderSupportedLanguages.iv);
                     type.MergeEventFunction(eventFunction, apiVersion);
                 }
 
@@ -476,8 +501,8 @@ namespace ApiParser
                     // See comment here
                     // https://github.com/Unity-Technologies/UnityCsReference/blob/2020.1/Editor/Mono/ExternalPlayModeView/ExternalPlayModeView.cs#L112
                     eventFunction = new UnityApiEventFunction("OnMainWindowMove", false, false, ApiType.Void, apiVersion,
-                        description: "Called when the main window is moved",
                         undocumented: true);
+                    eventFunction.AddDescription("Called when the main window is moved", RiderSupportedLanguages.iv);
                     type.MergeEventFunction(eventFunction, apiVersion);
                 }
             }

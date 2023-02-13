@@ -8,10 +8,10 @@ namespace ApiParser
         {
             Name = name;
             Type = type;
+            Descriptions = new UnityApiDescriptions();
         }
 
-        [CanBeNull]
-        public string Description { get; set; }
+        public UnityApiDescriptions Descriptions;
 
         [NotNull]
         public string Name { get; set; }
