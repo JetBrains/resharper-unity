@@ -5,7 +5,6 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Dots
 {
@@ -38,28 +37,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Dots
 
         bool IRecursiveElementProcessor.InteriorShouldBeProcessed(ITreeNode element)
         {
-            if (element is ITypeAndNamespaceHolderDeclaration or INamespaceBody or IClassBody)
+            if (element is ITypeAndNamespaceHolderDeclaration or INamespaceBody)
                 return true;
 
-            if (element is not IClassLikeDeclaration classLikeDeclaration)
+            if (element is IMethodDeclaration or IPropertyDeclaration)
                 return false;
 
+            if (element is not IClassLikeDeclaration classLikeDeclaration) 
+                return true;
+            
+            
             var typeElement = classLikeDeclaration.DeclaredElement;
             if (typeElement == null)
                 return false;
 
             if (!UnityApi.IsDerivesFromISystem(typeElement) && !UnityApi.IsDerivesFromSystemBase(typeElement))
-                return false;
-
-            foreach (var methodInstance in typeElement.GetAllClassMembers<IMethod>())
+                return true;
+            
+            foreach (var methodDeclaration in classLikeDeclaration.MethodDeclarationsEnumerable)
             {
-                if (DaemonProcess.InterruptFlag) break;
-                var method = methodInstance.Member;
-                if (!method.IsStatic)
+                if (DaemonProcess.InterruptFlag) 
+                    break;
+                
+                var method = methodDeclaration.DeclaredElement;
+                if ( method is { IsStatic: false })
                     myTypeUsageProcess.SetElementState(method, UsageState.CANNOT_BE_STATIC);
             }
 
-            return false;
+            return true;
         }
 
         void IRecursiveElementProcessor.ProcessBeforeInterior(ITreeNode element)

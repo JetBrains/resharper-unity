@@ -14,6 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Dots
 
         [Test] public void ISystemTest() { DoNamedTest(); }
         [Test] public void SystemBaseTest() { DoNamedTest(); }
+        [Test] public void SystemBaseNestedTest() { DoNamedTest(); }
 
         protected override void DoTest(Lifetime lifetime, IProject project)
         {
