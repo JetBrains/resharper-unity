@@ -22,8 +22,7 @@ namespace ApiParser
         private static readonly Regex CaptureArgumentsRegex =
             new Regex(@"^(?:[\w.]+)?\.(?:\w+)(?:\((?<args>.*)\)|(?<args>.*))$", RegexOptions.Compiled);
 
-        private static readonly string ScriptReferenceRelativePath =
-            Path.Combine("ScriptReference");
+        private static readonly string ScriptReferenceRelativePath = "ScriptReference";
 
         private readonly UnityApi myApi;
         private readonly TypeResolver myTypeResolver;
