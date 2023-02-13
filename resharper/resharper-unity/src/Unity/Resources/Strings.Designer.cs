@@ -61,6 +61,8 @@
     public static string AddExpensiveCommentContextAction_Name => ResourceManager.GetString("AddExpensiveCommentContextAction_Name");
     public static string AddHeaderAttributeAction_Description => ResourceManager.GetString("AddHeaderAttributeAction_Description");
     public static string AddHeaderAttributeAction_Name => ResourceManager.GetString("AddHeaderAttributeAction_Name");
+    public static string AdditionalFileLayoutSettings_s_Additional_Unity_C__file_layout_pattern => ResourceManager.GetString("AdditionalFileLayoutSettings_s_Additional_Unity_C__file_layout_pattern");
+    public static string AdditionalFileLayoutSettings_s_File_Layout_Pattern => ResourceManager.GetString("AdditionalFileLayoutSettings_s_File_Layout_Pattern");
     public static string AddPerformanceAnalysisDisableCommentContextAction_Name => ResourceManager.GetString("AddPerformanceAnalysisDisableCommentContextAction_Name");
     public static string AddRangeAttributeAction_Description => ResourceManager.GetString("AddRangeAttributeAction_Description");
     public static string AddRangeAttributeAction_Name => ResourceManager.GetString("AddRangeAttributeAction_Name");
@@ -356,12 +358,16 @@
     public static string TypeParameterMustBeUnmanagedIsNotMessage => ResourceManager.GetString("TypeParameterMustBeUnmanagedIsNotMessage");
     public static string Unity_Internal_DumpDuplicateTypeNames_Text => ResourceManager.GetString("Unity_Internal_DumpDuplicateTypeNames_Text");
     public static string Unity_Internal_DumpSpellCheckWordLists_Text => ResourceManager.GetString("Unity_Internal_DumpSpellCheckWordLists_Text");
+    public static string Unity_Internal_SerializeReferencesDump_Text => ResourceManager.GetString("Unity_Internal_SerializeReferencesDump_Text");
     public static string UnityAssetsFolder_Text => ResourceManager.GetString("UnityAssetsFolder_Text");
     public static string UnityAssetSpecificOccurrenceKinds_ComponentUsage_Unity_component_usage => ResourceManager.GetString("UnityAssetSpecificOccurrenceKinds_ComponentUsage_Unity_component_usage");
     public static string UnityAssetSpecificOccurrenceKinds_EventHandler_Unity_event_handler => ResourceManager.GetString("UnityAssetSpecificOccurrenceKinds_EventHandler_Unity_event_handler");
     public static string UnityAssetSpecificOccurrenceKinds_InspectorUsage_Inspector_values => ResourceManager.GetString("UnityAssetSpecificOccurrenceKinds_InspectorUsage_Inspector_values");
     public static string UnityCommonIconProvider_GetEventFunctionTooltip_This_function_can_be_a_coroutine_ => ResourceManager.GetString("UnityCommonIconProvider_GetEventFunctionTooltip_This_function_can_be_a_coroutine_");
     public static string UnityCommonIconProvider_GetEventFunctionTooltip_Unity_event_function => ResourceManager.GetString("UnityCommonIconProvider_GetEventFunctionTooltip_Unity_event_function");
+    public static string UnityCSharpFormattingSettingsKey_s_Blank_lines_after_the__Header__annotations => ResourceManager.GetString("UnityCSharpFormattingSettingsKey_s_Blank_lines_after_the__Header__annotations");
+    public static string UnityCSharpFormattingSettingsKey_s_Force_a_line_break_after_any__Header__annotations => ResourceManager.GetString("UnityCSharpFormattingSettingsKey_s_Force_a_line_break_after_any__Header__annotations");
+    public static string UnityCSharpFormattingSettingsKey_s_Settings_for_Unity_specific_C__formatting => ResourceManager.GetString("UnityCSharpFormattingSettingsKey_s_Settings_for_Unity_specific_C__formatting");
     public static string UnityDots_Add_RequireForUpdate_SingletonQuickFix => ResourceManager.GetString("UnityDots_Add_RequireForUpdate_SingletonQuickFix");
     public static string UnityDots_Add_RequireForUpdate_SingletonQuickFix_For_All => ResourceManager.GetString("UnityDots_Add_RequireForUpdate_SingletonQuickFix_For_All");
     public static string UnityDots_AddComponentLookup_Update_Text => ResourceManager.GetString("UnityDots_AddComponentLookup_Update_Text");
@@ -380,6 +386,12 @@
     public static string UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle");
     public static string UnityDots_GetSingletonMustBeRequested => ResourceManager.GetString("UnityDots_GetSingletonMustBeRequested");
     public static string UnityDots_projects => ResourceManager.GetString("UnityDots_projects");
+    public static string UnityDots_GenerateRefAccessors_Name => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Name");
+    public static string UnityDots_GenerateRefAccessors_Description => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Description");
+    public static string UnityDots_GenerateRefAccessors_Unity_Component_Fields_Title => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Unity_Component_Fields_Title");
+    public static string UnityDots_GenerateRefAccessors_Unity_Component_Fields_WindowTitle => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Unity_Component_Fields_WindowTitle");
+    public static string UnityDots_GenerateRefAccessors_Unity_Component_Fields_Description => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Unity_Component_Fields_Description");
+    public static string UnityDots_GenerateRefAccessors_Generate_Setters => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Generate_Setters");
     public static string UnityEditorFolder_Text => ResourceManager.GetString("UnityEditorFolder_Text");
     public static string UnityEventFunctionInheritanceMarkOnGutter_KindName_Unity_event_function => ResourceManager.GetString("UnityEventFunctionInheritanceMarkOnGutter_KindName_Unity_event_function");
     public static string UnityFindUsagesProvider_GetNotFoundMessage__are_only_implicit_ => ResourceManager.GetString("UnityFindUsagesProvider_GetNotFoundMessage__are_only_implicit_");
@@ -483,5 +495,9 @@
     public static string UsingnewToInstantiateAClassDerivedFromMonoBehaviourWillNotAttachItToAGameObjectInstanceAndUnityWillNotCallAnyEventFunctionsCreateANewInstanceUsingGameObjectAddComponentT => ResourceManager.GetString("UsingnewToInstantiateAClassDerivedFromMonoBehaviourWillNotAttachItToAGameObjectInstanceAndUnityWillNotCallAnyEventFunctionsCreateANewInstanceUsingGameObjectAddComponentT");
     public static string UsingnewToInstantiateAClassDerivedFromScriptableObjectMeansThatUnityWillNotCallAnyEventFunctionsCreateANewInstanceUsingGameObjectAddComponentT => ResourceManager.GetString("UsingnewToInstantiateAClassDerivedFromScriptableObjectMeansThatUnityWillNotCallAnyEventFunctionsCreateANewInstanceUsingGameObjectAddComponentT");
     public static string WritingToAStaticFieldIsNotSupported => ResourceManager.GetString("WritingToAStaticFieldIsNotSupported");
+    public static string ShowExpensiveCallsBulbAction_Text_Show_outgoing_Expensive_calls => ResourceManager.GetString("ShowExpensiveCallsBulbAction_Text_Show_outgoing_Expensive_calls");
+    public static string ShowExpensiveCallsBulbAction_Text_Show_incoming_Expensive_calls => ResourceManager.GetString("ShowExpensiveCallsBulbAction_Text_Show_incoming_Expensive_calls");
+    public static string UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode => ResourceManager.GetString("UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode");
+    public static string ModifyInspectorAttributes_Text => ResourceManager.GetString("ModifyInspectorAttributes_Text");
   }
 }

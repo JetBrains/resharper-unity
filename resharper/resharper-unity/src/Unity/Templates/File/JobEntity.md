@@ -6,7 +6,7 @@ reformat: True
 shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=Aspect, ValidateFileName=True
-scopes:  UnityFileTemplateSectionMarker;UnityDotsScope
+scopes: UnityDotsScope
 uitag: DOTS
 parameterOrder: HEADER, (JOBENTITY), (NAMESPACE)
 HEADER-expression: fileheader()
@@ -14,7 +14,7 @@ ASPECT-expression: getAlphaNumericFileNameWithoutExtension
 NAMESPACE-expression: fileDefaultNamespace()
 ---
 
-# IAspect
+# IJobEntity
 
 ```
 $HEADER$namespace $NAMESPACE$ 

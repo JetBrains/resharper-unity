@@ -1,5 +1,6 @@
+#nullable enable
+
 using System;
-using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
@@ -18,9 +19,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Caches
         private readonly Lifetime myLifetime;
         private readonly DeferredHelperCache myCache;
         private readonly IShellLocks myLocks;
-        [CanBeNull] private readonly BackgroundProgressManager myBackgroundProgressManager;
+        private readonly BackgroundProgressManager? myBackgroundProgressManager;
 
-        public RiderDeferredCacheProgressBar(Lifetime lifetime, DeferredHelperCache cache, IShellLocks locks, [CanBeNull] BackgroundProgressManager backgroundProgressManager = null)
+        public RiderDeferredCacheProgressBar(Lifetime lifetime, DeferredHelperCache cache, IShellLocks locks, BackgroundProgressManager? backgroundProgressManager = null)
             : base(lifetime, cache)
         {
             myLifetime = lifetime;
@@ -42,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Caches
 
                 var count = myCache.FilesToProcess.Count;
                 var processedCount = 0;
-                var progress = new Property<double>(startLifetime, "DeferredCacheProgressBarProgress", 0);
+                var progress = new Property<double>("DeferredCacheProgressBarProgress", 0);
 
                 myCache.AfterRemoveFromProcess.Advise(startLifetime, _ =>
                 {
@@ -51,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Caches
                         progress.Value = Math.Min(0.99, ((double) processedCount) / count);
                 });
 
-                var description = new Property<string>(startLifetime, "DeferredCacheProgressBarDescription", Strings.RiderDeferredCacheProgressBar_Start_Processing_assets);
+                var description = new Property<string>("DeferredCacheProgressBarDescription", Strings.RiderDeferredCacheProgressBar_Start_Processing_assets);
                 var task = BackgroundProgressBuilder.Create()
                     .WithTitle(Strings.RiderDeferredCacheProgressBar_Start_Calculating_asset_index)
                     .WithDescription(description)

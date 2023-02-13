@@ -92,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 "Unity::PackageManager::WaitForPackagesLockJson", TimeSpan.FromMilliseconds(2000), Rgc.Guarded,
                 DoRefresh);
 
-            myPackagesById = new DictionaryEvents<string, PackageData>(lifetime, "Unity::PackageManager");
+            myPackagesById = new DictionaryEvents<string, PackageData>("Unity::PackageManager");
             myPackageLifetimes = new Dictionary<string, LifetimeDefinition>();
 
             myPackagesFolder = mySolution.SolutionDirectory.Combine("Packages");
@@ -100,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             myManifestPath = myPackagesFolder.Combine("manifest.json");
             myLocalPackageCacheFolder = UnityCachesFinder.GetLocalPackageCacheFolder(mySolution.SolutionDirectory);
 
-            Updating = new Property<bool?>(lifetime, "PackageManger::Update");
+            Updating = new Property<bool?>("PackageManager::Update");
 
             // use IsUnityProjectFolder, otherwise frontend would not have packages information, when folder is opened
             // and incorrect notification text might be displayed
@@ -122,13 +122,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             Packages.AddRemove.Advise(lifetime, args =>
             {
                 var packageData = args.Value.Value;
-                
                 if(packageData.PackageFolder.IsNullOrEmpty())
                     return;
-                
+
                 if (args.IsAdding)
                     myFileSystemPathTrie.Add(packageData.PackageFolder, packageData);
-                    
+
                 if (args.IsRemoving)
                     myFileSystemPathTrie.Remove(packageData.PackageFolder);
             });
@@ -145,16 +144,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         public PackageData? GetPackageById(string id) =>
             myPackagesById.TryGetValue(id, out var packageData) ? packageData : null;
 
-        public PackageData? GetOwningPackage(VirtualFileSystemPath path)
-        {
-            foreach (var packageData in myPackagesById.Values)
-            {
-                if (packageData.PackageFolder != null && packageData.PackageFolder.IsPrefixOf(path))
-                    return packageData;
-            }
+        public bool HasPackage(string id) => GetPackageById(id) != null;
 
-            return null;
-        }
+        public PackageData? GetOwningPackage(VirtualFileSystemPath path) =>
+            myFileSystemPathTrie.FindLongestPrefix(path);
 
         public void RefreshPackages() => ScheduleRefresh();
 
@@ -261,7 +254,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 // Remove any left overs
                 foreach (var id in existingPackages)
                     RemovePackage(id);
-
             }
             finally
             {
@@ -287,7 +279,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                         myLogger.Info("manifest.json does not exist");
                         return GetPackagesFromPackagesLockJson();
                     }
-                    
+
                     var projectManifest = Logger.CatchSilent(() => ManifestJson.FromJson(myManifestPath.ReadAllText2().Text));
 
                     if (projectManifest == null)
@@ -295,7 +287,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                         myLogger.Info("failed to parse manifest.json");
                         return GetPackagesFromPackagesLockJson();
                     }
-                    
+
                     // special case, when the lock file is disabled, but maybe present on the disk
                     if (projectManifest.EnableLockFile.HasValue && !projectManifest.EnableLockFile.Value)
                     {
@@ -304,7 +296,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                     }
 
                     return GetPackagesFromPackagesLockJson() ?? GetPackagesFromManifestJson(projectManifest);
-
                 },
                 p => p != null ? $"{p.Count} packages" : "Null list of packages. Something went wrong");
         }
@@ -334,9 +325,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             return myLogger.CatchSilent(() =>
             {
                 var packageLockJson = myPackagesLockPath.ReadAllText2().Text;
-                myLogger.Trace($"package json text:\n{packageLockJson}");
+                myLogger.Trace("package json test:\n{0}", packageLockJson);
                 var packagesLockJson = PackagesLockJson.FromJson(packageLockJson);
-             
+
                 var packages = new List<PackageData>();
                 foreach (var (id, details) in packagesLockJson.Dependencies)
                     packages.Add(GetPackageData(id, details, builtInPackagesFolder));
@@ -453,7 +444,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 }
                 else
                 {
-                    myLogger.Info("packages-lock.json out of date. Most likely reason: Unity not running");    
+                    myLogger.Info("packages-lock.json out of date. Most likely reason: Unity not running");
                 }
             }
         }
@@ -828,11 +819,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             // Some package types take precedence over any requests for another version. Basically any package that is
             // built in or pointing at actual files
             return resolvedPackages.TryGetValue(id, out var packageData) &&
-                   (packageData.Source == PackageSource.Embedded
-                   || packageData.Source == PackageSource.BuiltIn
-                   || packageData.Source == PackageSource.Git
-                   || packageData.Source == PackageSource.Local
-                   || packageData.Source == PackageSource.LocalTarball);
+                   packageData.Source is PackageSource.Embedded or PackageSource.BuiltIn or PackageSource.Git
+                       or PackageSource.Local or PackageSource.LocalTarball;
         }
 
         private static JetSemanticVersion GetCurrentMaxVersion(
@@ -843,13 +831,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
         private JetSemanticVersion GetMinimumVersion(string id)
         {
-            // Note: do not inline this into the TryGetValue call, because net5's C# compiler complains, and that's what
-            // we use for CI. Presumably this because it would not be initialised if myGlobalManifest is null. net6's
-            // compiler doesn't complain.
-            // error CS0165: Use of unassigned local variable 'editorPackageDetails'
-            EditorPackageDetails? editorPackageDetails = null;
-            if (myGlobalManifest?.Packages.TryGetValue(id, out editorPackageDetails) == true
-                && JetSemanticVersion.TryParse(editorPackageDetails?.MinimumVersion, out var version))
+            // TODO: Use conditional access when the monorepo build uses a more modern C# compiler
+            // Currently (as of 01/2023) the monorepo build for Unity uses C#9 compiler, which will complain that the
+            // out variable is uninitialised when we use conditional access
+            // See also https://youtrack.jetbrains.com/issue/RSRP-489147
+            if (myGlobalManifest != null && myGlobalManifest.Packages.TryGetValue(id, out var editorPackageDetails) &&
+                JetSemanticVersion.TryParse(editorPackageDetails?.MinimumVersion, out var version))
             {
                 return version;
             }
@@ -869,10 +856,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         }
 
         private static JetSemanticVersion Max(JetSemanticVersion v1, JetSemanticVersion v2) => v1 > v2 ? v1 : v2;
-
-        public PackageData? GetPackageByAssetPath(VirtualFileSystemPath possibleResource)
-        {
-            return myFileSystemPathTrie.FindLongestPrefix(possibleResource);
-        }
     }
 }

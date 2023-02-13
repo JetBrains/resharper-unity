@@ -7,7 +7,6 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.io.isDirectory
 import com.jetbrains.rider.AssemblyExecutionContext
 import com.jetbrains.rider.RiderEnvironment
@@ -25,7 +24,7 @@ class AppleDeviceListener(project: Project,
     companion object {
         private val logger = Logger.getInstance(AppleDeviceListener::class.java)
         private val countRegex = "^(?<count>\\d+)$".toRegex()
-        private val deviceRegex = Pattern.compile("""(?<productId>[^\s]*)\s(?<deviceId>.*)""")
+        private val deviceRegex = Pattern.compile("""(?<productId>\S*)\s(?<deviceId>.*)""")
     }
 
     private val refreshPeriod: Long = 1000
@@ -36,7 +35,7 @@ class AppleDeviceListener(project: Project,
     private val descriptions: Map<Int, String>
 
     // Fetch the list of Apple devices currently attached via USB. This is done using Apple's usbmuxd service, which
-    // is cross platform and is essentially a socket based service that can send and receive plist messages. It can
+    // is cross-platform and is essentially a socket based service that can send and receive plist messages. It can
     // iterate the currently attached devices, create a socket to proxy data to/from a socket on the device, and
     // loads more.
     // Unity provides a native library that we can load and use the exported functions to get the devices and manage
@@ -149,14 +148,7 @@ class AppleDeviceListener(project: Project,
         // Get the helper exe from the DotFiles folder. TBH, I suspect the 'DotFiles' name is incorrect, as Rider plugin
         // files (including the 'Extensions' folder) live under 'dotnet'. ReSharper plugins ship in a 'DotFiles' folder,
         // but are installed into the main install folder. No-one actually uses 'DotFiles' now
-        val assembly = if (SystemInfo.isWindows) {
-            "netfx/JetBrains.Rider.Unity.ListIosUsbDevices.exe"
-        }
-        else {
-            "JetBrains.Rider.Unity.ListIosUsbDevices.dll"
-        }
-        val helperExe = RiderEnvironment.getBundledFile(assembly, pluginClass = javaClass)
-
+        val helperExe = RiderEnvironment.getBundledFile("JetBrains.Rider.Unity.ListIosUsbDevices.dll", pluginClass = javaClass)
         val commandLine = AssemblyExecutionContext(helperExe, RiderEnvironment.customExecutionOs, null,
             iosSupportPath.toString(), "$refreshPeriod").fillCommandLine(GeneralCommandLine())
         val processHandler = CapturingProcessHandler(commandLine)

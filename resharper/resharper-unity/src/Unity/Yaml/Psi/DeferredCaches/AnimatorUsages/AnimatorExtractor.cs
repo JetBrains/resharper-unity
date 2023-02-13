@@ -103,8 +103,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             var root = GetUnityObjectProperties();
             var animatorStateName = ExtractAnimatorStateNameFrom(root);
             var stateMachineBehavioursAnchors = ExtractStateMachineBehavioursAnchorsFrom(root);
+            Guid? guid = null;
+            if (AssetUtils.GetAnimReference(myFile, myDocument.Buffer) is ExternalReference animReference)
+                guid = animReference.ExternalAssetGuid;
             return new AnimatorStateScriptUsage(referenceToAnimatorState, animatorStateName,
-                stateMachineBehavioursAnchors);
+                stateMachineBehavioursAnchors, guid);
         }
 
         private LocalReference CreateReferenceToAnimatorState()

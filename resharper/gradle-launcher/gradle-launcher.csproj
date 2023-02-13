@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- This is a net7.0 app, but the core assemblies are net472, and nuget doesn't like that -->
+    <MSBuildWarningsAsMessages>NU1702</MSBuildWarningsAsMessages>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\debugger\debugger-worker\src\debugger.csproj">

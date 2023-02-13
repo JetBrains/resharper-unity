@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         protected override void Analyze(IAttribute attribute, ElementProblemAnalyzerData data,
             IHighlightingConsumer consumer)
         {
-            if (!(attribute.TypeReference?.Resolve().DeclaredElement is ITypeElement attributeTypeElement))
+            if (attribute.TypeReference?.Resolve().DeclaredElement is not ITypeElement attributeTypeElement)
                 return;
 
             if (!Equals(attributeTypeElement.GetClrName(), KnownTypes.SerializeField))
@@ -28,13 +28,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
             foreach (var declaration in AttributesOwnerDeclarationNavigator.GetByAttribute(attribute))
             {
-                if (declaration.DeclaredElement is IField field && Api.IsSerialisedField(field, false) == SerializedFieldStatus.NonSerializedField
-                    || (
-                        declaration.DeclaredElement is IProperty property 
+                // We must explicitly check the declaration kind, as the attribute can technically be applied to all
+                // attribute targets. We have a separate analysis for this.
+                if ((declaration.DeclaredElement is IField field
+                     && Api.IsSerialisedField(field, false) == SerializedFieldStatus.NonSerializedField)
+                    || (declaration.DeclaredElement is IProperty property
                         && attribute.Target == AttributeTarget.Field
-                        && Api.IsSerialisedAutoProperty(property, attribute, false) == SerializedFieldStatus.NonSerializedField
-                        )
-                    )
+                        && Api.IsSerialisedAutoProperty(property, false) == SerializedFieldStatus.NonSerializedField))
                 {
                     consumer.AddHighlighting(new RedundantSerializeFieldAttributeWarning(attribute));
                     return;

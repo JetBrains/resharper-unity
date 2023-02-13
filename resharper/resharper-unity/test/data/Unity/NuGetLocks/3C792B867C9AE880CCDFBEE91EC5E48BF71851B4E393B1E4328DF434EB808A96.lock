@@ -1,0 +1,6 @@
+﻿# Input (NuGetFramework=net40):
+# JetBrains.Tests.Platform.NETFrameWork [4.0.0.0, 4.0.0.2147483647]
+JetBrains.Tests.Microsoft.Gac 4.0
+JetBrains.Tests.Platform.NETFrameWork 4.0
+JetBrains.Tests.Platform.NetFramework.Binaries 4.0
+JetBrains.Tests.Platform.NetFramework.Profiles 4.0

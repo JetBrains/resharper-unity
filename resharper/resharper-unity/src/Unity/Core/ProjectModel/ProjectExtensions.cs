@@ -1,6 +1,5 @@
 using System;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Properties.Flavours;
 using JetBrains.Util;
 
 #nullable enable
@@ -27,10 +26,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
         {
             if (project == null || !project.IsValid())
                 return false;
-
-            // Only VSTU adds the Unity project flavour. Unity + Rider don't, so we have to look at references
-            if (HasUnityFlavour(project))
-                return true;
 
             // Quicker than calling GetComponent
             var referenceTracker = project.GetData(UnityReferencesTracker.UnityReferencesTrackerKey);
@@ -63,9 +58,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             // for our tests // todo: refactor tests so they also check logic above
             return project.HasSubItems(AssetsFolder) && IsUnityProject(project);
         }
-
-        public static bool HasUnityFlavour(this IProject? project) =>
-            project != null && project.HasFlavour<UnityProjectFlavor>();
 
         public static bool IsOneOfPredefinedUnityProjects(this IProject? project, bool includePlayerProjects = false) =>
             project != null && IsOneOfPredefinedUnityProjects(project.Name, includePlayerProjects);

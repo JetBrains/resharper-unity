@@ -12,6 +12,7 @@ namespace Unity.Entities
 
     public interface IQueryTypeParameter { }
     public interface IComponentData : IQueryTypeParameter { }
+    public interface IAspect { }
 
     public unsafe struct ComponentLookup<T> where T : unmanaged, IComponentData
     {
@@ -39,6 +40,18 @@ namespace Unity.Entities
             where T : unmanaged, IComponentData
         {
         }
+    }
+
+    public readonly struct RefRW<T>
+    {
+        private T _data;
+        public unsafe ref readonly T ValueRO {get {return _data; }}
+        public unsafe ref readonly T ValueRW {get {return _data; }}
+    }
+    public readonly struct RefRO<T>
+    {
+        private T _data;
+        public unsafe ref readonly T ValueRO {get {return _data; }}
     }
 }
 

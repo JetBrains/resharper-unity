@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
 
         [Test] public void TestAllAttributes() { DoNamedTest2(); }
     }
-    
+
     [TestUnity]
     public class RedundantAttributesScopedQuickFixAvailabilityGlobalStageTests : QuickFixAfterSwaAvailabilityTestBase
     {
@@ -51,12 +51,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
 
         [Test] public void TestAllAttributes() { DoNamedTest2(); }
     }
-    
+
     // [TestUnity]
     // public class RedundantAttributesScopedQuickFixGlobalStageTests : CSharpQuickFixAfterSwaTestBase<RemoveRedundantAttributeQuickFix>
     // {
     //     protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\RedundantAttributesScopedQuickFix";
-    //     
+    //
     //     protected override string GetGoldTestDataPath(string fileName)
     //     {
     //         return base.GetGoldTestDataPath(fileName + ".global");

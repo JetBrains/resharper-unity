@@ -165,17 +165,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
             extension = null;
             filePath = null;
             fileName = null;
-            
+
             var path = file.GetLocation().MakeRelativeTo(solutionDirPath);
             var pathComponents = path.Components;
             var assetFolder = pathComponents.FirstOrEmpty;
             if (assetFolder.Equals(UnityYamlConstants.AssetsFolder))
             {
-                filePath = string.Join("/", pathComponents.Select(t => t.ToString()));    
+                filePath = string.Join("/", pathComponents.Select(t => t.ToString()));
             }
             else
             {
-                var packageData = packageManager.GetPackageByAssetPath(file.GetLocation());
+                var packageData = packageManager.GetOwningPackage(file.GetLocation());
                 if (packageData == null || packageData.PackageFolder == null)
                 {
                     var ex = new Assertion.AssertionException(packageData == null
@@ -231,12 +231,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Servi
 
             public FindExecution Merge(UnityAssetFindResult data)
             {
-                var sourceFile = myPersistentIndexManager[data.OwningElemetLocation.OwningPsiPersistentIndex];
+                var sourceFile = myPersistentIndexManager[data.OwningElementLocation.OwningPsiPersistentIndex];
                 if (sourceFile == null)
                     return FindExecution.Continue;
 
                 var request = CreateRequest(myPackageManager, myLogger, mySolutionDirectoryPath, myAssetHierarchyProcessor, myAnimatorContainer,
-                    data.OwningElemetLocation, sourceFile, myDeclaredElement);
+                    data.OwningElementLocation, sourceFile, myDeclaredElement);
                 if (request != null)
                     Result.Add(request);
 

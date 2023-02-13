@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
             return TargetFrameworkId.Create(FrameworkIdentifier.NetFramework, new Version(4, 0));
         }
 
-        public IEnumerable<PackageDependency> GetPackages(TargetFrameworkId targetFrameworkId)
+        public IEnumerable<PackageDependency> GetPackages(TargetFrameworkId? targetFrameworkId)
         {
             // There isn't an official nuget for Unity, sadly, so add this feed to test/data/nuget.config
             // <add key="unity-testlibs" value="https://myget.org/F/resharper-unity/api/v2/" />
@@ -95,12 +95,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
             return new[] {UnityProjectFlavor.UnityProjectFlavorGuid};
         }
 
-        public IEnumerable<string> GetReferences(TargetFrameworkId targetFrameworkId, FileSystemPath testDataPath,
-            NuGetPackageCache nugetPackagesCache)
+        public IEnumerable<string> GetReferences(BaseTestNoShell test, TargetFrameworkId targetFrameworkId,
+            FileSystemPath testDataPath, NuGetPackageCache nugetPackagesCache)
         {
             var names = GetPackageNames().ToArray();
             var attribute = new TestPackagesAttribute(names);
-            return attribute.GetReferences(targetFrameworkId, testDataPath, nugetPackagesCache);
+            return attribute.GetReferences(test, targetFrameworkId, testDataPath, nugetPackagesCache);
         }
 
         public bool Inherits => false;

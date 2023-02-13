@@ -41,7 +41,7 @@
         <value>This file is part of the Unity Package Cache. Any changes made will be lost.</value>
     </data>
     <data name="LoadSceneFixBulbAction_Text_Add___SceneName___to_build_settings" xml:space="preserve">
-        <value>Add &apos;{0}&apos; to build settings</value>
+        <value>Add '{0}' to build settings</value>
     </data>
     <data name="MakeSureRider_IsSetAsTheExternalEditor_Text" xml:space="preserve">
         <value>Make sure Rider {0} is set as the External Editor in Unity preferences.</value>
@@ -50,12 +50,12 @@
         <value>Performance critical line marker</value>
     </data>
     <data name="PleaseSwitchToTheUnityEditorToReload_Text" xml:space="preserve">
-        <value>$@&quot;Please switch to the Unity Editor to reload the plugin.
+        <value>Please switch to the Unity Editor to reload the plugin.
                             Rider plugin v{0} can be found at:
                             {1}.</value>
     </data>
     <data name="PleaseSwitchToUnityEditorToLoadThePlugin_Text" xml:space="preserve">
-        <value>$@&quot;Please switch to Unity Editor to load the plugin.
+        <value>Please switch to Unity Editor to load the plugin.
                             Rider plugin v{0} can be found at:
                             {1}.</value>
     </data>
@@ -187,5 +187,67 @@
     </data>
     <data name="UsagesInAssetsAreNotAvailableDuring_Text" xml:space="preserve">
         <value>Usages in assets are not available during asset indexing</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Changed_in__0___assets" xml:space="preserve">
+        <value>Changed in {0}+ assets</value>
+        <comment>"Changed in 0+ assets" or "Changed in 1+ assets"  and so on</comment>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Unchanged" xml:space="preserve">
+        <value>Unchanged</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_asset" xml:space="preserve">
+        <value>asset</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_assets" xml:space="preserve">
+        <value>assets</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Changed_in__0___1_" xml:space="preserve">
+        <value>Changed in {0} {1}</value>
+        <comment>"Changed in 1 asset" or "Changed in 2 assets"</comment>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Property_Inspector_values" xml:space="preserve">
+        <value>Property Inspector values</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_GetTooltip_Unique_change" xml:space="preserve">
+        <value>Unique change</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_GetTooltip_No_changes_in_assets" xml:space="preserve">
+        <value>No changes in assets</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_GetTooltip_Possible_indirect_changes" xml:space="preserve">
+        <value>Possible indirect changes</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in_1_asset___possible_indirect_changes" xml:space="preserve">
+        <value>Changed in 1 asset + possible indirect changes</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in__0__assets___possible_indirect_changes" xml:space="preserve">
+        <value>Changed in {0} assets + possible indirect changes</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in__0__assets" xml:space="preserve">
+        <value>Changed in {0} assets</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_No_methods" xml:space="preserve">
+        <value>No methods</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_method" xml:space="preserve">
+        <value>method</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_CapitalChar_Method" xml:space="preserve">
+        <value>Method</value>
+    </data>
+    <data name="UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_methods" xml:space="preserve">
+        <value>methods</value>
+    </data>
+    <data name="AnimatorGroupingRule_AnimatorGroupingRule_Animator" xml:space="preserve">
+        <value>Animator</value>
+    </data>
+    <data name="AnimationEventGroupingRule_AnimationEventGroupingRule_AnimationEvent" xml:space="preserve">
+        <value>Animation Event</value>
+    </data>
+    <data name="GameObjectUsageGroupingRule_GameObjectUsageGroupingRule_UnityGameObject" xml:space="preserve">
+        <value>Unity GameObject</value>
+    </data>
+    <data name="ComponentUsageGroupingRule_ComponentUsageGroupingRule_UnityComponent" xml:space="preserve">
+        <value>Unity Component</value>
     </data>
 </root>

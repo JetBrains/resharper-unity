@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -38,8 +40,6 @@ using IUnitTestLaunch = JetBrains.ReSharper.UnitTestFramework.Execution.Launch.I
 using IUnitTestRun = JetBrains.ReSharper.UnitTestFramework.Execution.Launch.IUnitTestRun;
 using Status = JetBrains.Rider.Model.Unity.BackendUnity.Status;
 using UnitTestLaunch = JetBrains.Rider.Model.Unity.BackendUnity.UnitTestLaunch;
-
-#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitTesting
 {
@@ -87,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
             myLifetime = lifetime;
             myPackageCompatibilityValidator = packageCompatibilityValidator;
 
-            myUnityProcessId = new Property<int?>(lifetime, "RunViaUnityEditorStrategy.UnityProcessId");
+            myUnityProcessId = new Property<int?>("RunViaUnityEditorStrategy.UnityProcessId");
 
             myUnityProcessId.ForEachValue_NotNull(lifetime, (lt, processId) =>
             {
@@ -116,7 +116,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
 
         public bool RequiresProjectBuild(IProject project) => false;
         public bool RequiresProjectExplorationAfterBuild(IProject project) => false;
-        public bool RequiresProjectPropertiesRefreshBeforeLaunch(IProject project) => false;
+        public IProject? GetProjectForPropertiesRefreshBeforeLaunch(IUnitTestElement element) => null;
 
         public IRuntimeEnvironment GetRuntimeEnvironment(IUnitTestLaunch launch, IProject project,
                                                          TargetFrameworkId targetFrameworkId,
@@ -188,8 +188,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
 
         private void RefreshAndRunTask(IUnitTestRun run, TaskCompletionSource<bool> tcs, Lifetime taskLifetime)
         {
-            var cancellationTs = run.GetData(ourCancellationTokenSourceKey)
-                .NotNull("run.GetData(ourCancellationTokenSourceKey) != null");
+            var cancellationTs = run.GetData(ourCancellationTokenSourceKey).NotNull();
             var cancellationToken = cancellationTs.Token;
 
             myLogger.Trace("Before calling Refresh.");

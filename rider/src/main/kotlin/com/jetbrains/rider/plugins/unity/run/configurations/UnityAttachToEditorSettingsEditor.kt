@@ -3,13 +3,13 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 import com.intellij.execution.impl.CheckableRunConfigurationEditor
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.rd.defineNestedLifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 
 class UnityAttachToEditorSettingsEditor(project: Project) : SettingsEditor<UnityAttachToEditorRunConfiguration>(),
         CheckableRunConfigurationEditor<UnityAttachToEditorRunConfiguration> {
 
-    private val lifetimeDefinition: LifetimeDefinition = project.defineNestedLifetime()
+    private val lifetimeDefinition: LifetimeDefinition = UnityProjectLifetimeService.getNestedLifetimeDefinition(project)
     private val viewModel: UnityAttachToEditorViewModel = UnityAttachToEditorViewModel(lifetimeDefinition.lifetime, project)
     private val form: UnityAttachToEditorForm = UnityAttachToEditorForm(viewModel)
 

@@ -6,7 +6,7 @@ reformat: True
 shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=ScriptableObject, ValidateFileName=True
-scopes: UnityFileTemplateSectionMarker;InUnityCSharpProject
+scopes: InUnityCSharpProject
 uitag: Unity Script
 parameterOrder: HEADER, (CLASS), (NAMESPACE), FILENAME, MENUNAME
 HEADER-expression: fileheader()

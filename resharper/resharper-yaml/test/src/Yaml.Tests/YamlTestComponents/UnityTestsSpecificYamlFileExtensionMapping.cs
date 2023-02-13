@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.YamlTestComponents
   [ShellComponent]
   public class UnityTestsSpecificYamlFileExtensionMapping : FileTypeDefinitionExtensionMapping
   {
-    private static readonly string[] OurFileExtensions =
+    private static readonly string[] ourFileExtensions =
     {
       TestYamlProjectFileType.YAML_EXTENSION,
 
@@ -36,16 +36,16 @@ namespace JetBrains.ReSharper.Plugins.Tests.YamlTestComponents
 
     public override IEnumerable<ProjectFileType> GetFileTypes(string extension)
     {
-      if (OurFileExtensions.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
-        return new[] {YamlProjectFileType.Instance};
-      return base.GetFileTypes(extension);
+      return ourFileExtensions.Contains(extension, StringComparer.InvariantCultureIgnoreCase)
+        ? new[] { YamlProjectFileType.Instance! }
+        : base.GetFileTypes(extension);
     }
 
     public override IEnumerable<string> GetExtensions(ProjectFileType projectFileType)
     {
-      if (Equals(projectFileType, YamlProjectFileType.Instance))
-        return base.GetExtensions(projectFileType).Concat(OurFileExtensions);
-      return base.GetExtensions(projectFileType);
+      return Equals(projectFileType, YamlProjectFileType.Instance)
+        ? base.GetExtensions(projectFileType).Concat(ourFileExtensions)
+        : base.GetExtensions(projectFileType);
     }
   }
 }

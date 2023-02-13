@@ -5,9 +5,12 @@ import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.*
 import com.intellij.ui.components.dialog
-import com.intellij.ui.layout.panel
+import com.intellij.ui.components.noteComponent
+import com.intellij.ui.dsl.builder.Align
+import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.speedSearch.SpeedSearchUtil
 import com.intellij.ui.treeStructure.Tree
+import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.tree.TreeUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -21,7 +24,6 @@ import java.awt.Insets
 import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
 import javax.swing.*
-import javax.swing.border.EmptyBorder
 import javax.swing.tree.*
 
 class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(project) {
@@ -60,12 +62,13 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             // separator, which is drawn as content, and non-opaque. If it's shifted, then we'll see the item background
             // around it, which is very obvious when the item is selected. This is not a problem with Rider's default
             // themes, but is with IntelliJ Light and Darcula.
-            border = EmptyBorder(0, 0, 0, 0)
+            border = JBUI.Borders.empty()
 
             registerKeyboardAction(okAction, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_FOCUSED)
 
-            TreeSpeedSearch(this, { path -> path.lastPathComponent?.toString() }, true)
-                .apply { comparator = SpeedSearchComparator(false) }
+            TreeSpeedSearch(this, true) {
+                path -> path.lastPathComponent?.toString()
+            }.apply { comparator = SpeedSearchComparator(false) }
 
             emptyText.text = UnityBundle.message("dialog.progress.searching")
 
@@ -84,17 +87,18 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         }.installOn(tree)
 
         peerPanel = panel {
-            row { scrollPane(tree) }
+            row { scrollCell(tree).align(Align.FILL) }
             row {
                 button(UnityBundle.message("button.add.player.address.manually"), actionListener = { enterCustomIp() })
             }
-            commentRow(
-                UnityBundle.message("please.ensure.both.the.development.build.and.script.debugging.options.are.checked.in.unity.build.settings.dialog"))
+            row {
+                comment(UnityBundle.message("please.ensure.both.the.development.build.and.script.debugging.options.are.checked.in.unity.build.settings.dialog"))
+            }
         }.apply { preferredSize = Dimension(650, 450) }
 
         isOKActionEnabled = false
         init()
-        setResizable(true)
+        isResizable = true
 
         myPreferredFocusedComponent = tree
     }
@@ -136,9 +140,9 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         val portField = PortField(0)
 
         val panel = panel {
-            noteRow(UnityBundle.message("enter.the.ip.address.of.the.unity.process"))
-            row(UnityBundle.message("host.colon")) { hostField().focused() }
-            row(UnityBundle.message("port.colon")) { portField() }
+            row { cell(noteComponent(UnityBundle.message("enter.the.ip.address.of.the.unity.process"))) }
+            row(UnityBundle.message("host.colon")) { cell(hostField).focused() }
+            row(UnityBundle.message("port.colon")) { cell(portField) }
         }
 
         @Suppress("DialogTitleCapitalization") val dialog = dialog(
@@ -155,7 +159,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                 UnityBundle.message("dialog.message.host.address.must.not.be.empty")))
             if (port <= 0) validationResult.add(ValidationInfo(UnityBundle.message("dialog.message.port.number.must.be.positive")))
 
-            if (validationResult.count() == 0) {
+            if (validationResult.isEmpty()) {
                 // TODO: Do something better with this. Probably add a (temporary) run configuration
                 val process = UnityRemotePlayer("Custom Player", hostAddress, port, true, null)
                 val node = addProcess(process)
@@ -292,7 +296,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     private class GroupedProcessTreeCellRenderer : GroupedElementsRenderer.Tree() {
         override fun getTreeCellRendererComponent(tree: JTree, value: Any?, selected: Boolean, expanded: Boolean, leaf: Boolean, row: Int, hasFocus: Boolean): Component {
 
-            val itemComponent = myComponent as SimpleColoredComponent
+            val itemComponent = itemComponent as SimpleColoredComponent
             itemComponent.clear()
 
             val node = value as? UnityProcessTreeNode ?: return myRendererComponent

@@ -12,7 +12,9 @@ using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Explicit;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implicit;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
@@ -128,11 +130,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             return baseClass != null && myUxmlFactoryBaseClasses.Contains(baseClass.GetClrName());
         }
 
-        private static bool IsAnimationEvent(ISolution solution, IDeclaredElement property)
+        private static bool IsAnimationEvent(ISolution solution, IDeclaredElement element)
         {
             return solution
-                .GetComponent<AnimationEventUsagesContainer>()
-                .GetEventUsagesCountFor(property, out var isEstimatedResult) > 0 || isEstimatedResult;
+                .GetComponent<AnimExplicitUsagesContainer>()
+                .GetEventUsagesCountFor(element, out var isEstimatedResult) > 0 || isEstimatedResult
+                ||
+                (element is IMethod method && solution.GetComponent<AnimImplicitUsagesContainer>()
+                .LikelyUsed(method));
         }
 
         private bool IsImplicitlyUsedInterfaceType(ITypeElement typeElement)

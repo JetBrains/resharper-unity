@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.SolutionAnalysis;
@@ -6,7 +5,6 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
 using JetBrains.ReSharper.Plugins.Tests.Unity;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
 using JetBrains.Util;
@@ -23,10 +21,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
             }
         }
 
-        protected override IQuickFix CreateQuickFix(IProject project, ITextControl textControl,
-            out IHighlighting highlighting)
+        protected override IQuickFix? CreateQuickFix(IProject project, ITextControl textControl,
+                                                     out IHighlighting highlighting)
         {
-            IQuickFix result;
+            IQuickFix? result;
             var solution = project.GetSolution();
             var swea = solution.GetComponent<SolutionAnalysisService>();
             using (swea.RunAnalysisCookie())
@@ -34,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
             {
                 foreach (var file in swea.GetFilesToAnalyze())
                     swea.AnalyzeInvisibleFile(file);
-                
+
                 swea.AllFilesAnalyzed();
 
                 using (SyncReanalyzeCookie.Create(solution.Locks, SolutionAnalysisManager.GetInstance(solution)))

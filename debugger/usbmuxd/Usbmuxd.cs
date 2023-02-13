@@ -29,11 +29,12 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
     // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     // SOFTWARE.
-    public static class Usbmuxd
+    public class Usbmuxd
     {
         // Note: This struct is used in .Net for interop. so do not change it, or know what you are doing!
         // ReSharper disable InconsistentNaming
         // ReSharper disable FieldCanBeMadeReadOnly.Global
+        // ReSharper disable MemberCanBePrivate.Global
         [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
         public struct iOSDevice
         {
@@ -42,6 +43,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst=41)]
             public string udid;
         }
+        // ReSharper restore MemberCanBePrivate.Global
         // ReSharper restore FieldCanBeMadeReadOnly.Global
         // ReSharper restore InconsistentNaming
 
@@ -66,8 +68,9 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
         private const string NativeSoLinuxX64 = "x64/UnityEditor.iOS.Native.so";
         private const string NativeSoLinuxX64Fallback = "x86_64/UnityEditor.iOS.Native.so";
 
-        private static readonly IDllLoader ourLoader;
+        private static readonly IDllLoader? ourLoader;
         private static IntPtr ourNativeLibraryHandle;
+        private static int ourUsageCount;
 
         public delegate bool StartIosProxyDelegate(ushort localPort, ushort devicePort, [MarshalAs(UnmanagedType.LPStr)] string deviceId);
         public delegate void StopIosProxyDelegate(ushort localPort);
@@ -76,37 +79,58 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
         public delegate uint UsbmuxdGetDeviceCountDelegate();
         public delegate bool UsbmuxdGetDeviceDelegate(uint index, out iOSDevice device);
 
-        public static StartIosProxyDelegate StartIosProxy;
-        public static StopIosProxyDelegate StopIosProxy;
-        public static StartUsbmuxdListenThreadDelegate StartUsbmuxdListenThread;
-        public static StopUsbmuxdListenThreadDelegate StopUsbmuxdListenThread;
-        public static UsbmuxdGetDeviceCountDelegate UsbmuxdGetDeviceCount;
-        public static UsbmuxdGetDeviceDelegate UsbmuxdGetDevice;
+        public readonly StartIosProxyDelegate StartIosProxy;
+        public readonly StopIosProxyDelegate StopIosProxy;
+        public readonly StartUsbmuxdListenThreadDelegate StartUsbmuxdListenThread;
+        public readonly StopUsbmuxdListenThreadDelegate StopUsbmuxdListenThread;
+        public readonly UsbmuxdGetDeviceCountDelegate UsbmuxdGetDeviceCount;
+        public readonly UsbmuxdGetDeviceDelegate UsbmuxdGetDevice;
 
-        public static bool Supported => ourLoader != null;
         public static bool IsDllLoaded => ourNativeLibraryHandle != IntPtr.Zero;
 
         // Setup correctly, or throw trying
-        public static void Setup(string iosSupportPath)
+        public static Usbmuxd Create(string iosSupportPath)
         {
-            string libraryPath;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                libraryPath = GetWindowsNativeLibraryPath(iosSupportPath);
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                libraryPath = GetMacOsNativeLibraryPath(iosSupportPath);
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                libraryPath = GetLinuxNativeLibraryPath(iosSupportPath);
-            else
-                throw new PlatformNotSupportedException("iOS device enumeration not supported on this platform");
+            if (!IsDllLoaded)
+            {
+                string libraryPath;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    libraryPath = GetWindowsNativeLibraryPath(iosSupportPath);
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    libraryPath = GetMacOsNativeLibraryPath(iosSupportPath);
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    libraryPath = GetLinuxNativeLibraryPath(iosSupportPath);
+                else
+                    throw new PlatformNotSupportedException("iOS device enumeration not supported on this platform");
 
-            LoadNativeLibrary(libraryPath);
-            InitFunctions();
+                LoadNativeLibrary(libraryPath);
+            }
+
+            return new Usbmuxd();
         }
 
-        public static void Shutdown()
+        private Usbmuxd()
         {
-            if (ourNativeLibraryHandle == IntPtr.Zero)
+            if (ourNativeLibraryHandle == IntPtr.Zero || ourLoader == null)
+                throw new Exception("iOS native extension library was not loaded");
+
+            StartUsbmuxdListenThread = LoadFunction<StartUsbmuxdListenThreadDelegate>("StartUsbmuxdListenThread");
+            StopUsbmuxdListenThread = LoadFunction<StopUsbmuxdListenThreadDelegate>("StopUsbmuxdListenThread");
+            UsbmuxdGetDeviceCount = LoadFunction<UsbmuxdGetDeviceCountDelegate>("UsbmuxdGetDeviceCount");
+            UsbmuxdGetDevice = LoadFunction<UsbmuxdGetDeviceDelegate>("UsbmuxdGetDevice");
+            StartIosProxy = LoadFunction<StartIosProxyDelegate>("StartIosProxy");
+            StopIosProxy = LoadFunction<StopIosProxyDelegate>("StopIosProxy");
+
+            ourUsageCount++;
+        }
+
+        public void Shutdown()
+        {
+            if (ourLoader != null && IsDllLoaded && --ourUsageCount <= 0)
+            {
                 ourLoader.FreeLibrary(ourNativeLibraryHandle);
+                ourNativeLibraryHandle = IntPtr.Zero;
+            }
         }
 
         private static string GetWindowsNativeLibraryPath(string iosSupportPath)
@@ -194,7 +218,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
 
         private static void LoadNativeLibrary(string libraryPath)
         {
-            if (ourNativeLibraryHandle == IntPtr.Zero)
+            if (ourNativeLibraryHandle == IntPtr.Zero && ourLoader != null)
             {
                 ourNativeLibraryHandle = ourLoader.LoadLibrary(libraryPath);
                 if (ourNativeLibraryHandle != IntPtr.Zero)
@@ -204,23 +228,13 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
             }
         }
 
-        private static void InitFunctions()
-        {
-            StartUsbmuxdListenThread = LoadFunction<StartUsbmuxdListenThreadDelegate>("StartUsbmuxdListenThread");
-            StopUsbmuxdListenThread = LoadFunction<StopUsbmuxdListenThreadDelegate>("StopUsbmuxdListenThread");
-            UsbmuxdGetDeviceCount = LoadFunction<UsbmuxdGetDeviceCountDelegate>("UsbmuxdGetDeviceCount");
-            UsbmuxdGetDevice = LoadFunction<UsbmuxdGetDeviceDelegate>("UsbmuxdGetDevice");
-            StartIosProxy = LoadFunction<StartIosProxyDelegate>("StartIosProxy");
-            StopIosProxy = LoadFunction<StopIosProxyDelegate>("StopIosProxy");
-        }
-
         private static TType LoadFunction<TType>(string name) where TType: class
         {
-            if (ourNativeLibraryHandle == IntPtr.Zero)
+            if (ourNativeLibraryHandle == IntPtr.Zero || ourLoader == null)
                 throw new Exception("iOS native extension library was not loaded");
 
-            IntPtr addr = ourLoader.GetProcAddress(ourNativeLibraryHandle, name);
-            return Marshal.GetDelegateForFunctionPointer(addr, typeof(TType)) as TType;
+            var addr = ourLoader.GetProcAddress(ourNativeLibraryHandle, name);
+            return (Marshal.GetDelegateForFunctionPointer(addr, typeof(TType)) as TType)!;
         }
 
         static Usbmuxd()

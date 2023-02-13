@@ -1,8 +1,8 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.ui.AnActionButton
 import com.intellij.ui.PanelWithButtons
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.table.JBTable
@@ -29,13 +29,9 @@ class ProcessesPanel : PanelWithButtons() {
     }
 
     // Buttons on the side of the panel
-    override fun createButtons(): Array<JButton> {
-        return emptyArray()
-    }
+    override fun createButtons() = emptyArray<JButton>()
 
-    override fun getLabelText(): String? {
-        return UnityBundle.message("label.unity.editor.instances")
-    }
+    override fun getLabelText() = UnityBundle.message("label.unity.editor.instances")
 
     override fun createMainComponent(): JComponent {
 
@@ -104,7 +100,7 @@ class ProcessesPanel : PanelWithButtons() {
         }
 
         return ToolbarDecorator.createDecorator(table!!)
-                .addExtraAction(object: AnActionButton(UnityBundle.message("button.refresh"), AllIcons.Actions.Refresh){
+                .addExtraAction(object: AnAction(UnityBundle.message("button.refresh"), null, AllIcons.Actions.Refresh){
                     override fun actionPerformed(p0: AnActionEvent) {
                         vm.refreshProcessList()
                         updateSelection(table!!)

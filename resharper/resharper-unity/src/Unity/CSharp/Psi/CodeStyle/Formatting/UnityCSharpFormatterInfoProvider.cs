@@ -1,9 +1,11 @@
+#nullable enable
+
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Calculated.Interface;
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatting;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeStyle;
@@ -26,12 +28,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatter
             "UnityEngine.HeaderAttribute", "UnityEngine.Header", "HeaderAttribute", "Header"
         };
 
-        private readonly string[] myPossibleSerializeFieldNames =
-        {
-            "UnityEngine.SerializeFieldAttribute", "UnityEngine.SerializeField", "SerializeFieldAttribute",
-            "SerializeField"
-        };
-
         public UnityCSharpFormatterInfoProvider(
             ISettingsSchema settingsSchema,
             ICalculatedSettingsSchema calculatedSettingsSchema,
@@ -48,14 +44,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatter
             HeaderAttributeRules();
         }
 
-        [CanBeNull]
-        private static string GetSingleAttributeSectionName(ITreeNode node) =>
+        private static string? GetSingleAttributeSectionName(ITreeNode node) =>
             node is IAttributeSection { Attributes: { SingleItem: { } attrSectionCandidate } }
                 ? attrSectionCandidate.Name.GetText()
                 : null;
 
-        [CanBeNull]
-        private string GetSingleSectionAttributeListName(ITreeNode node) =>
+        private string? GetSingleSectionAttributeListName(ITreeNode node) =>
             node is IAttributeSectionList { Sections: { SingleItem: { Attributes: { SingleItem: { } attrCandidate } } } }
                 ? attrCandidate.Name.GetText()
                 : null;
@@ -63,10 +57,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatter
         private void HeaderAttributeRules()
         {
             var singleHeaderAttributeSection = Node().In(ElementType.ATTRIBUTE_SECTION).Satisfies((node, _) =>
-                myPossibleHeaderNames.Contains(GetSingleAttributeSectionName(node))).Obj;
+                myPossibleHeaderNames.Contains(GetSingleAttributeSectionName(node)) && node.GetProject().IsUnityProject()).Obj;
 
             var singleHeaderAttributeSectionList = Node().In(ElementType.ATTRIBUTE_SECTION_LIST).Satisfies((node, _) =>
-                myPossibleHeaderNames.Contains(GetSingleSectionAttributeListName(node))).Obj;
+                myPossibleHeaderNames.Contains(GetSingleSectionAttributeListName(node)) && node.GetProject().IsUnityProject()).Obj;
 
             var multipleFieldDeclaration = Node().In(ElementBitsets.MULTIPLE_DECLARATION_BIT_SET
                 .Except(ElementType.MULTIPLE_EVENT_DECLARATION)
@@ -74,13 +68,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatter
 
             var attributeSectionFollowingHeader = Node().In(ElementType.ATTRIBUTE_SECTION).Satisfies((node, _) =>
             {
-                // Default case: if node is the first section and it is not a Header section, we 
+                // Default case: if node is the first section and it is not a Header section, we
                 var attributeSectionList = AttributeSectionListNavigator.GetBySection(node as IAttributeSection);
                 if (attributeSectionList?.Sections.First() == node && !myPossibleHeaderNames.Contains(GetSingleAttributeSectionName(node)))
                     return true;
 
                 var previousSection = node?.GetPreviousMeaningfulSibling();
-                return myPossibleHeaderNames.Contains(GetSingleAttributeSectionName(previousSection));
+                return previousSection != null && myPossibleHeaderNames.Contains(GetSingleAttributeSectionName(previousSection)) && previousSection.GetProject().IsUnityProject();
             }).Obj;
 
             // Blank lines after [Header]
@@ -127,7 +121,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatter
                     Left().Is(singleHeaderAttributeSection)
                 )
                 .SwitchOnExternalKey(x => x.ENFORCE_CUSTOM_HEADER_FORMATTING,
-                    
                     When(true).Return(IntervalFormatType.NewLine)
                 )
                 .Priority(UnityPriority)

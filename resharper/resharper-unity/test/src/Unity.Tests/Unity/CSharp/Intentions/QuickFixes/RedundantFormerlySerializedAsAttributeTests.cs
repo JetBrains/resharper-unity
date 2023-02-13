@@ -21,12 +21,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         [Test] public void Test05() { DoNamedTest(); }
         [Test] public void Test06() { DoNamedTest(); }
     }
-    
+
     [TestUnity]
     public class RedundantFormerlySerializedAsAttributeQuickFixAvailabilityGlobalStageTests : QuickFixAfterSwaAvailabilityTestBase
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\RedundantFormerlySerializedAsAttribute\Availability";
-        
+
         protected override string GetGoldTestDataPath(string fileName)
         {
             return base.GetGoldTestDataPath(fileName + ".global");
@@ -34,10 +34,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
             IContextBoundSettingsStore boundSettingsStore)
         {
-            return highlighting is RedundantFormerlySerializedAsAttributeWarning 
+            return highlighting is RedundantFormerlySerializedAsAttributeWarning
                    && base.HighlightingPredicate(highlighting, psiSourceFile, boundSettingsStore);
         }
-        
+
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }
         [Test] public void Test03() { DoNamedTest(); }

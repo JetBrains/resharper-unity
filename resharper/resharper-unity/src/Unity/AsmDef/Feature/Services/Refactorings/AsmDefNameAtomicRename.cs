@@ -74,6 +74,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Refactorings
                     // ProgressIndicator should already have been added to the interruption set. This is the
                     // responsibility of the refactoring subsystem, but it's not clear that this has yet been done
                     // - other rename refactorings are still using this overload
+                    // To check, set a breakpoint and check to see if Interruption.Current.myProviders contains an
+                    // instance of ProgressIndicatorInterruptionSource for the passed in progress indicator.
+                    // As of 231, this check is still required
                     InterruptableActivityCookie.CheckAndThrow(pi);
 
                     var referenceRange = sortedReference.GetDocumentRange();
