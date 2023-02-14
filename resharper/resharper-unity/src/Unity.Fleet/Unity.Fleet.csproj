@@ -8,38 +8,33 @@
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyName>JetBrains.ReSharper.Plugins.Yaml.Tests</AssemblyName>
-    <RootNamespace>JetBrains.ReSharper.Plugins.Tests</RootNamespace>
+    <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Fleet</AssemblyName>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Fleet</RootNamespace>
     <LangVersion>9</LangVersion>
-    <!-- LibHarmony is not signed -->
-    <NoWarn>CS8002</NoWarn>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsNotAsErrors>CS0618</WarningsNotAsErrors>
-    <JetTestProject>True</JetTestProject>
-    <SignAssembly>False</SignAssembly>
-    <Nullable>enable</Nullable>
-    <JetTestProject>True</JetTestProject>
+    <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
   <!-- ********** -->
-  <!-- TODO: This should come from JetBrains.NET.Sdk, or Directory.Build.props -->
-  <PropertyGroup Condition="$(InternalBuild)" />
-  <Import Project="$(JetSdkProjectParameterFilePath)" Condition="Exists('$(JetSdkProjectParameterFilePath)')" />
-  <!-- ********** -->
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+  <ItemGroup Label="References">
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <Reference Include="WindowsBase" />
+    <ProjectReference Include="..\Unity\Unity.csproj" />
     <Reference Include="System" />
+    <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="System.IO.Compression" />
-    <PackageReference Include="Lib.Harmony" />
-    <ProjectReference Include="..\..\..\src\Yaml\Yaml.csproj" />
+    <Reference Include="mscorlib" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props" Condition="!$(InternalBuild)" />
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props" Condition="!$(InternalBuild)" />
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Strings.resx">
+      <Generator>JetResourceGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="!$(InternalBuild)" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Fleet_Fleet.Backend.Props" Condition="!$(InternalBuild)" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Fleet_Fleet.Protocol.Props" Condition="!$(InternalBuild)" />
   <Import Project="ManagedProject.Generated.Targets" Condition="$(InternalBuild)" />
   <Import Project="Sdk.targets" Sdk="JetBrains.NET.Sdk" Version="0.0.4" Condition="$(InternalBuild)" />
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />

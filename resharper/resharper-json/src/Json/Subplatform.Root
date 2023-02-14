@@ -2,6 +2,5 @@
 <SubplatformInfo xmlns="urn:schemas-jetbrains-com:build-subplatform-info" CompanyNameHuman="JetBrains" IsGitSubplatform="true">
     <SubplatformInfo.SubplatformReferences>
         <SubplatformReference Name="Psi.Features\src" />
-        <SubplatformReference Name="Rider\Rider.Backend" />
     </SubplatformInfo.SubplatformReferences>
 </SubplatformInfo>
