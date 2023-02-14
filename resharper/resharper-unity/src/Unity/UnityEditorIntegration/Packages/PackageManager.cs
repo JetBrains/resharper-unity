@@ -56,6 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
     public class PackageManager
     {
         private const string DefaultRegistryUrl = "https://packages.unity.com";
+        public const string UnityEntitiesPackageName = "com.unity.entities";
 
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
@@ -141,7 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         // context, so all callbacks also happen within the guarded reentrancy context
         public IReadonlyCollectionEvents<KeyValuePair<string, PackageData>> Packages => myPackagesById;
 
-        public PackageData? GetPackageById(string id) =>
+        public virtual PackageData? GetPackageById(string id) =>
             myPackagesById.TryGetValue(id, out var packageData) ? packageData : null;
 
         public bool HasPackage(string id) => GetPackageById(id) != null;

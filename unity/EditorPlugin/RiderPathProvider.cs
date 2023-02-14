@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  public class RiderPathProvider
+  internal class RiderPathProvider
   {
     private readonly IPluginSettings myPluginSettings;
 
@@ -28,11 +28,11 @@ namespace JetBrains.Rider.Unity.Editor
           return alreadySetPath;
         }
       }
-      
+
       var paths = RiderPathLocator.GetAllFoundPaths(myPluginSettings.OperatingSystemFamilyRider);
       return paths.FirstOrDefault();
     }
-    
+
     /// <summary>
     /// If external editor is Rider, exists and is contained in the list of allFoundPaths, it would be returned
     /// Otherwise, first of allFoundPaths would be returned
@@ -44,7 +44,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (UnityUtils.UseRiderTestPath)
         return "riderTestPath";
-      
+
       if (!string.IsNullOrEmpty(externalEditor))
       {
         var alreadySetPath = new FileInfo(externalEditor).FullName;

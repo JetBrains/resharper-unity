@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  public static class EditorPrefsWrapper
+  internal static class EditorPrefsWrapper
   {
     public static string ExternalScriptEditor
     {
@@ -19,7 +19,7 @@ namespace JetBrains.Rider.Unity.Editor
         return EditorPrefs.GetInt("kAutoRefreshMode", (int)legacyAutoRefreshMode) >= 1;
       }
     }
-    
+
     // copy from UnityEditor.AssetPipelineAutoRefreshMode
     private enum AssetPipelineAutoRefreshMode
     {

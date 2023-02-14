@@ -6,9 +6,9 @@ using System.Reflection;
 using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
 using JetBrains.Rider.Model.Unity.BackendUnity;
-using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Diagnostics;
+using JetBrains.Lifetimes;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -16,17 +16,27 @@ namespace JetBrains.Rider.Unity.Editor
   public class OnOpenAssetHandler
   {
     private readonly ILog myLogger = Log.GetLog<OnOpenAssetHandler>();
+    private readonly Lifetime myLifetime;
     private readonly RiderPathProvider myRiderPathProvider;
     private readonly IPluginSettings myPluginSettings;
     private readonly string mySlnFile;
 
-    public OnOpenAssetHandler(RiderPathProvider riderPathProvider, IPluginSettings pluginSettings, string slnFile)
+    internal OnOpenAssetHandler(Lifetime lifetime,
+                                RiderPathProvider riderPathProvider,
+                                IPluginSettings pluginSettings,
+                                string slnFile)
     {
+      myLifetime = lifetime;
       myRiderPathProvider = riderPathProvider;
       myPluginSettings = pluginSettings;
       mySlnFile = slnFile;
     }
 
+    // DO NOT RENAME OR CHANGE SIGNATURE!
+    // Used from package via reflection. Must remain public and non-static.
+    // Note that the package gets the type from PluginEntryPoint.OpenAssetHandler, so name, namespace and visibility of
+    // the class is not important
+    [PublicAPI]
     public bool OnOpenedAsset(int instanceID, int line, int column)
     {
       // determine asset that has been double clicked in the project view
@@ -68,7 +78,9 @@ namespace JetBrains.Rider.Unity.Editor
       return extensionStrings;
     }
 
-    [UsedImplicitly] // https://github.com/JetBrains/resharper-unity/issues/475
+    // DO NOT RENAME OR CHANGE SIGNATURE!
+    // Created as a public API for external users. See https://github.com/JetBrains/resharper-unity/issues/475
+    [PublicAPI]
     public bool OnOpenedAsset(string assetFilePath, int line, int column = 0)
     {
       var modifiedSource = EditorPrefs.GetBool(ModificationPostProcessor.ModifiedSource, false);
@@ -81,11 +93,9 @@ namespace JetBrains.Rider.Unity.Editor
         EditorPrefs.SetBool(ModificationPostProcessor.ModifiedSource, false);
       }
 
-      var models = PluginEntryPoint.UnityModels.Where(a=>a.Lifetime.IsAlive).ToArray();
-      if (models.Any())
+      var model = UnityEditorProtocol.Models.FirstOrDefault();
+      if (model != null)
       {
-        var modelLifetime = models.First();
-        var model = modelLifetime.Model;
         if (PluginEntryPoint.CheckConnectedToBackendSync(model))
         {
           myLogger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, column);
@@ -95,7 +105,7 @@ namespace JetBrains.Rider.Unity.Editor
           else
             AllowSetForegroundWindow();
 
-          model.OpenFileLineCol.Start(modelLifetime.Lifetime, new RdOpenFileArgs(assetFilePath, line, column));
+          model.OpenFileLineCol.Start(myLifetime, new RdOpenFileArgs(assetFilePath, line, column));
 
           // todo: maybe fallback to CallRider, if returns false
           return true;
@@ -127,7 +137,6 @@ namespace JetBrains.Rider.Unity.Editor
         proc.StartInfo.FileName = defaultApp;
         proc.StartInfo.Arguments = args;
       }
-
       proc.StartInfo.UseShellExecute = true; // avoid HandleInheritance
       var message = $"\"{proc.StartInfo.FileName}\" {proc.StartInfo.Arguments}";
       myLogger.Verbose(message);
