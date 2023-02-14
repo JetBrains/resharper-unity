@@ -69,6 +69,11 @@
                     location="SolutionModel.solutions.frontendBackendModel"
                     extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
                     handler="com.jetbrains.rider.plugins.unity.ui.unitTesting.UnitTestLauncherState$ProtocolListener"/>
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder"/>
+    <rd.extListener endpoint="IDE Frontend"
+                    location="SolutionModel.solutions.frontendBackendModel"
+                    extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
+                    handler="com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder$ProtocolListener"/>
 
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory"/>
 
