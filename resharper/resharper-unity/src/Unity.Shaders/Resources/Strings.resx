@@ -90,4 +90,10 @@
         <value>BraceStyle</value>
         <comment>Don't localize</comment>
     </data>
+    <data name="ShaderLabFormattingStylePageSchema_Describe_Brace_rules" xml:space="preserve">
+        <value>Brace rules</value>
+    </data>
+    <data name="ShaderLabFormattingStylePageSchema_PageName_ShaderLab_Formatting_Style" xml:space="preserve">
+        <value>ShaderLab Formatting Style</value>
+    </data>
 </root>

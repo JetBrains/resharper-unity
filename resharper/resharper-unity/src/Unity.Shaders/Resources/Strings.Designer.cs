@@ -74,5 +74,7 @@
     public static string ShaderLabAutopopupEnabledSettingsKey_s_ShaderLab => ResourceManager.GetString("ShaderLabAutopopupEnabledSettingsKey_s_ShaderLab");
     public static string ShaderLabFormatSettingsKey_s_Code_formatting_in_ShaderLab => ResourceManager.GetString("ShaderLabFormatSettingsKey_s_Code_formatting_in_ShaderLab");
     public static string ShaderLabFormatSettingsKey_s_BraceStyle => ResourceManager.GetString("ShaderLabFormatSettingsKey_s_BraceStyle");
+    public static string ShaderLabFormattingStylePageSchema_Describe_Brace_rules => ResourceManager.GetString("ShaderLabFormattingStylePageSchema_Describe_Brace_rules");
+    public static string ShaderLabFormattingStylePageSchema_PageName_ShaderLab_Formatting_Style => ResourceManager.GetString("ShaderLabFormattingStylePageSchema_PageName_ShaderLab_Formatting_Style");
   }
 }
