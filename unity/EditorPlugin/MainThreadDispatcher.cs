@@ -7,7 +7,7 @@ using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  public class MainThreadDispatcher : IScheduler
+  internal class MainThreadDispatcher : IScheduler
   {
     private static Thread ourUIThread;
     internal static readonly MainThreadDispatcher Instance = new MainThreadDispatcher();
@@ -20,7 +20,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       EditorApplication.update += DispatchTasks;
     }
-    
+
     /// <summary>
     /// Dispatches the specified action delegate.
     /// </summary>
@@ -32,7 +32,7 @@ namespace JetBrains.Rider.Unity.Editor
         action();
         return;
       }
-      
+
       lock (myTaskQueue)
       {
         myTaskQueue.Enqueue(action);
@@ -45,7 +45,7 @@ namespace JetBrains.Rider.Unity.Editor
     private void DispatchTasks()
     {
       ourUIThread = Thread.CurrentThread;
-      
+
       if (myTaskQueue.Count == 0)
         return;
       while (true)
@@ -68,7 +68,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       Assertion.Require(ourUIThread == null || ourUIThread == Thread.CurrentThread, "Not a UI thread");
     }
-    
+
     /// <summary>
     /// Indicates whether there are tasks available for dispatching
     /// </summary>

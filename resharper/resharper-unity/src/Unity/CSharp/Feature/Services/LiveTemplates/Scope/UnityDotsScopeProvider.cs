@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
                 yield break;
 
             var packageManager = context.Solution.GetComponent<PackageManager>();
-            if (packageManager.HasPackage("com.unity.entities"))
+            if (packageManager.HasPackage(PackageManager.UnityEntitiesPackageName))
                 yield return new UnityDotsScope();
         }
     }

@@ -18,6 +18,7 @@
     <JetTestProject>True</JetTestProject>
     <SignAssembly>False</SignAssembly>
     <Nullable>enable</Nullable>
+    <JetTestProject>True</JetTestProject>
   </PropertyGroup>
   <!-- ********** -->
   <!-- TODO: This should come from JetBrains.NET.Sdk, or Directory.Build.props -->

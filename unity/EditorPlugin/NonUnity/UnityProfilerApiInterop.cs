@@ -13,9 +13,9 @@ namespace JetBrains.Rider.Unity.Editor.Utils
             const string method = "StartProfiling";
             if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
                 Debug.Log($"{method}: {dllFile}");
-            
+
             InvokeApi(dllFile, method);
-            
+
             if (needReloadScripts)
                 ReloadScripts();
         }
@@ -31,13 +31,14 @@ namespace JetBrains.Rider.Unity.Editor.Utils
 
         private static void ReloadScripts()
         {
+            // TODO: This symbol isn't defined anywhere...
 #if UNITY_2019_3_OR_NEWER
             EditorUtility.RequestScriptReload(); // EditorPlugin would get loaded
-#else 
+#else
             UnityEditorInternal.InternalEditorUtility.RequestScriptReload();
 #endif
         }
-        
+
         private static void InvokeApi(string apiPath, string methodName)
         {
             // C:\Work\dotnet-products\Bin.RiderBackend\JetBrains.Etw.UnityProfilerApi.dll
@@ -50,13 +51,13 @@ namespace JetBrains.Rider.Unity.Editor.Utils
             var folder = new FileInfo(apiPath).Directory;
             if (folder == null)
                 throw new ApplicationException($"Folder of {apiPath} is null");
-            
+
             var instance = Activator.CreateInstance(profilerApiType, folder.FullName);
-            
+
             var method = profilerApiType.GetMethod(methodName);
             if (method == null)
                 throw new ApplicationException("Unable to get the method");
-            
+
             method.Invoke(instance, null);
         }
     }

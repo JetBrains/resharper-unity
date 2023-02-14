@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Services.FeatureStatistics
 {
@@ -77,7 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
 
         public IEnumerable<string> GetPossiblePackageName()
         {
-            yield return "com.unity.entities";
+            yield return PackageManager.UnityEntitiesPackageName;
         }
 
         public IEnumerable<string> GetPossibleAssemblyName()
