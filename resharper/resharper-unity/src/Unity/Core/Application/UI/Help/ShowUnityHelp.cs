@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Application;
+using JetBrains.Application.I18n;
 using JetBrains.Application.StdApplicationUI;
 using JetBrains.Application.UI.Help;
 using JetBrains.ProjectModel;
@@ -15,12 +17,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
         private readonly OpensUri myUriOpener;
         private readonly SolutionsManager mySolutionsManager;
         private readonly ILogger myLogger;
+        private readonly CultureContextComponent myCultureContextComponent;
 
-        public ShowUnityHelp(OpensUri uriOpener, SolutionsManager solutionsManager, ILogger logger)
+        public ShowUnityHelp(OpensUri uriOpener, SolutionsManager solutionsManager, ILogger logger, CultureContextComponent cultureContextComponent)
         {
             myUriOpener = uriOpener;
             mySolutionsManager = solutionsManager;
             myLogger = logger;
+            myCultureContextComponent = cultureContextComponent;
         }
 
         public bool ShowHelp(string keyword, HelpSystem.HelpKind kind, string preferredProduct = "")
@@ -69,32 +73,56 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
             // result for offline doc should be SerializeField-ctor/SerializeField, depending on presence of specific doc on the disk
             // result for online doc should contain dot, otherwise nothing is found
 
-            var documentationRoot = GetDocumentationRoot();
+            var unityLangCode = LangCodeMap.GetUnityLangCode(myCultureContextComponent.Culture.Value, myLogger);
+            var documentationRoot = GetDocumentationRoot(unityLangCode);
             var offlineKeyword = keyword.Replace(".#", "-").Replace(".-", "-");
             var res = GetFileUri(documentationRoot, $"ScriptReference/{offlineKeyword}.html") // ctor or type
                       ?? GetFileUri(documentationRoot, $"ScriptReference/{offlineKeyword.ReplaceLast('.', '-')}.html") // property
                       ?? GetFileUri(documentationRoot, $"ScriptReference/{offlineKeyword.Replace("-ctor", "")}.html") // ctor in Rider doesn't exist, so goto type doc
-                      ?? new Uri($"https://docs.unity3d.com{GetVersionSpecificPieceOfUrl()}/ScriptReference/30_search.html?q={keyword.Replace(".#", ".").Replace(".-", ".")}"); // fallback to online doc
-
+                      ?? new Uri($"https://docs.unity3d.com{GetVersionLanguageSpecificPieceOfUrl(unityLangCode)}/ScriptReference/30_search.html?q={keyword.Replace(".#", ".").Replace(".-", ".")}"); // fallback to online doc
+            
             myLogger.Trace($"GetUri offlineKeyword:{offlineKeyword}, onlineKeyword:{keyword.Replace(".#", ".").Replace(".-", ".")} {res}");
             return res;
         }
-
-        private string GetVersionSpecificPieceOfUrl()
+        
+        private string GetVersionLanguageSpecificPieceOfUrl(string unityLangCode)
         {
+            var sb = new StringBuilder();
+
+            if (unityLangCode == "en")
+                unityLangCode = string.Empty;
+            
+            if (!string.IsNullOrEmpty(unityLangCode))
+                sb.Append($"/{unityLangCode}");
+
             var version = mySolutionsManager.Solution?.GetComponent<UnityVersion>().ActualVersionForSolution.Value;
             if (version == null || version.Major == 0)
-                return string.Empty;
+            {
+                // when version is unknown, there is a difference between urls for lang code
+                // https://docs.unity3d.com/cn/current/ScriptReference/30_search.html?q=MonoBehaviour.OnTriggerStay2D
+                // https://docs.unity3d.com/ScriptReference/30_search.html?q=MonoBehaviour.OnTriggerStay2D
+                if (!string.IsNullOrEmpty(unityLangCode)) sb.Append("/current");
+                return sb.ToString();
+            }
             
             // Version before 2017.1 has different format of version:
             // https://docs.unity3d.com/560/Documentation/ScriptReference/MonoBehaviour.html
+            //var result = string.Empty;
             if (version < new Version(2017, 1))
-                return $"/{version.Major}{version.Minor}0/Documentation";
-            return $"/{version.ToString(2)}/Documentation";
+                sb.Append($"/{version.Major}{version.Minor}0");
+            else
+                sb.Append($"/{version.ToString(2)}");
+
+            // en url has additional Documentation part
+            // https://docs.unity3d.com/kr/2021.1/ScriptReference/30_search.html?q=MonoBehaviour.OnCollisionEnter
+            // https://docs.unity3d.com/2021.1/Documentation/ScriptReference/30_search.html?q=MonoBehaviour.OnCollisionEnter
+            if (string.IsNullOrEmpty(unityLangCode))
+                sb.Append("/Documentation");
+            return sb.ToString();
         }
 
         [NotNull]
-        private FileSystemPath GetDocumentationRoot()
+        private FileSystemPath GetDocumentationRoot(string unityLangCode)
         {
             var appPath = mySolutionsManager.Solution?.GetComponent<UnityVersion>().GetActualAppPathForSolution();
             if (appPath == null || appPath.IsEmpty) return FileSystemPath.Empty;
@@ -107,10 +135,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
             if (potentialRoot.IsAbsolute && potentialRoot.ExistsDirectory)
                 root = potentialRoot;
             
+            if (root.IsEmpty || !root.ExistsDirectory)
+                return FileSystemPath.Empty;
+
+            // first choice would be current lang
+            if (!string.IsNullOrEmpty(unityLangCode))
+            {
+                var langRoot = root.Combine(unityLangCode);
+                if (langRoot.ExistsDirectory)
+                    return langRoot.ToNativeFileSystemPath();
+            }
+            
+            // second choice - english
             var englishRoot = root.Combine("en");
-            if (root.IsNotEmpty && !englishRoot.ExistsDirectory && root.ExistsDirectory)
-                return root.GetChildDirectories().FirstOrDefault(englishRoot).ToNativeFileSystemPath();
-            return englishRoot.ToNativeFileSystemPath();
+            if (englishRoot.ExistsDirectory)
+                return englishRoot.ToNativeFileSystemPath();    
+            
+            // third choice - anything in the folder
+            return root.GetChildDirectories().FirstOrDefault(englishRoot).ToNativeFileSystemPath();
         }
 
         [CanBeNull]

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  public static class UIElementsSupport
+  internal static class UIElementsSupport
   {
     private static readonly ILog ourLogger = Log.GetLog("UIElementsSupport");
 

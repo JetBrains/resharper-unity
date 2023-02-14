@@ -4,18 +4,17 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Diagnostics;
 using JetBrains.Rider.Model.Unity;
-using JetBrains.Rider.Unity.Editor.Logger;
 using UnityEditor;
 using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  public interface IPluginSettings
+  internal interface IPluginSettings
   {
     OperatingSystemFamilyRider OperatingSystemFamilyRider { get; }
   }
 
-  public class PluginSettings : IPluginSettings
+  internal class PluginSettings : IPluginSettings
   {
     private static readonly ILog ourLogger = Log.GetLog<PluginSettings>();
 
@@ -25,7 +24,7 @@ namespace JetBrains.Rider.Unity.Editor
       set
       {
         EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value);
-        LogInitializer.InitLog(value);
+        LogInitializer.SetLogLevel(value);
       }
     }
 
@@ -262,7 +261,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         //UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(PluginEntryPoint.LogPath, 0);
         // works much faster than the commented code, when Rider is already started
-        PluginEntryPoint.OpenAssetHandler.OnOpenedAsset(PluginEntryPoint.LogPath, 0, 0);
+        PluginEntryPoint.OpenAssetHandler.OnOpenedAsset(LogInitializer.LogPath, 0, 0);
       }
       GUI.enabled = previous;
       GUILayout.EndHorizontal();
