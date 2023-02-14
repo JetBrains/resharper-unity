@@ -313,7 +313,7 @@ This function can be a coroutine.
 (62): ReSharper Unity Implicitly Used Identifier: 
 (63): Unity Gutter Icon: Unity event function
 
-OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody.
+OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
 This function can be a coroutine.
 (64): Unity Gutter Icon: Called when Unity first launches the editor, the player, or recompiles scripts
 (65): ReSharper Unity Implicitly Used Identifier: 

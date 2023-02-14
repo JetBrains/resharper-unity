@@ -22,8 +22,7 @@ namespace ApiParser
         private static readonly Regex CaptureArgumentsRegex =
             new Regex(@"^(?:[\w.]+)?\.(?:\w+)(?:\((?<args>.*)\)|(?<args>.*))$", RegexOptions.Compiled);
 
-        private static readonly string ScriptReferenceRelativePath =
-            Path.Combine("Documentation", "en", "ScriptReference");
+        private static readonly string ScriptReferenceRelativePath = "ScriptReference";
 
         private readonly UnityApi myApi;
         private readonly TypeResolver myTypeResolver;
@@ -39,7 +38,7 @@ namespace ApiParser
             myApi.ExportTo(writer);
         }
 
-        public void ParseFolder(string path, Version apiVersion)
+        public void ParseFolder(string path, Version apiVersion, RiderSupportedLanguages langCode)
         {
             var currentDirectory = Directory.GetCurrentDirectory();
             try
@@ -63,7 +62,7 @@ namespace ApiParser
                         continue;
                     }
 
-                    var document = TypeDocument.Load(links[i].file, links[i].fullName);
+                    var document = TypeDocument.Load(links[i].file, links[i].fullName, langCode);
                     progress++;
                     if (document != null)
                     {
@@ -95,7 +94,7 @@ namespace ApiParser
                     foreach (var message in document.Messages)
                     {
                         var eventFunction =
-                            ParseMessage(document.ShortName, message, apiVersion, document.Namespace);
+                            ParseMessage(document.ShortName, message, apiVersion, document.Namespace, langCode);
                         if (eventFunction == null)
                             continue;
 
@@ -170,7 +169,7 @@ namespace ApiParser
 
         [CanBeNull]
         private UnityApiEventFunction ParseMessage(string className, SimpleHtmlNode message, Version apiVersion,
-            string hintNamespace)
+            string hintNamespace, RiderSupportedLanguages langCode)
         {
             var link = message.SelectOne(@"td.lbl/a");
             var desc = message.SelectOne(@"td.desc");
@@ -261,9 +260,11 @@ namespace ApiParser
 
             var docPath = Path.Combine(ScriptReferenceRelativePath, detailsPath);
             var eventFunction = new UnityApiEventFunction(messageName, staticNode != null || isStaticFromExample,
-                isCoroutine, returnType, apiVersion, desc.Text, docPath);
+                isCoroutine, returnType, apiVersion, docPath);
 
-            return ParseParameters(eventFunction, signature, details, hintNamespace, argumentNames, apiVersion)
+            eventFunction.AddDescription(desc.Text, langCode);
+            
+            return ParseParameters(eventFunction, signature, details, hintNamespace, argumentNames, apiVersion, langCode)
                 ? eventFunction
                 : null;
         }
@@ -292,7 +293,7 @@ namespace ApiParser
         }
 
         private bool ParseParameters(UnityApiEventFunction eventFunction, SimpleHtmlNode signature,
-            SimpleHtmlNode details, string owningMessageNamespace, string[] argumentNames, Version apiVersion)
+            SimpleHtmlNode details, string owningMessageNamespace, string[] argumentNames, Version apiVersion, RiderSupportedLanguages langCode)
         {
             // Capture the arguments string. Note that this might be `string s, int i` or `string, int`
             var match = CaptureArgumentsRegex.Match(signature.Text);
@@ -319,7 +320,7 @@ namespace ApiParser
                 return new Argument(apiType, argName);
             }).ToArray();
 
-            ResolveArguments(details, arguments, argumentNames);
+            ResolveArguments(details, arguments, argumentNames, langCode);
 
             // If any of the types we're using have been removed/marked obsolete, then the message is also obsolete
             foreach (var argument in arguments)
@@ -329,13 +330,13 @@ namespace ApiParser
             }
 
             foreach (var argument in arguments)
-                eventFunction.AddParameter(argument.Name, argument.Type, argument.Description);
+                eventFunction.AddParameter(argument.Name, argument.Type, argument.Descriptions);
 
             return true;
         }
 
         private static void ResolveArguments([NotNull] SimpleHtmlNode details,
-            [NotNull] IReadOnlyList<Argument> arguments, string[] argumentNames)
+            [NotNull] IReadOnlyList<Argument> arguments, string[] argumentNames, RiderSupportedLanguages langCode)
         {
             for (var i = 0; i < arguments.Count && i < argumentNames.Length; i++)
             {
@@ -343,19 +344,19 @@ namespace ApiParser
                     arguments[i].Name = argumentNames[i];
             }
 
-            var parameters = details.Subsection("Parameters").ToArray();
+            var parameters = details.Subsection(LocalizationUtil.GetParametersDivTextByLangCode(langCode)).ToArray();
             if (Enumerable.Any(parameters))
-                ParseMessageParameters(arguments, parameters);
+                ParseMessageParameters(arguments, parameters, langCode);
         }
 
         private static void ParseMessageParameters([NotNull] IEnumerable<Argument> arguments,
-            [NotNull] IReadOnlyList<SimpleHtmlNode> parameters)
+            [NotNull] IReadOnlyList<SimpleHtmlNode> parameters, RiderSupportedLanguages langCode)
         {
             var i = 0;
             foreach (var argument in arguments)
             {
                 argument.Name = parameters[i].SelectOne(@"td.name.lbl")?.Text ?? argument.Name;
-                argument.Description = parameters[i].SelectOne(@"td.desc")?.Text ?? argument.Description;
+                argument.Descriptions.Add(langCode, parameters[i].SelectOne(@"td.desc")?.Text ?? argument.Descriptions.GetByLangCode(langCode));
                 ++i;
             }
         }

@@ -1,6 +1,6 @@
 namespace JetBrains.Rider.Unity.Editor
 {
-  public enum OperatingSystemFamilyRider
+  internal enum OperatingSystemFamilyRider
   {
     Other,
     // ReSharper disable once InconsistentNaming

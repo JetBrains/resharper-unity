@@ -10,6 +10,16 @@ Also looks like netstorage.unity3d.com/unity is interchangeable with download.un
 
 Based on a random sampling, the docs (and therefore the API) don't change between patch releases, only minor releases. It's safe to take the latest patch release of any version to use to generate the API data.
 
+# Current and localized
+
+https://cloudmedia-docs.unity3d.com/docscloudstorage/<languagecode>/<version>/UnityDocumentation.zip
+
+Language code: en, ja, kr, and cn
+
+Versions: 2023.1, 2022.2, 2021.3, 2020.3
+
+For example: https://cloudmedia-docs.unity3d.com/docscloudstorage/ja/2020.3/UnityDocumentation.zip
+
 ## Downloads
 
 * [2017.2.0 - 3 Oct 2017](https://beta.unity3d.com/download/472de62575d5/WindowsDocumentationInstaller/UnityDocumentationSetup-2017.2.0f2.exe)

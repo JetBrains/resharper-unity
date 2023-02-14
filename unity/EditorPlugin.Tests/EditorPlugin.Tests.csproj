@@ -8,9 +8,9 @@
     <WarningsNotAsErrors>CS0618</WarningsNotAsErrors>
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-  
+
   <ItemGroup>
-    <ProjectReference Include="..\EditorPlugin\EditorPlugin.csproj" />
+    <ProjectReference Include="..\EditorPlugin\EditorPlugin.SinceUnity.4.7.csproj" />
   </ItemGroup>
 
   <ItemGroup>

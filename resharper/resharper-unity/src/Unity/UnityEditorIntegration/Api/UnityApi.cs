@@ -450,5 +450,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             return type is IDeclaredType declaredType &&
                    ourUnityBuiltinSerializedFieldTypes.Contains(declaredType.GetClrName());
         }
+
     }
 }
