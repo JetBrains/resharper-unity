@@ -1040,16 +1040,16 @@
         <value>Unity DOTS projects</value>
     </data>
     <data name="UnityDots_GenerateRefAccessors_Name" xml:space="preserve">
-        <value>Generate accessors properties (DOTS)</value>
+        <value>Generate accessor properties (DOTS)</value>
     </data>
     <data name="UnityDots_GenerateRefAccessors_Description" xml:space="preserve">
-        <value>Generate accessors properties (DOTS)</value>
+        <value>Generate accessor properties (DOTS)</value>
     </data>
     <data name="UnityDots_GenerateRefAccessors_Unity_Component_Fields_Title" xml:space="preserve">
-        <value>Accessors properties (DOTS)</value>
+        <value>Accessor properties (DOTS)</value>
     </data>
     <data name="UnityDots_GenerateRefAccessors_Unity_Component_Fields_WindowTitle" xml:space="preserve">
-        <value>Accessors properties (DOTS)</value>
+        <value>Accessor properties (DOTS)</value>
     </data>    
     <data name="UnityDots_GenerateRefAccessors_Unity_Component_Fields_Description" xml:space="preserve">
         <value>Select fields for generation</value>
