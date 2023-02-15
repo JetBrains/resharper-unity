@@ -14,21 +14,18 @@ import com.intellij.xdebugger.XDebuggerManager
 import com.jetbrains.rd.framework.impl.RdTask
 import com.jetbrains.rd.ide.model.Solution
 import com.jetbrains.rd.platform.util.idea.LifetimedService
-import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
-import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.protocol.ProtocolExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.*
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
-import com.jetbrains.rider.plugins.unity.model.LogEvent
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.run.UnityRemoteConnectionDetails
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
-import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
+import com.jetbrains.rider.plugins.unity.run.configurations.UnityEditorDebugConfigurationType
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityProcessRunProfile
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
@@ -67,7 +64,7 @@ class FrontendBackendHost(project: Project) : LifetimedService() {
                 val task = RdTask<Boolean>()
 
                 val configuration =
-                    RunManager.getInstance(project).findConfigurationByTypeAndName(UnityDebugConfigurationType.id, DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME)
+                    RunManager.getInstance(project).findConfigurationByTypeAndName(UnityEditorDebugConfigurationType.id, DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME)
                 if (configuration == null)
                 {
                     task.set(false)

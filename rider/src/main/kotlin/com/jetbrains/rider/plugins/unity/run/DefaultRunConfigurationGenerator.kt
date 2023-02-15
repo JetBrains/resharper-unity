@@ -7,7 +7,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.ide.model.Solution
 import com.jetbrains.rd.platform.util.idea.LifetimedService
-import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.protocol.ProtocolExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNull
@@ -18,7 +17,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendMo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorAndPlayFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorFactory
-import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
+import com.jetbrains.rider.plugins.unity.run.configurations.UnityEditorDebugConfigurationType
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType
@@ -54,16 +53,16 @@ class DefaultRunConfigurationGenerator(project: Project) : LifetimedService() {
                 }
 
                 // Add "Attach Unity Editor" configurations, if they don't exist
-                if (!runManager.allSettings.any { it.type is UnityDebugConfigurationType && it.factory is UnityAttachToEditorFactory && it.name == ATTACH_CONFIGURATION_NAME }) {
-                    val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityDebugConfigurationType::class.java)
+                if (!runManager.allSettings.any { it.type is UnityEditorDebugConfigurationType && it.factory is UnityAttachToEditorFactory && it.name == ATTACH_CONFIGURATION_NAME }) {
+                    val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityEditorDebugConfigurationType::class.java)
                     val runConfiguration = runManager.createConfiguration(ATTACH_CONFIGURATION_NAME, configurationType.attachToEditorFactory)
                     // Not shared, as that requires the entire team to have the plugin installed
                     runConfiguration.storeInLocalWorkspace()
                     runManager.addConfiguration(runConfiguration)
                 }
 
-                if (project.isUnityProject() && !runManager.allSettings.any { it.type is UnityDebugConfigurationType && it.factory is UnityAttachToEditorAndPlayFactory && it.name == ATTACH_CONFIGURATION_NAME }) {
-                    val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityDebugConfigurationType::class.java)
+                if (project.isUnityProject() && !runManager.allSettings.any { it.type is UnityEditorDebugConfigurationType && it.factory is UnityAttachToEditorAndPlayFactory && it.name == ATTACH_CONFIGURATION_NAME }) {
+                    val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityEditorDebugConfigurationType::class.java)
                     val runConfiguration = runManager.createConfiguration(ATTACH_AND_PLAY_CONFIGURATION_NAME, configurationType.attachToEditorAndPlayFactory)
                     runConfiguration.storeInLocalWorkspace()
                     runManager.addConfiguration(runConfiguration)

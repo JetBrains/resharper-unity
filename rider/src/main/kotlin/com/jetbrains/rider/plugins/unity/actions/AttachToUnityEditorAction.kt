@@ -8,7 +8,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.DumbAwareAction
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
-import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
+import com.jetbrains.rider.plugins.unity.run.configurations.UnityEditorDebugConfigurationType
 
 class AttachUnityEditorAction: DumbAwareAction() {
     private val logger = Logger.getInstance(AttachUnityEditorAction::class.java)
@@ -18,7 +18,7 @@ class AttachUnityEditorAction: DumbAwareAction() {
 
         val runManager = RunManager.getInstance(project)
         val settings = runManager.findConfigurationByTypeAndName(
-                UnityDebugConfigurationType.id, DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME)
+                UnityEditorDebugConfigurationType.id, DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME)
 
         if (settings != null) {
             ExecutionUtil.runConfiguration(settings,
