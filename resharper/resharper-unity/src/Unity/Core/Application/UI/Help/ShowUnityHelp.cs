@@ -80,18 +80,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
                       ?? GetFileUri(documentationRoot, $"ScriptReference/{offlineKeyword.ReplaceLast('.', '-')}.html") // property
                       ?? GetFileUri(documentationRoot, $"ScriptReference/{offlineKeyword.Replace("-ctor", "")}.html") // ctor in Rider doesn't exist, so goto type doc
                       ?? new Uri($"https://docs.unity3d.com{GetVersionLanguageSpecificPieceOfUrl(unityLangCode)}/ScriptReference/30_search.html?q={keyword.Replace(".#", ".").Replace(".-", ".")}"); // fallback to online doc
-            
+
             myLogger.Trace($"GetUri offlineKeyword:{offlineKeyword}, onlineKeyword:{keyword.Replace(".#", ".").Replace(".-", ".")} {res}");
             return res;
         }
-        
+
         private string GetVersionLanguageSpecificPieceOfUrl(string unityLangCode)
         {
             var sb = new StringBuilder();
 
             if (unityLangCode == "en")
                 unityLangCode = string.Empty;
-            
+
             if (!string.IsNullOrEmpty(unityLangCode))
                 sb.Append($"/{unityLangCode}");
 
@@ -104,7 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
                 if (!string.IsNullOrEmpty(unityLangCode)) sb.Append("/current");
                 return sb.ToString();
             }
-            
+
             // Version before 2017.1 has different format of version:
             // https://docs.unity3d.com/560/Documentation/ScriptReference/MonoBehaviour.html
             //var result = string.Empty;
@@ -126,15 +126,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
         {
             var appPath = mySolutionsManager.Solution?.GetComponent<UnityVersion>().GetActualAppPathForSolution();
             if (appPath == null || appPath.IsEmpty) return FileSystemPath.Empty;
+
             var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(appPath);
             var root = contentsPath.Combine("Documentation");
 
-            // I see /home/ivan-shakhov/Unity/Hub/Editor/2021.2.4f1/Editor/Data/Documentation/Documentation/en path on my machine
-            // most likely Linux only peculiarity
+            // I see /home/ivan-shakhov/Unity/Hub/Editor/2021.2.4f1/Editor/Data/Documentation/Documentation/en path on
+            // my machine. Most likely Linux only peculiarity
             var potentialRoot = root.Combine("Documentation");
             if (potentialRoot.IsAbsolute && potentialRoot.ExistsDirectory)
                 root = potentialRoot;
-            
+
             if (root.IsEmpty || !root.ExistsDirectory)
                 return FileSystemPath.Empty;
 
@@ -145,12 +146,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
                 if (langRoot.ExistsDirectory)
                     return langRoot.ToNativeFileSystemPath();
             }
-            
+
             // second choice - english
             var englishRoot = root.Combine("en");
             if (englishRoot.ExistsDirectory)
-                return englishRoot.ToNativeFileSystemPath();    
-            
+                return englishRoot.ToNativeFileSystemPath();
+
             // third choice - anything in the folder
             return root.GetChildDirectories().FirstOrDefault(englishRoot).ToNativeFileSystemPath();
         }

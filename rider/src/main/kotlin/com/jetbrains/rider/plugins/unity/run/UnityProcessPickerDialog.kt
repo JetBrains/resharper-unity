@@ -279,8 +279,9 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         private fun getProcessKindWeight(process: UnityProcess): Int {
             return when (process) {
                 is UnityEditor -> 10
-                is UnityEditorHelper -> 20  // This is handled as a child node of UnityEditor
-                is UnityIosUsbProcess -> 30 // This is put into its own group
+                is UnityEditorHelper -> 20          // This is handled as a child node of UnityEditor
+                is UnityIosUsbProcess -> 30         // This is put into its own group
+                is UnityAndroidAdbProcess -> 30     // Treat the same as iOS USB
                 is UnityLocalPlayer -> 40
                 is UnityRemotePlayer -> 50
             }
@@ -303,7 +304,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
             val unityProcess = node.process
             val attributes = if (!node.debuggerAttached) SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES else SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES
-            val projectName = unityProcess.projectName ?: if (unityProcess is UnityIosUsbProcess) USB_DEVICES else UNKNOWN_PROJECTS
+            val projectName = unityProcess.projectName ?: if (unityProcess is UnityIosUsbProcess || unityProcess is UnityAndroidAdbProcess) USB_DEVICES else UNKNOWN_PROJECTS
             val hasSeparator = !isChildProcess(node) && (isFirstItem(node) || getPreviousSiblingProjectName(node) != projectName)
 
             // Set up visibility and selected status. This does not (re)set the selected status of the returned
@@ -328,6 +329,9 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             }
             if (unityProcess is UnityLocalProcess) {
                 append(itemComponent, UnityBundle.message("appended.pid.0", unityProcess.pid.toString()), SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
+            }
+            if (unityProcess is UnityAndroidAdbProcess && unityProcess.packageName != null) {
+                append(itemComponent, UnityBundle.message("appended.android.package", unityProcess.packageName), SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
             }
 
             SpeedSearchUtil.applySpeedSearchHighlighting(tree, itemComponent, true, selected)
@@ -359,7 +363,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
         private fun getPreviousSiblingProjectName(node: UnityProcessTreeNode): String {
             return (node.previousSibling as? UnityProcessTreeNode)?.let {
-                if (it.process is UnityIosUsbProcess) {
+                if (it.process is UnityIosUsbProcess || it.process is UnityAndroidAdbProcess) {
                     USB_DEVICES
                 }
                 else {

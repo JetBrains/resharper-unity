@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 package com.jetbrains.rider.plugins.unity.run
 
 import com.intellij.openapi.util.NlsSafe
@@ -29,3 +31,8 @@ class UnityLocalUwpPlayer(displayName: String, override val host: String, overri
     : UnityLocalPlayer(displayName, host, port, allowDebugging, projectName)
 
 class UnityIosUsbProcess(displayName: String, val deviceId: String) : UnityProcess(displayName, true)
+
+class UnityAndroidAdbProcess(displayName: String, val deviceName: String?, val deviceId: String, override val port: Int, val packageName: String?)
+    : UnityProcess(displayName, true), UnityRemoteConnectionDetails {
+    override val host = "127.0.0.1"
+}
