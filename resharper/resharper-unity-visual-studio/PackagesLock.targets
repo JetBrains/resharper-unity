@@ -5,5 +5,9 @@
         <PackageLock Include="VSSDK.Text" Version="10.0.4" />
         <PackageLock Include="VSSDK.CoreUtility" Version="10.0.4" />
         <PackageLock Include="VSSDK.IDE.10" Version="10.0.4" />
+        <PackageLock Include="JetBrains.Microsoft.Web.WebView2" Version="1.0.1343.25"  />
+        <PackageLock Include="JetBrains.Microsoft.Web.WebView2.windows-arm64" Version="1.0.1343.25" RuntimeIds="windows-arm64" />
+        <PackageLock Include="JetBrains.Microsoft.Web.WebView2.windows-x64" Version="1.0.1343.25" RuntimeIds="windows-x64" />
+        <PackageLock Include="JetBrains.Microsoft.Web.WebView2.windows-x86" Version="1.0.1343.25" RuntimeIds="windows-x86" />
     </ItemGroup>
 </Project>
