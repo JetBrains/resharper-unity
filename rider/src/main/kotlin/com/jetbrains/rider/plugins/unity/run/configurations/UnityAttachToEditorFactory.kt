@@ -1,15 +1,15 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.configurations.ConfigurationType
+import com.intellij.execution.configurations.RunConfigurationSingletonPolicy
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import icons.UnityIcons
 
-
 open class UnityAttachToEditorFactory(type: ConfigurationType) : UnityConfigurationFactoryBase(type) {
 
     override fun createTemplateConfiguration(project: Project) = UnityAttachToEditorRunConfiguration(project, this)
-    override fun isConfigurationSingletonByDefault() = true
+    override fun getSingletonPolicy() = RunConfigurationSingletonPolicy.SINGLE_INSTANCE_ONLY
     override fun getName() = UnityBundle.message("debug.unity.editor")
     override fun getIcon() = UnityIcons.RunConfigurations.AttachAndDebug
 
@@ -22,7 +22,7 @@ open class UnityAttachToEditorFactory(type: ConfigurationType) : UnityConfigurat
 class UnityAttachToEditorAndPlayFactory(type: ConfigurationType) : UnityConfigurationFactoryBase(type) {
 
     override fun createTemplateConfiguration(project: Project) = UnityAttachToEditorRunConfiguration(project, this, true)
-    override fun isConfigurationSingletonByDefault() = true
+    override fun getSingletonPolicy() = RunConfigurationSingletonPolicy.SINGLE_INSTANCE_ONLY
     override fun getName() = UnityBundle.message("name.debug.unity.editor.play.mode")
     override fun getId() = "UNITY_ATTACH_AND_PLAY"
     override fun getIcon() = UnityIcons.RunConfigurations.AttachDebugAndPlay
