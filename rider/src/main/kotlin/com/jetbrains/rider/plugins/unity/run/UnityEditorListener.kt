@@ -41,7 +41,7 @@ class UnityEditorListener(project: Project,
         editorProcesses.keys.filterNot { existingEditorPid ->
             processes.any { p -> p.pid == existingEditorPid }
         }.forEach { p ->
-            editorProcesses[p]?.let {
+            editorProcesses.remove(p)?.let {
                 logger.trace("Removing old Unity editor ${it.displayName}:${it.pid}")
                 onEditorRemoved(it)
             }

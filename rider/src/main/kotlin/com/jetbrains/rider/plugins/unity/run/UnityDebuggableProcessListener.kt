@@ -10,5 +10,6 @@ class UnityDebuggableProcessListener(project: Project, lifetime: Lifetime,
         UnityEditorListener(project, lifetime, onProcessAdded, onProcessRemoved)
         UnityPlayerListener(lifetime, onProcessAdded, onProcessRemoved)
         AppleDeviceListener(project, lifetime, onProcessAdded, onProcessRemoved)
+        AndroidDeviceListener(project, lifetime, onProcessAdded, onProcessRemoved)
     }
 }

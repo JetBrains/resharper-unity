@@ -64,11 +64,11 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 
             protected override void DoStartSession(IDebuggerSession session, IDebuggerSessionOptions options)
             {
-                StartCheckNetIsolation();
+                StartCheckNetIsolation(session);
                 session.Run(mySoftDebuggerStartInfo, options);
             }
 
-            private void StartCheckNetIsolation()
+            private void StartCheckNetIsolation(IDebuggerSession session)
             {
                 if (!PlatformUtil.IsRunningUnderWindows)
                     return;
@@ -77,9 +77,9 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
                 {
                     // The UAC prompt shows "AppContainer Network Isolation Diagnostic Tool"
                     // WriteLine will appear in the debugger's Console pane
-                    Console.WriteLine("Starting 'AppContainer Network Isolation Diagnostic Tool' (CheckNetIsolation.exe)");
+                    session.LogWriter?.Invoke(false, "Starting 'AppContainer Network Isolation Diagnostic Tool' (CheckNetIsolation.exe)");
                     var verb = PlatformUtilWindows.IsRunningElevated ? "open" : "runas";
-                    var processStartInfo = new ProcessStartInfo()
+                    var processStartInfo = new ProcessStartInfo
                     {
                         FileName = "CheckNetIsolation.exe",
                         Arguments = $"LoopbackExempt -is -n={myLocalUwpStartInfo.PackageName}",
@@ -89,19 +89,19 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
                     };
                     var process = Process.Start(processStartInfo);
                     if (process != null)
-                        myLifetime.OnTermination(() => StopCheckNetIsolation(process));
+                        myLifetime.OnTermination(() => StopCheckNetIsolation(process, session));
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Error running CheckNetIsolation.exe: {e.Message}");
+                    session.LogWriter?.Invoke(true, $"Error running CheckNetIsolation.exe: {e.Message}");
                     myLogger.Error(e);
                     throw;
                 }
             }
 
-            private void StopCheckNetIsolation(Process process)
+            private void StopCheckNetIsolation(Process process, IDebuggerSession session)
             {
-                Console.WriteLine("Stopping 'AppContainer Network Isolation Diagnostic Tool'");
+                session.LogWriter?.Invoke(false, "Stopping 'AppContainer Network Isolation Diagnostic Tool'");
                 process.Kill();
                 process.WaitForExit();
                 process.Close();

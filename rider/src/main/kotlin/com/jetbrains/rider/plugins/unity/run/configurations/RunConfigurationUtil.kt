@@ -41,6 +41,10 @@ class UnityProcessRunProfile(private val project: Project, val process: UnityPro
                 UnityAttachIosUsbProfileState(project, MyRemoteConfiguration("127.0.0.1", 12000),
                     environment, process.displayName, process.deviceId)
             }
+            is UnityAndroidAdbProcess -> {
+                UnityAttachAndroidAdbProfileState(project, MyRemoteConfiguration(process.host, process.port),
+                    environment, process.displayName, process.deviceId)
+            }
             is UnityLocalUwpPlayer -> {
                 UnityAttachLocalUwpProfileState(MyRemoteConfiguration(process.host, process.port), environment,
                     process.displayName, process.packageName)
