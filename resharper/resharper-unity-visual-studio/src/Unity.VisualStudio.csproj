@@ -21,7 +21,16 @@
     <PackageReference Include="VSSDK.Text" />
     <PackageReference Include="VSSDK.CoreUtility" />
     <PackageReference Include="VSSDK.IDE.10" />
-    <PackageReference Include="JetBrains.Microsoft.Web.WebView2" Version="1.0.1343.25">
+    <PackageReference Include="JetBrains.Microsoft.Web.WebView2">
+      <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="JetBrains.Microsoft.Web.WebView2.windows-arm64">
+      <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="JetBrains.Microsoft.Web.WebView2.windows-x64">
+      <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="JetBrains.Microsoft.Web.WebView2.windows-x86">
       <ExcludeAssets>all</ExcludeAssets>
     </PackageReference>
     <ProjectReference Include="..\..\resharper-unity\src\Unity\Unity.csproj" />
