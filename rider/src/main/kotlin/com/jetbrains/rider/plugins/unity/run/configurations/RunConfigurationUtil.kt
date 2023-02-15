@@ -2,11 +2,15 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.Executor
 import com.intellij.execution.ProgramRunnerUtil
+import com.intellij.execution.RunManager
+import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configurations.RunProfile
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
+import com.intellij.execution.runners.ExecutionUtil
+import com.intellij.execution.ui.RunConfigurationStartHistory
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.debugger.IRiderDebuggable
@@ -14,12 +18,38 @@ import com.jetbrains.rider.plugins.unity.run.*
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import javax.swing.Icon
 
+fun attachToUnityEditor(project: Project): Boolean {
+    val settings = RunManager.getInstance(project).findConfigurationByTypeAndName(
+        UnityEditorDebugConfigurationType.id, DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME
+    )
+
+    if (settings != null) {
+        executeRunConfiguration(project, settings)
+        return true
+    }
+
+    return false
+}
+
 fun attachToUnityProcess(project: Project, process: UnityProcess) {
     val runProfile = UnityProcessRunProfile(project, process)
     val environment = ExecutionEnvironmentBuilder
         .create(project, DefaultDebugExecutor.getDebugExecutorInstance(), runProfile)
         .build()
     ProgramRunnerUtil.executeConfiguration(environment, false, true)
+}
+
+private fun executeRunConfiguration(
+    project: Project,
+    configurationSettings: RunnerAndConfigurationSettings
+) {
+    ExecutionUtil.runConfiguration(configurationSettings, DefaultDebugExecutor.getDebugExecutorInstance())
+    RunManager.getInstance(project).selectedConfiguration = configurationSettings
+
+    // The new UI only adds items to the run widget if explicitly started from the run widget or via context action
+    // (IDEA-310169)
+    @Suppress("UnstableApiUsage")
+    RunConfigurationStartHistory.getInstance(project).register(configurationSettings)
 }
 
 /**
