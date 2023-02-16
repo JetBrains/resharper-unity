@@ -81,7 +81,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
 
                 val res = ext.executor(UnityAttachConfigurationParametersImpl(processId,
                                                                               finder.getApplicationExecutablePath(), args,
-                                                                              finder.getApplicationVersion()), environment) { _, _ ->
+                                                                              finder.getApplicationVersion()), environment) { _, _, _ ->
                     run {
                         if (executorId == "dotTrace Profiler") {
                             project.solution.frontendBackendModel.startProfiling.start(project.lifetime, play)

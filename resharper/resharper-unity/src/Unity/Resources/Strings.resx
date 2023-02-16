@@ -970,6 +970,9 @@
     <data name="UnityCommonIconProvider_GetEventFunctionTooltip_This_function_can_be_a_coroutine_" xml:space="preserve">
         <value>This function can be a coroutine.</value>
     </data>
+    <data name="UnityElementDescriptionProvider_GetEventFunctionDescription_This_function_is_undocumented_" xml:space="preserve">
+        <value>This function is undocumented.</value>
+    </data>
     <data name="UnityCommonIconProvider_GetEventFunctionTooltip_Unity_event_function" xml:space="preserve">
         <value>Unity event function</value>
     </data>
@@ -1037,16 +1040,16 @@
         <value>Unity DOTS projects</value>
     </data>
     <data name="UnityDots_GenerateRefAccessors_Name" xml:space="preserve">
-        <value>Generate accessors properties (DOTS)</value>
+        <value>Generate accessor properties (DOTS)</value>
     </data>
     <data name="UnityDots_GenerateRefAccessors_Description" xml:space="preserve">
-        <value>Generate accessors properties (DOTS)</value>
+        <value>Generate accessor properties (DOTS)</value>
     </data>
     <data name="UnityDots_GenerateRefAccessors_Unity_Component_Fields_Title" xml:space="preserve">
-        <value>Accessors properties (DOTS)</value>
+        <value>Accessor properties (DOTS)</value>
     </data>
     <data name="UnityDots_GenerateRefAccessors_Unity_Component_Fields_WindowTitle" xml:space="preserve">
-        <value>Accessors properties (DOTS)</value>
+        <value>Accessor properties (DOTS)</value>
     </data>    
     <data name="UnityDots_GenerateRefAccessors_Unity_Component_Fields_Description" xml:space="preserve">
         <value>Select fields for generation</value>
@@ -1382,4 +1385,145 @@ a plugin to be installed to a project.</value>
     <data name="ModifyInspectorAttributes_Text" xml:space="preserve">
         <value>Modify Inspector attributes</value>
     </data>
+    <data name="ShowBurstCallsBulbAction_Text_Show_incoming_Burst_calls" xml:space="preserve">
+        <value>Show incoming Burst calls</value>
+    </data>
+    <data name="ShowBurstCallsBulbAction_Text_Show_outgoing_Burst_calls" xml:space="preserve">
+        <value>Show outgoing Burst calls</value>
+    </data>
+    <data name="ShowPerformanceCriticalCallsBulbAction_Text_Show_incoming_Performance_Critical_calls" xml:space="preserve">
+        <value>Show incoming Performance Critical calls</value>
+    </data>
+    <data name="ShowPerformanceCriticalCallsBulbAction_Text_Show_outgoing_Performance_Critical_calls" xml:space="preserve">
+        <value>Show outgoing Performance Critical calls</value>
+    </data>
+    <data name="UnityElementDescriptionProvider_GetEventFunctionParameterDescription_This_parameter_is_optional_and_can_be_removed_if_not_used_" xml:space="preserve">
+        <value>This parameter is optional and can be removed if not used.</value>
+    </data>
+    <data name="UnityElementDescriptionProvider_GetEventFunctionParameterDescription_This_parameter_is_optional___0_" xml:space="preserve">
+        <value>This parameter is optional: {0}</value>
+    </data>
+
+    <data name="Template_Editable_SUNvbXBvbmVudERhdGEEQ" xml:space="preserve">
+        <value>IComponentData</value>
+    </data>
+    <data name="Template_Editable_RE9UUwEQEQ" xml:space="preserve">
+        <value>DOTS</value>
+    </data>
+    <data name="Template_Editable_VW5pdHkgQ3JlYXRlQXNzZXRNZW51IGF0dHJpYnV0ZQEQEQ" xml:space="preserve">
+        <value>Unity CreateAssetMenu attribute</value>
+    </data>
+    <data name="Template_Editable_QXNzZW1ibHkgRGVmaW5pdGlvbiBGaWxl" xml:space="preserve">
+        <value>Assembly Definition File</value>
+    </data>
+    <data name="Template_Editable_UGxheSBNb2RlIFRlc3QEQ" xml:space="preserve">
+        <value>Play Mode Test</value>
+    </data>
+    <data name="Template_Editable_VW5pdHkgU2NyaXB0" xml:space="preserve">
+        <value>Unity Script</value>
+    </data>
+    <data name="Template_Editable_SUpvYkVudGl0eQEQEQ" xml:space="preserve">
+        <value>IJobEntity</value>
+    </data>
+    <data name="Template_Editable_VW5pdHkgbG9nIHdhcm5pbmcEQ" xml:space="preserve">
+        <value>Unity log warning</value>
+    </data>
+    <data name="Template_Editable_SW1hZ2UgRWZmZWN0IFNoYWRlcgEQEQ" xml:space="preserve">
+        <value>Image Effect Shader</value>
+    </data>
+    <data name="Template_Editable_VW5pdHkgU2hhZGVy" xml:space="preserve">
+        <value>Unity Shader</value>
+    </data>
+    <data name="Template_Editable_QXNzZXQgUG9zdHByb2Nlc3NvcgEQEQ" xml:space="preserve">
+        <value>Asset Postprocessor</value>
+    </data>
+    <data name="Template_Editable_U2NyaXB0YWJsZSBPYmplY3QEQ" xml:space="preserve">
+        <value>Scriptable Object</value>
+    </data>
+    <data name="Template_Editable_TW9ubyBCZWhhdmlvdXIEQ" xml:space="preserve">
+        <value>Mono Behaviour</value>
+    </data>
+    <data name="Template_Editable_RWRpdG9yIFdpbmRvdwEQEQ" xml:space="preserve">
+        <value>Editor Window</value>
+    </data>
+    <data name="Template_Editable_U3RhdGUgTWFjaGluZSBCZWhhdmlvdXIEQ" xml:space="preserve">
+        <value>State Machine Behaviour</value>
+    </data>
+    <data name="Template_Editable_VW5pdHkgbG9nIGV4Y2VwdGlvbgEQEQ" xml:space="preserve">
+        <value>Unity log exception</value>
+    </data>
+    <data name="Template_Editable_VW5pdHkgbWVudSBpdGVtIGhhbmRsZXIEQ" xml:space="preserve">
+        <value>Unity menu item handler</value>
+    </data>
+    <data name="Template_Editable_VW5pdHkgc2VyaWFsaXplZCBmaWVsZAEQEQ" xml:space="preserve">
+        <value>Unity serialized field</value>
+    </data>
+    <data name="Template_Editable_RWRpdG9yIEVudHJ5UG9pbnQgQyMgc2NyaXB0" xml:space="preserve">
+        <value>Editor EntryPoint C# script</value>
+    </data>
+    <data name="Template_Editable_VW5pdHkgbG9nIGVycm9y" xml:space="preserve">
+        <value>Unity log error</value>
+    </data>
+    <data name="Template_Editable_VW5pdHkgbG9nIG9iamVjdC9tZXNzYWdl" xml:space="preserve">
+        <value>Unity log object/message</value>
+    </data>
+    <data name="Template_Editable_UHJvcGVydHkgRHJhd2VyIChJTUdVSSkEQ" xml:space="preserve">
+        <value>Property Drawer (IMGUI)</value>
+    </data>
+    <data name="Template_Editable_Q3VzdG9tIEVkaXRvciAoSU1HVUkp" xml:space="preserve">
+        <value>Custom Editor (IMGUI)</value>
+    </data>
+    <data name="Template_Editable_VW5pdHkgUmVxdWlyZUNvbXBvbmVudCBhdHRyaWJ1dGUEQ" xml:space="preserve">
+        <value>Unity RequireComponent attribute</value>
+    </data>
+    <data name="Template_Editable_SVN5c3RlbQEQEQ" xml:space="preserve">
+        <value>ISystem</value>
+    </data>
+    <data name="Template_Editable_U2NyaXB0YWJsZSBXaXphcmQEQ" xml:space="preserve">
+        <value>Scriptable Wizard</value>
+    </data>
+    <data name="Template_Editable_U3RhbmRhcmQgU3VyZmFjZSBTaGFkZXIEQ" xml:space="preserve">
+        <value>Standard Surface Shader</value>
+    </data>
+    <data name="Template_Editable_VW5pdHkgcHJvcGVydHkgd2l0aCBzZXJpYWxpemVkIGJhY2tpbmcgZmllbGQEQ" xml:space="preserve">
+        <value>Unity property with serialized backing field</value>
+    </data>
+    <data name="Template_Editable_RWRpdCBNb2RlIFRlc3QEQ" xml:space="preserve">
+        <value>Edit Mode Test</value>
+    </data>
+    <data name="Template_Editable_VW5pdHkgY29yb3V0aW5lIG1ldGhvZAEQEQ" xml:space="preserve">
+        <value>Unity coroutine method</value>
+    </data>
+    <data name="Template_Editable_VW5pdHkgbG9nIHZhcmlhYmxl" xml:space="preserve">
+        <value>Unity log variable</value>
+    </data>
+    <data name="Template_Editable_Q3VzdG9tIEVkaXRvcgEQEQ" xml:space="preserve">
+        <value>Custom Editor</value>
+    </data>
+    <data name="Template_Editable_VW5saXQgU2hhZGVy" xml:space="preserve">
+        <value>Unlit Shader</value>
+    </data>
+    <data name="Template_Editable_SUFzcGVjdAEQEQ" xml:space="preserve">
+        <value>IAspect</value>
+    </data>
+    <data name="Template_Editable_RWRpdG9yIFdpbmRvdyAoSU1HVUkp" xml:space="preserve">
+        <value>Editor Window (IMGUI)</value>
+    </data>
+    <data name="Template_Editable_U3lzdGVtQmFzZQEQEQ" xml:space="preserve">
+        <value>SystemBase</value>
+    </data>
+    <data name="Template_Editable_UHJvcGVydHkgRHJhd2Vy" xml:space="preserve">
+        <value>Property Drawer</value>
+    </data>
+    <data name="Template_Editable_TW9kdWxlIGludGVyZmFjZSB1bml0" xml:space="preserve">
+        <value>Module interface unit</value>
+    </data>
+    <data name="Template_Editable_SGVhZGVyIGZpbGUEQ" xml:space="preserve">
+        <value>Header file</value>
+    </data>
+    <data name="Template_Editable_U291cmNlIGZpbGUEQ" xml:space="preserve">
+        <value>Source file</value>
+    </data>
+
+
 </root>
