@@ -7,6 +7,7 @@ import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configurations.RunProfile
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.executors.DefaultDebugExecutor
+import com.intellij.execution.impl.ExecutionManagerImpl
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.execution.runners.ExecutionUtil
@@ -19,16 +20,24 @@ import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import javax.swing.Icon
 
-fun attachToUnityEditor(project: Project): Boolean {
-    val settings = RunManager.getInstance(project).findConfigurationByTypeAndName(
-        UnityEditorDebugConfigurationType.id, DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME
-    )
+/** Returns true if the "Attach to Unity Editor" run configuration exists and is running */
+fun isAttachedToUnityEditor(project: Project): Boolean {
+    getUnityEditorRunConfiguration(project)?.let { return isRunning(project, it) }
+    return false
+}
 
-    if (settings != null) {
-        executeRunConfiguration(project, settings)
+/**
+ * Runs the "Attach to Unity Editor" run configuration
+ *
+ * If the configuration is already running, it will make sure it's the selected run configuration.
+ *
+ * @return `false` if the run configuration does not exist
+ */
+fun attachToUnityEditor(project: Project): Boolean {
+    getUnityEditorRunConfiguration(project)?.let {
+        startDebugRunConfiguration(project, it)
         return true
     }
-
     return false
 }
 
@@ -45,10 +54,24 @@ fun attachToUnityProcess(project: Project, process: UnityProcess) {
     ProgramRunnerUtil.executeConfiguration(environment, false, true)
 }
 
-private fun executeRunConfiguration(
+private fun getUnityEditorRunConfiguration(project: Project) =
+    RunManager.getInstance(project).findConfigurationByTypeAndName(
+        UnityEditorDebugConfigurationType.id,
+        DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME
+    )
+
+private fun isRunning(project: Project, configurationSettings: RunnerAndConfigurationSettings) =
+    ExecutionManagerImpl.getInstance(project).getRunningDescriptors { it == configurationSettings }.isNotEmpty()
+
+private fun startDebugRunConfiguration(
     project: Project,
     configurationSettings: RunnerAndConfigurationSettings
 ) {
+    if (isRunning(project, configurationSettings)){
+        RunManager.getInstance(project).selectedConfiguration = configurationSettings
+        return
+    }
+
     ExecutionUtil.runConfiguration(configurationSettings, DefaultDebugExecutor.getDebugExecutorInstance())
     RunManager.getInstance(project).selectedConfiguration = configurationSettings
 
