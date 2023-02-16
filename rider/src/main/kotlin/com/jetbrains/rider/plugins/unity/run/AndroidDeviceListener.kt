@@ -121,7 +121,7 @@ class AndroidDeviceListener(
             val packageName = playerPackageNames[player.key]
 
             logger.trace("Adding new Android player ${player.key} - ${deviceName ?: player.deviceSerial}")
-            UnityAndroidAdbProcess(displayName, deviceName, player.deviceSerial, player.port, packageName).let {
+            UnityAndroidAdbProcess(displayName, player.deviceSerial, deviceName, player.port, packageName).let {
                 players[player.key] = it
                 onPlayerAdded(it)
             }

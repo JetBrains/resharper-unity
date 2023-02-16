@@ -90,34 +90,51 @@ class UnityProcessRunProfile(private val project: Project, val process: UnityPro
     override fun getName(): String = process.displayName
     override fun getIcon(): Icon = AllIcons.Actions.StartDebugger
 
-    override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? {
+    override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
+        val remoteConfiguration = object : RemoteConfiguration {
+            override var address = process.host
+            override var port = process.port
+            override var listenPortForConnections = false
+        }
+
         return when (process) {
             is UnityIosUsbProcess -> {
-                // We need to tell the debugger which port to connect to. The proxy will open this port and forward
-                // traffic to the on-device port of 56000. These port numbers are hardcoded, and follow what Unity does
-                // in their debugger plugins. There is a chance that the local 12000 port is in use, but there's not
-                // much we can do about that - we tell the proxy both port numbers and it tries to set things up.
-                UnityAttachIosUsbProfileState(project, MyRemoteConfiguration("127.0.0.1", 12000),
-                    environment, process.displayName, process.deviceId)
+                UnityAttachIosUsbProfileState(
+                    project,
+                    remoteConfiguration,
+                    environment,
+                    process.displayName,
+                    process.deviceId
+                )
             }
+
             is UnityAndroidAdbProcess -> {
-                UnityAttachAndroidAdbProfileState(project, MyRemoteConfiguration(process.host, process.port),
-                    environment, process.displayName, process.deviceId)
+                UnityAttachAndroidAdbProfileState(
+                    project,
+                    remoteConfiguration,
+                    environment,
+                    process.displayName,
+                    process.deviceId
+                )
             }
+
             is UnityLocalUwpPlayer -> {
-                UnityAttachLocalUwpProfileState(MyRemoteConfiguration(process.host, process.port), environment,
-                    process.displayName, process.packageName)
+                UnityAttachLocalUwpProfileState(
+                    remoteConfiguration,
+                    environment,
+                    process.displayName,
+                    process.packageName
+                )
             }
-            is UnityRemoteConnectionDetails -> {
-                UnityAttachProfileState(MyRemoteConfiguration(process.host, process.port), environment, process.displayName,
+
+            else -> {
+                UnityAttachProfileState(
+                    remoteConfiguration,
+                    environment,
+                    process.displayName,
                     process is UnityEditor || process is UnityEditorHelper
                 )
             }
-            else -> null
         }
-    }
-
-    private class MyRemoteConfiguration(override var address: String, override var port: Int) : RemoteConfiguration {
-        override var listenPortForConnections: Boolean = false
     }
 }

@@ -55,7 +55,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             selectionModel.addTreeSelectionListener {
                 isOKActionEnabled = !isSelectionEmpty
                 getSelectedUnityProcessTreeNode()?.let {
-                    isOKActionEnabled = !it.debuggerAttached && it.process.allowDebugging
+                    isOKActionEnabled = !it.debuggerAttached && it.process.debuggingEnabled
                 }
             }
 
@@ -116,7 +116,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         if (okAction.isEnabled) {
             val model = getSelectedUnityProcessTreeNode() ?: return
             val process = model.process
-            if (!model.debuggerAttached && process.allowDebugging) {
+            if (!model.debuggerAttached && process.debuggingEnabled) {
                 attachToUnityProcess(project, process)
             }
             close(OK_EXIT_CODE)
@@ -172,7 +172,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     }
 
     private fun addProcess(process: UnityProcess): UnityProcessTreeNode {
-        val isDebuggerAttached = process is UnityRemoteConnectionDetails && UnityRunUtil.isDebuggerAttached(process.host, process.port, project)
+        val isDebuggerAttached = UnityRunUtil.isDebuggerAttached(process.host, process.port, project)
 
         synchronized(treeModelLock) {
             val root = treeModel.root as DefaultMutableTreeNode
@@ -327,10 +327,12 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             if (node.debuggerAttached) {
                 append(itemComponent, UnityBundle.message("appended.debugger.attached"), SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES, selected, focused)
             }
-            if (!unityProcess.allowDebugging) {
+            if (!unityProcess.debuggingEnabled) {
                 append(itemComponent, UnityBundle.message("appended.script.debugging.disabled"), SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES, selected, focused)
             }
-            if (unityProcess is UnityRemoteConnectionDetails) {
+            if (unityProcess !is UnityIosUsbProcess) {
+                // Don't show the hardcoded host and port for iOS devices.
+                // Arguably, we could do the same for Android, as they're not correct until the port has been forwarded.
                 append(itemComponent, " ${unityProcess.host}:${unityProcess.port}", SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
             }
             if (unityProcess is UnityLocalProcess) {

@@ -23,7 +23,6 @@ import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
-import com.jetbrains.rider.plugins.unity.run.UnityRemoteConnectionDetails
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityEditorDebugConfigurationType
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityProcessRunProfile
@@ -59,6 +58,7 @@ class FrontendBackendHost(project: Project) : LifetimedService() {
                 StartUnityAction.startUnity(project)
             }
 
+            // TODO: Can we migrate this to RunConfigurationUtil?
             model.attachDebuggerToUnityEditor.set { lt, _ ->
                 val sessions = XDebuggerManager.getInstance(project).debugSessions
                 val task = RdTask<Boolean>()
@@ -80,7 +80,7 @@ class FrontendBackendHost(project: Project) : LifetimedService() {
                         return@any (it.runProfile as UnityAttachToEditorRunConfiguration).pid == unityAttachConfiguration.pid
                     }
                     if (it.runProfile is UnityProcessRunProfile) {
-                        return@any ((it.runProfile as UnityProcessRunProfile).process as UnityRemoteConnectionDetails).port == unityAttachConfiguration.port
+                        return@any (it.runProfile as UnityProcessRunProfile).process.port == unityAttachConfiguration.port
                     }
                     if (it.runProfile is UnityExeConfiguration) {
                         val params = (it.runProfile as UnityExeConfiguration).parameters
@@ -104,6 +104,7 @@ class FrontendBackendHost(project: Project) : LifetimedService() {
                         }
                     }
 
+                    // TODO: Should this create/execute a run configuration instance?
                     ProgramRunnerUtil.executeConfiguration(configuration, DefaultDebugExecutor.getDebugExecutorInstance())
                 } else task.set(true)
                 task
