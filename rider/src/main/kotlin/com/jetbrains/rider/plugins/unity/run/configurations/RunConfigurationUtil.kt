@@ -15,6 +15,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.debugger.IRiderDebuggable
 import com.jetbrains.rider.plugins.unity.run.*
+import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import javax.swing.Icon
 
@@ -32,6 +33,11 @@ fun attachToUnityEditor(project: Project): Boolean {
 }
 
 fun attachToUnityProcess(project: Project, process: UnityProcess) {
+    if (process is UnityEditor && EditorInstanceJson.getInstance(project).contents?.process_id == process.pid) {
+        attachToUnityEditor(project)
+        return
+    }
+
     val runProfile = UnityProcessRunProfile(project, process)
     val environment = ExecutionEnvironmentBuilder
         .create(project, DefaultDebugExecutor.getDebugExecutorInstance(), runProfile)
