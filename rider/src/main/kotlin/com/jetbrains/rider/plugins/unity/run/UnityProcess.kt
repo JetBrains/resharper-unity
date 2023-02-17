@@ -73,6 +73,19 @@ class UnityRemotePlayer(displayName: String, host: String, port: Int, debuggingE
     : UnityProcess(displayName, host, port, debuggingEnabled, projectName)
 
 /**
+ * User-created player process with hardcoded host and port
+ *
+ * If the normal player discovery processes fail, the user can enter a custom host and port.
+ * We can save the player and reuse the connection details to prevent the need to continually re-enter the details.
+ * We can also assume that the custom player is for the current project, or why else would you debug it?
+ */
+class UnityCustomPlayer(displayName: String, host: String, port: Int, override val projectName: String) :
+    UnityProcess(displayName, host, port, true, projectName) {
+
+    val playerId = "CustomPlayer($host:$port)"
+}
+
+/**
  * Represents a connection to iOS over USB. Does not necessarily mean that a game is running and ready to be debugged.
  *
  * The host and port are hardcoded because we use a proxy (usbmuxd) to forward a local port to the game's remote port

@@ -5,10 +5,7 @@ import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.*
 import com.intellij.ui.components.dialog
 import com.intellij.ui.components.noteComponent
-import com.intellij.ui.dsl.builder.Align
-import com.intellij.ui.dsl.builder.bindIntValue
-import com.intellij.ui.dsl.builder.bindText
-import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.speedSearch.SpeedSearchUtil
 import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.ui.JBUI
@@ -30,8 +27,9 @@ import javax.swing.tree.*
 class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(project) {
 
     companion object {
-        const val UNKNOWN_PROJECTS = "Unknown Projects"
-        const val USB_DEVICES = "USB Devices"
+        val UNKNOWN_PROJECT = UnityBundle.message("project.name.unknown.project")
+        val USB_DEVICES = UnityBundle.message("project.name.usb.devices")
+        val CUSTOM_PLAYER_PROJECT = UnityBundle.message("project.name.custom")
     }
 
     private class UnityProcessTreeNode(val process: UnityProcess, val debuggerAttached: Boolean): DefaultMutableTreeNode()
@@ -136,17 +134,25 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     private fun getSelectedUnityProcessTreeNode() =
         tree.lastSelectedPathComponent as? UnityProcessTreeNode
 
-    internal data class CustomPlayerModel(var name: String = "Custom Player",
+    internal data class CustomPlayerModel(var name: String,
                                           var host: String = "",
                                           var port: Int = 0)
 
     private fun enterCustomIp() {
-        val model = CustomPlayerModel()
+        var name = UnityBundle.message("custom.player.default.name")
+        var count = 1
+        while (findCustomPlayerByName(name) != null) {
+            name = UnityBundle.message("custom.player.default.template", count++)
+        }
+        val model = CustomPlayerModel(name)
         val panel = panel {
             row { cell(noteComponent(UnityBundle.message("enter.the.ip.address.of.the.unity.process"))) }
             row(UnityBundle.message("name.colon")) {
                 textField().bindText(model::name)
                     .errorOnApply(UnityBundle.message("dialog.message.name.must.not.be.empty")) { it.text.isBlank() }
+                    .errorOnApply(UnityBundle.message("dialog.message.name.must.be.unique")) {
+                        findCustomPlayerByName(it.text) != null
+                    }
             }
             row(UnityBundle.message("host.colon")) {
                 textField().bindText(model::host)
@@ -165,10 +171,18 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             project = project,
             parent = peerPanel)
         if (dialog.showAndGet()) {
-            val process = UnityRemotePlayer(model.name, model.host, model.port, true, project.name)
+            val process = UnityCustomPlayer(model.name, model.host, model.port, CUSTOM_PLAYER_PROJECT)
             val node = addProcess(process)
             tree.selectionPath = TreePath(node.path)
         }
+    }
+
+    private fun findCustomPlayerByName(name: String): UnityCustomPlayer? {
+        val root = treeModel.root as DefaultMutableTreeNode
+        val node = TreeUtil.findNode(root) {
+            ((it as? UnityProcessTreeNode)?.process as? UnityCustomPlayer)?.displayName == name
+        } as? UnityProcessTreeNode
+        return node?.process as? UnityCustomPlayer
     }
 
     private fun addProcess(process: UnityProcess): UnityProcessTreeNode {
@@ -248,23 +262,25 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         }
     }
 
-    private class TreeNodeComparator(private val projectName: String) : Comparator<TreeNode> {
+    private class TreeNodeComparator(private val currentProjectName: String) : Comparator<TreeNode> {
         override fun compare(o1: TreeNode, o2: TreeNode): Int {
             val node1 = o1 as? UnityProcessTreeNode ?: return -1
             val node2 = o2 as? UnityProcessTreeNode ?: return 1
 
-            val projectName1 = node1.process.projectName ?: UNKNOWN_PROJECTS
-            val projectName2 = node2.process.projectName ?: UNKNOWN_PROJECTS
+            val projectName1 = node1.process.projectName ?: UNKNOWN_PROJECT
+            val projectName2 = node2.process.projectName ?: UNKNOWN_PROJECT
 
             // Sort by project name
             var x = when {
                 projectName1 == projectName2 -> 0
-                projectName1 == projectName -> -1
-                projectName2 == projectName -> 1
+                projectName1 == currentProjectName -> -1
+                projectName2 == currentProjectName -> 1
+                projectName1 == CUSTOM_PLAYER_PROJECT -> -1
+                projectName2 == CUSTOM_PLAYER_PROJECT -> 1
                 projectName1 == USB_DEVICES -> -1
                 projectName2 == USB_DEVICES -> 1
-                projectName1 == UNKNOWN_PROJECTS -> -1
-                projectName2 == UNKNOWN_PROJECTS -> 1
+                projectName1 == UNKNOWN_PROJECT -> -1
+                projectName2 == UNKNOWN_PROJECT -> 1
                 else -> projectName1.compareTo(projectName2, true)
             }
             if (x != 0) return x
@@ -289,6 +305,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                 is UnityEditorHelper -> 20          // This is handled as a child node of UnityEditor
                 is UnityIosUsbProcess, is UnityAndroidAdbProcess -> 30  // These are put into their own group
                 is UnityLocalPlayer -> 40
+                is UnityCustomPlayer -> 45
                 is UnityRemotePlayer -> 50
             }
         }
@@ -310,7 +327,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
             val unityProcess = node.process
             val attributes = if (!node.debuggerAttached) SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES else SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES
-            val projectName = unityProcess.projectName ?: if (unityProcess is UnityIosUsbProcess || unityProcess is UnityAndroidAdbProcess) USB_DEVICES else UNKNOWN_PROJECTS
+            val projectName = unityProcess.projectName ?: if (unityProcess is UnityIosUsbProcess || unityProcess is UnityAndroidAdbProcess) USB_DEVICES else UNKNOWN_PROJECT
             val hasSeparator = !isChildProcess(node) && (isFirstItem(node) || getPreviousSiblingProjectName(node) != projectName)
 
             // Set up visibility and selected status. This does not (re)set the selected status of the returned
@@ -377,7 +394,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                 else {
                     it.process.projectName
                 }
-            } ?: UNKNOWN_PROJECTS
+            } ?: UNKNOWN_PROJECT
         }
 
         /**
