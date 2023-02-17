@@ -1,9 +1,7 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
-import com.intellij.execution.Executor
-import com.intellij.execution.ProgramRunnerUtil
-import com.intellij.execution.RunManager
-import com.intellij.execution.RunnerAndConfigurationSettings
+import com.intellij.execution.*
+import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.execution.configurations.RunProfile
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.executors.DefaultDebugExecutor
@@ -47,11 +45,39 @@ fun attachToUnityProcess(project: Project, process: UnityProcess) {
         return
     }
 
+    if (process is UnityCustomPlayer) {
+        attachToCustomPlayer(project, process)
+        return
+    }
+
     val runProfile = UnityProcessRunProfile(project, process)
     val environment = ExecutionEnvironmentBuilder
         .create(project, DefaultDebugExecutor.getDebugExecutorInstance(), runProfile)
         .build()
     ProgramRunnerUtil.executeConfiguration(environment, false, true)
+}
+
+fun attachToCustomPlayer(project: Project, customPlayer: UnityCustomPlayer) {
+    val runManager = RunManager.getInstance(project)
+    var configurationSettings = runManager.findConfigurationByTypeAndName(
+        UnityPlayerDebugConfigurationType.id,
+        customPlayer.displayName
+    )
+
+    if (configurationSettings == null) {
+        val configurationType =
+            ConfigurationTypeUtil.findConfigurationType(UnityPlayerDebugConfigurationType::class.java)
+        configurationSettings = runManager.createConfiguration(customPlayer.displayName, configurationType.attachToPlayerFactory)
+        (configurationSettings.configuration as UnityPlayerDebugConfiguration).apply {
+            state.playerId = customPlayer.playerId
+            state.host = customPlayer.host
+            state.port = customPlayer.port
+            state.projectName = customPlayer.projectName
+        }
+        runManager.setTemporaryConfiguration(configurationSettings)
+    }
+
+    startDebugRunConfiguration(project, configurationSettings)
 }
 
 private fun getUnityEditorRunConfiguration(project: Project) =
@@ -67,7 +93,7 @@ private fun startDebugRunConfiguration(
     project: Project,
     configurationSettings: RunnerAndConfigurationSettings
 ) {
-    if (isRunning(project, configurationSettings)){
+    if (isRunning(project, configurationSettings)) {
         RunManager.getInstance(project).selectedConfiguration = configurationSettings
         return
     }
@@ -96,9 +122,12 @@ class UnityProcessRunProfile(private val project: Project, val process: UnityPro
             override var port = process.port
             override var listenPortForConnections = false
         }
-
         return when (process) {
             is UnityIosUsbProcess -> {
+                // We need to tell the debugger which port to connect to. The proxy will open this port and forward
+                // traffic to the on-device port of 56000. These port numbers are hardcoded, and follow what Unity does
+                // in their debugger plugins. There is a chance that the local 12000 port is in use, but there's not
+                // much we can do about that - we tell the proxy both port numbers and it tries to set things up.
                 UnityAttachIosUsbProfileState(
                     project,
                     remoteConfiguration,
