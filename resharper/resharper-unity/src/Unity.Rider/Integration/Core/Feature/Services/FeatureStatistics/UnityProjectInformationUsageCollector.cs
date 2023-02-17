@@ -110,9 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
         {
             return await lifetime.StartMainReadAsync(async () =>
             {
-                // https://github.com/JetBrains/rd/pull/330/files
-                // todo: switch to NextTrueValueAsync after the fix lands
-                await NextValueAsync2(myMonitor.FullStartupFinished, lifetime, b => b);
+                await myMonitor.FullStartupFinished.NextTrueValueAsync(lifetime);
 
                 return await mySolution.GetPsiServices().Files.CommitWithRetryBackgroundRead(lifetime, () =>
                 {
@@ -127,21 +125,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
                     return hashSet;
                 });
             });
-        }
-        
-        public static Task<T> NextValueAsync2<T>(ISource<T> source, Lifetime lifetime, Func<T, bool> condition)
-        {
-            var tcs = new TaskCompletionSource<T>();
-            var definition = lifetime.CreateNested();
-            definition.SynchronizeWith(tcs);
-
-            source.Advise(definition.Lifetime, v =>
-            {
-                if (condition(v)) 
-                    tcs.TrySetResult(v);
-            });
-      
-            return tcs.Task;
         }
 
         private (Status exists, bool isEnabled, bool options) GetEnterPlayModeOptions()

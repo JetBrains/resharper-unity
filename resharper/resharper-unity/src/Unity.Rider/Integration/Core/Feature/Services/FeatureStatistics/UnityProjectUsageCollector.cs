@@ -21,9 +21,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
         public UnityProjectUsageCollector(UnityTechnologyDescriptionCollector descriptionCollector, FeatureUsageLogger featureUsageLogger)
         {
             myDescriptionCollector = descriptionCollector;
-            myGroup = new EventLogGroup("dotnet.unity.state", "Packages and Assets used by Unity users", 1, featureUsageLogger);
+            myGroup = new EventLogGroup("dotnet.unity.state", "Packages and Assets used by Unity users", 2, featureUsageLogger);
             myEvent = myGroup.RegisterEvent("unityTechnology", "Unity Technology", EventFields.String("id", "Name",
-                new[] { "HDRP", "CoreRP", "URP", "ECS", "InputSystem", "Burst", "Odin", "Peek", "UniRx", "UniTask" }), EventFields.Boolean("isDiscovered", "Is Discovered"));
+                new[] { "HDRP", "CoreRP", "URP", "ECS", "InputSystem", "Burst", "Odin", "Peek", "UniRx", "UniTask", "TestFramework" }), EventFields.Boolean("isDiscovered", "Is Discovered"));
         }
         
         public override EventLogGroup GetGroup()
