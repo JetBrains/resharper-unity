@@ -47,6 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
                 new PeekUnityTechnologyDescription(),
                 new UniRxUnityTechnologyDescription(),
                 new UniTaskUnityTechnologyDescription(),
+                new UnityTestFrameworkDescription()
             };
             
             myProjectsProcessed.Compose(lifetime, myPackagesProcessed, (a, b) => a && b).AdviseUntil(lifetime, v =>
