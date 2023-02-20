@@ -34,14 +34,16 @@ class UnityDebuggableProcessListener(project: Project, lifetime: Lifetime,
             customPlayers.forEach {
                 val configuration = it.configuration as UnityPlayerDebugConfiguration
 
-                // The configuration's values *should* be valid, but let's have fallback, just in case
-                val player = UnityCustomPlayer(
+                if (UnityProcess.typeFromId(configuration.state.playerId!!) == UnityCustomPlayer.TYPE) {
+                    // The configuration's values *should* be valid, but let's have fallback, just in case
+                    val player = UnityCustomPlayer(
                         configuration.name,
                         configuration.state.host ?: "localhost",
                         configuration.state.port,
                         configuration.state.projectName ?: UnityBundle.message("project.name.custom")
                     )
-                onProcessAdded(player)
+                    onProcessAdded(player)
+                }
             }
         } catch (e: Throwable) {
             logger.error(e)

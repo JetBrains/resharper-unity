@@ -147,7 +147,7 @@ class UnityPlayerListener(lifetime: Lifetime,
                 }
 
                 return if (isLocalAddress(hostAddress)) {
-                    if (id.startsWith("UWPPlayer") && packageName != null) {
+                    if (id.startsWith(UnityLocalUwpPlayer.TYPE) && packageName != null) {
                         UnityLocalUwpPlayer(id, hostAddress.hostAddress, debuggerPort, allowDebugging, projectName, packageName)
                     }
                     else {
