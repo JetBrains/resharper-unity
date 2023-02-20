@@ -1524,13 +1524,4 @@ a plugin to be installed to a project.</value>
     <data name="Template_Editable_U291cmNlIGZpbGUEQ" xml:space="preserve">
         <value>Source file</value>
     </data>
-    <data name="DeferredCacheProgressBar_Start_Calculating_asset_index" xml:space="preserve">
-        <value>Calculating asset index</value>
-    </data>
-    <data name="DeferredCacheProgressBar_Start_Processing_assets" xml:space="preserve">
-        <value>Processing assets</value>
-    </data>
-    <data name="DeferredCacheProgressBar_Start_Processing_FileName" xml:space="preserve">
-        <value>Processing {0}</value>
-    </data>
 </root>

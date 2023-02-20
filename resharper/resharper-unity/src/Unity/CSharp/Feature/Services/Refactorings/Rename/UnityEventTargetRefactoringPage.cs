@@ -1,7 +1,7 @@
 using JetBrains.IDE.UI.Extensions;
 using JetBrains.Lifetimes;
+using JetBrains.ReSharper.Feature.Services.Caches;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
-using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
 using JetBrains.Rider.Model.UIAutomation;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings.Rename

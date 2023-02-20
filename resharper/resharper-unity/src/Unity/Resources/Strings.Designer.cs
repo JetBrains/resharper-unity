@@ -546,8 +546,5 @@
     public static string Template_Editable_TW9kdWxlIGludGVyZmFjZSB1bml0 => ResourceManager.GetString("Template_Editable_TW9kdWxlIGludGVyZmFjZSB1bml0");
     public static string Template_Editable_SGVhZGVyIGZpbGUEQ => ResourceManager.GetString("Template_Editable_SGVhZGVyIGZpbGUEQ");
     public static string Template_Editable_U291cmNlIGZpbGUEQ => ResourceManager.GetString("Template_Editable_U291cmNlIGZpbGUEQ");
-    public static string DeferredCacheProgressBar_Start_Calculating_asset_index => ResourceManager.GetString("DeferredCacheProgressBar_Start_Calculating_asset_index");
-    public static string DeferredCacheProgressBar_Start_Processing_assets => ResourceManager.GetString("DeferredCacheProgressBar_Start_Processing_assets");
-    public static string DeferredCacheProgressBar_Start_Processing_FileName => ResourceManager.GetString("DeferredCacheProgressBar_Start_Processing_FileName");
   }
 }
