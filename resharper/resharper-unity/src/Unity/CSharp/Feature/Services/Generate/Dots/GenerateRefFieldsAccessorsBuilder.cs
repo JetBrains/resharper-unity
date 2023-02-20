@@ -80,12 +80,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 if (fieldOrProperty == null)
                     continue;
 
-                var fieldTypeName = fieldOrProperty.Type.GetTypeElement()?.GetClrName();
                 var fieldShortName = fieldOrProperty.ShortName;
-
-                var propertyType = TypeFactory.CreateTypeByCLRName(fieldTypeName!, NullableAnnotation.NotAnnotated,
-                    fieldOrProperty.Module);
-                var propertyDeclaration = factory.CreatePropertyDeclaration(propertyType, fieldShortName);
+                var propertyDeclaration = factory.CreatePropertyDeclaration(fieldOrProperty.Type, fieldShortName);
                 propertyDeclaration.SetAccessRights(AccessRights.PUBLIC);
                 var getterExpression = factory.CreateExpression(getterFormat, fieldName, fieldShortName);
 
