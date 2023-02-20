@@ -6,6 +6,7 @@ using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 using JetBrains.Rd;
 using JetBrains.Rd.Base;
@@ -13,7 +14,6 @@ using JetBrains.Rd.Impl;
 using JetBrains.RdBackend.Common.Features;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration.EditorPlugin;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Util;
@@ -33,8 +33,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
-        private readonly UnityPluginInstaller myPluginInstaller;
         private readonly JetHashSet<VirtualFileSystemPath> myPluginInstallations;
+
+        public readonly IViewableProperty<bool> Connected = new ViewableProperty<bool> { Value = false };
+        public readonly DataFlow.ISignal<Lifetime> OutOfSync = new DataFlow.Signal<Lifetime>("BackendUnityProtocol.OutOfSync");
 
         private DateTime myLastChangeTime;
 
@@ -45,8 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                                     IShellLocks locks,
                                     ISolution solution,
                                     UnitySolutionTracker unitySolutionTracker,
-                                    IFileSystemTracker fileSystemTracker,
-                                    UnityPluginInstaller pluginInstaller)
+                                    IFileSystemTracker fileSystemTracker)
         {
             myPluginInstallations = new JetHashSet<VirtualFileSystemPath>();
 
@@ -56,7 +57,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             myDispatcher = dispatcher;
             myLocks = locks;
             mySolution = solution;
-            myPluginInstaller = pluginInstaller;
             mySessionLifetimes = new SequentialLifetimes(lifetime);
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
@@ -128,6 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
                 protocol.OutOfSyncModels.AdviseOnce(thisSessionLifetime, _ => OnOutOfSync(thisSessionLifetime));
 
+                wire.Connected.FlowInto(myLifetime, Connected);
                 wire.Connected.WhenTrue(thisSessionLifetime, connectionLifetime =>
                 {
                     myLogger.Info("WireConnected.");
@@ -194,8 +195,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
             // avoid displaying Notification multiple times on each AppDomain.Reload in Unity
             myPluginInstallations.Add(mySolution.SolutionFilePath);
-
-            myPluginInstaller.ShowOutOfSyncNotification(lifetime);
+            
+            OutOfSync.Fire(lifetime);
         }
     }
 
