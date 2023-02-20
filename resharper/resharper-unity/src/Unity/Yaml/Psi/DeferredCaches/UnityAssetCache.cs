@@ -9,6 +9,7 @@ using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers;
+using JetBrains.DocumentManagers.impl;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
@@ -253,6 +254,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 MergeData(sourceFile, unityAssetData);
             }
 
+        }
+
+        public override void OnDocumentChange(IPsiSourceFile sourceFile, ProjectFileDocumentCopyChange change)
+        {
+            // TODO : temp solution
+            if (sourceFile is UnityExternalPsiSourceFile unityYamlExternalPsiSourceFile)
+            {
+                unityYamlExternalPsiSourceFile.MarkDocumentModified();
+            }
+
+            base.OnDocumentChange(sourceFile, change);
         }
 
         public override void InvalidateData()

@@ -1,3 +1,4 @@
+using JetBrains.DocumentManagers.impl;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches
@@ -12,5 +13,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches
         void Load();
         void MergeLoadedData();
         void Invalidate();
+        void OnDocumentChange(IPsiSourceFile sourceFile, ProjectFileDocumentCopyChange change);
     }
 }

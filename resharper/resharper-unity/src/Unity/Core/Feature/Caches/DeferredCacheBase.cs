@@ -1,5 +1,6 @@
 using JetBrains.Application.PersistentMap;
 using JetBrains.Application.Threading;
+using JetBrains.DocumentManagers.impl;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -95,6 +96,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches
             myPersistentIndexManager.Solution.GetComponent<IShellLocks>().AssertWriteAccessAllowed();
             InvalidateData();
             Map.Clear();
+        }
+
+        public virtual void OnDocumentChange(IPsiSourceFile sourceFile, ProjectFileDocumentCopyChange change)
+        {
         }
 
         /// <summary>

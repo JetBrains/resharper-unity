@@ -97,12 +97,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches
 
         public void OnDocumentChange(IPsiSourceFile sourceFile, ProjectFileDocumentCopyChange change)
         {
-            // TODO : temp solution
-            if (sourceFile is UnityExternalPsiSourceFile unityYamlExternalPsiSourceFile)
+            foreach (var cache in myCaches)
             {
-                unityYamlExternalPsiSourceFile.MarkDocumentModified();
+                if (cache.IsApplicable(sourceFile))
+                    cache.OnDocumentChange(sourceFile, change);
             }
-            
+
             AddToProcess(sourceFile);
         }
 
