@@ -58,9 +58,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         return configuration
     }
 
-    override fun hideDisabledExecutorButtons(): Boolean {
-        return true
-    }
+    override fun hideDisabledExecutorButtons() = true
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = UnityAttachToEditorSettingsEditor(project)
 

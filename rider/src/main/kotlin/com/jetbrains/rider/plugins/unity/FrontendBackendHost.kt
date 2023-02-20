@@ -1,8 +1,5 @@
 package com.jetbrains.rider.plugins.unity
 
-import com.intellij.execution.ProgramRunnerUtil
-import com.intellij.execution.RunManager
-import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
@@ -10,27 +7,21 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.BitUtil
-import com.intellij.xdebugger.XDebuggerManager
 import com.jetbrains.rd.framework.impl.RdTask
 import com.jetbrains.rd.ide.model.Solution
 import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.protocol.ProtocolExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.reactive.*
+import com.jetbrains.rd.util.reactive.AddRemove
+import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
-import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
-import com.jetbrains.rider.plugins.unity.run.configurations.UnityEditorDebugConfigurationType
-import com.jetbrains.rider.plugins.unity.run.configurations.UnityProcessRunProfile
-import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
-import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.plugins.unity.run.configurations.attachToUnityEditor
+import com.jetbrains.rider.plugins.unity.run.configurations.isAttachedToUnityEditor
 import com.jetbrains.rider.plugins.unity.util.Utils.Companion.AllowUnitySetForegroundWindow
-import com.jetbrains.rider.plugins.unity.util.toProgramParameters
-import com.jetbrains.rider.plugins.unity.util.withProjectPath
 import com.jetbrains.rider.projectView.solution
 import java.awt.Frame
 import java.io.File
@@ -58,56 +49,26 @@ class FrontendBackendHost(project: Project) : LifetimedService() {
                 StartUnityAction.startUnity(project)
             }
 
-            // TODO: Can we migrate this to RunConfigurationUtil?
             model.attachDebuggerToUnityEditor.set { lt, _ ->
-                val sessions = XDebuggerManager.getInstance(project).debugSessions
-                val task = RdTask<Boolean>()
-
-                val configuration =
-                    RunManager.getInstance(project).findConfigurationByTypeAndName(UnityEditorDebugConfigurationType.id, DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME)
-                if (configuration == null)
-                {
-                    task.set(false)
-                    return@set task
+                if (isAttachedToUnityEditor(project)) {
+                    return@set RdTask.fromResult(true)
                 }
 
-                val unityAttachConfiguration = configuration.configuration as UnityAttachToEditorRunConfiguration
-                unityAttachConfiguration.updatePidAndPort()
-
-                val isAttached = sessions.any {
-                    if (it.runProfile == null) return@any false
-                    if (it.runProfile is UnityAttachToEditorRunConfiguration) {
-                        return@any (it.runProfile as UnityAttachToEditorRunConfiguration).pid == unityAttachConfiguration.pid
-                    }
-                    if (it.runProfile is UnityProcessRunProfile) {
-                        return@any (it.runProfile as UnityProcessRunProfile).process.port == unityAttachConfiguration.port
-                    }
-                    if (it.runProfile is UnityExeConfiguration) {
-                        val params = (it.runProfile as UnityExeConfiguration).parameters
-                        val unityPath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath()
-                        return@any File(params.exePath) == unityPath?.toFile() && params.programParameters.contains(
-                            mutableListOf<String>().withProjectPath(project).toProgramParameters()
-                        )
-                    }
-                    return@any false
-                }
-                if (!isAttached) {
-                    val processTracker: RiderDebugActiveDotNetSessionsTracker = RiderDebugActiveDotNetSessionsTracker.getInstance(project)
-                    processTracker.dotNetDebugProcesses.change.advise(lifetime) { (event, debugProcess) ->
+                RdTask<Boolean>().also { task ->
+                    val processTracker: RiderDebugActiveDotNetSessionsTracker =
+                        RiderDebugActiveDotNetSessionsTracker.getInstance(project)
+                    processTracker.dotNetDebugProcesses.change.advise(lt) { (event, debugProcess) ->
                         if (event == AddRemove.Add) {
                             debugProcess.initializeDebuggerTask.debuggerInitializingState.advise(lt) {
-                                if (it == DebuggerInitializingState.Initialized)
-                                    task.set(true)
-                                if (it == DebuggerInitializingState.Canceled)
-                                    task.set(false)
+                                if (it == DebuggerInitializingState.Initialized) task.set(true)
+                                if (it == DebuggerInitializingState.Canceled) task.set(false)
                             }
                         }
                     }
 
-                    // TODO: Should this create/execute a run configuration instance?
-                    ProgramRunnerUtil.executeConfiguration(configuration, DefaultDebugExecutor.getDebugExecutorInstance())
-                } else task.set(true)
-                task
+                    // Run an existing "Attach to Unity Editor" configuration, or create it, and attach
+                    attachToUnityEditor(project)
+                }
             }
 
             model.allowSetForegroundWindow.set { _, _ ->

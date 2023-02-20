@@ -225,7 +225,7 @@ class AppleDeviceListener(project: Project,
                 val displayName = descriptions[productId] ?: "Apple Device"
 
                 if (!devices.containsKey(deviceId)) {
-                    val process = UnityIosUsbProcess(displayName, deviceId)
+                    val process = UnityIosUsbProcess(displayName, deviceId, displayName)
                     devices[deviceId] = process
                     usage[deviceId] = true
                     process
