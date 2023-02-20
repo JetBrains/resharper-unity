@@ -46,7 +46,7 @@ namespace ComponentsAndTags
         {
           public override void Bake(GraveyardPropertiesAuthoring authoring)
           {
-            AddComponent(new GraveyardPropertiesAuthoringComponentData
+            AddComponent(new GraveyardPropertiesComponentData
             {
               FieldDimensions = authoring.FieldDimensions,
               Prefab = GetEntity(authoring.Prefab),
@@ -56,7 +56,7 @@ namespace ComponentsAndTags
         }
     }
 
-    public struct GraveyardPropertiesAuthoringComponentData : IComponentData
+    public struct GraveyardPropertiesComponentData : IComponentData
     {
       public float2 FieldDimensions;
       public Entity Prefab;

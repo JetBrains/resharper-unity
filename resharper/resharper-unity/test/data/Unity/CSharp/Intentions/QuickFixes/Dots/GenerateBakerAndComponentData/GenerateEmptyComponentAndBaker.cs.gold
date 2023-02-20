@@ -39,12 +39,12 @@ namespace ComponentsAndTags
         {
           public override void Bake(GraveyardPropertiesAuthoring authoring)
           {
-            AddComponent(new GraveyardPropertiesAuthoringComponentData());
+            AddComponent(new GraveyardPropertiesComponentData());
           }
         }
     }
 
-    public struct GraveyardPropertiesAuthoringComponentData : IComponentData
+    public struct GraveyardPropertiesComponentData : IComponentData
     {
     }
 }

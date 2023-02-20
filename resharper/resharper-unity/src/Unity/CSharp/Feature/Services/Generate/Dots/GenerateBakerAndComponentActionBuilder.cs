@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Progress;
@@ -24,6 +25,7 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
+using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dots
 {
@@ -495,8 +497,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 ExistingComponentData = existingComponentData;
                 AuthoringDeclaration = authoringDeclaration;
                 InsertionHelper = new ComponentDataInsertionHelper(authoringDeclaration);
+                
+                var baseName = $"{authoringDeclaration.DeclaredName.RemoveEnd("Authoring", StringComparison.OrdinalIgnoreCase)}ComponentData";
+                
                 NewComponentDataUniqueName = existingComponentData == null
-                    ? NamingUtil.GetUniqueName(authoringDeclaration, $"{authoringDeclaration.DeclaredName}ComponentData", NamedElementKinds.TypesAndNamespaces)
+                    ? NamingUtil.GetUniqueName(authoringDeclaration, baseName, NamedElementKinds.TypesAndNamespaces)
                     : string.Empty;
                 Factory = factory;
             }
