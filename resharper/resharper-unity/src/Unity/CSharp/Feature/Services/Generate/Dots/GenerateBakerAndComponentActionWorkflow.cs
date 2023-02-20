@@ -10,11 +10,11 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dots
 {
-    public class GenerateBakerAndAuthoringActionWorkflow : GenerateCodeWorkflowBase
+    public class GenerateBakerAndComponentActionWorkflow : GenerateCodeWorkflowBase
     {
-        public GenerateBakerAndAuthoringActionWorkflow()
-            : base(GeneratorUnityKinds.UnityGenerateBakerAndAuthoring, LogoIcons.Unity.Id, Strings.UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Title, GenerateActionGroup.CLR_LANGUAGE,
-                Strings.UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle, Strings.UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Description, "Generate.BakerAndAuthoring")
+        public GenerateBakerAndComponentActionWorkflow()
+            : base(GeneratorUnityKinds.UnityGenerateBakerAndComponent, LogoIcons.Unity.Id, Strings.UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_Title, GenerateActionGroup.CLR_LANGUAGE,
+                Strings.UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_WindowTitle, Strings.UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_Description, "Generate.BakerAndAuthoring")
         {
         }
 
@@ -30,11 +30,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             var project = dataContext.GetData(ProjectModelDataConstants.PROJECT);
             if (project != null && !project.IsUnityProject())
                 return false;
-
+            
             var packageManager = solution.GetComponent<PackageManager>();
             if (!packageManager.HasPackage(PackageManager.UnityEntitiesPackageName))
                 return false;
-            
+
             return base.IsAvailable(dataContext);
         }
     }

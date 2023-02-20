@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
@@ -119,14 +120,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 }
 
                 if (classLikeDeclaration.GetContainingNode<IMethodDeclaration>() == null &&
-                    classLikeDeclaration.GetContainingNode<IPropertyDeclaration>() == null &&
-                    UnityApi.IsDerivesFromIComponentData(classLikeDeclaration.DeclaredElement))
+                    classLikeDeclaration.GetContainingNode<IPropertyDeclaration>() == null
+                   )
                 {
+                    IBulbAction? fix = null;
+                    var title = string.Empty;
+
+                    if (UnityApi.IsDerivesFromIComponentData(classLikeDeclaration.DeclaredElement))
+                    {
+                        fix = new GenerateBakerAndAuthoringActionFix(classLikeDeclaration);
+                        title = Strings.UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle;
+                    }
+                    else if (UnityApi.IsDerivesFromComponent(classLikeDeclaration.DeclaredElement))
+                    {
+                        fix = new GenerateBakerAndComponentActionFix(classLikeDeclaration);
+                        title = Strings.UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_WindowTitle;
+                    }
                     
-                    var fix = new GenerateBakerAndAuthoringActionFix(classLikeDeclaration);
-                    result.Add(new IntentionAction(fix, Strings.UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle,
-                            PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
-                        .ToBulbMenuItem(Solution, textControl));
+                    if(fix != null)
+                        result.Add(new IntentionAction(fix, title, PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems).ToBulbMenuItem(Solution, textControl));
                 }
                 
                 if (classLikeDeclaration.IsPartial
