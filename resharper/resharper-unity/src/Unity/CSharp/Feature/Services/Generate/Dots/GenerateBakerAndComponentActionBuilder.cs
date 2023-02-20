@@ -73,9 +73,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             {
                 if (!typeElement.IsFromUnityProject())
                     continue;
-
-                //skip components from packages
-                if (packageManager.GetOwningPackage(typeElement.GetSingleOrDefaultSourceFile().GetLocation()) != null)
+                
+                var packageData = packageManager.GetOwningPackage(typeElement.GetSingleOrDefaultSourceFile().GetLocation());
+                if(packageData != null && packageData.Source != PackageSource.Local)
                     continue;
 
                 var name = typeElement.GetClrName().FullName;
