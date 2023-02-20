@@ -14,7 +14,6 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Caches;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Feature.Services.Daemon.Experimental;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Resources.Shell;
@@ -25,7 +24,7 @@ using JetBrains.Util.Logging;
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches
 {
     [SolutionComponent]
-    public class DeferredCacheController : IDaemonTaskBeforeInvisibleProcessProvider
+    public class DeferredCacheController
     {
         private const int BATCH_SIZE = 10;
 
