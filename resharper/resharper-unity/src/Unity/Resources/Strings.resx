@@ -1028,13 +1028,13 @@
         <value>Baker</value>
     </data>
     <data name="UnityDots_GenerateBakerAndComponent_ComponentData" xml:space="preserve">
-        <value>IComponentData</value>
+        <value>ComponentData</value>
     </data>
     <data name="UnityDots_GenerateBakerAndComponent_Description" xml:space="preserve">
-        <value>Generate Baker and IComponentData script inside this file</value>
+        <value>Generate Baker and ComponentData script inside this file</value>
     </data>
     <data name="UnityDots_GenerateBakerAndComponent_Name" xml:space="preserve">
-        <value>Generate Baker and IComponentData script</value>
+        <value>Generate Baker and ComponentData script</value>
     </data>
     <data name="UnityDots_GenerateBakerAndComponent_NewComponentData" xml:space="preserve">
         <value>New ComponentData</value>
@@ -1043,10 +1043,10 @@
         <value>Select fields and properties</value>
     </data>
     <data name="UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_Title" xml:space="preserve">
-        <value>IComponentData Generation (DOTS)</value>
+        <value>ComponentData Generation (DOTS)</value>
     </data>
     <data name="UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_WindowTitle" xml:space="preserve">
-        <value>IComponentData</value>
+        <value>ComponentData</value>
     </data>
     <data name="UnityDots_GetSingletonMustBeRequested" xml:space="preserve">
         <value>To use the result of a 'GetSingleton&lt;{0}&gt;' call in the function, 'OnCreate' must include a 'RequireForUpdate' call</value>

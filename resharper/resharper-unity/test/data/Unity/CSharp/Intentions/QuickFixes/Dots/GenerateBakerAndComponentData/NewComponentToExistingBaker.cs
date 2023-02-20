@@ -18,11 +18,11 @@ namespace ComponentsAndTags
     {
         public override void Bake(GraveyardPropertiesAuthoring authoring)
         {
-            AddComponent(new GraveyardPropertiesAuthoringComponentData { FieldDimensions = authoring.FieldDimensions });
+            AddComponent(new GraveyardPropertiesComponentData { FieldDimensions = authoring.FieldDimensions });
         }
     }
 
-    public struct GraveyardPropertiesAuthoringComponentData : IComponentData
+    public struct GraveyardPropertiesComponentData : IComponentData
     {
         public float2 FieldDimensions;
     }

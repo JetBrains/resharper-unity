@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ComponentsAndTags
 {
-    public struct GraveyardPropertiesAuthoringComponentData : IComponentData
+    public struct GraveyardPropertiesComponentData : IComponentData
     {
         public float2 FieldDimensions;
     }

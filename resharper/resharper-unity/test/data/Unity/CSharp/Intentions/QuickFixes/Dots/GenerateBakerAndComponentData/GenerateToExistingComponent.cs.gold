@@ -1,4 +1,4 @@
-﻿Provided elements:
+Provided elements:
  0: ScavsCount:System.Int32
  1: name():System.String
  2: hideFlags():UnityEngine.HideFlags
@@ -25,7 +25,7 @@
 
 // ${KIND:Unity.GenerateBakerAndComponent}
 // ${SELECT0:ScavsCount:System.Int32}
-// ${GLOBAL0:SelectedComponent=ComponentsAndTags.GraveyardPropertiesAuthoringComponentData}
+// ${GLOBAL0:SelectedComponent=ComponentsAndTags.GraveyardPropertiesComponentData}
 
 using Unity.Entities;
 using Unity.Mathematics;
@@ -41,12 +41,12 @@ namespace ComponentsAndTags
         {
           public override void Bake(GraveyardPropertiesAuthoring authoring)
           {
-            AddComponent(new GraveyardPropertiesAuthoringComponentData { Count = authoring.ScavsCount });
+            AddComponent(new GraveyardPropertiesComponentData { Count = authoring.ScavsCount });
           }
         }
     }
 
-    public struct GraveyardPropertiesAuthoringComponentData : IComponentData
+    public struct GraveyardPropertiesComponentData : IComponentData
     {
         public float2 FieldDimensions;
         public float2 ScavsCount;

@@ -3,6 +3,7 @@ using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.Generate.Actions;
 using JetBrains.ReSharper.Feature.Services.Generate.Workflows;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 
@@ -22,8 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
         public override bool IsAvailable(IDataContext dataContext)
         {
-            var project = dataContext.GetData(ProjectModelDataConstants.PROJECT);
-            if (project == null || !project.IsUnityProject())
+            if (!DotsUtils.IsUnityProjectWithEntitiesPackage(dataContext)) 
                 return false;
             
             return base.IsAvailable(dataContext);

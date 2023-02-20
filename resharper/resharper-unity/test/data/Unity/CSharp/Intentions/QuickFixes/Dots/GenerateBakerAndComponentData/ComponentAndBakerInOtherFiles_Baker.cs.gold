@@ -1,4 +1,4 @@
-﻿using Unity.Entities;
+using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -8,7 +8,7 @@ namespace ComponentsAndTags
     {
         public override void Bake(GraveyardPropertiesAuthoring authoring)
         {
-          AddComponent(new GraveyardPropertiesAuthoringComponentData
+          AddComponent(new GraveyardPropertiesComponentData
           {
             ScavsCount = authoring.ScavsCount, FieldDimensions = authoring.FieldDimensions
           });

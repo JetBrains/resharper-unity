@@ -4,6 +4,7 @@ using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
@@ -46,13 +47,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var classDeclaration = node?.GetContainingNode<IClassLikeDeclaration>();
             if (classDeclaration == null) 
                 return false;
-            
-            if (node.GetContainingNode<IMethodDeclaration>() == null && node.GetContainingNode<IPropertyDeclaration>() == null)
-            {
-                return UnityApi.IsDerivesFromComponent(classDeclaration.DeclaredElement);
-            }
 
-            return false;
+            if (node.GetContainingNode<IMethodDeclaration>() != null ||
+                node.GetContainingNode<IPropertyDeclaration>() != null)
+                return false;
+            
+            return UnityApi.IsDerivesFromComponent(classDeclaration.DeclaredElement)
+                && myDataProvider.Solution.HasEntitiesPackage();
+
         }
     }
 }

@@ -66,3 +66,12 @@ namespace Unity.Mathematics
         }
     }
 }
+
+
+namespace Unity.Collections
+{
+
+    public struct NativeArray<T> : IDisposable, IEnumerable<T>, IEnumerable, IEquatable<NativeArray<T>>
+        where T : struct
+    {}
+}

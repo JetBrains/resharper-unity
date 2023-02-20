@@ -1,6 +1,6 @@
 // ${KIND:Unity.GenerateBakerAndComponent}
 // ${SELECT0:ScavsCount:System.Int32}
-// ${GLOBAL0:SelectedComponent=ComponentsAndTags.GraveyardPropertiesAuthoringComponentData}
+// ${GLOBAL0:SelectedComponent=ComponentsAndTags.GraveyardPropertiesComponentData}
 
 using Unity.Entities;
 using Unity.Mathematics;
@@ -13,7 +13,7 @@ namespace ComponentsAndTags
         public int ScavsCount;
     }
 
-    public struct GraveyardPropertiesAuthoringComponentData : IComponentData
+    public struct GraveyardPropertiesComponentData : IComponentData
     {
         public float2 FieldDimensions;
         public float2 ScavsCount;

@@ -7,11 +7,13 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dots;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -134,8 +136,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                     }
                     else if (UnityApi.IsDerivesFromComponent(declaredElement))
                     {
-                        fix = new GenerateBakerAndComponentActionFix(classLikeDeclaration);
-                        title = Strings.UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_WindowTitle;
+                        if (Solution.HasEntitiesPackage())
+                        {
+                            fix = new GenerateBakerAndComponentActionFix(classLikeDeclaration);
+                            title = Strings.UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_WindowTitle;
+                        }
                     }
                     
                     if(fix != null)

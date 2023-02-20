@@ -40,7 +40,7 @@ namespace ComponentsAndTags
         public float2 FieldDimensions;
     }
 
-    public struct PropertiesAuthoringComponentData : IComponentData
+    public struct GraveyardPropertiesAuthoringComponentData : IComponentData
     {
       public int ScavsCount;
     }
@@ -49,12 +49,12 @@ namespace ComponentsAndTags
     {
         public override void Bake(GraveyardPropertiesAuthoring authoring)
         {
-          AddComponent(new PropertiesAuthoringComponentData { ScavsCount = authoring.ScavsCount });
-          AddComponent(new GraveyardPropertiesAuthoringComponentData { FieldDimensions = authoring.FieldDimensions });
+          AddComponent(new GraveyardPropertiesAuthoringComponentData { ScavsCount = authoring.ScavsCount });
+          AddComponent(new GraveyardPropertiesComponentData { FieldDimensions = authoring.FieldDimensions });
         }
     }
 
-    public struct GraveyardPropertiesAuthoringComponentData : IComponentData
+    public struct GraveyardPropertiesComponentData : IComponentData
     {
         public float2 FieldDimensions;
     }
