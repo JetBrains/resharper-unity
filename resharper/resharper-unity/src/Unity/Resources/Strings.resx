@@ -1406,9 +1406,11 @@ a plugin to be installed to a project.</value>
 
     <data name="Template_Editable_SUNvbXBvbmVudERhdGEEQ" xml:space="preserve">
         <value>IComponentData</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="Template_Editable_RE9UUwEQEQ" xml:space="preserve">
         <value>DOTS</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="Template_Editable_VW5pdHkgQ3JlYXRlQXNzZXRNZW51IGF0dHJpYnV0ZQEQEQ" xml:space="preserve">
         <value>Unity CreateAssetMenu attribute</value>
@@ -1424,6 +1426,7 @@ a plugin to be installed to a project.</value>
     </data>
     <data name="Template_Editable_SUpvYkVudGl0eQEQEQ" xml:space="preserve">
         <value>IJobEntity</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="Template_Editable_VW5pdHkgbG9nIHdhcm5pbmcEQ" xml:space="preserve">
         <value>Unity log warning</value>
@@ -1478,6 +1481,7 @@ a plugin to be installed to a project.</value>
     </data>
     <data name="Template_Editable_SVN5c3RlbQEQEQ" xml:space="preserve">
         <value>ISystem</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="Template_Editable_U2NyaXB0YWJsZSBXaXphcmQEQ" xml:space="preserve">
         <value>Scriptable Wizard</value>
@@ -1505,12 +1509,14 @@ a plugin to be installed to a project.</value>
     </data>
     <data name="Template_Editable_SUFzcGVjdAEQEQ" xml:space="preserve">
         <value>IAspect</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="Template_Editable_RWRpdG9yIFdpbmRvdyAoSU1HVUkp" xml:space="preserve">
         <value>Editor Window (IMGUI)</value>
     </data>
     <data name="Template_Editable_U3lzdGVtQmFzZQEQEQ" xml:space="preserve">
         <value>SystemBase</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="Template_Editable_UHJvcGVydHkgRHJhd2Vy" xml:space="preserve">
         <value>Property Drawer</value>

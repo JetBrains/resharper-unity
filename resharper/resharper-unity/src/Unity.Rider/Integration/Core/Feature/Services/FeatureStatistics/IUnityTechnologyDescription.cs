@@ -214,4 +214,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
             yield return "UniTask";
         }
     }
+    
+    public class UnityTestFrameworkDescription : IUnityTechnologyDescription
+    {
+        public string Id => "TestFramework";
+
+        public IEnumerable<string> GetPossiblePackageName()
+        {
+            yield return "com.unity.test-framework";
+        }
+
+        public IEnumerable<string> GetPossibleAssemblyName()
+        {
+            yield break;
+        }
+
+        public IEnumerable<string> GetPossibleProjectName()
+        {
+            yield return "UnityEngine.TestRunner";
+        }
+    }
 }
