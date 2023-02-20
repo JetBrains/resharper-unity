@@ -22,7 +22,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             if (context.ClassDeclaration.DeclaredElement is not IClass typeElement)
                 return;
 
-            // CompactOneToListMap is optimised for the typical use case of only one item per key
             var existingFieldsAndProperties = new Dictionary<string, ITypeOwner>();
             foreach (var typeMemberInstance in typeElement.GetAllClassMembers<IField>())
             {

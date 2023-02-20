@@ -23,7 +23,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
             return null;
         }
-        
 
         private static readonly Dictionary<IClrTypeName, ConversionData> ourAuthoringToComponentDataSimpleTypesConversion = new() 
         {

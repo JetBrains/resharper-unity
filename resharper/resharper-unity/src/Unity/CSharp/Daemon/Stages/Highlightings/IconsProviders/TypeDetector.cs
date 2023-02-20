@@ -111,7 +111,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 .ForCurrentClient();
             if (declaration is IClassLikeDeclaration classLikeDeclaration && textControl != null)
             {
-                if (myUnityApi.IsUnityType(classLikeDeclaration.DeclaredElement))
+                var declaredElement = classLikeDeclaration.DeclaredElement;
+                if (myUnityApi.IsUnityType(declaredElement))
                 {
                     var fix = new GenerateUnityEventFunctionsFix(classLikeDeclaration);
                     result.Add(new IntentionAction(fix, Strings.TypeDetector_GetActions_Generate_Unity_event_functions,
@@ -126,12 +127,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                     IBulbAction? fix = null;
                     var title = string.Empty;
 
-                    if (UnityApi.IsDerivesFromIComponentData(classLikeDeclaration.DeclaredElement))
+                    if (UnityApi.IsDerivesFromIComponentData(declaredElement))
                     {
                         fix = new GenerateBakerAndAuthoringActionFix(classLikeDeclaration);
                         title = Strings.UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle;
                     }
-                    else if (UnityApi.IsDerivesFromComponent(classLikeDeclaration.DeclaredElement))
+                    else if (UnityApi.IsDerivesFromComponent(declaredElement))
                     {
                         fix = new GenerateBakerAndComponentActionFix(classLikeDeclaration);
                         title = Strings.UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_WindowTitle;
@@ -142,9 +143,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 }
                 
                 if (classLikeDeclaration.IsPartial
-                    && UnityApi.IsDotsImplicitlyUsedType(classLikeDeclaration.DeclaredElement)
+                    && UnityApi.IsDotsImplicitlyUsedType(declaredElement)
                     && !classLikeDeclaration.GetSourceFile().IsSourceGeneratedFile()
-                    && classLikeDeclaration.DeclaredElement.GetDeclarations().Count > 1)
+                    && declaredElement.GetDeclarations().Count > 1)
                 {
                     var bulbAction = new OpenDotsSourceGeneratedFileBulbAction(Strings.UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode, classLikeDeclaration);
                     result.Add(new IntentionAction(bulbAction,

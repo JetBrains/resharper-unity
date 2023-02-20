@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
@@ -33,8 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 
             var fix = new GenerateBakerAndComponentActionFix(classDeclaration, node);
             
-            var action = new IntentionAction(fix, UnityGutterIcons.UnityLogo.Id, //PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id,
-                new SubmenuAnchor(BulbMenuAnchors.PermanentBackgroundItems, SubmenuBehavior.Executable));
+            var action = new IntentionAction(fix, UnityGutterIcons.UnityLogo.Id, new SubmenuAnchor(BulbMenuAnchors.PermanentBackgroundItems, SubmenuBehavior.Executable));
 
             return new[] {action};
         }
@@ -44,14 +44,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var node = myDataProvider.GetSelectedTreeNode<ITreeNode>();
             
             var classDeclaration = node?.GetContainingNode<IClassLikeDeclaration>();
-            if (classDeclaration != null)
+            if (classDeclaration == null) 
+                return false;
+            
+            if (node.GetContainingNode<IMethodDeclaration>() == null && node.GetContainingNode<IPropertyDeclaration>() == null)
             {
-             
-                if (node.GetContainingNode<IMethodDeclaration>() == null &&
-                    node.GetContainingNode<IPropertyDeclaration>() == null)
-                {
-                    return UnityApi.IsDerivesFromComponent(classDeclaration.DeclaredElement);
-                }
+                return UnityApi.IsDerivesFromComponent(classDeclaration.DeclaredElement);
             }
 
             return false;

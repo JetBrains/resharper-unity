@@ -39,12 +39,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
         protected override void BuildOptions(CSharpGeneratorContext context, ICollection<IGeneratorOption> options)
         {
             base.BuildOptions(context, options);
-   
             
             var solution = context.Solution;
             var packageManager = solution.GetComponent<PackageManager>();
             var finder = solution.GetPsiServices().Finder;
-
 
             var availableComponents = GetAvailableComponents(finder, packageManager, context);
 
@@ -53,13 +51,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
             options.Add(componentsSelector);
             
-            
             var existingBakers = TryGetExistingBakers(context.ClassDeclaration, context, finder);
 
             var bakersSelector = new GeneratorOptionSelector(SelectedBaker, Strings.UnityDots_GenerateBakerAndAuthoring_Baker, existingBakers)
-            {
-                Value = existingBakers.SingleItem()
-            };
+            { Value = existingBakers.SingleItem() };
 
             options.Add(bakersSelector);
         }
@@ -122,19 +117,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             }
             result.Add(Strings.UnityDots_GenerateBakerAndAuthoring_NewBaker);
             
-            
             return result;
         }
 
         // Enables/disables the menu item
-
         protected override bool IsAvailable(CSharpGeneratorContext context)
         {
             return context.ClassDeclaration.IsFromUnityProject() && HasUnityBaseType(context) && base.IsAvailable(context);
         }
 
         // provides baker generation for empty Component
-
         protected override bool HasProcessableElements(CSharpGeneratorContext context, IEnumerable<IGeneratorElement> elements)
         {
             return true;
@@ -160,7 +152,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 componentDataGenerationResult, factory, context.PsiModule);
             GenerateBaker(context, componentToAuthoringFieldNames, bakerGenerationInfo);
         }
-
 
         private ITypeElement? GetSelectedComponent(IGeneratorContext context)
         {
@@ -287,8 +278,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 {
                     var parameters = existingBakeMethodDeclaration.DeclaredElement.NotNull().Parameters;
                     if (parameters.Count == 1 &&
-                        (parameters[0].Type.GetTypeElement()
-                            ?.Equals(generationInfo.DeclaredAuthoringType.GetTypeElement()) ?? false))
+                        (parameters[0].Type.GetTypeElement()?.Equals(generationInfo.DeclaredAuthoringType.GetTypeElement()) ?? false))
                     {
                         authoringParameterName = parameters[0].ShortName;
                         return existingBakeMethodDeclaration;
@@ -390,7 +380,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
             var authoringType = componentDataGenerationInfo.AuthoringDeclaration.DeclaredElement;
             return new ComponentDataGenerationResult(TypeFactory.CreateType(authoringType!), componentDataGenerationInfo.AuthoringDeclaration, componentDataDeclaration);
-            // return new ComponentDataGenerationResult(typeDeclaration, TypeFactory.CreateType(componentDataDeclaration.DeclaredElement!));
         }
 
         private static IClassLikeDeclaration GetOrCreateComponentDataStructDeclaration(IGeneratorContext context, 
@@ -400,7 +389,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
             if (componentDataGenerationInfo.ExistingComponentData != null)
             {
-                return (componentDataGenerationInfo.ExistingComponentData.GetDeclarations().FirstOrDefault() as IClassLikeDeclaration)!;
+                return (componentDataGenerationInfo.ExistingComponentData.GetDeclarations().SingleItem() as IClassLikeDeclaration)!;
             }
 
             var componentDataDeclaration = componentDataGenerationInfo.Factory.CreateTypeMemberDeclaration("public struct $0 : $1{}", componentDataGenerationInfo.NewComponentDataUniqueName,
@@ -450,15 +439,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 Factory = factory;
                 Module = module;
                 InsertionHelper =  new NestedBakerInsertion(componentDataGenerationResult);
-                    // : new NewBakerInsertion(componentDataGenerationResult);
-                
                
                 if (ExistedBaker != null)
                 {
                     BakerFullName = ExistedBaker.ShortName;
                     BakerUniqueClassName = BakerFullName;
                 }
-                else //if (generateAsNested)
+                else 
                 {
                     var componentName = componentDataGenerationResult.AuthoringType.GetClrName().ShortName;
                     var bakerClassName = $"{componentName}Baker";
@@ -467,12 +454,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                     BakerUniqueClassName = NamingUtil.GetUniqueName(componentDataGenerationResult.ComponentDataDeclaration, bakerClassName, NamedElementKinds.TypesAndNamespaces);
 
                 }
-                // else
-                // {
-                //     BakerUniqueClassName = NamingUtil.GetUniqueName(componentDataDeclaration, bakerClassName, NamedElementKinds.TypesAndNamespaces);
-                //     BakerFullName = $"{componentDataGenerationResult.ComponentDataDeclaration.CLRName}+{BakerUniqueClassName}";
-                // }
-                //
+               
                 DeclaredAuthoringType = componentDataGenerationResult.AuthoringType;
             }
         }
@@ -497,24 +479,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             }
         }
 
-        private class NewBakerInsertion : IBakerInsertionHelper
-        {
-            private readonly ComponentDataGenerationResult myComponentDataGenerationResult;
-
-            public NewBakerInsertion(ComponentDataGenerationResult componentDataGenerationResult)
-            {
-                myComponentDataGenerationResult = componentDataGenerationResult;
-            }
-
-            public IClassLikeDeclaration Insert(IClassLikeDeclaration bakerDeclaration)
-            {
-                return ModificationUtil.AddChildAfter(myComponentDataGenerationResult.AuthoringDeclaration, bakerDeclaration);
-            }
-        }
-
         private readonly struct ComponentDataGenerationInfo
         {
-            /*existingAuthoringTypeElement != null && existingAuthoringTypeElement.DerivesFrom(KnownTypes.MonoBehaviour)*/
             public readonly ITypeElement? ExistingComponentData;
 
             public readonly IClassLikeDeclaration AuthoringDeclaration;
