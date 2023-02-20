@@ -63,9 +63,6 @@
     public static string PerformanceCriticalLineMarker_RiderPresentableName => ResourceManager.GetString("PerformanceCriticalLineMarker_RiderPresentableName");
     public static string PleaseSwitchToTheUnityEditorToReload_Text => ResourceManager.GetString("PleaseSwitchToTheUnityEditorToReload_Text");
     public static string PleaseSwitchToUnityEditorToLoadThePlugin_Text => ResourceManager.GetString("PleaseSwitchToUnityEditorToLoadThePlugin_Text");
-    public static string RiderDeferredCacheProgressBar_Start_Calculating_asset_index => ResourceManager.GetString("RiderDeferredCacheProgressBar_Start_Calculating_asset_index");
-    public static string RiderDeferredCacheProgressBar_Start_Processing_assets => ResourceManager.GetString("RiderDeferredCacheProgressBar_Start_Processing_assets");
-    public static string RiderDeferredCacheProgressBar_Start_Processing_FileName => ResourceManager.GetString("RiderDeferredCacheProgressBar_Start_Processing_FileName");
     public static string RiderEventHandlerDetector_AddEventsHighlighting_Assets_usages => ResourceManager.GetString("RiderEventHandlerDetector_AddEventsHighlighting_Assets_usages");
     public static string RiderEventHandlerDetector_AddEventsHighlighting_Click_to_view_usages_in_assets => ResourceManager.GetString("RiderEventHandlerDetector_AddEventsHighlighting_Click_to_view_usages_in_assets");
     public static string RiderFieldDetector_AddMonoBehaviourHighlighting_Inspector_values_are_not_available_during_asset_indexing => ResourceManager.GetString("RiderFieldDetector_AddMonoBehaviourHighlighting_Inspector_values_are_not_available_during_asset_indexing");
