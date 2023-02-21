@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
@@ -108,6 +109,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
         {
             var packageManager = solution.GetComponent<PackageManager>();
             return packageManager.HasPackage(PackageManager.UnityEntitiesPackageName);
+        }
+
+        public static bool IsUnityProjectWithEntitiesPackage(IFile file)
+        {
+            return HasEntitiesPackageInternal(file.GetSolution(), file.GetProject());
         }
     }
 }

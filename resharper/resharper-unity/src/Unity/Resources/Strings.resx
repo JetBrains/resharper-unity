@@ -1072,6 +1072,12 @@
     <data name="UnityDots_GenerateRefAccessors_Generate_Setters" xml:space="preserve">
         <value>Generate Setters</value>
     </data>
+    <data name="UnityDots_InheritorMustBeMarkedPartialReadonly" xml:space="preserve">
+        <value>{0}'s inheritor '{1}' must be '{2}{3}{4}'</value>
+    </data>
+    <data name="UnityDots_DotsPartialClassesQuickFix_Add_Partial_Readonly" xml:space="preserve">
+        <value>Add '{0}' to {1}</value>
+    </data>
     <data name="UnityEditorFolder_Text" xml:space="preserve">
         <value>Unity Editor folder</value>
     </data>

@@ -36,8 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.QuickFixes
         {
             using (WriteLockCookie.Create())
             {
-                var classLikeDeclaration = myClassLikeDeclaration;
-                var onCreateMethod = DotsUtils.GetMethodsFromAllDeclarations(classLikeDeclaration)
+                var onCreateMethod = DotsUtils.GetMethodsFromAllDeclarations(myClassLikeDeclaration)
                     .FirstOrDefault(m => DotsUtils.IsISystemOnCreateMethod(m.DeclaredElement));
                
                 if (onCreateMethod == null)

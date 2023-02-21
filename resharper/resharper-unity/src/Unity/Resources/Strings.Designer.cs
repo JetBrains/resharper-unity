@@ -398,6 +398,8 @@
     public static string UnityDots_GenerateRefAccessors_Unity_Component_Fields_WindowTitle => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Unity_Component_Fields_WindowTitle");
     public static string UnityDots_GenerateRefAccessors_Unity_Component_Fields_Description => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Unity_Component_Fields_Description");
     public static string UnityDots_GenerateRefAccessors_Generate_Setters => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Generate_Setters");
+    public static string UnityDots_InheritorMustBeMarkedPartialReadonly => ResourceManager.GetString("UnityDots_InheritorMustBeMarkedPartialReadonly");
+    public static string UnityDots_DotsPartialClassesQuickFix_Add_Partial_Readonly => ResourceManager.GetString("UnityDots_DotsPartialClassesQuickFix_Add_Partial_Readonly");
     public static string UnityEditorFolder_Text => ResourceManager.GetString("UnityEditorFolder_Text");
     public static string UnityEventFunctionInheritanceMarkOnGutter_KindName_Unity_event_function => ResourceManager.GetString("UnityEventFunctionInheritanceMarkOnGutter_KindName_Unity_event_function");
     public static string UnityFindUsagesProvider_GetNotFoundMessage__are_only_implicit_ => ResourceManager.GetString("UnityFindUsagesProvider_GetNotFoundMessage__are_only_implicit_");

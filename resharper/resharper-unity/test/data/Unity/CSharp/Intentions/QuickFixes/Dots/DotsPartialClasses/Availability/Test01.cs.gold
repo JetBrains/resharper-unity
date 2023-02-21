@@ -1,0 +1,59 @@
+﻿using Unity.Entities;
+
+|struct EnemySpawnSystem : ISystem
+{
+    public void OnUpdate(ref SystemState state)
+    {
+    }
+
+    public void OnCreate(ref SystemState state)
+    {
+    }
+
+    public void OnDestroy(ref SystemState state)
+    {
+    }
+}|(0)
+
+|public class BigmapSystemBase : SystemBase
+{
+    protected override void OnUpdate()
+    {
+    }
+}|(1)
+
+
+|struct ShorelineSettingsAspect : IAspect
+{
+}|(2)
+
+
+|readonly struct BigmapSettingsAspect : IAspect
+{
+}|(3)
+
+------------------------------------------------
+0: Unity.Entities.ISystem's inheritor 'EnemySpawnSystem' must be 'partial'
+QUICKFIXES:
+Add 'partial' to EnemySpawnSystem
+--Add 'partial' to EnemySpawnSystem in file
+--Add 'partial' to EnemySpawnSystem in project
+--Add 'partial' to EnemySpawnSystem in solution
+1: Unity.Entities.SystemBase's inheritor 'BigmapSystemBase' must be 'partial'
+QUICKFIXES:
+Add 'partial' to BigmapSystemBase
+--Add 'partial' to BigmapSystemBase in file
+--Add 'partial' to BigmapSystemBase in project
+--Add 'partial' to BigmapSystemBase in solution
+2: Unity.Entities.IAspect's inheritor 'ShorelineSettingsAspect' must be 'partial readonly'
+QUICKFIXES:
+Add 'partial readonly' to ShorelineSettingsAspect
+--Add 'partial readonly' to ShorelineSettingsAspect in file
+--Add 'partial readonly' to ShorelineSettingsAspect in project
+--Add 'partial readonly' to ShorelineSettingsAspect in solution
+3: Unity.Entities.IAspect's inheritor 'BigmapSettingsAspect' must be 'partial'
+QUICKFIXES:
+Add 'partial' to BigmapSettingsAspect
+--Add 'partial' to BigmapSettingsAspect in file
+--Add 'partial' to BigmapSettingsAspect in project
+--Add 'partial' to BigmapSettingsAspect in solution
