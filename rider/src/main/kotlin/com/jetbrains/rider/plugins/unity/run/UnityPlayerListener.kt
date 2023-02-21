@@ -1,17 +1,18 @@
 package com.jetbrains.rider.plugins.unity.run
 
 import com.intellij.openapi.diagnostic.Logger
+import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import java.net.*
 import java.nio.ByteBuffer
 import java.nio.channels.DatagramChannel
 import java.nio.channels.SelectionKey
 import java.nio.channels.Selector
-import java.util.*
 import java.util.regex.Pattern
 
-class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
-                          private val onPlayerRemoved: (UnityProcess) -> Unit) {
+class UnityPlayerListener(lifetime: Lifetime,
+                          onPlayerAdded: (UnityProcess) -> Unit,
+                          onPlayerRemoved: (UnityProcess) -> Unit) {
 
     companion object {
         private val logger = Logger.getInstance(UnityPlayerListener::class.java)
@@ -52,6 +53,7 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
 )?
 """, Pattern.COMMENTS)
 
+        @Suppress("unused")
         enum class UnityPlayerConnectionFlags(val value: Int) {
             RequestImmediateConnect(1 shl 0),
             SupportsProfile(1 shl 1),
@@ -73,7 +75,6 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
     private val unityPlayerDescriptorsHeartbeats = mutableMapOf<String, Int>()
     private val unityProcesses = mutableMapOf<String, UnityProcess>()
 
-    private val refreshTimer: Timer
     private val syncLock = Object()
 
     init {
@@ -100,28 +101,28 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
             }
         }
 
-        refreshTimer = kotlin.concurrent.timer("Listen for Unity Players", true, 0L, refreshPeriod) {
-            refreshUnityPlayersList()
+        val refreshTimer = kotlin.concurrent.timer("Listen for Unity Players", true, 0L, refreshPeriod) {
+            refreshUnityPlayersList(onPlayerAdded, onPlayerRemoved)
         }
-    }
 
-    fun stop() {
-        refreshTimer.cancel()
+        lifetime.onTermination {
+            refreshTimer.cancel()
 
-        synchronized(syncLock) {
-            selector.keys().forEach {
-                try {
-                    // Close the channel. This will cancel the selection key and removes multicast group membership. It
-                    // doesn't close the socket, as there are still selector registrations active
-                    it.channel().close()
-                } catch (e: Throwable) {
-                    logger.warn(e)
+            synchronized(syncLock) {
+                selector.keys().forEach {
+                    try {
+                        // Close the channel. This will cancel the selection key and removes multicast group membership.
+                        // It doesn't close the socket, as there are still selector registrations active
+                        it.channel().close()
+                    } catch (e: Throwable) {
+                        logger.warn(e)
+                    }
                 }
-            }
 
-            // Close the selector. This deregisters the selector from all channels, and then kills the socket attached to
-            // the already closed channel
-            selector.close()
+                // Close the selector. This de-registers the selector from all channels, and then kills the socket
+                // attached to the already closed channel
+                selector.close()
+            }
         }
     }
 
@@ -131,7 +132,7 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
             if (matcher.find()) {
                 val ipInMessage = matcher.group("ip")
                 val id = matcher.group("id")
-                var flags = matcher.group("flags").toInt()
+                val flags = matcher.group("flags").toInt()
                 val allowDebugging = matcher.group("debug").startsWith("1")
                 val guid = matcher.group("guid").toLong()
                 val debuggerPort = matcher.group("debuggerPort")?.toIntOrNull() ?: convertPidToDebuggerPort(guid)
@@ -146,7 +147,7 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
                 }
 
                 return if (isLocalAddress(hostAddress)) {
-                    if (id.startsWith("UWPPlayer") && packageName != null) {
+                    if (id.startsWith(UnityLocalUwpPlayer.TYPE) && packageName != null) {
                         UnityLocalUwpPlayer(id, hostAddress.hostAddress, debuggerPort, allowDebugging, projectName, packageName)
                     }
                     else {
@@ -174,7 +175,10 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
         }
     }
 
-    private fun refreshUnityPlayersList() {
+    private fun refreshUnityPlayersList(
+        onPlayerAdded: (UnityProcess) -> Unit,
+        onPlayerRemoved: (UnityProcess) -> Unit
+    ) {
         synchronized(syncLock) {
 
             val start = System.currentTimeMillis()

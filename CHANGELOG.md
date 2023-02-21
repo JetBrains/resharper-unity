@@ -15,17 +15,20 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 ### Added
 
 - Add localisation of all Unity features - Chinese, Japanese, and Korean
-- Add accurate support for recognising serialised fields in subclasses of serialised classes (RIDER-79871, [RIDER-72838](https://youtrack.jetbrains.com/issue/RIDER-72838))
+- Add localisation of Unity API summaries, when available ([RIDER-84878](https://youtrack.jetbrains.com/issue/RIDER-84878))
+- Add accurate support for recognising serialised fields in subclasses of serialised classes ([RIDER-79871](https://youtrack.jetbrains.com/issue/RIDER-79871), [RIDER-72838](https://youtrack.jetbrains.com/issue/RIDER-72838))
 - Add context action and Generate menu item to generate baker and authoring classes from DOTS component data ([RIDER-85175](https://youtrack.jetbrains.com/issue/RIDER-85175))
+- Add context action and Generate menu item to generate properties for `RefRW` or `RefFO` fields ([RIDER-85192](https://youtrack.jetbrains.com/issue/RIDER-85192))
+- Add context action to navigate to source generator code from DOTS type ([RIDER-85189](https://youtrack.jetbrains.com/issue/RIDER-85189))
 - Add file templates for DOTS component data, systems, aspects and entity jobs ([RIDER-85180](https://youtrack.jetbrains.com/issue/RIDER-85180))
 - Add support for recognising serialised fields in all classes ([RIDER-79871](https://youtrack.jetbrains.com/issue/RIDER-79871))
 - Add inspection to check that `ComponentLookup` is updated in a system ([RIDER-85179](https://youtrack.jetbrains.com/issue/RIDER-85179))
 - Add quick fix to add a call to `ComponentLookup.Update` in a system's `OnUpdate` method ([RIDER-85179](https://youtrack.jetbrains.com/issue/RIDER-85179))
-- Add context action to generate baker and authoring classes to component data gutter icon
-- Add context action to navigate to source generator code from DOTS type ([RIDER-85189](https://youtrack.jetbrains.com/issue/RIDER-85189))
 - Add inspection and quick fix to ensure that a system calling `GetSingleton` has a corresponding call to `RequireForUpdate` ([RIDER-85181](https://youtrack.jetbrains.com/issue/RIDER-85181))
 - Add Find Usages support for methods used implicitly in animation clips ([RIDER-77030](https://youtrack.jetbrains.com/issue/RIDER-77030))
 - Add custom formatting rules to keep `[Header]` attribute on separate line ([RIDER-71840](https://youtrack.jetbrains.com/issue/RIDER-71840))
+- Rider: Add debugging Android via adb ([RIDER-31578](https://youtrack.jetbrains.com/issue/RIDER-31578), [#1287](https://github.com/JetBrains/resharper-unity/issues/1287), [#2389](https://github.com/JetBrains/resharper-unity/pull/2389))
+- Rider: Create temporary run configurations when debugging Unity players ([RIDER-47135](https://youtrack.jetbrains.com/issue/RIDER-47135), [RIDER-68742](https://youtrack.jetbrains.com/issue/RIDER-68742), [#2389](https://github.com/JetBrains/resharper-unity/pull/2389))
 - Rider: Provide link to online help for types and type members in Unity packages ([RIDER-86917](https://youtrack.jetbrains.com/issue/RIDER-86917))
 
 ### Changed
@@ -33,10 +36,11 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Update API information to Unity 2023.1.0b1
 - Serialised fields are now accurately recognised in any class, not just known Unity types ([RIDER-79871](https://youtrack.jetbrains.com/issue/RIDER-79871), [RIDER-72838](https://youtrack.jetbrains.com/issue/RIDER-72838))
 - Re-evaluate resource warnings when a resource file is updated or deleted
+- Suppress "make method static" inspection for methods on DOTS systems ([RIDER-89255](https://youtrack.jetbrains.com/issue/RIDER-89255))
 - Improve support for prefab modifications and event handlers
 - Provide more appropriate naming suggestions for `RefRW` or `RefRO` variables ([RIDER-85192](https://youtrack.jetbrains.com/issue/RIDER-85192))
 - Group auto properties with a serialised backing field with serialised fields in file layout ([RIDER-87809](https://youtrack.jetbrains.com/issue/RIDER-87809))
-- Add FMOD as a known abbreviation ([#2320](https://github.com/JetBrains/resharper-unity/issues/2320))
+- Add `FMOD` as a known abbreviation ([#2320](https://github.com/JetBrains/resharper-unity/issues/2320))
 - Exclude DOTS related generated code from search results ([RIDER-85189](https://youtrack.jetbrains.com/issue/RIDER-85189))
 - Rider: Allow static methods for `EventTrigger` usages
 - Rider: Update icons for `.asmdef`, `.asmref` and `.inputactions` files ([RIDER-68006](https://youtrack.jetbrains.com/issue/RIDER-68006))
@@ -62,6 +66,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix issues with recreating meta files that exist, due to being restored from Local History ([RIDER-84724](https://youtrack.jetbrains.com/issue/RIDER-84724))
 - Rider: Fix exception while generating UIElements schema in newer versions of Unity ([#2386](https://github.com/JetBrains/resharper-unity/issues/2386))
 - Rider: Fix incorrect icons in Unity run configurations ([RIDER-88500](https://youtrack.jetbrains.com/issue/RIDER-84724))
+- Rider: Fix incorrect file VCS status colour for hidden assets inside read only packages
 
 
 

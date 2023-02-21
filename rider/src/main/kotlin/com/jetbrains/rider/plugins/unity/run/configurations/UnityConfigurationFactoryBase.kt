@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.execution.configurations.RunConfiguration
+import com.intellij.execution.configurations.RunConfigurationSingletonPolicy
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.isUnityClassLibraryProject
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
@@ -16,4 +17,6 @@ abstract class UnityConfigurationFactoryBase(type: ConfigurationType)
     override fun isApplicable(project: Project): Boolean {
         return super.isApplicable(project) && (project.isUnityProjectFolder() || project.isUnityClassLibraryProject() == true)
     }
+
+    override fun getSingletonPolicy() = RunConfigurationSingletonPolicy.SINGLE_INSTANCE_ONLY
 }

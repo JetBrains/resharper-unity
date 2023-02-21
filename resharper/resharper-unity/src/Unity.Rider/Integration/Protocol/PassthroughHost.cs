@@ -101,6 +101,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                     : RdTask.Successful(false);
             });
 
+            frontendBackendModel.GetAndroidSdkRoot.SetAsync(async (l, u) =>
+            {
+                var model = backendUnityModelProperty.Maybe.ValueOrDefault;
+                return model == null ? null : await model.GetAndroidSdkRoot.Start(l, u).AsTask();
+            });
+
             // Signalled from frontend to select and ping the object in the Project view
             frontendBackendModel.ShowFileInUnity.Advise(lifetime, file =>
                 backendUnityModelProperty.Maybe.ValueOrDefault?.ShowFileInUnity.Fire(file));

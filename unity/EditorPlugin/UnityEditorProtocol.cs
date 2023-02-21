@@ -177,6 +177,8 @@ namespace JetBrains.Rider.Unity.Editor
           AdviseOnStartProfiling(model);
           AdviseLoggingStateChangeTimes(connectionLifetime, model);
 
+          BuildPipelineModelHelper.Advise(connectionLifetime, model);
+
 #if UNITY_5_6_OR_NEWER
           UnitTestingModelHelper.Advise(connectionLifetime, model);
           FindUsagesModelHelper.Advise(connectionLifetime, model);
