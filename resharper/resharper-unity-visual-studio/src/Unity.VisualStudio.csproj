@@ -21,9 +21,6 @@
     <PackageReference Include="VSSDK.Text" />
     <PackageReference Include="VSSDK.CoreUtility" />
     <PackageReference Include="VSSDK.IDE.10" />
-    <PackageReference Include="JetBrains.Microsoft.Web.WebView2" Version="1.0.1343.25">
-      <ExcludeAssets>all</ExcludeAssets>
-    </PackageReference>
     <ProjectReference Include="..\..\resharper-unity\src\Unity\Unity.csproj" />
     <!-- TODO: Do we need Unity.Shaders.VisualStudio for shader specific classification definitions?
          If not, then I think we'd get entries in Fonts + Colours for highlightings that aren't available, e.g. Cg -->
