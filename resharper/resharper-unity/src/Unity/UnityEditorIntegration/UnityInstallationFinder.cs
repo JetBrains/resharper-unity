@@ -80,9 +80,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             switch (PlatformUtil.RuntimePlatform)
             {
                     case PlatformUtil.Platform.MacOsX:
+                        // /Applications/Unity/Hub/Editor/202x.x.xf1/Unity.app/Contents
+                        // Note that this path is inside the Unity app, and cannot contain files that can be installed
+                        // as separate modules, such as documentation or optional playback engines, as these changes
+                        // would break code signing. However, Unity.app/Contents/Documentation is a symlink to
+                        // Unity.app/../Documentation and optional playback engines live at Unity.app/../PlaybackEngines
+                        // (Unity.app/Content/PlaybackEngines contains MacStandaloneSupport by default)
                         return applicationPath.Combine("Contents");
                     case PlatformUtil.Platform.Linux:
                     case PlatformUtil.Platform.Windows:
+                        // C:\Program Files\Unity\Hub\Editor\202x.x.xf1\Editor\Data
                         return applicationPath.Directory.Combine("Data");
             }
             ourLogger.Error("Unknown runtime platform");

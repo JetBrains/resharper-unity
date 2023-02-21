@@ -22,6 +22,12 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
     private val unityStartInfo = structdef extends unityStartInfoBase {
     }
 
+    // Forward Android debugging ports over ADB
+    private val unityAndroidAdbStartInfo = structdef extends unityStartInfoBase {
+        field("androidSdkRoot", string)
+        field("androidDeviceId", string)
+    }
+
     // Start the iOS USB debugging proxy before attaching
     private val unityIosUsbStartInfo = structdef extends unityStartInfoBase {
         field("iosSupportPath", string)

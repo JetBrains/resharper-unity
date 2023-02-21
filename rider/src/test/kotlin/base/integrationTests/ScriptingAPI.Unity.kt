@@ -142,10 +142,11 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
     val relPath = when {
         SystemInfo.isWindows -> "net472/rider-dev.app/rider-dev.bat"
         SystemInfo.isMac -> "net472/rider-dev.app"
+        SystemInfo.isUnix -> "net472/rider-dev.app/rider-dev.bat"
         else -> throw Exception("Not implemented")
     }
     val cwd = File(System.getProperty("user.dir"))
-    val riderPath = cwd.parentFile.resolve("unity/build/EditorPluginNet46/bin").listFiles()
+    val riderPath = cwd.parentFile.resolve("unity/build/EditorPlugin.SinceUnity.2019.2/bin").listFiles()
         .filter { a-> (a.name=="Debug"|| a.name=="Release") && a.isDirectory }.single().toPath().resolve(relPath)
         .toString()
     args.addAll(arrayOf("-riderPath", riderPath))

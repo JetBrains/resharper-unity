@@ -1,14 +1,17 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.configurations.ConfigurationTypeBase
+import com.intellij.execution.configurations.VirtualConfigurationType
 import com.intellij.openapi.project.DumbAware
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import icons.UnityIcons
 
-class UnityDebugConfigurationType : ConfigurationTypeBase(id,
-                                                          UnityBundle.message("configuration.type.name.attach.to.unity.editor"),
-                                                          UnityBundle.message("configuration.type.description.attach.to.unity.process.and.debug"),
-                                                          UnityIcons.RunConfigurations.AttachToUnityParentConfiguration), DumbAware {
+class UnityEditorDebugConfigurationType : ConfigurationTypeBase(
+    id,
+    UnityBundle.message("configuration.type.name.attach.to.unity.editor"),
+    UnityBundle.message("configuration.type.description.attach.to.unity.process.and.debug"),
+    UnityIcons.RunConfigurations.AttachToUnityParentConfiguration
+), VirtualConfigurationType, DumbAware {
 
     val attachToEditorFactory = UnityAttachToEditorFactory(this)
     val attachToEditorAndPlayFactory = UnityAttachToEditorAndPlayFactory(this)
