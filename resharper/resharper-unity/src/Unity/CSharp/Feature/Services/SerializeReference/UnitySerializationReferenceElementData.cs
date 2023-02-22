@@ -61,8 +61,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             //TODO - struct without superclass as Interface - couldn't be used with SerializeRef attribute
             // if(!classLikeDeclaration.IsPartial && !classLikeDeclaration.SuperTypes.Any() && classLikeDeclaration.DeclaredElement is IStruct)
             //     return;
+            if(classLikeDeclaration.DeclaredElement == null)
+                return;
             
-            var classInfoAdapter = classLikeDeclaration.DeclaredElement!.ToAdapter(myProvider);
+            var classInfoAdapter = classLikeDeclaration.DeclaredElement.ToAdapter(myProvider);
             SerializeReferenceTypesUtils.CollectClassData(classInfoAdapter, ClassInfoDictionary, TypeParameterResolves);
         }
     }

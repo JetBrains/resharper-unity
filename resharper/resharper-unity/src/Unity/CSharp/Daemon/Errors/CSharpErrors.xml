@@ -200,9 +200,9 @@
         <Title resourceName="UnityDots_GetSingletonMustBeRequested" resourceType="Strings" />
         <Description resourceName="UnityDots_GetSingletonMustBeRequested" resourceType="Strings" />
       </Tag>
-      <Tag externalName="InheritorMustBeMarkedPartialReadonlyWarning.HIGHLIGHTING_ID" default="ERROR">
-        <Title resourceName="UnityDots_InheritorMustBeMarkedPartialReadonly" resourceType="Strings" />
-        <Description resourceName="UnityDots_InheritorMustBeMarkedPartialReadonly" resourceType="Strings" />
+      <Tag externalName="InconsistentModifiersForDotsInheritorReadonlyWarning.HIGHLIGHTING_ID" default="ERROR">
+        <Title resourceName="UnityDots_InconsistentModifiersForDotsInheritor" resourceType="Strings" />
+        <Description resourceName="UnityDots_InconsistentModifiersForDotsInheritor" resourceType="Strings" />
       </Tag>
     </Group>
   </SeverityConfiguration>
@@ -613,18 +613,19 @@
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
-  <Warning name="InheritorMustBeMarkedPartialReadonly" configurableSeverity="Unity.Entities.InheritorMustBeMarkedPartialReadonly">
+  <Warning name="InconsistentModifiersForDotsInheritorReadonly" configurableSeverity="Unity.Entities.InconsistentModifiersForDotsInheritorReadonly">
     <Parameter type="IClassLikeDeclaration" name="classLikeDeclaration" />
+    <Parameter type="string" name="parentName" />
     <Parameter type="bool" name="mustBePartial" />
     <Parameter type="bool" name="mustBeReadonly" />
-    <Message resourceName="UnityDots_InheritorMustBeMarkedPartialReadonly" resourceType="Strings">
-      <Argument>classLikeDeclaration.SuperTypes.SingleItem().GetClrName()</Argument>
+    <Message resourceName="UnityDots_InconsistentModifiersForDotsInheritor" resourceType="Strings">
+      <Argument>parentName</Argument>
       <Argument>classLikeDeclaration.DeclaredName</Argument>
       <Argument>mustBePartial ? "partial" : string.Empty</Argument>
       <Argument>mustBePartial &amp;&amp; mustBeReadonly? " " : string.Empty</Argument>
       <Argument>mustBeReadonly ? "readonly" : string.Empty</Argument>
     </Message>
-    <Range>ClassLikeDeclaration.GetDocumentRange()</Range>
+    <Range>ClassLikeDeclaration.NameIdentifier.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 

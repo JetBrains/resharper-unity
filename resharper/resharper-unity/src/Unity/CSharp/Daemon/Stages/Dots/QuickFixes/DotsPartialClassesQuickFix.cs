@@ -15,19 +15,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.QuickFixes
     [QuickFix]
     public class DotsPartialClassesQuickFix : UnityScopedQuickFixBase
     {
-        private readonly InheritorMustBeMarkedPartialReadonlyWarning myInheritorMustBeMarkedPartialReadonlyWarning;
+        private readonly InconsistentModifiersForDotsInheritorReadonlyWarning myInconsistentModifiersForDotsInheritorReadonlyWarning;
         private readonly IClassLikeDeclaration myClassLikeDeclaration;
         
-        public DotsPartialClassesQuickFix(InheritorMustBeMarkedPartialReadonlyWarning inheritorMustBeMarkedPartialReadonlyWarning)
+        public DotsPartialClassesQuickFix(InconsistentModifiersForDotsInheritorReadonlyWarning InconsistentModifiersForDotsInheritorReadonlyWarning)
         {
-            myInheritorMustBeMarkedPartialReadonlyWarning = inheritorMustBeMarkedPartialReadonlyWarning;
-            myClassLikeDeclaration = inheritorMustBeMarkedPartialReadonlyWarning.ClassLikeDeclaration;
+            myInconsistentModifiersForDotsInheritorReadonlyWarning = InconsistentModifiersForDotsInheritorReadonlyWarning;
+            myClassLikeDeclaration = InconsistentModifiersForDotsInheritorReadonlyWarning.ClassLikeDeclaration;
         }
 
         private string GetText()
         {
-            var mustBeReadonly = myInheritorMustBeMarkedPartialReadonlyWarning.MustBeReadonly;
-            var mustBePartial = myInheritorMustBeMarkedPartialReadonlyWarning.MustBePartial;
+            var mustBeReadonly = myInconsistentModifiersForDotsInheritorReadonlyWarning.MustBeReadonly;
+            var mustBePartial = myInconsistentModifiersForDotsInheritorReadonlyWarning.MustBePartial;
             var modifiersString = $"{(mustBePartial ? "partial" : string.Empty)}{(mustBePartial && mustBeReadonly ? " " : string.Empty)}{(mustBeReadonly ? "readonly" : string.Empty)}";
             return string.Format(Strings.UnityDots_DotsPartialClassesQuickFix_Add_Partial_Readonly, modifiersString, myClassLikeDeclaration.DeclaredName);
         }
@@ -37,9 +37,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.QuickFixes
         {
             using (WriteLockCookie.Create())
             {
-                if (myInheritorMustBeMarkedPartialReadonlyWarning.MustBeReadonly)
+                if (myInconsistentModifiersForDotsInheritorReadonlyWarning.MustBeReadonly)
                     myClassLikeDeclaration.SetReadonly(true);
-                if (myInheritorMustBeMarkedPartialReadonlyWarning.MustBePartial)
+                if (myInconsistentModifiersForDotsInheritorReadonlyWarning.MustBePartial)
                     myClassLikeDeclaration.SetPartial(true);
             }
 

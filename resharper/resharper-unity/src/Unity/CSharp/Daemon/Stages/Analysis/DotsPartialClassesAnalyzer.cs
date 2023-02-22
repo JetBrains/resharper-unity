@@ -1,4 +1,5 @@
 #nullable enable
+using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots;
@@ -10,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
     [ElementProblemAnalyzer(typeof(IClassLikeDeclaration), HighlightingTypes = new[]
     {
-        typeof(InheritorMustBeMarkedPartialReadonlyWarning)
+        typeof(InconsistentModifiersForDotsInheritorReadonlyWarning)
     })]
     public class DotsPartialClassesAnalyzer : UnityElementProblemAnalyzer<IClassLikeDeclaration>
     {
@@ -27,29 +28,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         protected override void Analyze(IClassLikeDeclaration classLikeDeclaration, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
             var typeElement = classLikeDeclaration.DeclaredElement;
-            var isDerivesFromIAspect = UnityApi.IsDerivesFromIAspect(typeElement);
-            var isDerivesFromISystem = UnityApi.IsDerivesFromISystem(typeElement) || UnityApi.IsDerivesFromSystemBase(typeElement);
+            var parentTypeName = EmptyClrTypeName.Instance;
+            var shouldBeProcessed = false;
+            var mustBeReadonly = false;
 
-            if (!isDerivesFromISystem && !isDerivesFromIAspect)
+            if (UnityApi.IsDerivesFromIAspect(typeElement))
+            {
+                mustBeReadonly = !classLikeDeclaration.IsReadonly;
+                shouldBeProcessed = true;
+                parentTypeName = KnownTypes.IAspect;
+            }
+            else if (UnityApi.IsDerivesFromISystem(typeElement))
+            {
+                shouldBeProcessed = true;
+                parentTypeName = KnownTypes.ISystem;
+            }
+            else if (UnityApi.IsDerivesFromSystemBase(typeElement))
+            {
+                shouldBeProcessed = true;
+                parentTypeName = KnownTypes.SystemBase;
+            }
+
+            if (!shouldBeProcessed)
                 return;
 
-            if (isDerivesFromIAspect)
-            {
-                var isReadonly = classLikeDeclaration.IsReadonly;
-                var isPartial = classLikeDeclaration.IsPartial;
+            var mustBePartial = !classLikeDeclaration.IsPartial;
 
-                if (isReadonly && isPartial)
-                    return;
+            if (!mustBeReadonly && !mustBePartial)
+                return;
 
-                consumer.AddHighlighting(new InheritorMustBeMarkedPartialReadonlyWarning(classLikeDeclaration, !isPartial, !isReadonly));
-            }
-            else if (isDerivesFromISystem)
-            {
-                var isPartial = classLikeDeclaration.IsPartial;
-
-                if (!isPartial)
-                    consumer.AddHighlighting(new InheritorMustBeMarkedPartialReadonlyWarning(classLikeDeclaration, !isPartial, false));
-            }
+            consumer.AddHighlighting(new InconsistentModifiersForDotsInheritorReadonlyWarning(classLikeDeclaration, parentTypeName.ShortName, mustBePartial, mustBeReadonly));
+           
         }
     }
 }
