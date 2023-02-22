@@ -7,10 +7,10 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Generate
 {
     [TestUnity]
-    public class GenerateBakerAndAuthoringActionAvailabilityTest  : GenerateTestBase
+    public class GenerateBakerAndComponentDataActionTest  : GenerateTestBase
     {
         private const string DotsClassesFileName = "DotsClasses.cs";
-        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\Dots\GenerateBakerAndAuthoringActionFix";
+        protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\Dots\GenerateBakerAndComponentData";
 
         protected override void CheckProjectFile(IProjectFile projectItem, Action<TextWriter>? test = null)
         {
@@ -19,52 +19,37 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
             base.CheckProjectFile(projectItem, test);
         }
 
-        [Test] public void GenerateNewBakerNotNested()
-        {
-            DoNamedTest($"../{DotsClassesFileName}");
-        }
-
-        [Test] public void GenerateNewBakerNested()
-        {
-            DoNamedTest($"../{DotsClassesFileName}");
-        }
-
-        [Test] public void GenerateNewBakerForEmptyComponent()
-        {
-            DoNamedTest($"../{DotsClassesFileName}");
-        }
-
-        [Test] public void AddNewComponentToBaker()
-        {
-            DoNamedTest($"../{DotsClassesFileName}");
-        }
-
-        [Test] public void UpdateExistingNestedBaker()
+        [Test] public void GenerateComponentAndBaker()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
         
-        [Test] public void UpdateExistingPartialBaker()
-        {
-            DoNamedTest($"../{DotsClassesFileName}");
-        }
-
-        [Test] public void CreateNewWithExistingBaker()
+        [Test] public void GenerateEmptyComponentAndBaker()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
         
-        [Test] public void CreateNewNestedWithExistingBaker()
+        [Test] public void GenerateToExistingComponent()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
+                
+        [Test] public void NewComponentToExistingBaker()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
+                
+        [Test] public void ExistingBakerAndComponent()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
-        [Test] public void AuthoringAndBakerInOtherFiles()
+        [Test] public void ComponentAndBakerInOtherFiles()
         {
             DoNamedTest($"../{DotsClassesFileName}"
-                , $"{TestMethod!.Name}_Authoring.cs"
                 , $"{TestMethod!.Name}_Baker.cs"
-                );
+                , $"{TestMethod!.Name}_Component.cs"
+            );
         }
     }
 }

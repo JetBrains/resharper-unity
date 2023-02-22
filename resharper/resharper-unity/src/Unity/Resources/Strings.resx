@@ -1009,9 +1009,6 @@
     <data name="UnityDots_GenerateBakerAndAuthoring_Description" xml:space="preserve">
         <value>Generate Baker and Authoring script inside this file</value>
     </data>
-    <data name="UnityDots_GenerateBakerAndAuthoring_GenerateBakerAsNestedClass" xml:space="preserve">
-        <value>Generate Baker as nested class</value>
-    </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_Name" xml:space="preserve">
         <value>Generate Baker and Authoring script</value>
     </data>
@@ -1021,9 +1018,6 @@
     <data name="UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested" xml:space="preserve">
         <value>New Baker (Nested)</value>
     </data>
-    <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields" xml:space="preserve">
-        <value>Component fields for baking</value>
-    </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Description" xml:space="preserve">
         <value>Select fields for baking</value>
     </data>
@@ -1031,7 +1025,28 @@
         <value>Baker Generation (DOTS)</value>
     </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle" xml:space="preserve">
-        <value>Baker Generation</value>
+        <value>Baker</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndComponent_ComponentData" xml:space="preserve">
+        <value>ComponentData</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndComponent_Description" xml:space="preserve">
+        <value>Generate Baker and ComponentData script inside this file</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndComponent_Name" xml:space="preserve">
+        <value>Generate Baker and ComponentData script</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndComponent_NewComponentData" xml:space="preserve">
+        <value>New ComponentData</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_Description" xml:space="preserve">
+        <value>Select fields and properties</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_Title" xml:space="preserve">
+        <value>ComponentData Generation (DOTS)</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_WindowTitle" xml:space="preserve">
+        <value>ComponentData</value>
     </data>
     <data name="UnityDots_GetSingletonMustBeRequested" xml:space="preserve">
         <value>To use the result of a 'GetSingleton&lt;{0}&gt;' call in the function, 'OnCreate' must include a 'RequireForUpdate' call</value>
