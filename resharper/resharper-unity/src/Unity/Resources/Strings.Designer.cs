@@ -399,6 +399,7 @@
     public static string UnityDots_GenerateRefAccessors_Unity_Component_Fields_Description => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Unity_Component_Fields_Description");
     public static string UnityDots_GenerateRefAccessors_Generate_Setters => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Generate_Setters");
     public static string UnityDots_InconsistentModifiersForDotsInheritor => ResourceManager.GetString("UnityDots_InconsistentModifiersForDotsInheritor");
+    public static string UnityDots_MustBeStructForDotsInheritor => ResourceManager.GetString("UnityDots_MustBeStructForDotsInheritor");
     public static string UnityDots_DotsPartialClassesQuickFix_Add_Partial_Readonly => ResourceManager.GetString("UnityDots_DotsPartialClassesQuickFix_Add_Partial_Readonly");
     public static string UnityEditorFolder_Text => ResourceManager.GetString("UnityEditorFolder_Text");
     public static string UnityEventFunctionInheritanceMarkOnGutter_KindName_Unity_event_function => ResourceManager.GetString("UnityEventFunctionInheritanceMarkOnGutter_KindName_Unity_event_function");

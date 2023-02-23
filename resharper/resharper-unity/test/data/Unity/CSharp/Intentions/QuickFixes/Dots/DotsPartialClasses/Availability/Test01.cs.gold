@@ -32,6 +32,9 @@ readonly struct |BigmapSettingsAspect|(3) : IAspect
 {
 }
 
+struct Factory4 : IComponentData //shouldn't be partial
+{
+}
 ------------------------------------------------
 0: ISystem's inheritor 'EnemySpawnSystem' must be 'partial'
 QUICKFIXES:

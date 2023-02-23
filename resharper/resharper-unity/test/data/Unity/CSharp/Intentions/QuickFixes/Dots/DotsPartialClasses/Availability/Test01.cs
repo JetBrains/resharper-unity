@@ -31,3 +31,7 @@ struct ShorelineSettingsAspect : IAspect
 readonly struct BigmapSettingsAspect : IAspect
 {
 }
+
+struct Factory4 : IComponentData //shouldn't be partial
+{
+}
