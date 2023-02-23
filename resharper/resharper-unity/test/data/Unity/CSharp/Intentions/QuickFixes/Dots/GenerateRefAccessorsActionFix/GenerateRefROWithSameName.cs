@@ -1,10 +1,5 @@
-﻿Provided elements:
- 0: ExitCoordinates:Unity.Mathematics.float2
- 1: ScavsCount:System.Int32
-
 // ${KIND:Unity.GenerateRefAccessors}
 // ${SELECT0:ScavsCount:System.Int32}
-// ${GLOBAL0:GenerateSetters=False}
 
 using Unity.Entities;
 using Unity.Mathematics;
@@ -14,13 +9,19 @@ namespace ComponentsAndTags
 {
     struct Factory4 : IComponentData
     {
-        public float2 ExitCoordinates;
+        public int ScavsCount;
+    }
+
+    struct Rezerv : IComponentData
+    {
         public int ScavsCount;
     }
 
     struct FooAspect : IAspect
     {
-        private RefRW<Factory4> _factory{caret}4;
+        private RefRO<Factory4> _factory4;
+        private RefRO<Rezerv> _Rezerv{caret};
+
         public int ScavsCount => _factory4.ValueRO.ScavsCount;
     }
 }

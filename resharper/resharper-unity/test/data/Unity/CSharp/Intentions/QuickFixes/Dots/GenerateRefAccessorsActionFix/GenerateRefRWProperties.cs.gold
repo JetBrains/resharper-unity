@@ -3,9 +3,6 @@
  1: ScavsCount:System.Int32
  2: ArrayOfIndexes:Unity.Collections.NativeArray`1[T -> System.Int32]
 
-Preselected elements:
- 0: ScavsCount:System.Int32
-
 // ${KIND:Unity.GenerateRefAccessors}
 // ${SELECT0:ArrayOfIndexes:Unity.Collections.NativeArray`1[T -> System.Int32]}
 // ${GLOBAL0:GenerateSetters=True}
@@ -32,12 +29,6 @@ namespace ComponentsAndTags
         {
           get => _factory4.ValueRO.ArrayOfIndexes;
           set => _factory4.ValueRW.ArrayOfIndexes = value;
-        }
-
-        public int ScavsCount
-        {
-          get => _factory4.ValueRO.ScavsCount;
-          set => _factory4.ValueRW.ScavsCount = value;
         }
     }
 }
