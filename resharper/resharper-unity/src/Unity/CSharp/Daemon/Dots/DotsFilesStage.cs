@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.CSharp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -29,11 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Dots
             if (project != null && !project.IsUnityProject())
                 return false;
 
-            var packageManager = solution.GetComponent<PackageManager>();
-            if (!packageManager.HasPackage(PackageManager.UnityEntitiesPackageName))
-                return false;
-            
-            return base.IsSupported(sourceFile);
+            return solution.HasEntitiesPackage() && base.IsSupported(sourceFile);
         }
 
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process,

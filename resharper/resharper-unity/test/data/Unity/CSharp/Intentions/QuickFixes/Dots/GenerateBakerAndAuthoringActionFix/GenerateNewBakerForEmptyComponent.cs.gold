@@ -19,7 +19,7 @@ namespace ComponentsAndTags
     {
       public override void Bake(GraveyardPropertiesAuthoring authoring)
       {
-        AddComponent(new GraveyardProperties { });
+        AddComponent(new GraveyardProperties());
       }
     }
 }

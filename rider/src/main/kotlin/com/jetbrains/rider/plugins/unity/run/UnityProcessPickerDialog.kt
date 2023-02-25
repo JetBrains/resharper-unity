@@ -2,12 +2,10 @@ package com.jetbrains.rider.plugins.unity.run
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.*
 import com.intellij.ui.components.dialog
 import com.intellij.ui.components.noteComponent
-import com.intellij.ui.dsl.builder.Align
-import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.speedSearch.SpeedSearchUtil
 import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.ui.JBUI
@@ -29,8 +27,9 @@ import javax.swing.tree.*
 class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(project) {
 
     companion object {
-        const val UNKNOWN_PROJECTS = "Unknown Projects"
-        const val USB_DEVICES = "USB Devices"
+        val UNKNOWN_PROJECT = UnityBundle.message("project.name.unknown.project")
+        val USB_DEVICES = UnityBundle.message("project.name.usb.devices")
+        val CUSTOM_PLAYER_PROJECT = UnityBundle.message("project.name.custom")
     }
 
     private class UnityProcessTreeNode(val process: UnityProcess, val debuggerAttached: Boolean): DefaultMutableTreeNode()
@@ -54,14 +53,14 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             selectionModel.addTreeSelectionListener {
                 isOKActionEnabled = !isSelectionEmpty
                 getSelectedUnityProcessTreeNode()?.let {
-                    isOKActionEnabled = !it.debuggerAttached && it.process.allowDebugging
+                    isOKActionEnabled = !it.debuggerAttached && it.process.debuggingEnabled
                 }
             }
 
-            // Make sure the current theme doesn't add a border/insets to the contents of the tree. This can affect the
-            // separator, which is drawn as content, and non-opaque. If it's shifted, then we'll see the item background
-            // around it, which is very obvious when the item is selected. This is not a problem with Rider's default
-            // themes, but is with IntelliJ Light and Darcula.
+            // Make sure the current theme doesn't add a border or insets to the contents of the tree. This can affect
+            // the separator, which is drawn as content and non-opaque. If it's shifted, then we'll see the item
+            // background around it, which is very obvious when the item is selected. This is not a problem with Rider's
+            // default themes, but is with IntelliJ Light and Darcula.
             border = JBUI.Borders.empty()
 
             registerKeyboardAction(okAction, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_FOCUSED)
@@ -115,7 +114,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         if (okAction.isEnabled) {
             val model = getSelectedUnityProcessTreeNode() ?: return
             val process = model.process
-            if (!model.debuggerAttached && process.allowDebugging) {
+            if (!model.debuggerAttached && process.debuggingEnabled) {
                 attachToUnityProcess(project, process)
             }
             close(OK_EXIT_CODE)
@@ -135,43 +134,59 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     private fun getSelectedUnityProcessTreeNode() =
         tree.lastSelectedPathComponent as? UnityProcessTreeNode
 
-    private fun enterCustomIp() {
-        val hostField = JTextField("127.0.0.1")
-        val portField = PortField(0)
+    internal data class CustomPlayerModel(var name: String,
+                                          var host: String = "",
+                                          var port: Int = 0)
 
+    private fun enterCustomIp() {
+        var name = UnityBundle.message("custom.player.default.name")
+        var count = 1
+        while (findCustomPlayerByName(name) != null) {
+            name = UnityBundle.message("custom.player.default.template", count++)
+        }
+        val model = CustomPlayerModel(name)
         val panel = panel {
             row { cell(noteComponent(UnityBundle.message("enter.the.ip.address.of.the.unity.process"))) }
-            row(UnityBundle.message("host.colon")) { cell(hostField).focused() }
-            row(UnityBundle.message("port.colon")) { cell(portField) }
+            row(UnityBundle.message("name.colon")) {
+                textField().bindText(model::name)
+                    .errorOnApply(UnityBundle.message("dialog.message.name.must.not.be.empty")) { it.text.isBlank() }
+                    .errorOnApply(UnityBundle.message("dialog.message.name.must.be.unique")) {
+                        findCustomPlayerByName(it.text) != null
+                    }
+            }
+            row(UnityBundle.message("host.colon")) {
+                textField().bindText(model::host)
+                    .errorOnApply(UnityBundle.message("dialog.message.host.address.must.not.be.empty")) { it.text.isBlank() }
+                    .focused()
+            }
+            row(UnityBundle.message("port.colon")) {
+                cell(PortField(0)).bindIntValue(model::port)
+                    .errorOnApply(UnityBundle.message("dialog.message.port.number.must.be.positive")) { it.number <= 0 }
+            }
         }
 
         @Suppress("DialogTitleCapitalization") val dialog = dialog(
             title = UnityBundle.message("dialog.title.add.unity.process"),
             panel = panel,
             project = project,
-            parent = peerPanel) {
-            val hostAddress = hostField.text
-            portField.commitEdit()
-            val port = portField.number
-            val validationResult = mutableListOf<ValidationInfo>()
-
-            if (hostAddress.isNullOrBlank()) validationResult.add(ValidationInfo(
-                UnityBundle.message("dialog.message.host.address.must.not.be.empty")))
-            if (port <= 0) validationResult.add(ValidationInfo(UnityBundle.message("dialog.message.port.number.must.be.positive")))
-
-            if (validationResult.isEmpty()) {
-                // TODO: Do something better with this. Probably add a (temporary) run configuration
-                val process = UnityRemotePlayer("Custom Player", hostAddress, port, true, null)
-                val node = addProcess(process)
-                tree.selectionPath = TreePath(node.path)
-            }
-            validationResult
+            parent = peerPanel)
+        if (dialog.showAndGet()) {
+            val process = UnityCustomPlayer(model.name, model.host, model.port, CUSTOM_PLAYER_PROJECT)
+            val node = addProcess(process)
+            tree.selectionPath = TreePath(node.path)
         }
-        dialog.showAndGet()
+    }
+
+    private fun findCustomPlayerByName(name: String): UnityCustomPlayer? {
+        val root = treeModel.root as DefaultMutableTreeNode
+        val node = TreeUtil.findNode(root) {
+            ((it as? UnityProcessTreeNode)?.process as? UnityCustomPlayer)?.displayName == name
+        } as? UnityProcessTreeNode
+        return node?.process as? UnityCustomPlayer
     }
 
     private fun addProcess(process: UnityProcess): UnityProcessTreeNode {
-        val isDebuggerAttached = process is UnityRemoteConnectionDetails && UnityRunUtil.isDebuggerAttached(process.host, process.port, project)
+        val isDebuggerAttached = UnityRunUtil.isDebuggerAttached(process.host, process.port, project)
 
         synchronized(treeModelLock) {
             val root = treeModel.root as DefaultMutableTreeNode
@@ -179,7 +194,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             val newNode = UnityProcessTreeNode(process, isDebuggerAttached)
 
             if (process is UnityEditorHelper) {
-                // Try to add as a child node of the parent editor
+                // Try to add the helper as a child node of the parent editor
                 (TreeUtil.findNode(root) {
                     val parentProcess = (it as? UnityProcessTreeNode)?.process ?: return@findNode false
                     parentProcess is UnityEditor && parentProcess.projectName == process.projectName
@@ -210,12 +225,12 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             // Make sure the root node is expanded
             tree.expandPath(TreePath(root.path))
 
-            // We have variable height rows, to allow for the "separators". However, the tree's UI class caches row
+            // We have variable height rows to allow for the "separators". However, the tree's UI class caches row
             // heights for each cell. This causes problems when an item with a separator no longer needs the separator.
             // There are no public APIs to invalidate the cache. We could reload the model, but that collapses any open
             // nodes, so we'd have to expand everything again. So, let's change the row height, and then immediately
-            // change it back to 0 (to indicate variable height). This invalidates the height cache, but maintains other
-            // state
+            // change it back to 0 (to indicate variable height). This invalidates the height cache, but maintains all
+            // other state.
             tree.rowHeight = 1
             tree.rowHeight = 0
 
@@ -238,7 +253,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             }?.let {
                 treeModel.removeNodeFromParent(it)
 
-                // Now reparent any children, until they're removed
+                // Now reparent any children until they're removed
                 it.children().asSequence().filterIsInstance<UnityProcessTreeNode>().forEach { child ->
                     treeModel.removeNodeFromParent(child)
                     insertChildNode(treeModel.root as DefaultMutableTreeNode, child)
@@ -247,23 +262,25 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         }
     }
 
-    private class TreeNodeComparator(private val projectName: String) : Comparator<TreeNode> {
+    private class TreeNodeComparator(private val currentProjectName: String) : Comparator<TreeNode> {
         override fun compare(o1: TreeNode, o2: TreeNode): Int {
             val node1 = o1 as? UnityProcessTreeNode ?: return -1
             val node2 = o2 as? UnityProcessTreeNode ?: return 1
 
-            val projectName1 = node1.process.projectName ?: UNKNOWN_PROJECTS
-            val projectName2 = node2.process.projectName ?: UNKNOWN_PROJECTS
+            val projectName1 = node1.process.projectName ?: UNKNOWN_PROJECT
+            val projectName2 = node2.process.projectName ?: UNKNOWN_PROJECT
 
             // Sort by project name
             var x = when {
                 projectName1 == projectName2 -> 0
-                projectName1 == projectName -> -1
-                projectName2 == projectName -> 1
+                projectName1 == currentProjectName -> -1
+                projectName2 == currentProjectName -> 1
+                projectName1 == CUSTOM_PLAYER_PROJECT -> -1
+                projectName2 == CUSTOM_PLAYER_PROJECT -> 1
                 projectName1 == USB_DEVICES -> -1
                 projectName2 == USB_DEVICES -> 1
-                projectName1 == UNKNOWN_PROJECTS -> -1
-                projectName2 == UNKNOWN_PROJECTS -> 1
+                projectName1 == UNKNOWN_PROJECT -> -1
+                projectName2 == UNKNOWN_PROJECT -> 1
                 else -> projectName1.compareTo(projectName2, true)
             }
             if (x != 0) return x
@@ -277,11 +294,18 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         }
 
         private fun getProcessKindWeight(process: UnityProcess): Int {
+            // Players will be grouped by project, then sorted by their relative weights. The editor is considered the
+            // most important, so goes first. Editor helpers are grouped with their project's editors when possible, and
+            // if not, appear below any other editors. Locally connected devices are deemed the next most important,
+            // followed by players running locally on the desktop. Custom players have been entered by a user, so should
+            // be considered more important than remote players, which could simply be other team members running the
+            // game on the same network.
             return when (process) {
                 is UnityEditor -> 10
-                is UnityEditorHelper -> 20  // This is handled as a child node of UnityEditor
-                is UnityIosUsbProcess -> 30 // This is put into its own group
+                is UnityEditorHelper -> 20          // This is handled as a child node of UnityEditor
+                is UnityIosUsbProcess, is UnityAndroidAdbProcess -> 30  // These are put into their own group
                 is UnityLocalPlayer -> 40
+                is UnityCustomPlayer -> 45
                 is UnityRemotePlayer -> 50
             }
         }
@@ -291,7 +315,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     // * GroupedElementsRenderer.MyComponent (myRendererComponent) - root component
     //   * SeparatorWithText (mySeparatorComponent)
     //   * SimpleColoredComponent (myComponent) - item component defined in this derived class
-    // * ErrorLabel (myTextLabel) - looks like it's a text label for accessibility
+    // * ErrorLabel (myTextLabel) - appears to be a text label for accessibility
     // The root myRendererComponent is drawn in the correct selected/unselected tree background
     private class GroupedProcessTreeCellRenderer : GroupedElementsRenderer.Tree() {
         override fun getTreeCellRendererComponent(tree: JTree, value: Any?, selected: Boolean, expanded: Boolean, leaf: Boolean, row: Int, hasFocus: Boolean): Component {
@@ -303,7 +327,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
             val unityProcess = node.process
             val attributes = if (!node.debuggerAttached) SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES else SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES
-            val projectName = unityProcess.projectName ?: if (unityProcess is UnityIosUsbProcess) USB_DEVICES else UNKNOWN_PROJECTS
+            val projectName = unityProcess.projectName ?: if (unityProcess is UnityIosUsbProcess || unityProcess is UnityAndroidAdbProcess) USB_DEVICES else UNKNOWN_PROJECT
             val hasSeparator = !isChildProcess(node) && (isFirstItem(node) || getPreviousSiblingProjectName(node) != projectName)
 
             // Set up visibility and selected status. This does not (re)set the selected status of the returned
@@ -320,14 +344,19 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             if (node.debuggerAttached) {
                 append(itemComponent, UnityBundle.message("appended.debugger.attached"), SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES, selected, focused)
             }
-            if (!unityProcess.allowDebugging) {
+            if (!unityProcess.debuggingEnabled) {
                 append(itemComponent, UnityBundle.message("appended.script.debugging.disabled"), SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES, selected, focused)
             }
-            if (unityProcess is UnityRemoteConnectionDetails) {
+            if (unityProcess !is UnityIosUsbProcess) {
+                // Don't show the hardcoded host and port for iOS devices.
+                // Arguably, we could do the same for Android, as they're not correct until the port has been forwarded.
                 append(itemComponent, " ${unityProcess.host}:${unityProcess.port}", SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
             }
             if (unityProcess is UnityLocalProcess) {
                 append(itemComponent, UnityBundle.message("appended.pid.0", unityProcess.pid.toString()), SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
+            }
+            if (unityProcess is UnityAndroidAdbProcess && unityProcess.packageName != null) {
+                append(itemComponent, UnityBundle.message("appended.android.package", unityProcess.packageName), SimpleTextAttributes.GRAYED_ATTRIBUTES, selected, focused)
             }
 
             SpeedSearchUtil.applySpeedSearchHighlighting(tree, itemComponent, true, selected)
@@ -359,18 +388,18 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
         private fun getPreviousSiblingProjectName(node: UnityProcessTreeNode): String {
             return (node.previousSibling as? UnityProcessTreeNode)?.let {
-                if (it.process is UnityIosUsbProcess) {
+                if (it.process is UnityIosUsbProcess || it.process is UnityAndroidAdbProcess) {
                     USB_DEVICES
                 }
                 else {
                     it.process.projectName
                 }
-            } ?: UNKNOWN_PROJECTS
+            } ?: UNKNOWN_PROJECT
         }
 
         /**
-         * When the item is selected then we use default tree's selection foreground.
-         * It guaranties readability of selected text in any LAF.
+         * When the item is selected, then we use the tree's default selection foreground.
+         * It guaranties readability of the selected text in any LAF.
          */
         private fun append(component: SimpleColoredComponent, @Nls fragment: String, attributes: SimpleTextAttributes, isSelected: Boolean, isFocused: Boolean, isMainText: Boolean = false) {
             if (isSelected && isFocused) {

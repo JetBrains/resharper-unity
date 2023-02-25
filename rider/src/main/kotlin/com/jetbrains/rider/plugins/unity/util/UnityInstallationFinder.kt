@@ -82,7 +82,7 @@ class UnityInstallationFinder {
         return getApplicationContentsPath()?.resolve("PlaybackEngines")
     }
 
-    // Additional, optional player support files are installed here, e.g. iOSSupport, AndroidSupport
+    // Additional, optional player support files are installed here, e.g. iOSSupport, AndroidPlayer
     // Mac: /Applications/Unity/Hub/Editor/2020.2.0a15/PlaybackEngines
     // Windows: C:\Program Files\Unity\Hub\Editor\2020.1.0b13\Editor\Data\PlaybackEngines
     // Linux: ???

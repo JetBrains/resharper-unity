@@ -160,6 +160,7 @@ object BackendUnityModel: Root() {
         call("getCompilationResult", void, bool).documentation = "Called after Refresh to get the compilation result before launching unit tests"
         call("generateUIElementsSchema", void, bool).documentation = "Generates the UIElements schema, if available"
         call("runMethodInUnity", Library.RunMethodData, Library.RunMethodResult)
+        call("getAndroidSdkRoot", void, string.nullable).documentation = "Get the currently configured Android SDK root location, if available"
 
         // Actions called from Unity to the backend
         callback("openFileLineCol", RdOpenFileArgs, bool).documentation = "Called from Unity to quickly open a file in an existing Rider instance"
