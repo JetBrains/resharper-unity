@@ -1,27 +1,29 @@
+
 import base.integrationTests.prepareAssemblies
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
-import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.testFramework.TestModeFlags
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
-import com.jetbrains.rider.test.annotations.TestEnvironment
-import com.jetbrains.rider.test.base.BaseTestWithSolution
-import com.jetbrains.rider.test.enums.CoreVersion
-import com.jetbrains.rider.test.enums.ToolsetVersion
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.base.BaseTestWithSolution
+import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
-import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.test.scriptingApi.assertLookupContains
+import com.jetbrains.rider.test.scriptingApi.assertLookupNotContains
+import com.jetbrains.rider.test.scriptingApi.typeWithLatency
+import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
 
-@TestEnvironment(toolset = ToolsetVersion.TOOLSET_17_CORE, coreVersion = CoreVersion.DOT_NET_6)
+@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String = "ResourcesAutocompletionTestData"
 

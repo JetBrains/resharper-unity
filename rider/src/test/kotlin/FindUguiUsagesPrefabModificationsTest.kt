@@ -1,11 +1,11 @@
+
 import base.FindUsagesAssetTestBase
 import com.jetbrains.rider.test.annotations.TestEnvironment
-import com.jetbrains.rider.test.enums.CoreVersion
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.test.enums.ToolsetVersion
+import com.jetbrains.rider.test.env.enums.SdkVersion
 import org.testng.annotations.Test
 
-@TestEnvironment(platform = [PlatformType.ALL], toolset = ToolsetVersion.TOOLSET_17_CORE, coreVersion = CoreVersion.DOT_NET_6)
+@TestEnvironment(platform = [PlatformType.ALL], sdkVersion = SdkVersion.DOT_NET_6)
 class FindUguiUsagesPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     override val traceCategories: List<String>

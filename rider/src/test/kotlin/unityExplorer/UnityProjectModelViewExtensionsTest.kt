@@ -4,15 +4,14 @@ import base.*
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.ProjectModelBaseTest
-import com.jetbrains.rider.test.enums.CoreVersion
-import com.jetbrains.rider.test.enums.ToolsetVersion
+import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
 import org.testng.Assert
 import org.testng.annotations.Test
 import java.io.File
 
-@TestEnvironment(toolset = ToolsetVersion.TOOLSET_17_CORE, coreVersion = CoreVersion.DOT_NET_6)
+@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     override fun getSolutionDirectoryName() = "UnityProjectModelViewExtensionsTest"
     override val persistCaches: Boolean
