@@ -75,6 +75,8 @@
                     extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
                     handler="com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder$ProtocolListener"/>
 
+    <fileDocumentManagerListener implementation="com.jetbrains.rider.plugins.unity.UnityFileDocumentManagerListener"/>
+
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory"/>
 
     <rider.externalDirectoryProvider implementation="com.jetbrains.rider.plugins.unity.workspace.UnityExternalDirectoryProvider" />
@@ -222,7 +224,7 @@
   </extensions>
 
   <applicationListeners>
-    <listener class="com.jetbrains.rider.plugins.unity.SaveAllTracker" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
+    <listener class="com.jetbrains.rider.plugins.unity.SaveAllActionListener" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
     <listener class="com.jetbrains.rider.plugins.unity.explorer.MetaTracker" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
   </applicationListeners>
 
