@@ -62,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 {
                     AddUnityTypeHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_Unity_type, Strings.TypeDetector_AddDeclarationHighlighting_Custom_Unity_type, context);
                 }
-                else if (UnityApi.IsDotsImplicitlyUsedType(typeElement))
+                else if (typeElement.IsDotsImplicitlyUsedType())
                 {
                     //TODO obsolete
                     AddUnityDOTSHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_DOTS, Strings.TypeDetector_AddDeclarationHighlighting_Unity_entities_system,
@@ -129,12 +129,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                     IBulbAction? fix = null;
                     var title = string.Empty;
 
-                    if (UnityApi.IsDerivesFromIComponentData(declaredElement))
+                    if (declaredElement.DerivesFrom(KnownTypes.IComponentData))
                     {
                         fix = new GenerateBakerAndAuthoringActionFix(classLikeDeclaration);
                         title = Strings.UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle;
                     }
-                    else if (UnityApi.IsDerivesFromComponent(declaredElement))
+                    else if (declaredElement.DerivesFrom(KnownTypes.Component))
                     {
                         if (Solution.HasEntitiesPackage())
                         {
@@ -148,7 +148,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 }
                 
                 if (classLikeDeclaration.IsPartial
-                    && UnityApi.IsDotsImplicitlyUsedType(declaredElement)
+                    && declaredElement.IsDotsImplicitlyUsedType()
                     && !classLikeDeclaration.GetSourceFile().IsSourceGeneratedFile()
                     && declaredElement.GetDeclarations().Count > 1)
                 {

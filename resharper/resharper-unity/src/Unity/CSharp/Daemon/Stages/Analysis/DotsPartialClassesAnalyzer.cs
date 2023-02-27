@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -60,34 +61,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var mustBeChangedToStruct = false;
             var mustBePartial = false;
 
-            var isClassKeyword =
-                classLikeDeclaration.TypeDeclarationKeyword.NodeType.Equals(CSharpTokenType.CLASS_KEYWORD);
-
-            if (UnityApi.IsDerivesFromIAspect(typeElement))
+            var isClassKeyword = classLikeDeclaration.TypeDeclarationKeyword.NodeType.Equals(CSharpTokenType.CLASS_KEYWORD);
+            
+            //Base classes are excluded from inheritance check - to avoid extra warnings
+            if (CheckInheritance(typeElement, KnownTypes.IAspect))
             {
                 mustBeReadonly = !classLikeDeclaration.IsReadonly;
                 parentTypeName = KnownTypes.IAspect;
                 mustBeChangedToStruct = isClassKeyword;
                 mustBePartial = !classLikeDeclaration.IsPartial;
             }
-            else if (UnityApi.IsDerivesFromISystem(typeElement))
+            else if (CheckInheritance(typeElement,KnownTypes.ISystem))
             {
                 parentTypeName = KnownTypes.ISystem;
                 mustBeChangedToStruct = isClassKeyword;
                 mustBePartial = !classLikeDeclaration.IsPartial;
             }
-            else if (UnityApi.IsDerivesFromSystemBase(typeElement))
+            // ComponentSystemBase is a direct parent for different internal Unity systems, there is a possibility to use for user systems as well
+            // SystemBase : ComponentSystemBase - is widely used as base class for user systems
+            else if (CheckInheritance(typeElement, KnownTypes.ComponentSystemBase) && !typeElement.IsClrName(KnownTypes.SystemBase))
             {
                 parentTypeName = KnownTypes.SystemBase;
                 mustBePartial = !classLikeDeclaration.IsPartial;
             }
-            else if (UnityApi.IsDerivesFromIComponentData(typeElement))
+            else if (CheckInheritance(typeElement,KnownTypes.IComponentData))
             {
                 parentTypeName = KnownTypes.IComponentData;
                 mustBeChangedToStruct = isClassKeyword;
             }
 
             return new ModifiersProcessingInfo(parentTypeName, mustBeReadonly, mustBePartial, mustBeChangedToStruct);
+        }
+
+        private static bool CheckInheritance(ITypeElement typeElement, IClrTypeName baseTypeName)
+        {
+            return typeElement.DerivesFrom(baseTypeName) && !typeElement.IsClrName(baseTypeName);
         }
 
         private readonly struct ModifiersProcessingInfo

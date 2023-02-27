@@ -4,10 +4,10 @@ using System.Diagnostics.CodeAnalysis;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
             IHighlightingConsumer consumer)
         {
             var typeElement = element.DeclaredElement;
-            var isDotsImplicitlyUsedType = UnityApi.IsDerivesFromISystem(typeElement);
+            var isDotsImplicitlyUsedType = typeElement.DerivesFrom(KnownTypes.ISystem);
             if (!isDotsImplicitlyUsedType)
                 return;
 
@@ -108,7 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
                 if (method.ShortName != "GetSingleton" && method.ShortName != "GetSingletonEntity")
                     return false;
 
-                if (!UnityApi.IsSystemAPI(method.ContainingType))
+                if (!method.ContainingType.IsClrName(KnownTypes.SystemAPI))
                     return false;
 
                 var methodTypeParameters = method.TypeParameters;
@@ -132,7 +132,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
                 if (method.ShortName != "RequireForUpdate")
                     return false;
 
-                if (!UnityApi.IsSystemStateType(method.ContainingType))
+                if (!method.ContainingType.IsClrName(KnownTypes.SystemState))
                     return false;
 
                 var methodTypeParameters = method.TypeParameters;

@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             if (node == null)
                return; 
             
-            var (referencedType, isReadOnly) = UnityApi.GetReferencedType(node.GetContainingNode<IFieldDeclaration>());
+            var (referencedType, isReadOnly) = UnityApiExtensions.GetReferencedType(node.GetContainingNode<IFieldDeclaration>());
             if (referencedType == null)
                 return;
 
@@ -57,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             if (fieldDeclaration == null)
                 return;
 
-            var (referencedType, isReadOnly) = UnityApi.GetReferencedType(fieldDeclaration);
+            var (referencedType, isReadOnly) = UnityApiExtensions.GetReferencedType(fieldDeclaration);
             if (referencedType == null)
                 return;
 
@@ -67,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
             var selectedGeneratorElements = context.InputElements.OfType<GeneratorDeclaredElement>();
 
-            var isDerivesFromIAspect = UnityApi.IsDerivesFromIAspect(referencedType);
+            var isDerivesFromIAspect = referencedType.DerivesFrom(KnownTypes.IAspect);
             var getterFormat = isDerivesFromIAspect ? AspectGetterFormat : RefGetterFormat;
             var setterFormat = isDerivesFromIAspect ? AspectSetterFormat : RefSetterFormat;
 

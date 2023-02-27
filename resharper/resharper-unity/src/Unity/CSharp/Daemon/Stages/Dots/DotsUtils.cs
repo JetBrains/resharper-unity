@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Feature.Services.LiveTemplates.Context;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
@@ -58,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
                 return false;
 
             var methodParameter = method.Parameters[0];
-            if (!UnityApi.IsSystemStateType(methodParameter.Type.GetTypeElement()))
+            if (!methodParameter.Type.GetTypeElement().IsClrName(KnownTypes.SystemState))
                 return false;
 
             if (!methodParameter.IsRefMember())

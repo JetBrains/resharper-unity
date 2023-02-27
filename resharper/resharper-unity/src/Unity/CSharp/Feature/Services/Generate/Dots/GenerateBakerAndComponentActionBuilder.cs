@@ -425,7 +425,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
         private static bool HasUnityBaseType(CSharpGeneratorContext context)
         {
-            return context.ClassDeclaration.DeclaredElement is IClass typeElement && UnityApi.IsDerivesFromComponent(typeElement);
+            return context.ClassDeclaration.DeclaredElement is IClass typeElement && typeElement.DerivesFrom(KnownTypes.Component);
         }
 
         private readonly struct BakerGenerationInfo

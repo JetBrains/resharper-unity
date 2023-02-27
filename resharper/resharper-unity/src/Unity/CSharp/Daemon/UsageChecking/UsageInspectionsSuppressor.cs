@@ -57,12 +57,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             switch (element)
             {
                 case IClass cls when unityApi.IsUnityType(cls) ||
-                                     UnityApi.IsDotsImplicitlyUsedType(cls) ||
+                                     cls.IsDotsImplicitlyUsedType() ||
                                      IsUxmlFactory(cls):
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
                 case IStruct @struct when unityApi.IsUnityType(@struct) ||
-                                     UnityApi.IsDotsImplicitlyUsedType(@struct) :
+                                     @struct.IsDotsImplicitlyUsedType() :
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
                 case ITypeElement typeElement when unityApi.IsSerializableTypeDeclaration(typeElement) == SerializedFieldStatus.SerializedField:
