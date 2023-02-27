@@ -14,6 +14,7 @@
     <!-- LibHarmony is not signed -->
     <NoWarn>CS8002</NoWarn>
     <JetTestProject>True</JetTestProject>
+    <DefineConstants Condition="!$(InternalBuild)">INDEPENDENT_BUILD</DefineConstants>
     <!-- Force 64 bit for non-Windows, specifically Mac. The Rider SDK includes the ClrStack package that references
          both ClrStack.exe and ClrStack32.exe, and the 32 bit version convinces the unit testing framework that we
          should be a 32 bit assembly. Unfortunately, 32 bit processes aren't supported on Mac, and the tests fail.
