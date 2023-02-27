@@ -15,18 +15,15 @@ import com.jetbrains.rider.model.RdProjectModelSolutionDump
 import com.jetbrains.rider.model.projectModelTasks
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorerFileSystemNode
-import com.jetbrains.rider.projectView.ProjectVirtualFileView
+import com.jetbrains.rider.projectView.*
 import com.jetbrains.rider.projectView.actions.newFile.RiderNewDirectoryAction
 import com.jetbrains.rider.projectView.actions.renameAction.RiderRenameItemHandler
-import com.jetbrains.rider.projectView.getOrCreateActualElement
-import com.jetbrains.rider.projectView.getProjectElementView
 import com.jetbrains.rider.projectView.moveProviders.RiderCutProvider
 import com.jetbrains.rider.projectView.moveProviders.RiderDeleteProvider
 import com.jetbrains.rider.projectView.moveProviders.RiderPasteProvider
 import com.jetbrains.rider.projectView.moveProviders.impl.ActionOrderType
 import com.jetbrains.rider.projectView.moveProviders.impl.DuplicateNameDialog
 import com.jetbrains.rider.projectView.nodes.getVirtualFile
-import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 import com.jetbrains.rider.test.framework.TestProjectModelContext
@@ -110,9 +107,7 @@ private fun addNewFolder2(project: Project,
 
 fun renameItem(project: Project, path: Array<String>, newName: String) {
     val dataContext = createDataContextForUnityExplorer(project, arrayOf(path))
-    val renameHandler = RenameHandlerRegistry.getInstance().getRenameHandler(dataContext) as RiderRenameItemHandler
-    assert(renameHandler.isRenaming(dataContext)) { "Can't rename elements" }
-    RiderRenameItemHandler.execute(dataContext, newName)
+    renameItem(project, dataContext, newName, false)
 }
 
 fun deleteElement(project: Project, path: Array<String>) {

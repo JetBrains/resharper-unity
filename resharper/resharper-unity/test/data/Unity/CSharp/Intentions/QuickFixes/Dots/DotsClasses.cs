@@ -12,6 +12,7 @@ namespace Unity.Entities
 
     public interface IQueryTypeParameter { }
     public interface IComponentData : IQueryTypeParameter { }
+    public interface IAspect { }
 
     public unsafe struct ComponentLookup<T> where T : unmanaged, IComponentData
     {
@@ -40,9 +41,37 @@ namespace Unity.Entities
         {
         }
     }
+
+    public readonly struct RefRW<T>
+    {
+        private T _data;
+        public unsafe ref readonly T ValueRO {get {return _data; }}
+        public unsafe ref readonly T ValueRW {get {return _data; }}
+    }
+    public readonly struct RefRO<T>
+    {
+        private T _data;
+        public unsafe ref readonly T ValueRO {get {return _data; }}
+    }
 }
 
 namespace Unity.Mathematics
 {
     public struct float2 { }
+    public struct Random
+    {
+        public static Random CreateFromIndex(uint index)
+        {
+            return new Random();
+        }
+    }
+}
+
+
+namespace Unity.Collections
+{
+
+    public struct NativeArray<T> : IDisposable, IEnumerable<T>, IEnumerable, IEquatable<NativeArray<T>>
+        where T : struct
+    {}
 }

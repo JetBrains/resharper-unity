@@ -14,8 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.UsageChecking
     public class UsageInspectionsSuppressorTest : UsageCheckBaseTest
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\UsageChecking";
-        private Action<IProject> myOnProjectStarted;
-        private Action<IProject> myOnProjectFinished;
+        private Action<IProject>? myOnProjectStarted;
+        private Action<IProject>? myOnProjectFinished;
 
         [Test] public void MonoBehaviourMethods01() { DoNamedTest(); }
         [Test] public void MonoBehaviourFields01() { DoNamedTest(); }

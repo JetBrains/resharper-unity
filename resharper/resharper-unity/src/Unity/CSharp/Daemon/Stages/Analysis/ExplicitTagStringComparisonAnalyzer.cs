@@ -1,4 +1,6 @@
-﻿using JetBrains.ReSharper.Feature.Services.Daemon;
+﻿#nullable enable
+
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
@@ -39,13 +41,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var isRightOperandTagReference = rightOperand.IsTagProperty();
             if (isLeftOperandTagReference || isRightOperandTagReference)
             {
-                if (element.LeftOperand?.ConstantValue.Value is string value)
+                // TODO: Inline variable when the monorepo uses a more modern C# compiler
+                // Currently (as of 01/2023) the monorepo build for Unity uses C#9 compiler, which will complain that
+                // the out variable is uninitialised when we use conditional access
+                // See also https://youtrack.jetbrains.com/issue/RSRP-489147
+
+                // ReSharper disable once InlineOutVariableDeclaration
+                // ReSharper disable once RedundantAssignment
+                string? value = null;
+                if (element.LeftOperand?.ConstantValue.IsNotNullString(out value) == true)
                 {
                     CheckTag(value, element.LeftOperand, consumer);
                 }
-                else if (element.RightOperand?.ConstantValue.Value is string rValue)
+                else if (element.RightOperand?.ConstantValue.IsNotNullString(out value) == true)
                 {
-                    CheckTag(rValue, element.RightOperand, consumer);
+                    CheckTag(value, element.RightOperand, consumer);
                 }
 
                 consumer.AddHighlighting(new ExplicitTagStringComparisonWarning(element, isLeftOperandTagReference));

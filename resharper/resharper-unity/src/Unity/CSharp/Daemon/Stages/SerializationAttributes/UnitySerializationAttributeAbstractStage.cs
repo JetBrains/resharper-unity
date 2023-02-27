@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.SerializationAt
 
         protected override bool IsSupported(IPsiSourceFile sourceFile)
         {
-            return /*sourceFile.GetProject().IsUnityProject()*/ 
+            return /*sourceFile.GetProject().IsUnityProject()*/
                 myUnitySolutionTracker.HasUnityReference.Value
                 && base.IsSupported(sourceFile);
         }
@@ -76,15 +76,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.SerializationAt
 
             foreach (var declaration in AttributesOwnerDeclarationNavigator.GetByAttribute(attribute))
             {
-                if (declaration.DeclaredElement is IField field 
+                if (declaration.DeclaredElement is IField field
                     && myUnityApi.IsSerialisedField(field, false) == SerializedFieldStatus.Unknown //if we don't have info on the local state
                     && myUnityApi.IsSerialisedField(field) == SerializedFieldStatus.NonSerializedField
-                    
-                    || (declaration.DeclaredElement is IProperty property 
+
+                    || (declaration.DeclaredElement is IProperty property
                         && attribute.Target == AttributeTarget.Field
-                        && myUnityApi.IsSerialisedAutoProperty(property, attribute, false) == SerializedFieldStatus.Unknown
-                        && myUnityApi.IsSerialisedAutoProperty(property, attribute, true) == SerializedFieldStatus.NonSerializedField
-                        )
+                        && myUnityApi.IsSerialisedAutoProperty(property, false) == SerializedFieldStatus.Unknown
+                        && myUnityApi.IsSerialisedAutoProperty(property, true) == SerializedFieldStatus.NonSerializedField)
                     )
                 {
                     //TODO - only for previously unknown types
@@ -94,21 +93,4 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.SerializationAt
             }
         }
     }
-
-    // [DaemonStage(StagesBefore = new[] { typeof(CollectUsagesStage), typeof(GlobalFileStructureCollectorStage) },
-    //          StagesAfter  = new[] { typeof(LanguageSpecificDaemonStage)})]
-    //
-    // public class UnitySerializationAttributeStage : UnitySerializationAttributeAbstractStage
-    // {
-    //     public UnitySerializationAttributeStage(UnityApi unityApi) : base(unityApi)
-    //     {
-    //     }
-    // }
-    //
-    // public class UnitySerializationAttributeGlobalStage : UnitySerializationAttributeAbstractStage
-    // {
-    //     public UnitySerializationAttributeGlobalStage(UnityApi unityApi) : base(unityApi)
-    //     {
-    //     }
-    // }
 }

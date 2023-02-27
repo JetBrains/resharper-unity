@@ -11,7 +11,6 @@ using JetBrains.DataFlow;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon.SolutionAnalysis;
 using JetBrains.ReSharper.Daemon.SolutionAnalysis.FileImages;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistics;
@@ -21,7 +20,6 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
@@ -134,18 +132,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
             var newFiles = new ExternalFiles(mySolution, myLogger);
 
-            foreach (var metaFile in files.MetaFiles)
-            {
-                var path = metaFile.Path;
-                if (IsIndexedFileWithDisabledAssetSupport(path))
-                {
-                    newFiles.AssetFiles.Add(metaFile);
-                }
-            }
+            FilterFiles(files.MetaFiles, newFiles.MetaFiles);
+            FilterFiles(files.AssetFiles, newFiles.AssetFiles);
+            FilterFiles(files.AsmDefFiles, newFiles.AsmDefFiles);
+            FilterFiles(files.AsmRefFiles, newFiles.AsmRefFiles);
 
             newFiles.Directories.AddRange(files.Directories);
             
             return newFiles;
+        }
+
+        private void FilterFiles(List<ExternalFile> files, List<ExternalFile> newFiles)
+        {
+            foreach (var metaFile in files)
+            {
+                var path = metaFile.Path;
+                if (IsIndexedFileWithDisabledAssetSupport(path))
+                {
+                    newFiles.Add(metaFile);
+                }
+            }
         }
 
 
@@ -551,6 +557,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     fileType = UnityAssetInfoCollector.FileType.Prefab;
                 else if (externalFile.Path.IsScene())
                     fileType = UnityAssetInfoCollector.FileType.Scene;
+                else if (externalFile.Path.IsAnim())
+                    fileType = UnityAssetInfoCollector.FileType.Anim;
+                else if (externalFile.Path.IsController())
+                    fileType = UnityAssetInfoCollector.FileType.Controller;
 
                 if (fileType.HasValue)
                 {

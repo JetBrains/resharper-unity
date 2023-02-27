@@ -15,6 +15,10 @@
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
   <!-- ********** -->
+  <!-- TODO: This should come from JetBrains.NET.Sdk, or Directory.Build.props -->
+  <PropertyGroup Condition="$(InternalBuild)" />
+  <Import Project="$(JetSdkProjectParameterFilePath)" Condition="Exists('$(JetSdkProjectParameterFilePath)')" />
+  <!-- ********** -->
   <ItemGroup Label="C#">
     <ErrorsGen Include="CSharp\Daemon\Errors\CSharpErrors.xml">
       <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
@@ -56,8 +60,6 @@
     <Compile Update="CSharp\Daemon\Errors\GutterMarkInfos.generated.cs">
       <DependentUpon>GutterMarkInfos.xml</DependentUpon>
     </Compile>
-    <Compile Remove="AsmDef\ZoneMarker.cs" />
-    <Compile Remove="Core\Application\UI\Options\ZoneMarker.cs" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="AsmDef">
@@ -102,11 +104,13 @@
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="References">
-    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" />
+    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    </PackageReference>    
     <Reference Include="System.Xaml" />
     <ProjectReference Include="..\..\..\resharper-json\src\Json\Json.csproj" />
     <ProjectReference Include="..\..\..\resharper-yaml\src\Yaml\Yaml.csproj" />
@@ -114,6 +118,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="mscorlib" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="!$(InternalBuild)" />

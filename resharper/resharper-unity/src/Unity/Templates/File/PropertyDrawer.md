@@ -6,7 +6,7 @@ reformat: True
 shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=PropertyDrawer, ValidateFileName=True
-scopes: UnityFileTemplateSectionMarker;InUnityCSharpEditorFolder
+scopes: InUnityCSharpEditorFolder;MustBeInProjectWithMaximumUnityVersion(version=2022.1)
 uitag: Unity Script
 parameterOrder: HEADER, (CLASS), (NAMESPACE), TYPE
 HEADER-expression: fileheader()
@@ -15,7 +15,7 @@ NAMESPACE-expression: fileDefaultNamespace()
 TYPE-expression: complete()
 ---
 
-# Property Drawer
+# Property Drawer (IMGUI)
 
 ```
 $HEADER$namespace $NAMESPACE$ {

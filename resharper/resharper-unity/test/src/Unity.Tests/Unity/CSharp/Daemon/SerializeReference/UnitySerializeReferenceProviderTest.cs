@@ -52,13 +52,13 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
         {
             DoSolutionTestWithGold(@"Solutions\WrongSerializeReferenceAttributes\WrongSerializeReferenceAttributes.sln");
         }
-        
+
         [Test]
         public void PropertyWithBackingField()
         {
             DoSolutionTestWithGold(@"Solutions\PropertyWithBackingField\PropertyWithBackingField.sln");
         }
-        
+
         [Test]
         public void PropertyWithBackingFieldAssembly()
         {
@@ -66,17 +66,32 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
             SolutionBuilderHelper.PrepareDependencies(BaseTestDataPath, testSolutionAbsolutePath, "PropertyWithBackingField", AssembliesDirectory);
             DoSolutionTestWithGold(testSolutionAbsolutePath);
         }
-           
+
+        [Test]
+        public void ListArrayFixedBufferTest()
+        {
+            var testSolutionAbsolutePath = GetTestDataFilePath2(@"Solutions\ListArrayFixedBufferTest\ListArrayFixedBufferTest.sln");
+            DoSolutionTestWithGold(testSolutionAbsolutePath);
+        }
+
+        [Test]
+        public void ListArrayFixedBufferAssemblyTest()
+        {
+            var testSolutionAbsolutePath = GetTestDataFilePath2(@"Solutions\ListArrayFixedBufferAssemblyTest\ListArrayFixedBufferAssemblyTest.sln");
+            SolutionBuilderHelper.PrepareDependencies(BaseTestDataPath, testSolutionAbsolutePath, "ListArrayFixedBufferTest", AssembliesDirectory);
+            DoSolutionTestWithGold(testSolutionAbsolutePath);
+        }
+
         private void DoSolutionTestWithGold(string solutionPath)
         {
             DoSolutionTestWithGold(GetTestDataFilePath2(solutionPath));
         }
-        
+
         private void DoSolutionTestWithGold(FileSystemPath solutionPath)
         {
             UnitySerializeReferenceProviderDescriptionInfo.CreateLifetimeCookie(TestLifetime);
             DoTestSolution(solutionPath,
-                (lt, solution) =>
+                (_, solution) =>
                 {
                     var swea = SolutionAnalysisService.GetInstance(Solution);
                     using (TestPresentationMap.Cookie())

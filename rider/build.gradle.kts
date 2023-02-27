@@ -20,12 +20,12 @@ plugins {
     // Version is configured in gradle.properties
     id("com.jetbrains.rdgen")
     id("com.ullink.nuget") version "2.23"
-    id("com.ullink.nunit") version "2.4"
-    id("me.filippov.gradle.jvm.wrapper") version "0.11.0"
-    id("org.jetbrains.changelog") version "1.3.1"
+    id("com.ullink.nunit") version "2.8"
+    id("me.filippov.gradle.jvm.wrapper") version "0.14.0"
+    id("org.jetbrains.changelog") version "2.0.0"
     id("org.jetbrains.intellij") // version in rider/buildSrc/build.gradle.kts
-    id("org.jetbrains.grammarkit") version "2021.2.2"
-    kotlin("jvm")
+    id("org.jetbrains.grammarkit") version "2022.3"
+    kotlin("jvm") // version comes from buildSrc
 }
 
 repositories {
@@ -87,33 +87,28 @@ val debuggerDllFiles = files(
     "../resharper/build/debugger/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.pdb"
 )
 
-val helperExeFiles = files(
-    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net5.0/JetBrains.Rider.Unity.ListIosUsbDevices.dll",
-    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net5.0/JetBrains.Rider.Unity.ListIosUsbDevices.pdb",
-    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net5.0/JetBrains.Rider.Unity.ListIosUsbDevices.runtimeconfig.json"
-)
-
-val helperExeNetFxFiles = files(
-    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net472/JetBrains.Rider.Unity.ListIosUsbDevices.exe",
-    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net472/JetBrains.Rider.Unity.ListIosUsbDevices.pdb"
+val listIosUsbDevicesFiles = files(
+    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net7.0/JetBrains.Rider.Unity.ListIosUsbDevices.dll",
+    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net7.0/JetBrains.Rider.Unity.ListIosUsbDevices.pdb",
+    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net7.0/JetBrains.Rider.Unity.ListIosUsbDevices.runtimeconfig.json"
 )
 
 val unityEditorDllFiles = files(
-    "../unity/build/EditorPlugin/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll",
-    "../unity/build/EditorPlugin/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Repacked.pdb",
-    "../unity/build/EditorPluginUnity56/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.dll",
-    "../unity/build/EditorPluginUnity56/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.pdb",
-    "../unity/build/EditorPluginFull/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll",
-    "../unity/build/EditorPluginFull/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.pdb",
-    "../unity/build/EditorPluginNet46/bin/$buildConfiguration/net472/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll",
-    "../unity/build/EditorPluginNet46/bin/$buildConfiguration/net472/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.pdb"
+    "../unity/build/EditorPlugin.SinceUnity.4.7/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll",
+    "../unity/build/EditorPlugin.SinceUnity.4.7/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Repacked.pdb",
+    "../unity/build/EditorPlugin.SinceUnity.5.6/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.dll",
+    "../unity/build/EditorPlugin.SinceUnity.5.6/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.pdb",
+    "../unity/build/EditorPlugin.SinceUnity.2017.3/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll",
+    "../unity/build/EditorPlugin.SinceUnity.2017.3/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.pdb",
+    "../unity/build/EditorPlugin.SinceUnity.2019.2/bin/$buildConfiguration/net472/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll",
+    "../unity/build/EditorPlugin.SinceUnity.2019.2/bin/$buildConfiguration/net472/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.pdb"
 )
 
 version = "${pluginVersion}.$buildCounter"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 sourceSets {
@@ -197,8 +192,9 @@ tasks {
                 bundledMavenArtifacts.walkTopDown()
                     .filter { it.extension == "jar" && !it.name.endsWith("-sources.jar") }
                     .toList()
-                    + File("${ideaDependency.get().classes}/lib/3rd-party-rt.jar")
+                    + File("${setupDependencies.get().idea.get().classes}/lib/3rd-party-rt.jar")
                     + File("${ideaDependency.get().classes}/lib/util.jar")
+                    + File("${ideaDependency.get().classes}/lib/util-8.jar")
             )
         } else {
             logger.lifecycle("Use ant compiler artifacts from maven")
@@ -211,7 +207,7 @@ tasks {
     }
 
     named<Wrapper>("wrapper") {
-        gradleVersion = "7.4"
+        gradleVersion = "7.6"
         distributionType = Wrapper.DistributionType.BIN
     }
 
@@ -221,7 +217,7 @@ tasks {
         <body>
         <p><b>New in $pluginVersion</b></p>
         <p>
-        ${getChangelogItem().toHTML()}
+        ${changelog.renderItem(getChangelogItem(), Changelog.OutputType.HTML)}
         </p>
         <p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/net221/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
         </body>""".trimIndent()
@@ -245,7 +241,7 @@ tasks {
             if (rawBytes.isEmpty()) throw GradleException("plugin.xml cannot be empty")
             if (rawBytes.any { it < 0 }) throw GradleException("plugin.xml cannot contain invalid bytes")
 
-            logger.lifecycle("$pluginXml.path is valid XML and contains only US-ASCII symbols, bytes: $rawBytes.length")
+            logger.lifecycle("$pluginXml.path is valid XML and contains only US-ASCII symbols, bytes: ${rawBytes.size}")
         }
     }
 
@@ -298,7 +294,7 @@ tasks {
             val backendCsOutDir =
                 if (monorepo) monorepoPreGeneratedBackendDir.resolve("resharper/ModelLib")
                 else File(repoRoot, "resharper/build/generated/Model/Lib")
-            val unityEditorCsOutDir = 
+            val unityEditorCsOutDir =
                 if (monorepo) monorepoPreGeneratedUnityDir.resolve("unity/ModelLib")
                 else File(repoRoot, "unity/build/generated/Model/Lib")
             val frontendKtOutLayout = "src/main/rdgen/kotlin/com/jetbrains/rider/plugins/unity/model/lib"
@@ -320,6 +316,15 @@ tasks {
             hashFolder = "$hashBaseDir/lib"
             packages = "model.lib"
 
+            if (!monorepo) {
+                // rdgen has a hash file that will handle rebuilds, but we still pay for launching rdgen
+                inputs.files(modelSrcDir.resolve("lib/Library.kt"))
+                outputs.files(frontendKtOutDir.resolve("Library.Generated.kt"),
+                        backendCsOutDir.resolve("Library.Generated.cs"),
+                        unityEditorCsOutDir.resolve("Library.Generated.cs"),
+                        "$hashFolder/lib/.rdgen")
+            }
+
             // Library is used as backend in backendUnityModel and backend in frontendBackendModel, so needs to be both
             // asis and reversed. I.e. symmetric
             generator {
@@ -336,7 +341,7 @@ tasks {
                 root = "model.lib.Library"
                 directory = unityEditorCsOutDir.canonicalPath
                 if (monorepo) generatedFileSuffix = ".Pregenerated"
-            }   
+            }
             // Library is used as frontend in frontendBackendModel, so has same perspective. Generate as-is
             generator {
                 language = "kotlin"
@@ -389,6 +394,16 @@ tasks {
 
             hashFolder = "$hashBaseDir/frontendBackend"
             packages = "model.frontendBackend"
+
+            if (!monorepo) {
+                // rdgen has a hash file that will handle rebuilds, but we still pay for launching rdgen
+                inputs.files(modelSrcDir.resolve("lib/Library.kt"),
+                        modelSrcDir.resolve("frontendBackend/FrontendBackendModel.kt"))
+                outputs.files(frontendKtOutDir.resolve("FrontendBackendModel.Generated.kt"),
+                        backendCsOutDir.resolve("FrontendBackendModel.Generated.cs"),
+                        "$hashFolder/lib/.rdgen",
+                        "$hashFolder/frontendBackend/.rdgen")
+            }
 
             generator {
                 language = "kotlin"
@@ -449,6 +464,16 @@ tasks {
             hashFolder = "$hashBaseDir/backendUnity"
             packages = "model.backendUnity"
 
+            if (!monorepo) {
+                // rdgen has a hash file that will handle rebuilds, but we still pay for launching rdgen
+                inputs.files(modelSrcDir.resolve("lib/Library.kt"),
+                        modelSrcDir.resolve("backendUnity/BackendUnityModel.kt"))
+                outputs.files(backendCsOutDir.resolve("BackendUnityModel.Generated.cs"),
+                        unityEditorCsOutDir.resolve("BackendUnityModel.Generated.cs"),
+                        "$hashFolder/lib/.rdgen",
+                        "$hashFolder/backendUnity/.rdgen")
+            }
+
             generator {
                 language = "csharp"
                 transform = "asis"
@@ -505,6 +530,14 @@ tasks {
 
             hashFolder = "$hashBaseDir/debuggerWorker"
             packages = "model.debuggerWorker"
+
+            if (!monorepo) {
+                // rdgen has a hash file that will handle rebuilds, but we still pay for launching rdgen
+                inputs.files(modelSrcDir.resolve("debuggerWorker/UnityDebuggerWorkerModel.kt"))
+                outputs.files(frontendKtOutDir.resolve("UnityDebuggerWorkerModel.Generated.kt"),
+                        backendCsOutDir.resolve("UnityDebuggerWorkerModel.Generated.cs"),
+                        "$hashFolder/debuggerWorker/.rdgen")
+            }
 
             generator {
                 language = "kotlin"
@@ -583,9 +616,9 @@ tasks {
         description = "Packs resulting DLLs into a NuGet package which is an R# extension."
         dependsOn(buildReSharperHostPlugin)
 
-        val changelogNotes = getChangelogItem().withFilter { line ->
+        val changelogNotes = changelog.renderItem(getChangelogItem().withFilter { line ->
             !line.startsWith("- Rider:") && !line.startsWith("- Unity editor:")
-        }.toPlainText().trim().let {
+        }, Changelog.OutputType.PLAIN_TEXT).trim().let {
             // There's a bug in the changelog plugin that adds extra newlines on Windows, possibly
             // due to Unix/Windows line ending mismatch.
             // Remove this hack once JetBrains/gradle-changelog-plugin#8 is fixed
@@ -728,8 +761,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         doLast {
             dotnetDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
             debuggerDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
-            helperExeFiles.forEach { if (!it.exists()) error("File $it does not exist") }
-            helperExeNetFxFiles.forEach { if (!it.exists()) error("File $it does not exist") }
+            listIosUsbDevicesFiles.forEach { if (!it.exists()) error("File $it does not exist") }
             unityEditorDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
         }
 
@@ -737,13 +769,8 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
 
         dotnetDllFiles.forEach { from(it) { into("${pluginName}/dotnet") } }
         debuggerDllFiles.forEach { from(it) { into("${pluginName}/dotnetDebuggerWorker") } }
+        listIosUsbDevicesFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
         unityEditorDllFiles.forEach { from(it) { into("${pluginName}/EditorPlugin") } }
-
-        // This folder name allows RiderEnvironment.getBundledFile(file, pluginClass = this.class) to work
-        // Helper apps must be net5.0 for Mac/Linux, but we don't yet bundle netcore for Windows, so fall back to
-        // netfx. Get rid of the netfx folder as soon as we can
-        helperExeFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
-        helperExeNetFxFiles.forEach { from(it) { into("${pluginName}/DotFiles/netfx") } }
 
         from("../resharper/resharper-unity/src/Unity/annotations") {
             into("${pluginName}/dotnet/Extensions/com.intellij.resharper.unity/annotations")
@@ -753,52 +780,6 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
 
     withType<Test> {
         useTestNG()
-
-        // Should be the same as community/plugins/devkit/devkit-core/src/run/OpenedPackages.txt
-        jvmArgs("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
-                "--add-opens=java.base/java.net=ALL-UNNAMED",
-                "--add-opens=java.base/java.nio=ALL-UNNAMED",
-                "--add-opens=java.base/java.nio.charset=ALL-UNNAMED",
-                "--add-opens=java.base/java.text=ALL-UNNAMED",
-                "--add-opens=java.base/java.time=ALL-UNNAMED",
-                "--add-opens=java.base/java.util=ALL-UNNAMED",
-                "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
-                "--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED",
-                "--add-opens=java.base/jdk.internal.vm=ALL-UNNAMED",
-                "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
-                "--add-opens=java.base/sun.nio.fs=ALL-UNNAMED",
-                "--add-opens=java.base/sun.security.ssl=ALL-UNNAMED",
-                "--add-opens=java.base/sun.security.util=ALL-UNNAMED",
-                "--add-opens=java.desktop/com.apple.eawt=ALL-UNNAMED",
-                "--add-opens=java.desktop/com.apple.eawt.event=ALL-UNNAMED",
-                "--add-opens=java.desktop/com.apple.laf=ALL-UNNAMED",
-                "--add-opens=java.desktop/com.sun.java.swing.plaf.gtk=ALL-UNNAMED",
-                "--add-opens=java.desktop/java.awt=ALL-UNNAMED",
-                "--add-opens=java.desktop/java.awt.dnd.peer=ALL-UNNAMED",
-                "--add-opens=java.desktop/java.awt.event=ALL-UNNAMED",
-                "--add-opens=java.desktop/java.awt.image=ALL-UNNAMED",
-                "--add-opens=java.desktop/java.awt.peer=ALL-UNNAMED",
-                "--add-opens=java.desktop/java.awt.font=ALL-UNNAMED",
-                "--add-opens=java.desktop/javax.swing=ALL-UNNAMED",
-                "--add-opens=java.desktop/javax.swing.plaf.basic=ALL-UNNAMED",
-                "--add-opens=java.desktop/javax.swing.text.html=ALL-UNNAMED",
-                "--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED",
-                "--add-opens=java.desktop/sun.awt.datatransfer=ALL-UNNAMED",
-                "--add-opens=java.desktop/sun.awt.image=ALL-UNNAMED",
-                "--add-opens=java.desktop/sun.awt.windows=ALL-UNNAMED",
-                "--add-opens=java.desktop/sun.awt=ALL-UNNAMED",
-                "--add-opens=java.desktop/sun.font=ALL-UNNAMED",
-                "--add-opens=java.desktop/sun.java2d=ALL-UNNAMED",
-                "--add-opens=java.desktop/sun.lwawt=ALL-UNNAMED",
-                "--add-opens=java.desktop/sun.lwawt.macosx=ALL-UNNAMED",
-                "--add-opens=java.desktop/sun.swing=ALL-UNNAMED",
-                "--add-opens=jdk.attach/sun.tools.attach=ALL-UNNAMED",
-                "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
-                "--add-opens=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED",
-                "--add-opens=jdk.jdi/com.sun.tools.jdi=ALL-UNNAMED",
-                "-Didea.jna.unpacked=true",
-                "-Djna.nounpack=true",
-                "-Djna.boot.library.path=${setupDependencies.orNull?.idea?.get()?.classes}/lib/jna/${System.getProperty("os.arch")}")
 
         if (project.hasProperty("ignoreFailures")) { ignoreFailures = true }
 

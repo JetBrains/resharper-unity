@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using JetBrains.Annotations;
 using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Debugger.Worker.Mono;
 using JetBrains.Debugger.Worker.SessionStartup;
@@ -26,7 +25,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 
         // We have to inject this or we get a circular reference - options depends on DebuggerWorker which depends on
         // start info handlers
-        [Injected] internal IUnityOptions UnityOptions { get; set; }
+        [Injected] internal IUnityOptions UnityOptions { get; set; } = null!;
 
         protected override IDebuggerSessionOptions CreateSessionOptions(Lifetime lifetime, T startInfo,
                                                                         SessionProperties properties)
@@ -74,7 +73,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
         private class Il2CppAwareSessionOptions : DelegatingDebuggerSessionOptions
         {
             private readonly IUnityOptions myUnityOptions;
-            [CanBeNull] private SoftDebuggerSession mySoftDebuggerSession;
+            private SoftDebuggerSession? mySoftDebuggerSession;
             private bool? myIsIl2Cpp;
 
             public Il2CppAwareSessionOptions(IDebuggerSessionOptions debuggerSessionOptionsImplementation,
@@ -126,7 +125,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
 
             public void StartSession(IDebuggerSession session)
             {
-                myDebuggerSessionOptions?.SetDebuggerSession(session as SoftDebuggerSession);
+                myDebuggerSessionOptions.SetDebuggerSession((SoftDebuggerSession)session);
                 session.Run(myDebuggerStartInfo, myDebuggerSessionOptions);
             }
 

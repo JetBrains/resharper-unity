@@ -78,7 +78,7 @@ namespace ApiParser
         [NotNull]
         public IEnumerable<SimpleHtmlNode> Subsection([NotNull] string name)
         {
-            return SelectMany($@"div.subsection[h2='{name}']/table.list//tr");
+            return SelectMany($@"div.subsection[h2='{name}' or h3='{name}']/table.list//tr");
         }
 
         /// <summary>

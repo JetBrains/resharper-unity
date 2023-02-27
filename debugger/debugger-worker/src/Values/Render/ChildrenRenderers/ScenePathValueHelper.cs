@@ -1,14 +1,13 @@
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
-using MetadataLite.API;
-using MetadataLite.API.Selectors;
 using Mono.Debugging.Backend.Values;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
+using Mono.Debugging.MetadataLite.API;
+using Mono.Debugging.MetadataLite.API.Selectors;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderers
 {
@@ -19,15 +18,14 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
             && m.Parameters[0].Type.Is("UnityEngine.Transform")
             && m.Parameters[1].Type.Is("UnityEngine.Transform"));
 
-        [CanBeNull]
-        public static IValueEntity GetScenePathValue<TValue>([CanBeNull] IObjectValueRole<TValue> gameObjectRole,
-                                                             IPresentationOptions options,
-                                                             IValueServicesFacade<TValue> valueServices,
-                                                             ILogger logger)
+        public static IValueEntity? GetScenePathValue<TValue>(IObjectValueRole<TValue>? gameObjectRole,
+                                                              IPresentationOptions options,
+                                                              IValueServicesFacade<TValue> valueServices,
+                                                              ILogger logger)
             where TValue : class
         {
             if (gameObjectRole == null) return null;
-            return logger.CatchEvaluatorException<TValue, IValueEntity>(() =>
+            return logger.CatchEvaluatorException<TValue, IValueEntity?>(() =>
                 {
                     // Only available in the editor. Not available for players, where we'll display nothing.
                     // TODO: Hand roll this for players. Simply follow transform.parent
@@ -38,7 +36,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                         ?? valueServices.GetReifiedType(frame, "UnityEditor.AnimationUtility, UnityEditor.CoreModule");
                     var method = animationUtilityType?.MetadataType.GetMethods()
                         .FirstOrDefault(ourCalculateTransformPathSelector);
-                    if (method == null)
+                    if (animationUtilityType == null || method == null)
                     {
                         logger.Trace(
                             "Unable to get metadata for AnimationUtility.CalculateTransformPath method. Is this a player?");
@@ -51,9 +49,13 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                     var rootTransformReference = targetTransformRole?.GetInstancePropertyReference("root", true);
                     var rootTransformRole = rootTransformReference?.AsObjectSafe(options);
 
-                    if (targetTransformRole == null || rootTransformRole == null)
+                    if (targetTransformReference == null
+                        || targetTransformRole == null
+                        || rootTransformReference == null
+                        || rootTransformRole == null)
                     {
-                        logger.Warn("Unable to evaluate gameObject.transform and/or gameObject.transform.root or values are null.");
+                        logger.Warn(
+                            "Unable to evaluate gameObject.transform and/or gameObject.transform.root or values are null.");
                         return null;
                     }
 

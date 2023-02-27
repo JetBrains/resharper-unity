@@ -20,7 +20,7 @@ class A : Collider
   {
   }
 
-  private void OnCollisionStay(Collision collisionInfo)
+  private void OnCollisionStay(Collision other)
   {
     {selstart}throw new NotImplementedException();{selend}
   }

@@ -1,13 +1,12 @@
 package model.frontendBackend
 
-import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
 import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
+import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rider.model.nova.ide.SolutionModel.RdDocumentId
 import model.lib.Library
-import model.lib.Library.ProfilingData
 
 // frontend <-> backend model, from point of view of frontend, meaning:
 // Sink is a one-way signal the frontend subscribes to
@@ -132,6 +131,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         source("installEditorPlugin", void)
         source("showFileInUnity", string).documentation = "Focus Unity, focus the Project window and select and ping the given file path"
         call("generateUIElementsSchema", void, bool).documentation = "Tell the Unity backend to generate UIElement schema"
+        call("hasUnsavedState", void, bool).documentation = "Returns true if the currently open Unity editor has any unsaved state, such as scenes, prefabs, etc."
+        call("getAndroidSdkRoot", void, string.nullable).documentation = "Get the currently configured Android SDK root location, if available"
 
         // Actions called from the backend to the frontend
         sink("activateRider", void).documentation = "Tell Rider to bring itself to the foreground. Called when opening a file from Unity"
@@ -149,13 +150,11 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("isDeferredCachesCompletedOnce", bool)
         property("isUnityPackageManagerInitiallyIndexFinished", bool)
 
-        call ("hasUnsavedState", void, bool)
-
         // Actions called from Unity to the backend
         callback("openFileLineCol", RdOpenFileArgs, bool).documentation = "Called from Unity to quickly open a file in an existing Rider instance"
 
         // profiler
-        call ("startProfiling", bool, void).documentation = "Start profiling and enter PlayMode, depending on the param"
+        call("startProfiling", bool, void).documentation = "Start profiling and enter PlayMode, depending on the param"
 
         // debug
         call("getScriptingBackend", void, int).documentation = "Mono, IL2CPP, WinRTDotNET"

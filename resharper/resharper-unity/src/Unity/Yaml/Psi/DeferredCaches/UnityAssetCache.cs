@@ -9,9 +9,10 @@ using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers;
+using JetBrains.DocumentManagers.impl;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
+using JetBrains.ReSharper.Feature.Services.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
@@ -93,6 +94,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             
             foreach (var container in myOrderedContainers)
             {
+                if (!container.IsApplicable(sourceFile)) continue;
+                
                 if (data.UnityAssetDataElements.TryGetValue(container.Id, out var element))
                 {
                     Assertion.Assert(container != null, "container != null");
@@ -251,6 +254,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 MergeData(sourceFile, unityAssetData);
             }
 
+        }
+
+        public override void OnDocumentChange(IPsiSourceFile sourceFile, ProjectFileDocumentCopyChange change)
+        {
+            // TODO : temp solution
+            if (sourceFile is UnityExternalPsiSourceFile unityYamlExternalPsiSourceFile)
+            {
+                unityYamlExternalPsiSourceFile.MarkDocumentModified();
+            }
+
+            base.OnDocumentChange(sourceFile, change);
         }
 
         public override void InvalidateData()

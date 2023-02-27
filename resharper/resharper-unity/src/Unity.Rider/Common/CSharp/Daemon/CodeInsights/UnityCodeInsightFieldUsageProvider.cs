@@ -1,7 +1,8 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using JetBrains.Application.DataContext;
 using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Actions.ActionManager;
@@ -18,10 +19,9 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.RdBackend.Common.Features.Services;
 using JetBrains.ReSharper.Daemon.CodeInsights;
+using JetBrains.ReSharper.Feature.Services.Caches;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Navigation.Settings;
-using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
-using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Common.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
@@ -60,8 +60,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
         public override ICollection<CodeVisionRelativeOrdering> RelativeOrderings =>
             new[] {new CodeVisionRelativeOrderingLast()};
 
-        public UnityCodeInsightFieldUsageProvider(UnitySolutionTracker unitySolutionTracker,
-                                                  IFrontendBackendHost frontendBackendHost, BulbMenuComponent bulbMenu,
+        public UnityCodeInsightFieldUsageProvider(IFrontendBackendHost frontendBackendHost,
+                                                  BulbMenuComponent bulbMenu,
                                                   DeferredCacheController deferredCacheController,
                                                   AssetInspectorValuesContainer inspectorValuesContainer,
                                                   UnityEventsElementContainer unityEventsElementContainer)
@@ -78,7 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
         {
             Assertion.Assert(solution.Locks.IsReadAccessAllowed(), "ReadLock required");
 
-            var containingType = declaredElement.GetContainingType();
+            var containingType = declaredElement.ContainingType;
             if (containingType == null)
                 return (null, Array.Empty<string>());
 
@@ -104,7 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
 
                 rules.AddRule("DocumentEditorContext", DocumentModelDataConstants.EDITOR_CONTEXT, new DocumentEditorContext(highlightInfo.CodeInsightsHighlighting.Range));
                 rules.AddRule("PopupWindowSourceOverride", UIDataConstants.PopupWindowContextSource,
-                    new PopupWindowContextSource(lt => new RiderEditorOffsetPopupWindowContext(highlightInfo.CodeInsightsHighlighting.Range.StartOffset.Offset)));
+                    new PopupWindowContextSource(_ => new RiderEditorOffsetPopupWindowContext(highlightInfo.CodeInsightsHighlighting.Range.StartOffset.Offset)));
 
                 rules.AddRule("DontNavigateImmediatelyToSingleUsage", NavigationSettings.DONT_NAVIGATE_IMMEDIATELY_TO_SINGLE_USAGE, new object());
 
@@ -119,14 +119,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             IDeclaredElement declaredElement, string baseDisplayName, string baseTooltip, string moreText, IconModel iconModel,
             IEnumerable<BulbMenuItem> items, List<CodeVisionEntryExtraActionModel> extraActions)
         {
-            string displayName = null;
+            string? displayName = null;
 
             var solution = element.GetSolution();
             Assertion.Assert(solution.Locks.IsReadAccessAllowed(), "ReadLock required");
 
             var field = (declaredElement as IField).NotNull();
             var type = field.Type;
-            var containingType = field.GetContainingType();
+            var containingType = field.ContainingType;
             if (containingType == null)
             {
                 base.AddHighlighting(consumer, element, field, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);
@@ -153,31 +153,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             if (presentationType == UnityPresentationType.UnityEvent)
             {
                 var count = myUnityEventsElementContainer.GetUsageCountForEvent(field, out var estimated);
-                var sb = new StringBuilder();
-                if (count == 0 && !estimated)
-                {
-                    sb.Append("No methods");
-                }
-                else
-                {
-                    sb.Append(count);
-                    if (estimated)
-                        sb.Append('+');
-                    sb.Append(" ");
-                    sb.Append("method");
-                    if (estimated || count > 1)
-                        sb.Append("s");
-                }
+                var text = NounUtilEx.ToEmptyPluralOrSingularQuick(count, estimated,
+                    Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_No_methods,
+                    Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_method,
+                    Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_methods);
 
                 consumer.AddHighlighting(new UnityInspectorCodeInsightsHighlighting(element.GetNameDocumentRange(),
-                    sb.ToString(), GetTooltip(count, estimated, false), "Methods", this,
+                    text, GetTooltip(count, estimated, false), Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_CapitalChar_Method, this,
                     declaredElement, iconModel, presentationType));
                 return;
             }
 
 
-            var initializer = (element as IFieldDeclaration).NotNull("element as IFieldDeclaration != null").Initial;
-            var initValue = (initializer as IExpressionInitializer)?.Value?.ConstantValue.Value;
+            var initializer = (element as IFieldDeclaration).NotNull().Initial;
+            var initValue = (initializer as IExpressionInitializer)?.Value?.ConstantValue;
 
             var initValueUnityPresentation = GetUnitySerializedPresentation(presentationType, initValue);
 
@@ -187,7 +176,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             if (myInspectorValuesContainer.IsIndexResultEstimated(guid, containingType, propertyNames))
             {
                 changesCount = myInspectorValuesContainer.GetAffectedFiles(guid, propertyNames) -  myInspectorValuesContainer.GetAffectedFilesWithSpecificValue(guid, propertyNames, initValueUnityPresentation);
-                displayName = $"Changed in {changesCount}+ assets";
+                displayName = string.Format(Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Changed_in__0___assets, changesCount);
                 isEstimated = true;
             }
             else
@@ -216,56 +205,62 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
                                        initValueUnityPresentation);
                     if (changesCount == 0)
                     {
-                        displayName = "Unchanged";
+                        displayName = Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Unchanged;
                     }
                     else
                     {
-                        var word = NounUtil.ToPluralOrSingularQuick(changesCount, "asset", "assets");
-                        displayName = $"Changed in {changesCount} {word}";
+                        var word = NounUtil.ToPluralOrSingularQuick(changesCount, Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_asset, Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_assets);
+                        displayName = string.Format(Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Changed_in__0___1_, changesCount, word);
                     }
                 }
             }
 
             consumer.AddHighlighting(new UnityInspectorCodeInsightsHighlighting(element.GetNameDocumentRange(),
-                displayName, GetTooltip(changesCount, isEstimated, isUniqueChange), "Property Inspector values", this,
+                displayName, GetTooltip(changesCount, isEstimated, isUniqueChange), Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Property_Inspector_values, this,
                 declaredElement, iconModel, presentationType));
         }
 
         private string GetTooltip(int changesCount, bool isEstimated, bool isUniqueChange)
         {
             if (isUniqueChange)
-                return "Unique change";
+                return Strings.UnityCodeInsightFieldUsageProvider_GetTooltip_Unique_change;
 
             if (changesCount == 0 && !isEstimated)
-                return "No changes in assets";
+                return Strings.UnityCodeInsightFieldUsageProvider_GetTooltip_No_changes_in_assets;
 
             if (changesCount == 0 && isEstimated)
-                return "Possible indirect changes";
+                return Strings.UnityCodeInsightFieldUsageProvider_GetTooltip_Possible_indirect_changes;
 
             if (changesCount == 1 && isEstimated)
-                return "Changed in 1 asset + possible indirect changes";
+                return Strings.UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in_1_asset___possible_indirect_changes;
 
-            return $"Changed in {changesCount} assets" + (isEstimated ? " + possible indirect changes" : "");
+            return isEstimated ? string.Format(Strings.UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in__0__assets___possible_indirect_changes, changesCount) : string.Format(Strings.UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in__0__assets, changesCount);
         }
 
-        private IAssetValue GetUnitySerializedPresentation(UnityPresentationType presentationType, object value)
+        private IAssetValue GetUnitySerializedPresentation(UnityPresentationType presentationType, ConstantValue? value)
         {
-            if (presentationType == UnityPresentationType.Bool && value is bool b)
+            var b = false;
+            if (presentationType == UnityPresentationType.Bool && (value == null || value.IsBoolean(out b)))
                 return b ? new AssetSimpleValue("1") : new AssetSimpleValue("0");
 
-            if (presentationType == UnityPresentationType.ScriptableObject && value == null)
+            if (presentationType == UnityPresentationType.ScriptableObject && (value == null || value.IsNull()))
                 return new AssetReferenceValue(new LocalReference(0, 0));
 
-            if (presentationType == UnityPresentationType.FileId && value == null)
+            if (presentationType == UnityPresentationType.FileId && (value == null || value.IsNull()))
                 return new AssetReferenceValue(new LocalReference(0, 0));
 
-            if ((presentationType == UnityPresentationType.OtherSimple  || presentationType == UnityPresentationType.Bool) && value == null)
+            if (presentationType is UnityPresentationType.OtherSimple or UnityPresentationType.Bool &&
+                (value == null || value.IsNull()))
+            {
                 return new AssetSimpleValue("0");
+            }
 
-            if (value == null)
+            if (value == null || value.IsNull())
                 return new AssetSimpleValue(string.Empty);
 
-            return new AssetSimpleValue(value.ToString());
+#pragma warning disable CS0618
+            return new AssetSimpleValue(value.Value?.ToString());
+#pragma warning restore CS0618
         }
 
         private UnityPresentationType GetUnityPresentationType(IType type)

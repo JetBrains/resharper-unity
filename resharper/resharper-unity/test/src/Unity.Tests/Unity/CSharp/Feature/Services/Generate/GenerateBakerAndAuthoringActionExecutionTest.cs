@@ -12,33 +12,53 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
         private const string DotsClassesFileName = "DotsClasses.cs";
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\Dots\GenerateBakerAndAuthoringActionFix";
 
-        protected override void CheckProjectFile(IProjectFile projectItem, Action<TextWriter> test = null)
+        protected override void CheckProjectFile(IProjectFile projectItem, Action<TextWriter>? test = null)
         {
             if(projectItem.Location.Name.Equals(DotsClassesFileName))
                 return;
             base.CheckProjectFile(projectItem, test);
         }
 
-        [Test] public void GenerateBaker01()
-        {
-            DoNamedTest($"../{DotsClassesFileName}");
-        }
-        
-        [Test] public void GenerateBaker02()
-        {
-            DoNamedTest($"../{DotsClassesFileName}");
-        }
-        
-        [Test] public void GenerateBaker03()
+        [Test] public void GenerateNewBakerNotNested()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
 
-        [Test] public void AuthoringInOtherFile01()
+        [Test] public void GenerateNewBakerNested()
         {
-            DoNamedTest($"../{DotsClassesFileName}", $"{TestMethod!.Name}_Authoring.cs");
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
+
+        [Test] public void GenerateNewBakerForEmptyComponent()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
+
+        [Test] public void AddNewComponentToBaker()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
+
+        [Test] public void UpdateExistingNestedBaker()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
         }
         
+        [Test] public void UpdateExistingPartialBaker()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
+
+        [Test] public void CreateNewWithExistingBaker()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
+        
+        [Test] public void CreateNewNestedWithExistingBaker()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
+
         [Test] public void AuthoringAndBakerInOtherFiles()
         {
             DoNamedTest($"../{DotsClassesFileName}"

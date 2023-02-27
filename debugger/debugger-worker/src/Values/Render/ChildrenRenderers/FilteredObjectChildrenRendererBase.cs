@@ -1,22 +1,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using JetBrains.Annotations;
 using JetBrains.Util;
-using MetadataLite.API;
 using Mono.Debugging.Backend.Values.Render.ChildrenRenderers;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
+using Mono.Debugging.MetadataLite.API;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderers
 {
     public abstract class FilteredObjectChildrenRendererBase<TValue> : ChildrenRendererBase<TValue, IObjectValueRole<TValue>>
         where TValue : class
     {
-        [NotNull]
-        protected override IEnumerable<IValueEntity> GetChildren([NotNull] IObjectValueRole<TValue> valueRole,
+        protected override IEnumerable<IValueEntity> GetChildren(IObjectValueRole<TValue> valueRole,
                                                                  IMetadataTypeLite instanceType,
                                                                  IPresentationOptions options,
                                                                  IUserDataHolder dataHolder,
@@ -28,8 +26,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
             return RenderChildren(valueRole, references, options, token);
         }
 
-        [NotNull]
-        protected IEnumerable<IValueReference<TValue>> EnumerateChildren([NotNull] IObjectValueRole<TValue> valueRole,
+        protected IEnumerable<IValueReference<TValue>> EnumerateChildren(IObjectValueRole<TValue> valueRole,
                                                                          IPresentationOptions options,
                                                                          CancellationToken token)
         {
@@ -82,8 +79,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
             }
         }
 
-        [CanBeNull]
-        private static IObjectValueRole<TValue> FindNextBaseRoleWithVisibleMembers(IObjectValueRole<TValue> role)
+        private static IObjectValueRole<TValue>? FindNextBaseRoleWithVisibleMembers(IObjectValueRole<TValue> role)
         {
             var baseRole = role.Base;
             while (baseRole != null && baseRole.Type.IsVisibleType())

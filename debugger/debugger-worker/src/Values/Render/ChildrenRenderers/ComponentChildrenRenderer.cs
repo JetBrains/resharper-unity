@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using System.Threading;
-using JetBrains.Annotations;
 using JetBrains.Util;
-using MetadataLite.API;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
+using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.Soft;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderers
@@ -59,11 +58,10 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                 yield return valueEntity;
         }
 
-        [CanBeNull]
-        private IValueEntity GetGameObjectScenePath(IObjectValueRole<TValue> componentRole,
-                                                    IPresentationOptions options)
+        private IValueEntity? GetGameObjectScenePath(IObjectValueRole<TValue> componentRole,
+                                                     IPresentationOptions options)
         {
-            var gameObjectRole = Logger.CatchEvaluatorException<TValue, IObjectValueRole<TValue>>(
+            var gameObjectRole = Logger.CatchEvaluatorException<TValue, IObjectValueRole<TValue>?>(
                 () => componentRole.GetInstancePropertyReference("gameObject", true)
                     ?.AsObjectSafe(options),
                 exception => Logger.LogThrownUnityException(exception, componentRole.ValueReference.OriginatingFrame,

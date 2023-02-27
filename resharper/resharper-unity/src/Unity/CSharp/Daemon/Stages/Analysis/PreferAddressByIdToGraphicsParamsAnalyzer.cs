@@ -1,6 +1,7 @@
+#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
@@ -25,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             {KnownTypes.MaterialPropertyBlock, (KnownTypes.Shader, "PropertyToID")},
         };
 
-        public PreferAddressByIdToGraphicsParamsAnalyzer([NotNull] UnityApi unityApi)
+        public PreferAddressByIdToGraphicsParamsAnalyzer(UnityApi unityApi)
             : base(unityApi)
         {
         }
@@ -37,30 +38,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 return;
 
             var reference = expression.Reference;
-            if (reference == null)
-                return;
-
             var arguments = expression.Arguments;
 
             // cheap check for uninteresting methods
-            if (expression.TypeArguments.Count != 0)
-                return;
-
-            if (arguments.Count == 0)
+            if (expression.TypeArguments.Count != 0 || arguments.Count == 0)
                 return;
 
             var info = reference.Resolve();
             if (info.ResolveErrorType == ResolveErrorType.OK && info.DeclaredElement is IMethod stringMethod)
             {
-                if (HasOverloadWithIntParameter(stringMethod, expression, out var argumentIndex, out var containingType))
+                if (HasOverloadWithIntParameter(stringMethod, expression, out var argumentIndex,
+                        out var containingType) && containingType != null)
                 {
                     // extract argument for replace
                     var argument = arguments[argumentIndex];
                     var argumentValue = argument.Value;
                     var (clrName, methodName) = ourTypes[containingType.GetClrName()];
-                    var literal = argument.Expression?.ConstantValue.Value as string;
-                    if (literal == null)
-                        return;
 
                     if (argumentValue is IInvocationExpression) //nameof
                         return;
@@ -68,18 +61,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     if (argumentValue is IReferenceExpression referenceExpression)
                     {
                         // prevent extract local values, e.g local constant.
-                        var declaration = referenceExpression.Reference.Resolve().DeclaredElement?.GetDeclarationsIn(sourceFile).FirstOrDefault();
+                        var declaration = referenceExpression.Reference.Resolve().DeclaredElement
+                            ?.GetDeclarationsIn(sourceFile).FirstOrDefault();
                         if (declaration == null || declaration.GetContainingNode<IParametersOwnerDeclaration>() != null
-                            || declaration.GetContainingNode<IAccessorOwnerDeclaration>() != null)
+                                                || declaration.GetContainingNode<IAccessorOwnerDeclaration>() != null)
+                        {
                             return;
+                        }
                     }
 
-                    consumer.AddHighlighting(new PreferAddressByIdToGraphicsParamsWarning(expression, argument, argument.Expression, literal, clrName.FullName, methodName));
+                    // TODO: Use conditional access when the monorepo build uses a more modern C# compiler
+                    // Currently (as of 01/2023) the monorepo build for Unity uses C#9 compiler, which will complain
+                    // that the out variable is uninitialised when we use conditional access
+                    // See also https://youtrack.jetbrains.com/issue/RSRP-489147
+                    if (argument.Expression != null &&
+                        argument.Expression.ConstantValue.IsNotNullString(out var literal))
+                    {
+                        consumer.AddHighlighting(new PreferAddressByIdToGraphicsParamsWarning(expression, argument,
+                            argument.Expression, literal, clrName.FullName, methodName));
+                    }
                 }
             }
         }
 
-        private bool HasOverloadWithIntParameter(IMethod stringMethod, IInvocationExpression expression, out int index, out ITypeElement containingType)
+        private bool HasOverloadWithIntParameter(IMethod stringMethod, IInvocationExpression expression, out int index, out ITypeElement? containingType)
         {
             index = stringMethod.Parameters.Count;
             containingType = null;
@@ -88,8 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (!stringMethodName.StartsWith("Get") && !stringMethodName.StartsWith("Set") && !stringMethodName.Equals("ResetTrigger"))
                 return false;
 
-            containingType = stringMethod.GetContainingType();
-
+            containingType = stringMethod.ContainingType;
             if (containingType == null || !ourTypes.ContainsKey(containingType.GetClrName()))
                 return false;
 
@@ -121,7 +125,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             return isFound;
         }
 
-        private bool MatchSignatureStringToIntMethod([NotNull]IMethod stringMethod, [NotNull]IMethod intMethod, out int index)
+        private bool MatchSignatureStringToIntMethod(IMethod stringMethod, IMethod intMethod, out int index)
         {
             index = stringMethod.Parameters.Count;
 

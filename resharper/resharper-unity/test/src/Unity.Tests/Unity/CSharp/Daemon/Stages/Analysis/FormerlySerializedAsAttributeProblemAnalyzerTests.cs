@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
 
         [Test] public void TestNonUnityFields() { DoNamedTest2(); } //local stage - swea is not ready
         //1. as is - update gold
-        
+
         [Test] public void TestRedundantFormerlySerializedAs() { DoNamedTest2(); }
         [Test] public void TestPossibleMisapplicationToMultipleFields() { DoNamedTest2(); }
     }

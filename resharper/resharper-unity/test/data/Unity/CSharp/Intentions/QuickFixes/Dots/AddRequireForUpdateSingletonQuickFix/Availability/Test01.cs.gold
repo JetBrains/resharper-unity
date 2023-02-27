@@ -1,0 +1,54 @@
+﻿using Unity.Entities;
+
+struct Killa : IComponentData, IEnableableComponent
+{
+}
+
+struct Tagilla : IComponentData, IEnableableComponent
+{
+}
+
+struct Chadilla : IComponentData, IEnableableComponent
+{
+}
+
+partial struct Foo : ISystem
+{
+    void Doo()
+    {
+        var k = |SystemAPI.GetSingleton<Killa>()|(0);//Must be marked with warning
+    }
+}
+
+
+partial struct Foo : ISystem
+{
+    public void OnUpdate(ref SystemState state)
+    {
+        var t = |SystemAPI.GetSingleton<Tagilla>()|(1);//Must be marked with warning
+    }
+
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<Chadilla>();
+    }
+
+    private void CustomUpdate(ref SystemState state)
+    {
+        this.UpdatedByInternalMethod.Update(ref state);
+    }
+}
+
+------------------------------------------------
+0: To use the result of a 'GetSingleton<Killa>' call in the function, 'OnCreate' must include a 'RequireForUpdate' call
+QUICKFIXES:
+Add missing 'RequireForUpdate<Killa>' call
+--Add all missing 'RequireForUpdate' calls in file
+--Add all missing 'RequireForUpdate' calls in project
+--Add all missing 'RequireForUpdate' calls in solution
+1: To use the result of a 'GetSingleton<Tagilla>' call in the function, 'OnCreate' must include a 'RequireForUpdate' call
+QUICKFIXES:
+Add missing 'RequireForUpdate<Tagilla>' call
+--Add all missing 'RequireForUpdate' calls in file
+--Add all missing 'RequireForUpdate' calls in project
+--Add all missing 'RequireForUpdate' calls in solution

@@ -5,7 +5,8 @@
         <SubplatformReference Name="Psi.Features\Cpp\Src\Core\" />
         <SubplatformReference Name="Psi.Features\VisualStudio\ReSpeller" />
         <SubplatformReference Name="Platform\VisualStudio\SinceVs10" />
-        <SubplatformReference Name="Plugins\ReSharperUnity\resharper\resharper-unity\src" />
+        <SubplatformReference Name="Plugins\ReSharperUnity\resharper\resharper-unity\src\Unity" />
+        <SubplatformReference Name="Plugins\ReSharperUnity\resharper\resharper-unity\src\Unity.Shaders" />
 		<SubplatformReference Name="Plugins\_Unity.Pregenerated\BackendModel" />
     </SubplatformInfo.SubplatformReferences>
 </SubplatformInfo>

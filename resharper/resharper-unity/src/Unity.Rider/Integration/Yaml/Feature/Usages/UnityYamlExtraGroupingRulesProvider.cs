@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
@@ -51,9 +52,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
     {
         [CanBeNull] private readonly IconHost myIconHost;
 
-        protected UnityYamlUsageGroupingRuleBase(string name, IconId iconId, [CanBeNull] IconHost iconHost,
+        protected UnityYamlUsageGroupingRuleBase(string ruleId, string name, IconId iconId, [CanBeNull] IconHost iconHost,
             double sortingPriority)
         {
+            RuleId = ruleId;
             Name = name;
             IconId = iconId;
             SortingPriority = sortingPriority;
@@ -62,17 +64,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
 
         protected RdUsageGroup CreateModel(string text)
         {
-            return new RdUsageGroup(Name, text, myIconHost?.Transform(IconId));
+            return new RdUsageGroup(RuleId, text, myIconHost?.Transform(IconId));
         }
 
         protected RdUsageGroup EmptyModel()
         {
-            return new RdUsageGroup(Name, string.Empty, null);
+            return new RdUsageGroup(RuleId, string.Empty, null);
         }
 
         public abstract RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor);
         public abstract void Navigate(IOccurrence occurrence);
 
+        public string RuleId { get; }
         public string Name { get; }
         public IconId IconId { get; }
         public bool IsSeparable => true;
@@ -88,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
     public class AnimatorGroupingRule : UnityYamlUsageGroupingRuleBase
     {
         public AnimatorGroupingRule([NotNull] IconHost iconHost)
-            : base("Animator", UnityFileTypeThemedIcons.FileAnimatorController.Id, iconHost, 10.0)
+            : base("Animator", Strings.AnimatorGroupingRule_AnimatorGroupingRule_Animator, UnityFileTypeThemedIcons.FileAnimatorController.Id, iconHost, 10.0)
         {
         }
 
@@ -111,13 +114,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
     public class AnimationEventGroupingRule : UnityYamlUsageGroupingRuleBase
     {
         public AnimationEventGroupingRule([NotNull] IconHost iconHost)
-            : base("AnimationEvent", UnityFileTypeThemedIcons.FileAnimationClip.Id, iconHost, 9.0)
+            : base("AnimationEvent", Strings.AnimationEventGroupingRule_AnimationEventGroupingRule_AnimationEvent, UnityFileTypeThemedIcons.FileAnimationClip.Id, iconHost, 9.0)
         {
         }
 
         public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor)
         {
-            if (!(occurrence is UnityAnimationEventOccurence animationEventOccurence)) return EmptyModel();
+            if (!(occurrence is AnimExplicitEventOccurence animationEventOccurence)) return EmptyModel();
             var text = animationEventOccurence.GetDisplayText()?.Text;
             return text != null ? CreateModel(text) : EmptyModel();
         }
@@ -135,7 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
     {
         // Note that the name is in CamelCase and spaces are added in the frontend
         public GameObjectUsageGroupingRule([NotNull] IconHost iconHost)
-            : base("UnityGameObject", UnityObjectTypeThemedIcons.UnityGameObject.Id, iconHost, 7.0)
+            : base("UnityGameObject", Strings.GameObjectUsageGroupingRule_GameObjectUsageGroupingRule_UnityGameObject, UnityObjectTypeThemedIcons.UnityGameObject.Id, iconHost, 7.0)
         {
         }
 
@@ -180,7 +183,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Yaml.Feature.Usage
 
         // Note that the name is in CamelCase and spaces are added in the frontend
         public ComponentUsageGroupingRule(MetaFileGuidCache metaFileGuidCache, [NotNull] IconHost iconHost)
-            : base("UnityComponent", UnityObjectTypeThemedIcons.UnityComponent.Id, iconHost, 8.0)
+            : base("UnityComponent", Strings.ComponentUsageGroupingRule_ComponentUsageGroupingRule_UnityComponent, UnityObjectTypeThemedIcons.UnityComponent.Id, iconHost, 8.0)
         {
             myMetaFileGuidCache = metaFileGuidCache;
         }

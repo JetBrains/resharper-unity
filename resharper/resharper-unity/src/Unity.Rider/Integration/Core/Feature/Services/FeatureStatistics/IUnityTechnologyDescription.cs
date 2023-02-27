@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Services.FeatureStatistics
 {
@@ -77,7 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
 
         public IEnumerable<string> GetPossiblePackageName()
         {
-            yield return "com.unity.entities";
+            yield return PackageManager.UnityEntitiesPackageName;
         }
 
         public IEnumerable<string> GetPossibleAssemblyName()
@@ -211,6 +212,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
         public IEnumerable<string> GetPossibleProjectName()
         {
             yield return "UniTask";
+        }
+    }
+    
+    public class UnityTestFrameworkDescription : IUnityTechnologyDescription
+    {
+        public string Id => "TestFramework";
+
+        public IEnumerable<string> GetPossiblePackageName()
+        {
+            yield return "com.unity.test-framework";
+        }
+
+        public IEnumerable<string> GetPossibleAssemblyName()
+        {
+            yield break;
+        }
+
+        public IEnumerable<string> GetPossibleProjectName()
+        {
+            yield return "UnityEngine.TestRunner";
         }
     }
 }

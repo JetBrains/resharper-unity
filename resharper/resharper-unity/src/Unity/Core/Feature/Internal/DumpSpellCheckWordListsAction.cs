@@ -25,7 +25,7 @@ using JetBrains.Util.Logging;
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Internal
 {
     [ZoneMarker(typeof(IReSpellerZone))]
-    [Action("Unity_Internal_DumpSpellCheckWordLists", typeof(Strings), nameof(Strings.Unity_Internal_DumpSpellCheckWordLists_Text))]
+    [Action(typeof(Strings), nameof(Strings.Unity_Internal_DumpSpellCheckWordLists_Text))]
     public class DumpSpellCheckWordListsAction : IExecutableAction, IInsertLast<UnityInternalActionGroup>
     {
         public bool Update(IDataContext context, ActionPresentation presentation, DelegateUpdate nextUpdate)

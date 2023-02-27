@@ -25,6 +25,7 @@ SOFTWARE.
 using System;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using UnityEditorInternal;
 using UnityEngine;
@@ -55,6 +56,10 @@ namespace JetBrains.Rider.Unity.Editor.Utils
   {
     private static readonly ILog ourLogger = Log.GetLog("ScriptObjectSingleton");
     private static T instance;
+
+    // DO NOT RENAME!
+    // Called from package via reflection
+    [PublicAPI]
     public static T Instance
     {
       get

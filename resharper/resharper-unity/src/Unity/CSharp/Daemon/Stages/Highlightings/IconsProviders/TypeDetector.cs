@@ -2,15 +2,20 @@ using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dots;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
@@ -60,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 else if (UnityApi.IsDotsImplicitlyUsedType(typeElement))
                 {
                     //TODO obsolete
-                    AddUnityECSHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_ECS_system, Strings.TypeDetector_AddDeclarationHighlighting_Unity_entities_system,
+                    AddUnityDOTSHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_DOTS, Strings.TypeDetector_AddDeclarationHighlighting_Unity_entities_system,
                         context);
                 }
 
@@ -85,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             AddHighlighting(consumer, declaration, text, tooltip, context);
         }
 
-        protected virtual void AddUnityECSHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, IReadOnlyCallGraphContext context)
+        protected virtual void AddUnityDOTSHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, IReadOnlyCallGraphContext context)
         {
             AddHighlighting(consumer, declaration, text, tooltip, context);
         }
@@ -108,7 +113,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 .ForCurrentClient();
             if (declaration is IClassLikeDeclaration classLikeDeclaration && textControl != null)
             {
-                if (myUnityApi.IsUnityType(classLikeDeclaration.DeclaredElement))
+                var declaredElement = classLikeDeclaration.DeclaredElement;
+                if (myUnityApi.IsUnityType(declaredElement))
                 {
                     var fix = new GenerateUnityEventFunctionsFix(classLikeDeclaration);
                     result.Add(new IntentionAction(fix, Strings.TypeDetector_GetActions_Generate_Unity_event_functions,
@@ -116,12 +122,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                         .ToBulbMenuItem(Solution, textControl));
                 }
 
-                if (UnityApi.IsDerivesFromIComponentData(classLikeDeclaration.DeclaredElement))
+                if (classLikeDeclaration.GetContainingNode<IMethodDeclaration>() == null &&
+                    classLikeDeclaration.GetContainingNode<IPropertyDeclaration>() == null
+                   )
                 {
-                    var fix = new GenerateBakerAndAuthoringActionFix(classLikeDeclaration);
-                    result.Add(new IntentionAction(fix, Strings.UnityDots_GenerateBakerAndAuthoring_Name,
-                            PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
-                        .ToBulbMenuItem(Solution, textControl));
+                    IBulbAction? fix = null;
+                    var title = string.Empty;
+
+                    if (UnityApi.IsDerivesFromIComponentData(declaredElement))
+                    {
+                        fix = new GenerateBakerAndAuthoringActionFix(classLikeDeclaration);
+                        title = Strings.UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle;
+                    }
+                    else if (UnityApi.IsDerivesFromComponent(declaredElement))
+                    {
+                        if (Solution.HasEntitiesPackage())
+                        {
+                            fix = new GenerateBakerAndComponentActionFix(classLikeDeclaration);
+                            title = Strings.UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_WindowTitle;
+                        }
+                    }
+                    
+                    if(fix != null)
+                        result.Add(new IntentionAction(fix, title, PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems).ToBulbMenuItem(Solution, textControl));
+                }
+                
+                if (classLikeDeclaration.IsPartial
+                    && UnityApi.IsDotsImplicitlyUsedType(declaredElement)
+                    && !classLikeDeclaration.GetSourceFile().IsSourceGeneratedFile()
+                    && declaredElement.GetDeclarations().Count > 1)
+                {
+                    var bulbAction = new OpenDotsSourceGeneratedFileBulbAction(Strings.UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode, classLikeDeclaration);
+                    result.Add(new IntentionAction(bulbAction,
+                        Strings.UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode, PsiFeaturesUnsortedThemedIcons.Navigate.Id,
+                        BulbMenuAnchors.FirstClassContextItems).ToBulbMenuItem(Solution, textControl));
                 }
             }
 

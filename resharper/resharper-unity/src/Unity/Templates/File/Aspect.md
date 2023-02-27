@@ -6,7 +6,7 @@ reformat: True
 shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=Aspect, ValidateFileName=True
-scopes:  UnityFileTemplateSectionMarker;UnityDotsScope
+scopes: UnityDotsScope
 uitag: DOTS
 parameterOrder: HEADER, (ASPECT), (NAMESPACE)
 HEADER-expression: fileheader()
@@ -18,6 +18,6 @@ NAMESPACE-expression: fileDefaultNamespace()
 
 ```
 $HEADER$namespace $NAMESPACE$ {
-  public struct $ASPECT$ : Unity.Entities.IAspect {$END$}
+  public readonly partial struct $ASPECT$ : Unity.Entities.IAspect {$END$}
 }
 ```

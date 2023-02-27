@@ -1,3 +1,4 @@
+import base.SettingsHelper
 import base.integrationTests.prepareAssemblies
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
@@ -20,6 +21,11 @@ import java.io.File
 @TestEnvironment(toolset = ToolsetVersion.TOOLSET_17_CORE, coreVersion = CoreVersion.DOT_NET_6)
 class ProjectSettingsCompletionTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String = "ProjectSettingsTestData"
+    override fun preprocessTempDirectory(tempDir: File) {
+        if (testMethod.name.contains("YamlOff")) {
+            SettingsHelper.disableIsAssetIndexingEnabledSetting(activeSolution, activeSolutionDirectory)
+        }
+    }
 
     override val traceCategories: List<String>
         get() = listOf(
@@ -99,6 +105,14 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         }
 
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest2.cs") {
+            typeWithLatency("\"")
+            assertLookupContains(*basicLayers, checkFocus = false)
+        }
+    }
+
+    @Test
+    fun testLayer_PrimitiveCompletion_YamlOff() {
+        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
             typeWithLatency("\"")
             assertLookupContains(*basicLayers, checkFocus = false)
         }
