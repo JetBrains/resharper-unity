@@ -39,6 +39,7 @@
     <Reference Include="System.Core" />
     <Reference Include="mscorlib" />
     <Reference Include="WindowsBase" />
+    <Reference Include="netstandard" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="Resources">
