@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
                 var singletonCallsExpressions = currentElementVisitor.GetSingletonCallsExpressions[singletonCall];
                 foreach (var expression in singletonCallsExpressions)
                 {
-                    consumer.AddHighlighting(new SingletonMustBeRequestedWarning(element, expression, singletonCall, singletonCall.GetTypeElement()?.ShortName));
+                    consumer.AddHighlighting(new SingletonMustBeRequestedWarning(element, expression, singletonCall));
                 }
             }
 

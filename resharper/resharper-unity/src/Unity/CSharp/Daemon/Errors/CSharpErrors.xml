@@ -609,9 +609,8 @@
     <Parameter type="IClassLikeDeclaration" name="classLikeDeclaration" />
     <Parameter type="ICSharpExpression" name="availableUpdateMethod" />
     <Parameter type="IType" name="requestedType" />
-    <Parameter type="string" name="requestedTypeName" />
     <Message resourceName="UnityDots_GetSingletonMustBeRequested" resourceType="Strings">
-      <Argument>requestedTypeName</Argument>
+      <Argument>requestedType</Argument>
     </Message>
     <Range>AvailableUpdateMethod.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
