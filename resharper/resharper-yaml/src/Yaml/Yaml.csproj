@@ -53,6 +53,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <Reference Include="System" />
+    <Reference Include="netstandard" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="!$(InternalBuild)" />
   <Import Project="ManagedProject.Generated.Targets" Condition="$(InternalBuild)" />

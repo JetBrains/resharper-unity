@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
-using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
@@ -52,8 +52,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 node.GetContainingNode<IPropertyDeclaration>() != null)
                 return false;
             
-            return UnityApi.IsDerivesFromComponent(classDeclaration.DeclaredElement)
-                && myDataProvider.Solution.HasEntitiesPackage();
+            return classDeclaration.DeclaredElement.DerivesFrom(KnownTypes.Component)
+                   && myDataProvider.Solution.HasEntitiesPackage();
 
         }
     }

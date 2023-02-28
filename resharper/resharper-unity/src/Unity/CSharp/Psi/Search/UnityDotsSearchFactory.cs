@@ -111,7 +111,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
             if (result is not FindResultDeclaration { Declaration: IClassLikeDeclaration {IsPartial: true } classLikeDeclaration } resultDeclaration)
                 return false;
             
-            if (!UnityApi.IsDotsImplicitlyUsedType(classLikeDeclaration.DeclaredElement))
+            if (!classLikeDeclaration.DeclaredElement.IsDotsImplicitlyUsedType())
                 return false;
 
             return resultDeclaration.SourceFile.IsSourceGeneratedFile();

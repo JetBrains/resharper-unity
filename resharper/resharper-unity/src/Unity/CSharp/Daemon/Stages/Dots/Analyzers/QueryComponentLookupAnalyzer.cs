@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
@@ -25,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
             IHighlightingConsumer consumer)
         {
             var typeElement = element.DeclaredElement;
-            var isDotsImplicitlyUsedType = UnityApi.IsDerivesFromISystem(typeElement);
+            var isDotsImplicitlyUsedType = typeElement.DerivesFrom(KnownTypes.ISystem);
             if (!isDotsImplicitlyUsedType)
                 return;
 
@@ -39,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
                     var fieldDeclarationDeclaredElement = fieldDeclaration.DeclaredElement;
 
                     var isComponentLookup =
-                        UnityApi.IsComponentLookup(fieldDeclarationDeclaredElement?.Type.GetTypeElement());
+                        (fieldDeclarationDeclaredElement?.Type.GetTypeElement()).IsClrName(KnownTypes.ComponentLookup);
                     if (isComponentLookup && fieldDeclarationDeclaredElement != null)
                     {
                         queryLookupFields.Add(fieldDeclarationDeclaredElement);
@@ -112,7 +113,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
                 if (method.ShortName != "Update")
                     return;
 
-                if (!UnityApi.IsComponentLookup(method.ContainingType))
+                if (!method.ContainingType.IsClrName(KnownTypes.ComponentLookup))
                     return;
 
                 if (method.Parameters.Count != 1)
@@ -122,7 +123,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
                 if (!possibleStateParameter.IsRefMember())
                     return;
 
-                if (!UnityApi.IsSystemStateType(possibleStateParameter.Type.GetTypeElement()))
+                if (!possibleStateParameter.Type.GetTypeElement().IsClrName(KnownTypes.SystemState))
                     return;
 
                 var qualifier = expression.InvocationExpressionReference.IsPassThrough()

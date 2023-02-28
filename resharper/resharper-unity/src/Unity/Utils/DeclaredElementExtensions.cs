@@ -94,5 +94,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
             isBuiltin = typeElement.IsBuiltInUnityClass();
             return isBuiltin ? typeElement.DerivesFrom(KnownTypes.Component) : typeElement.DerivesFromMonoBehaviour();
         }
+
+        public static bool IsClrName(this ITypeElement typeElement, IClrTypeName clrTypeName)
+        {
+            return typeElement?.GetClrName().Equals(clrTypeName) ?? false;
+        }
     }
 }

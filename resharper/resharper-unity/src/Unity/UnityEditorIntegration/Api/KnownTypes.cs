@@ -105,6 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 
         // ECS/DOTS
         public static readonly IClrTypeName ComponentSystemBase = new ClrTypeName("Unity.Entities.ComponentSystemBase");
+        public static readonly IClrTypeName SystemBase = new ClrTypeName("Unity.Entities.SystemBase");
         public static readonly IClrTypeName ISystem = new ClrTypeName("Unity.Entities.ISystem");
         public static readonly IClrTypeName IBaker = new ClrTypeName("Unity.Entities.IBaker");
         public static readonly IClrTypeName Baker = new ClrTypeName("Unity.Entities.Baker`1");
