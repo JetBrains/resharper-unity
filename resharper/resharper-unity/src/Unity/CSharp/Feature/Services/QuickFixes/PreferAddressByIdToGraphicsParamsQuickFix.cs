@@ -172,7 +172,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             if (arguments.Count == 1 && arguments[0].Value != null)
             {
                 var constantValue = arguments[0].Value.ConstantValue(new UniversalContext(invocation));
-                if (constantValue.StringValue?.Equals(propertyName) == true)
+                if (constantValue.IsString(out var stringValue) && stringValue?.Equals(propertyName) == true)
                     return true;
             }
 
