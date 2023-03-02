@@ -19,7 +19,6 @@ NAMESPACE-expression: fileDefaultNamespace()
 ```
 $HEADER$namespace $NAMESPACE$ 
 {
-  [Unity.Burst.BurstCompile]
   public partial struct $JOBENTITY$ : Unity.Entities.IJobEntity 
   {
      public void Execute($END$)

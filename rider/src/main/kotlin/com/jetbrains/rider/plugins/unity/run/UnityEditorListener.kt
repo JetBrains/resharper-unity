@@ -3,11 +3,12 @@ package com.jetbrains.rider.plugins.unity.run
 import com.intellij.execution.process.OSProcessUtil
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import java.util.*
+import com.jetbrains.rd.util.lifetime.Lifetime
 
-class UnityEditorListener(private val project: Project,
-                          private val onEditorAdded: (UnityProcess) -> Unit,
-                          private val onEditorRemoved: (UnityProcess) -> Unit) {
+class UnityEditorListener(project: Project,
+                          lifetime: Lifetime,
+                          onEditorAdded: (UnityProcess) -> Unit,
+                          onEditorRemoved: (UnityProcess) -> Unit) {
 
     companion object {
         private val logger = Logger.getInstance(UnityEditorListener::class.java)
@@ -17,19 +18,19 @@ class UnityEditorListener(private val project: Project,
     private val refreshPeriod: Long = 1000
     private val editorProcesses = mutableMapOf<Int, UnityLocalProcess>()
 
-    private val refreshTimer: Timer
-
     init {
-        refreshTimer = kotlin.concurrent.timer("Listen for Unity Editor processes", true, 0L, refreshPeriod) {
-            refreshUnityEditorProcesses()
+        val refreshTimer = kotlin.concurrent.timer("Listen for Unity Editor processes", true, 0L, refreshPeriod) {
+            refreshUnityEditorProcesses(project, onEditorAdded, onEditorRemoved)
         }
+
+        lifetime.onTermination { refreshTimer.cancel() }
     }
 
-    fun stop() {
-        refreshTimer.cancel()
-    }
-
-    private fun refreshUnityEditorProcesses() {
+    private fun refreshUnityEditorProcesses(
+        project: Project,
+        onEditorAdded: (UnityProcess) -> Unit,
+        onEditorRemoved: (UnityProcess) -> Unit
+    ) {
         val start = System.currentTimeMillis()
         logger.trace("Refreshing local editor processes...")
 
@@ -40,7 +41,7 @@ class UnityEditorListener(private val project: Project,
         editorProcesses.keys.filterNot { existingEditorPid ->
             processes.any { p -> p.pid == existingEditorPid }
         }.forEach { p ->
-            editorProcesses[p]?.let {
+            editorProcesses.remove(p)?.let {
                 logger.trace("Removing old Unity editor ${it.displayName}:${it.pid}")
                 onEditorRemoved(it)
             }

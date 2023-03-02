@@ -1009,9 +1009,6 @@
     <data name="UnityDots_GenerateBakerAndAuthoring_Description" xml:space="preserve">
         <value>Generate Baker and Authoring script inside this file</value>
     </data>
-    <data name="UnityDots_GenerateBakerAndAuthoring_GenerateBakerAsNestedClass" xml:space="preserve">
-        <value>Generate Baker as nested class</value>
-    </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_Name" xml:space="preserve">
         <value>Generate Baker and Authoring script</value>
     </data>
@@ -1021,9 +1018,6 @@
     <data name="UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested" xml:space="preserve">
         <value>New Baker (Nested)</value>
     </data>
-    <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields" xml:space="preserve">
-        <value>Component fields for baking</value>
-    </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_Description" xml:space="preserve">
         <value>Select fields for baking</value>
     </data>
@@ -1031,7 +1025,28 @@
         <value>Baker Generation (DOTS)</value>
     </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle" xml:space="preserve">
-        <value>Baker Generation</value>
+        <value>Baker</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndComponent_ComponentData" xml:space="preserve">
+        <value>ComponentData</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndComponent_Description" xml:space="preserve">
+        <value>Generate Baker and ComponentData script inside this file</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndComponent_Name" xml:space="preserve">
+        <value>Generate Baker and ComponentData script</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndComponent_NewComponentData" xml:space="preserve">
+        <value>New ComponentData</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_Description" xml:space="preserve">
+        <value>Select fields and properties</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_Title" xml:space="preserve">
+        <value>ComponentData Generation (DOTS)</value>
+    </data>
+    <data name="UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_WindowTitle" xml:space="preserve">
+        <value>ComponentData</value>
     </data>
     <data name="UnityDots_GetSingletonMustBeRequested" xml:space="preserve">
         <value>To use the result of a 'GetSingleton&lt;{0}&gt;' call in the function, 'OnCreate' must include a 'RequireForUpdate' call</value>
@@ -1406,9 +1421,11 @@ a plugin to be installed to a project.</value>
 
     <data name="Template_Editable_SUNvbXBvbmVudERhdGEEQ" xml:space="preserve">
         <value>IComponentData</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="Template_Editable_RE9UUwEQEQ" xml:space="preserve">
         <value>DOTS</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="Template_Editable_VW5pdHkgQ3JlYXRlQXNzZXRNZW51IGF0dHJpYnV0ZQEQEQ" xml:space="preserve">
         <value>Unity CreateAssetMenu attribute</value>
@@ -1424,6 +1441,7 @@ a plugin to be installed to a project.</value>
     </data>
     <data name="Template_Editable_SUpvYkVudGl0eQEQEQ" xml:space="preserve">
         <value>IJobEntity</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="Template_Editable_VW5pdHkgbG9nIHdhcm5pbmcEQ" xml:space="preserve">
         <value>Unity log warning</value>
@@ -1478,6 +1496,7 @@ a plugin to be installed to a project.</value>
     </data>
     <data name="Template_Editable_SVN5c3RlbQEQEQ" xml:space="preserve">
         <value>ISystem</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="Template_Editable_U2NyaXB0YWJsZSBXaXphcmQEQ" xml:space="preserve">
         <value>Scriptable Wizard</value>
@@ -1505,12 +1524,14 @@ a plugin to be installed to a project.</value>
     </data>
     <data name="Template_Editable_SUFzcGVjdAEQEQ" xml:space="preserve">
         <value>IAspect</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="Template_Editable_RWRpdG9yIFdpbmRvdyAoSU1HVUkp" xml:space="preserve">
         <value>Editor Window (IMGUI)</value>
     </data>
     <data name="Template_Editable_U3lzdGVtQmFzZQEQEQ" xml:space="preserve">
         <value>SystemBase</value>
+        <comment>Don't localize</comment>
     </data>
     <data name="Template_Editable_UHJvcGVydHkgRHJhd2Vy" xml:space="preserve">
         <value>Property Drawer</value>
@@ -1524,6 +1545,4 @@ a plugin to be installed to a project.</value>
     <data name="Template_Editable_U291cmNlIGZpbGUEQ" xml:space="preserve">
         <value>Source file</value>
     </data>
-
-
 </root>

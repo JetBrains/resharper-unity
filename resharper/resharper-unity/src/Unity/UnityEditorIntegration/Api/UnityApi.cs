@@ -60,6 +60,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
             myKnownTypesCache = knownTypesCache;
             mySerializedReferenceProvider = serializedReferenceProvider;
         }
+        
+        public static bool IsDerivesFromComponent(ITypeElement? typeElement)
+        {
+            return typeElement.DerivesFrom(KnownTypes.Component);
+        }
+
+        public static bool IsDerivesFromGameObject(ITypeElement? typeElement)
+        {
+            return typeElement.DerivesFrom(KnownTypes.GameObject);
+        }
+
 
         public bool IsUnityType([NotNullWhen(true)] ITypeElement? type) =>
             type != null && myUnityTypeCache.IsUnityType(type);

@@ -172,7 +172,8 @@
     <solutionExplorerCustomization implementation="com.jetbrains.rider.plugins.unity.explorer.UnitySolutionExplorerCustomization" />
 
     <!-- Run configurations -->
-    <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType" />
+    <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityEditorDebugConfigurationType" />
+    <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityPlayerDebugConfigurationType" />
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType" />
     <rider.newRunConfigurationTreeGroupingProvider implementation="com.jetbrains.rider.plugins.unity.run.UnityNewRunConfigurationTreeGroupingProvider" />
 

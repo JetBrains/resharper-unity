@@ -1,0 +1,65 @@
+﻿Provided elements:
+ 0: FieldDimensions:Unity.Mathematics.float2
+ 1: Prefab:UnityEngine.GameObject
+ 2: Transform:UnityEngine.Transform
+ 3: name():System.String
+ 4: hideFlags():UnityEngine.HideFlags
+ 5: transform():UnityEngine.Transform
+ 6: gameObject():UnityEngine.GameObject
+ 7: tag():System.String
+ 8: rigidbody():UnityEngine.Component
+ 9: rigidbody2D():UnityEngine.Component
+ 10: camera():UnityEngine.Component
+ 11: light():UnityEngine.Component
+ 12: animation():UnityEngine.Component
+ 13: constantForce():UnityEngine.Component
+ 14: renderer():UnityEngine.Component
+ 15: audio():UnityEngine.Component
+ 16: networkView():UnityEngine.Component
+ 17: collider():UnityEngine.Component
+ 18: collider2D():UnityEngine.Component
+ 19: hingeJoint():UnityEngine.Component
+ 20: particleSystem():UnityEngine.Component
+ 21: enabled():System.Boolean
+ 22: isActiveAndEnabled():System.Boolean
+ 23: useGUILayout():System.Boolean
+ 24: runInEditMode():System.Boolean
+
+// ${KIND:Unity.GenerateBakerAndComponent}
+// ${SELECT0:FieldDimensions:Unity.Mathematics.float2}
+// ${SELECT1:Prefab:UnityEngine.GameObject}
+// ${SELECT2:Transform:UnityEngine.Transform}
+
+using Unity.Entities;
+using Unity.Mathematics;
+using UnityEngine;
+
+namespace ComponentsAndTags
+{
+    public class Graveyard{caret}PropertiesAuthoring : MonoBehaviour
+    {
+        public float2 FieldDimensions;
+        public GameObject Prefab;
+        public Transform Transform;
+
+        public class GraveyardPropertiesAuthoringBaker : Baker<GraveyardPropertiesAuthoring>
+        {
+          public override void Bake(GraveyardPropertiesAuthoring authoring)
+          {
+            AddComponent(new GraveyardPropertiesComponentData
+            {
+              FieldDimensions = authoring.FieldDimensions,
+              Prefab = GetEntity(authoring.Prefab),
+              Transform = GetEntity(authoring.Transform)
+            });
+          }
+        }
+    }
+
+    public struct GraveyardPropertiesComponentData : IComponentData
+    {
+      public float2 FieldDimensions;
+      public Entity Prefab;
+      public Entity Transform;
+    }
+}

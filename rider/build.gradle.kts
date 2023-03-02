@@ -192,7 +192,7 @@ tasks {
                 bundledMavenArtifacts.walkTopDown()
                     .filter { it.extension == "jar" && !it.name.endsWith("-sources.jar") }
                     .toList()
-
+                    + File("${setupDependencies.get().idea.get().classes}/lib/3rd-party-rt.jar")
                     + File("${ideaDependency.get().classes}/lib/util.jar")
                     + File("${ideaDependency.get().classes}/lib/util-8.jar")
             )

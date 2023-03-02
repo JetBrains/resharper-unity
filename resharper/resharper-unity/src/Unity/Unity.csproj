@@ -110,7 +110,7 @@
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    </PackageReference>    
     <Reference Include="System.Xaml" />
     <ProjectReference Include="..\..\..\resharper-json\src\Json\Json.csproj" />
     <ProjectReference Include="..\..\..\resharper-yaml\src\Yaml\Yaml.csproj" />

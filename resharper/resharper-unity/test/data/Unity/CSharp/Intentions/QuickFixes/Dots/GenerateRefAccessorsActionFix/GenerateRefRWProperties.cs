@@ -1,10 +1,11 @@
 // ${KIND:Unity.GenerateRefAccessors}
-// ${SELECT0:ScavsCount:System.Int32}
+// ${SELECT0:ArrayOfIndexes:Unity.Collections.NativeArray`1[T -> System.Int32]}
 // ${GLOBAL0:GenerateSetters=True}
 
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+using Unity.Collections;
 
 namespace ComponentsAndTags
 {
@@ -12,6 +13,7 @@ namespace ComponentsAndTags
     {
         public float2 ExitCoordinates;
         public int ScavsCount;
+        public NativeArray<int> ArrayOfIndexes;
     }
 
     struct FooAspect : IAspect
