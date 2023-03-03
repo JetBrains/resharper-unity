@@ -1,9 +1,9 @@
 using System;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
-using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.RdBackend.Common.Features.TextControls;
 using JetBrains.ReSharper.Features.Inspections.Bookmarks.NumberedBookmarks;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -13,7 +13,6 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Backend.Features.Notifications;
 using JetBrains.Rider.Backend.Features.ProjectModel;
 using JetBrains.Rider.Model.Unity.BackendUnity;
-using JetBrains.TextControl.TextControlsManagement;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
 
@@ -30,12 +29,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
                                          UnitySolutionTracker solutionTracker,
                                          ISolution solution,
                                          AsmDefCache asmDefCache,
-                                         TextControlManager? textControlHost = null,
                                          SolutionLifecycleHost? solutionLifecycleHost = null,
                                          NotificationPanelHost? notificationPanelHost = null)
         {
             // TODO: Why are these [CanBeNull]?
-            if (solutionLifecycleHost == null || textControlHost == null || notificationPanelHost == null)
+            if (solutionLifecycleHost == null || notificationPanelHost == null)
                 return;
 
             if (!solutionTracker.IsUnityGeneratedProject.Value)
@@ -43,12 +41,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
             
             solutionLifecycleHost.BeforeFullStartupFinished.AdviseOnce(lifetime, _ =>
             {
-                textControlHost.TextControls.ForEachItem(lifetime, (lt, host) =>
+                solution.GetComponent<ITextControlHost>().ViewHostTextControls(lifetime, (lt, textControlId, textControl) =>
                 {
                     IProjectFile projectFile;
                     using (ReadLockCookie.Create())
                     { 
-                        projectFile = host.ToProjectFile(solution);
+                        projectFile = textControl.ToProjectFile(solution);
                     }
                     
                     if (projectFile == null)
@@ -88,7 +86,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
                                 }));
                         }
 
-                        notificationPanelHost.AddNotificationPanel(modelLifetime, host,
+                        notificationPanelHost.AddNotificationPanel(modelLifetime, textControl,
                             new NotificationPanel(Strings.GeneratedFileNotification_GeneratedFileNotification_This_file_is_generated_by_Unity__Any_changes_made_will_be_lost_,
                                 "UnityGeneratedFile", links.ToArray()));
                     });
