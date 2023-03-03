@@ -3,8 +3,8 @@
 using System;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.RdBackend.Common.Features.Documents;
 using JetBrains.RdBackend.Common.Features.TextControls;
-using JetBrains.ReSharper.Features.Inspections.Bookmarks.NumberedBookmarks;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
@@ -30,28 +30,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
             textControlHost.ViewHostTextControls(lifetime, (lt, id, textControl) =>
             {
-                var projectFile = textControl.ToProjectFile(solution);
-                if (projectFile == null)
+                if (textControl.Document is not RiderDocument riderDocument ||
+                    !riderDocument.Location.ExtensionNoDot.Equals("csproj", StringComparison.OrdinalIgnoreCase))
                     return;
+                
                 string? message = null;
                 
-                if (solution.SolutionDirectory.Combine("Assets").IsPrefixOf(projectFile.Location))
+                if (solution.SolutionDirectory.Combine("Assets").IsPrefixOf(riderDocument.Location))
                     return;
-                if (solution.SolutionDirectory.Combine("Packages").IsPrefixOf(projectFile.Location))
+                if (solution.SolutionDirectory.Combine("Packages").IsPrefixOf(riderDocument.Location))
                     return;
                 
-                if (localPackageCacheFolder.IsPrefixOf(projectFile.Location))
+                if (localPackageCacheFolder.IsPrefixOf(riderDocument.Location))
                 {
                     message = Strings.ImmutablePackageNotification_ImmutablePackageNotification_This_file_is_part_of_the_Unity_Package_Cache__Any_changes_made_will_be_lost_;
                 }
-                else if (UnityCachesFinder.GetPackagesCacheRoot().IsPrefixOf(projectFile.Location)) 
+                else if (UnityCachesFinder.GetPackagesCacheRoot().IsPrefixOf(riderDocument.Location)) 
                 {
                     message = Strings.ImmutablePackageNotification_ImmutablePackageNotification_This_file_is_part_of_the_Global_Unity_Package_Cache__Any_changes_made_will_be_lost_;
                 }
                 else 
                 {
                     var builtInPackagesFolder = UnityCachesFinder.GetBuiltInPackagesFolder(unityVersion.GetActualAppPathForSolution());
-                    if (!builtInPackagesFolder.IsEmpty && builtInPackagesFolder.IsPrefixOf(projectFile.Location))
+                    if (!builtInPackagesFolder.IsEmpty && builtInPackagesFolder.IsPrefixOf(riderDocument.Location))
                         message = Strings.ImmutablePackageNotification_ImmutablePackageNotification_This_file_is_part_of_the_BuildIn_Unity_Package_Cache__Any_changes_made_will_be_lost_;
                 }
                 

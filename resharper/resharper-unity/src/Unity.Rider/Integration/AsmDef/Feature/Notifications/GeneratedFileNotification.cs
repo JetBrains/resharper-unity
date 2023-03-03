@@ -4,7 +4,7 @@ using JetBrains.Core;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Features.Inspections.Bookmarks.NumberedBookmarks;
+using JetBrains.RdBackend.Common.Features.Documents;
 using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
@@ -40,22 +40,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
 
             if (!solutionTracker.IsUnityGeneratedProject.Value)
                 return;
-            
+
             solutionLifecycleHost.BeforeFullStartupFinished.AdviseOnce(lifetime, _ =>
             {
                 textControlHost.TextControls.ForEachItem(lifetime, (lt, host) =>
                 {
-                    var projectFile = host.ToProjectFile(solution);
-                    if (projectFile == null)
+                    if (host.Document is not RiderDocument riderDocument ||
+                        !riderDocument.Location.ExtensionNoDot.Equals("csproj", StringComparison.OrdinalIgnoreCase))
                         return;
-
-                    if (!projectFile.Location.ExtensionNoDot.Equals("csproj", StringComparison.OrdinalIgnoreCase))
-                        return;
-
                     // TODO: ReactiveEx.ViewNotNull isn't NRT ready
                     backendUnityHost.BackendUnityModel!.ViewNotNull<BackendUnityModel>(lt, (modelLifetime, backendUnityModel) =>
                     {
-                        var name = projectFile.Location.NameWithoutExtension;
+                        var name = riderDocument.Location.NameWithoutExtension;
 
                         IPath? path;
                         using (ReadLockCookie.Create())
