@@ -43,7 +43,6 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="mscorlib" />
-    <Reference Include="netstandard" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="!$(InternalBuild)" />
   <Import Project="ManagedProject.Generated.Targets" Condition="$(InternalBuild)" />
