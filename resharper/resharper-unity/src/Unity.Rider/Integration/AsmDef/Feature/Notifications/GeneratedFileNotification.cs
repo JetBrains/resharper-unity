@@ -40,9 +40,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
 
             if (!solutionTracker.IsUnityGeneratedProject.Value)
                 return;
-
-            var fullStartupFinishedLifetimeDefinition = new LifetimeDefinition(lifetime);
-            solutionLifecycleHost.BeforeFullStartupFinished.Advise(fullStartupFinishedLifetimeDefinition.Lifetime, _ =>
+            
+            solutionLifecycleHost.BeforeFullStartupFinished.AdviseOnce(lifetime, _ =>
             {
                 textControlHost.TextControls.ForEachItem(lifetime, (lt, host) =>
                 {
@@ -58,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
                     {
                         var name = projectFile.Location.NameWithoutExtension;
 
-                        IPath? path = null;
+                        IPath? path;
                         using (ReadLockCookie.Create())
                         {
                             var location = asmDefCache.GetAsmDefLocationByAssemblyName(name);
@@ -89,8 +88,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
                                 "UnityGeneratedFile", links.ToArray()));
                     });
                 });
-
-                fullStartupFinishedLifetimeDefinition.Terminate();
             });
         }
     }
