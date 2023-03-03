@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
-using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -22,14 +21,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
     [SolutionComponent]
     public class UnityShortcutCache : SimpleICache<CountingSet<string>>
     {
-        private readonly UnitySolutionTracker myUnitySolutionTracker;
         private readonly CountingSet<string> myLocalCache = new();
         private readonly OneToCompactCountingSet<string, IPsiSourceFile> myFilesWithShortCut = new();
 
-        public UnityShortcutCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, UnitySolutionTracker unitySolutionTracker)
+        public UnityShortcutCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager)
             : base(lifetime, shellLocks, persistentIndexManager,  CreateMarshaller())
         {
-            myUnitySolutionTracker = unitySolutionTracker;
         }
 
 
