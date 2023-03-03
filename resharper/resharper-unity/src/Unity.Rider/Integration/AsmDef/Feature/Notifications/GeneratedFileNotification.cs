@@ -45,7 +45,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
             {
                 textControlHost.TextControls.ForEachItem(lifetime, (lt, host) =>
                 {
-                    var projectFile = host.ToProjectFile(solution);
+                    IProjectFile projectFile;
+                    using (ReadLockCookie.Create())
+                    { 
+                        projectFile = host.ToProjectFile(solution);
+                    }
+                    
                     if (projectFile == null)
                         return;
 
