@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
@@ -55,9 +56,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var fieldTypeElement = fieldDeclaration.DeclaredElement?.Type.GetTypeElement();
             if (fieldDeclaration.IsStatic)
                 return false;
-            return UnityApi.IsRefRO(fieldTypeElement) 
-                   || UnityApi.IsRefRW(fieldTypeElement)
-                   || UnityApi.IsDerivesFromIAspect(fieldTypeElement);
+            return fieldTypeElement.IsClrName(KnownTypes.RefRO) 
+                   || fieldTypeElement.IsClrName(KnownTypes.RefRW)
+                   || fieldTypeElement.DerivesFrom(KnownTypes.IAspect);
         }
     }
 }

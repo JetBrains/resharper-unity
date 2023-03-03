@@ -67,21 +67,21 @@ public class |NotSerializable|(38)
     [|SerializeField|(42)] private int |myImplicitlyAssignedPrivateField|(43);
 
     // Assigned + used - no warning
-    |public|(44) string |ImplicitlyAssignedAndUsedField|(45);
+    public string |ImplicitlyAssignedAndUsedField|(44);
 
     // Not serialized by Unity
-    public const string |UnusedConst|(46) = "hello";
-    private const string |UnusedPrivateConst|(47) = "hello";
-    [|SerializeField|(48)] private const string |UnusedPrivateConst2|(49) = "hello";
-    private string |myUnusedField|(50);
-    public readonly string ||UnusedReadonlyField|(51)|(52);
-    [NonSerialized] public string |ExplicitlyUnusedField|(53);
-    [NonSerialized, |SerializeField|(54)] public string |ExplicitlyUnusedField2|(55);
-    [NonSerialized, |SerializeField|(56)] private string |myExplicitlyUnusedField3|(57);
-    public static string |UnusedStaticField|(58);
-    [|SerializeField|(59)] private static string |ourUnusedPrivateStaticField|(60);
+    public const string |UnusedConst|(45) = "hello";
+    private const string |UnusedPrivateConst|(46) = "hello";
+    [|SerializeField|(47)] private const string |UnusedPrivateConst2|(48) = "hello";
+    private string |myUnusedField|(49);
+    public readonly string ||UnusedReadonlyField|(50)|(51);
+    [NonSerialized] public string |ExplicitlyUnusedField|(52);
+    [NonSerialized, |SerializeField|(53)] public string |ExplicitlyUnusedField2|(54);
+    [NonSerialized, |SerializeField|(55)] private string |myExplicitlyUnusedField3|(56);
+    public static string |UnusedStaticField|(57);
+    [|SerializeField|(58)] private static string |ourUnusedPrivateStaticField|(59);
 
-    public void |OnDestroy|(61)()
+    public void |OnDestroy|(60)()
     {
         Console.WriteLine(ImplicitlyAssignedAndUsedField);
     }
@@ -132,22 +132,21 @@ public class |NotSerializable|(38)
 (41): ReSharper Dead Code: Field 'ImplicitlyAssignedMultiField2' is never used
 (42): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (43): ReSharper Warning [CS0169]: Field 'myImplicitlyAssignedPrivateField' is never used
-(44): ReSharper Suggestion: Field 'ImplicitlyAssignedAndUsedField' can be made private
-(45): ReSharper Suggestion: Field 'ImplicitlyAssignedAndUsedField' is never assigned
-(46): ReSharper Dead Code: Constant 'UnusedConst' is never used
-(47): ReSharper Dead Code: Constant 'UnusedPrivateConst' is never used
-(48): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(49): ReSharper Dead Code: Constant 'UnusedPrivateConst2' is never used
-(50): ReSharper Warning [CS0169]: Field 'myUnusedField' is never used
-(51): ReSharper Dead Code: Field 'UnusedReadonlyField' is never used
-(52): ReSharper Warning: Readonly field 'UnusedReadonlyField' is never assigned
-(53): ReSharper Dead Code: Field 'ExplicitlyUnusedField' is never used
-(54): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(55): ReSharper Dead Code: Field 'ExplicitlyUnusedField2' is never used
-(56): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(57): ReSharper Warning [CS0169]: Field 'myExplicitlyUnusedField3' is never used
-(58): ReSharper Dead Code: Field 'UnusedStaticField' is never used
-(59): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(60): ReSharper Warning [CS0169]: Field 'ourUnusedPrivateStaticField' is never used
-(61): ReSharper Dead Code: Method 'OnDestroy' is never used
+(44): ReSharper Suggestion: Field 'ImplicitlyAssignedAndUsedField' is never assigned
+(45): ReSharper Dead Code: Constant 'UnusedConst' is never used
+(46): ReSharper Dead Code: Constant 'UnusedPrivateConst' is never used
+(47): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(48): ReSharper Dead Code: Constant 'UnusedPrivateConst2' is never used
+(49): ReSharper Warning [CS0169]: Field 'myUnusedField' is never used
+(50): ReSharper Dead Code: Field 'UnusedReadonlyField' is never used
+(51): ReSharper Warning: Readonly field 'UnusedReadonlyField' is never assigned
+(52): ReSharper Dead Code: Field 'ExplicitlyUnusedField' is never used
+(53): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(54): ReSharper Dead Code: Field 'ExplicitlyUnusedField2' is never used
+(55): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(56): ReSharper Warning [CS0169]: Field 'myExplicitlyUnusedField3' is never used
+(57): ReSharper Dead Code: Field 'UnusedStaticField' is never used
+(58): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(59): ReSharper Warning [CS0169]: Field 'ourUnusedPrivateStaticField' is never used
+(60): ReSharper Dead Code: Method 'OnDestroy' is never used
 

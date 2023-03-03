@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 
@@ -40,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             var typeByCLRName = TypeFactory.CreateTypeByCLRName(clrTypeName, NullableAnnotation.Unknown, psiModule);
 
             var typeElement = typeByCLRName.GetTypeElement();
-            if (UnityApi.IsDerivesFromComponent(typeElement) || UnityApi.IsDerivesFromGameObject(typeElement))
+            if (typeElement.DerivesFrom(KnownTypes.Component) || typeElement.DerivesFrom(KnownTypes.GameObject))
                 return ourComponentToEntityConversions;
 
             return null;

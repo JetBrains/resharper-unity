@@ -87,6 +87,31 @@ public class IncorrectReturnType
     }
 }
 
+public class DuplicateMenuItemShortCutProblemAnalyzer
+{
+    [MenuItem(|"MyMenu/Do Something with a Shortcut Key %g"|(8))]
+    static void LogSelectedTransformName()
+    {
+    }
+
+    [MenuItem(|"MyMenu/Do Something with a Shortcut Key %g"|(9))]
+    static void LogSelectedTransformName1()
+    {
+    }
+
+    const string myConst = "MyMenu/Do Something with a Shortcut Key %g";
+
+    [MenuItem(|myConst|(10))]
+    static void LogSelectedTransformName2()
+    {
+    }
+
+    [MenuItem(|$"{myConst}"|(11))]
+    static void LogSelectedTransformName2()
+    {
+    }
+}
+
 ---------------------------------------------------------
 (0): ReSharper Warning: Incorrect method signature
 (1): ReSharper Warning: Incorrect method signature
@@ -96,3 +121,7 @@ public class IncorrectReturnType
 (5): ReSharper Warning: Incorrect method signature
 (6): ReSharper Warning: Incorrect method signature
 (7): ReSharper Warning: Incorrect method signature
+(8): ReSharper Warning: The same shortcut is defined for another menu item in this file
+(9): ReSharper Warning: The same shortcut is defined for another menu item in this file
+(10): ReSharper Warning: The same shortcut is defined for another menu item in this file
+(11): ReSharper Warning: The same shortcut is defined for another menu item in this file
