@@ -115,7 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 return null;
             foreach (var (typeElement, substitution) in selectedBaker.GetSuperTypes())
             {
-                if (UnityApi.IsBaker(typeElement))
+                if (typeElement.IsClrName(KnownTypes.Baker))
                 {
                     var authoringType = typeElement.TypeParameters[0];
                     var type = substitution[authoringType];
@@ -375,7 +375,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
         private static bool HasUnityBaseType(CSharpGeneratorContext context)
         {
-            return context.ClassDeclaration.DeclaredElement is IStruct typeElement && UnityApi.IsDerivesFromIComponentData(typeElement);
+            return context.ClassDeclaration.DeclaredElement is IStruct typeElement && typeElement.DerivesFrom(KnownTypes.IComponentData);
         }
 
         private readonly struct BakerGenerationInfo

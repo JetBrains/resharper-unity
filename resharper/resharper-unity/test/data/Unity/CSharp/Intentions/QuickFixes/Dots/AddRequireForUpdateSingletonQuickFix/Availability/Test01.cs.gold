@@ -33,9 +33,13 @@ partial struct Foo : ISystem
         state.RequireForUpdate<Chadilla>();
     }
 
+    public void OnDestroy(ref SystemState state)
+    {
+    }
+
     private void CustomUpdate(ref SystemState state)
     {
-        this.UpdatedByInternalMethod.Update(ref state);
+        this.|UpdatedByInternalMethod|(2).Update(ref state);
     }
 }
 
@@ -52,3 +56,5 @@ Add missing 'RequireForUpdate<Tagilla>' call
 --Add all missing 'RequireForUpdate' calls in file
 --Add all missing 'RequireForUpdate' calls in project
 --Add all missing 'RequireForUpdate' calls in solution
+2: Cannot resolve symbol 'UpdatedByInternalMethod'
+NO QUICKFIXES

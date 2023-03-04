@@ -10,7 +10,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendMo
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.Project
 
-class SaveAllTracker : AnActionListener {
+class SaveAllActionListener : AnActionListener {
     override fun afterActionPerformed(action: AnAction, dataContext: DataContext, event: AnActionEvent) {
         if (action !is SaveAllAction && action !is SaveDocumentAction) return
         val project = dataContext.Project ?: return

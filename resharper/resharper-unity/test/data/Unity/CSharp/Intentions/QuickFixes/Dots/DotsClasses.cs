@@ -29,9 +29,14 @@ namespace Unity.Entities
         void OnCreate(ref SystemState state);
 
         void OnDestroy(ref SystemState state);
-
        
         void OnUpdate(ref SystemState state);
+    }
+
+    public class ComponentSystemBase {}
+    public class SystemBase : ComponentSystemBase
+    {
+        protected virtual void OnUpdate() {}
     }
 
     public static class SystemAPI

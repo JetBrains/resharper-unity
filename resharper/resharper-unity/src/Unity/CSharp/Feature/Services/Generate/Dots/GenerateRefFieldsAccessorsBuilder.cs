@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Progress;
-using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.CSharp.Generate;
 using JetBrains.ReSharper.Feature.Services.Generate;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Util;
+using JetBrains.ReSharper.Psi.Naming.Settings;
 using JetBrains.ReSharper.Resources.Shell;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dots
@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             if (node == null)
                return; 
             
-            var (referencedType, isReadOnly) = UnityApi.GetReferencedType(node.GetContainingNode<IFieldDeclaration>());
+            var (referencedType, isReadOnly) = UnityApiExtensions.GetReferencedType(node.GetContainingNode<IFieldDeclaration>());
             if (referencedType == null)
                 return;
 
@@ -57,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             if (fieldDeclaration == null)
                 return;
 
-            var (referencedType, isReadOnly) = UnityApi.GetReferencedType(fieldDeclaration);
+            var (referencedType, isReadOnly) = UnityApiExtensions.GetReferencedType(fieldDeclaration);
             if (referencedType == null)
                 return;
 
@@ -67,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
             var selectedGeneratorElements = context.InputElements.OfType<GeneratorDeclaredElement>();
 
-            var isDerivesFromIAspect = UnityApi.IsDerivesFromIAspect(referencedType);
+            var isDerivesFromIAspect = referencedType.DerivesFrom(KnownTypes.IAspect);
             var getterFormat = isDerivesFromIAspect ? AspectGetterFormat : RefGetterFormat;
             var setterFormat = isDerivesFromIAspect ? AspectSetterFormat : RefSetterFormat;
 
@@ -81,11 +81,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                     continue;
 
                 var fieldShortName = fieldOrProperty.ShortName;
-                var propertyDeclaration = factory.CreatePropertyDeclaration(fieldOrProperty.Type, fieldShortName);
-                propertyDeclaration.SetAccessRights(AccessRights.PUBLIC);
-                var getterExpression = factory.CreateExpression(getterFormat, fieldName, fieldShortName);
+                var uniquePropertyName = NamingUtil.GetUniqueName(classLikeDeclaration.Body, fieldShortName, NamedElementKinds.Property);
 
-                if (isReadOnly || !shouldGenerateSetters)
+                var propertyDeclaration = factory.CreatePropertyDeclaration(fieldOrProperty.Type, uniquePropertyName);
+                propertyDeclaration.SetAccessRights(AccessRights.PUBLIC);
+                
+                var getterExpression = factory.CreateExpression(getterFormat, fieldName, fieldShortName);
+                var generateGettersOnly = isReadOnly || !shouldGenerateSetters;
+                
+                if (isDerivesFromIAspect)
+                {
+                    switch (fieldOrProperty)
+                    {
+                        case IField field:
+                            generateGettersOnly |= field.IsReadonly; 
+                            break;
+                        case IProperty property:
+                            generateGettersOnly |= property.IsReadonly || property.Setter == null;
+                            break;
+                    }
+                }
+
+                if (generateGettersOnly)
                 {
                     propertyDeclaration.SetBodyExpression(getterExpression);
                 }

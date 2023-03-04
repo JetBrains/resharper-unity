@@ -33,6 +33,10 @@ partial struct Foo : ISystem
         state.RequireForUpdate<Chadilla>();
     }
 
+    public void OnDestroy(ref SystemState state)
+    {
+    }
+
     private void CustomUpdate(ref SystemState state)
     {
         this.UpdatedByInternalMethod.Update(ref state);

@@ -116,8 +116,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
                 {
                     var attributeInstance = attribute.GetAttributeInstance();
                     var nameParameter = attributeInstance.PositionParameter(0);
-                    if (nameParameter.IsConstant && nameParameter.ConstantValue.IsString() &&
-                        nameParameter.ConstantValue.StringValue == nameArgument)
+                    if (nameParameter.IsConstant && nameParameter.ConstantValue.IsString(out var stringValue) &&
+                        stringValue == nameArgument)
                     {
                         list.Add(attribute);
                     }

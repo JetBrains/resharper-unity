@@ -36,6 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework
                 foreach (var file in files)
                     swea.AnalyzeInvisibleFile(file);
 
+                swea.AllFilesAnalyzed();
+
                 ExecuteWithGold(writer =>
                 {
                     var highlightingSettingsManager = HighlightingSettingsManager.Instance;
