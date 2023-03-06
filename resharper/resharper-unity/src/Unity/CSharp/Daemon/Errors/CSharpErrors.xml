@@ -208,6 +208,17 @@
         <Title resourceName="UnityDots_MustBeStructForDotsInheritor" resourceType="Strings" />
         <Description resourceName="UnityDots_MustBeStructForDotsInheritor" resourceType="Strings" />
       </Tag>
+      <Tag externalName="MustBeStructForDotsInheritorWarning.HIGHLIGHTING_ID" default="ERROR">
+        <Title resourceName="UnityDots_MustBeStructForDotsInheritor" resourceType="Strings" />
+        <Description resourceName="UnityDots_MustBeStructForDotsInheritor" resourceType="Strings" />
+      </Tag>
+      
+      <Tag externalName="AspectWrongFieldsTypeWarning.HIGHLIGHTING_ID" default="ERROR">
+        <Title resourceName="UnityDots_AspectWrongFieldsType" resourceType="Strings" />
+        <Description resourceName="UnityDots_AspectWrongFieldsType" resourceType="Strings" />
+      </Tag>
+      
+      
     </Group>
   </SeverityConfiguration>
   
@@ -643,5 +654,15 @@
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
-
+  <Warning name="AspectWrongFieldsType" configurableSeverity="Unity.Entities.AspectWrongFieldsType">
+    <Parameter type="IClassLikeDeclaration" name="classLikeDeclaration" />
+    <Parameter type="IFieldDeclaration" name="fieldDeclaration" />
+    <Message resourceName="UnityDots_AspectWrongFieldsType" resourceType="Strings">
+      <Argument>classLikeDeclaration.DeclaredName</Argument>
+      <Argument>fieldDeclaration.DeclaredName</Argument>
+    </Message>
+    <Range>FieldDeclaration.TypeUsage.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+ 
 </Errors>
