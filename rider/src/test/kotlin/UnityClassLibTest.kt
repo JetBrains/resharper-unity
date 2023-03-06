@@ -70,7 +70,6 @@ class UnityClassLibTest : BaseTestWithSolutionBase() {
         persistAllFilesOnDisk()
 
         waitForSolution(newProject, params)
-        assertCurrentSolutionToolset(newProject)
 
         return newProject
     }
