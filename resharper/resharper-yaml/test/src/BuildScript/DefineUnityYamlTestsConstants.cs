@@ -4,9 +4,9 @@ using JetBrains.Application.BuildScript.PreCompile.Autofix;
 using JetBrains.Application.BuildScript.Solution;
 using JetBrains.Build;
 
-namespace JetBrains.ReSharper.Plugins.Unity.BuildScript
+namespace JetBrains.ReSharper.Plugins.Yaml.Tests.BuildScript
 {
-	public static class DefineUnityYamlConstants
+	public static class DefineUnityYamlTestsConstants
 	{
 		[BuildStep]
 		public static IEnumerable<AutofixAllowedDefineConstant> YieldAllowedDefineConstantsForUnity()
@@ -17,7 +17,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.BuildScript
 
 			return constants.SelectMany(s => new []
 			{
-				new AutofixAllowedDefineConstant(new SubplatformName("Plugins\\ReSharperUnity\\resharper\\resharper-yaml\\src"), s),
 				new AutofixAllowedDefineConstant(new SubplatformName("Plugins\\ReSharperUnity\\resharper\\resharper-yaml\\test\\src"), s),
 			});
 		}

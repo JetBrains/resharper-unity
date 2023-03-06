@@ -1077,6 +1077,12 @@
     </data>
     <data name="UnityDots_MustBeStructForDotsInheritor" xml:space="preserve">
         <value>{0}'s inheritor '{1}' must be struct</value>
+    </data>    
+    <data name="UnityDots_AspectWrongFieldsType" xml:space="preserve">
+        <value>{0}'s field '{1}' cannot be other type than RefRW, RefRO, EnabledRefRW, EnabledRefRO, DynamicBuffer, or Entity</value>
+    </data>
+    <data name="UnityDots_AspectWrongFieldsType_WrapWith" xml:space="preserve">
+        <value>Wrap with '{0}'</value>
     </data>
     <data name="UnityDots_DotsPartialClassesQuickFix_Add_Partial_Readonly" xml:space="preserve">
         <value>Add '{0}' to {1}</value>
