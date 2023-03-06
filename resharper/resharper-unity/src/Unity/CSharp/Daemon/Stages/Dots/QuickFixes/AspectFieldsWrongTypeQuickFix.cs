@@ -83,8 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.QuickFixes
             myFieldDeclaration = fieldDeclaration;
             myWrapperTypeName = wrapperTypeName;
         }
-        
-        
+
 
         public override string Text =>
             string.Format(Strings.UnityDots_AspectWrongFieldsType_WrapWith, myWrapperTypeName.ShortName);
@@ -107,25 +106,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.QuickFixes
         {
             return myFieldDeclaration.IsValid();
         }
-
-        // public void Execute(ISolution solution, ITextControl textControl)
-        // {
-        //     
-        //    
-        // }
-        //
-        //
-        //
-        // protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
-        // {
-        //  
-        //
-        //     return null;
-        // }
-        //
-        // protected override ITreeNode TryGetContextTreeNode()
-        // {
-        //     return myFieldDeclaration;
-        // }
     }
 }
