@@ -14,15 +14,9 @@
     <!-- LibHarmony is not signed -->
     <NoWarn>CS8002</NoWarn>
     <JetTestProject>True</JetTestProject>
-    <DefineConstants Condition="!$(InternalBuild)">INDEPENDENT_BUILD</DefineConstants>
+    <DefineConstants Condition="!$(InternalBuild)">$(DefineConstants);INDEPENDENT_BUILD</DefineConstants>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  <!-- ********** -->
-  <!-- TODO: This should come from JetBrains.NET.Sdk, or Directory.Build.props -->
-  <PropertyGroup Condition="$(InternalBuild)">
-    <DefineConstants>$(DefineConstants);JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS</DefineConstants>
-  </PropertyGroup>
-  <Import Project="$(JetSdkProjectParameterFilePath)" Condition="Exists('$(JetSdkProjectParameterFilePath)')" />
   <!-- ********** -->
   <ItemGroup>
     <Reference Include="System.Xml" />
