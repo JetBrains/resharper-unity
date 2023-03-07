@@ -40,7 +40,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
         {
             base.BuildOptions(context, options);
             
-            
             var (bakerBaseTypeElement, _) = TypeFactory.CreateTypeByCLRName(KnownTypes.Baker, NullableAnnotation.Unknown, context.PsiModule);
             var typeElements = new List<ITypeElement>();
 
