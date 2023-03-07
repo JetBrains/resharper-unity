@@ -26,6 +26,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
 
         public IReferenceFactory? CreateFactory(IPsiSourceFile sourceFile, IFile file, IWordIndex? wordIndexForChecks)
         {
+            if (!sourceFile.IsValid())
+                return null;
+            
             // The source file might be in the external files module, so we can't look at what project it belongs to
             if (!sourceFile.GetSolution().HasUnityReference() && !myUnitySolutionTracker.IsUnityProject.HasTrueValue())
                 return null;
