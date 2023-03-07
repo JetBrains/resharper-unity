@@ -59,7 +59,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 {
                     if (classMemberDeclaration is not IFieldDeclaration { Type: IDeclaredType fieldDeclarationType } fieldDeclaration) 
                         continue;
-                    if (!fieldDeclarationType.GetTypeElement().DerivesFrom(KnownTypes.IComponentData)) 
+                    var fieldTypeElement = fieldDeclarationType.GetTypeElement();
+                    
+                    if(fieldTypeElement is not IStruct)
+                        continue;
+                    
+                    if (!fieldTypeElement.DerivesFrom(KnownTypes.IComponentData)) 
                         continue;
                     
                     consumer.AddHighlighting(new AspectWrongFieldsTypeWarning(classLikeDeclaration, fieldDeclaration));
