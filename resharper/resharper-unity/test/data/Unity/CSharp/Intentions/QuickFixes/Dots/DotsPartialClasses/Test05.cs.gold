@@ -8,7 +8,7 @@ public readonly partial struct IKAnimationAspect : IAspect
 {
 }
 
-partial struct PlayersDialogSystem : ISystem
+struct PlayersDialogSystem : ISystem
 {
     public void OnUpdate(ref SystemState state){}
     public void OnCreate(ref SystemState state){}

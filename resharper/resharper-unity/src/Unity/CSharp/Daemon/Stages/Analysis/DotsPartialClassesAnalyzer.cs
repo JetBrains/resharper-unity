@@ -85,20 +85,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 mustBeChangedToStruct = isClassKeyword;
                 mustBePartial = !classLikeDeclaration.IsPartial;
             }
-            else if (CheckInheritance(typeElement,KnownTypes.ISystem))
+            // TODO: temporary disabled due to upcoming Unity API changes right on RTM 2023.1 release
+            else if (CheckInheritance(typeElement, KnownTypes.ISystem))
             {
                 parentTypeName = KnownTypes.ISystem;
                 mustBeChangedToStruct = isClassKeyword;
-                mustBePartial = !classLikeDeclaration.IsPartial;
+                // mustBePartial = !classLikeDeclaration.IsPartial;
             }
-            // ComponentSystemBase is a direct parent for different internal Unity systems, there is a possibility to use for user systems as well
-            // SystemBase : ComponentSystemBase - is widely used as base class for user systems
-            else if (CheckInheritance(typeElement, KnownTypes.ComponentSystemBase) && !typeElement.IsClrName(KnownTypes.SystemBase))
-            {
-                parentTypeName = KnownTypes.SystemBase;
-                mustBePartial = !classLikeDeclaration.IsPartial;
-            }
-            else if (CheckInheritance(typeElement,KnownTypes.IComponentData))
+            // // ComponentSystemBase is a direct parent for different internal Unity systems, there is a possibility to use for user systems as well
+            // // SystemBase : ComponentSystemBase - is widely used as base class for user systems
+            // else if (CheckInheritance(typeElement, KnownTypes.ComponentSystemBase) &&
+            //          !typeElement.IsClrName(KnownTypes.SystemBase))
+            // {
+            //     parentTypeName = KnownTypes.SystemBase;
+            //     mustBePartial = !classLikeDeclaration.IsPartial;
+            // }
+            else if (CheckInheritance(typeElement, KnownTypes.IComponentData))
             {
                 parentTypeName = KnownTypes.IComponentData;
                 mustBeChangedToStruct = isClassKeyword;
