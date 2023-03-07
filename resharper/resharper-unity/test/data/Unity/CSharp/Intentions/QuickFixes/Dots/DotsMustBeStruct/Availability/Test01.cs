@@ -19,6 +19,10 @@ class ShorelineSettingsAspect : IAspect
 {
 }
 
+public class MyJobEntity : IJobEntity
+{
+}
+
 class Factory4 : IComponentData //could be a class instance
 {
 }

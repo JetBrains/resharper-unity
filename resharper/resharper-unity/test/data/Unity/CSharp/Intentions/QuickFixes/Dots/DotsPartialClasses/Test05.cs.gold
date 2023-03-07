@@ -8,6 +8,10 @@ public readonly partial struct IKAnimationAspect : IAspect
 {
 }
 
+public partial struct MyJobEntity : IJobEntity
+{
+}
+
 struct PlayersDialogSystem : ISystem
 {
     public void OnUpdate(ref SystemState state){}

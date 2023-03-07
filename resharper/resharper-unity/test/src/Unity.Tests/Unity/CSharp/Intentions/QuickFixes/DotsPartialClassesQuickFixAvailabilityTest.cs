@@ -50,6 +50,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         [Ignore("Unity's changing the api, waiting for pre3")][Test] public void Test02() { DoNamedTest(); }
         [Ignore("Unity's changing the api, waiting for pre3")][Test] public void Test03() { DoNamedTest(); }
         [Ignore("Unity's changing the api, waiting for pre3")][Test, ExecuteScopedActionInFile] public void Test04() { DoNamedTest(); }
-        [Ignore("Unity's changing the api, waiting for pre3")][Test, ExecuteScopedActionInFile] public void Test05() { DoNamedTest(); }
+        [Test, ExecuteScopedActionInFile] public void Test05() { DoNamedTest(); }
     }
 }

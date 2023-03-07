@@ -90,6 +90,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 mustBeChangedToStruct = isClassKeyword;
                 mustBePartial = !classLikeDeclaration.IsPartial;
             }
+            if (CheckInheritance(typeElement, KnownTypes.IJobEntity))
+            {
+                parentTypeName = KnownTypes.IJobEntity;
+                mustBeChangedToStruct = isClassKeyword;
+                mustBePartial = !classLikeDeclaration.IsPartial;
+            }
             // TODO: temporary disabled due to upcoming Unity API changes right on RTM 2023.1 release
             else if (CheckInheritance(typeElement, KnownTypes.ISystem))
             {

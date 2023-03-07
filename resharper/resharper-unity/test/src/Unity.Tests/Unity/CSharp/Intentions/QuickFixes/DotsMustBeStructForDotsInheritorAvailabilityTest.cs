@@ -50,5 +50,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
         [Test] public void Test02() { DoNamedTest(); }
         [Test, ExecuteScopedActionInFile] public void ScopeTest01() { DoNamedTest(); }
         [Test, ExecuteScopedActionInFile] public void ScopeTest02() { DoNamedTest(); }
+        [Test, ExecuteScopedActionInFile] public void ScopeTest03() { DoNamedTest(); }
     }
 }
