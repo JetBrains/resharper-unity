@@ -19,6 +19,6 @@ class ShorelineSettingsAspect : IAspect
 {
 }
 
-class Factory4 : IComponentData
+class Factory4 : IComponentData //could be a class instance
 {
 }

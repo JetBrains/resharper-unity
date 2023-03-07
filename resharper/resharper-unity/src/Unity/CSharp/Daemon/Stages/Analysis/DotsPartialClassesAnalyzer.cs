@@ -100,11 +100,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             //     parentTypeName = KnownTypes.SystemBase;
             //     mustBePartial = !classLikeDeclaration.IsPartial;
             // }
-            else if (CheckInheritance(typeElement, KnownTypes.IComponentData))
-            {
-                parentTypeName = KnownTypes.IComponentData;
-                mustBeChangedToStruct = isClassKeyword;
-            }
+            // else if (CheckInheritance(typeElement, KnownTypes.IComponentData))
+            // {
+            //     parentTypeName = KnownTypes.IComponentData;
+            //     mustBeChangedToStruct = isClassKeyword;
+            // }
 
             return new ModifiersProcessingInfo(parentTypeName, mustBeReadonly, mustBePartial, mustBeChangedToStruct);
         }

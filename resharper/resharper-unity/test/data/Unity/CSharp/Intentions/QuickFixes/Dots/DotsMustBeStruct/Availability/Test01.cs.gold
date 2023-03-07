@@ -19,7 +19,7 @@ class ||ShorelineSettingsAspect|(1)|(2) : IAspect
 {
 }
 
-class |Factory4|(3) : IComponentData
+class Factory4 : IComponentData //could be a class instance
 {
 }
 
@@ -38,9 +38,3 @@ IAspect's inheritor 'ShorelineSettingsAspect' must be struct
 --IAspect's inheritor 'ShorelineSettingsAspect' must be struct in file
 --IAspect's inheritor 'ShorelineSettingsAspect' must be struct in project
 --IAspect's inheritor 'ShorelineSettingsAspect' must be struct in solution
-3: IComponentData's inheritor 'Factory4' must be struct
-QUICKFIXES:
-IComponentData's inheritor 'Factory4' must be struct
---IComponentData's inheritor 'Factory4' must be struct in file
---IComponentData's inheritor 'Factory4' must be struct in project
---IComponentData's inheritor 'Factory4' must be struct in solution
