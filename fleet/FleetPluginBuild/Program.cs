@@ -159,24 +159,24 @@ int DoPack()
         {
           "version" : "bundled_version",
           "builtOn": "{{DateTime.Now:yyyy-MM-dd HH:mm:ss}}",
-          "CompanyNameHuman": "JetBrains",
-          "SubplatformName": "unity",
-          "PackageFiles": [
+          "companyNameHuman": "JetBrains",
+          "subplatformName": "unity",
+          "packageFiles": [
               {
-                "RelativePath" : "backend/JetBrains.ReSharper.Plugins.Json.dll",
-                "AssemblyName" : "*"
+                "relativePath" : "backend/JetBrains.ReSharper.Plugins.Json.dll",
+                "assemblyName" : "*"
               },
               {
-                "RelativePath" : "backend/JetBrains.ReSharper.Plugins.Yaml.dll",
-                "AssemblyName" : "*"
+                "relativePath" : "backend/JetBrains.ReSharper.Plugins.Yaml.dll",
+                "assemblyName" : "*"
               },
               {
-                "RelativePath" : "backend/JetBrains.ReSharper.Plugins.Unity.dll",
-                "AssemblyName" : "*"
+                "relativePath" : "backend/JetBrains.ReSharper.Plugins.Unity.dll",
+                "assemblyName" : "*"
               },
               {
-                "RelativePath" : "backend/JetBrains.ReSharper.Plugins.Unity.Fleet.dll",
-                "AssemblyName" : "*"
+                "relativePath" : "backend/JetBrains.ReSharper.Plugins.Unity.Fleet.dll",
+                "assemblyName" : "*"
               }
           ]   
         }
