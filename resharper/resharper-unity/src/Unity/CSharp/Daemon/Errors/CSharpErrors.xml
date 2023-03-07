@@ -200,6 +200,14 @@
         <Title resourceName="UnityDots_GetSingletonMustBeRequested" resourceType="Strings" />
         <Description resourceName="UnityDots_GetSingletonMustBeRequested" resourceType="Strings" />
       </Tag>
+      <Tag externalName="InconsistentModifiersForDotsInheritorWarning.HIGHLIGHTING_ID" default="ERROR">
+        <Title resourceName="UnityDots_InconsistentModifiersForDotsInheritor" resourceType="Strings" />
+        <Description resourceName="UnityDots_InconsistentModifiersForDotsInheritor" resourceType="Strings" />
+      </Tag>
+      <Tag externalName="MustBeStructForDotsInheritorWarning.HIGHLIGHTING_ID" default="ERROR">
+        <Title resourceName="UnityDots_MustBeStructForDotsInheritor" resourceType="Strings" />
+        <Description resourceName="UnityDots_MustBeStructForDotsInheritor" resourceType="Strings" />
+      </Tag>
     </Group>
   </SeverityConfiguration>
   
@@ -601,12 +609,39 @@
     <Parameter type="IClassLikeDeclaration" name="classLikeDeclaration" />
     <Parameter type="ICSharpExpression" name="availableUpdateMethod" />
     <Parameter type="IType" name="requestedType" />
-    <Parameter type="string" name="requestedTypeName" />
     <Message resourceName="UnityDots_GetSingletonMustBeRequested" resourceType="Strings">
-      <Argument>requestedTypeName</Argument>
+      <Argument>requestedType</Argument>
     </Message>
     <Range>AvailableUpdateMethod.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
+
+  <Warning name="InconsistentModifiersForDotsInheritor" configurableSeverity="Unity.Entities.InconsistentModifiersForDotsInheritor">
+    <Parameter type="IClassLikeDeclaration" name="classLikeDeclaration" />
+    <Parameter type="string" name="parentName" />
+    <Parameter type="bool" name="mustBePartial" />
+    <Parameter type="bool" name="mustBeReadonly" />
+    <Message resourceName="UnityDots_InconsistentModifiersForDotsInheritor" resourceType="Strings">
+      <Argument>parentName</Argument>
+      <Argument>classLikeDeclaration.DeclaredName</Argument>
+      <Argument>mustBePartial ? "partial" : string.Empty</Argument>
+      <Argument>mustBePartial &amp;&amp; mustBeReadonly? " " : string.Empty</Argument>
+      <Argument>mustBeReadonly ? "readonly" : string.Empty</Argument>
+    </Message>
+    <Range>ClassLikeDeclaration.NameIdentifier.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="MustBeStructForDotsInheritor" configurableSeverity="Unity.Entities.MustBeStructForDotsInheritor">
+    <Parameter type="IClassLikeDeclaration" name="classLikeDeclaration" />
+    <Parameter type="string" name="parentName" />
+    <Message resourceName="UnityDots_MustBeStructForDotsInheritor" resourceType="Strings">
+      <Argument>parentName</Argument>
+      <Argument>classLikeDeclaration.DeclaredName</Argument>
+    </Message>
+    <Range>ClassLikeDeclaration.NameIdentifier.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
 
 </Errors>

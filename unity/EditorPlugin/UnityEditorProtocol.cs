@@ -98,6 +98,12 @@ namespace JetBrains.Rider.Unity.Editor
         protocols.Add(new ProtocolInstance(solutionName, port));
       }
 
+      if (!protocols.Any())
+      {
+        ourLogger.Warn("Initialising protocol failed.");
+        return;
+      }
+
       allProtocolsLifetimeDefinition.Lifetime.OnTermination(() =>
       {
         if (lifetime.IsAlive)
@@ -125,18 +131,18 @@ namespace JetBrains.Rider.Unity.Editor
       });
     }
 
-    private static List<string> GetSolutionNames()
+    private static HashSet<string> GetSolutionNames()
     {
       // Get a list of all the solutions in the Unity project. We'll have at least the generated solution, but there
       // might be others, e.g. class libraries. We'll create a protocol connection for all such solutions
       var currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
-      var solutionNames = new List<string> { currentDirectory.Name };
+      var solutionNames = new HashSet<string> { currentDirectory.Name };
 
       var solutionFiles = currentDirectory.GetFiles("*.sln", SearchOption.TopDirectoryOnly);
       foreach (var solutionFile in solutionFiles)
       {
         var solutionName = Path.GetFileNameWithoutExtension(solutionFile.FullName);
-        if (!solutionName.Equals(currentDirectory.Name)) solutionNames.Add(solutionName);
+        solutionNames.Add(solutionName);
       }
 
       return solutionNames;

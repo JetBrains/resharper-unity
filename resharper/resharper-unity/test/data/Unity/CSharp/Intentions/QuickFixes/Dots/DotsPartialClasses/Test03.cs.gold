@@ -1,0 +1,8 @@
+﻿using Unity.Entities;
+
+public partial class Bigmap{caret}SystemBase : SystemBase
+{
+    protected override void OnUpdate()
+    {
+    }
+}

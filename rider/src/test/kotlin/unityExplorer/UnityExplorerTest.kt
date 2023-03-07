@@ -6,14 +6,13 @@ import base.dump
 import base.withUnityExplorerPane
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
-import com.jetbrains.rider.test.enums.CoreVersion
-import com.jetbrains.rider.test.enums.ToolsetVersion
+import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.prepareProjectView
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
 import org.testng.annotations.Test
 
-@TestEnvironment(toolset = ToolsetVersion.TOOLSET_17_CORE, coreVersion = CoreVersion.DOT_NET_6)
+@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class UnityExplorerTest : BaseTestWithSolutionBase() {
 
     @Test //RIDER-70098 Rider adds Unity meta files in a non-Unity project

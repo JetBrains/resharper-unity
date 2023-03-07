@@ -53,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 return false;
             
             return node.GetContainingNode<IClassBody>() == null 
-                   && UnityApi.IsDotsImplicitlyUsedType(classLikeDeclaration.DeclaredElement);
+                   && classLikeDeclaration.DeclaredElement.IsDotsImplicitlyUsedType();
         }
     }
 }

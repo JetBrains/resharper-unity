@@ -62,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
 
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return myUnitySolutionTracker.HasUnityReference.HasTrueValue() && base.IsApplicable(sf) && sf.PrimaryPsiLanguage.Is<CSharpLanguage>();
+            return base.IsApplicable(sf) && sf.PrimaryPsiLanguage.Is<CSharpLanguage>() && sf.GetProject().IsUnityProject();
         }
 
         public override object? Build(IPsiSourceFile sourceFile, bool isStartup)
@@ -93,10 +93,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
                             var isValidateFunction = validateArgument?.Value?.ConstantValue.IsTrue();
                             if (!isValidateFunction.HasValue || !isValidateFunction.Value)
                             {
-                                var name = GetArgument(0, "itemName", arguments)?.Value?.ConstantValue.StringValue;
-                                if (name != null)
+                                var constantValue = GetArgument(0, "itemName", arguments)?.Value?.ConstantValue;
+                                if (constantValue != null && constantValue.IsString(out var nameValue) && nameValue != null)
                                 {
-                                    var shortcut = ExtractShortcutFromName(name);
+                                    var shortcut = ExtractShortcutFromName(nameValue);
                                     if (shortcut != null)
                                     {
                                         result.Add(shortcut);

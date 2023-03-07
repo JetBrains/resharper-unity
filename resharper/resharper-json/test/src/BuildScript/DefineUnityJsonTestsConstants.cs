@@ -4,9 +4,9 @@ using JetBrains.Application.BuildScript.PreCompile.Autofix;
 using JetBrains.Application.BuildScript.Solution;
 using JetBrains.Build;
 
-namespace JetBrains.ReSharper.Plugins.Unity.BuildScript
+namespace JetBrains.ReSharper.Plugins.Json.Tests.BuildScript
 {
-	public static class DefineUnityJsonConstants
+	public static class DefineUnityJsonTestsConstants
 	{
 		[BuildStep]
 		public static IEnumerable<AutofixAllowedDefineConstant> YieldAllowedDefineConstantsForUnity()
@@ -17,7 +17,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.BuildScript
 
 			return constants.SelectMany(s => new []
 			{
-				new AutofixAllowedDefineConstant(new SubplatformName("Plugins\\ReSharperUnity\\resharper\\resharper-json\\src"), s),
 				new AutofixAllowedDefineConstant(new SubplatformName("Plugins\\ReSharperUnity\\resharper\\resharper-json\\test\\src"), s),
 			});
 		}

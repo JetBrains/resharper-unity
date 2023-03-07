@@ -30,6 +30,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
+        
+        [Test]
+        public void GenerateRefROWithSameName()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
 
         [Test]
         public void GenerateRefRWProperties()
@@ -42,11 +48,22 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
+                
+        [Test]
+        public void GenerateAspectAccessor1()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
+                
+        [Test]
+        public void GenerateAspectAccessor2()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
     }
 
     [TestUnity]
-    public class GenerateRefAccessorsActionAvailabilityTest
-        : ContextActionAvailabilityTestBase<GenerateRefAccessorsAction>
+    public class GenerateRefAccessorsActionAvailabilityTest : ContextActionAvailabilityTestBase<GenerateRefAccessorsAction>
     {
         private const string DotsClassesFileName = "DotsClasses.cs";
         protected override string ExtraPath => String.Empty;
@@ -62,8 +79,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
     }
 
     [TestUnity]
-    public class GenerateRefAccessorsActionExecutionTest
-        : ContextActionExecuteTestBase<GenerateRefAccessorsAction>
+    public class GenerateRefAccessorsActionExecutionTest : ContextActionExecuteTestBase<GenerateRefAccessorsAction>
     {
         private const string DotsClassesFileName = "DotsClasses.cs";
         protected override string ExtraPath => String.Empty;
@@ -78,8 +94,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
             {
                 var provider = Solution.GetComponent<TestGenerateRefAccessorsProvider>();
                 provider.SelectElement("ScavsCount");
-
-                return Disposable.CreateAction(() => Solution.GetComponent<TestGenerateUnityEventFunctionsProvider>().Clear());
+                
+                return Disposable.CreateAction(() => provider.Clear());
             };
         }
         

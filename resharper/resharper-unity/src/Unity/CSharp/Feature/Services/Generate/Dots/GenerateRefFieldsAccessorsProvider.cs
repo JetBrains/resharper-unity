@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             if (!context.ClassDeclaration.IsFromUnityProject())
                 return;
             var node = context.Anchor;
-            var (sourceType, _) = UnityApi.GetReferencedType(node.GetContainingNode<IFieldDeclaration>());
+            var (sourceType, _) = UnityApiExtensions.GetReferencedType(node.GetContainingNode<IFieldDeclaration>());
 
             if (sourceType == null)
                 return;

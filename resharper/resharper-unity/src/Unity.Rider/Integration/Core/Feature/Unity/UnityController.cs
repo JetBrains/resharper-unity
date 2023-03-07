@@ -11,7 +11,7 @@ using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
-using JetBrains.RdBackend.Common.Features;
+using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitTesting;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
                                IThreading threading,
                                ILogger logger)
         {
-            if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
+            if (!solution.HasProtocolSolution())
                 return;
 
             myBackendUnityHost = backendUnityHost;

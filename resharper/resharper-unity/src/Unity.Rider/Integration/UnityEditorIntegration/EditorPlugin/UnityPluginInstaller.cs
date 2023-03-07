@@ -40,6 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private readonly UnitySolutionTracker myUnitySolutionTracker;
         private readonly UnityRefresher myRefresher;
         private readonly UserNotifications myUserNotifications;
+        private readonly BackendUnityProtocol myBackendUnityProtocol;
         private readonly IHostProductInfo myHostProductInfo;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
         private readonly ProcessingQueue myQueue;
@@ -58,7 +59,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             UnitySolutionTracker unitySolutionTracker,
             UnityRefresher refresher,
             IHostProductInfo hostProductInfo,
-            UserNotifications userNotifications)
+            UserNotifications userNotifications, 
+            BackendUnityProtocol backendUnityProtocol)
         {
             myPluginInstallations = new JetHashSet<VirtualFileSystemPath>();
 
@@ -74,7 +76,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             myRefresher = refresher;
             myHostProductInfo = hostProductInfo;
             myUserNotifications = userNotifications;
-            
+            myBackendUnityProtocol = backendUnityProtocol;
+
             myBoundSettingsStore = settingsStore.BoundSettingsStore;
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
             
@@ -102,6 +105,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                 myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "IsAbleToEstablishProtocolConnectionWithUnity", InstallPluginIfRequired);
                 BindToInstallationSettingChange();
             });
+            
+            myBackendUnityProtocol.OutOfSync.Advise(lifetime, ShowOutOfSyncNotification);
         }
 
         private void BindToInstallationSettingChange()

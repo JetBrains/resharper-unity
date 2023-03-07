@@ -1,0 +1,48 @@
+﻿using Unity.Entities;
+
+class ||EnemySpawnSystem|(0)|(1) : ISystem
+{
+    public void OnUpdate(ref SystemState state)
+    {
+    }
+
+    public void OnCreate(ref SystemState state)
+    {
+    }
+
+    public void OnDestroy(ref SystemState state)
+    {
+    }
+}
+
+class ||ShorelineSettingsAspect|(2)|(3) : IAspect
+{
+}
+
+class |Factory4|(4) : IComponentData
+{
+}
+
+------------------------------------------------
+0: ISystem's inheritor 'EnemySpawnSystem' must be 'partial'
+NO QUICKFIXES
+1: ISystem's inheritor 'EnemySpawnSystem' must be struct
+QUICKFIXES:
+ISystem's inheritor 'EnemySpawnSystem' must be struct
+--ISystem's inheritor 'EnemySpawnSystem' must be struct in file
+--ISystem's inheritor 'EnemySpawnSystem' must be struct in project
+--ISystem's inheritor 'EnemySpawnSystem' must be struct in solution
+2: IAspect's inheritor 'ShorelineSettingsAspect' must be 'partial readonly'
+NO QUICKFIXES
+3: IAspect's inheritor 'ShorelineSettingsAspect' must be struct
+QUICKFIXES:
+IAspect's inheritor 'ShorelineSettingsAspect' must be struct
+--IAspect's inheritor 'ShorelineSettingsAspect' must be struct in file
+--IAspect's inheritor 'ShorelineSettingsAspect' must be struct in project
+--IAspect's inheritor 'ShorelineSettingsAspect' must be struct in solution
+4: IComponentData's inheritor 'Factory4' must be struct
+QUICKFIXES:
+IComponentData's inheritor 'Factory4' must be struct
+--IComponentData's inheritor 'Factory4' must be struct in file
+--IComponentData's inheritor 'Factory4' must be struct in project
+--IComponentData's inheritor 'Factory4' must be struct in solution

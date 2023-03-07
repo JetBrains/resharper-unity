@@ -273,7 +273,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                         var reference = argument.GetReferences<UnityObjectTypeOrNamespaceReference>().FirstOrDefault();
                         if (reference != null && reference.Resolve().ResolveErrorType.IsAcceptable)
                         {
-                            baseName = argument.ConstantValue.StringValue.NotNull();
+                            var constantValue = argument.ConstantValue;
+                            if (constantValue.IsString(out var name))
+                                baseName = name.NotNull();
                         }
                     }
                 }

@@ -47,8 +47,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
         public override IReference BindTo(IDeclaredElement element)
         {
             var literalAlterer = StringLiteralAltererUtil.CreateStringLiteralByExpression(myOwner);
-            var constantValue = myOwner.ConstantValue.StringValue.NotNull();
-            literalAlterer.Replace(constantValue, element.ShortName);
+            var stringValue = myOwner.ConstantValue.StringValue.NotNull();
+            literalAlterer.Replace(stringValue, element.ShortName);
             var newOwner = literalAlterer.Expression;
             if (!myOwner.Equals(newOwner))
                 return newOwner.FindReference<StringLiteralReferenceBase>(r => r.GetType() == GetType()) ?? this;
