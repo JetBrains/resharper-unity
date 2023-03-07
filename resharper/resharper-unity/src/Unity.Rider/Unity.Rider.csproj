@@ -15,7 +15,9 @@
   </PropertyGroup>
   <!-- ********** -->
   <!-- TODO: This should come from JetBrains.NET.Sdk, or Directory.Build.props -->
-  <PropertyGroup Condition="$(InternalBuild)" />
+  <PropertyGroup Condition="$(InternalBuild)">
+    <DefineConstants>$(DefineConstants);JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS</DefineConstants>
+  </PropertyGroup>
   <Import Project="$(JetSdkProjectParameterFilePath)" Condition="Exists('$(JetSdkProjectParameterFilePath)')" />
   <!-- ********** -->
   <ItemGroup Label="Model">
@@ -39,7 +41,6 @@
     <Reference Include="System.Core" />
     <Reference Include="mscorlib" />
     <Reference Include="WindowsBase" />
-    <Reference Include="netstandard" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="Resources">
