@@ -34,6 +34,7 @@
     <Compile Update="Daemon\Errors\YamlErrors.generated.cs">
       <DependentUpon>YamlErrors.xml</DependentUpon>
     </Compile>
+    <Compile Remove="BuildScript\**" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup>
@@ -41,6 +42,7 @@
       <Generator>JetResourceGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Remove="BuildScript\**" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup>
@@ -50,6 +52,9 @@
     </PackageReference>
     <Reference Include="System" />
     <Reference Include="netstandard" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="BuildScript\**" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="!$(InternalBuild)" />
   <Import Project="ManagedProject.Generated.Targets" Condition="$(InternalBuild)" />

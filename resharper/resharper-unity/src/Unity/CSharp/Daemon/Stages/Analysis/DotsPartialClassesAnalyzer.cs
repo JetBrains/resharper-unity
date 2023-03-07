@@ -16,7 +16,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     [ElementProblemAnalyzer(typeof(IClassLikeDeclaration), HighlightingTypes = new[]
     {
         typeof(InconsistentModifiersForDotsInheritorWarning),
-        typeof(MustBeStructForDotsInheritorWarning)
+        typeof(MustBeStructForDotsInheritorWarning),
+        typeof(AspectWrongFieldsTypeWarning)
     })]
     public class DotsPartialClassesAnalyzer : UnityElementProblemAnalyzer<IClassLikeDeclaration>
     {
@@ -50,6 +51,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             {
                 consumer.AddHighlighting(new MustBeStructForDotsInheritorWarning(classLikeDeclaration,
                     modifiersProcessingInfo.SuperTypeName.ShortName));
+            }
+
+            if (typeElement.DerivesFrom(KnownTypes.IAspect))
+            {
+                foreach (var classMemberDeclaration in classLikeDeclaration.ClassMemberDeclarations)
+                {
+                    if (classMemberDeclaration is not IFieldDeclaration { Type: IDeclaredType fieldDeclarationType } fieldDeclaration) 
+                        continue;
+                    if (!fieldDeclarationType.GetTypeElement().DerivesFrom(KnownTypes.IComponentData)) 
+                        continue;
+                    
+                    consumer.AddHighlighting(new AspectWrongFieldsTypeWarning(classLikeDeclaration, fieldDeclaration));
+                }
             }
         }
 
