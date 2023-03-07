@@ -163,19 +163,19 @@ int DoPack()
           "SubplatformName": "unity",
           "PackageFiles": [
               {
-                "RelativePath" : "JetBrains.ReSharper.Plugins.Json.dll",
+                "RelativePath" : "backend/JetBrains.ReSharper.Plugins.Json.dll",
                 "AssemblyName" : "*"
               },
               {
-                "RelativePath" : "JetBrains.ReSharper.Plugins.Yaml.dll",
+                "RelativePath" : "backend/JetBrains.ReSharper.Plugins.Yaml.dll",
                 "AssemblyName" : "*"
               },
               {
-                "RelativePath" : "JetBrains.ReSharper.Plugins.Unity.dll",
+                "RelativePath" : "backend/JetBrains.ReSharper.Plugins.Unity.dll",
                 "AssemblyName" : "*"
               },
               {
-                "RelativePath" : "JetBrains.ReSharper.Plugins.Unity.Fleet.dll",
+                "RelativePath" : "backend/JetBrains.ReSharper.Plugins.Unity.Fleet.dll",
                 "AssemblyName" : "*"
               }
           ]   
