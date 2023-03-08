@@ -14,6 +14,7 @@ namespace Unity.Entities
     public interface IComponentData : IQueryTypeParameter { }
     public interface IEnableableComponent {}
     public interface IAspect { }
+    public interface IJobEntity {}
 
     public unsafe struct ComponentLookup<T> where T : unmanaged, IComponentData
     {
