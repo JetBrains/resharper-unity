@@ -197,25 +197,21 @@
         <Description resourceName="UnityDots_CurrentComponentLookupMustBeUpdated" resourceType="Strings" />
       </Tag>
       <Tag externalName="SingletonMustBeRequestedWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title resourceName="UnityDots_GetSingletonMustBeRequested" resourceType="Strings" />
-        <Description resourceName="UnityDots_GetSingletonMustBeRequested" resourceType="Strings" />
+        <Title resourceName="UnityDots_GetSingletonMustBeRequested_WarningInfo" resourceType="Strings" />
+        <Description resourceName="UnityDots_GetSingletonMustBeRequested_WarningInfo" resourceType="Strings" />
       </Tag>
       <Tag externalName="InconsistentModifiersForDotsInheritorWarning.HIGHLIGHTING_ID" default="ERROR">
-        <Title resourceName="UnityDots_InconsistentModifiersForDotsInheritor" resourceType="Strings" />
-        <Description resourceName="UnityDots_InconsistentModifiersForDotsInheritor" resourceType="Strings" />
+        <Title resourceName="UnityDots_InconsistentModifiersForDotsInheritor_WarningInformation" resourceType="Strings" />
+        <Description resourceName="UnityDots_InconsistentModifiersForDotsInheritor_WarningInformation" resourceType="Strings" />
       </Tag>
       <Tag externalName="MustBeStructForDotsInheritorWarning.HIGHLIGHTING_ID" default="ERROR">
-        <Title resourceName="UnityDots_MustBeStructForDotsInheritor" resourceType="Strings" />
-        <Description resourceName="UnityDots_MustBeStructForDotsInheritor" resourceType="Strings" />
-      </Tag>
-      <Tag externalName="MustBeStructForDotsInheritorWarning.HIGHLIGHTING_ID" default="ERROR">
-        <Title resourceName="UnityDots_MustBeStructForDotsInheritor" resourceType="Strings" />
-        <Description resourceName="UnityDots_MustBeStructForDotsInheritor" resourceType="Strings" />
+        <Title resourceName="UnityDots_MustBeStructForDotsInheritor_WarningInformation" resourceType="Strings" />
+        <Description resourceName="UnityDots_MustBeStructForDotsInheritor_WarningInformation" resourceType="Strings" />
       </Tag>
       
       <Tag externalName="AspectWrongFieldsTypeWarning.HIGHLIGHTING_ID" default="ERROR">
-        <Title resourceName="UnityDots_AspectWrongFieldsType" resourceType="Strings" />
-        <Description resourceName="UnityDots_AspectWrongFieldsType" resourceType="Strings" />
+        <Title resourceName="UnityDots_AspectWrongFieldsType_Warning" resourceType="Strings" />
+        <Description resourceName="UnityDots_AspectWrongFieldsType_Warning" resourceType="Strings" />
       </Tag>
       
       
@@ -657,7 +653,7 @@
   <Warning name="AspectWrongFieldsType" configurableSeverity="Unity.Entities.AspectWrongFieldsType">
     <Parameter type="IClassLikeDeclaration" name="classLikeDeclaration" />
     <Parameter type="IFieldDeclaration" name="fieldDeclaration" />
-    <Message resourceName="UnityDots_AspectWrongFieldsType" resourceType="Strings">
+    <Message resourceName="UnityDots_AspectWrongFieldsType_Message" resourceType="Strings">
       <Argument>classLikeDeclaration.DeclaredName</Argument>
       <Argument>fieldDeclaration.DeclaredName</Argument>
     </Message>

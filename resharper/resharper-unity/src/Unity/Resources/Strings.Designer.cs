@@ -349,7 +349,7 @@
     public static string TypeDetector_AddDeclarationHighlighting_Editor => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Editor");
     public static string TypeDetector_AddDeclarationHighlighting_Script => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Script");
     public static string TypeDetector_AddDeclarationHighlighting_Scriptable_object => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Scriptable_object");
-    public static string TypeDetector_AddDeclarationHighlighting_Unity_entities_system => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_entities_system");
+    public static string TypeDetector_AddDeclarationHighlighting_Unity_entities => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_entities");
     public static string TypeDetector_AddDeclarationHighlighting_Unity_script => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_script");
     public static string TypeDetector_AddDeclarationHighlighting_Unity_scriptable_object => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_scriptable_object");
     public static string TypeDetector_AddDeclarationHighlighting_Unity_type => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_type");
@@ -391,6 +391,7 @@
     public static string UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_Title => ResourceManager.GetString("UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_Title");
     public static string UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_WindowTitle => ResourceManager.GetString("UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_WindowTitle");
     public static string UnityDots_GetSingletonMustBeRequested => ResourceManager.GetString("UnityDots_GetSingletonMustBeRequested");
+    public static string UnityDots_GetSingletonMustBeRequested_WarningInfo => ResourceManager.GetString("UnityDots_GetSingletonMustBeRequested_WarningInfo");
     public static string UnityDots_projects => ResourceManager.GetString("UnityDots_projects");
     public static string UnityDots_GenerateRefAccessors_Name => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Name");
     public static string UnityDots_GenerateRefAccessors_Description => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Description");
@@ -399,8 +400,11 @@
     public static string UnityDots_GenerateRefAccessors_Unity_Component_Fields_Description => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Unity_Component_Fields_Description");
     public static string UnityDots_GenerateRefAccessors_Generate_Setters => ResourceManager.GetString("UnityDots_GenerateRefAccessors_Generate_Setters");
     public static string UnityDots_InconsistentModifiersForDotsInheritor => ResourceManager.GetString("UnityDots_InconsistentModifiersForDotsInheritor");
+    public static string UnityDots_InconsistentModifiersForDotsInheritor_WarningInformation => ResourceManager.GetString("UnityDots_InconsistentModifiersForDotsInheritor_WarningInformation");
     public static string UnityDots_MustBeStructForDotsInheritor => ResourceManager.GetString("UnityDots_MustBeStructForDotsInheritor");
-    public static string UnityDots_AspectWrongFieldsType => ResourceManager.GetString("UnityDots_AspectWrongFieldsType");
+    public static string UnityDots_MustBeStructForDotsInheritor_WarningInformation => ResourceManager.GetString("UnityDots_MustBeStructForDotsInheritor_WarningInformation");
+    public static string UnityDots_AspectWrongFieldsType_Message => ResourceManager.GetString("UnityDots_AspectWrongFieldsType_Message");
+    public static string UnityDots_AspectWrongFieldsType_Warning => ResourceManager.GetString("UnityDots_AspectWrongFieldsType_Warning");
     public static string UnityDots_AspectWrongFieldsType_WrapWith => ResourceManager.GetString("UnityDots_AspectWrongFieldsType_WrapWith");
     public static string UnityDots_DotsPartialClassesQuickFix_Add_Partial_Readonly => ResourceManager.GetString("UnityDots_DotsPartialClassesQuickFix_Add_Partial_Readonly");
     public static string UnityEditorFolder_Text => ResourceManager.GetString("UnityEditorFolder_Text");
