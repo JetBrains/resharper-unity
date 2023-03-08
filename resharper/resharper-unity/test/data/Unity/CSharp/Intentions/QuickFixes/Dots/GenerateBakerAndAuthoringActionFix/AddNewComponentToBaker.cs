@@ -15,7 +15,7 @@ namespace ComponentsAndTags
         public Entity TombstonePrefab;
     }
 
-    struct Random{caret}Properties : IComponentData
+    class Random{caret}Properties : IComponentData
     {
         public Unity.Mathematics.Random SpawnRandom;
     }

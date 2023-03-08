@@ -15,12 +15,6 @@
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
   <!-- ********** -->
-  <!-- TODO: This should come from JetBrains.NET.Sdk, or Directory.Build.props -->
-  <PropertyGroup Condition="$(InternalBuild)">
-    <DefineConstants>$(DefineConstants);JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS</DefineConstants>
-  </PropertyGroup>
-  <Import Project="$(JetSdkProjectParameterFilePath)" Condition="Exists('$(JetSdkProjectParameterFilePath)')" />
-  <!-- ********** -->
   <ItemGroup Label="C#">
     <ErrorsGen Include="CSharp\Daemon\Errors\CSharpErrors.xml">
       <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
@@ -112,7 +106,7 @@
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>    
+    </PackageReference>
     <Reference Include="System.Xaml" />
     <ProjectReference Include="..\..\..\resharper-json\src\Json\Json.csproj" />
     <ProjectReference Include="..\..\..\resharper-yaml\src\Yaml\Yaml.csproj" />

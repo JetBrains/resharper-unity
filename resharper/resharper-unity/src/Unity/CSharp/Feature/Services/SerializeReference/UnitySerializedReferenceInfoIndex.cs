@@ -104,7 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
             if (!isAssemblyRegistered)
             {
-                myLogger.Info(
+                myLogger.Verbose(
                     $"Adding {nameof(psiAssembly)}:{psiAssembly.Id.Mvid}:{fullAssemblyId}|{fullAssemblyId}");
                 AssemblyDictionary.Add(fullAssemblyId, elementInfo);
                 Merge(null!, elementInfo);
