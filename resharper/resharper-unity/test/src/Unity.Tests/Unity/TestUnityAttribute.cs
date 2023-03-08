@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.platforms;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Assemblies.Impl;
@@ -45,6 +46,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
     }
     // ReSharper restore InconsistentNaming
 
+    // Zone marker required because this file is included into Rider tests, which doesn't have a zone marker for the
+    // namespace. Note that this will appear to be redundant in Unity.Tests. Do not remove!
+    [ZoneMarker(typeof(IProjectModelZone))]
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class TestUnityAttribute : TestAspectAttribute, ITestLibraryReferencesProvider, ITestPackagesProvider,
         ITestFlavoursProvider, ITestTargetFrameworkIdProvider, ITestFileExtensionProvider, ICustomProjectPropertyAttribute
