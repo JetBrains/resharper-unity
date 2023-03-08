@@ -14,12 +14,6 @@
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
   <!-- ********** -->
-  <!-- TODO: This should come from JetBrains.NET.Sdk, or Directory.Build.props -->
-  <PropertyGroup Condition="$(InternalBuild)">
-    <DefineConstants>$(DefineConstants);JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS</DefineConstants>
-  </PropertyGroup>
-  <Import Project="$(JetSdkProjectParameterFilePath)" Condition="Exists('$(JetSdkProjectParameterFilePath)')" />
-  <!-- ********** -->
   <ItemGroup>
     <PsiLanguageNames Include="Yaml">
       <Visible>False</Visible>
@@ -40,6 +34,7 @@
     <Compile Update="Daemon\Errors\YamlErrors.generated.cs">
       <DependentUpon>YamlErrors.xml</DependentUpon>
     </Compile>
+    <Compile Remove="BuildScript\**" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup>
@@ -47,6 +42,7 @@
       <Generator>JetResourceGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Remove="BuildScript\**" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup>
@@ -56,6 +52,9 @@
     </PackageReference>
     <Reference Include="System" />
     <Reference Include="netstandard" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="BuildScript\**" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="!$(InternalBuild)" />
   <Import Project="ManagedProject.Generated.Targets" Condition="$(InternalBuild)" />

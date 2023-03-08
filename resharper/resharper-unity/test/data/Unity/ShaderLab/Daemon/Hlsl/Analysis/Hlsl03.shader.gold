@@ -36,7 +36,7 @@
         
             #if SHADER_TARGET > 40
                 // Albedo comes from a texture tinted by color
-                |fixed4|(8) |c|(9) = tex2D |(_MainTex, IN.uv_MainTex, 2)|(10) * _Color;
+                |fixed4|(8) |c|(9) = |tex2D|(10) (_MainTex, IN.uv_MainTex, 2) * _Color;
                 o.Albedo = c.rgb;
                 // Metallic and smoothness come from slider variables
                 o.Metallic = _Metallic;
@@ -59,4 +59,4 @@
 (7): ReSharper Underlined Error Highlighting: This declarator has unknown type
 (8): ReSharper Error Highlighting: Cannot resolve symbol 'fixed4'
 (9): ReSharper Underlined Error Highlighting: This declarator has unknown type
-(10): ReSharper Underlined Error Highlighting: None of the overloads accepts 3 arguments
+(10): ReSharper Underlined Error Highlighting: Expression of type function-overload-set is not callable

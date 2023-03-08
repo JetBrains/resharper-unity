@@ -16,7 +16,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     [ElementProblemAnalyzer(typeof(IClassLikeDeclaration), HighlightingTypes = new[]
     {
         typeof(InconsistentModifiersForDotsInheritorWarning),
-        typeof(MustBeStructForDotsInheritorWarning)
+        typeof(MustBeStructForDotsInheritorWarning),
+        typeof(AspectWrongFieldsTypeWarning)
     })]
     public class DotsPartialClassesAnalyzer : UnityElementProblemAnalyzer<IClassLikeDeclaration>
     {
@@ -51,6 +52,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 consumer.AddHighlighting(new MustBeStructForDotsInheritorWarning(classLikeDeclaration,
                     modifiersProcessingInfo.SuperTypeName.ShortName));
             }
+
+            if (typeElement.DerivesFrom(KnownTypes.IAspect))
+            {
+                foreach (var classMemberDeclaration in classLikeDeclaration.ClassMemberDeclarations)
+                {
+                    if (classMemberDeclaration is not IFieldDeclaration { Type: IDeclaredType fieldDeclarationType } fieldDeclaration) 
+                        continue;
+                    var fieldTypeElement = fieldDeclarationType.GetTypeElement();
+                    
+                    if(fieldTypeElement is not IStruct)
+                        continue;
+                    
+                    if (!fieldTypeElement.DerivesFrom(KnownTypes.IComponentData)) 
+                        continue;
+                    
+                    consumer.AddHighlighting(new AspectWrongFieldsTypeWarning(classLikeDeclaration, fieldDeclaration));
+                }
+            }
         }
 
         private static ModifiersProcessingInfo GetModifiersInfo(IClassLikeDeclaration classLikeDeclaration,
@@ -71,24 +90,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 mustBeChangedToStruct = isClassKeyword;
                 mustBePartial = !classLikeDeclaration.IsPartial;
             }
-            else if (CheckInheritance(typeElement,KnownTypes.ISystem))
+            if (CheckInheritance(typeElement, KnownTypes.IJobEntity))
+            {
+                parentTypeName = KnownTypes.IJobEntity;
+                mustBeChangedToStruct = isClassKeyword;
+                mustBePartial = !classLikeDeclaration.IsPartial;
+            }
+            // TODO: temporary disabled due to upcoming Unity API changes right on RTM 2023.1 release
+            else if (CheckInheritance(typeElement, KnownTypes.ISystem))
             {
                 parentTypeName = KnownTypes.ISystem;
                 mustBeChangedToStruct = isClassKeyword;
-                mustBePartial = !classLikeDeclaration.IsPartial;
+                // mustBePartial = !classLikeDeclaration.IsPartial;
             }
-            // ComponentSystemBase is a direct parent for different internal Unity systems, there is a possibility to use for user systems as well
-            // SystemBase : ComponentSystemBase - is widely used as base class for user systems
-            else if (CheckInheritance(typeElement, KnownTypes.ComponentSystemBase) && !typeElement.IsClrName(KnownTypes.SystemBase))
-            {
-                parentTypeName = KnownTypes.SystemBase;
-                mustBePartial = !classLikeDeclaration.IsPartial;
-            }
-            else if (CheckInheritance(typeElement,KnownTypes.IComponentData))
-            {
-                parentTypeName = KnownTypes.IComponentData;
-                mustBeChangedToStruct = isClassKeyword;
-            }
+            // // ComponentSystemBase is a direct parent for different internal Unity systems, there is a possibility to use for user systems as well
+            // // SystemBase : ComponentSystemBase - is widely used as base class for user systems
+            // else if (CheckInheritance(typeElement, KnownTypes.ComponentSystemBase) &&
+            //          !typeElement.IsClrName(KnownTypes.SystemBase))
+            // {
+            //     parentTypeName = KnownTypes.SystemBase;
+            //     mustBePartial = !classLikeDeclaration.IsPartial;
+            // }
+            // else if (CheckInheritance(typeElement, KnownTypes.IComponentData))
+            // {
+            //     parentTypeName = KnownTypes.IComponentData;
+            //     mustBeChangedToStruct = isClassKeyword;
+            // }
 
             return new ModifiersProcessingInfo(parentTypeName, mustBeReadonly, mustBePartial, mustBeChangedToStruct);
         }

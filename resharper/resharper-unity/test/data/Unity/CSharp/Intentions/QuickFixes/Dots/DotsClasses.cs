@@ -12,7 +12,9 @@ namespace Unity.Entities
 
     public interface IQueryTypeParameter { }
     public interface IComponentData : IQueryTypeParameter { }
+    public interface IEnableableComponent {}
     public interface IAspect { }
+    public interface IJobEntity {}
 
     public unsafe struct ComponentLookup<T> where T : unmanaged, IComponentData
     {
@@ -21,8 +23,6 @@ namespace Unity.Entities
         }
     }
     
-    public interface IEnableableComponent { }
-
     public interface ISystem
     {
 
@@ -58,6 +58,17 @@ namespace Unity.Entities
         private T _data;
         public unsafe ref readonly T ValueRO {get {return _data; }}
     }
+
+    public readonly struct EnabledRefRO<T>
+    {
+        public bool ValueRO =>  true;
+    }
+
+    public readonly struct EnabledRefRW<T>
+    {
+        public bool ValueRW {get;set;};
+    }
+
 }
 
 namespace Unity.Mathematics

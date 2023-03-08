@@ -6,6 +6,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders
     [ZoneDefinition]
     public interface IUnityShaderZone : IZone, IRequire<IUnityPluginZone>, IRequire<ILanguageCppZone>
     {
-        
     }
 }

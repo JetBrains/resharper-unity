@@ -1,9 +1,10 @@
 using Unity.Entities;
 
-public class BotData{caret}ComponentData : IComponentData
+
+public class BotData{caret}IJobEntity : IJobEntity
 {
 }
 
-public readonly class IKAnimationComponentData : IComponentData
+public readonly class IKAnimationIJobEntity : IJobEntity
 {
 }
