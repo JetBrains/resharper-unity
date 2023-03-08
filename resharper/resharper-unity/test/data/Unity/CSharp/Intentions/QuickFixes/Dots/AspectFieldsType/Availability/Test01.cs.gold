@@ -9,10 +9,15 @@ public struct AnotherComponentData : IComponentData, IEnableableComponent
 {
 }
 
+public class ClassComponentData : IComponentData
+{
+}
+
 public readonly partial struct MyAspect : IAspect
 {
     public readonly |SomeComponentData|(0) SomeComponentData; //must be an error
     public readonly |AnotherComponentData|(1) AnotherComponentData; //must be an error
+    public readonly ClassComponentData ClassComponentData; //no RW/RO error
 }
 
 ------------------------------------------------
