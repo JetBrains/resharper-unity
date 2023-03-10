@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.platforms;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Assemblies.Impl;

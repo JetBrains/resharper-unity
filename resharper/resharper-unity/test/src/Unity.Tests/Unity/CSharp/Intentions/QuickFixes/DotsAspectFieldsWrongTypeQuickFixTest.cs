@@ -3,7 +3,6 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
 using JetBrains.ReSharper.Plugins.Tests.UnityTestComponents;
-using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using NUnit.Framework;

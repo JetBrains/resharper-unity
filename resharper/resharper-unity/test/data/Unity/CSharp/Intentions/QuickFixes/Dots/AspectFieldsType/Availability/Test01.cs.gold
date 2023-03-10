@@ -9,18 +9,23 @@ public struct AnotherComponentData : IComponentData, IEnableableComponent
 {
 }
 
+public class ClassComponentData : IComponentData
+{
+}
+
 public readonly partial struct MyAspect : IAspect
 {
     public readonly |SomeComponentData|(0) SomeComponentData; //must be an error
     public readonly |AnotherComponentData|(1) AnotherComponentData; //must be an error
+    public readonly ClassComponentData ClassComponentData; //no RW/RO error
 }
 
 ------------------------------------------------
-0: MyAspect's field 'SomeComponentData' cannot be other type than RefRW, RefRO, EnabledRefRW, EnabledRefRO, DynamicBuffer, or Entity
+0: MyAspect's field 'SomeComponentData' must be of type RefRW, RefRO, EnabledRefRW, EnabledRefRO, DynamicBuffer, or Entity
 QUICKFIXES:
 Wrap with 'RefRO'
 Wrap with 'RefRW'
-1: MyAspect's field 'AnotherComponentData' cannot be other type than RefRW, RefRO, EnabledRefRW, EnabledRefRO, DynamicBuffer, or Entity
+1: MyAspect's field 'AnotherComponentData' must be of type RefRW, RefRO, EnabledRefRW, EnabledRefRO, DynamicBuffer, or Entity
 QUICKFIXES:
 Wrap with 'RefRO'
 --Wrap with 'EnabledRefRO'

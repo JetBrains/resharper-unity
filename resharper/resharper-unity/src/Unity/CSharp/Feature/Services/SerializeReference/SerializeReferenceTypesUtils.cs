@@ -174,13 +174,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
             if (classMetaInfoDictionary.TryGetValue(classId, out var existedValue))
             {
-                ourLogger.Info(
+                ourLogger.Verbose(
                     $"ClassId {classId} already exists. Existed class:{existedValue}, new info: {classMetaInfo}");
                 existedValue.UnionWith(classMetaInfo);
             }
             else
             {
-                ourLogger.Info(
+                ourLogger.Verbose(
                     $"Adding id:{classId}, name:{classMetaInfo.ClassName}, {classAdapter.FullyQualifiedName}");
                 classMetaInfoDictionary.Add(classId, classMetaInfo);
             }
