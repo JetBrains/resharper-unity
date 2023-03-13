@@ -105,7 +105,11 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
                         if (process.ExitCode != 0)
                             myLogger.Error(process.StandardError.ReadToEnd());
                     };
-                    process.StartInfo = new ProcessStartInfo(adbPath, arguments);
+                    process.StartInfo = new ProcessStartInfo(adbPath, arguments)
+                    {
+                        UseShellExecute = false,
+                        RedirectStandardError = true
+                    };
                     process.Start();
                 }
                 catch (Exception e)
