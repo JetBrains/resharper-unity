@@ -5,7 +5,10 @@ import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.*
 import com.intellij.ui.components.dialog
 import com.intellij.ui.components.noteComponent
-import com.intellij.ui.dsl.builder.*
+import com.intellij.ui.dsl.builder.Align
+import com.intellij.ui.dsl.builder.bindIntValue
+import com.intellij.ui.dsl.builder.bindText
+import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.speedSearch.SpeedSearchUtil
 import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.ui.JBUI
@@ -37,16 +40,25 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     private val treeModel = DefaultTreeModel(DefaultMutableTreeNode())
     private val treeModelLock = Object()
     private val tree: Tree
-    private val peerPanel: JPanel
+    private val panel: JPanel
 
     init {
         title = UnityBundle.message("dialog.title.searching")
 
-        tree = Tree().apply {
+        tree = object: Tree() {
+            // The default JBViewport implementation to get the size of the Scrollable uses the height of the first
+            // getVisibleRowCount rows if they exist, or getVisibleRowCount * height of the first row otherwise.
+            // Unfortunately, our first row always has a separator, which forces the dialog to resize when adding a node
+            override fun getPreferredScrollableViewportSize(): Dimension {
+                val rowHeight = JBUI.CurrentTheme.Tree.rowHeight()
+                return Dimension(preferredSize.width, rowHeight * getVisibleRowCount())
+            }
+        }.apply {
             model = treeModel
             isRootVisible = false
             showsRootHandles = false
             rowHeight = 0
+            visibleRowCount = 15
             toggleClickCount = 0
             cellRenderer = GroupedProcessTreeCellRenderer()
             selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
@@ -85,15 +97,15 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             }
         }.installOn(tree)
 
-        peerPanel = panel {
-            row { scrollCell(tree).align(Align.FILL) }
+        panel = panel {
+            row { scrollCell(tree).align(Align.FILL) }.resizableRow()
             row {
                 button(UnityBundle.message("button.add.player.address.manually"), actionListener = { enterCustomIp() })
             }
             row {
                 comment(UnityBundle.message("please.ensure.both.the.development.build.and.script.debugging.options.are.checked.in.unity.build.settings.dialog"))
             }
-        }.apply { preferredSize = Dimension(650, 450) }
+        }
 
         isOKActionEnabled = false
         init()
@@ -102,7 +114,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         myPreferredFocusedComponent = tree
     }
 
-    override fun createCenterPanel() = peerPanel
+    override fun createCenterPanel() = panel
 
     override fun createHelpButton(insets: Insets): JButton {
         val button = super.createHelpButton(insets)
@@ -169,7 +181,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             title = UnityBundle.message("dialog.title.add.unity.process"),
             panel = panel,
             project = project,
-            parent = peerPanel)
+            parent = this.panel)
         if (dialog.showAndGet()) {
             val process = UnityCustomPlayer(model.name, model.host, model.port, CUSTOM_PLAYER_PROJECT)
             val node = addProcess(process)
@@ -365,7 +377,8 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         }
 
         override fun createSeparator(): SeparatorWithText {
-            // The separator is not painted opaque by default but looks bad painted over a selected background
+            // The separator is not painted opaque by default, so includes the item's background, which looks bad when
+            // the item is selected - as though the separator was selected, too
             return object: SeparatorWithText() {
                 override fun paint(g: Graphics?) {
                     g?.color = background
