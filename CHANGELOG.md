@@ -60,6 +60,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Fix memory leak when showing usages of code in Unity editor tool window ([RIDER-87538](https://youtrack.jetbrains.com/issue/RIDER-87538))
 - Fix indexing project settings and assembly definitions when asset indexing is disabled ([RIDER-87363](https://youtrack.jetbrains.com/issue/RIDER-87363))
 - Fix duplicate "Unity" availability configurations in File Template settings ([RIDER-89065](https://youtrack.jetbrains.com/issue/RIDER-89065))
+- Fix missing XML documentation in recent Unity versions ([RIDER-89954](https://youtrack.jetbrains.com/issue/RIDER-89954))
 - Rider: Fix Rider not refreshing Unity when saving all files ([RIDER-62501](https://youtrack.jetbrains.com/issue/RIDER-62051))
 - Rider: Fix unable to find usages or `.asmdef` files when player projects generated ([RIDER-71238](https://youtrack.jetbrains.com/issue/RIDER-71238))
 - Rider: Fix completion list showing duplicate entries when player projects generated ([RIDER-75500](https://youtrack.jetbrains.com/issue/RIDER-75500))
