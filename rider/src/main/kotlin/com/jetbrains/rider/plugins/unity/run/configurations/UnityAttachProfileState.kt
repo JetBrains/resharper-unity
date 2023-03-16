@@ -32,7 +32,7 @@ import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 open class UnityAttachProfileState(private val remoteConfiguration: RemoteConfiguration,
                                    executionEnvironment: ExecutionEnvironment,
                                    private val targetName: String,
-                                   val isEditor: Boolean)
+                                   val isEditor: Boolean = false)
     : MonoConnectRemoteProfileState(remoteConfiguration, executionEnvironment) {
 
     override suspend fun createWorkerRunInfo(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {

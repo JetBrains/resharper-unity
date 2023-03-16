@@ -42,7 +42,7 @@ sealed class UnityLocalProcess(id: String, name: String, val pid: Int, projectNa
  * `Library/EditorInstance.json` file.
  */
 class UnityEditor(executableName: String, pid: Int, projectName: String?) :
-    UnityLocalProcess("$TYPE($executableName-$pid)", executableName, pid, projectName) {
+    UnityLocalProcess("$TYPE($executableName-${projectName ?: "UnknownProject"})", executableName, pid, projectName) {
     companion object {
         const val TYPE = "Editor"
     }
@@ -56,7 +56,7 @@ class UnityEditor(executableName: String, pid: Int, projectName: String?) :
  * The project name should always be available, but this is not guaranteed.
  */
 class UnityEditorHelper(executableName: String, @NlsSafe val roleName: String, pid: Int, projectName: String?) :
-    UnityLocalProcess("$TYPE($executableName-$roleName-$pid)", executableName, pid, projectName) {
+    UnityLocalProcess("$TYPE($executableName-$roleName-${projectName ?: "UnknownProject"})", executableName, pid, projectName) {
     companion object {
         const val TYPE = "EditorHelper"
     }
