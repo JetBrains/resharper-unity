@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 
 namespace JetBrains.Rider.Unity.Editor.Utils
@@ -25,7 +24,7 @@ namespace JetBrains.Rider.Unity.Editor.Utils
     {
       lock (myLockObject)
       {
-        return myQueue.Any() ? myQueue.Dequeue() : null;
+        return myQueue.Count > 0 ? myQueue.Dequeue() : null;
       }
     }
 
