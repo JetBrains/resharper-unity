@@ -50,7 +50,8 @@ fun attachToUnityProcess(project: Project, process: UnityProcess) {
         return
     }
 
-    // Try to find an existing run configuration for this player/process
+    // Try to find an existing run configuration for the project on the chosen player/process. Note that we might have
+    // a run config for the same player with a different project
     val runManager = RunManager.getInstance(project)
     var configurationSettings = runManager.allSettings.firstOrNull {
         (it.configuration as? UnityPlayerDebugConfiguration)?.state?.playerId == process.id
