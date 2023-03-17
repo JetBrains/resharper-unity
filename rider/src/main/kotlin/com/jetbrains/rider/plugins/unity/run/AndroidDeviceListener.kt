@@ -6,12 +6,12 @@ import com.intellij.execution.util.ExecUtil
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.trace
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.util.launchBackground
 import com.jetbrains.rd.platform.diagnostics.doActivity
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
-import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.nio.file.Path
 import kotlin.concurrent.timer
@@ -93,13 +93,14 @@ class AndroidDeviceListener() {
         // Since we're running in a modal dialog, we block the normal UI thread scheduler for getAdbPath. However, that
         // uses startSuspending, which will work with the appropriate scheduler. It's also really quick, as we're just
         // fetching a single string value, so we can use runBlocking and wait for the call to complete
-        val adbExe = runBlocking { getAdbPath(project, lifetime) } ?: return
+        lifetime.launchBackground {
+            val adbExe = getAdbPath(project, lifetime) ?: return@launchBackground
 
-        val refreshTimer = timer("Poll for Android devices via adb", true, 0L, refreshPeriod) {
-            refreshAndroidProcesses(adbExe, onPlayerAdded, onPlayerRemoved)
+            val refreshTimer = timer("Poll for Android devices via adb", true, 0L, refreshPeriod) {
+                refreshAndroidProcesses(adbExe, onPlayerAdded, onPlayerRemoved)
+            }
+            lifetime.onTermination { refreshTimer.cancel() }
         }
-
-        lifetime.onTermination { refreshTimer.cancel() }
     }
 
     // Invoked on background thread
