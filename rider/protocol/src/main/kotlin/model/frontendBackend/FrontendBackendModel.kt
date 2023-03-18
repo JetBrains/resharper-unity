@@ -132,7 +132,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         source("showFileInUnity", string).documentation = "Focus Unity, focus the Project window and select and ping the given file path"
         call("generateUIElementsSchema", void, bool).documentation = "Tell the Unity backend to generate UIElement schema"
         call("hasUnsavedState", void, bool).documentation = "Returns true if the currently open Unity editor has any unsaved state, such as scenes, prefabs, etc."
-        call("getAndroidSdkRoot", void, string.nullable).documentation = "Get the currently configured Android SDK root location, if available"
+        call("getAndroidSdkRoot", void, string.nullable).async.documentation = "Get the currently configured Android SDK root location, if available"
 
         // Actions called from the backend to the frontend
         sink("activateRider", void).documentation = "Tell Rider to bring itself to the foreground. Called when opening a file from Unity"

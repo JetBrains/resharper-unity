@@ -6,23 +6,18 @@ import com.intellij.execution.util.ExecUtil
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.trace
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.util.launchBackground
 import com.jetbrains.rd.platform.diagnostics.doActivity
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.reactive.adviseOnce
-import com.jetbrains.rd.util.threading.SynchronousScheduler
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import java.io.File
 import java.nio.file.Path
 import kotlin.concurrent.timer
 import kotlin.io.path.isDirectory
 
-class AndroidDeviceListener(
-    project: Project,
-    lifetime: Lifetime,
-    onPlayerAdded: (UnityProcess) -> Unit,
-    onPlayerRemoved: (UnityProcess) -> Unit
-) {
+class AndroidDeviceListener() {
 
     companion object {
         private val logger = Logger.getInstance(AndroidDeviceListener::class.java)
@@ -55,54 +50,90 @@ class AndroidDeviceListener(
     private val playerPackageNames = mutableMapOf<String, String?>()
     private val players = mutableMapOf<String, UnityAndroidAdbProcess>()
 
-    init {
-        // This class is initialised when displaying a modal dialog, which means the EDT thread is busy in a modal loop
-        // and can't handle protocol messages. We know we're going to be quick here, so we'll use the synchronous
-        // scheduler to wait for the result
-        val host = FrontendBackendHost.getInstance(project)
-        val task = host.model.getAndroidSdkRoot.start(lifetime, Unit, SynchronousScheduler)
-        task.result.adviseOnce(lifetime) { result ->
-            try {
-                val sdkRoot = result.unwrap()?.let { Path.of(it) }?.takeIf { it.isDirectory() } ?: run {
-                    logger.info("No Android SDK root from model. Trying to find manually")
-                    UnityInstallationFinder.getInstance(project).getAdditionalPlaybackEnginesRoot()?.resolve("AndroidPlayer")?.takeIf { it.isDirectory() }
-                }
-
-                if (sdkRoot == null) {
-                    logger.warn("Cannot find Android SDK tools. Skipping looking for Android devices")
-                    return@adviseOnce
-                }
-
-                logger.trace("Using Android SDK root: $sdkRoot")
-
-                var adbExe = sdkRoot.resolve("SDK/platform-tools/adb").toFile()
-                if (!adbExe.exists()) {
-                    adbExe = sdkRoot.resolve("SDK/platform-tools/adb.exe").toFile()
-                    if (!adbExe.exists()) {
-                        logger.warn("Cannot find adb. Skipping looking for Android devices")
-                        return@adviseOnce
-                    }
-                }
-
-                val refreshTimer = timer("Poll for Android devices via adb", true, 0L, refreshPeriod) {
-                    refreshAndroidDeviceProcesses(adbExe, onPlayerAdded, onPlayerRemoved)
-                }
-
-                lifetime.onTermination { refreshTimer.cancel() }
-            } catch (e: Throwable) {
-                logger.error(e)
+    private suspend fun getAdbPath(project: Project, lifetime: Lifetime): File? {
+        try {
+            val host = FrontendBackendHost.getInstance(project)
+            val sdkRoot = host.model.getAndroidSdkRoot.startSuspending(lifetime, Unit)?.let { Path.of(it) }
+                ?.takeIf { it.isDirectory() } ?: run {
+                logger.trace("No Android SDK root from model. Trying to find manually")
+                UnityInstallationFinder.getInstance(project).getAdditionalPlaybackEnginesRoot()
+                    ?.resolve("AndroidPlayer")
+                    ?.takeIf { it.isDirectory() }
             }
+
+            if (sdkRoot == null) {
+                logger.warn("Cannot find Android SDK tools. Skipping looking for Android devices")
+                return null
+            }
+
+            logger.trace("Using Android SDK root: $sdkRoot")
+
+            var adbExe = sdkRoot.resolve("SDK/platform-tools/adb").toFile()
+            if (!adbExe.exists()) {
+                adbExe = sdkRoot.resolve("SDK/platform-tools/adb.exe").toFile()
+            }
+
+            if (!adbExe.exists()) {
+                logger.warn("Cannot find adb. Skipping looking for Android devices")
+                return null
+            }
+
+            return adbExe
+        } catch (e: Throwable) {
+            logger.error(e)
+            return null
         }
     }
 
-    private fun refreshAndroidDeviceProcesses(
+    // Invoked on UI thread
+    fun startListening(project: Project,
+                       lifetime: Lifetime,
+                       onPlayerAdded: (UnityProcess) -> Unit,
+                       onPlayerRemoved: (UnityProcess) -> Unit) {
+        // Since we're running in a modal dialog, we block the normal UI thread scheduler for getAdbPath. However, that
+        // uses startSuspending, which will work with the appropriate scheduler. It's also really quick, as we're just
+        // fetching a single string value, so we can use runBlocking and wait for the call to complete
+        lifetime.launchBackground {
+            val adbExe = getAdbPath(project, lifetime) ?: return@launchBackground
+
+            val refreshTimer = timer("Poll for Android devices via adb", true, 0L, refreshPeriod) {
+                refreshAndroidProcesses(adbExe, onPlayerAdded, onPlayerRemoved)
+            }
+            lifetime.onTermination { refreshTimer.cancel() }
+        }
+    }
+
+    // Invoked on background thread
+    suspend fun getPlayersForDevice(project: Project, deviceId: String): List<UnityProcess> {
+        val lifetime = UnityProjectLifetimeService.getLifetime(project).createNested()
+        try {
+            val adbExe = getAdbPath(project, lifetime) ?: return emptyList()
+            val players = mutableListOf<UnityProcess>()
+            refreshAndroidProcesses(adbExe, listOf(deviceId), { players.add(it) }, { players.remove(it) })
+            return players
+        }
+        finally {
+            lifetime.terminate()
+        }
+    }
+
+    private fun refreshAndroidProcesses(
         adbExe: File,
         onPlayerAdded: (UnityProcess) -> Unit,
         onPlayerRemoved: (UnityProcess) -> Unit
     ) {
         val discoveredDevices = getDevices(adbExe)
         updateCachedDeviceDetails(adbExe, discoveredDevices)
-        val discoveredPlayers = getPlayers(adbExe, discoveredDevices)
+        refreshAndroidProcesses(adbExe, discoveredDevices, onPlayerAdded, onPlayerRemoved)
+    }
+
+    private fun refreshAndroidProcesses(
+        adbExe: File,
+        devices: List<String>,
+        onPlayerAdded: (UnityProcess) -> Unit,
+        onPlayerRemoved: (UnityProcess) -> Unit
+    ) {
+        val discoveredPlayers = getPlayers(adbExe, devices)
         updateCachedPackageNames(adbExe, discoveredPlayers)
 
         // Remove any players that are no longer available

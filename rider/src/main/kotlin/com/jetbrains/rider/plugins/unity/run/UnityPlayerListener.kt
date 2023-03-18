@@ -1,8 +1,11 @@
 package com.jetbrains.rider.plugins.unity.run
 
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
+import kotlinx.coroutines.delay
 import java.net.*
 import java.nio.ByteBuffer
 import java.nio.channels.DatagramChannel
@@ -10,9 +13,7 @@ import java.nio.channels.SelectionKey
 import java.nio.channels.Selector
 import java.util.regex.Pattern
 
-class UnityPlayerListener(lifetime: Lifetime,
-                          onPlayerAdded: (UnityProcess) -> Unit,
-                          onPlayerRemoved: (UnityProcess) -> Unit) {
+class UnityPlayerListener {
 
     companion object {
         private val logger = Logger.getInstance(UnityPlayerListener::class.java)
@@ -77,11 +78,50 @@ class UnityPlayerListener(lifetime: Lifetime,
 
     private val syncLock = Object()
 
-    init {
+    // Invoked on the UI thread
+    fun startListening(lifetime: Lifetime,
+                       onPlayerAdded: (UnityProcess) -> Unit,
+                       onPlayerRemoved: (UnityProcess) -> Unit) {
 
+        startListeningUdp(lifetime)
+
+        val refreshTimer = kotlin.concurrent.timer("Listen for Unity Players", true, 0L, refreshPeriod) {
+            refreshUnityPlayersList(onPlayerAdded, onPlayerRemoved)
+        }
+        lifetime.onTermination { refreshTimer.cancel() }
+    }
+
+    // Invoked on a background thread
+    suspend fun getPlayer(project: Project, predicate: (UnityProcess) -> Boolean): UnityProcess? {
+        val lifetime = UnityProjectLifetimeService.getLifetime(project).createNested()
+        try {
+            startListeningUdp(lifetime)
+
+            val players = mutableListOf<UnityProcess>()
+
+            // Give all players the chance to broadcast, and keep going until we find our player, or we time out.
+            // We repeat 30 times, with a 100ms delay, so we'll wait 3 second for the player
+            for (i in 1..30) {
+                refreshUnityPlayersList({ players.add(it) }, { players.remove(it) })
+                val player = players.firstOrNull(predicate)
+                if (player != null) {
+                    return player
+                }
+
+                delay(100)
+            }
+
+            return null
+        }
+        finally {
+            lifetime.terminate()
+        }
+    }
+
+    private fun startListeningUdp(lifetime: Lifetime) {
         for (networkInterface in NetworkInterface.getNetworkInterfaces()) {
             if (!networkInterface.isUp || !networkInterface.supportsMulticast()
-                    || !networkInterface.inetAddresses.asSequence().any { it is Inet4Address }) {
+                || !networkInterface.inetAddresses.asSequence().any { it is Inet4Address }) {
                 continue
             }
 
@@ -101,13 +141,7 @@ class UnityPlayerListener(lifetime: Lifetime,
             }
         }
 
-        val refreshTimer = kotlin.concurrent.timer("Listen for Unity Players", true, 0L, refreshPeriod) {
-            refreshUnityPlayersList(onPlayerAdded, onPlayerRemoved)
-        }
-
         lifetime.onTermination {
-            refreshTimer.cancel()
-
             synchronized(syncLock) {
                 selector.keys().forEach {
                     try {
