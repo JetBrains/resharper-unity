@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Daemon
     [TestUnity]
     public class GuidReferenceInlayHintHighlightingTests : HighlightingTestBase
     {
-        protected override PsiLanguageType CompilerIdsLanguage => JsonNewLanguage.Instance;
+        protected override PsiLanguageType? CompilerIdsLanguage => JsonNewLanguage.Instance;
         protected override string RelativeTestDataPath => @"AsmDef\Daemon\Stages\InlayHints";
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,

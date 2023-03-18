@@ -19,7 +19,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         public ImmutablePackageNotification(Lifetime lifetime,
             UnitySolutionTracker solutionTracker,
             ISolution solution,
-            ITextControlHost textControlHost,
             NotificationPanelHost notificationPanelHost,
             UnityVersion unityVersion)
         {
@@ -28,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
             var localPackageCacheFolder = UnityCachesFinder.GetLocalPackageCacheFolder(solution.SolutionDirectory);
 
-            textControlHost.ViewHostTextControls(lifetime, (lt, id, textControl) =>
+            solution.GetComponent<ITextControlHost>().ViewHostTextControls(lifetime, (lt, id, textControl) =>
             {
                 var projectFile = textControl.ToProjectFile(solution);
                 if (projectFile == null)

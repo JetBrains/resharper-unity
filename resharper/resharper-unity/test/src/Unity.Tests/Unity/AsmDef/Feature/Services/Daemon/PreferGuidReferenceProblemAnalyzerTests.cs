@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.AsmDef.Feature.Services.Daemon
     [TestFileExtension(".asmdef")]
     public class PreferGuidReferenceProblemAnalyzerTests : JsonNewHighlightingTestBase<PreferGuidReferenceWarning>
     {
-        protected override PsiLanguageType CompilerIdsLanguage => JsonNewLanguage.Instance;
+        protected override PsiLanguageType? CompilerIdsLanguage => JsonNewLanguage.Instance;
         protected override string RelativeTestDataPath => @"AsmDef\Daemon\Stages\Analysis\PreferGuidReference";
 
         [Test] public void TestShowHint() { DoNamedTest2("Ref1.asmdef"); }

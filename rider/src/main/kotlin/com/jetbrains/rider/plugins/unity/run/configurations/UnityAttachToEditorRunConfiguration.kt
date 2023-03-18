@@ -58,9 +58,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         return configuration
     }
 
-    override fun hideDisabledExecutorButtons(): Boolean {
-        return true
-    }
+    override fun hideDisabledExecutorButtons() = true
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = UnityAttachToEditorSettingsEditor(project)
 
@@ -81,7 +79,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
 
                 val res = ext.executor(UnityAttachConfigurationParametersImpl(processId,
                                                                               finder.getApplicationExecutablePath(), args,
-                                                                              finder.getApplicationVersion()), environment) { runProfile, handler ->
+                                                                              finder.getApplicationVersion()), environment) { _, _, _ ->
                     run {
                         if (executorId == "dotTrace Profiler") {
                             project.solution.frontendBackendModel.startProfiling.start(project.lifetime, play)

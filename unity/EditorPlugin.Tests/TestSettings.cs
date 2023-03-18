@@ -1,6 +1,6 @@
 ﻿namespace JetBrains.Rider.Unity.Editor.Tests
 {
-  public class TestPluginSettings:IPluginSettings
+  internal class TestPluginSettings : IPluginSettings
   {
     public OperatingSystemFamilyRider OperatingSystemFamilyRider => OperatingSystemFamilyRider.Windows;
 

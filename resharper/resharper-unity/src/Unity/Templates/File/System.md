@@ -6,7 +6,7 @@ reformat: True
 shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=System, ValidateFileName=True
-scopes:  UnityFileTemplateSectionMarker;UnityDotsScope
+scopes: UnityDotsScope
 uitag: DOTS
 parameterOrder: HEADER, (SYSTEM), (NAMESPACE)
 HEADER-expression: fileheader()
@@ -18,21 +18,17 @@ NAMESPACE-expression: fileDefaultNamespace()
 
 ```
 $HEADER$namespace $NAMESPACE$ {
-  [Unity.Burst.BurstCompile]
   public partial struct $SYSTEM$ : Unity.Entities.ISystem
   {
-    [Unity.Burst.BurstCompile]
     public void OnCreate(ref Unity.Entities.SystemState state)
     {
         $END$
     }
 
-    [Unity.Burst.BurstCompile]
     public void OnDestroy(ref Unity.Entities.SystemState state)
     {
     }
 
-    [Unity.Burst.BurstCompile]
     public void OnUpdate(ref Unity.Entities.SystemState state)
     {
     }

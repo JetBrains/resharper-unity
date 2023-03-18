@@ -223,10 +223,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
             foreach (var attribute in field.GetAttributeInstances(KnownTypes.FormerlySerializedAsAttribute, false))
             {
-                var result = attribute.PositionParameters().FirstOrDefault()?.ConstantValue.StringValue;
-                if (result == null)
-                    continue;
-                yield return result;
+                var constantValue = attribute.PositionParameters().FirstOrDefault()?.ConstantValue;
+                if (constantValue == null) continue;
+                if (!constantValue.IsString(out var stringValue)) continue;
+                if (stringValue == null) continue;
+                yield return stringValue;
             }
         }
 

@@ -14,6 +14,10 @@ import org.testng.annotations.BeforeMethod
 import java.time.Duration
 
 abstract class IntegrationTestWithReuseSolutionBase : BaseTestWithSolutionBase(), IntegrationTestWithFrontendBackendModel {
+
+    override val customTempTestDirName = "IntegrationTestWithReuseSolution"
+    override val cleanTempTestDirectory = false
+
     protected open val withCoverage: Boolean
         get() = false
 
@@ -37,12 +41,6 @@ abstract class IntegrationTestWithReuseSolutionBase : BaseTestWithSolutionBase()
             }
             backendLoadedTimeout = Duration.ofSeconds(60)
         }
-
-    override val clearCaches: Boolean
-        get() = false
-
-    override val testCaseNameToTempDir: String
-        get() = "tempTestDir"
 
     private var myUnityProcessHandle: ProcessHandle? = null
     val unityProcessHandle: ProcessHandle

@@ -6,7 +6,7 @@ reformat: True
 shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=Aspect, ValidateFileName=True
-scopes:  UnityFileTemplateSectionMarker;UnityDotsScope
+scopes: UnityDotsScope
 uitag: DOTS
 parameterOrder: HEADER, (JOBENTITY), (NAMESPACE)
 HEADER-expression: fileheader()
@@ -19,7 +19,6 @@ NAMESPACE-expression: fileDefaultNamespace()
 ```
 $HEADER$namespace $NAMESPACE$ 
 {
-  [Unity.Burst.BurstCompile]
   public partial struct $JOBENTITY$ : Unity.Entities.IJobEntity 
   {
      public void Execute($END$)

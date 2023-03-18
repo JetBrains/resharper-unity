@@ -15,7 +15,7 @@
   </PropertyGroup>
   <!-- ********** -->
   <ItemGroup Label="Model">
-    <Compile Include="..\..\..\build\generated\Model\**\*" LinkBase="Model" />
+    <Compile Include="..\..\..\build\generated\Model\**\*" LinkBase="Model" Condition="!$(InternalBuild)" />
     <Compile Include="..\..\..\..\unity\EditorPlugin\NonUnity\ProtocolCompatibility.cs">
       <Link>Protocol\ProtocolCompatibility.cs</Link>
     </Compile>
@@ -36,7 +36,8 @@
     <Reference Include="mscorlib" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
-  <ItemGroup>
+  <!-- ********** -->
+  <ItemGroup Label="Resources">
     <EmbeddedResource Update="Resources\Strings.resx">
       <Generator>JetResourceGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>

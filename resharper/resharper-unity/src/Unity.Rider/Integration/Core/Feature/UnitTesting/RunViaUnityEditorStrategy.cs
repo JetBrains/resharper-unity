@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,11 +12,10 @@ using JetBrains.DataFlow;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Access;
-using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Features.SolutionBuilders.Prototype.Services.Execution;
 using JetBrains.Rd.Base;
-using JetBrains.RdBackend.Common.Features;
+using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration.Packages;
@@ -58,12 +56,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
         private readonly FrontendBackendHost myFrontendBackendHost;
         private readonly ILogger myLogger;
         private readonly Lifetime myLifetime;
+        private readonly UnityProcessTracker myProcessTracker;
         private readonly PackageCompatibilityValidator myPackageCompatibilityValidator;
 
         private readonly object myCurrentLaunchesTaskAccess = new();
         private Task myCurrentLaunchesTask = Task.CompletedTask;
-
-        private readonly IProperty<int?> myUnityProcessId;
 
         public RunViaUnityEditorStrategy(ISolution solution,
                                          IUnitTestResultManager unitTestResultManager,
@@ -74,6 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
                                          FrontendBackendHost frontendBackendHost,
                                          ILogger logger,
                                          Lifetime lifetime,
+                                         UnityProcessTracker processTracker,
                                          PackageCompatibilityValidator packageCompatibilityValidator)
         {
             mySolution = solution;
@@ -85,38 +83,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
             myFrontendBackendHost = frontendBackendHost;
             myLogger = logger;
             myLifetime = lifetime;
+            myProcessTracker = processTracker;
             myPackageCompatibilityValidator = packageCompatibilityValidator;
 
-            myUnityProcessId = new Property<int?>("RunViaUnityEditorStrategy.UnityProcessId");
-
-            myUnityProcessId.ForEachValue_NotNull(lifetime, (lt, processId) =>
-            {
-                var process = myLogger.CatchIgnore(() => Process.GetProcessById(processId.NotNull()));
-                if (process == null)
-                {
-                    myUnityProcessId.Value = null;
-                    return;
-                }
-
-                process.EnableRaisingEvents = true;
-
-                void OnProcessExited(object sender, EventArgs a) => myUnityProcessId.Value = null;
-                lt.Bracket(() => process.Exited += OnProcessExited, () => process.Exited -= OnProcessExited);
-
-                if (process.HasExited)
-                    myUnityProcessId.Value = null;
-            });
-
-            myBackendUnityHost.BackendUnityModel!.ViewNotNull<BackendUnityModel>(lifetime, (lt, model) =>
-            {
-                // This will set the current value, if it exists
-                model.UnityApplicationData.FlowInto(lt, myUnityProcessId, data => data.UnityProcessId);
-            });
         }
 
         public bool RequiresProjectBuild(IProject project) => false;
         public bool RequiresProjectExplorationAfterBuild(IProject project) => false;
-        public bool RequiresProjectPropertiesRefreshBeforeLaunch(IProject project) => false;
+        public IProject? GetProjectForPropertiesRefreshBeforeLaunch(IUnitTestElement element) => null;
 
         public IRuntimeEnvironment GetRuntimeEnvironment(IUnitTestLaunch launch, IProject project,
                                                          TargetFrameworkId targetFrameworkId,
@@ -143,14 +117,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
 
         private Task Run(IUnitTestRun run)
         {
-            if (myUnityProcessId.Value == null)
+            if (myProcessTracker.UnityProcessId.Value == null)
                 return Task.FromException(new Exception("Unity Editor is not available."));
 
             var tcs = new TaskCompletionSource<bool>();
             var taskLifetimeDef = Lifetime.Define(myLifetime);
             taskLifetimeDef.SynchronizeWith(tcs);
 
-            myUnityProcessId.When(run.Lifetime, (int?) null,
+            myProcessTracker.UnityProcessId.When(run.Lifetime, (int?) null,
                 _ => { tcs.TrySetException(new Exception("Unity Editor has been closed.")); });
 
             var hostId = run.HostController.HostId;
@@ -536,7 +510,7 @@ else if (criterion is CategoryCriterion categoryCriterion)
             Cancel(run);
         }
 
-        public int? TryGetRunnerProcessId() => myUnityProcessId.Value;
+        public int? TryGetRunnerProcessId() => myProcessTracker.UnityProcessId.Value;
 
         private class UnityRuntimeEnvironment : IRuntimeEnvironmentWithProject
         {

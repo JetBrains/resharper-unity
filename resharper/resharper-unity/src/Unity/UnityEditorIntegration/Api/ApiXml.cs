@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Xml;
+using JetBrains.DataFlow;
 using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
@@ -22,10 +24,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         private readonly Dictionary<string, Version> myVersions = new();
         private readonly JetHashSet<string> myIdentifiers = new();
         private readonly UnityTypeSpec myDefaultReturnTypeSpec = new(PredefinedType.INT_FQN);
+        private CultureInfo myCultureInfo;
 
-        public UnityTypes LoadTypes()
+        public UnityTypes LoadTypes(CultureInfo instanceCulture)
         {
             var types = new List<UnityType>();
+            myCultureInfo = instanceCulture;
 
             var ns = GetType().Namespace;
             using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(ns + @".api.xml");
@@ -158,7 +162,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 
             Assertion.AssertNotNull(name, "name != null");
 
-            var description = node.Attributes?["description"]?.Value;
+            var description = ParseDescription(node);
+
             var isStatic = bool.Parse(node.Attributes?["static"]?.Value ?? "false");
             var canBeCoroutine = bool.Parse(node.Attributes?["coroutine"]?.Value ?? "false");
             var isUndocumented = bool.Parse(node.Attributes?["undocumented"]?.Value ?? "false");
@@ -187,11 +192,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
                 canBeCoroutine, description, isUndocumented, minimumVersion, maximumVersion, parameters);
         }
 
+        private string? ParseDescription(XmlNode node)
+        {
+            string? description = null;
+            var descriptionNodes = node.SelectNodes("descriptions/description");
+            if (descriptionNodes != null)
+            {
+                var langCode = myCultureInfo.TwoLetterISOLanguageName;
+
+                var matchingDescription = descriptionNodes.OfType<XmlNode>()
+                    .Where(a => a.Attributes?["langCode"]?.Value == langCode).FirstNotNull();
+                description = matchingDescription?.Attributes?["text"]?.Value;
+
+                if (description == null && langCode != "iv")
+                {
+                    // fallback to invariant language
+                    description = descriptionNodes.OfType<XmlNode>()
+                        .Where(a => a.Attributes?["langCode"]?.Value == "iv").FirstNotNull()
+                        ?.Attributes?["text"]?.Value;
+                }
+            }
+
+            return description;
+        }
+
         private UnityEventFunctionParameter LoadParameter(XmlNode node, int i)
         {
             var type = node.Attributes?["type"]?.Value;
             var name = node.Attributes?["name"].Value;
-            var description = node.Attributes?["description"]?.Value;
+            var description = ParseDescription(node);
             var isArray = bool.Parse(node.Attributes?["array"]?.Value ?? "false");
             var isByRef = bool.Parse(node.Attributes?["byRef"]?.Value ?? "false");
             var isOptional = bool.Parse(node.Attributes?["optional"]?.Value ?? "false");

@@ -1,3 +1,5 @@
+#nullable enable
+
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi.CSharp.Impl.CodeStyle.MemberReordering;
@@ -10,31 +12,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.MemberReorderin
     {
         public bool Matches(ITreeNode node, INodeMatchingContext ctx)
         {
-            var unityApi = node.GetSolution().GetComponent<UnityApi>();
             if (node is IMultipleFieldDeclaration multipleFieldDeclaration)
             {
+                var unityApi = node.GetSolution().GetComponent<UnityApi>();
                 foreach (var multipleDeclarationMember in multipleFieldDeclaration.DeclaratorsEnumerable)
                 {
-                    if (multipleDeclarationMember is IFieldDeclaration field)
+                    if (multipleDeclarationMember is IFieldDeclaration field &&
+                        unityApi.IsSerialisedField(field.DeclaredElement) == SerializedFieldStatus.SerializedField)
                     {
-                        if (unityApi.IsSerialisedField(field.DeclaredElement) == SerializedFieldStatus.SerializedField)
-                            return true;
+                        return true;
                     }
                 }
             }
 
             if (node is IFieldDeclaration fieldDeclaration)
-                return unityApi.IsSerialisedField(fieldDeclaration.DeclaredElement) == SerializedFieldStatus.SerializedField;
+            {
+                var unityApi = node.GetSolution().GetComponent<UnityApi>();
+                return unityApi.IsSerialisedField(fieldDeclaration.DeclaredElement) ==
+                       SerializedFieldStatus.SerializedField;
+            }
 
             return false;
         }
 
-        public int? Compare(INodeConstraint other)
-        {
-            if (other == null || other == Unconstrained.Instance)
-                return -1;
-
-            return null;
-        }
+        public int? Compare(INodeConstraint? other) => other == null || other == Unconstrained.Instance ? -1 : null;
     }
 }

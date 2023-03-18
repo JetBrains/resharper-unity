@@ -86,3 +86,28 @@ public class IncorrectReturnType
         return Selection.activeTransform != null;
     }
 }
+
+public class DuplicateMenuItemShortCutProblemAnalyzer
+{
+    [MenuItem("MyMenu/Do Something with a Shortcut Key %g")]
+    static void LogSelectedTransformName()
+    {
+    }
+
+    [MenuItem("MyMenu/Do Something with a Shortcut Key %g")]
+    static void LogSelectedTransformName1()
+    {
+    }
+
+    const string myConst = "MyMenu/Do Something with a Shortcut Key %g";
+
+    [MenuItem(myConst)]
+    static void LogSelectedTransformName2()
+    {
+    }
+
+    [MenuItem($"{myConst}")]
+    static void LogSelectedTransformName2()
+    {
+    }
+}

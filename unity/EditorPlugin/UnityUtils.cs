@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Diagnostics;
 using JetBrains.Rider.Model.Unity;
+using JetBrains.Rider.Unity.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -19,8 +20,8 @@ namespace JetBrains.Rider.Unity.Editor
     public static void SyncSolution()
     {
       var T = Type.GetType("UnityEditor.SyncVS,UnityEditor");
-      var syncSolution = T.GetMethod("SyncSolution", BindingFlags.Public | BindingFlags.Static);
-      syncSolution.Invoke(null, null);
+      var syncSolution = T?.GetMethod("SyncSolution", BindingFlags.Public | BindingFlags.Static);
+      syncSolution?.Invoke(null, null);
     }
 
     public static Version UnityVersion
@@ -47,12 +48,7 @@ namespace JetBrains.Rider.Unity.Editor
         {
             var args = Environment.GetCommandLineArgs();
             var commandlineParser = new CommandLineParser(args);
-            if (commandlineParser.Options.ContainsKey("-logfile"))
-            {
-                return commandlineParser.Options["-logfile"];
-            }
-
-            return string.Empty;
+            return commandlineParser.Options.TryGetValue("-logfile", out var path) ? path : string.Empty;
         }
     }
 
@@ -70,9 +66,12 @@ namespace JetBrains.Rider.Unity.Editor
         {
           // not available in earlier runtime versions
           var property = typeof(EditorApplication).GetProperty("scriptingRuntimeVersion");
-          ourScriptingRuntimeCached = (int) property.GetValue(null, null);
-          if (ourScriptingRuntimeCached > 0)
-            ourLogger.Verbose("Latest runtime detected.");
+          if (property != null)
+          {
+            ourScriptingRuntimeCached = (int) property.GetValue(null, null);
+            if (ourScriptingRuntimeCached > 0)
+              ourLogger.Verbose("Latest runtime detected.");
+          }
         }
         catch (Exception)
         {

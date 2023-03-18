@@ -1,0 +1,26 @@
+﻿using Unity.Entities;
+
+namespace Unity.Entities
+{
+    public class ComponentSystemBase {}
+    public class SystemBase : ComponentSystemBase
+    {
+        protected virtual void OnUpdate() {}
+    }
+}
+
+public class ParentClass
+{
+    public partial class BigmapSystemBase : SystemBase
+    {
+        protected override void OnUpdate()
+        {
+            DoThing();
+        }
+
+        private void DoThing()
+        {
+        }
+    }
+}
+---------------------------------------------------------

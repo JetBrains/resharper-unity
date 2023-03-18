@@ -87,26 +87,21 @@ val debuggerDllFiles = files(
     "../resharper/build/debugger/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.pdb"
 )
 
-val helperExeFiles = files(
-    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net5.0/JetBrains.Rider.Unity.ListIosUsbDevices.dll",
-    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net5.0/JetBrains.Rider.Unity.ListIosUsbDevices.pdb",
-    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net5.0/JetBrains.Rider.Unity.ListIosUsbDevices.runtimeconfig.json"
-)
-
-val helperExeNetFxFiles = files(
-    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net472/JetBrains.Rider.Unity.ListIosUsbDevices.exe",
-    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net472/JetBrains.Rider.Unity.ListIosUsbDevices.pdb"
+val listIosUsbDevicesFiles = files(
+    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net7.0/JetBrains.Rider.Unity.ListIosUsbDevices.dll",
+    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net7.0/JetBrains.Rider.Unity.ListIosUsbDevices.pdb",
+    "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net7.0/JetBrains.Rider.Unity.ListIosUsbDevices.runtimeconfig.json"
 )
 
 val unityEditorDllFiles = files(
-    "../unity/build/EditorPlugin/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll",
-    "../unity/build/EditorPlugin/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Repacked.pdb",
-    "../unity/build/EditorPluginUnity56/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.dll",
-    "../unity/build/EditorPluginUnity56/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.pdb",
-    "../unity/build/EditorPluginFull/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll",
-    "../unity/build/EditorPluginFull/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.pdb",
-    "../unity/build/EditorPluginNet46/bin/$buildConfiguration/net472/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll",
-    "../unity/build/EditorPluginNet46/bin/$buildConfiguration/net472/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.pdb"
+    "../unity/build/EditorPlugin.SinceUnity.4.7/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll",
+    "../unity/build/EditorPlugin.SinceUnity.4.7/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Repacked.pdb",
+    "../unity/build/EditorPlugin.SinceUnity.5.6/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.dll",
+    "../unity/build/EditorPlugin.SinceUnity.5.6/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.pdb",
+    "../unity/build/EditorPlugin.SinceUnity.2017.3/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll",
+    "../unity/build/EditorPlugin.SinceUnity.2017.3/bin/$buildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.pdb",
+    "../unity/build/EditorPlugin.SinceUnity.2019.2/bin/$buildConfiguration/net472/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll",
+    "../unity/build/EditorPlugin.SinceUnity.2019.2/bin/$buildConfiguration/net472/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.pdb"
 )
 
 version = "${pluginVersion}.$buildCounter"
@@ -197,8 +192,9 @@ tasks {
                 bundledMavenArtifacts.walkTopDown()
                     .filter { it.extension == "jar" && !it.name.endsWith("-sources.jar") }
                     .toList()
-                    + File("${ideaDependency.get().classes}/lib/3rd-party-rt.jar")
+                    + File("${setupDependencies.get().idea.get().classes}/lib/3rd-party-rt.jar")
                     + File("${ideaDependency.get().classes}/lib/util.jar")
+                    + File("${ideaDependency.get().classes}/lib/util-8.jar")
             )
         } else {
             logger.lifecycle("Use ant compiler artifacts from maven")
@@ -298,7 +294,7 @@ tasks {
             val backendCsOutDir =
                 if (monorepo) monorepoPreGeneratedBackendDir.resolve("resharper/ModelLib")
                 else File(repoRoot, "resharper/build/generated/Model/Lib")
-            val unityEditorCsOutDir = 
+            val unityEditorCsOutDir =
                 if (monorepo) monorepoPreGeneratedUnityDir.resolve("unity/ModelLib")
                 else File(repoRoot, "unity/build/generated/Model/Lib")
             val frontendKtOutLayout = "src/main/rdgen/kotlin/com/jetbrains/rider/plugins/unity/model/lib"
@@ -345,7 +341,7 @@ tasks {
                 root = "model.lib.Library"
                 directory = unityEditorCsOutDir.canonicalPath
                 if (monorepo) generatedFileSuffix = ".Pregenerated"
-            }   
+            }
             // Library is used as frontend in frontendBackendModel, so has same perspective. Generate as-is
             generator {
                 language = "kotlin"
@@ -765,8 +761,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         doLast {
             dotnetDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
             debuggerDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
-            helperExeFiles.forEach { if (!it.exists()) error("File $it does not exist") }
-            helperExeNetFxFiles.forEach { if (!it.exists()) error("File $it does not exist") }
+            listIosUsbDevicesFiles.forEach { if (!it.exists()) error("File $it does not exist") }
             unityEditorDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
         }
 
@@ -774,13 +769,8 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
 
         dotnetDllFiles.forEach { from(it) { into("${pluginName}/dotnet") } }
         debuggerDllFiles.forEach { from(it) { into("${pluginName}/dotnetDebuggerWorker") } }
+        listIosUsbDevicesFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
         unityEditorDllFiles.forEach { from(it) { into("${pluginName}/EditorPlugin") } }
-
-        // This folder name allows RiderEnvironment.getBundledFile(file, pluginClass = this.class) to work
-        // Helper apps must be net5.0 for Mac/Linux, but we don't yet bundle netcore for Windows, so fall back to
-        // netfx. Get rid of the netfx folder as soon as we can
-        helperExeFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
-        helperExeNetFxFiles.forEach { from(it) { into("${pluginName}/DotFiles/netfx") } }
 
         from("../resharper/resharper-unity/src/Unity/annotations") {
             into("${pluginName}/dotnet/Extensions/com.intellij.resharper.unity/annotations")

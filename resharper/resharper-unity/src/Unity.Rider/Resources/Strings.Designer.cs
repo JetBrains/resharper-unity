@@ -63,9 +63,6 @@
     public static string PerformanceCriticalLineMarker_RiderPresentableName => ResourceManager.GetString("PerformanceCriticalLineMarker_RiderPresentableName");
     public static string PleaseSwitchToTheUnityEditorToReload_Text => ResourceManager.GetString("PleaseSwitchToTheUnityEditorToReload_Text");
     public static string PleaseSwitchToUnityEditorToLoadThePlugin_Text => ResourceManager.GetString("PleaseSwitchToUnityEditorToLoadThePlugin_Text");
-    public static string RiderDeferredCacheProgressBar_Start_Calculating_asset_index => ResourceManager.GetString("RiderDeferredCacheProgressBar_Start_Calculating_asset_index");
-    public static string RiderDeferredCacheProgressBar_Start_Processing_assets => ResourceManager.GetString("RiderDeferredCacheProgressBar_Start_Processing_assets");
-    public static string RiderDeferredCacheProgressBar_Start_Processing_FileName => ResourceManager.GetString("RiderDeferredCacheProgressBar_Start_Processing_FileName");
     public static string RiderEventHandlerDetector_AddEventsHighlighting_Assets_usages => ResourceManager.GetString("RiderEventHandlerDetector_AddEventsHighlighting_Assets_usages");
     public static string RiderEventHandlerDetector_AddEventsHighlighting_Click_to_view_usages_in_assets => ResourceManager.GetString("RiderEventHandlerDetector_AddEventsHighlighting_Click_to_view_usages_in_assets");
     public static string RiderFieldDetector_AddMonoBehaviourHighlighting_Inspector_values_are_not_available_during_asset_indexing => ResourceManager.GetString("RiderFieldDetector_AddMonoBehaviourHighlighting_Inspector_values_are_not_available_during_asset_indexing");
@@ -106,5 +103,25 @@
     public static string UnityUsagesCodeVisionProvider_Noun_asset_usage => ResourceManager.GetString("UnityUsagesCodeVisionProvider_Noun_asset_usage");
     public static string UnityUsagesCodeVisionProvider_Noun_asset_usages => ResourceManager.GetString("UnityUsagesCodeVisionProvider_Noun_asset_usages");
     public static string UsagesInAssetsAreNotAvailableDuring_Text => ResourceManager.GetString("UsagesInAssetsAreNotAvailableDuring_Text");
+    public static string UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Changed_in__0___assets => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Changed_in__0___assets");
+    public static string UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Unchanged => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Unchanged");
+    public static string UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_asset => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_asset");
+    public static string UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_assets => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_assets");
+    public static string UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Changed_in__0___1_ => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Changed_in__0___1_");
+    public static string UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Property_Inspector_values => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_Property_Inspector_values");
+    public static string UnityCodeInsightFieldUsageProvider_GetTooltip_Unique_change => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_GetTooltip_Unique_change");
+    public static string UnityCodeInsightFieldUsageProvider_GetTooltip_No_changes_in_assets => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_GetTooltip_No_changes_in_assets");
+    public static string UnityCodeInsightFieldUsageProvider_GetTooltip_Possible_indirect_changes => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_GetTooltip_Possible_indirect_changes");
+    public static string UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in_1_asset___possible_indirect_changes => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in_1_asset___possible_indirect_changes");
+    public static string UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in__0__assets___possible_indirect_changes => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in__0__assets___possible_indirect_changes");
+    public static string UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in__0__assets => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_GetTooltip_Changed_in__0__assets");
+    public static string UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_No_methods => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_No_methods");
+    public static string UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_method => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_method");
+    public static string UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_CapitalChar_Method => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_CapitalChar_Method");
+    public static string UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_methods => ResourceManager.GetString("UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_methods");
+    public static string AnimatorGroupingRule_AnimatorGroupingRule_Animator => ResourceManager.GetString("AnimatorGroupingRule_AnimatorGroupingRule_Animator");
+    public static string AnimationEventGroupingRule_AnimationEventGroupingRule_AnimationEvent => ResourceManager.GetString("AnimationEventGroupingRule_AnimationEventGroupingRule_AnimationEvent");
+    public static string GameObjectUsageGroupingRule_GameObjectUsageGroupingRule_UnityGameObject => ResourceManager.GetString("GameObjectUsageGroupingRule_GameObjectUsageGroupingRule_UnityGameObject");
+    public static string ComponentUsageGroupingRule_ComponentUsageGroupingRule_UnityComponent => ResourceManager.GetString("ComponentUsageGroupingRule_ComponentUsageGroupingRule_UnityComponent");
   }
 }

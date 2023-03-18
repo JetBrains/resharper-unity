@@ -14,7 +14,10 @@
     <!-- LibHarmony is not signed -->
     <NoWarn>CS8002</NoWarn>
     <JetTestProject>True</JetTestProject>
+    <DefineConstants Condition="!$(InternalBuild)">$(DefineConstants);INDEPENDENT_BUILD</DefineConstants>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
+  <!-- ********** -->
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">

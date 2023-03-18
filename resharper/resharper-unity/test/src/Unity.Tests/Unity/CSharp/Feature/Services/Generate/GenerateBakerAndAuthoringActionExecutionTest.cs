@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
         private const string DotsClassesFileName = "DotsClasses.cs";
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\Dots\GenerateBakerAndAuthoringActionFix";
 
-        protected override void CheckProjectFile(IProjectFile projectItem, Action<TextWriter> test = null)
+        protected override void CheckProjectFile(IProjectFile projectItem, Action<TextWriter>? test = null)
         {
             if(projectItem.Location.Name.Equals(DotsClassesFileName))
                 return;
@@ -23,27 +23,42 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
-        
+
         [Test] public void GenerateNewBakerNested()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
-        
+
+        [Test] public void GenerateNewBakerForEmptyComponent()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
+
         [Test] public void AddNewComponentToBaker()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
-        
+
         [Test] public void UpdateExistingNestedBaker()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
         
+        [Test] public void UpdateExistingPartialBaker()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
+
         [Test] public void CreateNewWithExistingBaker()
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
         
+        [Test] public void CreateNewNestedWithExistingBaker()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
+
         [Test] public void AuthoringAndBakerInOtherFiles()
         {
             DoNamedTest($"../{DotsClassesFileName}"

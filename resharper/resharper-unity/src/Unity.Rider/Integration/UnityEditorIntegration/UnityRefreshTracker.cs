@@ -7,11 +7,12 @@ using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
+using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.ProjectsHost.SolutionHost.Progress;
 using JetBrains.Rd.Tasks;
-using JetBrains.RdBackend.Common.Features;
+using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
@@ -33,23 +34,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
         private readonly BackendUnityHost myBackendUnityHost;
+        private readonly BackendUnityProtocol myBackendUnityProtocol;
         private readonly ILogger myLogger;
         private readonly UnityVersion myUnityVersion;
+        private readonly UnityProcessTracker myUnityProcessTracker;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution,
-                              BackendUnityHost backendUnityHost,
-                              IApplicationWideContextBoundSettingStore settingsStore,
-                              ILogger logger, UnityVersion unityVersion)
+            BackendUnityHost backendUnityHost,
+            BackendUnityProtocol backendUnityProtocol,
+            IApplicationWideContextBoundSettingStore settingsStore,
+            ILogger logger, UnityVersion unityVersion, UnityProcessTracker unityProcessTracker)
         {
             myLocks = locks;
             myLifetime = lifetime;
             mySolution = solution;
             myBackendUnityHost = backendUnityHost;
+            myBackendUnityProtocol = backendUnityProtocol;
             myLogger = logger;
             myUnityVersion = unityVersion;
+            myUnityProcessTracker = unityProcessTracker;
 
-            if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
+            if (!solution.HasProtocolSolution())
                 return;
 
             myBoundSettingsStore = settingsStore.BoundSettingsStore;
@@ -103,11 +109,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                 return;
 
             var lifetimeDef = Lifetime.Define(lifetime);
+            myUnityProcessTracker.UnityProcessId.When(lifetimeDef.Lifetime, (int?)null,
+                _ => { lifetimeDef.Terminate(); });
+
             try
             {
-                myLogger.Verbose($"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Started");
+                myLogger.Verbose(
+                    $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Started");
                 mySolution.GetComponent<BackgroundProgressManager>().AddNewTask(lifetimeDef.Lifetime,
-                    BackgroundProgressBuilder.Create().WithHeader(Strings.UnityRefresher_RefreshInternal_Refreshing_solution_in_Unity_Editor___)
+                    BackgroundProgressBuilder.Create()
+                        .WithHeader(Strings.UnityRefresher_RefreshInternal_Refreshing_solution_in_Unity_Editor___)
                         .AsIndeterminate().AsNonCancelable());
 
                 var version = myUnityVersion.ActualVersionForSolution.Value;
@@ -119,7 +130,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                         {
                             try
                             {
-                                await myBackendUnityHost.BackendUnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+                                await myBackendUnityHost.BackendUnityModel.Value.Refresh
+                                    .Start(lifetimeDef.Lifetime, refreshType).AsTask();
                             }
                             finally
                             {
@@ -128,24 +140,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                         }
                     }
                     else // it is a risk to pause vfs https://github.com/JetBrains/resharper-unity/issues/1601
-                        await myBackendUnityHost.BackendUnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+                        await myBackendUnityHost.BackendUnityModel.Value.Refresh
+                            .Start(lifetimeDef.Lifetime, refreshType).AsTask();
                 }
-                catch (Exception e)
+                catch (TaskCanceledException e)
                 {
-                    myLogger.Warn(e, comment:"connection usually brakes during refresh.");
+                    myLogger.Warn(e, comment: "connection usually brakes during refresh.");
+                    // myBackendUnityProtocol.Connected = false, will follow in milliseconds
+                    await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
+                    await WaitForStableConnection(lifetimeDef.Lifetime, TimeSpan.FromMilliseconds(250));
+                    await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
                 }
                 finally
                 {
                     await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
+                    await myBackendUnityProtocol.Connected.NextTrueValueAsync(lifetimeDef.Lifetime);
+                    myLogger.Verbose("await Connected finished.");
+                    await myBackendUnityHost.BackendUnityModel.NextValueAsync(lifetimeDef.Lifetime);
+                    myLogger.Verbose("await for BackendUnityModel finished.");
 
-                    myLogger.Verbose(
-                            $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Finished");
+                    myLogger.Verbose($"Refresh, force = {refreshType} Finished");
                     var solution = mySolution.GetProtocolSolution();
                     var solFolder = mySolution.SolutionDirectory;
-                    var list = new List<string> {solFolder.FullPath};
-                    myLogger.Verbose("RefreshPaths.StartAsTask Finished.");
+                    var list = new List<string> { solFolder.FullPath };
                     await solution.GetFileSystemModel().RefreshPaths
-                            .Start(lifetimeDef.Lifetime, new RdFsRefreshRequest(list, true)).AsTask();
+                        .Start(lifetimeDef.Lifetime, new RdFsRefreshRequest(list, true)).AsTask();
+                    myLogger.Verbose("RefreshPaths.StartAsTask Finished.");
                     await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
                 }
             }
@@ -157,6 +177,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             {
                 lifetimeDef.Terminate();
             }
+        }
+
+        /// <summary>
+        /// Unity may have iterations over a change, like a change in the manifest.json
+        /// Connection would establish and disconnect and establish again
+        /// We want to wait <paramref name="interval"/> ms after established connection to see if it is still valid 
+        /// </summary>
+        /// <param name="lifetime"></param>
+        /// <param name="interval"></param>
+        private async Task WaitForStableConnection(Lifetime lifetime, TimeSpan interval)
+        {
+            var def = lifetime.CreateNested();
+            var tcs = def.Lifetime.CreateTaskCompletionSource<bool>();
+            var groupingEvent = myLocks.GroupingEvents.CreateEvent(def.Lifetime, "WaitForConnectionGroupingEvent",
+                interval,
+                Rgc.Guarded, () =>
+                {
+                    // wait interval after the last Connected and end only if connection is still present
+                    if (myBackendUnityProtocol.Connected.HasTrueValue())
+                    {
+                        tcs.SetResult(true);
+                        def.Terminate();
+                    }
+                });
+            myBackendUnityProtocol.Connected.Advise(def.Lifetime, connected =>
+            {
+                myLogger.Trace($"Connected value: {connected}.");
+                if (connected) groupingEvent.FireIncoming();
+            });
+            await tcs.Task;
         }
     }
 
@@ -173,7 +223,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             UnitySolutionTracker unitySolutionTracker)
         {
             myLogger = logger;
-            if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
+            if (!solution.HasProtocolSolution())
                 return;
 
             unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>

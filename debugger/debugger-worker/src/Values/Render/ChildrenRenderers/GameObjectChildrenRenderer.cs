@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using JetBrains.Annotations;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
 using Mono.Debugging.Autofac;
@@ -166,8 +165,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
             }
 
             private string GetComponentName(IValueReference<TValue> componentValue,
-                                            [CanBeNull] IReifiedType<TValue> objectNamesType,
-                                            [CanBeNull] IMetadataMethodLite getInspectorTitleMethod,
+                                            IReifiedType<TValue>? objectNamesType,
+                                            IMetadataMethodLite? getInspectorTitleMethod,
                                             IStackFrame frame,
                                             IValueFetchOptions options,
                                             IValueServicesFacade<TValue> services,
@@ -209,7 +208,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
             private readonly IObjectValueRole<TValue> myGameObjectRole;
             private readonly IValueServicesFacade<TValue> myValueServices;
             private readonly ILogger myLogger;
-            private IMetadataMethodLite myGetChildMethod;
+            private IMetadataMethodLite? myGetChildMethod;
 
             public GameObjectChildrenGroup(IObjectValueRole<TValue> gameObjectRole,
                                            IValueServicesFacade<TValue> valueServices, ILogger logger)
@@ -278,7 +277,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
                 {
                     var frame = myGameObjectRole.ValueReference.OriginatingFrame;
                     var indexValue = myValueServices.ValueFactory.CreatePrimitive(frame, options, index);
-                    var childTransformValue = collection.CallInstanceMethod(myGetChildMethod, indexValue);
+                    var childTransformValue = collection.CallInstanceMethod(myGetChildMethod!, indexValue);
                     var childTransform = new SimpleValueReference<TValue>(childTransformValue,
                         frame, myValueServices.RoleFactory).AsObjectSafe(options);
                     var gameObject = childTransform?.GetInstancePropertyReference("gameObject", true)

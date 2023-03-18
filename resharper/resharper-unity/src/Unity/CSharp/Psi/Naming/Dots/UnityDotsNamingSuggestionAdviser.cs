@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Naming.Impl;
@@ -18,8 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Dots
             if (typeElement == null)
                 return EmptyList<NameRoot>.Instance;
 
-            var isRefRw = UnityApi.IsRefRW(typeElement);
-            var isRefRo = UnityApi.IsRefRO(typeElement);
+            var isRefRw = typeElement.IsClrName(KnownTypes.RefRW);
+            var isRefRo = typeElement.IsClrName(KnownTypes.RefRO);
             
             if (isRefRw || isRefRo)
             {

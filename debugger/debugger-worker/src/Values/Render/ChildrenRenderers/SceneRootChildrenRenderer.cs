@@ -123,9 +123,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
             {
                 try
                 {
-                    var elementRole = elementReference.AsObjectSafe(options);
-                    if (elementRole == null)
-                        return null;
+                    var elementRole = elementReference.AsObject(options);
 
                     var isNameFromValue = true;
                     var name = elementRole.GetInstancePropertyReference("name", true)?.AsStringSafe(options)

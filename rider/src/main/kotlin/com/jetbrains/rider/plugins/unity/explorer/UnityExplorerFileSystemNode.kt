@@ -8,7 +8,7 @@ import com.intellij.openapi.vcs.FileStatus
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.workspaceModel.ide.WorkspaceModel
-import com.intellij.workspaceModel.ide.impl.virtualFile
+import com.intellij.workspaceModel.ide.virtualFile
 import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 import com.jetbrains.rider.projectView.calculateFileSystemIcon
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
@@ -64,11 +64,17 @@ open class UnityExplorerFileSystemNode(project: Project,
                 return true
             }
 
-            if (file.name.endsWith("~")) {
-                return true
+            return file.name.endsWith("~")
+        }
+
+        private fun isDescendantOfReadOnlyPackage(node: UnityExplorerFileSystemNode?): Boolean {
+            if (node == null) return false
+
+            if (node.descendentOf == AncestorNodeType.HiddenAsset || node.descendentOf == AncestorNodeType.IgnoredFolder) {
+                return isDescendantOfReadOnlyPackage(node.parent as? UnityExplorerFileSystemNode)
             }
 
-            return false
+            return node.descendentOf == AncestorNodeType.ReadOnlyPackage
         }
     }
 
@@ -337,14 +343,21 @@ open class UnityExplorerFileSystemNode(project: Project,
     }
 
     override fun getFileStatus(): FileStatus {
-        // Read only package files are cached under Library, which is ignored by VCS, but it's pointless us showing them
-        // as IGNORED
-        return if (descendentOf == AncestorNodeType.ReadOnlyPackage) FileStatus.NOT_CHANGED else super.getFileStatus()
+        // Read only package files are cached in the Library folder, which is ignored by VCS, but it's pointless showing
+        // these as IGNORED. We need to get the ultimate ancestor of this node, so we don't mark hidden or ignored files
+        // inside read only packages as IGNORED.
+        return if (isDescendantOfReadOnlyPackage(this)) {
+            FileStatus.NOT_CHANGED
+        }
+        else {
+            super.getFileStatus()
+        }
     }
 
     override fun getFileStatusColor(status: FileStatus?): Color? {
-        // NOT_CHANGED colour is discovered recursively, so if any files under this are ignored, we'd get the wrong colour
-        return if (descendentOf == AncestorNodeType.ReadOnlyPackage && status == FileStatus.NOT_CHANGED) {
+        // The super implementation will try to recursively discover a more appropriate status if asked for NOT_CHANGED,
+        // so it can propagate changes from descendants. Make sure that we always show NOT_CHANGED for readonly packages
+        return if (isDescendantOfReadOnlyPackage(this) && status == FileStatus.NOT_CHANGED) {
             status?.color
         } else {
             super.getFileStatusColor(status)

@@ -19,12 +19,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             if (!context.ClassDeclaration.IsFromUnityProject())
                 return;
 
-            if (context.ClassDeclaration.DeclaredElement is not IStruct typeElement)
+            var classDeclarationDeclaredElement = context.ClassDeclaration.DeclaredElement;
+            if (classDeclarationDeclaredElement == null)
                 return;
 
-            // CompactOneToListMap is optimised for the typical use case of only one item per key
             var existingFields = new Dictionary<string, IField>();
-            foreach (var typeMemberInstance in typeElement.GetAllClassMembers<IField>())
+            foreach (var typeMemberInstance in classDeclarationDeclaredElement.GetAllClassMembers<IField>())
             {
                 var field = typeMemberInstance.Member;
                 if (!field.IsStatic && field.GetAccessRights() == AccessRights.PUBLIC)

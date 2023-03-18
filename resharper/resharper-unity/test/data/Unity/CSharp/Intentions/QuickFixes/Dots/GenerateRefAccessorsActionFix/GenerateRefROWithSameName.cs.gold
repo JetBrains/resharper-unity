@@ -1,0 +1,31 @@
+﻿Provided elements:
+ 0: ScavsCount:System.Int32
+
+// ${KIND:Unity.GenerateRefAccessors}
+// ${SELECT0:ScavsCount:System.Int32}
+
+using Unity.Entities;
+using Unity.Mathematics;
+using UnityEngine;
+
+namespace ComponentsAndTags
+{
+    struct Factory4 : IComponentData
+    {
+        public int ScavsCount;
+    }
+
+    struct Rezerv : IComponentData
+    {
+        public int ScavsCount;
+    }
+
+    struct FooAspect : IAspect
+    {
+        private RefRO<Factory4> _factory4;
+        private RefRO<Rezerv> _Rezerv{caret};
+        public int Count => _Rezerv.ValueRO.ScavsCount;
+
+        public int ScavsCount => _factory4.ValueRO.ScavsCount;
+    }
+}

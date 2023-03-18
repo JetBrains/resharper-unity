@@ -56,8 +56,6 @@
     <Compile Update="CSharp\Daemon\Errors\GutterMarkInfos.generated.cs">
       <DependentUpon>GutterMarkInfos.xml</DependentUpon>
     </Compile>
-    <Compile Remove="AsmDef\ZoneMarker.cs" />
-    <Compile Remove="Core\Application\UI\Options\ZoneMarker.cs" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="AsmDef">
@@ -102,7 +100,7 @@
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="References">
-    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="3.3.0">
+    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
@@ -116,6 +114,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="mscorlib" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="!$(InternalBuild)" />

@@ -1,5 +1,4 @@
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -38,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
             SolutionBuilderHelper.PrepareDependencies(BaseTestDataPath, testSolutionAbsolutePath, "AssemblyWithSerializedRef", AssembliesDirectory);
             DoSolutionTestWithGold(testSolutionAbsolutePath);
         }
-        
+
 
         [Test]
         public void TestWithoutSerialisedReferenceFromAssemblies()
@@ -47,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
             SolutionBuilderHelper.PrepareDependencies(BaseTestDataPath, testSolutionAbsolutePath, "AssemblyWithoutSerilaizeRef", AssembliesDirectory);
             DoSolutionTestWithGold(testSolutionAbsolutePath);
         }
-        
+
         [Test]
         public void RedundantFieldsWithGenerics()
         {
@@ -98,7 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.SerializeReferen
             return pf.Location.Name.EndsWith(".cs") && file.Name.Contains("TestFile");
         }
 
-        protected virtual bool HighlightingPredicate([NotNull] IHighlighting highlighting, IPsiSourceFile sourceFile,
+        protected virtual bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
             IContextBoundSettingsStore settingsStore)
         {
             return highlighting is IUnityAnalyzerHighlighting;

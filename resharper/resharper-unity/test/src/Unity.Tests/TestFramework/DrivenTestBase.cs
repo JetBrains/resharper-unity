@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Application.DataContext;
 using JetBrains.DocumentModel;
 using JetBrains.DocumentModel.DataContext;
@@ -28,27 +27,25 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework
             mySettingsTables = InitSettingsTable();
         }
 
-        [NotNull]
         protected virtual IDictionary<string, string> InitSettingsTable()
         {
             return EmptyDictionary<string, string>.Instance;
         }
 
-        [CanBeNull]
-        protected abstract IRefactoringWorkflow CreateRefactoringWorkflow([NotNull] ITextControl control,
-            IDataContext context);
+        protected abstract IRefactoringWorkflow? CreateRefactoringWorkflow(ITextControl control,
+                                                                           IDataContext context);
 
         protected string GetMySetting(IDocument document, string setting)
         {
-            string value = GetSetting(document.Buffer, setting);
+            var value = GetSetting(document.Buffer, setting);
             if (value == null && !mySettingsTables.TryGetValue(setting, out value))
                 value = "error";
             return value;
         }
 
-        protected T GetTypedSetting<T>(IDocument document, string setting, Func<string, T> converter)
+        protected T? GetTypedSetting<T>(IDocument document, string setting, Func<string, T> converter)
         {
-            string value = GetSetting(document.Buffer, setting);
+            string? value = GetSetting(document.Buffer, setting);
             if (value == null) return default(T);
             return converter.Invoke(value);
         }
@@ -82,8 +79,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework
                 myDrivenTextBase = test;
             }
 
-            protected override IRefactoringWorkflow CreateRefactoringWorkflow(ITextControl textControl,
-                IDataContext context)
+            protected override IRefactoringWorkflow? CreateRefactoringWorkflow(ITextControl textControl,
+                                                                               IDataContext context)
             {
                 return myDrivenTextBase.CreateRefactoringWorkflow(textControl, context);
             }

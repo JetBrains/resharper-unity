@@ -13,6 +13,7 @@
     <LangVersion>9</LangVersion>
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
+  <!-- ********** -->
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
       <PrivateAssets>all</PrivateAssets>

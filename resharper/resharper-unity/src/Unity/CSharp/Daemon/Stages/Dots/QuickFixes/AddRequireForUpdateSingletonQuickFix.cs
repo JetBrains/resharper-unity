@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
@@ -18,17 +19,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.QuickFixes
     [QuickFix]
     public class AddRequireForUpdateSingletonQuickFix : UnityScopedQuickFixBase
     {
-        private readonly string myClassName;
+        private readonly IType mySingletonClassType;
         private readonly IClassLikeDeclaration myClassLikeDeclaration;
 
         public override string Text =>
-            string.Format(Strings.UnityDots_Add_RequireForUpdate_SingletonQuickFix, myClassName);
+            string.Format(Strings.UnityDots_Add_RequireForUpdate_SingletonQuickFix, mySingletonClassType);
 
         public override string ScopedText => Strings.UnityDots_Add_RequireForUpdate_SingletonQuickFix_For_All;
 
         public AddRequireForUpdateSingletonQuickFix(SingletonMustBeRequestedWarning warning)
         {
-            myClassName = warning.RequestedTypeName;
+            mySingletonClassType = warning.RequestedType;
             myClassLikeDeclaration = warning.ClassLikeDeclaration;
         }
 
@@ -36,8 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.QuickFixes
         {
             using (WriteLockCookie.Create())
             {
-                var classLikeDeclaration = myClassLikeDeclaration;
-                var onCreateMethod = DotsUtils.GetMethodsFromAllDeclarations(classLikeDeclaration)
+                var onCreateMethod = DotsUtils.GetMethodsFromAllDeclarations(myClassLikeDeclaration)
                     .FirstOrDefault(m => DotsUtils.IsISystemOnCreateMethod(m.DeclaredElement));
                
                 if (onCreateMethod == null)
@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.QuickFixes
                     var updateMethod =
                         factory.CreateTypeMemberDeclaration(
                             "public void OnCreate(ref SystemState state){state.RequireForUpdate<$0>();}",
-                            myClassName);
+                            mySingletonClassType);
                     ModificationUtil.AddChildAfter(myClassLikeDeclaration.Body.FirstChild, updateMethod);
                 }
                 else
@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.QuickFixes
                     var factory = CSharpElementFactory.GetInstance(myClassLikeDeclaration);
 
                     var updateQueryExpression = factory.CreateStatement("$0.RequireForUpdate<$1>();",
-                        refStateParameterName, myClassName);
+                        refStateParameterName, mySingletonClassType);
 
                     ModificationUtil.AddChildAfter(onCreateMethod.Body.FirstChild, updateQueryExpression);
                 }
