@@ -10,7 +10,7 @@ scopes: UnityDotsScope
 uitag: DOTS
 parameterOrder: HEADER, (JOBENTITY), (NAMESPACE)
 HEADER-expression: fileheader()
-ASPECT-expression: getAlphaNumericFileNameWithoutExtension
+JOBENTITY-expression: getAlphaNumericFileNameWithoutExtension
 NAMESPACE-expression: fileDefaultNamespace()
 ---
 
@@ -23,6 +23,7 @@ $HEADER$namespace $NAMESPACE$
   {
      public void Execute($END$)
      {
+
      }
   }
 }

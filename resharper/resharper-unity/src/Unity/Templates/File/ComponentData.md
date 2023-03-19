@@ -18,6 +18,9 @@ NAMESPACE-expression: fileDefaultNamespace()
 
 ```
 $HEADER$namespace $NAMESPACE$ {
-  public struct $COMPONENT$ : Unity.Entities.IComponentData {$END$}
+  public struct $COMPONENT$ : Unity.Entities.IComponentData
+  {
+    $END$
+  }
 }
 ```
