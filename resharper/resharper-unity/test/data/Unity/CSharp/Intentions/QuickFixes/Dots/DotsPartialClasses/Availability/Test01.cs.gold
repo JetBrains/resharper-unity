@@ -1,6 +1,6 @@
 ﻿using Unity.Entities;
 
-struct |EnemySpawnSystem|(0) : ISystem
+struct EnemySpawnSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
@@ -15,7 +15,7 @@ struct |EnemySpawnSystem|(0) : ISystem
     }
 }
 
-public class |BigmapSystemBase|(1) : SystemBase
+public class BigmapSystemBase : SystemBase
 {
     protected override void OnUpdate()
     {
@@ -23,12 +23,12 @@ public class |BigmapSystemBase|(1) : SystemBase
 }
 
 
-struct |ShorelineSettingsAspect|(2) : IAspect
+struct |ShorelineSettingsAspect|(0) : IAspect
 {
 }
 
 
-readonly struct |BigmapSettingsAspect|(3) : IAspect
+readonly struct |BigmapSettingsAspect|(1) : IAspect
 {
 }
 
@@ -36,25 +36,13 @@ struct Factory4 : IComponentData //shouldn't be partial
 {
 }
 ------------------------------------------------
-0: ISystem's inheritor 'EnemySpawnSystem' must be 'partial'
-QUICKFIXES:
-Add 'partial' to EnemySpawnSystem
---Add 'partial' to EnemySpawnSystem in file
---Add 'partial' to EnemySpawnSystem in project
---Add 'partial' to EnemySpawnSystem in solution
-1: SystemBase's inheritor 'BigmapSystemBase' must be 'partial'
-QUICKFIXES:
-Add 'partial' to BigmapSystemBase
---Add 'partial' to BigmapSystemBase in file
---Add 'partial' to BigmapSystemBase in project
---Add 'partial' to BigmapSystemBase in solution
-2: IAspect's inheritor 'ShorelineSettingsAspect' must be 'partial readonly'
+0: IAspect's inheritor 'ShorelineSettingsAspect' must be 'partial readonly'
 QUICKFIXES:
 Add 'partial readonly' to ShorelineSettingsAspect
 --Add 'partial readonly' to ShorelineSettingsAspect in file
 --Add 'partial readonly' to ShorelineSettingsAspect in project
 --Add 'partial readonly' to ShorelineSettingsAspect in solution
-3: IAspect's inheritor 'BigmapSettingsAspect' must be 'partial'
+1: IAspect's inheritor 'BigmapSettingsAspect' must be 'partial'
 QUICKFIXES:
 Add 'partial' to BigmapSettingsAspect
 --Add 'partial' to BigmapSettingsAspect in file

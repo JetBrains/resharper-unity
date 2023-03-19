@@ -18,10 +18,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.QuickFixes
         private readonly InconsistentModifiersForDotsInheritorWarning myInconsistentModifiersForDotsInheritorWarning;
         private readonly IClassLikeDeclaration myClassLikeDeclaration;
         
-        public DotsPartialClassesQuickFix(InconsistentModifiersForDotsInheritorWarning InconsistentModifiersForDotsInheritorWarning)
+        public DotsPartialClassesQuickFix(InconsistentModifiersForDotsInheritorWarning inconsistentModifiersForDotsInheritorWarning)
         {
-            myInconsistentModifiersForDotsInheritorWarning = InconsistentModifiersForDotsInheritorWarning;
-            myClassLikeDeclaration = InconsistentModifiersForDotsInheritorWarning.ClassLikeDeclaration;
+            myInconsistentModifiersForDotsInheritorWarning = inconsistentModifiersForDotsInheritorWarning;
+            myClassLikeDeclaration = inconsistentModifiersForDotsInheritorWarning.ClassLikeDeclaration;
         }
 
         private string GetText()

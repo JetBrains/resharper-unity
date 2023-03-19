@@ -5,10 +5,10 @@ using JetBrains.Rider.Backend.Product;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Env
 {
-    [ZoneMarker]
-    [ZoneActivator]
-    public class ZoneActivator : IActivate<IRiderUnityPluginZone>, IActivate<IUnityShaderZone>, IRequire<IRiderProductEnvironmentZone>
+    [ZoneMarker, ZoneActivator]
+    public class ZoneActivator : IRequire<IRiderProductEnvironmentZone>,
+        IActivate<IRiderUnityPluginZone>,
+        IActivate<IUnityShaderZone>
     {
-        
     }
 }
