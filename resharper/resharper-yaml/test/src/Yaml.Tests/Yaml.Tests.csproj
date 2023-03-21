@@ -18,7 +18,7 @@
     <JetTestProject>True</JetTestProject>
     <SignAssembly>False</SignAssembly>
     <Nullable>enable</Nullable>
-    <DefineConstants Condition="!$(InternalBuild)">$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="!$(InternalBuild)">$(DefineConstants);INDEPENDENT_BUILD</DefineConstants>
     <JetTestProject>True</JetTestProject>
   </PropertyGroup>
   <!-- ********** -->
