@@ -180,7 +180,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             }
             else
             {
-                ourLogger.Verbose(
+                ourLogger.Trace(
                     $"Adding id:{classId}, name:{classMetaInfo.ClassName}, {classAdapter.FullyQualifiedName}");
                 classMetaInfoDictionary.Add(classId, classMetaInfo);
             }
