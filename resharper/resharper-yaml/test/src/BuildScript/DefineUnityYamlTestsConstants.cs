@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests.BuildScript
 		{
 			var constants = new List<string>();
 
-			constants.AddRange(new[] {"$(DefineConstants)", "JET_MODE_ASSERT", "JET_MODE_REPORT_EXCEPTIONS"});
+			constants.AddRange(new[] {"$(DefineConstants)", "JET_MODE_ASSERT", "JET_MODE_REPORT_EXCEPTIONS", "INDEPENDENT_BUILD"});
 
 			return constants.SelectMany(s => new []
 			{
