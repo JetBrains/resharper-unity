@@ -153,7 +153,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
 
             // Check exists of process if it was killed by manual and EditorInstance.json wasn't deleted
             processId = Convert.ToInt32(processIdString);
-            return PlatformUtil.ProcessExists(processId);
+            return ProcessUtil.IsProcessAlive(processId) == true;
         }
 
         private Task<int> StartUnityAndWaitConnection(Lifetime lifetime)
