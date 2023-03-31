@@ -97,7 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 
         private static void SetRiderProcessId(BackendUnityModel backendUnityModel)
         {
-            if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
+            if (PlatformUtil.RuntimePlatform == JetPlatform.Windows)
             {
                 // RiderProcessId is only used on Windows (for AllowSetForegroundWindow)
                 var frontendProcess = Process.GetCurrentProcess().GetParent();
