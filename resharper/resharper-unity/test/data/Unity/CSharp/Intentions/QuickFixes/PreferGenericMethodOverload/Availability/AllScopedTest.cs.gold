@@ -22,7 +22,7 @@ public class Test01
 
     public void Method2(GameObject o)
     {
-        |o.AddComponent(|"SomethingElse"|(3))|(2);
+        o.|AddComponent|(2)(|"SomethingElse"|(3));
         ScriptableObject.CreateInstance(|"ScriptableThing"|(4));
     }
 }
