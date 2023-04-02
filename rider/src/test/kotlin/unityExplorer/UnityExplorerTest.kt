@@ -4,6 +4,7 @@ import base.addNewFolder2
 import base.addNewItem2
 import base.dump
 import base.withUnityExplorerPane
+import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
 import com.jetbrains.rider.test.env.enums.SdkVersion

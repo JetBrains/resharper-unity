@@ -23,6 +23,8 @@ import com.jetbrains.rd.util.addUnique
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
 import com.jetbrains.rider.plugins.unity.workspace.getPackages
 import com.jetbrains.rider.projectDir
+import com.jetbrains.rider.projectView.solutionDirectory
+import com.jetbrains.rdclient.util.idea.toVirtualFile
 import com.jetbrains.rider.projectView.VfsBackendRequester
 import org.jetbrains.annotations.Nls
 import java.nio.file.Path
@@ -41,7 +43,11 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
 
     override fun after(events: MutableList<out VFileEvent>) {
         val projectManager = serviceIfCreated<ProjectManager>() ?: return
-        val openedUnityProjects = projectManager.openProjects.filter { !it.isDisposed && it.isUnityProjectFolder() && !isUndoRedoInProgress(it)}.toList()
+        val openedUnityProjects = projectManager.openProjects.filter {
+            !it.isDisposed &&
+            it.solutionDirectory.toVirtualFile(false) != null && // RIDER-91651 Solution Explorer sometimes isn't properly loaded
+            it.isUnityProjectFolder() && !isUndoRedoInProgress(it)
+        }.toList()
 
         for (event in events) {
             if (!isValidEvent(event)) continue
