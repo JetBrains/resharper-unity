@@ -234,7 +234,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
                 return false;
             
             var unityPath = unityPathData.Value?.ApplicationPath;
-            if (unityPath != null && PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
+            if (unityPath != null && PlatformUtil.RuntimePlatform == JetPlatform.MacOsX)
                 unityPath = VirtualFileSystemPath.Parse(unityPath, InteractionContext.SolutionContext).Combine("Contents/MacOS/Unity").FullPath;
             
             if (unityPath == null)
