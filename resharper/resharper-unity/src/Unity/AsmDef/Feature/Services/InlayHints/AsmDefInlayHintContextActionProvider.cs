@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
         }
 
         public override IEnumerable<IntentionAction> GetPerHighlightingActions(
-            IEnumerable<IInlayHintContextActionHighlighting> highlighting, IAnchor configureAnchor)
+            IEnumerable<IInlayHintContextActionHighlighting> highlighting, IAnchor configureAnchor, IAnchor configureParentAnchor)
         {
             yield break;
         }

@@ -288,7 +288,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             {
                 switch (PlatformUtil.RuntimePlatform)
                 {
-                    case PlatformUtil.Platform.Windows:
+                    case JetPlatform.Windows:
 
                         ourLogger.CatchWarn(() =>
                         {
@@ -308,7 +308,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
                         }
 
                         break;
-                    case PlatformUtil.Platform.MacOsX:
+                    case JetPlatform.MacOsX:
                         var infoPlistPath = appPath.Combine("Contents/Info.plist");
                         if (infoPlistPath.ExistsFile)
                         {
@@ -324,7 +324,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
                         }
 
                         break;
-                    case PlatformUtil.Platform.Linux:
+                    case JetPlatform.Linux:
                         version = Parse(appPath.FullPath); // parse from path
                         break;
                 }

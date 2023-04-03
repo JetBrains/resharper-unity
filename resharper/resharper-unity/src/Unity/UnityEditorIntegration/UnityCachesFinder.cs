@@ -35,11 +35,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
             switch (PlatformUtil.RuntimePlatform)
             {
-                case PlatformUtil.Platform.Windows:
+                case JetPlatform.Windows:
                     return Environment.SpecialFolder.LocalApplicationData.ToVirtualFileSystemPath(InteractionContext.SolutionContext).Combine("Unity/cache/packages");
-                case PlatformUtil.Platform.MacOsX:
+                case JetPlatform.MacOsX:
                     return Environment.SpecialFolder.Personal.ToVirtualFileSystemPath(InteractionContext.SolutionContext).Combine("Library/Unity/cache/packages");
-                case PlatformUtil.Platform.Linux:
+                case JetPlatform.Linux:
                     // This will check $XDG_CONFIG_HOME, if it exists, and fall back to ~/.config
                     // TODO: Check this works
                     return Environment.SpecialFolder.ApplicationData.ToVirtualFileSystemPath(InteractionContext.SolutionContext).Combine("unity3d/cache/packages");

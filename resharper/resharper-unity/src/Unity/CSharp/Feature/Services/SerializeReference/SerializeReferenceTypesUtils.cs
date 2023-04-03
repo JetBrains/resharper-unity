@@ -180,7 +180,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             }
             else
             {
-                ourLogger.Verbose(
+                ourLogger.Trace(
                     $"Adding id:{classId}, name:{classMetaInfo.ClassName}, {classAdapter.FullyQualifiedName}");
                 classMetaInfoDictionary.Add(classId, classMetaInfo);
             }
@@ -294,22 +294,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
 
         public static bool HasFieldAttribute(this IProperty property, IClrTypeName clrTypeName)
         {
+            Assertion.Require(property != null, "property != null");
+            
             var attributes = property.GetDeclarations<IPropertyDeclaration>()
                 .SelectMany(declaration => declaration.AttributesEnumerable);
             foreach (var attribute in attributes)
             {
-                if (attribute.Target == AttributeTarget.Field)
-                {
-                    var result = attribute.Name.Reference.Resolve();
-                    if (result.ResolveErrorType == ResolveErrorType.OK &&
-                        result.DeclaredElement is ITypeElement typeElement)
-                    {
-                        if (Equals(typeElement.GetClrName(), clrTypeName))
-                        {
-                            return true;
-                        }
-                    }
-                }
+                if (attribute is not { Target: AttributeTarget.Field }) 
+                    continue;
+                
+                var result = attribute.Name.Reference.Resolve();
+                    
+                if (result.ResolveErrorType != ResolveErrorType.OK || result.DeclaredElement is not ITypeElement typeElement) 
+                    continue;
+                    
+                if (Equals(typeElement.GetClrName(), clrTypeName))
+                    return true;
             }
 
             return false;
@@ -429,6 +429,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         internal static ClassInfoAdapter ToAdapter(this ITypeElement typeElement,
             IUnityElementIdProvider provider)
         {
+            Assertion.Require(typeElement != null, "typeElement != null");
+            Assertion.Require(provider != null, "provider != null");
+
             var elementId = provider.GetElementId(typeElement);
             var superTypes = typeElement.GetSuperTypes().Where(t => !t.IsObject()).ToList();
 
@@ -439,6 +442,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                             && i.Type() is not IArrayType { Rank: 1 }
                             && !i.Type().IsGenericList())
                 .Select(i => provider.GetElementId(i))
+                .Where(id => id != null)
                 .Select(id => new KeyValuePair<ElementId, int>(id!.Value, 1));
 
             var fullyQualifiedName = GetFullyQualifiedNameDescription(typeElement);

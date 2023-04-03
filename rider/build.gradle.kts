@@ -659,6 +659,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
     }
 
     val nunitReSharperJson by registering(NUnit::class) {
+        nunitVersion = "3.16.2" // newer than default, helps running with net 7
         group = testGroup
         shadowCopy = false
         outputs.upToDateWhen { false }
@@ -669,6 +670,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
     }
 
     val nunitReSharperYaml by registering(NUnit::class) {
+        nunitVersion = "3.16.2" // newer than default, helps running with net 7
         group = testGroup
         shadowCopy = false
         outputs.upToDateWhen { false }
@@ -679,6 +681,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
     }
 
     val nunitReSharperUnity by registering(NUnit::class) {
+        nunitVersion = "3.16.2" // newer than default, helps running with net 7
         group = testGroup
         shadowCopy = false
         outputs.upToDateWhen { false }
@@ -692,6 +695,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
     }
 
     val nunitReSharperUnityRider by registering(NUnit::class) {
+        nunitVersion = "3.16.2" // newer than default, helps running with net 7
         group = testGroup
         shadowCopy = false
         outputs.upToDateWhen { false }

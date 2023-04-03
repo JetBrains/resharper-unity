@@ -24,7 +24,6 @@ class InputSystemUnityEventModeTest : BaseTestWithSolution() {
         prepareAssemblies(activeSolutionDirectory)
     }
     @Test
-    @Mute("RIDER-84142")
     fun usedCodeTest() {
         val projectLifetime = project.lifetime
         val model = project.solution.frontendBackendModel

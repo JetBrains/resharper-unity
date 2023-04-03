@@ -4,8 +4,8 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithConsoleBuild
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
@@ -63,7 +63,7 @@ abstract class IntegrationTestWithReuseSolutionBase : BaseTestWithSolutionBase()
                 myProject = null
                 oldSolutionDirectory.deleteRecursively()
             }
-            myProject = openSolution(solution, openSolutionParams)
+            myProject = prepareAndOpenSolution(solution, openSolutionParams)
             installPlugin(project)
             activateRiderFrontendTest()
         }

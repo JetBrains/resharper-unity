@@ -67,6 +67,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
         {
             return SuperClasses.Count == 0 && SerializeReferenceHolders.Count == 0 && Inheritors.Count == 0;
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(ClassName)}: {ClassName}, {nameof(IsTypeParameter)}: {IsTypeParameter}, {nameof(SuperClasses)}: {SuperClasses.Count}, {nameof(Inheritors)}: {Inheritors.Count}, {nameof(SerializeReferenceHolders)}: {SerializeReferenceHolders.Count}";
+        }
     }
 
     public class TypeParameter
