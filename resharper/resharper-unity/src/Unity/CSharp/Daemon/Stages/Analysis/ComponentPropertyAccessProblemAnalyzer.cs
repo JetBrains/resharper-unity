@@ -49,10 +49,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     var codeBody = parametersOwnerDeclaration.GetCodeBody();
                     scope = codeBody.BlockBody ?? (ICSharpTreeNode)codeBody.ExpressionBody;
                     break;
-                case ILambdaExpression lambdaExpression:
-                    codeBody = lambdaExpression.GetCodeBody();
-                    scope = codeBody.BlockBody ?? (ICSharpTreeNode)codeBody.ExpressionBody;
-                    break;
                 case IPropertyDeclaration propertyDeclaration:
                     var initial = propertyDeclaration.Initial;
                     if (initial != null)

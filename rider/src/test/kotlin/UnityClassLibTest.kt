@@ -3,6 +3,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
 import com.jetbrains.rider.test.enums.PlatformType
