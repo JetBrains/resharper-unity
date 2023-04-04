@@ -1,7 +1,9 @@
 package integrationTests
 
+import com.jetbrains.rider.test.annotations.Mute
 import java.io.File
 
+@Mute("RIDER-67296")
 class DebuggerTestOldMono : DebuggerTestBase() {
     override fun preprocessTempDirectory(tempDir: File) {
         super.preprocessTempDirectory(tempDir)
