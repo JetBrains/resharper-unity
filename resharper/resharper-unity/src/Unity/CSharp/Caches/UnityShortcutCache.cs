@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
-using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -22,14 +21,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
     [SolutionComponent]
     public class UnityShortcutCache : SimpleICache<CountingSet<string>>
     {
-        private readonly UnitySolutionTracker myUnitySolutionTracker;
         private readonly CountingSet<string> myLocalCache = new();
         private readonly OneToCompactCountingSet<string, IPsiSourceFile> myFilesWithShortCut = new();
 
-        public UnityShortcutCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, UnitySolutionTracker unitySolutionTracker)
+        public UnityShortcutCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager)
             : base(lifetime, shellLocks, persistentIndexManager,  CreateMarshaller())
         {
-            myUnitySolutionTracker = unitySolutionTracker;
         }
 
 
@@ -62,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
 
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return myUnitySolutionTracker.HasUnityReference.HasTrueValue() && base.IsApplicable(sf) && sf.PrimaryPsiLanguage.Is<CSharpLanguage>();
+            return base.IsApplicable(sf) && sf.PrimaryPsiLanguage.Is<CSharpLanguage>() && sf.GetProject().IsUnityProject();
         }
 
         public override object? Build(IPsiSourceFile sourceFile, bool isStartup)
@@ -93,10 +90,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
                             var isValidateFunction = validateArgument?.Value?.ConstantValue.IsTrue();
                             if (!isValidateFunction.HasValue || !isValidateFunction.Value)
                             {
-                                var name = GetArgument(0, "itemName", arguments)?.Value?.ConstantValue.StringValue;
-                                if (name != null)
+                                var constantValue = GetArgument(0, "itemName", arguments)?.Value?.ConstantValue;
+                                if (constantValue != null && constantValue.IsString(out var nameValue) && nameValue != null)
                                 {
-                                    var shortcut = ExtractShortcutFromName(name);
+                                    var shortcut = ExtractShortcutFromName(nameValue);
                                     if (shortcut != null)
                                     {
                                         result.Add(shortcut);

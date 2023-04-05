@@ -4,11 +4,9 @@ import com.intellij.execution.process.OSProcessUtil
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 
-class UnityEditorListener(project: Project,
-                          lifetime: Lifetime,
-                          onEditorAdded: (UnityProcess) -> Unit,
-                          onEditorRemoved: (UnityProcess) -> Unit) {
+class UnityEditorListener {
 
     companion object {
         private val logger = Logger.getInstance(UnityEditorListener::class.java)
@@ -18,12 +16,26 @@ class UnityEditorListener(project: Project,
     private val refreshPeriod: Long = 1000
     private val editorProcesses = mutableMapOf<Int, UnityLocalProcess>()
 
-    init {
+    // Invoked on UI thread
+    fun startListening(project: Project, lifetime: Lifetime, onEditorAdded: (UnityProcess) -> Unit, onEditorRemoved: (UnityProcess) -> Unit) {
         val refreshTimer = kotlin.concurrent.timer("Listen for Unity Editor processes", true, 0L, refreshPeriod) {
             refreshUnityEditorProcesses(project, onEditorAdded, onEditorRemoved)
         }
 
         lifetime.onTermination { refreshTimer.cancel() }
+    }
+
+    // Invoked on background thread
+    fun getEditorProcesses(project: Project): List<UnityProcess> {
+        val lifetime = UnityProjectLifetimeService.getLifetime(project).createNested()
+        try {
+            val editors = mutableListOf<UnityProcess>()
+            refreshUnityEditorProcesses(project, { editors.add(it) }, { editors.remove(it) })
+            return editors
+        }
+        finally {
+            lifetime.terminate()
+        }
     }
 
     private fun refreshUnityEditorProcesses(

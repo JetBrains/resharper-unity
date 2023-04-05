@@ -6,11 +6,12 @@ using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
-using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.ReSharper.Resources.Resources.Icons;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
@@ -34,8 +35,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             
             var fix = new GenerateRefAccessorsActionFix(classLikeDeclaration, node);
             
-            var action = new IntentionAction(fix, UnityGutterIcons.UnityLogo.Id, 
-                new SubmenuAnchor(BulbMenuAnchors.PermanentBackgroundItems, SubmenuBehavior.Executable));
+            var action = new IntentionAction(fix, PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, 
+                new SubmenuAnchor(IntentionsAnchors.HighPriorityContextActionsAnchor, SubmenuBehavior.Executable));
 
             return new[] {action};
         }
@@ -55,9 +56,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var fieldTypeElement = fieldDeclaration.DeclaredElement?.Type.GetTypeElement();
             if (fieldDeclaration.IsStatic)
                 return false;
-            return UnityApi.IsRefRO(fieldTypeElement) 
-                   || UnityApi.IsRefRW(fieldTypeElement)
-                   || UnityApi.IsDerivesFromIAspect(fieldTypeElement);
+            return fieldTypeElement.IsClrName(KnownTypes.RefRO) 
+                   || fieldTypeElement.IsClrName(KnownTypes.RefRW)
+                   || fieldTypeElement.DerivesFrom(KnownTypes.IAspect);
         }
     }
 }

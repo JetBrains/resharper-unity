@@ -192,8 +192,9 @@ tasks {
                 bundledMavenArtifacts.walkTopDown()
                     .filter { it.extension == "jar" && !it.name.endsWith("-sources.jar") }
                     .toList()
-                    + File("${ideaDependency.get().classes}/lib/3rd-party-rt.jar")
+                    + File("${setupDependencies.get().idea.get().classes}/lib/3rd-party-rt.jar")
                     + File("${ideaDependency.get().classes}/lib/util.jar")
+                    + File("${ideaDependency.get().classes}/lib/util-8.jar")
             )
         } else {
             logger.lifecycle("Use ant compiler artifacts from maven")
@@ -658,6 +659,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
     }
 
     val nunitReSharperJson by registering(NUnit::class) {
+        nunitVersion = "3.16.2" // newer than default, helps running with net 7
         group = testGroup
         shadowCopy = false
         outputs.upToDateWhen { false }
@@ -668,6 +670,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
     }
 
     val nunitReSharperYaml by registering(NUnit::class) {
+        nunitVersion = "3.16.2" // newer than default, helps running with net 7
         group = testGroup
         shadowCopy = false
         outputs.upToDateWhen { false }
@@ -678,6 +681,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
     }
 
     val nunitReSharperUnity by registering(NUnit::class) {
+        nunitVersion = "3.16.2" // newer than default, helps running with net 7
         group = testGroup
         shadowCopy = false
         outputs.upToDateWhen { false }
@@ -691,6 +695,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
     }
 
     val nunitReSharperUnityRider by registering(NUnit::class) {
+        nunitVersion = "3.16.2" // newer than default, helps running with net 7
         group = testGroup
         shadowCopy = false
         outputs.upToDateWhen { false }

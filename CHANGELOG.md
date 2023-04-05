@@ -8,6 +8,10 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 Since 2018.1, the version numbers and release cycle match Rider's versions and release dates. The plugin is always bundled with Rider, but is released for ReSharper separately. Sometimes the ReSharper version isn't released. This is usually because the changes are not applicable to ReSharper, but also by mistake.
 
+## 2023.2.0
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net231...net232)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/59?closed=1)
+
 ## 2023.1.0
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net223...net231)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/58?closed=1)
@@ -18,8 +22,10 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Add localisation of Unity API summaries, when available ([RIDER-84878](https://youtrack.jetbrains.com/issue/RIDER-84878))
 - Add accurate support for recognising serialised fields in subclasses of serialised classes ([RIDER-79871](https://youtrack.jetbrains.com/issue/RIDER-79871), [RIDER-72838](https://youtrack.jetbrains.com/issue/RIDER-72838))
 - Add context action and Generate menu item to generate baker and authoring classes from DOTS component data ([RIDER-85175](https://youtrack.jetbrains.com/issue/RIDER-85175))
+- Add context action and Generate menu item to generate DOTS baker and component data from `MonoBehaviour` ([RIDER-89340](https://youtrack.jetbrains.com/issue/RIDER-89340))
 - Add context action and Generate menu item to generate properties for `RefRW` or `RefFO` fields ([RIDER-85192](https://youtrack.jetbrains.com/issue/RIDER-85192))
 - Add context action to navigate to source generator code from DOTS type ([RIDER-85189](https://youtrack.jetbrains.com/issue/RIDER-85189))
+- Add inspections and quick fixes to ensure systems and aspects are correctly declared as `struct`, `partial` and potentially `readonly` ([RIDER-89953](https://youtrack.jetbrains.com/issue/RIDER-89953))
 - Add file templates for DOTS component data, systems, aspects and entity jobs ([RIDER-85180](https://youtrack.jetbrains.com/issue/RIDER-85180))
 - Add support for recognising serialised fields in all classes ([RIDER-79871](https://youtrack.jetbrains.com/issue/RIDER-79871))
 - Add inspection to check that `ComponentLookup` is updated in a system ([RIDER-85179](https://youtrack.jetbrains.com/issue/RIDER-85179))
@@ -49,6 +55,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Fixed
 
+- Fix Unity plugin not working with `inspectcode` command line tool ([RIDER-80879](https://youtrack.jetbrains.com/issue/RIDER-80879), [RIDER-82789](https://youtrack.jetbrains.com/issue/RIDER-82789))
 - Fix asset usages for package scripts and assets ([RIDER-85431](https://youtrack.jetbrains.com/issue/RIDER-85431))
 - Fix method usage inside `EventTrigger` prefab modification ([RIDER-47693](https://youtrack.jetbrains.com/issue/RIDER-47693))
 - Fix warning when a partial DOTS class and its generated part both declare the same base class ([RIDER-87055](https://youtrack.jetbrains.com/issue/RIDER-87055))
@@ -57,6 +64,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Fix memory leak when showing usages of code in Unity editor tool window ([RIDER-87538](https://youtrack.jetbrains.com/issue/RIDER-87538))
 - Fix indexing project settings and assembly definitions when asset indexing is disabled ([RIDER-87363](https://youtrack.jetbrains.com/issue/RIDER-87363))
 - Fix duplicate "Unity" availability configurations in File Template settings ([RIDER-89065](https://youtrack.jetbrains.com/issue/RIDER-89065))
+- Fix missing XML documentation in recent Unity versions ([RIDER-89954](https://youtrack.jetbrains.com/issue/RIDER-89954))
+- Rider: Fix Rider not refreshing Unity when saving all files ([RIDER-62501](https://youtrack.jetbrains.com/issue/RIDER-62051))
 - Rider: Fix unable to find usages or `.asmdef` files when player projects generated ([RIDER-71238](https://youtrack.jetbrains.com/issue/RIDER-71238))
 - Rider: Fix completion list showing duplicate entries when player projects generated ([RIDER-75500](https://youtrack.jetbrains.com/issue/RIDER-75500))
 - Rider: Fix "Attach to Unity" run configuration form to resize gracefully ([RIDER-84643](https://youtrack.jetbrains.com/issue/RIDER-75500))

@@ -17,10 +17,10 @@ class UnityDebuggableProcessListener(project: Project, lifetime: Lifetime,
     }
 
     init {
-        UnityEditorListener(project, lifetime, onProcessAdded, onProcessRemoved)
-        UnityPlayerListener(lifetime, onProcessAdded, onProcessRemoved)
+        UnityEditorListener().startListening(project, lifetime, onProcessAdded, onProcessRemoved)
+        UnityPlayerListener().startListening(lifetime, onProcessAdded, onProcessRemoved)
         AppleDeviceListener(project, lifetime, onProcessAdded, onProcessRemoved)
-        AndroidDeviceListener(project, lifetime, onProcessAdded, onProcessRemoved)
+        AndroidDeviceListener().startListening(project, lifetime, onProcessAdded, onProcessRemoved)
         enumerateCustomPlayers(project, onProcessAdded)
     }
 

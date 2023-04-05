@@ -40,7 +40,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
         {
             base.BuildOptions(context, options);
             
-            
             var (bakerBaseTypeElement, _) = TypeFactory.CreateTypeByCLRName(KnownTypes.Baker, NullableAnnotation.Unknown, context.PsiModule);
             var typeElements = new List<ITypeElement>();
 
@@ -81,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
         // Enables/disables the menu item
         protected override bool IsAvailable(CSharpGeneratorContext context)
         {
-            return context.ClassDeclaration.IsFromUnityProject() && HasUnityBaseType(context) && base.IsAvailable(context);
+            return context.ClassDeclaration.IsFromUnityProject() && IsInheritorOfComponentData(context) && base.IsAvailable(context);
         }
 
         // provides baker generation for empty Component
@@ -92,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
         protected override void Process(CSharpGeneratorContext context, IProgressIndicator progress)
         {
-            if (!HasUnityBaseType(context)) 
+            if (!IsInheritorOfComponentData(context)) 
                 return;
             
             var (selectedBaker, generateAsNested) = GetSelectedBaker(context);
@@ -115,7 +114,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 return null;
             foreach (var (typeElement, substitution) in selectedBaker.GetSuperTypes())
             {
-                if (UnityApi.IsBaker(typeElement))
+                if (typeElement.IsClrName(KnownTypes.Baker))
                 {
                     var authoringType = typeElement.TypeParameters[0];
                     var type = substitution[authoringType];
@@ -278,9 +277,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             if (existingCreationExpression != null)
                 return (IObjectCreationExpression)existingCreationExpression;
 
-            //AddComponent(new ComponentData{})
+            //AddComponent/AddComponentObject(new ComponentData{})
+            var addComponentMethod = componentDeclaredType is IStruct ? "AddComponent();" :  "AddComponentObject();";
             var addComponentStatement =
-                (IExpressionStatement)bakeMethodExpression.Body.AddStatementAfter(factory.CreateStatement("AddComponent();"),
+                (IExpressionStatement)bakeMethodExpression.Body.AddStatementAfter(factory.CreateStatement(addComponentMethod),
                     null);
             var addComponentExpression = (addComponentStatement.Expression as IInvocationExpression).NotNull();
             var creationArgument = addComponentExpression.AddArgumentAfter(
@@ -373,9 +373,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             return authoringFieldType;
         }
 
-        private static bool HasUnityBaseType(CSharpGeneratorContext context)
+        private static bool IsInheritorOfComponentData(CSharpGeneratorContext context)
         {
-            return context.ClassDeclaration.DeclaredElement is IStruct typeElement && UnityApi.IsDerivesFromIComponentData(typeElement);
+            return context.ClassDeclaration.DeclaredElement.DerivesFrom(KnownTypes.IComponentData);
         }
 
         private readonly struct BakerGenerationInfo

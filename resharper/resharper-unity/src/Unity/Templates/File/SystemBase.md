@@ -22,7 +22,7 @@ $HEADER$namespace $NAMESPACE$ {
   {
     protected override void OnUpdate()
     {
-        $END$
+      $END$
     }
   }
 }

@@ -283,7 +283,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                 else
                 {
                     //Assertion.Require(!string.IsNullOrEmpty(classMetaInfoDiff.ClassName));
-                    Assertion.Require(!classMetaInfoDiff.IsEmpty() || diff.DiffType == DiffType.Added);
+                    Assertion.Require(!classMetaInfoDiff.IsEmpty() || diff.DiffType == DiffType.Added, $"!classMetaInfoDiff.IsEmpty() || diff.DiffType == DiffType.Added [isEmpty:{classMetaInfoDiff.IsEmpty()}, diff.Type:{diff.DiffType}]");
 
                     metaInfo = new IndexClassInfo(classMetaInfoDiff.ClassName);
                     metaInfo.ApplyDiff(classMetaInfoDiff, classInfo, diffElementId);
@@ -312,7 +312,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
                 else
                 {
                     // Assertion.Require(!string.IsNullOrEmpty(diff.ClassName));
-                    Assertion.Require(diff.DiffType == DiffType.Added);
+                    Assertion.Require(diff.DiffType == DiffType.Added, $"diff.DiffType == DiffType.Added [diffType:{diff.DiffType}]");
 
                     metaInfo = new IndexClassInfo(diff.ClassName, true);
                     metaInfo.SerializeReferenceHolders.ApplyDiff(diff.SerializeReferenceHoldersDiff);
@@ -354,36 +354,57 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             foreach (var diff in resolvesDiff)
             {
                 var resolution = diff.TypeParameterResolve;
+                
+                Assertion.Require(resolution != null, "resolution != null");
 
-                var openTypeExists = classInfo.TryGetValue(resolution.OpenTypeId, out var opentTypeInfo);
+                var openTypeExists = classInfo.TryGetValue(resolution.OpenTypeId, out var openTypeInfo);
                 var resolvedTypeExists = classInfo.TryGetValue(resolution.ResolvedTypeId, out var resolvedInfo);
 
                 switch (diff.DiffType)
                 {
                     case DiffType.Removed:
                         if (openTypeExists)
-                            opentTypeInfo!.Inheritors.Remove(resolution.ResolvedTypeId);
+                        {
+                            Assertion.Require(openTypeInfo != null, $"openTypeInfo != null | {diff.DiffType}");
+                            openTypeInfo.Inheritors.Remove(resolution.ResolvedTypeId);
+                        }
+
                         if (resolvedTypeExists)
-                            resolvedInfo!.SuperClasses.Remove(resolution.OpenTypeId);
+                        {
+                            Assertion.Require(resolvedInfo != null, $"resolvedInfo != null | {diff.DiffType}");
+                            resolvedInfo.SuperClasses.Remove(resolution.OpenTypeId);
+                        }
                         break;
                     case DiffType.Added:
                         if (!openTypeExists)
                         {
-                            opentTypeInfo = new IndexClassInfo(resolution.ResolutionString, true);
-                            classInfo.Add(resolution.OpenTypeId, opentTypeInfo);
+                            openTypeInfo = new IndexClassInfo(resolution.ResolutionString, true);
+                            classInfo.Add(resolution.OpenTypeId, openTypeInfo);
                         }
-
-                        opentTypeInfo!.Inheritors.Add(resolution.ResolvedTypeId);
+                        
+                        Assertion.Require(openTypeInfo != null, $"openTypeInfo != null | {diff.DiffType}");
+                        openTypeInfo.Inheritors.Add(resolution.ResolvedTypeId);
 
 
                         if (!resolvedTypeExists)
                         {
                             resolvedInfo = new IndexClassInfo(string.Empty, true);
-                            classInfo.Add(resolution.ResolvedTypeId, resolvedInfo);
+                            
+                            //TODO: remove this extra validations after fix
+                            var resolutionResolvedTypeId = resolution.ResolvedTypeId;
+                            var alreadyHasSameKey =
+                                classInfo.TryGetValue(resolutionResolvedTypeId, out var doubleCheckVal);
+                            Assertion.Require(!alreadyHasSameKey, $"Dictionary {nameof(classInfo)} already has this key:{resolutionResolvedTypeId}, value:{doubleCheckVal}, attemption to add {resolvedInfo}");
+
+                            if(!alreadyHasSameKey)
+                                classInfo.Add(resolutionResolvedTypeId, resolvedInfo);
                         }
 
-                        resolvedInfo!.SuperClasses.Add(resolution.OpenTypeId);
+                        Assertion.Require(resolvedInfo != null, $"resolvedInfo != null | {diff.DiffType}");
+                        resolvedInfo.SuperClasses.Add(resolution.OpenTypeId);
+                        
                         break;
+
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

@@ -4,8 +4,8 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithConsoleBuild
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
@@ -14,6 +14,10 @@ import org.testng.annotations.BeforeMethod
 import java.time.Duration
 
 abstract class IntegrationTestWithReuseSolutionBase : BaseTestWithSolutionBase(), IntegrationTestWithFrontendBackendModel {
+
+    override val customTempTestDirName = "IntegrationTestWithReuseSolution"
+    override val cleanTempTestDirectory = false
+
     protected open val withCoverage: Boolean
         get() = false
 
@@ -38,12 +42,6 @@ abstract class IntegrationTestWithReuseSolutionBase : BaseTestWithSolutionBase()
             backendLoadedTimeout = Duration.ofSeconds(60)
         }
 
-    override val clearCaches: Boolean
-        get() = false
-
-    override val testCaseNameToTempDir: String
-        get() = "tempTestDir"
-
     private var myUnityProcessHandle: ProcessHandle? = null
     val unityProcessHandle: ProcessHandle
         get() = myUnityProcessHandle!!
@@ -65,7 +63,7 @@ abstract class IntegrationTestWithReuseSolutionBase : BaseTestWithSolutionBase()
                 myProject = null
                 oldSolutionDirectory.deleteRecursively()
             }
-            myProject = openSolution(solution, openSolutionParams)
+            myProject = prepareAndOpenSolution(solution, openSolutionParams)
             installPlugin(project)
             activateRiderFrontendTest()
         }

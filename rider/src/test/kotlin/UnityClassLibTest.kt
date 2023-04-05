@@ -1,12 +1,17 @@
+
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
-import com.jetbrains.rider.test.enums.CoreVersion
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.test.framework.*
+import com.jetbrains.rider.test.env.enums.SdkVersion
+import com.jetbrains.rider.test.framework.closeProjectsWaitForBackendWillBeClosed
+import com.jetbrains.rider.test.framework.combine
+import com.jetbrains.rider.test.framework.executeWithGold
+import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.Test
 import java.io.File
@@ -15,7 +20,7 @@ import java.time.Duration
 @TestEnvironment(platform = [PlatformType.MAC_OS_ALL, PlatformType.WINDOWS_ALL]) // requires mono
 class UnityClassLibTest : BaseTestWithSolutionBase() {
 
-    private val templateId = TemplateIdWithVersion("JetBrains.Common.Unity.Library.CSharp", CoreVersion.NONE)
+    private val templateId = TemplateIdWithVersion("JetBrains.Common.Unity.Library.CSharp", SdkVersion.NONE)
     private val editorGoldFile: File
         get() = File(testCaseGoldDirectory, "${testMethod.name}_opened")
 
@@ -66,7 +71,6 @@ class UnityClassLibTest : BaseTestWithSolutionBase() {
         persistAllFilesOnDisk()
 
         waitForSolution(newProject, params)
-        assertCurrentSolutionToolset(newProject)
 
         return newProject
     }

@@ -7,9 +7,11 @@ using JetBrains.ReSharper.Feature.Services.LiveTemplates.Context;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
@@ -57,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
                 return false;
 
             var methodParameter = method.Parameters[0];
-            if (!UnityApi.IsSystemStateType(methodParameter.Type.GetTypeElement()))
+            if (!methodParameter.Type.GetTypeElement().IsClrName(KnownTypes.SystemState))
                 return false;
 
             if (!methodParameter.IsRefMember())
@@ -108,6 +110,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
         {
             var packageManager = solution.GetComponent<PackageManager>();
             return packageManager.HasPackage(PackageManager.UnityEntitiesPackageName);
+        }
+
+        public static bool IsUnityProjectWithEntitiesPackage(IFile file)
+        {
+            return HasEntitiesPackageInternal(file.GetSolution(), file.GetProject());
         }
     }
 }

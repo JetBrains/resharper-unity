@@ -195,11 +195,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 var selectedGeneratorElements = context.InputElements.OfType<GeneratorDeclaredElement>();
                 foreach (var generatorElement in selectedGeneratorElements)
                 {
-                    if (generatorElement.DeclaredElement is not IField selectedField)
+                    var fieldOrProperty = generatorElement.DeclaredElement;
+
+                    if (fieldOrProperty is not IField && fieldOrProperty is not IProperty) 
                         continue;
 
-                    var fieldTypeName = selectedField.Type.GetTypeElement()?.GetClrName();
-                    Assertion.AssertNotNull(fieldTypeName);
+                    if (fieldOrProperty is not ITypeOwner selectedField)
+                        continue;
+                    
+                    var fieldTypeName = selectedField!.Type.GetTypeElement()?.GetClrName();
+                    
+                    if(fieldTypeName == null)
+                        continue;
+                    
                     var authoringFieldName = selectedField.ShortName;
                     var componentShortName = componentToAuthoringFieldNames[authoringFieldName];
 
@@ -370,7 +378,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                     }
                 }
                 
-                //Add field to Authoring class
+                //Add field to ComponentData struct
                 var componentFieldName = NamingUtil.GetUniqueName(componentDataDeclaration.Body, authoringFieldShortName, NamedElementKinds.PublicFields, null,
                     element => existingFields.ContainsKey(element.ShortName));
                 authoringToComponentFieldNames.Add(authoringFieldShortName, componentFieldName);
@@ -417,7 +425,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
         private static bool HasUnityBaseType(CSharpGeneratorContext context)
         {
-            return context.ClassDeclaration.DeclaredElement is IClass typeElement && UnityApi.IsDerivesFromComponent(typeElement);
+            return context.ClassDeclaration.DeclaredElement is IClass typeElement && typeElement.DerivesFrom(KnownTypes.Component);
         }
 
         private readonly struct BakerGenerationInfo

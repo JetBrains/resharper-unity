@@ -1,0 +1,23 @@
+﻿using Unity.Entities;
+
+public partial struct AINavigation{caret}System : ISystem
+{
+    public void OnUpdate(ref SystemState state){}
+    public void OnCreate(ref SystemState state){}
+    public void OnDestroy(ref SystemState state){}
+}
+
+private partial struct ScavsDialogSystem : ISystem
+{
+    public void OnUpdate(ref SystemState state){}
+    public void OnCreate(ref SystemState state){}
+    public void OnDestroy(ref SystemState state){}
+}
+
+
+partial struct PlayersDialogSystem : ISystem
+{
+    public void OnUpdate(ref SystemState state){}
+    public void OnCreate(ref SystemState state){}
+    public void OnDestroy(ref SystemState state){}
+}

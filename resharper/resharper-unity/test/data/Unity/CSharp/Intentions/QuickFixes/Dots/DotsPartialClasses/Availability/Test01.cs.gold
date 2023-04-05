@@ -1,0 +1,50 @@
+﻿using Unity.Entities;
+
+struct EnemySpawnSystem : ISystem
+{
+    public void OnUpdate(ref SystemState state)
+    {
+    }
+
+    public void OnCreate(ref SystemState state)
+    {
+    }
+
+    public void OnDestroy(ref SystemState state)
+    {
+    }
+}
+
+public class BigmapSystemBase : SystemBase
+{
+    protected override void OnUpdate()
+    {
+    }
+}
+
+
+struct |ShorelineSettingsAspect|(0) : IAspect
+{
+}
+
+
+readonly struct |BigmapSettingsAspect|(1) : IAspect
+{
+}
+
+struct Factory4 : IComponentData //shouldn't be partial
+{
+}
+------------------------------------------------
+0: IAspect's inheritor 'ShorelineSettingsAspect' must be 'partial readonly'
+QUICKFIXES:
+Add 'partial readonly' to ShorelineSettingsAspect
+--Add 'partial readonly' to ShorelineSettingsAspect in file
+--Add 'partial readonly' to ShorelineSettingsAspect in project
+--Add 'partial readonly' to ShorelineSettingsAspect in solution
+1: IAspect's inheritor 'BigmapSettingsAspect' must be 'partial'
+QUICKFIXES:
+Add 'partial' to BigmapSettingsAspect
+--Add 'partial' to BigmapSettingsAspect in file
+--Add 'partial' to BigmapSettingsAspect in project
+--Add 'partial' to BigmapSettingsAspect in solution

@@ -18,6 +18,9 @@ NAMESPACE-expression: fileDefaultNamespace()
 
 ```
 $HEADER$namespace $NAMESPACE$ {
-  public readonly partial struct $ASPECT$ : Unity.Entities.IAspect {$END$}
+  public readonly partial struct $ASPECT$ : Unity.Entities.IAspect
+  {
+    $END$
+  }
 }
 ```

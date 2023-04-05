@@ -155,7 +155,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             prefixProperty.SetValue(cachedUserRule.Policy.NamingRule.Prefix);
             prefixProperty.Change.Advise_NoAcknowledgement(Lifetime, args =>
             {
-                cachedUserRule.Policy.NamingRule.Prefix = args.New ?? string.Empty;
+                var newNamingRule = cachedUserRule.Policy.NamingRule with { Prefix = args.New ?? string.Empty };
+                cachedUserRule = new ClrUserDefinedNamingRule(
+                    cachedUserRule.Descriptor, cachedUserRule.Policy with { NamingRule = newNamingRule });
+
                 UnityNamingRuleDefaultSettings.SetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry, cachedUserRule);
             });
 
@@ -163,7 +166,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             suffixProperty.SetValue(cachedUserRule.Policy.NamingRule.Suffix);
             suffixProperty.Change.Advise_NoAcknowledgement(Lifetime, args =>
             {
-                cachedUserRule.Policy.NamingRule.Suffix = args.New ?? string.Empty;
+                var newNamingRule = cachedUserRule.Policy.NamingRule with { Suffix = args.New ?? string.Empty };
+                cachedUserRule = new ClrUserDefinedNamingRule(
+                    cachedUserRule.Descriptor, cachedUserRule.Policy with { NamingRule = newNamingRule });
+
                 UnityNamingRuleDefaultSettings.SetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry, cachedUserRule);
             });
 
@@ -171,7 +177,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             kindProperty.SetValue(cachedUserRule.Policy.NamingRule.NamingStyleKind);
             kindProperty.Change.Advise_NoAcknowledgement(Lifetime, args =>
             {
-                cachedUserRule.Policy.NamingRule.NamingStyleKind = (NamingStyleKinds)args.New;
+                var newNamingRule = cachedUserRule.Policy.NamingRule with { NamingStyleKind = (NamingStyleKinds)args.New };
+                cachedUserRule = new ClrUserDefinedNamingRule(
+                    cachedUserRule.Descriptor, cachedUserRule.Policy with { NamingRule = newNamingRule });
+
                 UnityNamingRuleDefaultSettings.SetUnitySerializedFieldRule(OptionsSettingsSmartContext, entry, cachedUserRule);
             });
 

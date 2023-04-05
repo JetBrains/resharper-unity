@@ -59,15 +59,6 @@
                             Rider plugin v{0} can be found at:
                             {1}.</value>
     </data>
-    <data name="RiderDeferredCacheProgressBar_Start_Calculating_asset_index" xml:space="preserve">
-        <value>Calculating asset index</value>
-    </data>
-    <data name="RiderDeferredCacheProgressBar_Start_Processing_assets" xml:space="preserve">
-        <value>Processing assets</value>
-    </data>
-    <data name="RiderDeferredCacheProgressBar_Start_Processing_FileName" xml:space="preserve">
-        <value>Processing {0}</value>
-    </data>
     <data name="RiderEventHandlerDetector_AddEventsHighlighting_Assets_usages" xml:space="preserve">
         <value>Assets usages</value>
     </data>

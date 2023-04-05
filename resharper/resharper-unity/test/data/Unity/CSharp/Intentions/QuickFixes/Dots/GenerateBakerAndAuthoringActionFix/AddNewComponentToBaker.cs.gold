@@ -18,7 +18,7 @@ namespace ComponentsAndTags
         public Entity TombstonePrefab;
     }
 
-    struct Random{caret}Properties : IComponentData
+    class Random{caret}Properties : IComponentData
     {
         public Unity.Mathematics.Random SpawnRandom;
     }
@@ -33,7 +33,7 @@ namespace ComponentsAndTags
         {
             public override void Bake(GraveyardPropertiesAuthoring authoring)
             {
-              AddComponent(new RandomProperties
+              AddComponentObject(new RandomProperties
               {
                 SpawnRandom = Unity.Mathematics.Random.CreateFromIndex(authoring.SpawnRandom)
               });

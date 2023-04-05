@@ -14,7 +14,7 @@
     <!-- LibHarmony is not signed -->
     <NoWarn>CS8002</NoWarn>
     <JetTestProject>True</JetTestProject>
-    <DefineConstants Condition="!$(InternalBuild)">INDEPENDENT_BUILD</DefineConstants>
+    <DefineConstants Condition="!$(InternalBuild)">$(DefineConstants);INDEPENDENT_BUILD</DefineConstants>
     <!-- Force 64 bit for non-Windows, specifically Mac. The Rider SDK includes the ClrStack package that references
          both ClrStack.exe and ClrStack32.exe, and the 32 bit version convinces the unit testing framework that we
          should be a 32 bit assembly. Unfortunately, 32 bit processes aren't supported on Mac, and the tests fail.
@@ -22,10 +22,6 @@
     <PlatformTarget Condition="'$([MSBuild]::IsOsPlatform(Windows))' != 'True'">x64</PlatformTarget>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  <!-- ********** -->
-  <!-- TODO: This should come from JetBrains.NET.Sdk, or Directory.Build.props -->
-  <PropertyGroup Condition="$(InternalBuild)" />
-  <Import Project="$(JetSdkProjectParameterFilePath)" Condition="Exists('$(JetSdkProjectParameterFilePath)')" />
   <!-- ********** -->
   <ItemGroup>
     <Compile Include="..\Unity.Tests\Unity\CSharp\Daemon\Stages\UnityGlobalHighlightingsStageTestBase.cs">
@@ -37,7 +33,7 @@
   </ItemGroup>
   <ItemGroup Label="References">
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

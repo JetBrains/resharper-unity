@@ -2,6 +2,7 @@ using System;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -47,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Dots
             if (typeElement == null)
                 return false;
 
-            if (!UnityApi.IsDerivesFromISystem(typeElement) && !UnityApi.IsDerivesFromSystemBase(typeElement))
+            if (!typeElement.DerivesFrom(KnownTypes.ISystem) && !typeElement.DerivesFrom(KnownTypes.ComponentSystemBase))
                 return true;
             
             foreach (var methodDeclaration in classLikeDeclaration.MethodDeclarationsEnumerable)

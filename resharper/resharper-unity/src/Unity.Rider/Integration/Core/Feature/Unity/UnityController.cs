@@ -11,7 +11,7 @@ using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
-using JetBrains.RdBackend.Common.Features;
+using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitTesting;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
                                IThreading threading,
                                ILogger logger)
         {
-            if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
+            if (!solution.HasProtocolSolution())
                 return;
 
             myBackendUnityHost = backendUnityHost;
@@ -153,7 +153,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
 
             // Check exists of process if it was killed by manual and EditorInstance.json wasn't deleted
             processId = Convert.ToInt32(processIdString);
-            return PlatformUtil.ProcessExists(processId);
+            return ProcessUtil.IsProcessAlive(processId) == true;
         }
 
         private Task<int> StartUnityAndWaitConnection(Lifetime lifetime)
@@ -234,7 +234,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
                 return false;
             
             var unityPath = unityPathData.Value?.ApplicationPath;
-            if (unityPath != null && PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
+            if (unityPath != null && PlatformUtil.RuntimePlatform == JetPlatform.MacOsX)
                 unityPath = VirtualFileSystemPath.Parse(unityPath, InteractionContext.SolutionContext).Combine("Contents/MacOS/Unity").FullPath;
             
             if (unityPath == null)

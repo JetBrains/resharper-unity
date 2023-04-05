@@ -50,16 +50,25 @@ fun attachToUnityProcess(project: Project, process: UnityProcess) {
         return
     }
 
-    // Try to find an existing run configuration for this player/process
+    // Try to find an existing run configuration for the project on the chosen player/process. Note that we might have
+    // a run config for the same player with a different project
     val runManager = RunManager.getInstance(project)
     var configurationSettings = runManager.allSettings.firstOrNull {
         (it.configuration as? UnityPlayerDebugConfiguration)?.state?.playerId == process.id
+            && (it.configuration as? UnityPlayerDebugConfiguration)?.state?.projectName == process.projectName
     }
 
     if (configurationSettings == null) {
+        // Make sure "Unity" and "AssetImportWorker0" have a bit more context in the run config
+        val displayName = when (process) {
+            is UnityEditor -> process.displayName + " (${process.projectName ?: "Unknown Project"})"
+            is UnityEditorHelper -> process.displayName + " (${process.projectName ?: "Unknown Project"})"
+            else -> process.displayName
+        }
+
         val configurationType =
             ConfigurationTypeUtil.findConfigurationType(UnityPlayerDebugConfigurationType::class.java)
-        configurationSettings = runManager.createConfiguration(process.displayName, configurationType.attachToPlayerFactory)
+        configurationSettings = runManager.createConfiguration(displayName, configurationType.attachToPlayerFactory)
         (configurationSettings.configuration as UnityPlayerDebugConfiguration).apply {
             state.playerId = process.id
             state.host = process.host
@@ -78,6 +87,11 @@ fun attachToUnityProcess(project: Project, process: UnityProcess) {
                     state.packageName = process.packageName
                 }
                 is UnityLocalUwpPlayer -> state.packageName = process.packageName
+                is UnityEditor -> state.pid = process.pid
+                is UnityEditorHelper -> {
+                    state.pid = process.pid
+                    state.roleName = process.roleName
+                }
                 else -> {}
             }
         }

@@ -4,7 +4,7 @@
   <version>2021.3.0.9999</version>
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
 
-  <idea-version since-build="2023.1" />
+  <idea-version since-build="2023.2" />
 
   <depends>com.intellij.modules.rider</depends>
   <depends>com.intellij.modules.xdebugger</depends>
@@ -74,6 +74,8 @@
                     location="SolutionModel.solutions.frontendBackendModel"
                     extClass="com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel"
                     handler="com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder$ProtocolListener"/>
+
+    <fileDocumentManagerListener implementation="com.jetbrains.rider.plugins.unity.UnityFileDocumentManagerListener"/>
 
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory"/>
 
@@ -222,7 +224,7 @@
   </extensions>
 
   <applicationListeners>
-    <listener class="com.jetbrains.rider.plugins.unity.SaveAllTracker" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
+    <listener class="com.jetbrains.rider.plugins.unity.SaveAllActionListener" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
     <listener class="com.jetbrains.rider.plugins.unity.explorer.MetaTracker" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
   </applicationListeners>
 
