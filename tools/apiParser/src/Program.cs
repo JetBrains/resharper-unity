@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using ApiParser.Resources;
 using JetBrains.Util;
 
 namespace ApiParser
@@ -258,17 +259,14 @@ namespace ApiParser
 
                 // From GitHub. Love the optimism in this one :)
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/96187e5fc1a23847206bf66b6f2d0e4a1ad43301/Editor/Mono/AssetPostprocessor.cs#L96
-                var description =
-                    "This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that "
-                    + "is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or "
-                    + "just completely replace them). Hopefully we'll never need this.";
+                var description = Strings.AssetPostprocessor_OnGeneratedCSProjectFiles_Description;
                 eventFunction = new UnityApiEventFunction("OnGeneratedCSProjectFiles",
                     true, false, ApiType.Void, apiVersion, description, undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 // Technically, return type is optional
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/96187e5fc1a23847206bf66b6f2d0e4a1ad43301/Editor/Mono/AssetPostprocessor.cs#L138
-                description = "This callback is used by UnityVS to take over project generation from Unity";
+                description = Strings.AssetPostprocessor_OnPreGeneratingCSProjectFiles_Description;
                 eventFunction = new UnityApiEventFunction("OnPreGeneratingCSProjectFiles",
                     true, false, ApiType.Bool, apiVersion, description, undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);
@@ -280,7 +278,7 @@ namespace ApiParser
                 {
                     // Technically, return type is optional
                     // https://github.com/Unity-Technologies/UnityCsReference/blob/96187e5fc1a23847206bf66b6f2d0e4a1ad43301/Editor/Mono/AssetPostprocessor.cs#L123
-                    description = "This callback is used by C# code editors to modify the .csproj files.";
+                    description = Strings.AssetPostprocessor_OnGeneratedCSProject_Description;
                     eventFunction = new UnityApiEventFunction("OnGeneratedCSProject",
                         true, false, ApiType.String, apiVersion, description, undocumented: true);
                     eventFunction.AddParameter("path", ApiType.String);
@@ -289,7 +287,7 @@ namespace ApiParser
 
                     // Technically, return type is optional
                     // https://github.com/Unity-Technologies/UnityCsReference/blob/96187e5fc1a23847206bf66b6f2d0e4a1ad43301/Editor/Mono/AssetPostprocessor.cs#L108
-                    description = "This callback is used by C# code editors to modify the .sln file";
+                    description = Strings.AssetPostprocessor_OnGeneratedSlnSolution_Description;
                     eventFunction = new UnityApiEventFunction("OnGeneratedSlnSolution",
                         true, false, ApiType.String, apiVersion, description, undocumented: true);
                     eventFunction.AddParameter("path", ApiType.String);
@@ -304,8 +302,7 @@ namespace ApiParser
                 if (apiVersion >= new Version(2021, 2))
                 {
                     // This function will match the pre 2021.2 functions and extend it's max applicable version
-                    description =
-                        "This is called after importing of any number of assets is complete (when the Assets progress bar has reached the end).";
+                    description = Strings.AssetPostprocessor_OnPostprocessAllAssets_Description;
                     var functions = type.FindEventFunctions("OnPostprocessAllAssets");
                     eventFunction = new UnityApiEventFunction("OnPostprocessAllAssets",
                         true, false, ApiType.Void, apiVersion,
@@ -331,8 +328,7 @@ namespace ApiParser
             type = unityApi.FindType("MonoBehaviour");
             if (type != null)
             {
-                const string description =
-                    "This callback is called if an associated RectTransform has its dimensions changed.";
+                var description = Strings.MonoBehaviour_OnRectTransformDimensionsChange_Description;
                 var eventFunction = new UnityApiEventFunction("OnRectTransformDimensionsChange",
                     false, false, ApiType.Void, apiVersion, description, undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);
@@ -374,7 +370,7 @@ namespace ApiParser
             {
                 // Documented in 2020.1
                 var eventFunction = new UnityApiEventFunction("OnValidate", false, false, ApiType.Void, apiVersion, undocumented: true);
-                eventFunction.AddDescription("This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only).", RiderSupportedLanguages.iv);
+                eventFunction.AddDescription(Strings.ScriptableObject_OnValidate_Description, RiderSupportedLanguages.iv);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 // Documented in 2020.1
@@ -391,16 +387,16 @@ namespace ApiParser
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/SceneView/SceneView.cs#L2436
                 var eventFunction = new UnityApiEventFunction("OnPreSceneGUI", false, false, ApiType.Void, apiVersion,
                     undocumented: true);
-                eventFunction.AddDescription("Called before the Scene view is drawn.", RiderSupportedLanguages.iv);
+                eventFunction.AddDescription(Strings.Editor_OnPreSceneGUI_Description, RiderSupportedLanguages.iv);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 // Editor.OnSceneDrag has been around since at least 2017.1. Still undocumented as of 2020.2
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/GUI/EditorCache.cs#L63
                 eventFunction = new UnityApiEventFunction("OnSceneDrag", false, false, ApiType.Void, apiVersion,
                     undocumented: true);
-                eventFunction.AddDescription("Called for each object dragged onto the scene view", RiderSupportedLanguages.iv);
-                eventFunction.AddParameter("sceneView", new ApiType("UnityEditor.SceneView"), new KeyValuePair<RiderSupportedLanguages, string>(RiderSupportedLanguages.iv, "The current scene view"));
-                eventFunction.AddParameter("index", ApiType.Int, new KeyValuePair<RiderSupportedLanguages, string>(RiderSupportedLanguages.iv, "The index into the DragAndDrop.objectReferences array"));
+                eventFunction.AddDescription(Strings.Editor_OnSceneDrag_Description, RiderSupportedLanguages.iv);
+                eventFunction.AddParameter("sceneView", new ApiType("UnityEditor.SceneView"), new KeyValuePair<RiderSupportedLanguages, string>(RiderSupportedLanguages.iv, Strings.Editor_OnSceneDrag_sceneView_Description));
+                eventFunction.AddParameter("index", ApiType.Int, new KeyValuePair<RiderSupportedLanguages, string>(RiderSupportedLanguages.iv, Strings.Editor_OnSceneDrag_index_Description));
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 if (apiVersion < new Version(2020, 2))
@@ -411,7 +407,7 @@ namespace ApiParser
                     eventFunction = new UnityApiEventFunction("HasFrameBounds", false, false, ApiType.Bool,
                         apiVersion,
                         undocumented: true);
-                    eventFunction.AddDescription("Validates whether custom bounds can be calculated for this editor.", RiderSupportedLanguages.iv);
+                    eventFunction.AddDescription(Strings.Editor_HasFrameBounds_Description, RiderSupportedLanguages.iv);
                     type.MergeEventFunction(eventFunction, apiVersion);
 
                     // Editor.OnGetFrameBounds has been around since at least 2017.1. First documented in 2020.2
@@ -420,7 +416,7 @@ namespace ApiParser
                     eventFunction = new UnityApiEventFunction("OnGetFrameBounds", false, false,
                         new ApiType("UnityEngine.Bounds"), apiVersion,
                         undocumented: true);
-                    eventFunction.AddDescription("Gets custom bounds for the target of this editor.", RiderSupportedLanguages.iv);
+                    eventFunction.AddDescription(Strings.Editor_OnGetFrameBounds_Description, RiderSupportedLanguages.iv);
                     type.MergeEventFunction(eventFunction, apiVersion);
                 }
             }
@@ -434,7 +430,7 @@ namespace ApiParser
                 // http://www.improck.com/2014/11/editorwindow-modifier-keys/
                 var eventFunction = new UnityApiEventFunction("ModifierKeysChanged", false, false, ApiType.Void, apiVersion,
                     undocumented: true);
-                eventFunction.AddDescription("Called when the modifier keys are changed. Automatically registers and de-registers the EditorApplication.modifierKeysChanged event", RiderSupportedLanguages.iv);
+                eventFunction.AddDescription(Strings.EditorWindow_ModifierKeysChanged_Description, RiderSupportedLanguages.iv);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 // EditorWindow.ShowButton has been around since at least 2017.1. Still undocumented as of 2020.2
@@ -442,7 +438,7 @@ namespace ApiParser
                 // http://www.improck.com/2014/11/editorwindow-inspector-lock-icon/
                 eventFunction = new UnityApiEventFunction("ShowButton", false, false, ApiType.Void, apiVersion,
                     undocumented: true);
-                eventFunction.AddDescription("Allow Editor panes to show a small button next to the generic menu (e.g. inspector lock icon)", RiderSupportedLanguages.iv);
+                eventFunction.AddDescription(Strings.EditorWindow_ShowButton_Description, RiderSupportedLanguages.iv);
                 eventFunction.AddParameter("rect", new ApiType("UnityEngine.Rect"), new KeyValuePair<RiderSupportedLanguages, string>(RiderSupportedLanguages.iv, "Position to draw the button"));
                 type.MergeEventFunction(eventFunction, apiVersion);
 
@@ -450,21 +446,21 @@ namespace ApiParser
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/HostView.cs#L302
                 eventFunction = new UnityApiEventFunction("OnBecameVisible", false, false, ApiType.Void, apiVersion,
                     undocumented: true);
-                eventFunction.AddDescription("Called when an editor window has been opened", RiderSupportedLanguages.iv);
+                eventFunction.AddDescription(Strings.EditorWindow_OnBecameVisible_Description, RiderSupportedLanguages.iv);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 // EditorWindow.OnBecameInvisible has been around since at least 2017.1. Still undocumented as of 2020.2
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/HostView.cs#L337
                 eventFunction = new UnityApiEventFunction("OnBecameInvisible", false, false, ApiType.Void, apiVersion,
                     undocumented: true);
-                eventFunction.AddDescription("Called when an editor window has been closed", RiderSupportedLanguages.iv);
+                eventFunction.AddDescription(Strings.EditorWindow_OnBecameInvisible_Description, RiderSupportedLanguages.iv);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 // EditorWindow.OnDidOpenScene has been around since at least 2017.1. Still undocumented as of 2020.2
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/HostView.cs#L163
                 eventFunction = new UnityApiEventFunction("OnDidOpenScene", false, false, ApiType.Void, apiVersion,
                     undocumented: true);
-                eventFunction.AddDescription("Called when a scene has been opened", RiderSupportedLanguages.iv);
+                eventFunction.AddDescription(Strings.EditorWindow_OnDidOpenScene_Description, RiderSupportedLanguages.iv);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 if (apiVersion >= new Version(2019, 1))
@@ -473,14 +469,14 @@ namespace ApiParser
                     // https://github.com/Unity-Technologies/UnityCsReference/blob/2019.1/Editor/Mono/GUI/DockArea.cs#L188
                     eventFunction = new UnityApiEventFunction("OnAddedAsTab", false, false, ApiType.Void, apiVersion,
                         undocumented: true);
-                    eventFunction.AddDescription("Called when the editor window is added as a tab", RiderSupportedLanguages.iv);
+                    eventFunction.AddDescription(Strings.EditorWindow_OnAddedAsTab_Description, RiderSupportedLanguages.iv);
                     type.MergeEventFunction(eventFunction, apiVersion);
 
                     // EditorWindow.OnBeforeRemovedAsTab was introduced in 2019.1
                     // https://github.com/Unity-Technologies/UnityCsReference/blob/2019.1/Editor/Mono/GUI/DockArea.cs#L195
                     eventFunction = new UnityApiEventFunction("OnBeforeRemovedAsTab", false, false, ApiType.Void, apiVersion,
                         undocumented: true);
-                    eventFunction.AddDescription("Called before an editor window is removed as a tab", RiderSupportedLanguages.iv);
+                    eventFunction.AddDescription(Strings.EditorWindow_OnBeforeRemovedAsTab_Description, RiderSupportedLanguages.iv);
                     type.MergeEventFunction(eventFunction, apiVersion);
                 }
 
@@ -490,7 +486,7 @@ namespace ApiParser
                     // https://github.com/Unity-Technologies/UnityCsReference/blob/2019.3/Editor/Mono/GUI/DockArea.cs#L940
                     eventFunction = new UnityApiEventFunction("OnTabDetached", false, false, ApiType.Void, apiVersion,
                         undocumented: true);
-                    eventFunction.AddDescription("Called during drag and drop, when an editor window tab is detached", RiderSupportedLanguages.iv);
+                    eventFunction.AddDescription(Strings.EditorWindow_OnTabDetached_Description, RiderSupportedLanguages.iv);
                     type.MergeEventFunction(eventFunction, apiVersion);
                 }
 
@@ -502,7 +498,7 @@ namespace ApiParser
                     // https://github.com/Unity-Technologies/UnityCsReference/blob/2020.1/Editor/Mono/ExternalPlayModeView/ExternalPlayModeView.cs#L112
                     eventFunction = new UnityApiEventFunction("OnMainWindowMove", false, false, ApiType.Void, apiVersion,
                         undocumented: true);
-                    eventFunction.AddDescription("Called when the main window is moved", RiderSupportedLanguages.iv);
+                    eventFunction.AddDescription(Strings.EditorWindow_OnMainWindowMove_Description, RiderSupportedLanguages.iv);
                     type.MergeEventFunction(eventFunction, apiVersion);
                 }
             }
