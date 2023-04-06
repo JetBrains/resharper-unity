@@ -153,7 +153,36 @@ int DoPack()
         File.Copy(originFile, Path.Combine(resultBackendDirectory, fileToCopy), true);   
     }
 
-// final
+    var pluginJson = Path.Combine(resultPluginDirectory, "pluginInfo.json");
+    File.WriteAllText(pluginJson, 
+        $$"""
+        {
+          "version" : "bundled_version",
+          "builtOn": "{{DateTime.Now:yyyy-MM-dd HH:mm:ss}}",
+          "companyNameHuman": "JetBrains",
+          "subplatformName": "unity",
+          "packageFiles": [
+              {
+                "relativePath" : "backend/JetBrains.ReSharper.Plugins.Json.dll",
+                "assemblyName" : "*"
+              },
+              {
+                "relativePath" : "backend/JetBrains.ReSharper.Plugins.Yaml.dll",
+                "assemblyName" : "*"
+              },
+              {
+                "relativePath" : "backend/JetBrains.ReSharper.Plugins.Unity.dll",
+                "assemblyName" : "*"
+              },
+              {
+                "relativePath" : "backend/JetBrains.ReSharper.Plugins.Unity.Fleet.dll",
+                "assemblyName" : "*"
+              }
+          ]   
+        }
+        """);
+    
+    // final
     var archiveFile = resultPluginDirectory + ".zip";
     if (File.Exists(archiveFile))
         File.Delete(archiveFile);
