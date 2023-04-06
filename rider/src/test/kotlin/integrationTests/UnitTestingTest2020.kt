@@ -2,6 +2,7 @@ package integrationTests
 
 import base.integrationTests.IntegrationTestWithEditorBase
 import com.jetbrains.rider.test.annotations.Mute
+import com.jetbrains.rider.test.annotations.Mutes
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.*
@@ -12,6 +13,7 @@ class UnitTestingTest2020 : IntegrationTestWithEditorBase() {
     override fun getSolutionDirectoryName() = "UnitTesting/Project2020"
 
     @Test
+    @Mute("RIDER-89390")
     fun checkRunAllTestsFromProject() {
         withUtFacade(project) {
             val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
@@ -28,7 +30,10 @@ class UnitTestingTest2020 : IntegrationTestWithEditorBase() {
     }
 
     @Test(description = "RIDER-54359")
-    @Mute("RIDER-86046", platforms = [PlatformType.MAC_OS_ARM64])
+    @Mutes([
+        Mute("RIDER-86046", platforms = [PlatformType.MAC_OS_ARM64]),
+        Mute("RIDER-89390")
+    ])
     fun checkRefreshBeforeTest() {
         withUtFacade(project) {
             val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
