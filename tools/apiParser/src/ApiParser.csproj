@@ -18,4 +18,10 @@
     <PackageReference Include="HtmlAgilityPack" Version="1.4.9.5" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
+  <ItemGroup Label="Resources">
+    <EmbeddedResource Update="Resources\Strings.resx">
+      <Generator>JetResourceGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

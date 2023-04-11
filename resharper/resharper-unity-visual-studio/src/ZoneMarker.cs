@@ -1,5 +1,5 @@
 ﻿using JetBrains.Application.BuildScript.Application.Zones;
-using JetBrains.VsIntegration.Shell.Zones;
+using JetBrains.VsIntegration.Zones;
 
 namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio
 {
