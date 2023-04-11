@@ -28,6 +28,13 @@ class InputSystemTest : BaseTestWithSolution() {
 
     override val traceCategories: List<String>
         get() = listOf(
+            "#com.jetbrains.rdclient.document",
+            "#com.jetbrains.rider.document",
+            "#com.jetbrains.rider.editors",
+            "JetBrains.Rider.Test.Framework.Core.Documents",
+            "JetBrains.ReSharper.Host.Features.Documents",
+            "JetBrains.ReSharper.Host.Features.TextControls",
+            "JetBrains.ReSharper.Psi.Caches",
             "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages")
 
     @BeforeMethod(alwaysRun = true)
@@ -88,7 +95,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
-    @Mute("RIDER-91507")
+    //@Mute("RIDER-91507")
     fun usedCodeTest() {
         // PlayerInput is attached to Cube
         // NewBehaviourScript is attached Cube
@@ -96,7 +103,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
-    @Mute("RIDER-91507")
+    //@Mute("RIDER-91507")
     fun usedCodeTestWithPrefab1() {
         // Cube1 is a prefab
         // PlayerInput is attached to the Cube1 prefab
@@ -105,7 +112,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
-    @Mute("RIDER-91507")
+    //@Mute("RIDER-91507")
     fun usedCodeTestWithPrefab2() {
         // Cube2 is a prefab, but everything is attached on the scene:
         // PlayerInput is attached to Cube2 on the scene
