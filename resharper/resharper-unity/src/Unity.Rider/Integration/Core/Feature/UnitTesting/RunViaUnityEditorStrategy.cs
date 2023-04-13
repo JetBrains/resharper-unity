@@ -358,7 +358,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
                     myLogger.Trace("After myRiderSolutionSaver.Save");
                     if (waitingLifetime.IsAlive)
                     {
-                        myUnityRefresher.Refresh(waitingLifetime, RefreshType.Force)
+                        myUnityRefresher.Refresh(waitingLifetime, RefreshType.Normal) // RIDER-90121
                             .ContinueWith(result =>
                             {
                                 if (result.Exception != null )
