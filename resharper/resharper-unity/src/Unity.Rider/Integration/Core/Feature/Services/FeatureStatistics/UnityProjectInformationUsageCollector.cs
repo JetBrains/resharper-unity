@@ -112,6 +112,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
             {
                 await myMonitor.FullStartupFinished.NextTrueValueAsync(lifetime);
 
+                var isUnity = myUnitySolutionTracker.HasUnityReference.Value ||
+                              myUnitySolutionTracker.IsUnityProjectFolder.Value;
+
+                if (!isUnity) return EmptySet<MetricEvent>.InstanceSet;
+
                 return await mySolution.GetPsiServices().Files.CommitWithRetryBackgroundRead(lifetime, () =>
                 {
                     var (verifiedVersion, isCustom) = GetUnityVersion(UnityVersion.GetProjectSettingsUnityVersion(mySolution.SolutionDirectory));
@@ -119,19 +124,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
                     var hashSet = new HashSet<MetricEvent>();
                     hashSet.Add(myProjectKindEvent.Metric(GetProjectType()));
                     hashSet.Add(myUnityVersionEvent.Metric(verifiedVersion, isCustom));
-                    var (exists, isEnabled, options) = GetEnterPlayModeOptions();
-                    hashSet.Add(myEnterPlayModeOptionsEvent.Metric(exists, isEnabled, options));
+                    var editorSettings = UnityProjectSettingsUtils.GetEditorSettings(myUnityModule);
+                    if (editorSettings != null)
+                    {
+                        var (exists, isEnabled, options) = GetEnterPlayModeOptions(editorSettings);
+                        hashSet.Add(myEnterPlayModeOptionsEvent.Metric(exists, isEnabled, options));
+                    }
                     
                     return hashSet;
                 });
             });
         }
 
-        private (Status exists, bool isEnabled, bool options) GetEnterPlayModeOptions()
+        private (Status exists, bool isEnabled, bool options) GetEnterPlayModeOptions(IPsiSourceFile editorSettings)
         {
             try
             {
-                var editorSettings = UnityProjectSettingsUtils.GetEditorSettings(myUnityModule);
                 Assertion.Assert(editorSettings != null);
                 myShellLocks.AssertReadAccessAllowed();
                 var yamlFile = editorSettings.GetDominantPsiFile<YamlLanguage>() as IYamlFile;

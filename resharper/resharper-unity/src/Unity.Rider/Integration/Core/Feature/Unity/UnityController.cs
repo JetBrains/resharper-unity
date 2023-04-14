@@ -8,6 +8,7 @@ using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Application.UI.Controls;
 using JetBrains.Collections.Viewable;
+using JetBrains.HabitatDetector;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
