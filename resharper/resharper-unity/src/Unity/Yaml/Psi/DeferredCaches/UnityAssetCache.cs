@@ -254,6 +254,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 MergeData(sourceFile, unityAssetData);
             }
 
+            base.MergeLoadedData();
         }
 
         public override void OnDocumentChange(IPsiSourceFile sourceFile, ProjectFileDocumentCopyChange change)
