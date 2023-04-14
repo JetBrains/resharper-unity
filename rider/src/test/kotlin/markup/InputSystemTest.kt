@@ -15,6 +15,7 @@ import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
 import com.jetbrains.rider.test.annotations.Mute
+import com.jetbrains.rider.test.waitForDaemon
 import org.testng.annotations.BeforeMethod
 
 class InputSystemTest : BaseTestWithSolution() {
@@ -31,6 +32,7 @@ class InputSystemTest : BaseTestWithSolution() {
             "#com.jetbrains.rdclient.document",
             "#com.jetbrains.rider.document",
             "#com.jetbrains.rider.editors",
+            "#com.jetbrains.rdclient.daemon",
             "JetBrains.Rider.Test.Framework.Core.Documents",
             "JetBrains.ReSharper.Host.Features.Documents",
             "JetBrains.ReSharper.Host.Features.TextControls",
