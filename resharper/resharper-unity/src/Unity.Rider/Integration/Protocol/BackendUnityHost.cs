@@ -6,6 +6,7 @@ using JetBrains.Application.UI.Components;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Diagnostics;
+using JetBrains.HabitatDetector;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;

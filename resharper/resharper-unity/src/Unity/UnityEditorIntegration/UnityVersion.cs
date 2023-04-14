@@ -9,6 +9,7 @@ using JetBrains.Annotations;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
+using JetBrains.HabitatDetector;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Impl;
