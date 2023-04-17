@@ -300,7 +300,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         MainThreadDispatcher.AssertThread();
 
-        var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
+        var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isPlaying;
 
         if (!model.PlayControls.Play.HasValue() ||
             model.PlayControls.Play.HasValue() && model.PlayControls.Play.Value != isPlaying)
