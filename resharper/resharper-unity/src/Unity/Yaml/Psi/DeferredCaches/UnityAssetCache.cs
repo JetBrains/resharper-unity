@@ -219,7 +219,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             }
         }
 
-        public override void DropData(IPsiSourceFile sourceFile, UnityAssetData data)
+        protected override void DropData(IPsiSourceFile sourceFile, UnityAssetData data)
         {
             myDocumentNumber.TryRemove(sourceFile, out _);
             myCurrentTimeStamp.TryRemove(sourceFile, out _);
@@ -255,7 +255,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             base.OnDocumentChange(sourceFile, change);
         }
 
-        public override void InvalidateData()
+        protected override void InvalidateData()
         {
             foreach (var increasingContainer in myOrderedIncreasingContainers)
             {
