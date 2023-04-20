@@ -121,6 +121,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static readonly IClrTypeName EnabledRefRO = new ClrTypeName("Unity.Entities.EnabledRefRO`1");
         public static readonly IClrTypeName EnabledRefRW = new ClrTypeName("Unity.Entities.EnabledRefRW`1");
         public static readonly IClrTypeName IEnableableComponent = new ClrTypeName("Unity.Entities.IEnableableComponent");
+        public static readonly IClrTypeName TransformUsageFlags = new ClrTypeName("Unity.Entities.TransformUsageFlags");
         
         //Unity.Mathematics
         public static readonly IClrTypeName Random = new ClrTypeName("Unity.Mathematics.Random");
