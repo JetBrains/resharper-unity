@@ -25,7 +25,9 @@ namespace ComponentsAndTags
         {
             public override void Bake(GraveyardPropertiesAuthoring authoring)
             {
-                AddComponent(new GraveyardProperties
+                var entity = GetEntity(TransformUsageFlags.Dynamic);
+
+                AddComponent(entity, new GraveyardProperties
                 {
                     NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn,
                 });

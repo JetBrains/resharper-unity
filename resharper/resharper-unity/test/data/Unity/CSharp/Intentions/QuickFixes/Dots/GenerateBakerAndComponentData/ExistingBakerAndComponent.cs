@@ -19,7 +19,9 @@ namespace ComponentsAndTags
     {
         public override void Bake(GraveyardPropertiesAuthoring authoring)
         {
-            AddComponent(new GraveyardPropertiesComponentData { FieldDimensions = authoring.FieldDimensions });
+            var entity = GetEntity(TransformUsageFlags.Dynamic);
+
+            AddComponent(entity, new GraveyardPropertiesComponentData { FieldDimensions = authoring.FieldDimensions });
         }
     }
 
