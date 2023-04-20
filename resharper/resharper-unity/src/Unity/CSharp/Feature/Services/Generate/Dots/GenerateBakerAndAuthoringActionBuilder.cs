@@ -140,6 +140,69 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             var asNested = selectedBaker.Equals(Strings.UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested);
             return (null, asNested);
         }
+        
+           private static ITreeNode GetOrCreateGetEntityExpression(ICSharpFunctionDeclaration bakeMethodExpression, CSharpElementFactory factory)
+        {
+            var entityNode = TryGetExistingEntityCreationNode(bakeMethodExpression);
+            if (entityNode != null) 
+                return entityNode;
+            
+            //return any AddComponent(...)
+            var anyAddComponentMethodExpression = bakeMethodExpression.Body.FindNextNode(node =>
+            {
+                if (node is IMethodDeclaration)
+                    return TreeNodeActionType.IGNORE_SUBTREE;
+
+                if (node is not IInvocationExpression invocationExpression)
+                    return TreeNodeActionType.CONTINUE;
+                
+                return invocationExpression.IsAnyAddComponentMethod()
+                    ? TreeNodeActionType.ACCEPT
+                    : TreeNodeActionType.CONTINUE;
+            });
+
+
+            if (anyAddComponentMethodExpression is IInvocationExpression { Arguments: { Count: > 0 } } methodExpression)
+            {
+                return methodExpression.Arguments[0].Value;
+            }
+
+            //var entity = GetEntity(TransformUsageFlags.Dynamic);
+            var getEntityExpression =
+                (IDeclarationStatement)bakeMethodExpression.Body.AddStatementAfter(factory.CreateStatement("var entity = GetEntity(TransformUsageFlags.Dynamic);"),
+                    null);
+            
+            //returns "entity" node
+            
+            return getEntityExpression.VariableDeclarations.SingleItem!.FirstChild!;
+        }
+
+        private static ITreeNode? TryGetExistingEntityCreationNode(ICSharpFunctionDeclaration bakeMethodExpression)
+        {
+            var existingExpression = bakeMethodExpression.Body.FindNextNode(node =>
+            {
+                if (node is IMethodDeclaration)
+                    return TreeNodeActionType.IGNORE_SUBTREE;
+
+                if (node is not IInvocationExpression invocationExpression)
+                    return TreeNodeActionType.CONTINUE;
+
+                var localVariableDeclaration = invocationExpression.GetContainingNode<ILocalVariableDeclaration>();
+
+                if (localVariableDeclaration == null)
+                    return TreeNodeActionType.CONTINUE;
+
+                return invocationExpression.IsBakerGetPrimaryEntityMethod()
+                    ? TreeNodeActionType.ACCEPT
+                    : TreeNodeActionType.CONTINUE;
+            });
+
+            var variableDeclaration = existingExpression?.GetContainingNode<ILocalVariableDeclaration>();
+
+            var variableNameNode = variableDeclaration?.DeclaredElement.GetDeclarations().SingleItem()?.FirstChild;
+
+            return variableNameNode;
+        }
 
         private static void GenerateBaker(IGeneratorContext context, Dictionary<string, string> componentToAuthoringFieldNames, BakerGenerationInfo generationInfo)
         {
@@ -148,7 +211,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 : CreateBakerClassDeclaration(generationInfo);
             
             var bakeMethodExpression = GetOrCreateBakeMethodExpression(bakerClassDeclarations, generationInfo.Factory, generationInfo, out var authoringParameterName);
-            var componentCreationExpression = GetOrCreateComponentCreationExpression(generationInfo.Factory, bakeMethodExpression, generationInfo.ComponentStructDeclaration.DeclaredElement!);
+            var entityExpression = GetOrCreateGetEntityExpression(bakeMethodExpression, generationInfo.Factory);
+            var componentCreationExpression = GetOrCreateComponentCreationExpression(generationInfo.Factory, bakeMethodExpression, generationInfo.ComponentStructDeclaration.DeclaredElement!, entityExpression);
             if(context.InputElements.Count != 0)
             {
                 var creationExpressionInitializer = GetOrCreateInitializer(componentCreationExpression, generationInfo.Factory);
@@ -261,7 +325,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
         }
 
         private static IObjectCreationExpression GetOrCreateComponentCreationExpression(CSharpElementFactory factory,
-            IMethodDeclaration bakeMethodExpression, ITypeElement componentDeclaredType)
+            IMethodDeclaration bakeMethodExpression, ITypeElement componentDeclaredType, ITreeNode entityExpression)
         {
             var existingCreationExpression = bakeMethodExpression.Body.FindNextNode( node =>
             {
@@ -280,11 +344,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             //AddComponent/AddComponentObject(new ComponentData{})
             var addComponentMethod = componentDeclaredType is IStruct ? "AddComponent();" :  "AddComponentObject();";
             var addComponentStatement =
-                (IExpressionStatement)bakeMethodExpression.Body.AddStatementAfter(factory.CreateStatement(addComponentMethod),
+                (IExpressionStatement)bakeMethodExpression.Body.AddStatementBefore(factory.CreateStatement(addComponentMethod),
                     null);
             var addComponentExpression = (addComponentStatement.Expression as IInvocationExpression).NotNull();
+            
+            var entityArgument = factory.CreateArgument(ParameterKind.VALUE, factory.CreateExpression("$0", entityExpression));
+            entityArgument = addComponentExpression.AddArgumentAfter(entityArgument, null);
+            
             var creationArgument = addComponentExpression.AddArgumentAfter(
-                factory.CreateArgument(ParameterKind.VALUE, factory.CreateExpression("new $0()", componentDeclaredType)), null);
+                factory.CreateArgument(ParameterKind.VALUE, factory.CreateExpression("new $0()", componentDeclaredType)), entityArgument);
 
             var componentCreationExpression = creationArgument.Value as IObjectCreationExpression;
             return componentCreationExpression!;

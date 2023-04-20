@@ -183,7 +183,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 : CreateBakerClassDeclaration(generationInfo);
             
             var bakeMethodExpression = GetOrCreateBakeMethodExpression(bakerClassDeclarations, generationInfo.Factory, generationInfo, out var authoringParameterName);
-            var componentCreationExpression = GetOrCreateComponentCreationExpression(generationInfo.Factory, bakeMethodExpression, generationInfo.ComponentDataDeclaration.DeclaredElement!);
+            var entityExpression = GetOrCreateGetEntityExpression(bakeMethodExpression, generationInfo.Factory);
+            var componentCreationExpression = GetOrCreateComponentCreationExpression(generationInfo.Factory, bakeMethodExpression, generationInfo.ComponentDataDeclaration.DeclaredElement!, entityExpression);
             if(context.InputElements.Count != 0)
             {
                 var creationExpressionInitializer = GetOrCreateInitializer(componentCreationExpression, generationInfo.Factory);
@@ -305,10 +306,73 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             return bakeMethodExpression;
         }
 
-        private static IObjectCreationExpression GetOrCreateComponentCreationExpression(CSharpElementFactory factory,
-            IMethodDeclaration bakeMethodExpression, ITypeElement componentDeclaredType)
+        private static ITreeNode GetOrCreateGetEntityExpression(ICSharpFunctionDeclaration bakeMethodExpression, CSharpElementFactory factory)
         {
-            var existingCreationExpression = bakeMethodExpression.Body.FindNextNode( node =>
+            var entityNode = TryGetExistingEntityCreationNode(bakeMethodExpression);
+            if (entityNode != null) 
+                return entityNode;
+            
+            //return any AddComponent(...)
+            var anyAddComponentMethodExpression = bakeMethodExpression.Body.FindNextNode(node =>
+            {
+                if (node is IMethodDeclaration)
+                    return TreeNodeActionType.IGNORE_SUBTREE;
+
+                if (node is not IInvocationExpression invocationExpression)
+                    return TreeNodeActionType.CONTINUE;
+                
+                return invocationExpression.IsAnyAddComponentMethod()
+                    ? TreeNodeActionType.ACCEPT
+                    : TreeNodeActionType.CONTINUE;
+            });
+
+
+            if (anyAddComponentMethodExpression is IInvocationExpression { Arguments: { Count: > 0 } } methodExpression)
+            {
+                return methodExpression.Arguments[0].Value;
+            }
+
+            //var entity = GetEntity(TransformUsageFlags.Dynamic);
+            var getEntityExpression =
+                (IDeclarationStatement)bakeMethodExpression.Body.AddStatementAfter(factory.CreateStatement("var entity = GetEntity(TransformUsageFlags.Dynamic);"),
+                    null);
+            
+            //returns "entity" node
+            
+            return getEntityExpression.VariableDeclarations.SingleItem!.FirstChild!;
+        }
+
+        private static ITreeNode? TryGetExistingEntityCreationNode(ICSharpFunctionDeclaration bakeMethodExpression)
+        {
+            var existingExpression = bakeMethodExpression.Body.FindNextNode(node =>
+            {
+                if (node is IMethodDeclaration)
+                    return TreeNodeActionType.IGNORE_SUBTREE;
+
+                if (node is not IInvocationExpression invocationExpression)
+                    return TreeNodeActionType.CONTINUE;
+
+                var localVariableDeclaration = invocationExpression.GetContainingNode<ILocalVariableDeclaration>();
+
+                if (localVariableDeclaration == null)
+                    return TreeNodeActionType.CONTINUE;
+
+                return invocationExpression.IsBakerGetPrimaryEntityMethod()
+                    ? TreeNodeActionType.ACCEPT
+                    : TreeNodeActionType.CONTINUE;
+            });
+
+            var variableDeclaration = existingExpression?.GetContainingNode<ILocalVariableDeclaration>();
+
+            var variableNameNode = variableDeclaration?.DeclaredElement.GetDeclarations().SingleItem()?.FirstChild;
+
+            return variableNameNode;
+        }
+
+        private static IObjectCreationExpression GetOrCreateComponentCreationExpression(CSharpElementFactory factory,
+            IMethodDeclaration bakeMethodExpression, ITypeElement componentDeclaredType, ITreeNode entityExpression)
+        {
+            var existingCreationExpression = bakeMethodExpression.Body.FindNextNode(node =>
             {
                 if (node is IMethodDeclaration)
                     return TreeNodeActionType.IGNORE_SUBTREE;
@@ -321,14 +385,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
             if (existingCreationExpression != null)
                 return (IObjectCreationExpression)existingCreationExpression;
-
+            
             //AddComponent(new ComponentData{})
             var addComponentStatement =
-                (IExpressionStatement)bakeMethodExpression.Body.AddStatementAfter(factory.CreateStatement("AddComponent();"),
+                (IExpressionStatement)bakeMethodExpression.Body.AddStatementBefore(factory.CreateStatement("AddComponent();"),
                     null);
             var addComponentExpression = (addComponentStatement.Expression as IInvocationExpression).NotNull();
+            var entityArgument = factory.CreateArgument(ParameterKind.VALUE, factory.CreateExpression("$0", entityExpression));
+            entityArgument = addComponentExpression.AddArgumentAfter(entityArgument, null);
+
             var creationArgument = addComponentExpression.AddArgumentAfter(
-                factory.CreateArgument(ParameterKind.VALUE, factory.CreateExpression("new $0()", componentDeclaredType)), null);
+                factory.CreateArgument(ParameterKind.VALUE, factory.CreateExpression("new $0()", componentDeclaredType)), entityArgument);
 
             var componentCreationExpression = creationArgument.Value as IObjectCreationExpression;
             return componentCreationExpression!;
