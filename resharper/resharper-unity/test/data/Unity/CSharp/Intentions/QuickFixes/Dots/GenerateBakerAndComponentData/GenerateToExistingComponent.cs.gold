@@ -19,7 +19,8 @@ namespace ComponentsAndTags
         {
           public override void Bake(GraveyardPropertiesAuthoring authoring)
           {
-            AddComponent(new GraveyardPropertiesComponentData { Count = authoring.ScavsCount });
+            var entity = GetEntity(TransformUsageFlags.Dynamic);
+            AddComponent(entity, new GraveyardPropertiesComponentData { Count = authoring.ScavsCount });
           }
         }
     }

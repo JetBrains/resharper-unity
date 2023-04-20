@@ -33,15 +33,18 @@ namespace ComponentsAndTags
         {
             public override void Bake(GraveyardPropertiesAuthoring authoring)
             {
-              AddComponentObject(new RandomProperties
-              {
-                SpawnRandom = Unity.Mathematics.Random.CreateFromIndex(authoring.SpawnRandom)
-              });
-              AddComponent(new GraveyardProperties
+                var entity = GetEntity(TransformUsageFlags.Dynamic);
+
+                AddComponent(entity, new GraveyardProperties
                 {
                     NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn,
                     TombstonePrefab = GetEntity(authoring.TombstonePrefab)
                 });
+                AddComponentObject(entity,
+                  new RandomProperties
+                    {
+                      SpawnRandom = Unity.Mathematics.Random.CreateFromIndex(authoring.SpawnRandom)
+                    });
             }
         }
     }
