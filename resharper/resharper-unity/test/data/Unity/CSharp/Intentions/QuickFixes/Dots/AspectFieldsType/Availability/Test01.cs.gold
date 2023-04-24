@@ -21,11 +21,11 @@ public readonly partial struct MyAspect : IAspect
 }
 
 ------------------------------------------------
-0: MyAspect's field 'SomeComponentData' cannot be other type than RefRW, RefRO, EnabledRefRW, EnabledRefRO, DynamicBuffer, or Entity
+0: MyAspect's field 'SomeComponentData' must be of type RefRW, RefRO, EnabledRefRW, EnabledRefRO, DynamicBuffer, or Entity
 QUICKFIXES:
 Wrap with 'RefRO'
 Wrap with 'RefRW'
-1: MyAspect's field 'AnotherComponentData' cannot be other type than RefRW, RefRO, EnabledRefRW, EnabledRefRO, DynamicBuffer, or Entity
+1: MyAspect's field 'AnotherComponentData' must be of type RefRW, RefRO, EnabledRefRW, EnabledRefRO, DynamicBuffer, or Entity
 QUICKFIXES:
 Wrap with 'RefRO'
 --Wrap with 'EnabledRefRO'

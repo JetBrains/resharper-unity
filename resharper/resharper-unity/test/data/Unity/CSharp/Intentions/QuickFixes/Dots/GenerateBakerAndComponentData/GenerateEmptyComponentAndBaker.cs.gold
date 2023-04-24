@@ -1,27 +1,5 @@
 ﻿Provided elements:
  0: FieldDimensions:UnityEngine.Vector2
- 1: name():System.String
- 2: hideFlags():UnityEngine.HideFlags
- 3: transform():UnityEngine.Transform
- 4: gameObject():UnityEngine.GameObject
- 5: tag():System.String
- 6: rigidbody():UnityEngine.Component
- 7: rigidbody2D():UnityEngine.Component
- 8: camera():UnityEngine.Component
- 9: light():UnityEngine.Component
- 10: animation():UnityEngine.Component
- 11: constantForce():UnityEngine.Component
- 12: renderer():UnityEngine.Component
- 13: audio():UnityEngine.Component
- 14: networkView():UnityEngine.Component
- 15: collider():UnityEngine.Component
- 16: collider2D():UnityEngine.Component
- 17: hingeJoint():UnityEngine.Component
- 18: particleSystem():UnityEngine.Component
- 19: enabled():System.Boolean
- 20: isActiveAndEnabled():System.Boolean
- 21: useGUILayout():System.Boolean
- 22: runInEditMode():System.Boolean
 
 // ${KIND:Unity.GenerateBakerAndComponent}
 
