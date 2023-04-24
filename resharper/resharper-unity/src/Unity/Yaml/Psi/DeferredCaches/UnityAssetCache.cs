@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using JetBrains.Application;
 using JetBrains.Application.Threading;
-using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers;
 using JetBrains.DocumentManagers.impl;
@@ -245,15 +244,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                     }
                 }
             }
-        }
-
-        public override void MergeLoadedData()
-        {
-            foreach (var (sourceFile, unityAssetData) in Map)
-            {
-                MergeData(sourceFile, unityAssetData);
-            }
-
         }
 
         public override void OnDocumentChange(IPsiSourceFile sourceFile, ProjectFileDocumentCopyChange change)

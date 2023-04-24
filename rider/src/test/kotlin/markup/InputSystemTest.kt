@@ -10,12 +10,14 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendMo
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.framework.executeWithGold
-import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.test.scriptingApi.markupContributor
+import com.jetbrains.rider.test.scriptingApi.runSwea
+import com.jetbrains.rider.test.scriptingApi.waitForLenses
+import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
+import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
-import com.jetbrains.rider.test.annotations.Mute
-import org.testng.annotations.BeforeMethod
 
 class InputSystemTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String {
@@ -28,7 +30,14 @@ class InputSystemTest : BaseTestWithSolution() {
 
     override val traceCategories: List<String>
         get() = listOf(
-            "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages")
+            "#com.jetbrains.rdclient.document",
+            "#com.jetbrains.rider.document",
+            "#com.jetbrains.rider.editors",
+            "#com.jetbrains.rdclient.daemon",
+            "JetBrains.Rider.Test.Framework.Core.Documents",
+            "JetBrains.ReSharper.Host.Features.Documents",
+            "JetBrains.ReSharper.Host.Features.TextControls",
+            "JetBrains.ReSharper.Psi.Caches")
 
     @BeforeMethod(alwaysRun = true)
     fun resetGroupings() {
@@ -81,6 +90,8 @@ class InputSystemTest : BaseTestWithSolution() {
                     { "Deferred caches are not completed" })
         executeWithGold(testGoldFile) { ps ->
             withOpenedEditor(relPath) {
+                // we call this here to ensure that we had IN_PROGRESS_GLOBAL followed by UP_TO_DATE
+                waitForLenses() // todo: remove this hack, expect this would help RIDER-92327
                 ps.println(annotateDocumentWithHighlighterTags(markupContributor.markupAdapter,
                                                                valueFilter = { it.backendAttributeIdOrThrow == "ReSharper Dead Code" }))
             }
@@ -88,7 +99,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
-    @Mute("RIDER-91507")
+    //@Mute("RIDER-91507")
     fun usedCodeTest() {
         // PlayerInput is attached to Cube
         // NewBehaviourScript is attached Cube
@@ -96,7 +107,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
-    @Mute("RIDER-91507")
+    //@Mute("RIDER-91507")
     fun usedCodeTestWithPrefab1() {
         // Cube1 is a prefab
         // PlayerInput is attached to the Cube1 prefab
@@ -105,7 +116,7 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
-    @Mute("RIDER-91507")
+    //@Mute("RIDER-91507")
     fun usedCodeTestWithPrefab2() {
         // Cube2 is a prefab, but everything is attached on the scene:
         // PlayerInput is attached to Cube2 on the scene
