@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
     {
         protected override TextLookupRanges EvaluateRanges(ShaderLabCodeCompletionContext context)
         {
-            return context.Ranges;
+            return context.CompletionRanges;
         }
 
         protected override IVariableReferenceReference GetReference(ShaderLabCodeCompletionContext context)
