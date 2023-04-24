@@ -3,6 +3,6 @@
     <ItemGroup>
         <PackageLock Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" IsDevelopmentDependency="True" />
         <PackageLock Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="3.3.0" IsDevelopmentDependency="True" />
-        <PackageLock Include="JetBrains.HabitatDetector" Version="1.0.1" IsDevelopmentDependency="True" />
+        <PackageLock Include="JetBrains.HabitatDetector" Version="1.0.2" IsDevelopmentDependency="True" />
     </ItemGroup>
 </Project>
