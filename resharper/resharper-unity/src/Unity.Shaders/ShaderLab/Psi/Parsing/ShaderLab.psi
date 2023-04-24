@@ -922,7 +922,7 @@ shaderCommand
   shaderValue<SHADER_LAB_VALUE, Value>
 ;
 
-shaderValue
+errorhandling shaderValue
 :
   shaderValueName
   LBRACE<LBRACE, LBrace>
@@ -1222,7 +1222,7 @@ categoryCommand
   categoryValue<SHADERLAB_VALUE, Value>
 ;
 
-categoryValue
+errorhandling categoryValue
 :
   LBRACE<LBRACE, LBrace>
   stateCommand<STATE_COMMAND, StateCommands>*
