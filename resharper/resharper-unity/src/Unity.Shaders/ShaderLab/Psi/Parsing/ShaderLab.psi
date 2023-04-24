@@ -981,7 +981,7 @@ options {
 :
   propertyHeader
   EQUALS<EQUALS, Equals>
-  propertyValue<PROPERTY_VALUE, PropertValue>
+  propertyValue<PROPERTY_VALUE, PropertyValue>
 ;
 
 // Error handling, to make propertyDeclaration::EQUALS a resync point
