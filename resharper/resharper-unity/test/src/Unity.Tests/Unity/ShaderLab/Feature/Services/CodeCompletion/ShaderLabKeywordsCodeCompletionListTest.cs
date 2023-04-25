@@ -36,8 +36,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         }
 
         [TestCase("TestTopLevelStatement01")]
+        [TestCase("TestTopLevelStatement02")]
         [TestCase("TestShaderCommandContent01")]
+        [TestCase("TestShaderCommandContent02")]
         [TestCase("TestCategoryCommandContent01")]
-        public void TestCompletion(string testName) => DoTestSolution(testName + Extension);
+        public void TestCompletion(string testName) => DoOneTest(testName);
     }
 }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl;
 using JetBrains.ReSharper.Psi.ExpectedTypes;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -14,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
 {
     public class ShaderLabKeywordSuggester
     {
-        readonly Dictionary<Type, List<(TokenNodeType Token, bool Exclusive)>> scopedSuggesters = new();
+        readonly Dictionary<object, List<(TokenNodeType Token, bool Exclusive)>> myScopedSuggesters = new();
 
         public ShaderLabKeywordSuggester()
         {
@@ -51,27 +52,42 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
 
         private void AddScopedKeyword(Type scopeType, TokenNodeType keyword, bool exclusive)
         {
-            scopedSuggesters.GetOrCreateValue(scopeType, () => new()).Add((keyword, exclusive));
+            myScopedSuggesters.GetOrCreateValue(scopeType, () => new()).Add((keyword, exclusive));
         }
 
-        private static ITreeNode? GetScopeNode(ITreeNode? treeNode)
+        private static object? GetErrorScope(IErrorElement error)
+        {
+            var errorOwner = error.Parent;
+            return errorOwner switch
+            {
+                IBlockCommand blockCommand when blockCommand.FirstChild == error  => blockCommand.Parent?.GetType(),  // first token in block command is a keyword itself, provide it's scope for keywords suggestion
+                IBlockCommand blockCommand when blockCommand.Value.RBrace != null => blockCommand.Parent?.GetType(),  // if command is closed (RBrace exists) then we provide keywords for outer scope
+                IBlockValue blockValue                                            => blockValue.GetType(),            // when error is inside block value it handles errors only within parenthesis and should advice all keywords valid for the block body
+                _ => null
+            };
+        }
+
+        private static object? GetScope(ITreeNode? treeNode)
         {
             return treeNode switch
             {
                 null => null,
-                IIdentifier or IErrorElement => GetScopeNode(treeNode.Parent),
-                _ => treeNode
+                {Parent: IErrorElement errorElement} => GetErrorScope(errorElement),
+                _ => treeNode.GetType()
             };
         }
 
-        private static Type? GetKeywordsScope(ShaderLabCodeCompletionContext context) => GetScopeNode(context.UnterminatedContext.TreeNode)?.GetType();
+        private static object? GetKeywordsScope(ShaderLabCodeCompletionContext context) => GetScope(context.UnterminatedContext.TreeNode);
 
         public void Suggest(ShaderLabCodeCompletionContext context, IItemsCollector collector)
         {
             var psiIconManager = context.BasicContext.PsiIconManager;
             var keywordsCollector = new KeywordsCollector(collector, psiIconManager.KeywordIcon, (ulong)(ShaderLabLookupItemRelevance.Keywords | ShaderLabLookupItemRelevance.LiveTemplates));
+            
             var scope = GetKeywordsScope(context);
-            if (scope == null || !scopedSuggesters.TryGetValue(scope, out var keywords))
+            if (scope == null)
+                return;
+            if (!myScopedSuggesters.TryGetValue(scope, out var keywords))
                 return;
             foreach (var keyword in keywords)
                 keywordsCollector.Add(keyword.Token, context.CompletionRanges, TailType.None);

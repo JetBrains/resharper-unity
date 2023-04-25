@@ -871,7 +871,7 @@ ppLineDirective
 //
 // **************************************************************************
 
-errorhandling shaderLabFile options { stubBase="ShaderLabFileElement"; }
+shaderLabFile options { stubBase="ShaderLabFileElement"; }
 :
   shaderCommand<SHADER_LAB_COMMAND, Command>
 ;
@@ -916,19 +916,24 @@ interface blockValue
 //
 // **************************************************************************
 
-shaderCommand
+errorhandling shaderCommand
 :
   SHADER_KEYWORD<SHADER_LAB_KEYWORD, ShaderKeyword>
   shaderValue<SHADER_LAB_VALUE, Value>
 ;
 
-errorhandling shaderValue
+shaderValue
 :
   shaderValueName
   LBRACE<LBRACE, LBrace>
+  shaderValueBody
+  RBRACE<RBRACE, RBrace>
+;
+
+private errorhandling shaderValueBody
+:
   propertiesCommand<PROPERTIES_COMMAND, PropertiesCommand>?
   shaderBlock<SHADER_BLOCK, ShaderBlocks>*
-  RBRACE<RBRACE, RBrace>
 ;
 
 shaderBlock
@@ -956,7 +961,6 @@ private errorhandling shaderValueName
 // **************************************************************************
 
 // Parsing context so nested errors will resync on following rules
-// Must also be errorhandling, or else no-one will check IsInFollow
 errorhandling propertiesCommand
 options {
   parsingContext;
@@ -973,7 +977,7 @@ propertiesValue
   RBRACE<RBRACE, RBrace>
 ;
 
-propertyDeclaration
+errorhandling propertyDeclaration
 options {
   customInterface;
   stubBase="ShaderLabDeclarationBase";
@@ -1216,21 +1220,24 @@ stringAttributeParameterValue
 //
 // **************************************************************************
 
-categoryCommand
+errorhandling categoryCommand
 :
   CATEGORY_KEYWORD<SHADER_LAB_KEYWORD, CategoryKeyword>
   categoryValue<SHADERLAB_VALUE, Value>
 ;
 
-errorhandling categoryValue
+categoryValue
 :
   LBRACE<LBRACE, LBrace>
-  stateCommand<STATE_COMMAND, StateCommands>*
-  shaderBlock<SHADER_BLOCK, ShaderBlocks>*
+  categoryValueBody
   RBRACE<RBRACE, RBrace>
 ;
 
-
+private errorhandling categoryValueBody
+:
+  stateCommand<STATE_COMMAND, StateCommands>*
+  shaderBlock<SHADER_BLOCK, ShaderBlocks>*
+;
 
 // **************************************************************************
 //
@@ -1239,7 +1246,7 @@ errorhandling categoryValue
 // **************************************************************************
 
 // TODO: Sort out error handling for subtree
-subShaderCommand
+errorhandling subShaderCommand
 :
   SUB_SHADER_KEYWORD<SHADER_LAB_KEYWORD, SubShaderKeyword>
   subShaderValue<SHADER_LAB_VALUE, Value>
@@ -1275,7 +1282,7 @@ interface stateCommand
 //
 // **************************************************************************
 
-tagsCommand
+errorhandling tagsCommand
 :
   TAGS_KEYWORD<SHADER_LAB_KEYWORD, TagsKeyword>
   tagsValue<SHADER_KAB_VALUE, Value>
@@ -1284,9 +1291,14 @@ tagsCommand
 tagsValue
 :
   LBRACE<LBRACE, LBrace>
-  tagDeclaration<TAG_DECLARATIONS, Declarations>*
+  tagsValueBody
   RBRACE<RBRACE, RBrace>
 ;
+
+private errorhandling tagsValueBody
+:
+  tagDeclaration<TAG_DECLARATIONS, Declarations>*
+; 
 
 interface tagDeclaration
 :
@@ -1560,7 +1572,7 @@ stencilOperation
   | variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
-stencilCommand
+errorhandling stencilCommand
 :
   STENCIL_KEYWORD<SHADER_LAB_KEYWORD, StencilKeyword>
   stencilValue<SHADER_LAB_VALUE, Value>
@@ -1755,7 +1767,7 @@ colorMaterialValue
   | EMISSION_KEYWORD<SHADER_LAB_VALUE, Value>
 ;
 
-materialCommand
+errorhandling materialCommand
 :
   MATERIAL_KEYWORD<SHADER_LAB_KEYWORD, MaterialKeyword>
   materialValue<SHADER_LAB_VALUE, Value>
@@ -1814,7 +1826,7 @@ emissionCommand
 //
 // **************************************************************************
 
-setTextureCommand
+errorhandling setTextureCommand
 :
   SET_TEXTURE_KEYWORD<SHADER_LAB_KEYWORD, SetTextureKeyword>
   setTextureValue<SHADER_LAB_VALUE, Value>
@@ -1984,7 +1996,7 @@ private alphaTestComparisonValue
 //
 // **************************************************************************
 
-fogCommand
+errorhandling fogCommand
 :
   FOG_KEYWORD<SHADER_LAB_KEYWORD, FogKeyword>
   fogValue<SHADER_LAB_VALUE, Value>
@@ -2046,7 +2058,7 @@ rangeValue
 //
 // **************************************************************************
 
-bindChannelsCommand
+errorhandling bindChannelsCommand
 :
   BIND_CHANNELS_KEYWORD<SHADER_LAB_KEYWORD, BindChannelsKeyword>
   bindChannelsValue<SHADER_LAB_VALUE, Value>
@@ -2243,7 +2255,7 @@ fallbackCommand
   fallbackValue<SHADER_LAB_VALUE, Value>
 ;
 
-fallbackValue
+errorhandling fallbackValue
 :
   (
     STRING_LITERAL<SHADER_LAB_NAME, Name>

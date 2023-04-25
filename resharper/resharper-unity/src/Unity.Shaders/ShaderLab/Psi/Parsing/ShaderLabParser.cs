@@ -97,12 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
             return ParseErrorElement();
         }
 
-        private bool IsIdentifier(TokenNodeType token)
-        {
-            // TODO: This should just be a bitset
-            // At the very least, it needs to be a better check
-            return token == ShaderLabTokenType.IDENTIFIER || token.IsKeyword;
-        }
+        private bool IsIdentifier(TokenNodeType token) => token.IsIdentifier || token.IsKeyword;
 
         public override TreeElement ParseErrorPropertyValue()
         {
