@@ -86,6 +86,7 @@
     <Keyword name="COLOR_KEYWORD" representation="Color" />
     <Keyword name="FLOAT_KEYWORD" representation="Float" />
     <Keyword name="INT_KEYWORD" representation="Int" />
+    <Keyword name="INTEGER_KEYWORD" representation="Integer" />
     <Keyword name="RANGE_KEYWORD" representation="Range" />
     <Keyword name="VECTOR_KEYWORD" representation="Vector" />
   </PropertyTypeKeywords>
