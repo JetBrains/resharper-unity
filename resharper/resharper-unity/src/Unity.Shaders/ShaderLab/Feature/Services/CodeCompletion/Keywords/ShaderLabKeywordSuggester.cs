@@ -2,7 +2,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl;
@@ -57,15 +59,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
 
         private static object? GetErrorScope(IErrorElement error)
         {
+            if (error.FindPrevSibling(static it => it.NodeType == ShaderLabTokenType.RBRACE) is not null)
+                return FindContainingScope(error);
             var errorOwner = error.Parent;
             return errorOwner switch
             {
-                IBlockCommand blockCommand when blockCommand.FirstChild == error  => blockCommand.Parent?.GetType(),  // first token in block command is a keyword itself, provide it's scope for keywords suggestion
-                IBlockCommand blockCommand when blockCommand.Value.RBrace != null => blockCommand.Parent?.GetType(),  // if command is closed (RBrace exists) then we provide keywords for outer scope
-                IBlockValue blockValue                                            => blockValue.GetType(),            // when error is inside block value it handles errors only within parenthesis and should advice all keywords valid for the block body
+                IBlockCommand blockCommand when blockCommand.FirstChild == error                    => FindContainingScope(blockCommand),  // first token in block command is a keyword itself, provide it's scope for keywords suggestion
+                IBlockValue   blockValue   when error.IsNodeWithinBraces()                          => blockValue.GetType(),               // when error is inside block value it handles errors only within parenthesis and should advice all keywords valid for the block body
                 _ => null
             };
         }
+
+        private static object FindContainingScope(ITreeNode node) => node.FindParent(static node => node is IBlockValue)?.GetType() ?? typeof(ShaderLabFile);
 
         private static object? GetScope(ITreeNode? treeNode)
         {
@@ -77,32 +82,38 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
             };
         }
 
-        private static object? GetKeywordsScope(ShaderLabCodeCompletionContext context) => GetScope(context.UnterminatedContext.TreeNode);
+        private IEnumerable<KeywordCompletionResult> GetKeywords(ShaderLabCodeCompletionContext context)
+        {
+            var treeNode = context.UnterminatedContext.TreeNode;
+            if (treeNode is { Parent: UnexpectedTokenErrorElement { ExpectedTokenTypes: { } expectedTokenTypes } })
+                return expectedTokenTypes.Where(it => it is TokenNodeType { IsKeyword: true }).Select(it => new KeywordCompletionResult((TokenNodeType)it));
+                
+            var scope = GetScope(treeNode);
+            if (scope != null && myScopedSuggesters.TryGetValue(scope, out var keywords))
+                return keywords.Select(it => new KeywordCompletionResult(it.Token));
+            return Array.Empty<KeywordCompletionResult>();
+        }
 
         public void Suggest(ShaderLabCodeCompletionContext context, IItemsCollector collector)
         {
             var psiIconManager = context.BasicContext.PsiIconManager;
             var keywordsCollector = new KeywordsCollector(collector, psiIconManager.KeywordIcon, (ulong)(ShaderLabLookupItemRelevance.Keywords | ShaderLabLookupItemRelevance.LiveTemplates));
             
-            var scope = GetKeywordsScope(context);
-            if (scope == null)
-                return;
-            if (!myScopedSuggesters.TryGetValue(scope, out var keywords))
-                return;
+            var keywords = GetKeywords(context);
             foreach (var keyword in keywords)
                 keywordsCollector.Add(keyword.Token, context.CompletionRanges, TailType.None);
         }
         
         struct KeywordCompletionResult
         {
-            public string Keyword { get; }
+            public TokenNodeType Token { get; }
             public TailType TailType { get; }
 
-            public KeywordCompletionResult(string keyword) : this(keyword, TailType.None) { }
+            public KeywordCompletionResult(TokenNodeType token) : this(token, TailType.None) { }
             
-            public KeywordCompletionResult(string keyword, TailType tailType)
+            public KeywordCompletionResult(TokenNodeType token, TailType tailType)
             {
-                Keyword = keyword;
+                Token = token;
                 TailType = tailType;
             }
         }

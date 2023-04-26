@@ -47,6 +47,9 @@
 
   // Namespace for generating custom interface when `customInterface` option used
   customInterfacePackage="JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree";
+  
+  // Custom error element creation from exception, may fill error with additional info from context
+  customCreateErrorElementFromException="ShaderLabElementFactory.CreateErrorElement(error)";
 
   // Any role used in this file that begins with this prefix must be defined in `ChildRole`
   publicChildRolePrefix="SHADER_LAB_";

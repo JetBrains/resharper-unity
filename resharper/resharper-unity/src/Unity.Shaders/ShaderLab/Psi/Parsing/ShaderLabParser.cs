@@ -1,5 +1,4 @@
 ﻿using JetBrains.Annotations;
-using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Gen;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
@@ -84,7 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
                 SetOffset(leaf, tokenStart);
             return element;
         }
-
+        
         public override TreeElement ParseErrorElement()
         {
             // NOTE: Doesn't Advance
