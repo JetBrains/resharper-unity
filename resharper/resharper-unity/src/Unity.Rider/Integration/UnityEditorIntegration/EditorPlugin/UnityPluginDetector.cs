@@ -132,6 +132,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         [NotNull]
         private InstallationInfo GetInstallationInfoFromFoundInstallation(List<VirtualFileSystemPath> pluginFiles, Version newVersion)
         {
+            myLogger.Info($"GetInstallationInfoFromFoundInstallation, newVersion {newVersion}");
             var parentDirs = pluginFiles.Select(f => f.Directory).Distinct().ToList();
             if (parentDirs.Count > 1)
             {
