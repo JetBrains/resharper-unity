@@ -16,11 +16,14 @@ namespace ComponentsAndTags
 
     public class GraveyardPropertiesAuthoringBaker : Baker<GraveyardPropertiesAuthoring>
     {
+        private Entity GetMyEntity()
+        {
+            return GetEntity(TransformUsageFlags.Dynamic);
+        }
+
         public override void Bake(GraveyardPropertiesAuthoring authoring)
         {
-            var getEntity = GetEntity(TransformUsageFlags.Dynamic);
-
-            AddComponent(getEntity, new GraveyardPropertiesComponentData { FieldDimensions = authoring.FieldDimensions });
+            AddComponent(GetMyEntity(), new GraveyardPropertiesComponentData { FieldDimensions = authoring.FieldDimensions });
         }
     }
 

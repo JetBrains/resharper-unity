@@ -35,6 +35,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
             return false;
         }
 
+        public static bool IsAnyAddComponentMethod(this IInvocationExpression invocationExpression)
+        {
+            if (invocationExpression.Reference.Resolve().DeclaredElement is not IMethod method)
+                return false;
+
+            if (!method.ShortName.Equals("AddComponent"))
+                return false;
+
+            if (method.ContainingType != null && method.ContainingType.GetClrName().Equals(KnownTypes.IBaker))
+                return true;
+
+            return false;
+        }
+
+        public static bool IsBakerGetPrimaryEntityMethod(this IInvocationExpression invocationExpression)
+        {
+            if (invocationExpression.Reference.Resolve().DeclaredElement is not IMethod method)
+                return false;
+
+            if (!method.ShortName.Equals("GetEntity"))
+                return false;
+
+            if (method.ContainingType == null || !method.ContainingType.GetClrName().Equals(KnownTypes.IBaker))
+                return false;
+
+            var parameters = method.Parameters;
+            if (parameters.Count != 1)
+                return false;
+
+            var parameter = parameters[0];
+
+            return parameter.Type is IDeclaredType declaredType
+                   && declaredType.GetClrName().Equals(KnownTypes.TransformUsageFlags);
+        }
+        
         public static bool IsCompareTagMethod(this IInvocationExpression expr)
         {
             return IsSpecificMethod(expr, KnownTypes.Component, "CompareTag")

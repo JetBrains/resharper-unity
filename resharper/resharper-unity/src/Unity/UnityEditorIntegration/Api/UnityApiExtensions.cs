@@ -1,4 +1,5 @@
 #nullable enable
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
@@ -10,13 +11,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 {
     public static class UnityApiExtensions
     {
-        public static bool IsDotsImplicitlyUsedType([NotNullWhen(true)] this ITypeElement? typeElement) =>
-            typeElement.DerivesFrom(KnownTypes.ComponentSystemBase)
-            || typeElement.DerivesFrom(KnownTypes.ISystem)
-            || typeElement.DerivesFrom(KnownTypes.IAspect)
-            || typeElement.DerivesFrom(KnownTypes.IComponentData)
-            || typeElement.DerivesFrom(KnownTypes.IJobEntity)
-            || typeElement.DerivesFrom(KnownTypes.IBaker);
+        private static readonly IClrTypeName[] ourDotsTypes =
+        {
+            KnownTypes.ComponentSystemBase,
+            KnownTypes.ISystem,
+            KnownTypes.IAspect,
+            KnownTypes.IComponentData,
+            KnownTypes.IJobEntity,
+            KnownTypes.IBaker,
+        };
+
+        public static bool IsDotsImplicitlyUsedType([NotNullWhen(true)] this ITypeElement? typeElement)
+        {
+            return typeElement.GetDotsCLRBaseTypeName() != null;
+        }
+
+        public static IClrTypeName? GetDotsCLRBaseTypeName(this ITypeElement? typeElement)
+        {
+            IClrTypeName clrBaseTypeName = null;
+            foreach (var baseClrTypeName in ourDotsTypes)
+            {
+                if (!typeElement.DerivesFrom(baseClrTypeName)) continue;
+                clrBaseTypeName = baseClrTypeName;
+                break;
+            }
+
+            return clrBaseTypeName;
+        }
 
 
         public static (ITypeElement?, bool) GetReferencedType(IFieldDeclaration? fieldDeclaration)

@@ -255,6 +255,60 @@ IShaderLabFile
               ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
               ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_FloatValue)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"FloatValue")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ISimplePropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:FLOAT_KEYWORD, text:Float)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:12.5)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_IntValue)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"IntValue")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ISimplePropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:INT_KEYWORD, text:Int)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:12)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          IPropertyDeclaration
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_IntegerValue)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"IntegerValue")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ISimplePropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:INTEGER_KEYWORD, text:Integer)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:23)
+          Whitespace(type:WHITESPACE, text:  ) spaces: "  "
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:  ) spaces: "  "
           ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"

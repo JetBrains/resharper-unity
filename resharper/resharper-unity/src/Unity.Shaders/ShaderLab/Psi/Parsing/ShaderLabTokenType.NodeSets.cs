@@ -20,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
                 COLOR_KEYWORD,
                 FLOAT_KEYWORD,
                 INT_KEYWORD,
+                INTEGER_KEYWORD,
                 RANGE_KEYWORD,
                 VECTOR_KEYWORD,
 

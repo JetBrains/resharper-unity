@@ -11,6 +11,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Resources.Resources.Icons;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
@@ -35,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var fix = new GenerateBakerAndAuthoringActionFix(classDeclaration, node);
 
             
-            var action = new IntentionAction(fix, UnityGutterIcons.UnityLogo.Id, //PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id,
+            var action = new IntentionAction(fix, PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id,
                 new SubmenuAnchor(BulbMenuAnchors.PermanentBackgroundItems, SubmenuBehavior.Executable));
 
             return new[] {action};

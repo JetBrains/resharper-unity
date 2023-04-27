@@ -1,28 +1,6 @@
 ﻿Provided elements:
  0: ScavsCount:System.Int32
  1: FieldDimensions:Unity.Mathematics.float2
- 2: name():System.String
- 3: hideFlags():UnityEngine.HideFlags
- 4: transform():UnityEngine.Transform
- 5: gameObject():UnityEngine.GameObject
- 6: tag():System.String
- 7: rigidbody():UnityEngine.Component
- 8: rigidbody2D():UnityEngine.Component
- 9: camera():UnityEngine.Component
- 10: light():UnityEngine.Component
- 11: animation():UnityEngine.Component
- 12: constantForce():UnityEngine.Component
- 13: renderer():UnityEngine.Component
- 14: audio():UnityEngine.Component
- 15: networkView():UnityEngine.Component
- 16: collider():UnityEngine.Component
- 17: collider2D():UnityEngine.Component
- 18: hingeJoint():UnityEngine.Component
- 19: particleSystem():UnityEngine.Component
- 20: enabled():System.Boolean
- 21: isActiveAndEnabled():System.Boolean
- 22: useGUILayout():System.Boolean
- 23: runInEditMode():System.Boolean
 
 // ${KIND:Unity.GenerateBakerAndComponent}
 // ${SELECT0:ScavsCount:System.Int32}
@@ -49,8 +27,10 @@ namespace ComponentsAndTags
     {
         public override void Bake(GraveyardPropertiesAuthoring authoring)
         {
-          AddComponent(new PropertiesComponentData { ScavsCount = authoring.ScavsCount });
-          AddComponent(new GraveyardPropertiesComponentData { FieldDimensions = authoring.FieldDimensions });
+            var getEntity = GetEntity(TransformUsageFlags.Dynamic);
+
+            AddComponent(getEntity, new GraveyardPropertiesComponentData { FieldDimensions = authoring.FieldDimensions });
+            AddComponent(getEntity, new PropertiesComponentData { ScavsCount = authoring.ScavsCount });
         }
     }
 
