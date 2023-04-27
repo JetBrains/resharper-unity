@@ -1,21 +1,28 @@
 #nullable enable
 
+using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Collections;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Cpp.Parsing.Preprocessor;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi.Cpp.Parsing.Preprocessor;
+using JetBrains.ReSharper.Psi.Cpp.Tree;
 using JetBrains.ReSharper.Psi.Cpp.Util;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 {
     [SolutionComponent]
-    public class UnityGameEngineDirectiveResolver : IGameEngineIncludeDirectiveResolver
+    public class UnityGameEngineDirectiveResolver : IGameEngineIncludeDirectiveResolver, IGameEngineIncludeDirectiveProvider
     {
         private readonly ISolution mySolution;
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly PackageManager myPackageManager;
+
+        public bool Active => mySolutionTracker.IsUnityProject.HasTrueValue() || mySolutionTracker.HasUnityReference.HasTrueValue();
 
         public UnityGameEngineDirectiveResolver(ISolution solution,
                                                 UnitySolutionTracker solutionTracker,
@@ -26,12 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             myPackageManager = packageManager;
         }
 
-        public bool IsApplicable(CppInclusionContext context, string path)
-        {
-            return path.StartsWith("Packages/") &&
-                   (mySolutionTracker.IsUnityProject.HasTrueValue() ||
-                    mySolutionTracker.HasUnityReference.HasTrueValue());
-        }
+        public bool IsApplicable(CppInclusionContext context, string path) => path.StartsWith("Packages/") && Active;
 
         public string TransformPath(CppInclusionContext context, string path)
         {
@@ -49,7 +51,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 
             var packageName = path.Substring(pos, endPos - pos);
             var package = myPackageManager.GetPackageById(packageName);
-            return package?.PackageFolder?.Combine(path[(endPos+1)..]).FullPath ?? path;
+            if (package?.PackageFolder is not { } transformedPath)
+                return path;
+            if (endPos < path.Length)
+                transformedPath = transformedPath.Combine(path[(endPos+1)..]);
+            return transformedPath.FullPath;
+        }
+        
+        public IEnumerable<CppIncludePath> ProvideIncludePaths(in ICppFileReference reference)
+        {
+            var qualifier = reference.GetQualifierReference();
+            if (qualifier == null || qualifier.GetName() != "Packages")
+                return Enumerable.Empty<CppIncludePath>();
+
+            var packagesDir = VirtualFileSystemPath.CreateByCanonicalPath(qualifier.GetName(), InteractionContext.SolutionContext);
+            var items = new List<CppIncludePath>();
+            foreach (var (packageId, packageData) in myPackageManager.Packages)
+            {
+                if (packageData.PackageFolder is {} packageFolder)
+                    items.Add(new(packageId, packagesDir.Combine(packageId), false));
+            }
+
+            return items;
         }
     }
 }
