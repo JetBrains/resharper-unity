@@ -54,7 +54,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             if (package?.PackageFolder is not { } transformedPath)
                 return path;
             if (endPos < path.Length)
-                transformedPath = transformedPath.Combine(path[(endPos+1)..]);
+                // DON'T USE Combine because it removes trailing slashes! We should be sure tail of the path exactly same as before for proper basePath resolving. We don't use pure string concatenation for interning support purposes only.
+                transformedPath = VirtualFileSystemPath.CreateByCanonicalPath($"{transformedPath.FullPath}{path[endPos..]}", transformedPath.InteractionContext); 
             return transformedPath.FullPath;
         }
         
@@ -64,12 +65,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             if (qualifier == null || qualifier.GetName() != "Packages")
                 return Enumerable.Empty<CppIncludePath>();
 
-            var packagesDir = VirtualFileSystemPath.CreateByCanonicalPath(qualifier.GetName(), InteractionContext.SolutionContext);
             var items = new List<CppIncludePath>();
             foreach (var (packageId, packageData) in myPackageManager.Packages)
             {
                 if (packageData.PackageFolder is {} packageFolder)
-                    items.Add(new(packageId, packagesDir.Combine(packageId), false));
+                    items.Add(new(packageId, packageFolder, false));
             }
 
             return items;
