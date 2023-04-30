@@ -64,8 +64,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 }
                 else if (typeElement.IsDotsImplicitlyUsedType())
                 {
-                    //TODO obsolete
-                    AddUnityDOTSHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_DOTS, Strings.TypeDetector_AddDeclarationHighlighting_Unity_entities_system,
+                    var tooltip = string.Format(Strings.TypeDetector_AddDeclarationHighlighting_Unity_entities,
+                        typeElement.GetDotsCLRBaseTypeName()!.ShortName);
+                    AddUnityDOTSHighlighting(consumer, element, 
+                        Strings.TypeDetector_AddDeclarationHighlighting_DOTS,
+                        tooltip,
                         context);
                 }
 

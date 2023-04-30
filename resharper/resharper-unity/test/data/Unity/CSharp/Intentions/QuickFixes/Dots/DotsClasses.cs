@@ -1,5 +1,16 @@
 namespace Unity.Entities
 {
+    [Flags]
+    public enum TransformUsageFlags : int
+    {
+        None = 0,
+        Renderable = 1,
+        Dynamic = 1 << 1,
+        WorldSpace = 1 << 2,
+        NonUniformScale = 1 << 3,
+        ManualOverride = 1 << 4,
+    }
+
     public unsafe ref struct SystemState
     {
         public void RequireForUpdate<T>() {}
@@ -7,7 +18,17 @@ namespace Unity.Entities
     }
     public struct Entity {}
 
-    public abstract class IBaker { }
+    public abstract class IBaker
+    {
+        public Entity GetEntity(TransformUsageFlags flags)
+        {
+            return new Entity();
+        }
+
+        public void AddComponent<T>(Entity entity, in T component) where T : unmanaged, IComponentData {}
+        public void AddComponent<T>(Entity entity) {}
+    }
+    
     public abstract class Baker<TAuthoringType> : IBaker {}
 
     public interface IQueryTypeParameter { }
@@ -25,7 +46,6 @@ namespace Unity.Entities
     
     public interface ISystem
     {
-
         void OnCreate(ref SystemState state);
 
         void OnDestroy(ref SystemState state);

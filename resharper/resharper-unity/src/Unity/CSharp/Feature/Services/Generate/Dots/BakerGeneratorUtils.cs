@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
     {
         private static readonly Dictionary<IClrTypeName, ConversionData> ourComponentDataToAuthoringTypesConversion = new() 
         {
-            {KnownTypes.Entity, new ConversionData(KnownTypes.GameObject, "GetEntity($0.$1)")},
+            {KnownTypes.Entity, new ConversionData(KnownTypes.GameObject, "GetEntity($0.$1, TransformUsageFlags.Dynamic)")},
             {KnownTypes.Random, new ConversionData(PredefinedType.UINT_FQN, "Unity.Mathematics.Random.CreateFromIndex($0.$1)")}
         };
         
@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             {KnownTypes.Vector3, new ConversionData(KnownTypes.Float3, "$0.$1")},
         };
 
-        private static readonly ConversionData ourComponentToEntityConversions = new(KnownTypes.Entity, "GetEntity($0.$1)");
+        private static readonly ConversionData ourComponentToEntityConversions = new(KnownTypes.Entity, "GetEntity($0.$1, TransformUsageFlags.Dynamic)");
         
         public static ConversionData? ConvertAuthoringToComponentField(IClrTypeName clrTypeName, IPsiModule psiModule)
         {

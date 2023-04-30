@@ -349,7 +349,7 @@
     public static string TypeDetector_AddDeclarationHighlighting_Editor => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Editor");
     public static string TypeDetector_AddDeclarationHighlighting_Script => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Script");
     public static string TypeDetector_AddDeclarationHighlighting_Scriptable_object => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Scriptable_object");
-    public static string TypeDetector_AddDeclarationHighlighting_Unity_entities_system => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_entities_system");
+    public static string TypeDetector_AddDeclarationHighlighting_Unity_entities => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_entities");
     public static string TypeDetector_AddDeclarationHighlighting_Unity_script => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_script");
     public static string TypeDetector_AddDeclarationHighlighting_Unity_scriptable_object => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_scriptable_object");
     public static string TypeDetector_AddDeclarationHighlighting_Unity_type => ResourceManager.GetString("TypeDetector_AddDeclarationHighlighting_Unity_type");

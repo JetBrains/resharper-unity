@@ -31,10 +31,13 @@ namespace ComponentsAndTags
     {
       public override void Bake(PropertiesAuthoring authoring)
       {
-        AddComponent(new GraveyardProperties
-        {
-          FieldDimensions = authoring.FieldDimensions, TombstonePrefab = GetEntity(authoring.TombstonePrefab)
-        });
+        var entity = GetEntity(TransformUsageFlags.Dynamic);
+        AddComponent(entity,
+          new GraveyardProperties
+            {
+              FieldDimensions = authoring.FieldDimensions,
+              TombstonePrefab = GetEntity(authoring.TombstonePrefab, TransformUsageFlags.Dynamic)
+            });
       }
     }
 
@@ -48,7 +51,9 @@ namespace ComponentsAndTags
     {
         public override void Bake(GraveyardPropertiesAuthoring authoring)
         {
-            AddComponent(new GraveyardProperties
+            var entity = GetEntity(TransformUsageFlags.Dynamic);
+
+            AddComponent(entity, new GraveyardProperties
             {
                 NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn,
             });
