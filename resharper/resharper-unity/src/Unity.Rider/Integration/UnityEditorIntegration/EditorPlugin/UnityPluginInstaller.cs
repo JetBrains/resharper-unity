@@ -99,10 +99,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             {
                 if (!args) return;
 
-                var versionForSolution = myUnityVersion.ActualVersionForSolution.Value;
-                if (versionForSolution.Major >= 2019) // it is very unlikely that project is upgraded from pre-2019.2 to 2020.x+
-                    return;
-
                 shellLocks.Tasks.StartNew(lifetime, Scheduling.FreeThreaded, () =>
                 {
                     var info = myDetector.GetInstallationInfo(myCurrentVersion,

@@ -336,7 +336,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         private void UpdateActualVersionForSolution()
         {
             var version = GetActualVersionForSolution();
-            ourLogger.Log(LoggingLevel.INFO, $"UpdateActualVersionForSolution to {version}");
+            ourLogger.Verbose($"UpdateActualVersionForSolution to {version}");
             ActualVersionForSolution.SetValue(version);
         }
 
