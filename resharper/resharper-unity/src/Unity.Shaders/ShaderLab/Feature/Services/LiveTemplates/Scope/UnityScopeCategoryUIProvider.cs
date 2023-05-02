@@ -2,6 +2,7 @@
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Templates;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Psi.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.LiveTemplates.Scope
 {
@@ -14,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.L
 
         static UnityScopeCategoryUIProvider()
         {
-            TemplateImage.Register("UnityShaderLab", ShaderFileTypeThemedIcons.FileShader.Id);
+            TemplateImage.Register("UnityShaderLab", PsiSymbolsThemedIcons.FileShader.Id);
         }
 
         public UnityScopeCategoryUIProvider()
