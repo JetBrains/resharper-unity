@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
             myKeywordRelevance = keywordRelevance;
         }
 
-        public void Add(TokenNodeType keyword, TextLookupRanges completionRanges, TailType tailType)
+        public void Add(ITokenNodeType keyword, TextLookupRanges completionRanges, TailType tailType)
         {
             var text = keyword.TokenRepresentation;
             var textLookupRanges = completionRanges;
