@@ -35,7 +35,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
             }
         }
 
-        [Ignore("Re-enable when decide on keywords suggestion implementation")]
         [TestCase("TestTopLevelStatement01")]
         [TestCase("TestTopLevelStatement02")]
         [TestCase("TestTopLevelStatement03")]
