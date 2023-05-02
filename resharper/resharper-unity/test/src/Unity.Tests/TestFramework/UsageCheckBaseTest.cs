@@ -52,6 +52,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework
                             DaemonStageManager.GetInstance(Solution).Stages,
                             (highlighting, psiSourceFile, settingsStore) =>
                             {
+                                if (highlighting is IHighlightingTestBehaviour { IsSuppressed: true }) return false;
+
                                 var attribute = highlightingSettingsManager.GetHighlightingAttribute(highlighting);
                                 var severity = highlightingSettingsManager.GetSeverity(highlighting, psiSourceFile, Solution, settingsStore);
                                 return severity != Severity.INFO || attribute.OverlapResolve != OverlapResolveKind.NONE;

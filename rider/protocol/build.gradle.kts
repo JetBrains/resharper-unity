@@ -1,15 +1,13 @@
-import com.jetbrains.rider.plugins.gradle.BackendPaths
-
 plugins {
     kotlin("jvm")
 }
 
-val backend: BackendPaths = gradle.rootProject.extra["backend"] as BackendPaths
+val rdLibDirectory: () -> File by rootProject.extra
 
 repositories {
     maven { setUrl { "https://cache-redirector.jetbrains.com/maven-central" } }
     flatDir {
-        dir({ backend.getRdLibDirectory() })
+        dir(rdLibDirectory())
     }
 }
 
