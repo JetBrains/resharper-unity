@@ -58,7 +58,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
         protected override bool AddLookupItems(CSharpCodeCompletionContext context, IItemsCollector collector)
         {
-            // System.Diagnostics.Debugger.Launch();
             var stringLiteral = context.StringLiteral();
             if (stringLiteral == null)
                 return false;
@@ -92,19 +91,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                     AddPredefinedDirectories(collector, completionSearchInfo.Ranges);
                     return true;
                 case CompletionSearchInfo.PassType.PackagesRootFolder:
-                case CompletionSearchInfo.PassType.InternalPackageFolder:
-                    AddResourcesFromPackage(context, collector, completionSearchInfo);
+                    AddPackagesLookupItems(collector, completionSearchInfo);
+                    return true;
+                case CompletionSearchInfo.PassType.InternalFolder:
+                    AddResourcesFromAssetsFolder(collector, completionSearchInfo);
                     return true;
                 case CompletionSearchInfo.PassType.Unknown:
-                case CompletionSearchInfo.PassType.AssetsFolder:
-                    AddResourcesFromAssetsFolder(context, collector, completionSearchInfo);
-                    return true;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        private static CompletionSearchInfo CollectSearchInfo(CSharpCodeCompletionContext context, ICSharpLiteralExpression stringLiteral)
+        private static CompletionSearchInfo CollectSearchInfo(CSharpCodeCompletionContext context,
+            ICSharpLiteralExpression stringLiteral)
         {
             var nodeInFile = context.NodeInFile;
             var solution = nodeInFile.GetSolution();
@@ -114,7 +113,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             if (relativeSearchPath.IsEmpty)
                 return new CompletionSearchInfo(unitySolutionPath, CompletionSearchInfo.PassType.ProjectRoot,
-                    textLookupRanges);
+                    textLookupRanges, solution);
 
             var factory = solution.TryGetComponent<UnityExternalFilesModuleFactory>();
             if (factory == null)
@@ -131,8 +130,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 while (!unityExternalFilesPsiModule.ContainsPath(searchPath) && !searchPath.Equals(unitySolutionPath))
                     searchPath = searchPath.Parent;
 
-                return new CompletionSearchInfo(searchPath, CompletionSearchInfo.PassType.AssetsFolder,
-                    textLookupRanges);
+                return new CompletionSearchInfo(searchPath, CompletionSearchInfo.PassType.InternalFolder,
+                    textLookupRanges, solution);
             }
 
             if (firstDirectory.EqualTo(ProjectExtensions.PackagesFolder))
@@ -144,7 +143,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 //not valid package - returns packages folder
                 if (packageData is null || packageData.PackageFolder == null)
                     return new CompletionSearchInfo(packagesFolderPath,
-                        CompletionSearchInfo.PassType.PackagesRootFolder, textLookupRanges);
+                        CompletionSearchInfo.PassType.PackagesRootFolder, textLookupRanges, solution);
 
                 //extracting path relative to package folder -> FolderA
                 var innerPackagePath = relativeSearchPath.RemoveFirstComponent().RemoveFirstComponent();
@@ -154,11 +153,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 var absolutePathCompletionFolder = packageData.PackageFolder.Combine(innerPackagePath);
 
                 return new CompletionSearchInfo(absolutePathCompletionFolder,
-                    CompletionSearchInfo.PassType.InternalPackageFolder, textLookupRanges);
+                    CompletionSearchInfo.PassType.InternalFolder, textLookupRanges, solution);
             }
 
             return new CompletionSearchInfo(unitySolutionPath, CompletionSearchInfo.PassType.ProjectRoot,
-                textLookupRanges);
+                textLookupRanges, solution);
         }
 
         private static RelativePath CalculateSearchPath(CSharpCodeCompletionContext context,
@@ -222,42 +221,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 contextCompletionRanges));
         }
 
-        private static void AddResourcesFromPackage(CSharpCodeCompletionContext context, IItemsCollector collector,
-            CompletionSearchInfo completionSearchInfo)
+        private static void AddPackagesLookupItems(IItemsCollector collector, CompletionSearchInfo searchInfo)
         {
-            var solution = context.NodeInFile.GetSolution();
-            var packageManager = solution.GetComponent<PackageManager>();
-            // var packageFolderPath = solutionFolder.Combine(ProjectExtensions.PackagesRootFolder);
-            //
-            // var searchPath = completionSearchInfo.AbsolutePathCompletionFolder;
-            // if (searchPath == null)
-            //     return;
+            var solution = searchInfo.Solution;
 
-            if ( /*searchPath.Equals(packageFolderPath)*/completionSearchInfo.SearchPathType ==
-                                                         CompletionSearchInfo.PassType.PackagesRootFolder)
-            {
-                AddPackagesLookupItems(packageManager, collector, completionSearchInfo.Ranges);
+            if(solution == null)
                 return;
-            }
-
-            AddResourcesFromAssetsFolder(context, collector, completionSearchInfo);
-        }
-
-        private static void AddPackagesLookupItems(PackageManager packageManager,
-            IItemsCollector collector, TextLookupRanges contextCompletionRanges)
-        {
+            
+            var packageManager = solution.GetComponent<PackageManager>();
             foreach (var (key, _) in packageManager.Packages)
             {
-                var resourcePathItem =
-                    new ResourcePathItem(key, true, contextCompletionRanges);
+                var resourcePathItem = new ResourcePathItem(key, true, searchInfo.Ranges);
                 collector.Add(resourcePathItem);
             }
         }
 
-        private static void AddResourcesFromAssetsFolder(CSharpCodeCompletionContext context, IItemsCollector collector,
-            CompletionSearchInfo completionSearchInfo)
+        private static void AddResourcesFromAssetsFolder(IItemsCollector collector, CompletionSearchInfo completionSearchInfo)
         {
-            var factory = context.NodeInFile.GetSolution().TryGetComponent<UnityExternalFilesModuleFactory>();
+            var solution = completionSearchInfo.Solution;
+
+            var factory = solution?.TryGetComponent<UnityExternalFilesModuleFactory>();
             if (factory == null)
                 return;
 
@@ -306,24 +289,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             {
                 Unknown,
                 ProjectRoot,
-                AssetsFolder,
                 PackagesRootFolder,
-                InternalPackageFolder,
+                InternalFolder,
             }
 
             public static readonly CompletionSearchInfo InvalidData = new(null, PassType.Unknown,
-                new TextLookupRanges(DocumentRange.InvalidRange, DocumentRange.InvalidRange));
+                new TextLookupRanges(DocumentRange.InvalidRange, DocumentRange.InvalidRange), null);
 
             public readonly TextLookupRanges Ranges;
+            public readonly ISolution? Solution;
             public readonly VirtualFileSystemPath? AbsolutePathCompletionFolder;
             public readonly PassType SearchPathType;
 
             public CompletionSearchInfo(VirtualFileSystemPath? absolutePathCompletionFolder, PassType passType,
-                TextLookupRanges ranges)
+                TextLookupRanges ranges, ISolution? solution)
             {
                 SearchPathType = passType;
                 AbsolutePathCompletionFolder = absolutePathCompletionFolder;
                 Ranges = ranges;
+                Solution = solution;
             }
 
             public override string ToString()
