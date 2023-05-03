@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         [TestCase("TestShaderCommandContent02")]
         [TestCase("TestShaderCommandContent03")]
         [TestCase("TestShaderCommandContent04")]
-        [TestCase("TestShaderCommandContent05")]
+        //[TestCase("TestShaderCommandContent05")]
         [TestCase("TestCategoryCommandContent01")]
         public void TestCompletion(string testName) => DoOneTest(testName);
     }

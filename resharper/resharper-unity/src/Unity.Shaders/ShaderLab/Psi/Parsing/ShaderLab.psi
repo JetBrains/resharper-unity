@@ -119,6 +119,7 @@
 // `noInterface`
 // `expectedSymbol`
 // `overrideGetters`
+// `preCheckExpected` - pre-check expected symbols as first step of non-terminal parsing, it will fail fast and provide all possible symbols instead of only these which are required
 //
 // Rules:
 //
@@ -934,9 +935,16 @@ shaderValue
 ;
 
 private errorhandling shaderValueBody
+options { preCheckExpected; }
 :
   propertiesCommand<PROPERTIES_COMMAND, PropertiesCommand>?
-  shaderBlock<SHADER_BLOCK, ShaderBlocks>*
+  shaderValueBodyShaders
+;
+
+private shaderValueBodyShaders
+options { preCheckExpected; }
+:
+    shaderBlock<SHADER_BLOCK, ShaderBlocks>*
 ;
 
 shaderBlock
@@ -1236,7 +1244,8 @@ categoryValue
   RBRACE<RBRACE, RBrace>
 ;
 
-private errorhandling categoryValueBody
+private errorhandling categoryValueBody 
+options { preCheckExpected; }
 :
   stateCommand<STATE_COMMAND, StateCommands>*
   shaderBlock<SHADER_BLOCK, ShaderBlocks>*
