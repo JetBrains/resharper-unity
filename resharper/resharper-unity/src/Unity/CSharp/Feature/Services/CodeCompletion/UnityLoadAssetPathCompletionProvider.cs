@@ -1,7 +1,6 @@
 #nullable enable
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Collections;
@@ -31,6 +30,7 @@ using JetBrains.TextControl;
 using JetBrains.UI.Icons;
 using JetBrains.UI.RichText;
 using JetBrains.Util;
+using JetBrains.Util.Collections;
 using JetBrains.Util.Logging;
 using ProjectExtensions = JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.ProjectExtensions;
 
@@ -119,8 +119,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             IFileSystemWrapper unityExternalFilesPsiModule = assetIndexingEnabled
                 ? new UnityPsiModuleWrapper(factory.PsiModule)
-                : new FileSystemModuleWrapper(unitySolutionPath);
-            
+                : new FileSystemModuleWrapper();
+
             var relativeSearchPath = CalculateSearchPath(context, stringLiteral, nodeInFile, out var textLookupRanges);
 
             if (relativeSearchPath.IsEmpty)
@@ -134,7 +134,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             {
                 var searchPath = unitySolutionPath.Combine(relativeSearchPath);
                 //clear wrong not existing part of the path
-                while (!unityExternalFilesPsiModule.ContainsPath(searchPath) && !searchPath.Equals(unitySolutionPath))
+                while (!unityExternalFilesPsiModule.DirectoryExists(searchPath) &&
+                       !searchPath.Equals(unitySolutionPath))
                     searchPath = searchPath.Parent;
 
                 return new CompletionSearchInfo(searchPath, CompletionSearchInfo.PassType.InternalFolder,
@@ -150,7 +151,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 //not valid package - returns packages folder
                 if (packageData is null || packageData.PackageFolder == null)
                     return new CompletionSearchInfo(packagesFolderPath,
-                        CompletionSearchInfo.PassType.PackagesRootFolder, textLookupRanges, solution, unityExternalFilesPsiModule);
+                        CompletionSearchInfo.PassType.PackagesRootFolder, textLookupRanges, solution,
+                        unityExternalFilesPsiModule);
 
                 //extracting path relative to package folder -> FolderA
                 var innerPackagePath = relativeSearchPath.RemoveFirstComponent().RemoveFirstComponent();
@@ -160,7 +162,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 var absolutePathCompletionFolder = packageData.PackageFolder.Combine(innerPackagePath);
 
                 return new CompletionSearchInfo(absolutePathCompletionFolder,
-                    CompletionSearchInfo.PassType.InternalFolder, textLookupRanges, solution, unityExternalFilesPsiModule);
+                    CompletionSearchInfo.PassType.InternalFolder, textLookupRanges, solution,
+                    unityExternalFilesPsiModule);
             }
 
             return new CompletionSearchInfo(unitySolutionPath, CompletionSearchInfo.PassType.ProjectRoot,
@@ -293,7 +296,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             }
 
             public static readonly CompletionSearchInfo InvalidData = new(null, PassType.Unknown,
-                new TextLookupRanges(DocumentRange.InvalidRange, DocumentRange.InvalidRange), null, null);
+                new TextLookupRanges(DocumentRange.InvalidRange, DocumentRange.InvalidRange), null, new FileSystemWrapperDummy());
 
             public readonly TextLookupRanges Ranges;
             public readonly ISolution? Solution;
@@ -321,7 +324,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
         private interface IFileSystemWrapper
         {
-            bool ContainsPath(VirtualFileSystemPath path);
+            bool DirectoryExists(VirtualFileSystemPath path);
             IEnumerable<VirtualFileSystemPath?> GetChildFilesFolder(VirtualFileSystemPath path);
         }
 
@@ -334,35 +337,50 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 myModule = module;
             }
 
-            public bool ContainsPath(VirtualFileSystemPath path)
+            public bool DirectoryExists(VirtualFileSystemPath path)
             {
                 return myModule.ContainsPath(path);
             }
 
             public IEnumerable<VirtualFileSystemPath?> GetChildFilesFolder(VirtualFileSystemPath path)
             {
-                return myModule.GetChildFilesFolder(path).Select(sf => sf.GetLocation());
+                try
+                {
+                    return myModule.GetChildFilesFolder(path).Select(sf => sf.GetLocation());
+                }
+                catch (Exception e)
+                {
+                    Logger.LogExceptionSilently(e);
+                }
+
+                return EnumerableCollection<VirtualFileSystemPath?>.Empty;
             }
         }
 
         private class FileSystemModuleWrapper : IFileSystemWrapper
         {
-            private readonly VirtualFileSystemPath mySolutionPath;
-
-            public FileSystemModuleWrapper(VirtualFileSystemPath solutionPath)
+            public bool DirectoryExists(VirtualFileSystemPath path)
             {
-                mySolutionPath = solutionPath;
-            }
-
-            public bool ContainsPath(VirtualFileSystemPath path)
-            {
-                return mySolutionPath.IsPrefixOf(path);
+                return path.Exists == FileSystemPath.Existence.Directory;
             }
 
             public IEnumerable<VirtualFileSystemPath?> GetChildFilesFolder(VirtualFileSystemPath path)
             {
                 var virtualFileSystemPaths = path.GetDirectoryEntries();
                 return virtualFileSystemPaths.Select(dirData => dirData.GetAbsolutePath());
+            }
+        }
+
+        private class FileSystemWrapperDummy : IFileSystemWrapper
+        {
+            public bool DirectoryExists(VirtualFileSystemPath path)
+            {
+                return false;
+            }
+
+            public IEnumerable<VirtualFileSystemPath?> GetChildFilesFolder(VirtualFileSystemPath path)
+            {
+                return EnumerableCollection<VirtualFileSystemPath?>.Empty;
             }
         }
 
