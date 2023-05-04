@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
         {
             var treeNode = context.UnterminatedContext.TreeNode;
             if (treeNode is { Parent: UnexpectedTokenErrorElement { ExpectedTokenTypes: { } expectedTokenTypes } })
-                return expectedTokenTypes.GetMatchingNodeTypes().Where(it => it is ITokenNodeType { IsKeyword: true }).Select(it => new KeywordCompletionResult((ITokenNodeType)it));
+                return expectedTokenTypes.Where(it => it is ITokenNodeType { IsKeyword: true }).Select(it => new KeywordCompletionResult((ITokenNodeType)it));
             
             return EmptyList<KeywordCompletionResult>.Instance;
         }
