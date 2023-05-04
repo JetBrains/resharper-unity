@@ -280,7 +280,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 }
                 catch (Exception e)
                 {
-                    Logger.LogException(e);
+                    Logger.LogExceptionSilently(e);
                 }
             }
         }
@@ -366,8 +366,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             public IEnumerable<VirtualFileSystemPath?> GetChildFilesFolder(VirtualFileSystemPath path)
             {
-                var virtualFileSystemPaths = path.GetDirectoryEntries();
-                return virtualFileSystemPaths.Select(dirData => dirData.GetAbsolutePath());
+                try
+                {
+                    var virtualFileSystemPaths = path.GetDirectoryEntries();
+                    return virtualFileSystemPaths.Select(dirData => dirData.GetAbsolutePath());
+                }
+                catch (Exception e)
+                {
+                    Logger.LogExceptionSilently(e);
+                }
+
+                return EnumerableCollection<VirtualFileSystemPath?>.Empty;
             }
         }
 
