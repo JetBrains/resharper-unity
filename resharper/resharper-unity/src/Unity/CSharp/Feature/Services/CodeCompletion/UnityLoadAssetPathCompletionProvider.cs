@@ -1,6 +1,8 @@
 #nullable enable
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Collections;
 using JetBrains.DocumentModel;
@@ -109,17 +111,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var solution = nodeInFile.GetSolution();
             var unitySolutionPath = solution.SolutionDirectory;
 
-            var relativeSearchPath = CalculateSearchPath(context, stringLiteral, nodeInFile, out var textLookupRanges);
-
-            if (relativeSearchPath.IsEmpty)
-                return new CompletionSearchInfo(unitySolutionPath, CompletionSearchInfo.PassType.ProjectRoot,
-                    textLookupRanges, solution);
-
             var factory = solution.TryGetComponent<UnityExternalFilesModuleFactory>();
             if (factory == null)
                 return CompletionSearchInfo.InvalidData;
 
-            var unityExternalFilesPsiModule = factory.PsiModule;
+            var assetIndexingEnabled = solution.GetComponent<AssetIndexingSupport>().IsEnabled.Value;
+
+            IFileSystemWrapper unityExternalFilesPsiModule = assetIndexingEnabled
+                ? new UnityPsiModuleWrapper(factory.PsiModule)
+                : new FileSystemModuleWrapper(unitySolutionPath);
+            
+            var relativeSearchPath = CalculateSearchPath(context, stringLiteral, nodeInFile, out var textLookupRanges);
+
+            if (relativeSearchPath.IsEmpty)
+                return new CompletionSearchInfo(unitySolutionPath, CompletionSearchInfo.PassType.ProjectRoot,
+                    textLookupRanges, solution, unityExternalFilesPsiModule);
+
 
             //Search path like: "Assets/Foo/.."
             var firstDirectory = relativeSearchPath.Components.FirstOrEmpty;
@@ -131,7 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                     searchPath = searchPath.Parent;
 
                 return new CompletionSearchInfo(searchPath, CompletionSearchInfo.PassType.InternalFolder,
-                    textLookupRanges, solution);
+                    textLookupRanges, solution, unityExternalFilesPsiModule);
             }
 
             if (firstDirectory.EqualTo(ProjectExtensions.PackagesFolder))
@@ -143,21 +150,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 //not valid package - returns packages folder
                 if (packageData is null || packageData.PackageFolder == null)
                     return new CompletionSearchInfo(packagesFolderPath,
-                        CompletionSearchInfo.PassType.PackagesRootFolder, textLookupRanges, solution);
+                        CompletionSearchInfo.PassType.PackagesRootFolder, textLookupRanges, solution, unityExternalFilesPsiModule);
 
                 //extracting path relative to package folder -> FolderA
                 var innerPackagePath = relativeSearchPath.RemoveFirstComponent().RemoveFirstComponent();
 
-                // absolutePathCompletionFolder would be  F:/someFolders/MyProject/Library/PackagesCache/com.companyname.packName/FolderA/
+                // path would be  F:/someFolders/MyProject/Library/PackagesCache/com.companyname.packName/FolderA/
                 // or another local directory, or even local Packages folder
                 var absolutePathCompletionFolder = packageData.PackageFolder.Combine(innerPackagePath);
 
                 return new CompletionSearchInfo(absolutePathCompletionFolder,
-                    CompletionSearchInfo.PassType.InternalFolder, textLookupRanges, solution);
+                    CompletionSearchInfo.PassType.InternalFolder, textLookupRanges, solution, unityExternalFilesPsiModule);
             }
 
             return new CompletionSearchInfo(unitySolutionPath, CompletionSearchInfo.PassType.ProjectRoot,
-                textLookupRanges, solution);
+                textLookupRanges, solution, unityExternalFilesPsiModule);
         }
 
         private static RelativePath CalculateSearchPath(CSharpCodeCompletionContext context,
@@ -207,7 +214,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
         private static string ExtractPackageIdFromSearchPath(RelativePath searchPath)
         {
-            //searchPath = "Packages/com.companyname.packName/FolderA/
+            //path = "Packages/com.companyname.packName/FolderA/
             return searchPath.RemoveFirstComponent().Components.FirstOrEmpty.ToString();
         }
 
@@ -225,9 +232,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         {
             var solution = searchInfo.Solution;
 
-            if(solution == null)
+            if (solution == null)
                 return;
-            
+
             var packageManager = solution.GetComponent<PackageManager>();
             foreach (var (key, _) in packageManager.Packages)
             {
@@ -236,7 +243,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             }
         }
 
-        private static void AddResourcesFromAssetsFolder(IItemsCollector collector, CompletionSearchInfo completionSearchInfo)
+        private static void AddResourcesFromAssetsFolder(IItemsCollector collector,
+            CompletionSearchInfo completionSearchInfo)
         {
             var solution = completionSearchInfo.Solution;
 
@@ -248,16 +256,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             if (absolutePathCompletionFolder == null)
                 return;
 
-            var unityExternalFilesPsiModule = factory.PsiModule;
-
-
-            var virtualFileSystemPaths = absolutePathCompletionFolder.GetDirectoryEntries();
-
-            var children = unityExternalFilesPsiModule.ContainsPath(absolutePathCompletionFolder)
-                ? unityExternalFilesPsiModule.GetChildFilesFolder(absolutePathCompletionFolder)
-                    .Select(sf => sf.GetLocation())
-                : virtualFileSystemPaths.Select(dirData => dirData.GetAbsolutePath());
-
+            var children = completionSearchInfo.FileSystemWrapper.GetChildFilesFolder(absolutePathCompletionFolder);
 
             foreach (var sourceFilePath in children)
             {
@@ -294,7 +293,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             }
 
             public static readonly CompletionSearchInfo InvalidData = new(null, PassType.Unknown,
-                new TextLookupRanges(DocumentRange.InvalidRange, DocumentRange.InvalidRange), null);
+                new TextLookupRanges(DocumentRange.InvalidRange, DocumentRange.InvalidRange), null, null);
 
             public readonly TextLookupRanges Ranges;
             public readonly ISolution? Solution;
@@ -302,18 +301,68 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             public readonly PassType SearchPathType;
 
             public CompletionSearchInfo(VirtualFileSystemPath? absolutePathCompletionFolder, PassType passType,
-                TextLookupRanges ranges, ISolution? solution)
+                TextLookupRanges ranges, ISolution? solution, IFileSystemWrapper fileSystemWrapper)
             {
                 SearchPathType = passType;
                 AbsolutePathCompletionFolder = absolutePathCompletionFolder;
                 Ranges = ranges;
                 Solution = solution;
+                FileSystemWrapper = fileSystemWrapper;
             }
+
+            public IFileSystemWrapper FileSystemWrapper { get; }
 
             public override string ToString()
             {
                 return
                     $"{nameof(AbsolutePathCompletionFolder)}: {AbsolutePathCompletionFolder}, {nameof(Ranges)}: {Ranges}, {nameof(SearchPathType)}: {SearchPathType}";
+            }
+        }
+
+        private interface IFileSystemWrapper
+        {
+            bool ContainsPath(VirtualFileSystemPath path);
+            IEnumerable<VirtualFileSystemPath?> GetChildFilesFolder(VirtualFileSystemPath path);
+        }
+
+        private class UnityPsiModuleWrapper : IFileSystemWrapper
+        {
+            private readonly UnityExternalFilesPsiModule myModule;
+
+            public UnityPsiModuleWrapper(UnityExternalFilesPsiModule module)
+            {
+                myModule = module;
+            }
+
+            public bool ContainsPath(VirtualFileSystemPath path)
+            {
+                return myModule.ContainsPath(path);
+            }
+
+            public IEnumerable<VirtualFileSystemPath?> GetChildFilesFolder(VirtualFileSystemPath path)
+            {
+                return myModule.GetChildFilesFolder(path).Select(sf => sf.GetLocation());
+            }
+        }
+
+        private class FileSystemModuleWrapper : IFileSystemWrapper
+        {
+            private readonly VirtualFileSystemPath mySolutionPath;
+
+            public FileSystemModuleWrapper(VirtualFileSystemPath solutionPath)
+            {
+                mySolutionPath = solutionPath;
+            }
+
+            public bool ContainsPath(VirtualFileSystemPath path)
+            {
+                return mySolutionPath.IsPrefixOf(path);
+            }
+
+            public IEnumerable<VirtualFileSystemPath?> GetChildFilesFolder(VirtualFileSystemPath path)
+            {
+                var virtualFileSystemPaths = path.GetDirectoryEntries();
+                return virtualFileSystemPaths.Select(dirData => dirData.GetAbsolutePath());
             }
         }
 
