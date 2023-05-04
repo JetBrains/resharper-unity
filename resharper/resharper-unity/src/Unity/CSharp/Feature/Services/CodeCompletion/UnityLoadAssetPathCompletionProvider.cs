@@ -375,7 +375,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         {
             public bool DirectoryExists(VirtualFileSystemPath path)
             {
-                return false;
+                return path.Exists == FileSystemPath.Existence.Directory;
             }
 
             public IEnumerable<VirtualFileSystemPath?> GetChildFilesFolder(VirtualFileSystemPath path)
