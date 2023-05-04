@@ -15,10 +15,10 @@ IShaderLabFile
           Whitespace(type:WHITESPACE, text: ) spaces: " "
           IFallbackValue
             ShaderLabTokenType+KeywordTokenElement(type:OFF_KEYWORD, text:Off)
-            ErrorElement:Unexpected token
-              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-              Whitespace(type:WHITESPACE, text: ) spaces: " "
-              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+        ErrorElement:Unexpected token
+          ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+          Whitespace(type:WHITESPACE, text: ) spaces: " "
+          ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
 
