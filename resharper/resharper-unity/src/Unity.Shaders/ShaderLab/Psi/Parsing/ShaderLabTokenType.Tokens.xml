@@ -129,6 +129,57 @@
     <Keyword name="BACK_KEYWORD" representation="Back" />
     <Keyword name="FRONT_KEYWORD" representation="Front" />
   </CullOrientationKeywords>
+  
+  <BlendFactorKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="SRC_COLOR_KEYWORD" representation="SrcColor" />
+    <Keyword name="SRC_ALPHA_KEYWORD" representation="SrcAlpha" />
+    <Keyword name="SRC_ALPHA_SATURATE_KEYWORD" representation="SrcAlphaSaturate" />
+    <Keyword name="DST_COLOR_KEYWORD" representation="DstColor" />
+    <Keyword name="DST_ALPHA_KEYWORD" representation="DstAlpha" />
+    <Keyword name="ONE_MINUS_SRC_COLOR_KEYWORD" representation="OneMinusSrcColor" />
+    <Keyword name="ONE_MINUS_SRC_ALPHA_KEYWORD" representation="OneMinusSrcAlpha" />
+    <Keyword name="ONE_MINUS_DST_COLOR_KEYWORD" representation="OneMinusDstColor" />
+    <Keyword name="ONE_MINUS_DST_ALPHA_KEYWORD" representation="OneMinusDstAlpha" />
+  </BlendFactorKeywords>
+
+  <BlendOpOperationKeywords NodeType="KeywordTokenNodeType">
+    <Keyword name="ADD_KEYWORD" representation="Add" />
+    <Keyword name="SUB_KEYWORD" representation="Sub" />
+    <Keyword name="REV_SUB_KEYWORD" representation="RevSub" />
+    <Keyword name="MIN_KEYWORD" representation="Min" />
+    <Keyword name="MAX_KEYWORD" representation="Max" />
+    <Keyword name="LOGICAL_CLEAR_KEYWORD" representation="LogicalClear" />
+    <Keyword name="LOGICAL_SET_KEYWORD" representation="LogicalSet" />
+    <Keyword name="LOGICAL_COPY_KEYWORD" representation="LogicalCopy" />
+    <Keyword name="LOGICAL_COPY_INVERTED_KEYWORD" representation="LogicalCopyInverted" />
+    <Keyword name="LOGICAL_NOOP_KEYWORD" representation="LogicalNoop" />
+    <Keyword name="LOGICAL_INVERT_KEYWORD" representation="LogicalInvert" />
+    <Keyword name="LOGICAL_AND_KEYWORD" representation="LogicalAnd" />
+    <Keyword name="LOGICAL_NAND_KEYWORD" representation="LogicalNand" />
+    <Keyword name="LOGICAL_OR_KEYWORD" representation="LogicalOr" />
+    <Keyword name="LOGICAL_NOR_KEYWORD" representation="LogicalNor" />
+    <Keyword name="LOGICAL_XOR_KEYWORD" representation="LogicalXor" />
+    <Keyword name="LOGICAL_EQUIV_KEYWORD" representation="LogicalEquiv" />
+    <Keyword name="LOGICAL_AND_REVERSE_KEYWORD" representation="LogicalAndReverse" />
+    <Keyword name="LOGICAL_AND_INVERTED_KEYWORD" representation="LogicalAndInverted" />
+    <Keyword name="LOGICAL_OR_REVERSE_KEYWORD" representation="LogicalOrReverse" />
+    <Keyword name="LOGICAL_OR_INVERTED_KEYWORD" representation="LogicalOrInverted" />
+    <Keyword name="MULTIPLY_KEYWORD" representation="Multiply" />
+    <Keyword name="SCREEN_KEYWORD" representation="Screen" />
+    <Keyword name="OVERLAY_KEYWORD" representation="Overlay" />
+    <Keyword name="DARKEN_KEYWORD" representation="Darken" />
+    <Keyword name="LIGHTEN_KEYWORD" representation="Lighten" />
+    <Keyword name="COLOR_DODGE_KEYWORD" representation="ColorDodge" />
+    <Keyword name="COLOR_BURN_KEYWORD" representation="ColorBurn" />
+    <Keyword name="HARD_LIGHT_KEYWORD" representation="HardLight" />
+    <Keyword name="SOFT_LIGHT_KEYWORD" representation="SoftLight" />
+    <Keyword name="DIFFERENCE_KEYWORD" representation="Difference" />
+    <Keyword name="EXCLUSION_KEYWORD" representation="Exclusion" />
+    <Keyword name="HSL_HUE_KEYWORD" representation="HSLHue" />
+    <Keyword name="HSL_SATURATION_KEYWORD" representation="HSLSaturation" />
+    <Keyword name="HSL_COLOR_KEYWORD" representation="HSLColor" />
+    <Keyword name="HSL_LUMINOSITY_KEYWORD" representation="HSLLuminosity" />
+  </BlendOpOperationKeywords>
 
   <LegacyFixedFunctionCommands NodeType="KeywordTokenNodeType">
     <Command name="LIGHTING_KEYWORD" representation="Lighting" />

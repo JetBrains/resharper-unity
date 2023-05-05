@@ -81,6 +81,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         [TestCase("TestTexturePropertyValue01")]
         [TestCase("TestTexturePropertyValue02")]
         [TestCase("TestTexturePropertyValue03")]
+        [TestCase("TestBlendOp01")]
+        [TestCase("TestBlendOp02")]
+        [TestCase("TestBlend01")]
+        [TestCase("TestBlend02")]
+        [TestCase("TestBlend03")]
         public void TestCompletion(string testName) => DoOneTest(testName);
     }
 }
