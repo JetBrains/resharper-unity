@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Caches;
+using JetBrains.ReSharper.Feature.Services;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -24,6 +26,7 @@ using Strings = JetBrains.ReSharper.Plugins.Unity.Rider.Resources.Strings;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
     [SolutionComponent]
+    [ZoneMarker(typeof(ICodeEditingZone))]
     public class RiderTypeDetector : TypeDetector
     {
         private readonly AssetIndexingSupport myAssetIndexingSupport;

@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 
         public bool IsAvailable(IUserDataHolder cache)
         {
-            var node = myDataProvider.GetSelectedTreeNode<ITreeNode>();
+            var node = myDataProvider.GetSelectedTreeNode<ICSharpIdentifier>();
             
             var classDeclaration = node?.GetContainingNode<IClassLikeDeclaration>();
             if (classDeclaration == null)
@@ -56,6 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var fieldTypeElement = fieldDeclaration.DeclaredElement?.Type.GetTypeElement();
             if (fieldDeclaration.IsStatic)
                 return false;
+            
             return fieldTypeElement.IsClrName(KnownTypes.RefRO) 
                    || fieldTypeElement.IsClrName(KnownTypes.RefRW)
                    || fieldTypeElement.DerivesFrom(KnownTypes.IAspect);

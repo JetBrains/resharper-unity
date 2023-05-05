@@ -1,6 +1,7 @@
 package icons
 
 import com.intellij.openapi.util.IconLoader
+import icons.ReSharperIcons.PsiSymbols
 import javax.swing.Icon
 
 // FYI: Icons are defined in C# files in the backend. When being shown in the frontend, only the icon ID is passed to
@@ -46,8 +47,8 @@ class UnityIcons {
 
     class FileTypes {
         companion object {
-            val ShaderLab = IconLoader.getIcon("/resharper/ShaderFileType/FileShader.svg", UnityIcons::class.java)
-            val Cg = ShaderLab
+            val ShaderLab = PsiSymbols.FileShader
+            val Cg = PsiSymbols.FileShader
 
             val AsmDef: Icon = IconLoader.getIcon("/resharper/UnityFileType/Asmdef.svg", UnityIcons::class.java)
             val AsmRef: Icon = IconLoader.getIcon("/resharper/UnityFileType/Asmref.svg", UnityIcons::class.java)
