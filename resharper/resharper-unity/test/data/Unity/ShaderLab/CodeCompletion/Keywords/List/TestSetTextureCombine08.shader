@@ -4,7 +4,7 @@ Shader "MyShader" {
         {
             SetTexture [_ABC]
             {
-                Combine Previous Lerp (One - Constant) {caret}
+                Combine Previous Lerp (Constant) {caret}
             }
         }
     }

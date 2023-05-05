@@ -19,6 +19,7 @@
         public const string IDS_COLOR_MASK_RGBA_FLAGS = "RGBA flags";
         public const string IDS_COLOR_MATERIAL_VALUE = "color material value";
         public const string IDS_COLOR_VALUE = "color value";
+        public const string IDS_COMBINE_SRC_VALUE = "combine source value";
         public const string IDS_CULL_ORIENTATION = "cull orientation";
         public const string IDS_CULL_VALUE = "cull value";
         public const string IDS_FALSE_LITERAL = "false/off";

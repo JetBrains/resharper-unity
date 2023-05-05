@@ -72,6 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Parsing
         [TestCase("LegacyTextureCombiner02")]
         [TestCase("LegacyTextureCombiner03")]
         [TestCase("LegacyTextureCombiner04")]
+        [TestCase("LegacyTextureCombiner05")]
 
         [TestCase("LegacyAlphaTesting01")]
         [TestCase("LegacyAlphaTesting02")]

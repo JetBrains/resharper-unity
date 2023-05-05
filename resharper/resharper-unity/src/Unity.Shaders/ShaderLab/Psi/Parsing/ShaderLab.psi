@@ -1940,6 +1940,7 @@ combineCalculation
 ;
 
 private brightnessModifier
+options { preCheckExpected; }
 :
   DOUBLE_KEYWORD<BRIGHTNESS_MODIFIER, BrightnessModifier>
   | QUAD_KEYWORD<BRIGHTNESS_MODIFIER, BrightnessModifier>
@@ -1948,28 +1949,38 @@ private brightnessModifier
 combineOperation[combineSrc src1]
 :
   &src1<SRC1, Src1>
-  combineOperationRExpression
+  combineOperationRPart
 ;
 
-private combineOperationRExpression
+// right part for two arg combine operation (three arg form valid only when first operation with multiply operator so it is not here)
+private combineOperationRPart
 options { preCheckExpected; }
 :
+  (combineNoMultiplyOp | combineMultiplyOp)?
+;
+  
+private combineNoMultiplyOp
+:  
   (
-    operator
-    combineSrc<SRC2, Src2>
-    (
-      operator
-      combineSrc<SRC3, Src3>
-    )?
-  )?
+    PLUS<OPERATOR, Operator>
+    | MINUS<OPERATOR, Operator>
+    | legacyOperator{OPERATOR, Operator}
+  )
+  combineSrcNoMultiply<SRC2, Src2>        
 ;
 
-private operator
+private combineMultiplyOp
 :
-  PLUS<OPERATOR, Operator>
-  | MINUS<OPERATOR, Operator>
-  | MULTIPLY<OPERATOR, Operator>
-  | legacyOperator{OPERATOR, Operator}
+  MULTIPLY<OPERATOR, Operator>
+  combineSrcMultiply<SRC2, Src2>
+  (
+    (
+      PLUS<OPERATOR, Operator>
+      | MINUS<OPERATOR, Operator>      // legacy
+      | PLUS_MINUS<OPERATOR, Operator> // legacy
+    )
+    combineSrcNoMultiply<SRC3, Src3>
+  )?        
 ;
 
 private legacyOperator{ROLE, Getter}
@@ -1986,28 +1997,17 @@ combineInterpolation[combineSrc src1]
   &src1<SRC1, Src1>
   LERP_KEYWORD<SHADER_LAB_KEYWORD, LerpKeyword>
   LPAREN<LPAREN, LParen>
-  combineSrc<SRC2, Src2>
+  combineSrcLerp<SRC2, Src2>
   RPAREN<RPAREN, RParen>
-  combineSrc<SRC3, Src3>
+  combineSrcNoMultiply<SRC3, Src3>
 ;
 
 combineSrc
 options { preCheckExpected; } 
 :
   colorNegationModifier<COLOR_NEGATION_MODIFIER, ColorNegationModifier>?
-  (
-    PREVIOUS_KEYWORD<SRC, Src>
-    | PRIMARY_KEYWORD<SRC, Src>
-    | TEXTURE_KEYWORD<SRC, Src>
-    | CONSTANT_KEYWORD<SRC, Src>
-  )
+  combineSrcValue
   combineSrcAlpha
-;
-
-private combineSrcAlpha
-options { preCheckExpected; }
-:
-  ALPHA_KEYWORD<ALPHA_CHANNEL_MODIFIER, AlphaChannelModifier>?
 ;
 
 colorNegationModifier
@@ -2016,6 +2016,61 @@ colorNegationModifier
   MINUS<MINUS, Minus>
 ;
 
+private combineSrcValue
+: 
+  PREVIOUS_KEYWORD<SRC, Src>
+  | PRIMARY_KEYWORD<SRC, Src>
+  | TEXTURE_KEYWORD<SRC, Src>
+  | CONSTANT_KEYWORD<SRC, Src>  
+;
+
+private combineSrcAlpha
+options { preCheckExpected; }
+:
+  ALPHA_KEYWORD<ALPHA_CHANNEL_MODIFIER, AlphaChannelModifier>?
+;
+
+combineSrcLerp
+options { result=combineSrc; }
+:
+  combineSrcValue
+  combineSrcLerpAlpha
+;
+
+// we need different alpha symbols because way how nonterminal follows work, if we use single alpha then it will advice all possible symbols for any context 
+private combineSrcLerpAlpha
+options { preCheckExpected; }
+:
+  ALPHA_KEYWORD<ALPHA_CHANNEL_MODIFIER, AlphaChannelModifier>?
+;
+
+combineSrcMultiply
+options { result=combineSrc; preCheckExpected; }
+:
+  colorNegationModifier<COLOR_NEGATION_MODIFIER, ColorNegationModifier>?
+  combineSrcValue
+  combineSrcMultiplyAlpha
+;
+
+private combineSrcMultiplyAlpha
+options { preCheckExpected; }
+:
+  ALPHA_KEYWORD<ALPHA_CHANNEL_MODIFIER, AlphaChannelModifier>?
+;
+
+combineSrcNoMultiply
+options { result=combineSrc; preCheckExpected; }
+:
+  colorNegationModifier<COLOR_NEGATION_MODIFIER, ColorNegationModifier>?
+  combineSrcValue
+  combineSrcNoMultiplyAlpha
+;
+
+private combineSrcNoMultiplyAlpha
+options { preCheckExpected; }
+:
+  ALPHA_KEYWORD<ALPHA_CHANNEL_MODIFIER, AlphaChannelModifier>?
+;
 
 // **************************************************************************
 //
