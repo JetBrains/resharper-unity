@@ -20,10 +20,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         private readonly Stack<string> myParts = new Stack<string>();
         private readonly Stack<int> myIndex = new Stack<int>();
         
-        public bool AddGameObject(AssetDocumentHierarchyElement owner, IGameObjectHierarchy gameObject)
+        public bool AddGameObject(AssetDocumentHierarchyElement owner, IGameObjectHierarchy gameObject, AssetDocumentHierarchyElementContainer container, bool importPrefab)
         {
             myParts.Push(gameObject.Name ?? "...");
-            myIndex.Push(gameObject.GetTransformHierarchy(owner).NotNull("gameObject.GetTransformHierarchy(cache, owner) != null").RootIndex);
+            var transformHierarchy = gameObject.GetTransformHierarchy(owner).NotNull("gameObject.GetTransformHierarchy(cache, owner) != null");
+            if (transformHierarchy.RootOrder != -1)
+            {
+                myIndex.Push(transformHierarchy.RootOrder);
+            }
+            else
+            {
+                // index of the transform may instead come from the m_Children of its parent
+                var currentTransform = gameObject.GetTransformHierarchy(owner);
+                var parentTransformReference = currentTransform.ParentTransform;
+                var parentTransform = container.GetHierarchyElement(parentTransformReference, importPrefab);
+                if (parentTransform is TransformHierarchy parentTransformHierarchy)
+                {
+                    myIndex.Push(parentTransformHierarchy.Children.IndexOf(currentTransform.Location.LocalDocumentAnchor));
+                }
+            }
             return !myOnlyName;
         }
     }

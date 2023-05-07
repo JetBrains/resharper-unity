@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private static readonly StringSearcher ourActionsSearcher = new("m_Actions:", true);
         private static readonly StringSearcher ourMotionSearcher = new("m_Motion:", true);
         private static readonly StringSearcher ourGameObjectNameSearcher = new("m_Name:", true);
-        private static readonly StringSearcher ourRootIndexSearcher = new("m_RootOrder:", true);
+        private static readonly StringSearcher ourRootOrderSearcher = new("m_RootOrder:", true);
         private static readonly StringSearcher ourPrefabInstanceSearcher = new("m_PrefabInstance:", true);
         private static readonly StringSearcher ourPrefabInstanceSearcher2017 = new("m_PrefabInternal:", true);
         private static readonly StringSearcher ourCorrespondingObjectSearcher = new("m_CorrespondingSourceObject:", true);
@@ -50,6 +50,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private static readonly StringSearcher ourSourcePrefabSearcher = new("m_SourcePrefab:", true);
         private static readonly StringSearcher ourSourcePrefab2017Searcher = new("m_ParentPrefab:", true);
         private static readonly StringSearcher ourFatherSearcher = new("m_Father:", true);
+        private static readonly StringSearcher ourChildrenSearcher = new("m_Children:", true);
+        private static readonly StringSearcher ourChildSearcher = new("-", true);
         private static readonly StringSearcher ourBracketSearcher = new("}", true);
         private static readonly StringSearcher ourEndLineSearcher = new("\n", true);
         private static readonly StringSearcher ourEndLine2Searcher = new("\r", true);
@@ -128,12 +130,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourSourcePrefabSearcher) ??
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourSourcePrefab2017Searcher);
 
-        public static int GetRootIndex(IBuffer assetDocumentBuffer)
+        public static int GetRootOrder(IBuffer assetDocumentBuffer)
         {
-            var start = ourRootIndexSearcher.Find(assetDocumentBuffer, 0, assetDocumentBuffer.Length);
+            var start = ourRootOrderSearcher.Find(assetDocumentBuffer, 0, assetDocumentBuffer.Length);
             if (start < 0)
                 return 0;
-            start += "m_RootIndex:".Length;
+            start += "m_RootOrder:".Length;
             while (start < assetDocumentBuffer.Length)
             {
                 if (assetDocumentBuffer[start].IsPureWhitespace())
@@ -146,7 +148,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
             while (start < assetDocumentBuffer.Length)
             {
-                if (char.IsDigit(assetDocumentBuffer[start]))
+                if (assetDocumentBuffer[start] == '-' || char.IsDigit(assetDocumentBuffer[start])) // "-1" is possible
                 {
                     result.Append(assetDocumentBuffer[start]);
                     start++;
@@ -158,6 +160,82 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             }
 
             return int.TryParse(result.ToString(), out var index) ? index : 0;
+        }
+        
+        public static LocalList<long> GetChildren(IPsiSourceFile assetSourceFile, IBuffer buffer)
+        {
+            var start = ourChildrenSearcher.Find(buffer, 0, buffer.Length);
+            if (start < 0)
+                return new LocalList<long>();
+            start += "m_Children:".Length;
+            
+            // one possibility:
+            //   m_Children: []
+            // other possibility: 
+            //   m_Children:
+            //   - {fileID: 191985400}
+            //   - {fileID: 1435803377}
+            
+            while (start < buffer.Length)
+            {
+                if (buffer[start].IsPureWhitespace())
+                    start++;
+                else if (buffer[start] == '[')
+                    return new LocalList<long>();
+                else
+                    break;
+            }
+            
+            var headerLineEnd = FindEndOfLine(buffer, start);
+            if (headerLineEnd < 0)
+                return new LocalList<long>();
+            start = headerLineEnd + 1;
+
+            var results = new LocalList<long>();
+            var pos = start;
+            while (pos < buffer.Length)
+            {
+                if (buffer[pos].IsPureWhitespace())
+                {
+                    pos++;
+                    continue;
+                }
+
+                if (buffer[pos] == '-')
+                {
+                    var eol = FindEndOfLine(buffer, pos);
+                    pos = eol + 1;
+                    continue;
+                }
+
+                break;
+            }
+            
+            var childrenBuffer = ProjectedBuffer.Create(buffer, new TextRange(start, pos));
+            var lexer = new YamlLexer(childrenBuffer, false, false);
+            var parser = new YamlParser(lexer.ToCachingLexer());
+            var document = parser.ParseDocument();
+
+            if (document.Body.BlockNode is IBlockSequenceNode sn)
+            {
+                foreach (var sequenceEntry in sn.Entries)
+                {
+                    if (sequenceEntry.Value is not IFlowMappingNode flowMappingNode) continue;
+                    var localDocumentAnchor = flowMappingNode.GetMapEntryPlainScalarText("fileID");
+                    if (localDocumentAnchor != null && long.TryParse(localDocumentAnchor, out var result))
+                        results.Add(result);
+                }
+            }
+
+            return results;
+        }
+
+        private static int FindEndOfLine(IBuffer buffer, int start)
+        {
+            var eol = ourEndLineSearcher.Find(buffer, start, buffer.Length);
+            if (eol < 0)
+                eol = ourEndLine2Searcher.Find(buffer, start, buffer.Length);
+            return eol;
         }
 
         public static string? GetGameObjectName(IBuffer buffer)
@@ -171,9 +249,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             if (start < 0)
                 return null;
 
-            var eol = ourEndLineSearcher.Find(buffer, start, buffer.Length);
-            if (eol < 0)
-                eol = ourEndLine2Searcher.Find(buffer, start, buffer.Length);
+            var eol = FindEndOfLine(buffer, start);
             if (eol < 0)
                 return null;
 
