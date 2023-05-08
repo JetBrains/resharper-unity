@@ -102,4 +102,5 @@ Categorised:
 | [sfield](Live/SerialisedField.md)                   | Unity serialized field                       |
 | [baker](Live/DotsBaker.md)                          | DOTS Baker                                   |
 | [sprop](Live/PropertyWithSerialisedBackingField.md) | Unity property with serialized backing field |
+| [jobentity](Live/JobEntity.md)                          | DOTS IJobEntity                              |
 
