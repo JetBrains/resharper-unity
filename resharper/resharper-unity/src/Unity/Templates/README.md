@@ -50,6 +50,7 @@ Categorised:
 | [menuitem](Live/MenuItem.md)                        | Unity menu item handler                      |
 | [reqcomp](Live/RequireComponent.md)                 | Unity RequireComponent attribute             |
 | [sfield](Live/SerialisedField.md)                   | Unity serialized field                       |
+| [baker](Live/DotsBaker.md)                          | DOTS Baker                                   |
 | [sprop](Live/PropertyWithSerialisedBackingField.md) | Unity property with serialized backing field |
 
 <a name="unity"></a>
@@ -99,5 +100,6 @@ Categorised:
 | [menuitem](Live/MenuItem.md)                        | Unity menu item handler                      |
 | [reqcomp](Live/RequireComponent.md)                 | Unity RequireComponent attribute             |
 | [sfield](Live/SerialisedField.md)                   | Unity serialized field                       |
+| [baker](Live/DotsBaker.md)                          | DOTS Baker                                   |
 | [sprop](Live/PropertyWithSerialisedBackingField.md) | Unity property with serialized backing field |
 
