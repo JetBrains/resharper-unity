@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Linq;
 using JetBrains.Application.Settings;
 using JetBrains.DocumentModel;
@@ -7,6 +9,7 @@ using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -66,12 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
             // And then a separate identifier
             if (!sourceFile.PsiModule.IsMiscFilesProjectModule() && node is IErrorElement errorElement)
             {
-                DocumentRange range;
-                if (node.Children().Any(t => t.Children<ICgContent>().Any()))
-                    range = node.MeaningfulChildren().FirstOrDefault()?.GetDocumentRange() ?? DocumentRange.InvalidRange;
-                else
-                    range = errorElement.GetDocumentRange();
-                
+                var range = GetErrorHighlightRange(errorElement);
                 if (!range.IsValid())
                     range = node.Parent.GetDocumentRange();
                 if (range.TextRange.IsEmpty)
@@ -85,6 +83,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
             }
 
             base.VisitNode(node, consumer);
+        }
+
+        private DocumentRange GetErrorHighlightRange(IErrorElement errorElement)
+        {
+            var firstMeaningful = errorElement.FirstChild;
+            // skip until first meaningful
+            for (; firstMeaningful != null && firstMeaningful.IsFiltered(); firstMeaningful = firstMeaningful.NextSibling) { }
+            if (firstMeaningful == null)
+                return errorElement.GetDocumentRange();
+
+            var lastNode = firstMeaningful;
+            for (var nextSibling = firstMeaningful.NextSibling; nextSibling != null; nextSibling = nextSibling.NextSibling)
+            {
+                var nodeType = nextSibling.NodeType; 
+                if (nodeType.Equals(ShaderLabTokenType.NEW_LINE) 
+                    || nodeType.Equals(ShaderLabTokenType.LBRACE) 
+                    || nextSibling.Children<ICgContent>().Any())
+                    break;
+                if (!nextSibling.IsFiltered())
+                    lastNode = nextSibling;
+            }
+            
+            return new DocumentRange(firstMeaningful.GetDocumentStartOffset(), lastNode.GetDocumentEndOffset());
         }
     }
 }

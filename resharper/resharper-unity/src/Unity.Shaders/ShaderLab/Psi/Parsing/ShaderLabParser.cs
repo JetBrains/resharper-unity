@@ -175,5 +175,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
 
             return element;
         }
+
+        protected override void SkipErrorToken(CompositeElement parent)
+        {
+            if (myOriginalLexer.TokenType == ShaderLabTokenType.LBRACE)
+                SkipNestedBraces(parent);
+            else
+                base.SkipErrorToken(parent);
+        }
     }
 }
