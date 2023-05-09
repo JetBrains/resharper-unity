@@ -204,27 +204,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 if (buffer[pos] == '-')
                 {
                     var eol = FindEndOfLine(buffer, pos);
+                    
+                    var childBuffer = ProjectedBuffer.Create(buffer, new TextRange(pos + 1, eol));
+                    var lexer = new YamlLexer(childBuffer, false, false);
+                    var parser = new YamlParser(lexer.ToCachingLexer());
+                    var document = parser.ParseDocument();
+                    
+                    if (document.Body.BlockNode is not IFlowMappingNode flowMappingNode) continue;
+                    var localDocumentAnchor = flowMappingNode.GetMapEntryPlainScalarText("fileID");
+                    if (localDocumentAnchor != null && long.TryParse(localDocumentAnchor, out var result))
+                        results.Add(result);
+                    
                     pos = eol + 1;
                     continue;
                 }
 
                 break;
-            }
-            
-            var childrenBuffer = ProjectedBuffer.Create(buffer, new TextRange(start, pos));
-            var lexer = new YamlLexer(childrenBuffer, false, false);
-            var parser = new YamlParser(lexer.ToCachingLexer());
-            var document = parser.ParseDocument();
-
-            if (document.Body.BlockNode is IBlockSequenceNode sn)
-            {
-                foreach (var sequenceEntry in sn.Entries)
-                {
-                    if (sequenceEntry.Value is not IFlowMappingNode flowMappingNode) continue;
-                    var localDocumentAnchor = flowMappingNode.GetMapEntryPlainScalarText("fileID");
-                    if (localDocumentAnchor != null && long.TryParse(localDocumentAnchor, out var result))
-                        results.Add(result);
-                }
             }
 
             return results;
