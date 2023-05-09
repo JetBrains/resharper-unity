@@ -61,6 +61,7 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
                     "\"from_pack_folder__EDITOR\"",
                     "\"from_res__RUNTIME\"",
                     "\"from_res__EDITOR\"",
+                    "\"Folder\"",
                     checkFocus = false)
             }
         }
@@ -82,6 +83,7 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
                     "\"from_pack_folder__EDITOR\"",
                     "\"from_res__RUNTIME\"",
                     "\"from_res__EDITOR\"",
+                    "\"Folder\"",
                     checkFocus = false)
             }
         }
@@ -103,6 +105,7 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
                     "\"from_pack_folder__EDITOR\"",
                     "\"from_res__RUNTIME\"",
                     "\"from_res__EDITOR\"",
+                    "\"Folder\"",
                     checkFocus = false)
             }
         }
