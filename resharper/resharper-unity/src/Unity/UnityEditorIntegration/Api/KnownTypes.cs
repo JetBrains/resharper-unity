@@ -92,6 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static readonly IClrTypeName PreferenceItem = new ClrTypeName("UnityEditor.PreferenceItem");
         public static readonly IClrTypeName PropertyDrawer = new ClrTypeName("UnityEditor.PropertyDrawer");
         public static readonly IClrTypeName RequiredSignatureAttribute = new ClrTypeName("UnityEditor.RequiredSignatureAttribute");
+        public static readonly IClrTypeName AssetDatabase = new ClrTypeName("UnityEditor.AssetDatabase");
 
         // UnityEditor.Callbacks
         public static readonly IClrTypeName DidReloadScripts = new ClrTypeName("UnityEditor.Callbacks.DidReloadScripts");
@@ -136,6 +137,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static readonly IClrTypeName NativeSetClassTypeToNullOnScheduleAttribute = new ClrTypeName("Unity.Collections.LowLevel.Unsafe.NativeSetClassTypeToNullOnScheduleAttribute");
         public static readonly IClrTypeName SharedStatic = new ClrTypeName("Unity.Burst.SharedStatic`1");
 
+        //Custom attributes
+        public static readonly IClrTypeName AssetPathAttribute = new ClrTypeName("JetBrains.Annotations.AssetPathAttribute");
+        
+        
         // Jobs
         // public static readonly IClrTypeName Job = new ClrTypeName("Unity.Jobs.IJob");
         // public static readonly IClrTypeName JobFor = new ClrTypeName("Unity.Jobs.IJobFor");
