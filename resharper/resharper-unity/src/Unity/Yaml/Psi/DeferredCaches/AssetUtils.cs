@@ -163,11 +163,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return int.TryParse(result.ToString(), out var index) ? index : 0;
         }
         
-        public static FrugalLocalList<long> GetChildren(IPsiSourceFile assetSourceFile, IBuffer buffer)
+        public static long[] GetChildren(IPsiSourceFile assetSourceFile, IBuffer buffer)
         {
             var start = ourChildrenSearcher.Find(buffer, 0, buffer.Length);
             if (start < 0)
-                return new FrugalLocalList<long>();
+                return Array.Empty<long>();
             start += "m_Children:".Length;
             
             // one possibility:
@@ -182,14 +182,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 if (buffer[start].IsPureWhitespace())
                     start++;
                 else if (buffer[start] == '[')
-                    return new FrugalLocalList<long>();
+                    return Array.Empty<long>();
                 else
                     break;
             }
             
             var headerLineEnd = FindEndOfLine(buffer, start);
             if (headerLineEnd < 0)
-                return new FrugalLocalList<long>();
+                return Array.Empty<long>();
             start = headerLineEnd + 1;
 
             var results = new FrugalLocalList<long>();
@@ -223,7 +223,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 break;
             }
 
-            return results;
+            return results.ToArray();
         }
 
         private static int FindEndOfLine(IBuffer buffer, int start)

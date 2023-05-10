@@ -1,7 +1,8 @@
+using JetBrains.Rd;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.Serialization;
-using JetBrains.Util;
+using JetBrains.Rd.Impl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
 {
@@ -36,10 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             transformHierarchy.OwningGameObject.WriteTo(writer);
             transformHierarchy.ParentTransform.WriteTo(writer);
             writer.Write(transformHierarchy.myRootOrder);
-            writer.Write<long, long[]>((w, val) =>
-            {
-                w.Write(val);
-            }, transformHierarchy.Children);
+            writer.WriteArray((_, w, val) => w.Write(val), new SerializationCtx(), transformHierarchy.Children);
         }
 
         public static TransformHierarchy Read(UnsafeReader reader)
