@@ -101,5 +101,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
         public IEnumerable<IPsiSourceFile> GetSourceFilesByRootFolder(VirtualFileSystemPath rootFolder) =>
             mySourceFileTrie.GetSubTreeData(rootFolder);
+        
+        public IEnumerable<IPsiSourceFile> GetChildFilesFolder(VirtualFileSystemPath rootFolder) =>
+            mySourceFileTrie.GetChildrenData(rootFolder);
     }
 }

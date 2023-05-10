@@ -113,7 +113,7 @@
     <backend.typedHandler language="ShaderLab" implementationClass="com.jetbrains.rider.cpp.fileType.CppTypedHandler"/>
     <langCodeStyleSettingsProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.settings.ShaderLabStyleSettingsProvider"/>
 
-    <fileType name="C++" extensions="cg;cginc;hlslinc;compute" />
+    <fileType name="HLSL" extensions="cg;cginc;hlslinc;compute" />
 
     <!-- Cg support -->
     <!-- Don't forget to update CgProjectFileType list on the backend -->

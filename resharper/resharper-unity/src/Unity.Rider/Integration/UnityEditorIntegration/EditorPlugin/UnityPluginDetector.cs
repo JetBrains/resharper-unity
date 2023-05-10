@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 using ProjectExtensions = JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.ProjectExtensions;
@@ -15,18 +16,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
     {
         private readonly ISolution mySolution;
         private readonly ILogger myLogger;
+        private readonly UnityVersion myUnityVersion;
 
         private const string PluginCsFile = "Unity3DRider.cs";
 
-        public UnityPluginDetector(ISolution solution, ILogger logger)
+        public UnityPluginDetector(ISolution solution, ILogger logger, UnityVersion unityVersion)
         {
             mySolution = solution;
             myLogger = logger;
+            myUnityVersion = unityVersion;
         }
 
         [NotNull]
         public InstallationInfo GetInstallationInfo(Version newVersion, VirtualFileSystemPath previousInstallationDir = null)
         {
+            var versionForSolution = myUnityVersion.ActualVersionForSolution.Value;
+            if (versionForSolution.Major >= 2019) // it is very unlikely that project is upgraded from pre-2019.2 to 2020.x+
+            {
+                myLogger.Verbose($"Return DoNotInstall based on current Unity version {versionForSolution}.");
+                return InstallationInfo.DoNotInstall;
+            }
+         
             myLogger.Verbose("GetInstallationInfo.");
             try
             {
@@ -59,12 +69,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                 if (TryFindExistingPluginOnDisk(defaultDir, newVersion, out installationInfo))
                     return installationInfo;
 
-                // dll is there, but was not referenced by any project, for example - only Assembly-CSharp project is present
-                if (TryFindExistingPluginOnDiskInFolderRecursive(assetsDir, newVersion, out var installationInfo1))
-                {
-                    return installationInfo1;
-                }
-
                 // not fresh install, but nothing in previously installed dir on in solution
                 if (!previousInstallationDir.IsNullOrEmpty())
                 {
@@ -84,25 +88,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                 myLogger.LogExceptionSilently(e);
                 return InstallationInfo.DoNotInstall;
             }
-        }
-
-        private bool TryFindExistingPluginOnDiskInFolderRecursive(VirtualFileSystemPath directory, Version newVersion, [NotNull] out InstallationInfo result)
-        {
-            myLogger.Verbose("Looking for plugin on disk: '{0}'", directory);
-
-            var pluginFiles = directory
-                .GetChildFiles("*.dll", PathSearchFlags.RecurseIntoSubdirectories)
-                .Where(f => f.Name == PluginPathsProvider.BasicPluginDllFile)
-                .ToList();
-
-            if (pluginFiles.Count == 0)
-            {
-                result = InstallationInfo.DoNotInstall;
-                return false;
-            }
-
-            result = GetInstallationInfoFromFoundInstallation(pluginFiles, newVersion);
-            return true;
         }
 
         private bool TryFindExistingPluginOnDisk(VirtualFileSystemPath directory, Version newVersion, [NotNull] out InstallationInfo result)
@@ -132,6 +117,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         [NotNull]
         private InstallationInfo GetInstallationInfoFromFoundInstallation(List<VirtualFileSystemPath> pluginFiles, Version newVersion)
         {
+            myLogger.Verbose($"GetInstallationInfoFromFoundInstallation, newVersion {newVersion}");
             var parentDirs = pluginFiles.Select(f => f.Directory).Distinct().ToList();
             if (parentDirs.Count > 1)
             {
