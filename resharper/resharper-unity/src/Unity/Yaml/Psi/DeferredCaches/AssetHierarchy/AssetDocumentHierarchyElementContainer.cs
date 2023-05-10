@@ -91,13 +91,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 }
             } else if (gameObject != null && AssetUtils.IsTransform(assetDocument.Buffer))
             {
-                var father = AssetUtils.GetTransformFather(currentAssetSourceFile, assetDocument.Buffer) as LocalReference?;
-                if (father == null)
+                if (AssetUtils.GetTransformFather(currentAssetSourceFile, assetDocument.Buffer) is not LocalReference father)
                     return null;
 
-                var rootIndex = AssetUtils.GetRootIndex(assetDocument.Buffer);
-                return new TransformHierarchy(location, gameObject.Value, father.Value, rootIndex);
-            } else if (AssetUtils.IsGameObject(assetDocument.Buffer))
+                var rootOrder = AssetUtils.GetRootOrder(assetDocument.Buffer);
+                var children = AssetUtils.GetChildren(currentAssetSourceFile, assetDocument.Buffer);
+                return new TransformHierarchy(location, gameObject.Value, father, rootOrder, children);
+            }
+            else if (AssetUtils.IsGameObject(assetDocument.Buffer))
             {
                 var name = AssetUtils.GetGameObjectName(assetDocument.Buffer);
                 if (name != null)
