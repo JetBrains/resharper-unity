@@ -112,6 +112,7 @@
     <lang.documentationProvider language="ShaderLab" implementationClass="com.jetbrains.rdclient.quickDoc.FrontendDocumentationProvider"/>
     <backend.typedHandler language="ShaderLab" implementationClass="com.jetbrains.rider.cpp.fileType.CppTypedHandler"/>
     <langCodeStyleSettingsProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.settings.ShaderLabStyleSettingsProvider"/>
+    <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.breadcrumbs.ShaderLabBreadcrumbsInfoProvider"/>
 
     <fileType name="HLSL" extensions="cg;cginc;hlslinc;compute" />
 
