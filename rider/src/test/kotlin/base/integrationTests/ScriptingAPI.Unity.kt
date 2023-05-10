@@ -38,6 +38,7 @@ import com.jetbrains.rider.services.popups.nova.headless.NullPrintStream
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
+import com.jetbrains.rider.test.env.packages.LocalNuGetRepoPackagePreparer
 import com.jetbrains.rider.test.framework.TeamCityHelper
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.downloadAndExtractArchiveArtifactIntoPersistentCache
@@ -62,9 +63,7 @@ val unityActionsTimeout: Duration = Duration.ofSeconds(30)
 
 //region UnityDll
 
-private fun downloadUnityDll(): File {
-    return downloadAndExtractArchiveArtifactIntoPersistentCache("https://packages.jetbrains.team/files/p/net/test-data/UnityEngine-2018.3-08-01-2019.dll.tar.gz").combine("UnityEngine.dll")
-}
+val unity2022_2_15f1_ref_asm by LocalNuGetRepoPackagePreparer("Unity3d-2022.2.15f1-27-04-2023.zip")
 
 private fun downloadMsCorLib():File{
     return downloadAndExtractArchiveArtifactIntoPersistentCache("https://packages.jetbrains.team/files/p/net/test-data/Unity_mscorlib_2018.4.tar.gz").combine("mscorlib.dll")
@@ -78,8 +77,12 @@ fun prepareAssemblies(project: Project, activeSolutionDirectory: File) {
 fun prepareAssemblies(activeSolutionDirectory: File) {
     val dll = downloadMsCorLib()
     dll.copyTo(activeSolutionDirectory.combine(dll.name))
-    val unityDll = downloadUnityDll()
-    unityDll.copyTo(activeSolutionDirectory.combine(unityDll.name))
+
+    //moving all UnityEngine* and UnityEditor* ref-asm dlls to test solution folder
+    for (file in unity2022_2_15f1_ref_asm.root.listFiles()!!) {
+        val target = activeSolutionDirectory.combine(file.name)
+        file.copyTo(target)
+    }
 }
 
 //endregion
