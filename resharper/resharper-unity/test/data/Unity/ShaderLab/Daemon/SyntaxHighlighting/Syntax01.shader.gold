@@ -5,10 +5,10 @@
         // Color property for material inspector, default to white
         _Color ("Main Color", Color) = (1,1,1,1)
     }
-    |SubShXXXader
+    |SubShXXXader|(0)
     {
         Pass
-        {|(0)
+        {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -32,9 +32,8 @@
             }
             ENDCG
         }
-    |}
-}|(1)
+    }
+}
 
 ---------------------------------------------------------
 (0): ReSharper Underlined Error Highlighting: Unexpected token
-(1): ReSharper Underlined Error Highlighting: Unexpected token

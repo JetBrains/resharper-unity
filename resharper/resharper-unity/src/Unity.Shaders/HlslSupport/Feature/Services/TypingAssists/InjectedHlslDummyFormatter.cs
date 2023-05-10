@@ -34,10 +34,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
 
         public override string CalculateInjectionIndent(CppDummyFormatterContext context, CachingLexer lexer)
         {
-            var offset = context.TextControl.Caret.DocumentOffset();
+            var offset = context.TextControl.Caret.DocumentOffset().Offset;
             using (LexerStateCookie.Create(lexer))
             {
-                if (!lexer.FindTokenAt(offset.Offset))
+                if (!lexer.FindTokenAt(offset))
                     return "";
 
                 var tt = lexer.TokenType;
@@ -54,24 +54,38 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
 
                 if (tt != null)
                 {
-                    var doc = context.TextControl.Document;
-                    var lineStart = doc.GetLineStartOffset(doc.GetCoordsByOffset(lexer.TokenStart).Line);
-                    lexer.FindTokenAt(lineStart);
-                    tt = lexer.TokenType;
+                    var blockStartPos = lexer.CurrentPosition;
+                    for (lexer.Advance(); lexer.TokenEnd <= offset && (tt = lexer.TokenType) is { IsWhitespace: true }; lexer.Advance()) { } // skip to next non-whitespace token 
 
-                    Assertion.AssertNotNull(tt, "Lexer.TokenType may not be null");
-                    while (tt.IsWhitespace)
-                    {
-                        lexer.Advance();
-                        tt = lexer.TokenType;
-                    }
-
-                    var tokenLineStart = doc.GetLineStartOffset(doc.GetCoordsByOffset(lexer.TokenStart).Line);
-                    return doc.GetText(new TextRange(tokenLineStart, lexer.TokenStart));
+                    // if next non-empty token is end of block then reset to block start otherwise use offset of first line in the block 
+                    if (tt == ShaderLabTokenType.CG_END ||
+                        tt == ShaderLabTokenType.HLSL_END ||
+                        tt == ShaderLabTokenType.GLSL_END)
+                        lexer.CurrentPosition = blockStartPos;
+                    
+                    return CalculateLineIndent(context, lexer);
                 }
             }
 
             return "";
+        }
+
+        private static string CalculateLineIndent(CppDummyFormatterContext context, CachingLexer lexer)
+        {
+            var doc = context.TextControl.Document;
+            var lineStart = doc.GetLineStartOffset(doc.GetCoordsByOffset(lexer.TokenStart).Line);
+            lexer.FindTokenAt(lineStart);
+            var tt = lexer.TokenType;
+
+            Assertion.AssertNotNull(tt, "Lexer.TokenType may not be null");
+            while (tt!.IsWhitespace)
+            {
+                lexer.Advance();
+                tt = lexer.TokenType;
+            }
+
+            var tokenLineStart = doc.GetLineStartOffset(doc.GetCoordsByOffset(lexer.TokenStart).Line);
+            return doc.GetText(new TextRange(tokenLineStart, lexer.TokenStart));
         }
 
         public class HlslDummyFormatterContext : CppDummyFormatterContext
