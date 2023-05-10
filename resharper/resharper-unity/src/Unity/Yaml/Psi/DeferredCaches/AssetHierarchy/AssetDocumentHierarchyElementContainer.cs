@@ -95,7 +95,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                     return null;
 
                 var rootOrder = AssetUtils.GetRootOrder(assetDocument.Buffer);
-                var children = AssetUtils.GetChildren(currentAssetSourceFile, assetDocument.Buffer);
+                var children = AssetUtils.GetChildren(currentAssetSourceFile, assetDocument.Buffer).ToArray();
                 return new TransformHierarchy(location, gameObject.Value, father, rootOrder, children);
             }
             else if (AssetUtils.IsGameObject(assetDocument.Buffer))

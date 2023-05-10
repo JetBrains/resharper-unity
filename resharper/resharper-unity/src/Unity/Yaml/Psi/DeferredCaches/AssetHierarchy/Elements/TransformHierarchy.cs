@@ -10,10 +10,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public LocalReference Location { get; }
         public LocalReference OwningGameObject { get; }
         public LocalReference ParentTransform { get; }
-        public LocalList<long> Children { get; }
+        public long[] Children { get; }
         private readonly int myRootOrder;
 
-        public TransformHierarchy(LocalReference location, LocalReference owner, LocalReference parent, int rootOrder, LocalList<long> children)
+        public TransformHierarchy(LocalReference location, LocalReference owner, LocalReference parent, int rootOrder, long[] children)
         {
             Location = location;
             OwningGameObject = owner;
@@ -36,8 +36,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             transformHierarchy.OwningGameObject.WriteTo(writer);
             transformHierarchy.ParentTransform.WriteTo(writer);
             writer.Write(transformHierarchy.myRootOrder);
-            writer.Write(transformHierarchy.Children.Count);
-            foreach (var child in transformHierarchy.Children) writer.Write(child);
+            writer.Write<long, long[]>((w, val) =>
+            {
+                w.Write(val);
+            }, transformHierarchy.Children);
         }
 
         public static TransformHierarchy Read(UnsafeReader reader)
@@ -46,11 +48,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             var owningGameObject = HierarchyReferenceUtil.ReadLocalReferenceFrom(reader);
             var parentTransform = HierarchyReferenceUtil.ReadLocalReferenceFrom(reader);
             var rootOrder = reader.ReadInt32();
-            var count = reader.ReadInt32();
-            var children = new LocalList<long>(count);
-            for (var i = 0; i < count; i++)
-                children.Add(reader.ReadLong());
-
+            var children = reader.ReadArray(unsafeReader => unsafeReader.ReadLong());
+            
             return new TransformHierarchy(location, owningGameObject, parentTransform, rootOrder, children);
         }
     }

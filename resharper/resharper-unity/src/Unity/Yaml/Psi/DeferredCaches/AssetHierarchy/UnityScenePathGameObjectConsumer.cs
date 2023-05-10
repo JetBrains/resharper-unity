@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Diagnostics;
@@ -36,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 var parentTransform = container.GetHierarchyElement(parentTransformReference, importPrefab);
                 if (parentTransform is TransformHierarchy parentTransformHierarchy)
                 {
-                    myIndex.Push(parentTransformHierarchy.Children.IndexOf(currentTransform.Location.LocalDocumentAnchor));
+                    myIndex.Push(Array.IndexOf(parentTransformHierarchy.Children, currentTransform.Location.LocalDocumentAnchor));
                 }
             }
             return !myOnlyName;

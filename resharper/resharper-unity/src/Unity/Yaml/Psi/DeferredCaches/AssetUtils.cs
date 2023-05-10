@@ -22,6 +22,7 @@ using JetBrains.Serialization;
 using JetBrains.Text;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
+using JetBrains.Util.dataStructures;
 using JetBrains.Util.Maths;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
@@ -162,11 +163,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return int.TryParse(result.ToString(), out var index) ? index : 0;
         }
         
-        public static LocalList<long> GetChildren(IPsiSourceFile assetSourceFile, IBuffer buffer)
+        public static FrugalLocalList<long> GetChildren(IPsiSourceFile assetSourceFile, IBuffer buffer)
         {
             var start = ourChildrenSearcher.Find(buffer, 0, buffer.Length);
             if (start < 0)
-                return new LocalList<long>();
+                return new FrugalLocalList<long>();
             start += "m_Children:".Length;
             
             // one possibility:
@@ -181,17 +182,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 if (buffer[start].IsPureWhitespace())
                     start++;
                 else if (buffer[start] == '[')
-                    return new LocalList<long>();
+                    return new FrugalLocalList<long>();
                 else
                     break;
             }
             
             var headerLineEnd = FindEndOfLine(buffer, start);
             if (headerLineEnd < 0)
-                return new LocalList<long>();
+                return new FrugalLocalList<long>();
             start = headerLineEnd + 1;
 
-            var results = new LocalList<long>();
+            var results = new FrugalLocalList<long>();
             var pos = start;
             while (pos < buffer.Length)
             {
