@@ -15,6 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
             {
             }
 
+            public override bool IsIdentifier => true;
+
             public override string TokenRepresentation => "identifier01";
 
             public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)

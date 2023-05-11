@@ -297,12 +297,10 @@ IShaderLabFile
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
                     IBlendValue
                       IBlendFactor
-                        IShaderLabIdentifier
-                          Identifier(type:IDENTIFIER, text:SrcAlpha)
+                        ShaderLabTokenType+KeywordTokenElement(type:SRC_ALPHA_KEYWORD, text:SrcAlpha)
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
                       IBlendFactor
-                        IShaderLabIdentifier
-                          Identifier(type:IDENTIFIER, text:OneMinusSrcAlpha)
+                        ShaderLabTokenType+KeywordTokenElement(type:ONE_MINUS_SRC_ALPHA_KEYWORD, text:OneMinusSrcAlpha)
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:            ) spaces: "            "

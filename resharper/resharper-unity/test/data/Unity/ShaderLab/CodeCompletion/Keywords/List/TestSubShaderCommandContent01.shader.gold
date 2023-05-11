@@ -1,0 +1,55 @@
+﻿# 25 ITEMS #
+
++ AlphaTest
+AlphaToMask
+BindChannels
+Blend
+BlendOp
+Color
+ColorMask
+ColorMaterial
+Conservative
+Cull
+Fog
+GrabPass
+LOD
+Lighting
+Material
+Name
+Offset
+Pass
+SeparateSpecular
+Stencil
+Tags
+UsePass
+ZClip
+ZTest
+ZWrite
+# AUTOMATIC #
+# 25 ITEMS #
+
++ AlphaTest
+AlphaToMask
+BindChannels
+Blend
+BlendOp
+Color
+ColorMask
+ColorMaterial
+Conservative
+Cull
+Fog
+GrabPass
+LOD
+Lighting
+Material
+Name
+Offset
+Pass
+SeparateSpecular
+Stencil
+Tags
+UsePass
+ZClip
+ZTest
+ZWrite

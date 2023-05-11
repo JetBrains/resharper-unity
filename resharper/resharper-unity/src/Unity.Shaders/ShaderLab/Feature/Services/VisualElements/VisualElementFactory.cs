@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.V
                 if (vectorPropertyValue != null)
                 {
                     // Does the vector literal belong to a vector property or a color property?
-                    var propertyDeclation = PropertyDeclarationNavigator.GetByPropertValue(vectorPropertyValue);
+                    var propertyDeclation = PropertyDeclarationNavigator.GetByPropertyValue(vectorPropertyValue);
                     if (propertyDeclation == null)
                         return null;
 

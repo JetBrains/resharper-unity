@@ -1,14 +1,10 @@
-﻿using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
-using JetBrains.ReSharper.FeaturesTestFramework.Completion;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
-using JetBrains.ReSharper.TestFramework;
+﻿using JetBrains.ReSharper.FeaturesTestFramework.Completion;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.CodeCompletion
 {
     [RequireHlslSupport]
-    [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
-    public class ShaderLabVariableReferenceCompletionListTests : CodeCompletionTestBase
+    public class ShaderLabVariableReferenceCompletionListTests : ShaderLabCodeCompletionTestBase
     {
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
         protected override string RelativeTestDataPath => @"ShaderLab\CodeCompletion\VariableReference";
@@ -17,13 +13,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
     }
 
     [RequireHlslSupport]
-    [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
-    public class ShaderLabVariableReferenceCompletionActionTests : CodeCompletionTestBase
+    public class ShaderLabVariableReferenceCompletionActionTests : ShaderLabCodeCompletionTestBase
     {
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.Action;
         protected override string RelativeTestDataPath => @"ShaderLab\CodeCompletion\VariableReference";
         protected override bool CheckAutomaticCompletionDefault() => true;
-        protected override LookupListSorting Sorting => LookupListSorting.ByRelevance;
 
         [Test] public void TestAction01() { DoNamedTest(); }
     }
