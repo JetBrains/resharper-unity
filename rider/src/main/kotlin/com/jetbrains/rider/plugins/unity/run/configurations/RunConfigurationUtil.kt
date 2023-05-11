@@ -145,6 +145,5 @@ private fun startDebugRunConfiguration(
 
     // The new UI only adds items to the run widget if explicitly started from the run widget or via context action
     // (IDEA-310169)
-    @Suppress("UnstableApiUsage")
     RunConfigurationStartHistory.getInstance(project).register(configurationSettings)
 }

@@ -42,7 +42,6 @@ enum class AncestorNodeType {
     }
 }
 
-@Suppress("UnstableApiUsage")
 open class UnityExplorerFileSystemNode(project: Project,
                                        virtualFile: VirtualFile,
                                        nestedFiles: List<NestingNode<VirtualFile>>,
@@ -52,7 +51,8 @@ open class UnityExplorerFileSystemNode(project: Project,
     companion object {
         // can be folder or file
         // note that children of hidden folder are not matched by this function
-        fun isHiddenAsset(file: VirtualFile): Boolean {
+        fun isHiddenAsset(file: VirtualFile?): Boolean {
+            if (file == null) return false
             // See https://docs.unity3d.com/Manual/SpecialFolders.html
             val extension = file.extension?.lowercase(Locale.getDefault())
             if (extension != null && UnityExplorer.IgnoredExtensions.contains(extension)) {
@@ -266,7 +266,7 @@ open class UnityExplorerFileSystemNode(project: Project,
         return dir.children.any { it.extension.equals("asmdef", true) }
     }
 
-    private fun calculateIcon(): Icon? {
+    private fun calculateIcon(): Icon {
         if (isIgnoredFolder(virtualFile) || (virtualFile.isDirectory && descendentOf == AncestorNodeType.IgnoredFolder)) {
             return UnityIcons.Explorer.UnloadedFolder
         }
