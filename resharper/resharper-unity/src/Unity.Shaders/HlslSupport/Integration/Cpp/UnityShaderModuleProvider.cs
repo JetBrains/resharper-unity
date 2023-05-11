@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Collections.Viewable;
 using JetBrains.DocumentManagers;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Reader.API;
@@ -121,7 +122,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
         public Tuple<IProjectPsiModuleHandler, IPsiModuleDecorator> OverrideHandler(Lifetime lifetime, IProject project,
             IProjectPsiModuleHandler handler)
         {
-            if ( handler.PrimaryModule != null && project.GetComponent<UnityReferencesTracker>().IsUnityProject(project))
+            if (handler.PrimaryModule != null && project.GetComponent<UnitySolutionTracker>().IsUnityProject.HasTrueValue())
             {
                 var module = new UnityShaderModule(project.GetSolution(), project.Name, handler.PrimaryModule.TargetFrameworkId);
                 var newHandlerAndDecorator = new UnityShaderModuleHandlerAndDecorator(module, handler);

@@ -1,6 +1,8 @@
+using JetBrains.Rd;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.Serialization;
+using JetBrains.Rd.Impl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
 {
@@ -9,14 +11,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public LocalReference Location { get; }
         public LocalReference OwningGameObject { get; }
         public LocalReference ParentTransform { get; }
-        private readonly int myRootIndex;
+        public long[] Children { get; }
+        private readonly int myRootOrder;
 
-        public TransformHierarchy(LocalReference location, LocalReference owner, LocalReference parent, int rootIndex)
+        public TransformHierarchy(LocalReference location, LocalReference owner, LocalReference parent, int rootOrder, long[] children)
         {
             Location = location;
             OwningGameObject = owner;
             ParentTransform = parent;
-            myRootIndex = rootIndex;
+            myRootOrder = rootOrder;
+            Children = children;
         }
 
         public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
@@ -25,22 +29,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         }
 
         public string Name => "Transform";
-        public int RootIndex => myRootIndex;
+        public int RootOrder => myRootOrder;
 
         public static void Write(UnsafeWriter writer, TransformHierarchy transformHierarchy)
         {
             transformHierarchy.Location.WriteTo(writer);
             transformHierarchy.OwningGameObject.WriteTo(writer);
             transformHierarchy.ParentTransform.WriteTo(writer);
-            writer.Write(transformHierarchy.myRootIndex);
+            writer.Write(transformHierarchy.myRootOrder);
+            writer.WriteArray((_, w, val) => w.Write(val), new SerializationCtx(), transformHierarchy.Children);
         }
 
         public static TransformHierarchy Read(UnsafeReader reader)
         {
-            return new TransformHierarchy(HierarchyReferenceUtil.ReadLocalReferenceFrom(reader),
-                HierarchyReferenceUtil.ReadLocalReferenceFrom(reader),
-                HierarchyReferenceUtil.ReadLocalReferenceFrom(reader),
-                reader.ReadInt32());
+            var location = HierarchyReferenceUtil.ReadLocalReferenceFrom(reader);
+            var owningGameObject = HierarchyReferenceUtil.ReadLocalReferenceFrom(reader);
+            var parentTransform = HierarchyReferenceUtil.ReadLocalReferenceFrom(reader);
+            var rootOrder = reader.ReadInt32();
+            var children = reader.ReadArray(unsafeReader => unsafeReader.ReadLong());
+            
+            return new TransformHierarchy(location, owningGameObject, parentTransform, rootOrder, children);
         }
     }
 }

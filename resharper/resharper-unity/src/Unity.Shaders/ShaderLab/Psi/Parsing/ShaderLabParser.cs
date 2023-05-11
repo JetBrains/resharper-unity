@@ -1,5 +1,4 @@
 ﻿using JetBrains.Annotations;
-using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Gen;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
@@ -84,7 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
                 SetOffset(leaf, tokenStart);
             return element;
         }
-
+        
         public override TreeElement ParseErrorElement()
         {
             // NOTE: Doesn't Advance
@@ -97,12 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
             return ParseErrorElement();
         }
 
-        private bool IsIdentifier(TokenNodeType token)
-        {
-            // TODO: This should just be a bitset
-            // At the very least, it needs to be a better check
-            return token == ShaderLabTokenType.IDENTIFIER || token.IsKeyword;
-        }
+        private bool IsIdentifier(TokenNodeType token) => token.IsIdentifier || token.IsKeyword;
 
         public override TreeElement ParseErrorPropertyValue()
         {
@@ -180,6 +174,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
             myLexer.Advance();
 
             return element;
+        }
+
+        protected override void SkipErrorToken(CompositeElement parent)
+        {
+            if (myOriginalLexer.TokenType == ShaderLabTokenType.LBRACE)
+                SkipNestedBraces(parent);
+            else
+                base.SkipErrorToken(parent);
         }
     }
 }

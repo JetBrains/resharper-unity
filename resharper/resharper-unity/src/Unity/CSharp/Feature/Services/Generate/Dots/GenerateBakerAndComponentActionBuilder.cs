@@ -119,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             }
             result.Add(Strings.UnityDots_GenerateBakerAndAuthoring_NewBaker);
             
-            return result;
+            return result.Distinct().ToList();
         }
 
         // Enables/disables the menu item

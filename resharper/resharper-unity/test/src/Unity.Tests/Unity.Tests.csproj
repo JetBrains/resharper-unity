@@ -11,6 +11,11 @@
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Tests</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Tests</RootNamespace>
     <LangVersion>9</LangVersion>
+    <!-- Force 64 bit for non-Windows, specifically Mac. The Rider SDK includes the ClrStack package that references
+         both ClrStack.exe and ClrStack32.exe, and the 32 bit version convinces the unit testing framework that we
+         should be a 32 bit assembly. Unfortunately, 32 bit processes aren't supported on Mac, and the tests fail.
+         Any test project that uses the Rider SDK will require this -->
+    <PlatformTarget Condition="'$([MSBuild]::IsOsPlatform(Windows))' != 'True'">x64</PlatformTarget>
     <!-- LibHarmony is not signed -->
     <NoWarn>CS8002</NoWarn>
     <JetTestProject>True</JetTestProject>

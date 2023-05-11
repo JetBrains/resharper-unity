@@ -6,7 +6,6 @@ using JetBrains.Application.Settings.Calculated.Interface;
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatting;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -16,7 +15,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Impl.CodeStyle;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatter
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Formatting
 {
     [Language(typeof(CSharpLanguage))]
     public class UnityCSharpFormatterInfoProvider : CSharpFormatterInfoProviderPart

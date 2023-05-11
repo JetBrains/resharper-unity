@@ -13,8 +13,7 @@ IShaderLabFile
       IShaderBlock
         IFallbackCommand
           ShaderLabTokenType+KeywordTokenElement(type:FALLBACK_KEYWORD, text:Fallback)
-          IFallbackValue
-            ErrorElement:Unexpected token
+        ErrorElement:Fallback value expected
       Whitespace(type:WHITESPACE, text: ) spaces: " "
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
