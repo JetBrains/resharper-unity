@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Feature.Services.LiveTemplates.Hotspots;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Macros;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Tree;
@@ -42,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.LiveTemplate
                 var typeDeclaration = tokenNode.GetContainingNode<ITypeDeclaration>();
                 while (typeDeclaration != null)
                 {
-                    if (unityApi.IsUnityType(typeDeclaration?.DeclaredElement))
+                    if (typeDeclaration.DeclaredElement.DerivesFrom(KnownTypes.Component))
                         break;
 
                     typeDeclaration = typeDeclaration.GetContainingNode<ITypeDeclaration>();
