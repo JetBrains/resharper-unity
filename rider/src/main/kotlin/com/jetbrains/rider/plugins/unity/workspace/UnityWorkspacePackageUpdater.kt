@@ -11,7 +11,6 @@ import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.intellij.workspaceModel.ide.getInstance
 import com.intellij.workspaceModel.ide.toVirtualFileUrl
 import com.intellij.workspaceModel.storage.MutableEntityStorage
-import com.intellij.workspaceModel.storage.bridgeEntities.addContentRootEntity
 import com.intellij.workspaceModel.storage.url.VirtualFileUrlManager
 import com.jetbrains.rd.ide.model.Solution
 import com.jetbrains.rd.platform.util.idea.LifetimedService
