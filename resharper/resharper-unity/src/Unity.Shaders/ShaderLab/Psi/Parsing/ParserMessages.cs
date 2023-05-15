@@ -54,6 +54,7 @@
         public const string IDS_VALUE = "value";
         public const string IDS_ZTEST_VALUE = "ZTest value";
         public const string IDS_FALLBACK_VALUE = "Fallback value";
+        public const string IDS_SHADER_LAB_COMMAND = "ShaderLab command";
 
         public static string GetString(string id) => id;
 

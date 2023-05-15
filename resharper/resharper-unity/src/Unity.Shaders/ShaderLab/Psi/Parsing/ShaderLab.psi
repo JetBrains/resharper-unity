@@ -1021,6 +1021,58 @@ shaderLabFile options { stubBase="ShaderLabFileElement"; }
   shaderCommand<SHADER_LAB_COMMAND, Command>
 ;
 
+interface shaderLabCommand
+:
+  blockCommand
+  | cullCommand
+  | zwriteCommand
+  | conservativeCommand
+  | zclipCommand
+  | ztestCommand
+  | offsetCommand
+  | colorMaskCommand
+  | blendCommand
+  | blendOpCommand
+  | alphaToMaskCommand
+  | refCommand
+  | readMaskCommand
+  | writeMaskCommand
+  | compCommand
+  | compFrontCommand
+  | compBackCommand
+  | passCommand
+  | passFrontCommand
+  | passBackCommand
+  | failCommand
+  | failFrontCommand
+  | failBackCommand
+  | zfailCommand
+  | zfailFrontCommand
+  | zfailBackCommand
+  | nameCommand
+  | lodCommand
+  | colorCommand
+  | lightingCommand
+  | separateSpecularCommand
+  | colorMaterialCommand
+  | diffuseCommand
+  | ambientCommand
+  | specularCommand
+  | shininessCommand
+  | emissionCommand
+  | matrixCommand
+  | constantColorCommand
+  | combineCommand
+  | alphaTestCommand
+  | modeCommand
+  | densityCommand
+  | rangeCommand
+  | bindCommand
+  | usePassDef
+  | fallbackCommand
+  | customEditorCommand
+  | dependencyCommand
+;
 
 // Identify commands that have block values. Used for brace matching and folding
 interface blockCommand
@@ -1064,6 +1116,7 @@ interface blockValue
 // **************************************************************************
 
 errorhandling shaderCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
   SHADER_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   shaderValue<SHADER_LAB_VALUE, Value>
@@ -1112,6 +1165,7 @@ private errorhandling shaderValueName
 errorhandling propertiesCommand
 options {
   parsingContext;
+  stubBase="ShaderLabCommandBase";
 }
 :
   PROPERTIES_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
@@ -1374,6 +1428,7 @@ stringAttributeParameterValue
 // **************************************************************************
 
 errorhandling categoryCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
   CATEGORY_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   categoryValue<SHADERLAB_VALUE, Value>
@@ -1406,6 +1461,7 @@ private errorhandling stateCommandForCategory
 // **************************************************************************
 
 subShaderCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
   SUB_SHADER_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   subShaderValue<SHADER_LAB_VALUE, Value>
@@ -1454,6 +1510,7 @@ interface stateCommand
 // **************************************************************************
 
 tagsCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
   TAGS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   tagsValue<SHADER_LAB_VALUE, Value>
@@ -1562,8 +1619,9 @@ comparisonFunctionValue
 // **************************************************************************
 
 cullCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  CULL_KEYWORD<SHADER_LAB_KEYWORD, CullKeyword>
+  CULL_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   cullValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1584,26 +1642,30 @@ cullOrientation
 ;
 
 zwriteCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  ZWRITE_KEYWORD<SHADER_LAB_KEYWORD, ZWriteKeyword>
+  ZWRITE_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   boolValue<SHADER_LAB_VALUE, Value>
 ;
 
 conservativeCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  CONSERVATIVE_KEYWORD<SHADER_LAB_KEYWORD, ConservativeKeyword>
+  CONSERVATIVE_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   boolValue<SHADER_LAB_VALUE, Value>
 ;
 
 zclipCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  ZCLIP_KEYWORD<SHADER_LAB_KEYWORD, ZClipKeyword>
+  ZCLIP_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   boolValue<SHADER_LAB_VALUE, Value>
 ;
 
 ztestCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  ZTEST_KEYWORD<SHADER_LAB_KEYWORD, ZTestKeyword>
+  ZTEST_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   ztestValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1615,8 +1677,9 @@ ztestValue
 ;
 
 offsetCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  OFFSET_KEYWORD<SHADER_LAB_KEYWORD, OffsetKeyword>
+  OFFSET_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   offsetValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1628,8 +1691,9 @@ offsetValue
 ;
 
 colorMaskCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  COLOR_MASK_KEYWORD<SHADER_LAB_KEYWORD, ColorMaskKeyword>
+  COLOR_MASK_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   colorMaskValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1662,8 +1726,9 @@ colorMaskRgbaFlags
 // **************************************************************************
 
 blendCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  BLEND_KEYWORD<SHADER_LAB_KEYWORD, BlendKeyword>
+  BLEND_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   blendValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1705,8 +1770,9 @@ blendFactor
 ;
 
 blendOpCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  BLEND_OP_KEYWORD<SHADER_LAB_KEYWORD, BlendOpKeyword>
+  BLEND_OP_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   blendOpValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1762,8 +1828,9 @@ private blendOpValueAux{OP_ROLE, OpGetter, OP_REFERENCE_ROLE, OpReferenceGetter}
 ;
 
 alphaToMaskCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  ALPHA_TO_MASK_KEYWORD<SHADER_LAB_KEYWORD, AlphaToMaskKeyword>
+  ALPHA_TO_MASK_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   boolValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1789,6 +1856,7 @@ stencilOperation
 ;
 
 stencilCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
   STENCIL_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   stencilValue<SHADER_LAB_VALUE, Value>
@@ -1827,92 +1895,107 @@ private errorhandling stencilContents{ROLE, Getter}
 ;
 
 refCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  REF_KEYWORD<SHADER_LAB_KEYWORD, RefKeyword>
+  REF_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   numericValue<SHADER_LAB_VALUE, Value>
 ;
 
 readMaskCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  READ_MASK_KEYWORD<SHADER_LAB_KEYWORD, ReadMaskKeyword>
+  READ_MASK_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   numericValue<SHADER_LAB_VALUE, Value>
 ;
 
 writeMaskCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  WRITE_MASK_KEYWORD<SHADER_LAB_KEYWORD, WriteMaskKeyword>
+  WRITE_MASK_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   numericValue<SHADER_LAB_VALUE, Value>
 ;
 
 compCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  COMP_KEYWORD<SHADER_LAB_KEYWORD, CompKeyword>
+  COMP_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   comparisonFunctionValue<SHADER_LAB_VALUE, Value>
 ;
 
 compFrontCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  COMP_FRONT_KEYWORD<SHADER_LAB_KEYWORD, CompFrontKeyword>
+  COMP_FRONT_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   comparisonFunctionValue<SHADER_LAB_VALUE, Value>
 ;
 
 compBackCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  COMP_BACK_KEYWORD<SHADER_LAB_KEYWORD, CompBackKeyword>
+  COMP_BACK_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   comparisonFunctionValue<SHADER_LAB_VALUE, Value>
 ;
 
 passCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
   PASS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   stencilOperation<SHADER_LAB_VALUE, Value>
 ;
 
 passFrontCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  PASS_FRONT_KEYWORD<SHADER_LAB_KEYWORD, PassFrontKeyword>
+  PASS_FRONT_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   stencilOperation<SHADER_LAB_VALUE, Value>
 ;
 
 passBackCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  PASS_BACK_KEYWORD<SHADER_LAB_KEYWORD, PassBackKeyword>
+  PASS_BACK_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   stencilOperation<SHADER_LAB_VALUE, Value>
 ;
 
 failCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  FAIL_KEYWORD<SHADER_LAB_KEYWORD, FailKeyword>
+  FAIL_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   stencilOperation<SHADER_LAB_VALUE, Value>
 ;
 
 failFrontCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  FAIL_FRONT_KEYWORD<SHADER_LAB_KEYWORD, FailFrontKeyword>
+  FAIL_FRONT_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   stencilOperation<SHADER_LAB_VALUE, Value>
 ;
 
 failBackCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  FAIL_BACK_KEYWORD<SHADER_LAB_KEYWORD, FailBackKeyword>
+  FAIL_BACK_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   stencilOperation<SHADER_LAB_VALUE, Value>
 ;
 
 zfailCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  ZFAIL_KEYWORD<SHADER_LAB_KEYWORD, ZFailKeyword>
+  ZFAIL_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   stencilOperation<SHADER_LAB_VALUE, Value>
 ;
 
 zfailFrontCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  ZFAIL_FRONT_KEYWORD<SHADER_LAB_KEYWORD, ZFailFrontKeyword>
+  ZFAIL_FRONT_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   stencilOperation<SHADER_LAB_VALUE, Value>
 ;
 
 zfailBackCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  ZFAIL_BACK_KEYWORD<SHADER_LAB_KEYWORD, ZFailBackKeyword>
+  ZFAIL_BACK_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   stencilOperation<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1924,8 +2007,9 @@ zfailBackCommand
 // **************************************************************************
 
 nameCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  NAME_KEYWORD<SHADER_LAB_KEYWORD, NameKeyword>
+  NAME_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   nameValue<SHADER_LAB_VALUE>
 ;
 
@@ -1942,8 +2026,9 @@ nameValue
 // **************************************************************************
 
 lodCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  LOD_KEYWORD<SHADER_LAB_KEYWORD, LodKeyword>
+  LOD_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   lodValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1960,26 +2045,30 @@ lodValue
 // **************************************************************************
 
 colorCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  COLOR_KEYWORD<SHADER_LAB_KEYWORD, ColorKeyword>
+  COLOR_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   colorValue<SHADER_LAB_VALUE, Value>
 ;
 
 lightingCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  LIGHTING_KEYWORD<SHADER_LAB_KEYWORD, LightingKeyword>
+  LIGHTING_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   boolLiteral<SHADER_LAB_VALUE, Value>
 ;
 
 separateSpecularCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  SEPARATE_SPECULAR_KEYWORD<SHADER_LAB_KEYWORD, SeparateSpecularKeyword>
+  SEPARATE_SPECULAR_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   boolLiteral<SHADER_LAB_VALUE, Value>
 ;
 
 colorMaterialCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  COLOR_MATERIAL_KEYWORD<SHADER_LAB_KEYWORD, ColorMaterialKeyword>
+  COLOR_MATERIAL_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   colorMaterialValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1990,6 +2079,7 @@ colorMaterialValue
 ;
 
 materialCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
   MATERIAL_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   materialValue<SHADER_LAB_VALUE, Value>
@@ -2018,32 +2108,37 @@ private errorhandling materialContents
 ;
 
 diffuseCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  DIFFUSE_KEYWORD<SHADER_LAB_KEYWORD, DiffuseKeyword>
+  DIFFUSE_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   colorValue<SHADER_LAB_VALUE, Value>
 ;
 
 ambientCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  AMBIENT_KEYWORD<SHADER_LAB_KEYWORD, AmbientKeyword>
+  AMBIENT_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   colorValue<SHADER_LAB_VALUE, Value>
 ;
 
 specularCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  SPECULAR_KEYWORD<SHADER_LAB_KEYWORD, SpecularKeyword>
+  SPECULAR_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   colorValue<SHADER_LAB_VALUE, Value>
 ;
 
 shininessCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  SHININESS_KEYWORD<SHADER_LAB_KEYWORD, ShininessKeyword>
+  SHININESS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   numericValue<SHADER_LAB_VALUE, Value>
 ;
 
 emissionCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  EMISSION_KEYWORD<SHADER_LAB_KEYWORD, EmissionKeyword>
+  EMISSION_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   colorValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -2055,6 +2150,7 @@ emissionCommand
 // **************************************************************************
 
 errorhandling setTextureCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
   SET_TEXTURE_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   setTextureValue<SHADER_LAB_VALUE, Value>
@@ -2084,23 +2180,26 @@ errorhandling interface textureBinding
 ;
 
 matrixCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
   // TODO: The only supported value is [unity_LightmapMatrix]
   // Otherwise compiler error:
   // "Fixed function texture '{varref}' used; they don't do anything now"
-  MATRIX_KEYWORD<SHADER_LAB_KEYWORD, MatrixKeyword>
+  MATRIX_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   variableReference<SHADER_LAB_REFERENCE, VariableReference>
 ;
 
 constantColorCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  CONSTANT_COLOR_KEYWORD<SHADER_LAB_KEYWORD, ConstantColorKeyword>
+  CONSTANT_COLOR_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   colorValue<SHADER_LAB_VALUE, Value>
 ;
 
 combineCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  COMBINE_KEYWORD<SHADER_LAB_KEYWORD, CombineKeyword>
+  COMBINE_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   combineValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -2266,8 +2365,9 @@ options { preCheckExpected; }
 // **************************************************************************
 
 alphaTestCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  ALPHA_TEST_KEYWORD<SHADER_LAB_KEYWORD, AlphaTestKeyword>
+  ALPHA_TEST_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   alphaTestValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -2299,6 +2399,7 @@ private alphaTestComparisonValue
 // **************************************************************************
 
 fogCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
   FOG_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   fogValue<SHADER_LAB_VALUE, Value>
@@ -2326,8 +2427,9 @@ private errorhandling fogContents
 ;
 
 modeCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  MODE_KEYWORD<SHADER_LAB_KEYWORD, ModeKeyword>
+  MODE_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   modeValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -2341,14 +2443,16 @@ modeValue
 ;
 
 densityCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  DENSITY_KEYWORD<SHADER_LAB_KEYWORD, DensityKeyword>
+  DENSITY_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   numericValue<SHADER_LAB_VALUE, Value>
 ;
 
 rangeCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  RANGE_KEYWORD<SHADER_LAB_KEYWORD, RangeKeyword>
+  RANGE_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   rangeValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -2367,6 +2471,7 @@ rangeValue
 // **************************************************************************
 
 errorhandling bindChannelsCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
   BIND_CHANNELS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   bindChannelsValue<SHADER_LAB_VALUE, Value>
@@ -2386,8 +2491,9 @@ options { preCheckExpected; }
 ;
 
 errorhandling bindCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  BIND_KEYWORD<SHADER_LAB_KEYWORD, BindKeyword>
+  BIND_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   bindValue<SHADER_LAB_VALUE, Values>
 ;
 
@@ -2506,12 +2612,14 @@ errorhandling interface passDef
 ;
 
 usePassDef
+options { stubBase="ShaderLabCommandBase"; }
 :
-  USEPASS_KEYWORD<SHADER_LAB_KEYWORD, UsePassKeyword>
+  USEPASS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   STRING_LITERAL<SHADER_LAB_VALUE, UsePassValue>
 ;
 
 grabPassDef
+options { stubBase="ShaderLabCommandBase"; }
 :
   GRABPASS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   grabPassValue<SHADER_LAB_VALUE, Value>
@@ -2543,6 +2651,7 @@ optionalNameCommand
 ;
 
 texturePassDef
+options { stubBase="ShaderLabCommandBase"; }
 :
   PASS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   texturePassValue<SHADER_LAB_VALUE, Value>
@@ -2575,8 +2684,9 @@ private errorhandling stateCommandForTexturePass
 
 // TODO: Verify error handling
 fallbackCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  FALLBACK_KEYWORD<SHADER_LAB_KEYWORD, FallbackKeyword>
+  FALLBACK_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   fallbackValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -2601,8 +2711,9 @@ fallbackValue
 
 // TODO: Verify error handling
 customEditorCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  CUSTOM_EDITOR_KEYWORD<SHADER_LAB_KEYWORD, CustomEditorKeyword>
+  CUSTOM_EDITOR_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   customEditorValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -2624,8 +2735,9 @@ customEditorValue
 // e.g. Dependency "AddPassShader" = "Custom/ToonTerrainAddPass"
 // Looks like first string literal is a known value, called by the terrain shader
 errorhandling dependencyCommand
+options { stubBase="ShaderLabCommandBase"; }
 :
-  DEPENDENCY_KEYWORD<SHADER_LAB_KEYWORD, DependencyKeyword>
+  DEPENDENCY_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   dependencyValue<SHADER_LAB_VALUE, Value>
 ;
 

@@ -29,11 +29,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElemen
 
         public IList<IDeclaration> GetDeclarations()
         {
-            if (!(mySourceFile.GetPrimaryPsiFile() is IShaderLabFile psi))
+            if (mySourceFile.GetPrimaryPsiFile() is not IShaderLabFile psi)
                 return EmptyList<IDeclaration>.InstanceList;
 
             var node = psi.FindNodeAt(TreeTextRange.FromLength(new TreeOffset(TreeOffset), 1));
-            while (node != null && !(node is IDeclaration))
+            while (node != null && node is not IDeclaration)
                 node = node.Parent;
             if (node == null)
                 return EmptyList<IDeclaration>.Instance;
