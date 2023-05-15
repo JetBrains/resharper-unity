@@ -1,13 +1,18 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl
 {
-    public abstract class ShaderLabCommandBase : ShaderLabKeywordDeclarationBase, IShaderLabCommand
+    public abstract class ShaderLabCommandBase : ShaderLabKeywordDeclarationBase, IShaderLabCommand, IHierarchicalDeclaration
     {
+        public IHierarchicalDeclaration? ParentDeclaration => GetContainingNode<IHierarchicalDeclaration>();
+        public virtual IEnumerable<IHierarchicalDeclaration> GetChildDeclarations() => EmptyList<IHierarchicalDeclaration>.Enumerable;
+        
         protected override DeclaredElementType ElementType => ShaderLabDeclaredElementType.Command; 
 
         protected sealed override ITokenNode? Keyword => ((IShaderLabCommand)this).CommandKeyword;
