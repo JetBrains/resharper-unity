@@ -155,11 +155,8 @@ class MetaTracker {
         val roots = mutableSetOf<VirtualFile>()
         val assets = project.projectDir.findChild("Assets") ?: return roots
         roots.add(assets)
-        val editablePackages = WorkspaceModel.getInstance(project).getPackages().filter { it.isEditable() }
-        for (pack in editablePackages) {
-            val packageFolder = pack.packageFolder ?: continue
-            roots.add(packageFolder)
-        }
+        val editablePackages = WorkspaceModel.getInstance(project).getPackages().filter { it.isEditable() }.mapNotNull { it.packageFolder }
+        roots.addAll(editablePackages)
         return roots
     }
 
