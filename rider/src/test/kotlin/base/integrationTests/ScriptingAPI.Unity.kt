@@ -63,7 +63,7 @@ val unityActionsTimeout: Duration = Duration.ofSeconds(30)
 
 //region UnityDll
 
-val unity2022_2_15f1_ref_asm by LocalNuGetRepoPackagePreparer("Unity3d-2022.2.15f1-27-04-2023.zip")
+val unity2022_2_15f1_ref_asm by LocalNuGetRepoPackagePreparer("Unity3d-2022.2.15f1-15-05-2023.zip")
 
 private fun downloadMsCorLib():File{
     return downloadAndExtractArchiveArtifactIntoPersistentCache("https://packages.jetbrains.team/files/p/net/test-data/Unity_mscorlib_2018.4.tar.gz").combine("mscorlib.dll")
