@@ -21,8 +21,8 @@
     _ColorWithMissingClosingBrace ("Whatever", Color) = (0.3, 0.3, .3, .3
     |_ColorWithTooManyValues ("Whatever", Color|(23))| |(24)= (0.3, 0.3, .3, .3, .3, .3)
     _MissingValue ("Whatever", Int) =|
-|(25)    _MissingEquals ("Whatever", Int) |0.2
-    _TextureWithMissingName ("Whatever", 2D)|(26) = |{}|(27)
+|(25)    _MissingEquals ("Whatever", Int) |0.2|(26)
+    _TextureWithMissingName ("Whatever", 2D) = |{}|(27)
     _TextureWithMissingBlock ("Whatever", 2D) = "Name"
     _TextureWithExtraBlockValues ("Whatever", 2D) = "Name" { |Thing|(28) }
     _TextureWithExtraBlockValues2 ("Whatever", 2D) = "Name" { |Thing, Whatever(), Stuff( ,,|(29)  }

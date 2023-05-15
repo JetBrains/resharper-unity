@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties.VCXProj;
@@ -32,8 +33,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
                 LanguageKind = CppLanguageKind.HLSL,ClrSupport = VCXCompileAsManagedOptions.ManagedNotSet,
             };
 
-            var cgIncludeFolder =
-                CgIncludeDirectoryTracker.GetCgIncludeFolderPath(cache.Solution.GetComponent<UnityVersion>());
+            var unityVersion = cache.Solution.GetComponent<UnityVersion>();
+            var cgIncludeFolder = CgIncludeDirectoryTracker.GetCgIncludeFolderPath(unityVersion);
             if (!cgIncludeFolder.IsEmpty)
             {
                 properties.HeaderSearchPaths.IncludePaths.Add(cgIncludeFolder);
@@ -43,10 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             return CreateInclusionContextResult(cache, rootFile, options, properties, null, cacheVersion, lifetime);
         }
         
-        
-        
-        
-        public static CppInclusionContextResult CreateInclusionContextResult(
+        private static CppInclusionContextResult CreateInclusionContextResult(
             CppGlobalSymbolCache cache,
             CppFileLocation rootFile,
             FileProcessingOptions options,
@@ -65,12 +63,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             var shaderCache = cache.Solution.GetComponent<InjectedHlslFileLocationTracker>();
             var (includes, defines) = shaderCache.GetProgramInfo(rootFile);
 
-            inclusionContext.ProcessDefine(CppPPDefineSymbolUtil.ParsePredefinedMacro("SHADER_API_D3D11"));
-            inclusionContext.ProcessDefine(CppPPDefineSymbolUtil.ParsePredefinedMacro("__RESHARPER__"));
-            inclusionContext.ProcessDefine(CppPPDefineSymbolUtil.ParsePredefinedMacro("INTERNAL_DATA= "));
-            inclusionContext.ProcessDefine(CppPPDefineSymbolUtil.ParsePredefinedMacro("WorldReflectionVector(data,normal)=data.worldRefl"));
-            inclusionContext.ProcessDefine(CppPPDefineSymbolUtil.ParsePredefinedMacro("WorldNormalVector(data,normal)=normal"));
-
+            var unityHlslDefinesProvider = cache.Solution.GetComponent<UnityHlslDefineSymbolsProvider>();
+            foreach (var defineSymbol in unityHlslDefinesProvider.GetDefineSymbols())
+                inclusionContext.ProcessDefine(defineSymbol);
+            
             foreach (var define in defines)
             {
                 inclusionContext.ProcessDefine(CppPPDefineSymbolUtil.ParsePredefinedMacro($"{define.Key}={define.Value}"));
