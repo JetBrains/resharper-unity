@@ -6,6 +6,8 @@ Add folders
   References
   -Scenes
    SampleScene.unity
+  -Uxml
+   Menu.uss
   NewBehaviourScript.cs
 
 
@@ -37,6 +39,8 @@ Show tilde folders
    Class1.cs, tooltip=This file is not imported into the asset database
   -Scenes
    SampleScene.unity
+  -Uxml
+   Menu.uss
   NewBehaviourScript.cs
 
 
@@ -77,9 +81,13 @@ Show All Files
   -Scenes
    SampleScene.unity
    SampleScene.unity.meta, tooltip=This file is not imported into the asset database
+  -Uxml
+   Menu.uss
+   Menu.uss.meta, tooltip=This file is not imported into the asset database
   NewBehaviourScript.cs
   NewBehaviourScript.cs.meta, tooltip=This file is not imported into the asset database
   Scenes.meta, tooltip=This file is not imported into the asset database
+  Uxml.meta, tooltip=This file is not imported into the asset database
 
 
 
@@ -113,6 +121,8 @@ Hide all
   References
   -Scenes
    SampleScene.unity
+  -Uxml
+   Menu.uss
   Class1.cs
   NewBehaviourScript.cs
 
