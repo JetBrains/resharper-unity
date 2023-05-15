@@ -54,13 +54,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.B
                     case IProgramBlock programBlock:
                         AddCrumb(crumbs, solution, programBlock.Program);
                         break;
-                    case IBlockCommand command:
-                        AddCrumb(crumbs, solution, command.CommandKeyword);
+                    case IBlockCommand and IDeclaration declaration:
+                        AddCrumb(crumbs, declaration);
                         break;
                 }
             }
 
             return crumbs;
+        }
+        
+        private void AddCrumb(Stack<CrumbModel> crumbs, IDeclaration declaration)
+        {
+            Interruption.Current.CheckAndThrow();
+
+            var targetElement = declaration.DeclaredElement;
+            if (targetElement == null || declaration.GetContainingFile() is not {} file)
+                return;
+            
+            var presentation = DeclaredElementPresenter.Format(ShaderLabLanguage.Instance, DeclaredElementPresenter.QUALIFIED_NAME_PRESENTER, targetElement);
+            
+            var icon = myIconManager.GetImage(targetElement, file.Language, true);
+            var documentRange = file.GetDocumentRange(declaration.GetNameRange());
+            var rdRange = new RdTextRange(documentRange.TextRange.StartOffset, documentRange.TextRange.EndOffset);
+            var crumbModel = new CrumbModel(targetElement.ShortName , $"{presentation}\n{Strings.ClickToNavigate_Text}", myIconHost.Transform(icon), rdRange, new List<CrumbAction>());
+            
+            crumbModel.Navigate.SetVoid(_ =>
+            {
+                using (ReadLockCookie.Create())
+                {
+                    targetElement.GetPsiServices().Files.ExecuteAfterCommitAllDocuments(() =>
+                    {
+                        if (!file.IsValid())
+                            return;
+                        using (CompilationContextCookie.GetOrCreate(file.GetResolveContext()))
+                            targetElement.Navigate(false);
+                    });
+                }
+            });
+            crumbs.Push(crumbModel);
         }
 
         private void AddCrumb(Stack<CrumbModel> crumbs, ISolution solution, ITreeNode node)
