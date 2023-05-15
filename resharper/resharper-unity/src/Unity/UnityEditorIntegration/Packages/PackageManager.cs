@@ -111,9 +111,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
                 ScheduleRefresh();
 
-                // Track changes to the Packages folder, non-recursively. This will handle manifest.json,
-                // packages-lock.json and any folders that are added/deleted/renamed
-                fileSystemTracker.AdviseDirectoryChanges(lifetime, myPackagesFolder, false, OnPackagesFolderUpdate);
+                // Track changes to the Packages folder. This will handle manifest.json,
+                // packages-lock.json and package.json in the local packages
+                fileSystemTracker.AdviseDirectoryChanges(lifetime, myPackagesFolder, true, OnPackagesFolderUpdate);
 
                 // We're all set up, terminate the advise
                 return true;
@@ -190,7 +190,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 myWaitForPackagesLockJsonGroupingEvent.CancelIncoming();
                 myDoRefreshGroupingEvent.FireIncoming();
             }
-            else
+            else if (change.GetChildren().Any(a=>a.GetChildren().Any(b=>b.NewPath.Name == "package.json")))
             {
                 myLogger.Trace("Other file modification in Packages folder. Scheduling normal refresh");
                 myDoRefreshGroupingEvent.FireIncoming();
