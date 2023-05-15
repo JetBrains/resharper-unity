@@ -18,13 +18,11 @@ import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.vfs.newvfs.events.*
 import com.intellij.util.PathUtil
 import com.intellij.util.application
-import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.jetbrains.rd.platform.util.getLogger
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.addUnique
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
-import com.jetbrains.rider.plugins.unity.workspace.getPackages
-import com.jetbrains.rider.projectDir
+import com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater
 import com.jetbrains.rider.projectView.VfsBackendRequester
 import org.jetbrains.annotations.Nls
 import java.nio.file.Path
@@ -151,19 +149,10 @@ class MetaTracker {
         return "meta".equals(extension, true)
     }
 
-    private fun getSourceRoots(project:Project): MutableSet<VirtualFile> {
-        val roots = mutableSetOf<VirtualFile>()
-        val assets = project.projectDir.findChild("Assets") ?: return roots
-        roots.add(assets)
-        val editablePackages = WorkspaceModel.getInstance(project).getPackages().filter { it.isEditable() }.mapNotNull { it.packageFolder }
-        roots.addAll(editablePackages)
-        return roots
-    }
-
     private fun isApplicableForProject(event: VFileEvent, project: Project): Boolean {
         val file = event.file ?: return false
 
-        for (folder in getSourceRoots(project)) {
+        for (folder in UnityWorkspacePackageUpdater.getInstance(project).sourceRootsTree) {
             if (VfsUtil.isAncestor(folder, file, false)) return true
         }
 
@@ -190,7 +179,7 @@ class MetaTracker {
         // a hidden Asset (like `Documentation~`), but not its children
         // if parent folder (except SourceRoots) doesn't have meta file, this would cover children of the HiddenAssetFolder, see RIDER-93037
 
-        val roots = getSourceRoots(project)
+        val roots = UnityWorkspacePackageUpdater.getInstance(project).sourceRootsTree
         if (UnityExplorerFileSystemNode.isHiddenAsset(assetFile) || (!roots.contains(parent) && getMetaFile(parent) == null)) {
             logger.info("avoid adding meta file for $assetFile.")
             return false

@@ -6,6 +6,8 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFilePrefixTreeFactory
 import com.intellij.util.application
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.intellij.workspaceModel.ide.getInstance
@@ -17,10 +19,12 @@ import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.protocol.ProtocolExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
+import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.adviseUntil
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
+import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
 import com.jetbrains.rider.projectView.workspace.getOrCreateRiderModuleEntity
 import java.nio.file.Paths
@@ -33,6 +37,7 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
     }
 
     private var initialEntityStorage: MutableEntityStorage? = MutableEntityStorage.create()
+    val sourceRootsTree = VirtualFilePrefixTreeFactory.createSet()
 
     class ProtocolListener : ProtocolExtListener<Solution, FrontendBackendModel> {
         override fun extensionCreated(lifetime: Lifetime, project: Project, parent: Solution, model: FrontendBackendModel) {
@@ -59,6 +64,12 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
                     return@adviseUntil true
                 }
                 return@adviseUntil false
+            }
+
+            model.packagesUpdating.adviseNotNull(lifetime) { updating ->
+                if (!updating) {
+                    getInstance(project).syncSourceRootsTree(project)
+                }
             }
         }
     }
@@ -117,6 +128,21 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
                 entityStorage.replaceBySource({ it is RiderUnityPackageEntitySource }, initialEntityStorage)
             }
         }
+    }
+
+    private fun syncSourceRootsTree(project: Project){
+        val sourceRoots = getSourceRoots(project)
+        for (root in sourceRoots)
+            sourceRootsTree.add(root)
+    }
+
+    private fun getSourceRoots(project:Project): MutableSet<VirtualFile> {
+        val roots = mutableSetOf<VirtualFile>()
+        val assets = project.projectDir.findChild("Assets") ?: return roots
+        roots.add(assets)
+        val editablePackages = WorkspaceModel.getInstance(project).getPackages().filter { it.isEditable() }.mapNotNull { it.packageFolder }
+        roots.addAll(editablePackages)
+        return roots
     }
 
     object RiderUnityPackageEntitySource : RiderEntitySource
