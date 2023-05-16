@@ -2543,24 +2543,27 @@ errorhandling interface includeBlock
 ;
 
 cgIncludeBlock
+options { stubBase="ShaderLabIncludeBase"; }
 :
-  CG_INCLUDE<START_DELIMITER, StartDelimiter>
+  CG_INCLUDE<START_DELIMITER, StartKeyword>
   cgContent<CONTENT, Content>
-  CG_END<END_DELIMITER, EndDelimiter>
+  CG_END<END_DELIMITER, EndKeyword>
 ;
 
 glslIncludeBlock
+options { stubBase="ShaderLabIncludeBase"; }
 :
-  GLSL_INCLUDE<START_DELIMITER, StartDelimiter>
+  GLSL_INCLUDE<START_DELIMITER, StartKeyword>
   cgContent<GLSL_CONTENT, Content>
-  GLSL_END<END_DELIMITER, EndDelimiter>
+  GLSL_END<END_DELIMITER, EndKeyword>
 ;
 
 hlslIncludeBlock
+options { stubBase="ShaderLabIncludeBase"; }
 :
-  HLSL_INCLUDE<START_DELIMITER, StartDelimiter>
+  HLSL_INCLUDE<START_DELIMITER, StartKeyword>
   cgContent<CONTENT, Content>
-  HLSL_END<END_DELIMITER, EndDelimiter>
+  HLSL_END<END_DELIMITER, EndKeyword>
 ;
 
 
@@ -2572,24 +2575,27 @@ errorhandling interface programBlock
 ;
 
 cgProgramBlock
+options { stubBase="ShaderLabProgramBase"; }
 :
-  CG_PROGRAM<CG_PROGRAM, Program>
+  CG_PROGRAM<CG_PROGRAM, StartKeyword>
   cgContent<CG_CONTENT, Content>
-  CG_END<CG_END, End>
+  CG_END<CG_END, EndKeyword>
 ;
 
 glslProgramBlock
+options { stubBase="ShaderLabProgramBase"; }
 :
-  GLSL_PROGRAM<GLSL_PROGRAM, Program>
+  GLSL_PROGRAM<GLSL_PROGRAM, StartKeyword>
   cgContent<GLSL_CONTENT, Content>
-  GLSL_END<GLSL_END, End>
+  GLSL_END<GLSL_END, EndKeyword>
 ;
 
 hlslProgramBlock
+options { stubBase="ShaderLabProgramBase"; }
 :
-  HLSL_PROGRAM<HLSL_PROGRAM, Program>
+  HLSL_PROGRAM<HLSL_PROGRAM, StartKeyword>
   cgContent<HLSL_CONTENT, Content>
-  HLSL_END<HLSL_END, End>
+  HLSL_END<HLSL_END, EndKeyword>
 ;
 
 cgContent

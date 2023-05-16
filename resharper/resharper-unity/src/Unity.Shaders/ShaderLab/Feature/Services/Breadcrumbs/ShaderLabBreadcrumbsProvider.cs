@@ -5,22 +5,18 @@ using System.Linq;
 using JetBrains.Application;
 using JetBrains.DocumentModel;
 using JetBrains.IDE.UI;
-using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Feature.Services.Breadcrumbs;
 using JetBrains.ReSharper.Feature.Services.Navigation;
-using JetBrains.ReSharper.Feature.Services.Navigation.NavigationProviders;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Language;
 using JetBrains.ReSharper.Psi.Files;
-using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
-using JetBrains.UI.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Breadcrumbs
 {
@@ -38,7 +34,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.B
 
         public IEnumerable<CrumbModel> CollectBreadcrumbs(IFile psiFile, DocumentOffset documentOffset)
         {
-            var solution = psiFile.GetSolution();
             var crumbs = new Stack<CrumbModel>();
             var currentNode = psiFile.FindNodeAt(documentOffset);
             foreach (var containingNode in currentNode.ContainingNodes(true))
@@ -48,13 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.B
                     case ICgContent: 
                         CollectInjectedHlslCrumbs(crumbs, containingNode, documentOffset);
                         break;
-                    case IIncludeBlock includeBlock:
-                        AddCrumb(crumbs, solution, includeBlock.StartDelimiter);
-                        break;
-                    case IProgramBlock programBlock:
-                        AddCrumb(crumbs, solution, programBlock.Program);
-                        break;
-                    case IBlockCommand and IDeclaration declaration:
+                    case IDeclaration declaration and (IBlockCommand or IIncludeBlock or IProgramBlock):
                         AddCrumb(crumbs, declaration);
                         break;
                 }
@@ -88,30 +77,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.B
                             return;
                         using (CompilationContextCookie.GetOrCreate(file.GetResolveContext()))
                             targetElement.Navigate(false);
-                    });
-                }
-            });
-            crumbs.Push(crumbModel);
-        }
-
-        private void AddCrumb(Stack<CrumbModel> crumbs, ISolution solution, ITreeNode node)
-        {
-            Interruption.Current.CheckAndThrow();
-            
-            var icon = default(IconId);
-            var documentRange = node.GetDocumentRange();
-            var rdRange = new RdTextRange(documentRange.TextRange.StartOffset, documentRange.TextRange.EndOffset);
-            var nodeName = node.NodeType is ITokenNodeType tokenNodeType ? tokenNodeType.TokenRepresentation : node.NodeType.ToString();
-            var crumbModel = new CrumbModel(nodeName , $"{nodeName}\n{Strings.ClickToNavigate_Text}", myIconHost.Transform(icon), rdRange, new List<CrumbAction>());
-            
-            crumbModel.Navigate.SetVoid(_ =>
-            {
-                using (ReadLockCookie.Create())
-                {
-                    solution.GetPsiServices().Files.ExecuteAfterCommitAllDocuments(() =>
-                    {
-                        if (node.IsValid() && node.GetContainingFile() is { } file && file.GetSourceFile()?.ToProjectFile() is { } projectFile)
-                            NavigationManager.GetInstance(solution).Navigate<IProjectFileTextRangeNavigationProvider, ProjectFileTextRange>(new ProjectFileTextRange(projectFile, file.GetDocumentRange(node.GetTreeTextRange()).TextRange, null), true);
                     });
                 }
             });
