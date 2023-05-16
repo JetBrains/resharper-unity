@@ -18,6 +18,7 @@ import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.vfs.newvfs.events.*
 import com.intellij.util.PathUtil
 import com.intellij.util.application
+import com.intellij.util.ui.EDT
 import com.jetbrains.rd.platform.util.getLogger
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.addUnique
@@ -150,6 +151,7 @@ class MetaTracker {
     }
 
     private fun isApplicableForProject(event: VFileEvent, project: Project): Boolean {
+        EDT.assertIsEdt()
         val file = event.file ?: return false
         return UnityWorkspacePackageUpdater.getInstance(project).sourceRootsTree.getAncestors(file).any()
     }
@@ -173,7 +175,7 @@ class MetaTracker {
         // avoid adding a meta file for:
         // a hidden Asset (like `Documentation~`), but not its children
         // if parent folder (except SourceRoots) doesn't have meta file, this would cover children of the HiddenAssetFolder, see RIDER-93037
-
+        EDT.assertIsEdt()
         val roots = UnityWorkspacePackageUpdater.getInstance(project).sourceRootsTree
         if (UnityExplorerFileSystemNode.isHiddenAsset(assetFile) || (!roots.contains(parent) && getMetaFile(parent) == null)) {
             logger.info("avoid adding meta file for $assetFile.")

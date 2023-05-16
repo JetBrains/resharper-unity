@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFilePrefixTreeFactory
 import com.intellij.util.application
+import com.intellij.util.ui.EDT
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.intellij.workspaceModel.ide.getInstance
 import com.intellij.workspaceModel.ide.toVirtualFileUrl
@@ -40,6 +41,7 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
 
     class ProtocolListener : ProtocolExtListener<Solution, FrontendBackendModel> {
         override fun extensionCreated(lifetime: Lifetime, project: Project, parent: Solution, model: FrontendBackendModel) {
+            EDT.assertIsEdt()
             val assets = project.projectDir.findChild("Assets")
             if (assets != null) getInstance(project).sourceRootsTree.add(assets)
 
@@ -49,12 +51,13 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
             // point, we sync the cached changes, and switch to updating the workspace model directly. We then expect
             // Unity to only add/remove a single package at a time.
             model.packages.adviseAddRemove(lifetime) { action, _, unityPackage ->
+                EDT.assertIsEdt()
                 val updater = getInstance(project)
                 val packageFolder = unityPackage.packageFolderPath?.let { VfsUtil.findFile(Paths.get(it), true) }
                 when (action) {
                     AddRemove.Add -> getInstance(project).updateWorkspaceModel { entityStorage ->
-                        updater.addPackage(unityPackage, packageFolder, entityStorage)
                         if (packageFolder != null) updater.sourceRootsTree.add(packageFolder)
+                        updater.addPackage(unityPackage, packageFolder, entityStorage)
                     }
                     AddRemove.Remove -> getInstance(project).updateWorkspaceModel { entityStorage ->
                         if (packageFolder != null) updater.sourceRootsTree.remove(packageFolder)
