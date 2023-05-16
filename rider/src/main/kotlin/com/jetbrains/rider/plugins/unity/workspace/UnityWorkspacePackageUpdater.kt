@@ -19,7 +19,6 @@ import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.protocol.ProtocolExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
-import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.adviseUntil
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
@@ -41,6 +40,8 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
 
     class ProtocolListener : ProtocolExtListener<Solution, FrontendBackendModel> {
         override fun extensionCreated(lifetime: Lifetime, project: Project, parent: Solution, model: FrontendBackendModel) {
+            val assets = project.projectDir.findChild("Assets")
+            if (assets != null) getInstance(project).sourceRootsTree.add(assets)
 
             // Subscribe to package changes. If we subscribe after the backend has loaded the initial list of packages,
             // this map will already be populated, and we'll be called for each item. If we subscribe before the list
@@ -48,9 +49,17 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
             // point, we sync the cached changes, and switch to updating the workspace model directly. We then expect
             // Unity to only add/remove a single package at a time.
             model.packages.adviseAddRemove(lifetime) { action, _, unityPackage ->
+                val updater = getInstance(project)
+                val packageFolder = unityPackage.packageFolderPath?.let { VfsUtil.findFile(Paths.get(it), true) }
                 when (action) {
-                    AddRemove.Add -> getInstance(project).updateWorkspaceModel { entityStorage -> getInstance(project).addPackage(unityPackage, entityStorage) }
-                    AddRemove.Remove -> getInstance(project).updateWorkspaceModel { entityStorage -> getInstance(project).removePackage(unityPackage, entityStorage) }
+                    AddRemove.Add -> getInstance(project).updateWorkspaceModel { entityStorage ->
+                        updater.addPackage(unityPackage, packageFolder, entityStorage)
+                        if (packageFolder != null) updater.sourceRootsTree.add(packageFolder)
+                    }
+                    AddRemove.Remove -> getInstance(project).updateWorkspaceModel { entityStorage ->
+                        if (packageFolder != null) updater.sourceRootsTree.remove(packageFolder)
+                        updater.removePackage(unityPackage, entityStorage)
+                    }
                 }
             }
 
@@ -65,19 +74,12 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
                 }
                 return@adviseUntil false
             }
-
-            model.packagesUpdating.adviseNotNull(lifetime) { updating ->
-                if (!updating) {
-                    getInstance(project).syncSourceRootsTree(project)
-                }
-            }
         }
     }
 
-    private fun addPackage(unityPackage: UnityPackage, entityStorage: MutableEntityStorage) {
+    private fun addPackage(unityPackage: UnityPackage, packageFolder: VirtualFile?,  entityStorage: MutableEntityStorage) {
         logger.trace("Adding Unity package: ${unityPackage.id}")
 
-        val packageFolder = unityPackage.packageFolderPath?.let { VfsUtil.findFile(Paths.get(it), true) }
         val contentRootEntity = if (packageFolder != null && unityPackage.source != UnityPackageSource.Unknown) {
             entityStorage.addContentRootEntity(
                 packageFolder.toVirtualFileUrl(VirtualFileUrlManager.getInstance(project)),
@@ -128,21 +130,6 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
                 entityStorage.replaceBySource({ it is RiderUnityPackageEntitySource }, initialEntityStorage)
             }
         }
-    }
-
-    private fun syncSourceRootsTree(project: Project){
-        val sourceRoots = getSourceRoots(project)
-        for (root in sourceRoots)
-            sourceRootsTree.add(root)
-    }
-
-    private fun getSourceRoots(project:Project): MutableSet<VirtualFile> {
-        val roots = mutableSetOf<VirtualFile>()
-        val assets = project.projectDir.findChild("Assets") ?: return roots
-        roots.add(assets)
-        val editablePackages = WorkspaceModel.getInstance(project).getPackages().filter { it.isEditable() }.mapNotNull { it.packageFolder }
-        roots.addAll(editablePackages)
-        return roots
     }
 
     object RiderUnityPackageEntitySource : RiderEntitySource
