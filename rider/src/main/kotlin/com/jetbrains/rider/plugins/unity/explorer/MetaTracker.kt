@@ -151,12 +151,7 @@ class MetaTracker {
 
     private fun isApplicableForProject(event: VFileEvent, project: Project): Boolean {
         val file = event.file ?: return false
-
-        for (folder in UnityWorkspacePackageUpdater.getInstance(project).sourceRootsTree) {
-            if (VfsUtil.isAncestor(folder, file, false)) return true
-        }
-
-        return false
+        return UnityWorkspacePackageUpdater.getInstance(project).sourceRootsTree.getAncestors(file).any()
     }
 
     private fun getMetaFile(path: String?): Path? {
@@ -204,7 +199,7 @@ class MetaTracker {
                 override fun beforeCommandFinished(event: CommandEvent) {
                     // apply all changes from Map<Runnable, List<Path>> and add our changes to meta files
 
-                    execute(event)
+                    execute()
                     clear()
 
                     super.beforeCommandFinished(event)
@@ -232,7 +227,7 @@ class MetaTracker {
             actions.add(MetaAction(metaFile, project, action))
         }
 
-        fun execute(event: CommandEvent) {
+        fun execute() {
             if (actions.isEmpty()) return
 
             val commandProcessor = CommandProcessor.getInstance()
