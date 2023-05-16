@@ -26,7 +26,7 @@ using Vestris.ResourceLib;
 namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 {
     [SolutionComponent]
-    public class UnityVersion : IUnityReferenceChangeHandler
+    public class UnityVersion : IUnityReferenceChangeHandler, IUnityVersion
     {
         public const string VersionRegex = @"(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)(?<type>[a-z])(?<revision>\d+)";
 
@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         private Version myVersionFromEditorInstanceJson;
         private static readonly ILogger ourLogger = Logger.GetLogger<UnityVersion>();
 
-        public readonly ViewableProperty<Version> ActualVersionForSolution = new(new Version(0,0));
+        public ViewableProperty<Version> ActualVersionForSolution { get; } = new(new Version(0,0));
 
         private readonly ViewableProperty<VirtualFileSystemPath> myActualAppPathForSolution = new();
 

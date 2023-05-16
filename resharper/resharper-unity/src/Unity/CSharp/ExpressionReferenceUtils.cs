@@ -107,6 +107,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
         {
             return invocationExpression.InvocationExpressionReference.IsResourcesLoadMethod();
         }
+        
+        public static bool IsAssetDataBaseLoadMethod(this IInvocationExpression invocationExpression)
+        {
+            return invocationExpression.InvocationExpressionReference.IsAssetDataBaseLoadMethod();
+        }
 
         private static bool IsSpecificMethod(IInvocationExpression invocationExpression, IClrTypeName typeName, params string[] methodNames)
         {
@@ -115,7 +120,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
                 return false;
 
             if (methodNames.Any(t => t.Equals(declaredElement.ShortName)))
-                return declaredElement.GetContainingType()?.GetClrName().Equals(typeName) == true;
+                return declaredElement.ContainingType?.GetClrName().Equals(typeName) == true;
             return false;
         }
 
@@ -139,6 +144,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
             return IsRelatedMethod(reference, IsResourcesLoad);
         }
 
+        public static bool IsAssetDataBaseLoadMethod(this IInvocationExpressionReference reference)
+        {
+            return IsRelatedMethod(reference, IsAssetDataBaseLoad);
+        }
+
         private static bool IsRelatedMethod(IInvocationExpressionReference reference, Func<IMethod, bool> checker)
         {
             var result = reference.Resolve();
@@ -156,38 +166,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
 
         private static bool IsEditorSceneManagerLoadScene(IMethod method)
         {
-            if (method != null && method.ShortName.Equals("OpenScene") &&
-                method.GetContainingType()?.GetClrName().Equals(KnownTypes.EditorSceneManager) == true)
-            {
-                return true;
-            }
-
-            return false;
+            return method != null 
+                   && method.ShortName.Equals("OpenScene") && method.ContainingType?.GetClrName().Equals(KnownTypes.EditorSceneManager) == true;
         }
 
         private static bool IsSceneManagerLoadScene(IMethod method)
         {
-            if (method != null && method.ShortName.StartsWith("LoadScene") &&
-                method.GetContainingType()?.GetClrName().Equals(KnownTypes.SceneManager) == true)
-            {
-                return true;
-            }
-
-            return false;
+            return method != null 
+                   && method.ShortName.StartsWith("LoadScene") 
+                   && method.ContainingType?.GetClrName().Equals(KnownTypes.SceneManager) == true;
         }
         
         private static bool IsAnimatorPlay(IMethod method)
         {
             return method != null &&
-                   method.ShortName.StartsWith("Play") &&
-                   method.GetContainingType()?.GetClrName().Equals(KnownTypes.Animator) == true;
+                   method.ShortName.StartsWith("Play") && method.ContainingType?.GetClrName().Equals(KnownTypes.Animator) == true;
         }
 
         private static bool IsResourcesLoad(IMethod method)
         {
             return method != null &&
-                   method.ShortName.StartsWith("Load") &&
-                   method.GetContainingType()?.GetClrName().Equals(KnownTypes.Resources) == true;
+                   method.ShortName.StartsWith("Load") && method.ContainingType?.GetClrName().Equals(KnownTypes.Resources) == true;
+        }        
+        
+        private static bool IsAssetDataBaseLoad(IMethod method)
+        {
+            return method != null &&
+                   method.ShortName.StartsWith("Load") && method.ContainingType?.GetClrName().Equals(KnownTypes.AssetDatabase) == true;
         }
     }
 }

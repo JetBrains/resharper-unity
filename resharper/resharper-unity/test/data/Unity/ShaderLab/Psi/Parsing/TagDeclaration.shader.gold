@@ -74,37 +74,41 @@ IShaderLabFile
                           Identifier(type:IDENTIFIER, text:LightMode)
                         Whitespace(type:WHITESPACE, text: ) spaces: " "
                         ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
-  Whitespace(type:WHITESPACE, text: ) spaces: " "
-  ErrorElement:Identifier expected
-    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Vertex")
-    Whitespace(type:WHITESPACE, text: ) spaces: " "
-    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-    Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-    ShaderLabTokenType+KeywordTokenElement(type:TAGS_KEYWORD, text:Tags)
-    Whitespace(type:WHITESPACE, text: ) spaces: " "
-    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-    Whitespace(type:WHITESPACE, text: ) spaces: " "
-    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"LightMode")
-    Whitespace(type:WHITESPACE, text: ) spaces: " "
-    ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
-    Whitespace(type:WHITESPACE, text: ) spaces: " "
-    Identifier(type:IDENTIFIER, text:Vertex)
-    Whitespace(type:WHITESPACE, text: ) spaces: " "
-    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-    Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-    ICgProgramBlock
-      ShaderLabTokenType+CgProgramTokenElement(type:CG_PROGRAM, text:CGPROGRAM)
-      ICgContent
-        ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:\n            )
-      ShaderLabTokenType+CgEndTokenElement(type:CG_END, text:ENDCG)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-    Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-    Whitespace(type:WHITESPACE, text:    ) spaces: "    "
-    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      ErrorElement:Identifier expected
+                        ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Vertex")
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                  ITagsCommand
+                    ShaderLabTokenType+KeywordTokenElement(type:TAGS_KEYWORD, text:Tags)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ITagsValue
+                      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      IStringLiteralTagDeclaration
+                        ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"LightMode")
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      ErrorElement:"XXX" expected
+                        Identifier(type:IDENTIFIER, text:Vertex)
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                  ICgProgramBlock
+                    ShaderLabTokenType+CgProgramTokenElement(type:CG_PROGRAM, text:CGPROGRAM)
+                    ICgContent
+                      ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:\n            )
+                    ShaderLabTokenType+CgEndTokenElement(type:CG_END, text:ENDCG)
+                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                  Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+            ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
 

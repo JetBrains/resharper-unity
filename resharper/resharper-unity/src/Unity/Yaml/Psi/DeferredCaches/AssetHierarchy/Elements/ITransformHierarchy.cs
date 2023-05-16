@@ -6,6 +6,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     {
         // TODO : think about store only parent anchor, because file id is stored in Location
         LocalReference ParentTransform { get; }
-        int RootIndex { get; }
+        int RootOrder { get; }
     }
 }

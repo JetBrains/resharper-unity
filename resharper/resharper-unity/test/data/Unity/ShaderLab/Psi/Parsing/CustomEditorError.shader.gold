@@ -14,7 +14,7 @@ IShaderLabFile
         ICustomEditorCommand
           ShaderLabTokenType+KeywordTokenElement(type:CUSTOM_EDITOR_KEYWORD, text:CustomEditor)
           ICustomEditorValue
-            ErrorElement:Unexpected token
+        ErrorElement:"XXX" expected
       Whitespace(type:WHITESPACE, text: ) spaces: " "
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
