@@ -17,9 +17,9 @@ IShaderLabFile
             ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"fallbackShader")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             ILodValue
-  Whitespace(type:WHITESPACE, text: ) spaces: " "
-  ErrorElement:0.0 expected
-    Identifier(type:IDENTIFIER, text:ID)
-    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        ErrorElement:0.0 expected
+          Identifier(type:IDENTIFIER, text:ID)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
 

@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using JetBrains.ReSharper.Feature.Services.CSharp.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Features.WinForms.Designer.Protocol.Model;
@@ -9,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 {
     internal static class UnityCompletionUtils
     {
-        internal static bool IsSpecificArgumentInSpecificMethod(CSharpCodeCompletionContext context, out ICSharpLiteralExpression stringLiteral,
+        internal static bool IsSpecificArgumentInSpecificMethod(CSharpCodeCompletionContext context, out ICSharpLiteralExpression? stringLiteral,
             Func<IInvocationExpression, bool> methodChecker, Func<IArgumentList, ICSharpArgument, bool> argumentChecker)
         {
             stringLiteral = null;
@@ -59,6 +60,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 
                 return false;
             };
+        }
+
+        internal static ICSharpLiteralExpression? StringLiteral(this CSharpCodeCompletionContext context)
+        {
+            return context.NodeInFile is ITokenNode { Parent: ICSharpLiteralExpression literalExpression } &&
+                   literalExpression.Literal.IsAnyStringLiteral()
+                ? literalExpression
+                : null;
         }
     }
 }

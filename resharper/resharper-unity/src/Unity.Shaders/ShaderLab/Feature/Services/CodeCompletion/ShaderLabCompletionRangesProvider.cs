@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
     {
         protected override TextLookupRanges GetDefaultRanges(ShaderLabCodeCompletionContext context)
         {
-            return context.Ranges;
+            return context.CompletionRanges;
         }
     }
 }
