@@ -15,6 +15,7 @@
         public const string IDS_BOOL_LITERAL = "bool";
         public const string IDS_BOOL_VALUE = "bool";
         public const string IDS_BRIGHTNESS_MODIFIER = "Brightness modifier";
+        public const string IDS_CODE_BLOCK = "code block";
         public const string IDS_COMPARISON_FUNCTION_VALUE = "comparison function";
         public const string IDS_COLOR_MASK_RGBA_FLAGS = "RGBA flags";
         public const string IDS_COLOR_MATERIAL_VALUE = "color material value";

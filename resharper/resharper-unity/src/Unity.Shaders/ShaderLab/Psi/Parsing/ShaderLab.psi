@@ -1116,7 +1116,7 @@ interface blockValue
 // **************************************************************************
 
 errorhandling shaderCommand
-options { stubBase="ShaderLabCommandBase"; }
+options { stubBase="ShaderLabBlockCommandBase"; }
 :
   SHADER_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   shaderValue<SHADER_LAB_VALUE, Value>
@@ -1165,7 +1165,7 @@ private errorhandling shaderValueName
 errorhandling propertiesCommand
 options {
   parsingContext;
-  stubBase="ShaderLabCommandBase";
+  stubBase="ShaderLabBlockCommandBase";
 }
 :
   PROPERTIES_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
@@ -1428,7 +1428,7 @@ stringAttributeParameterValue
 // **************************************************************************
 
 errorhandling categoryCommand
-options { stubBase="ShaderLabCommandBase"; }
+options { stubBase="ShaderLabBlockCommandBase"; }
 :
   CATEGORY_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   categoryValue<SHADERLAB_VALUE, Value>
@@ -1461,7 +1461,7 @@ private errorhandling stateCommandForCategory
 // **************************************************************************
 
 subShaderCommand
-options { stubBase="ShaderLabCommandBase"; }
+options { stubBase="ShaderLabBlockCommandBase"; }
 :
   SUB_SHADER_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   subShaderValue<SHADER_LAB_VALUE, Value>
@@ -1510,7 +1510,7 @@ interface stateCommand
 // **************************************************************************
 
 tagsCommand
-options { stubBase="ShaderLabCommandBase"; }
+options { stubBase="ShaderLabBlockCommandBase"; }
 :
   TAGS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   tagsValue<SHADER_LAB_VALUE, Value>
@@ -1856,7 +1856,7 @@ stencilOperation
 ;
 
 stencilCommand
-options { stubBase="ShaderLabCommandBase"; }
+options { stubBase="ShaderLabBlockCommandBase"; }
 :
   STENCIL_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   stencilValue<SHADER_LAB_VALUE, Value>
@@ -2079,7 +2079,7 @@ colorMaterialValue
 ;
 
 materialCommand
-options { stubBase="ShaderLabCommandBase"; }
+options { stubBase="ShaderLabBlockCommandBase"; }
 :
   MATERIAL_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   materialValue<SHADER_LAB_VALUE, Value>
@@ -2150,7 +2150,7 @@ options { stubBase="ShaderLabCommandBase"; }
 // **************************************************************************
 
 errorhandling setTextureCommand
-options { stubBase="ShaderLabCommandBase"; }
+options { stubBase="ShaderLabBlockCommandBase"; }
 :
   SET_TEXTURE_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   setTextureValue<SHADER_LAB_VALUE, Value>
@@ -2399,7 +2399,7 @@ private alphaTestComparisonValue
 // **************************************************************************
 
 fogCommand
-options { stubBase="ShaderLabCommandBase"; }
+options { stubBase="ShaderLabBlockCommandBase"; }
 :
   FOG_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   fogValue<SHADER_LAB_VALUE, Value>
@@ -2471,7 +2471,7 @@ rangeValue
 // **************************************************************************
 
 errorhandling bindChannelsCommand
-options { stubBase="ShaderLabCommandBase"; }
+options { stubBase="ShaderLabBlockCommandBase"; }
 :
   BIND_CHANNELS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   bindChannelsValue<SHADER_LAB_VALUE, Value>
@@ -2514,13 +2514,19 @@ bindValue
 //
 // **************************************************************************
 
+interface codeBlock
+:
+  includeBlock
+  | programBlock
+;
+
 // This rule isn't used by anything. It forces a following token set of any token
 // which allows us to use `errorhandling`. If we don't have this rule, the following
 // token is expected to be null, and then we don't get `errorhandling` and would
 // have to handle thrown syntax errors manually
 errorhandling cgBlockForceFollows
 :
-  (includeBlock | programBlock)
+  codeBlock
   (errorElement | WHITESPACE | NEW_LINE)
 ;
 
@@ -2625,7 +2631,7 @@ options { stubBase="ShaderLabCommandBase"; }
 ;
 
 grabPassDef
-options { stubBase="ShaderLabCommandBase"; }
+options { stubBase="ShaderLabBlockCommandBase"; }
 :
   GRABPASS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   grabPassValue<SHADER_LAB_VALUE, Value>
@@ -2657,7 +2663,7 @@ optionalNameCommand
 ;
 
 texturePassDef
-options { stubBase="ShaderLabCommandBase"; }
+options { stubBase="ShaderLabBlockCommandBase"; }
 :
   PASS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   texturePassValue<SHADER_LAB_VALUE, Value>
