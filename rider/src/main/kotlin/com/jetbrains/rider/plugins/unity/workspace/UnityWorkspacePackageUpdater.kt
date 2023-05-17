@@ -9,7 +9,6 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFilePrefixTreeFactory
 import com.intellij.util.application
-import com.intellij.util.ui.EDT
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.intellij.workspaceModel.ide.getInstance
 import com.intellij.workspaceModel.ide.toVirtualFileUrl
@@ -21,10 +20,12 @@ import com.jetbrains.rd.protocol.ProtocolExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.adviseUntil
+import com.jetbrains.rdclient.util.idea.toVirtualFile
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
 import com.jetbrains.rider.projectDir
+import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
 import com.jetbrains.rider.projectView.workspace.getOrCreateRiderModuleEntity
 import java.nio.file.Paths
@@ -39,19 +40,21 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
     private var initialEntityStorage: MutableEntityStorage? = MutableEntityStorage.create()
     val sourceRootsTree = VirtualFilePrefixTreeFactory.createSet()
 
+    init {
+        application.assertIsDispatchThread()
+        val assets = project.solutionDirectory.toVirtualFile(false)?.findChild("Assets") ?: error("Virtual file not found for Assets directory")
+        sourceRootsTree.add(assets)
+    }
+
     class ProtocolListener : ProtocolExtListener<Solution, FrontendBackendModel> {
         override fun extensionCreated(lifetime: Lifetime, project: Project, parent: Solution, model: FrontendBackendModel) {
-            EDT.assertIsEdt()
-            val assets = project.projectDir.findChild("Assets")
-            if (assets != null) getInstance(project).sourceRootsTree.add(assets)
-
             // Subscribe to package changes. If we subscribe after the backend has loaded the initial list of packages,
             // this map will already be populated, and we'll be called for each item. If we subscribe before the list
             // is loaded, updateWorkspaceModel will cache the changes until the packagesUpdating flag is reset. At this
             // point, we sync the cached changes, and switch to updating the workspace model directly. We then expect
             // Unity to only add/remove a single package at a time.
             model.packages.adviseAddRemove(lifetime) { action, _, unityPackage ->
-                EDT.assertIsEdt()
+                application.assertIsDispatchThread()
                 val updater = getInstance(project)
                 val packageFolder = unityPackage.packageFolderPath?.let { VfsUtil.findFile(Paths.get(it), true) }
                 when (action) {
