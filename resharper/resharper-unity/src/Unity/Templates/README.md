@@ -12,6 +12,7 @@ Categorised:
 |----------------------------------------------------------|
 | [Assembly Definition File](File/AsmDef.md)               |
 | [Asset Postprocessor](File/AssetPostprocessor.md)        |
+| [Authoring](File/AuthoringMonoBehaviour.md)              |
 | [Custom Editor](File/CustomEditorNew.md)                 |
 | [Custom Editor (IMGUI)](File/CustomEditor.md)            |
 | [Edit Mode Test](File/EditModeTest.md)                   |
@@ -49,6 +50,7 @@ Categorised:
 | [menuitem](Live/MenuItem.md)                        | Unity menu item handler                      |
 | [reqcomp](Live/RequireComponent.md)                 | Unity RequireComponent attribute             |
 | [sfield](Live/SerialisedField.md)                   | Unity serialized field                       |
+| [baker](Live/DotsBaker.md)                          | DOTS Baker                                   |
 | [sprop](Live/PropertyWithSerialisedBackingField.md) | Unity property with serialized backing field |
 
 <a name="unity"></a>
@@ -60,6 +62,7 @@ Categorised:
 |----------------------------------------------------------|
 | [Assembly Definition File](File/AsmDef.md)               |
 | [Asset Postprocessor](File/AssetPostprocessor.md)        |
+| [Authoring](File/AuthoringMonoBehaviour.md)              |
 | [Custom Editor](File/CustomEditorNew.md)                 |
 | [Custom Editor (IMGUI)](File/CustomEditor.md)            |
 | [Edit Mode Test](File/EditModeTest.md)                   |
@@ -97,5 +100,7 @@ Categorised:
 | [menuitem](Live/MenuItem.md)                        | Unity menu item handler                      |
 | [reqcomp](Live/RequireComponent.md)                 | Unity RequireComponent attribute             |
 | [sfield](Live/SerialisedField.md)                   | Unity serialized field                       |
+| [baker](Live/DotsBaker.md)                          | DOTS Baker                                   |
 | [sprop](Live/PropertyWithSerialisedBackingField.md) | Unity property with serialized backing field |
+| [jobentity](Live/JobEntity.md)                          | DOTS IJobEntity                              |
 

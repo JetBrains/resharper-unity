@@ -5,7 +5,7 @@ using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
-    public enum ResourceLocationType
+    internal enum ResourceLocationType
     {
         Player,
         Editor,
@@ -13,38 +13,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         PackageEditor,
     }
 
-    public class ResourcesCacheItem
+    internal class ResourcesCacheItem
     {
         public static readonly IUnsafeMarshaller<ResourcesCacheItem> Marshaller =
             new UniversalMarshaller<ResourcesCacheItem>(Read, Write);
 
-        private readonly ResourceLocationType myLocationType;
-        private readonly VirtualFileSystemPath myPathInsideResourcesFolder;
-        [CanBeNull] private readonly RelativePath myRelativePath;
-        private readonly string myExtensionWithDot;
-
         public ResourcesCacheItem(ResourceLocationType locationType, VirtualFileSystemPath pathInsideResourcesFolder,
             RelativePath relativePath, string extensionWithDot)
         {
-            myLocationType = locationType;
-            myPathInsideResourcesFolder = pathInsideResourcesFolder;
-            myRelativePath = relativePath;
-            myExtensionWithDot = extensionWithDot;
+            LocationType = locationType;
+            PathInsideResourcesFolder = pathInsideResourcesFolder;
+            RelativePath = relativePath;
+            ExtensionWithDot = extensionWithDot;
         }
 
-        public ResourceLocationType LocationType => myLocationType;
-        public VirtualFileSystemPath PathInsideResourcesFolder => myPathInsideResourcesFolder;
+        public ResourceLocationType LocationType { get; }
 
-        [CanBeNull] public RelativePath RelativePath => myRelativePath;
+        public VirtualFileSystemPath PathInsideResourcesFolder { get; }
 
-        public string ExtensionWithDot => myExtensionWithDot;
+        [CanBeNull] public RelativePath RelativePath { get; }
 
+        public string ExtensionWithDot { get; }
+        
         private static void Write(UnsafeWriter writer, ResourcesCacheItem value)
         {
-            writer.WriteEnum(value.myLocationType);
-            writer.Write(value.myPathInsideResourcesFolder);
-            writer.Write(value.myRelativePath);
-            writer.Write(value.myExtensionWithDot);
+            writer.WriteEnum(value.LocationType);
+            writer.Write(value.PathInsideResourcesFolder);
+            writer.Write(value.RelativePath);
+            writer.Write(value.ExtensionWithDot);
         }
 
         private static ResourcesCacheItem Read(UnsafeReader reader)
@@ -54,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             var relativePath = reader.ReadRelativePath();
             var extensionWithDot = reader.ReadString();
             
-            return new ResourcesCacheItem(locationType.Value, pathInsideResourcesDirectory, relativePath, extensionWithDot);    
+            return new ResourcesCacheItem(locationType!.Value, pathInsideResourcesDirectory, relativePath, extensionWithDot);    
         }
 
         public override string ToString()
