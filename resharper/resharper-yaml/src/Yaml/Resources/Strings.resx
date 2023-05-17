@@ -25,6 +25,6 @@
         <comment>Nothing to translate here. It is part of the generator's work, not a mistake.</comment>
     </data>
     <data name="YamlLanguageSpecificDaemonBehaviour_InitialErrorStripe_File_s_primary_language_in_not_Yaml" xml:space="preserve">
-        <value>File's primary language in not YAML</value>
+        <value>File's primary language is not YAML</value>
     </data>
 </root>

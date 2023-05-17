@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
                 return ErrorStripeRequestWithDescription.StripeAndErrors;
             }
 
-            return ErrorStripeRequestWithDescription.None("File's primary language in not ShaderLab");
+            return ErrorStripeRequestWithDescription.None("File's primary language is not ShaderLab");
         }
 
         public bool CanShowErrorBox => true;
