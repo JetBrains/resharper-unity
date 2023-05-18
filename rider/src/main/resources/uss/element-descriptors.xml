@@ -545,13 +545,14 @@
   <!-- Note that 2017.1 has custom properties.8A1y unknown property is added to dictionary. Doesn't appear to have a typ -->
 
   <!-- Pseudo classes -->
-  <!-- https://docs.unity3d.com/Manual/UIE-USS-Selectors.html -->
+  <!-- https://docs.unity3d.com/Manual/UIE-USS-Selectors-Pseudo-Classes.html -->
   <pseudo-class id="hover" declared-in="0" tooltip="The cursor is hovering over the visual element."/>
   <pseudo-class id="active" declared-in="0" tooltip="The visual element is being interacted with." />
-  <pseudo-class id="inactive" declared-in="0" tooltip="The visual element is no longer being interacted with." />
+  <pseudo-class id="inactive" declared-in="0" tooltip="A user stops to interact with the element." />
   <pseudo-class id="focus" declared-in="0" tooltip="The visual element has focus." />
-  <!-- The documentation also lists selected ("unused") -->
-  <pseudo-class id="disabled" declared-in="0" tooltip="The visual element is set to enabled == false." />
-  <pseudo-class id="enabled" declared-in="0" tooltip="The visual element is set to enabled == true." />
-  <pseudo-class id="checked" declared-in="0" tooltip="The visual element is a Toggle element and it is checked." />
+  <!-- ":selected	USS doesn’t support this pseudo-state. Use :checked instead." -->
+  <pseudo-class id="disabled" declared-in="0" tooltip="The element is in a disabled state." />
+  <pseudo-class id="enabled" declared-in="0" tooltip="The element is in an enabled state." />
+  <pseudo-class id="checked" declared-in="0" tooltip="The element is a Toggle or RadioButton element and it’s selected." />
+  <pseudo-class id="root" declared-in="0" tooltip="The element is the highest-level element in the visual tree." /> <!-- 2020.1 -->
 </definitions>

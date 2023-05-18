@@ -15,7 +15,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
     [PsiComponent]
-    public class ResourceLoadCache : SimpleICache<ResourcesCacheItem>
+    internal class ResourceLoadCache : SimpleICache<ResourcesCacheItem>
     {
         private readonly object myCachedResourcesLock = new();
         private readonly HashSet<ResourceCacheInfo> myCachedResources = new();
@@ -57,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             var extensionNoDot =
                 sourceFileLocation.ExtensionNoDot; //get real file extension (png) - used on the completion popup
 
-            if (extensionNoDot.IsNullOrEmpty()) //files without extension or any folder - should be skipped 
+            if (extensionNoDot.IsNullOrEmpty() && !sourceFileLocation.ExistsDirectory) //files without extension - should be skipped 
                 return null;
 
             var relativeToSolution = sourceFileLocation.TryMakeRelativeTo(mySolutionDirectory);

@@ -556,5 +556,7 @@
     public static string Template_Editable_TW9kdWxlIGludGVyZmFjZSB1bml0 => ResourceManager.GetString("Template_Editable_TW9kdWxlIGludGVyZmFjZSB1bml0");
     public static string Template_Editable_SGVhZGVyIGZpbGUEQ => ResourceManager.GetString("Template_Editable_SGVhZGVyIGZpbGUEQ");
     public static string Template_Editable_U291cmNlIGZpbGUEQ => ResourceManager.GetString("Template_Editable_U291cmNlIGZpbGUEQ");
+    public static string EvaluatesParentTypeName_Text => ResourceManager.GetString("EvaluatesParentTypeName_Text");
+    public static string EvaluatesBakerParentTypeName_Text => ResourceManager.GetString("EvaluatesBakerParentTypeName_Text");
   }
 }

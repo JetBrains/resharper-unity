@@ -19,7 +19,6 @@ import com.jetbrains.rider.projectView.workspace.getSolutionEntity
 import com.jetbrains.rider.projectView.workspace.impl.WorkspaceProjectsCount
 import icons.UnityIcons
 
-@Suppress("UnstableApiUsage")
 class AssetsRootNode(project: Project, virtualFile: VirtualFile)
     : UnityExplorerFileSystemNode(project, virtualFile, emptyList(), AncestorNodeType.Assets) {
 

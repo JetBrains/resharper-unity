@@ -6,12 +6,13 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFilePrefixTreeFactory
 import com.intellij.util.application
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.intellij.workspaceModel.ide.getInstance
 import com.intellij.workspaceModel.ide.toVirtualFileUrl
 import com.intellij.workspaceModel.storage.MutableEntityStorage
-import com.intellij.workspaceModel.storage.bridgeEntities.addContentRootEntity
 import com.intellij.workspaceModel.storage.url.VirtualFileUrlManager
 import com.jetbrains.rd.ide.model.Solution
 import com.jetbrains.rd.platform.util.idea.LifetimedService
@@ -19,9 +20,12 @@ import com.jetbrains.rd.protocol.ProtocolExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.adviseUntil
+import com.jetbrains.rdclient.util.idea.toVirtualFile
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
+import com.jetbrains.rider.projectDir
+import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
 import com.jetbrains.rider.projectView.workspace.getOrCreateRiderModuleEntity
 import java.nio.file.Paths
@@ -34,19 +38,34 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
     }
 
     private var initialEntityStorage: MutableEntityStorage? = MutableEntityStorage.create()
+    val sourceRootsTree = VirtualFilePrefixTreeFactory.createSet()
+
+    init {
+        application.assertIsDispatchThread()
+        val assets = project.solutionDirectory.toVirtualFile(false)?.findChild("Assets") ?: error("Virtual file not found for Assets directory")
+        sourceRootsTree.add(assets)
+    }
 
     class ProtocolListener : ProtocolExtListener<Solution, FrontendBackendModel> {
         override fun extensionCreated(lifetime: Lifetime, project: Project, parent: Solution, model: FrontendBackendModel) {
-
             // Subscribe to package changes. If we subscribe after the backend has loaded the initial list of packages,
             // this map will already be populated, and we'll be called for each item. If we subscribe before the list
             // is loaded, updateWorkspaceModel will cache the changes until the packagesUpdating flag is reset. At this
             // point, we sync the cached changes, and switch to updating the workspace model directly. We then expect
             // Unity to only add/remove a single package at a time.
             model.packages.adviseAddRemove(lifetime) { action, _, unityPackage ->
+                application.assertIsDispatchThread()
+                val updater = getInstance(project)
+                val packageFolder = unityPackage.packageFolderPath?.let { VfsUtil.findFile(Paths.get(it), true) }
                 when (action) {
-                    AddRemove.Add -> getInstance(project).updateWorkspaceModel { entityStorage -> getInstance(project).addPackage(unityPackage, entityStorage) }
-                    AddRemove.Remove -> getInstance(project).updateWorkspaceModel { entityStorage -> getInstance(project).removePackage(unityPackage, entityStorage) }
+                    AddRemove.Add -> getInstance(project).updateWorkspaceModel { entityStorage ->
+                        if (packageFolder != null) updater.sourceRootsTree.add(packageFolder)
+                        updater.addPackage(unityPackage, packageFolder, entityStorage)
+                    }
+                    AddRemove.Remove -> getInstance(project).updateWorkspaceModel { entityStorage ->
+                        if (packageFolder != null) updater.sourceRootsTree.remove(packageFolder)
+                        updater.removePackage(unityPackage, entityStorage)
+                    }
                 }
             }
 
@@ -64,10 +83,9 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
         }
     }
 
-    private fun addPackage(unityPackage: UnityPackage, entityStorage: MutableEntityStorage) {
+    private fun addPackage(unityPackage: UnityPackage, packageFolder: VirtualFile?,  entityStorage: MutableEntityStorage) {
         logger.trace("Adding Unity package: ${unityPackage.id}")
 
-        val packageFolder = unityPackage.packageFolderPath?.let { VfsUtil.findFile(Paths.get(it), true) }
         val contentRootEntity = if (packageFolder != null && unityPackage.source != UnityPackageSource.Unknown) {
             entityStorage.addContentRootEntity(
                 packageFolder.toVirtualFileUrl(VirtualFileUrlManager.getInstance(project)),

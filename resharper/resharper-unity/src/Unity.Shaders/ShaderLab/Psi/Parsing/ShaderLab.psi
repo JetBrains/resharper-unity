@@ -1034,7 +1034,9 @@ interface blockCommand
   | materialCommand
   | setTextureCommand
   | fogCommand
-  | bindChannelsCommand
+  | bindChannelsCommand  
+  | grabPassDef
+  | texturePassDef
 ;
 
 interface blockValue
@@ -1063,7 +1065,7 @@ interface blockValue
 
 errorhandling shaderCommand
 :
-  SHADER_KEYWORD<SHADER_LAB_KEYWORD, ShaderKeyword>
+  SHADER_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   shaderValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1112,7 +1114,7 @@ options {
   parsingContext;
 }
 :
-  PROPERTIES_KEYWORD<SHADER_LAB_KEYWORD, PropertiesKeyword>
+  PROPERTIES_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   propertiesValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1373,7 +1375,7 @@ stringAttributeParameterValue
 
 errorhandling categoryCommand
 :
-  CATEGORY_KEYWORD<SHADER_LAB_KEYWORD, CategoryKeyword>
+  CATEGORY_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   categoryValue<SHADERLAB_VALUE, Value>
 ;
 
@@ -1405,7 +1407,7 @@ private errorhandling stateCommandForCategory
 
 subShaderCommand
 :
-  SUB_SHADER_KEYWORD<SHADER_LAB_KEYWORD, SubShaderKeyword>
+  SUB_SHADER_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   subShaderValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1453,8 +1455,8 @@ interface stateCommand
 
 tagsCommand
 :
-  TAGS_KEYWORD<SHADER_LAB_KEYWORD, TagsKeyword>
-  tagsValue<SHADER_KAB_VALUE, Value>
+  TAGS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
+  tagsValue<SHADER_LAB_VALUE, Value>
 ;
 
 tagsValue
@@ -1788,7 +1790,7 @@ stencilOperation
 
 stencilCommand
 :
-  STENCIL_KEYWORD<SHADER_LAB_KEYWORD, StencilKeyword>
+  STENCIL_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   stencilValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1862,7 +1864,7 @@ compBackCommand
 
 passCommand
 :
-  PASS_KEYWORD<SHADER_LAB_KEYWORD, PassKeyword>
+  PASS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   stencilOperation<SHADER_LAB_VALUE, Value>
 ;
 
@@ -1989,7 +1991,7 @@ colorMaterialValue
 
 materialCommand
 :
-  MATERIAL_KEYWORD<SHADER_LAB_KEYWORD, MaterialKeyword>
+  MATERIAL_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   materialValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -2054,7 +2056,7 @@ emissionCommand
 
 errorhandling setTextureCommand
 :
-  SET_TEXTURE_KEYWORD<SHADER_LAB_KEYWORD, SetTextureKeyword>
+  SET_TEXTURE_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   setTextureValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -2298,7 +2300,7 @@ private alphaTestComparisonValue
 
 fogCommand
 :
-  FOG_KEYWORD<SHADER_LAB_KEYWORD, FogKeyword>
+  FOG_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   fogValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -2366,7 +2368,7 @@ rangeValue
 
 errorhandling bindChannelsCommand
 :
-  BIND_CHANNELS_KEYWORD<SHADER_LAB_KEYWORD, BindChannelsKeyword>
+  BIND_CHANNELS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   bindChannelsValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -2506,12 +2508,12 @@ errorhandling interface passDef
 usePassDef
 :
   USEPASS_KEYWORD<SHADER_LAB_KEYWORD, UsePassKeyword>
-  STRING_LITERAL<SHADER_LAB_VALUE, Value>
+  STRING_LITERAL<SHADER_LAB_VALUE, UsePassValue>
 ;
 
 grabPassDef
 :
-  GRABPASS_KEYWORD<SHADER_LAB_KEYWORD, GrabPassKeyword>
+  GRABPASS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   grabPassValue<SHADER_LAB_VALUE, Value>
 ;
 
@@ -2542,7 +2544,7 @@ optionalNameCommand
 
 texturePassDef
 :
-  PASS_KEYWORD<SHADER_LAB_KEYWORD, PassKeyword>
+  PASS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
   texturePassValue<SHADER_LAB_VALUE, Value>
 ;
 

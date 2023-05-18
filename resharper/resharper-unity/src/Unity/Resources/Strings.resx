@@ -1563,4 +1563,10 @@ a plugin to be installed to a project.</value>
     <data name="Template_Editable_U291cmNlIGZpbGUEQ" xml:space="preserve">
         <value>Source file</value>
     </data>
+    <data name="EvaluatesParentTypeName_Text" xml:space="preserve">
+        <value>Current parent Unity type name</value>
+    </data>
+    <data name="EvaluatesBakerParentTypeName_Text" xml:space="preserve">
+        <value>Generate Baker name based on parent Unity type name</value>
+    </data>
 </root>

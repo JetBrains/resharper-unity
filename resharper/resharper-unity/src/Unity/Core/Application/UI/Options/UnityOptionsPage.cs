@@ -24,7 +24,8 @@ using JetBrains.Rider.Model.UIAutomation;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
 {
-    [OptionsPage(PID, Name, typeof(LogoIcons.Unity), ParentId = CodeEditingPage.PID)]
+    [OptionsPage(PID, Name, typeof(LogoIcons.Unity), ParentId = CodeEditingPage.PID, 
+        HelpKeyword = "Settings_Unity_Engine")]
     public class UnityOptionsPage : BeSimpleOptionsPage
     {
         public const string PID = "UnityPluginSettings";

@@ -1,0 +1,48 @@
+.screen {
+    flex-grow: 1;
+    background-image: url("project:Assets/UI/TitleScreen.png");
+    align-items: center;
+    justify-content: center;
+    -unity-font: url('/Assets/UI/Fonts/LilitaOne-Regular.ttf');
+    font-size: 20px;
+    -unity-background-scale-mode: scale-and-crop;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.screen--tinted {
+    flex-grow: 1;
+    -unity-background-image-tint-color: rgb(108, 108, 108);
+}
+
+.header {
+    font-size: 36px;
+    margin-bottom: 18px;
+    margin-top: 15px;
+    color: rgb(255, 255, 255);
+}
+
+.button {
+    background-color: rgba(228, 228, 228, 0);
+    background-image: url('/Assets/UI/Elements/ui_btn_menus.png');
+    height: 87px;
+    justify-content: center;
+    align-items: stretch;
+    -unity-slice-left: 80;
+    -unity-slice-right: 80;
+    -unity-slice-top: 40;
+    -unity-slice-bottom: 40;
+    border-color: rgba(0, 0, 0, 0);
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 32px;
+    color: rgb(255, 255, 255);
+    width: 266px;
+}
+
+.button:hover {
+    border-color: rgba(0, 0, 0, 0);
+    color: rgb(180, 178, 178);
+}
