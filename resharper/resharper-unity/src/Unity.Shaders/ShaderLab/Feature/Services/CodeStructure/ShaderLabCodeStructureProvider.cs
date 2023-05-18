@@ -1,6 +1,8 @@
 #nullable enable
 
 using JetBrains.ReSharper.Feature.Services.CodeStructure;
+using JetBrains.ReSharper.Plugins.Unity.Services.CodeStructure;
+using JetBrains.ReSharper.Plugins.Unity.Services.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -11,9 +13,9 @@ using JetBrains.ReSharper.Psi.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.CodeStructure
 {
     [Language(typeof(ShaderLabLanguage))]
-    public class ShaderLabCodeStructureProvider : HierarchicalDeclarationPsiFileCodeStructureProviderBase
+    public class ShaderLabCodeStructureProvider : StructuralDeclarationPsiFileCodeStructureProviderBase
     {
-        protected override CodeStructureElement? CreateDeclarationElement(CodeStructureElement parent, IHierarchicalDeclaration declaration, CodeStructureOptions options)
+        protected override CodeStructureElement? CreateDeclarationElement(CodeStructureElement parent, IStructuralDeclaration declaration, CodeStructureOptions options)
         {
             var element = base.CreateDeclarationElement(parent, declaration, options);
             if (declaration is ICodeBlock codeBlock && element != null)

@@ -3,6 +3,8 @@
 using JetBrains.DocumentModel;
 using JetBrains.IDE.UI;
 using JetBrains.ReSharper.Feature.Services.Breadcrumbs;
+using JetBrains.ReSharper.Plugins.Unity.Services.Breadcrumbs;
+using JetBrains.ReSharper.Plugins.Unity.Services.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -15,14 +17,14 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Breadcrumbs
 {
     [Language(typeof(ShaderLabLanguage))]
-    public class ShaderLabBreadcrumbsProvider : HierarchicalDeclarationBreadcrumbsProviderBase
+    public class ShaderLabBreadcrumbsProvider : StructuralDeclarationBreadcrumbsProviderBase
     {
         public ShaderLabBreadcrumbsProvider(IIconHost iconHost, PsiIconManager iconManager) : base(iconHost, iconManager) { }
 
-        protected override bool CanGoToFileMember(IHierarchicalDeclaration declaration) => false;
-        protected override bool CanShowFileStructure(IHierarchicalDeclaration declaration) => false;
+        protected override bool CanGoToFileMember(IStructuralDeclaration declaration) => true;
+        protected override bool CanShowFileStructure(IStructuralDeclaration declaration) => true;
 
-        protected override void CollectNodeBreadcrumbs(ref LocalList<CrumbModel> crumbs, IHierarchicalDeclaration? declaration, ITreeNode node, DocumentOffset documentOffset)
+        protected override void CollectNodeBreadcrumbs(ITreeNode node, IStructuralDeclaration? declaration, DocumentOffset documentOffset, ref LocalList<CrumbModel> crumbs)
         {
             if (declaration is ICodeBlock)
                 CollectInjectedHlslCrumbs(ref crumbs, node, documentOffset);

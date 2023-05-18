@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Services.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl
 {
     internal partial class SubShaderCommand
     {
-        public override IEnumerable<IHierarchicalDeclaration> GetChildDeclarations()
+        public override IEnumerable<IStructuralDeclaration> GetMemberDeclarations()
         {
             if (Value is not ISubShaderValue subShaderValue)
                 yield break;
@@ -13,11 +13,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl
             {
                 foreach (var stateCommand in pass.StateCommands)
                 {
-                    if (stateCommand is IHierarchicalDeclaration declaration)
+                    if (stateCommand is IStructuralDeclaration declaration)
                         yield return declaration;
                 }
 
-                if (pass.PassDefinition is IHierarchicalDeclaration passDeclaration)
+                if (pass.PassDefinition is IStructuralDeclaration passDeclaration)
                     yield return passDeclaration;
             }
         }
