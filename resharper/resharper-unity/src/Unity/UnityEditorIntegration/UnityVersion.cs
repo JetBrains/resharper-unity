@@ -117,7 +117,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             return GetVersionForTests(mySolution);
         }
 
-        [NotNull]
         public VirtualFileSystemPath GetActualAppPathForSolution()
         {
             if (mySolution.IsVirtualSolution())
