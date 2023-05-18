@@ -72,12 +72,9 @@ Show All Files
   References
   -.NewFolder1, tooltip=This folder is not imported into the asset database
    Class1.cs, tooltip=This file is not imported into the asset database
-   Class1.cs.meta, tooltip=This file is not imported into the asset database
   -NewFolder1~, tooltip=This folder is not imported into the asset database
    Class1.cs, tooltip=This file is not imported into the asset database
-   Class1.cs.meta, tooltip=This file is not imported into the asset database
    Class2.cs, tooltip=This file is not imported into the asset database
-   Class2.cs.meta, tooltip=This file is not imported into the asset database
   -Scenes
    SampleScene.unity
    SampleScene.unity.meta, tooltip=This file is not imported into the asset database
@@ -141,6 +138,7 @@ Project [Name:Assembly-CSharp, GUID:GUID]
           Child items:
             ProjectFileImpl(Path : Class1.cs)[COMPILE ]
         ProjectFileImpl(Path : Class1.cs)[COMPILE ]
+        ProjectFileImpl(Path : Class1.cs.meta)[CONTENT ]
         ProjectFileImpl(Path : NewBehaviourScript.cs)[COMPILE ]
         Folder [Name:NewFolder1~]
           Child items:

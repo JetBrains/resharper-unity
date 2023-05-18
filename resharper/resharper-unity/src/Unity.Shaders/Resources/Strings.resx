@@ -26,7 +26,7 @@
         <value>built-in type</value>
     </data>
     <data name="CgLanguageSpecificDaemonBehaviour_InitialErrorStripe_File_s_primary_language_in_not_Cg" xml:space="preserve">
-        <value>File's primary language in not Cg</value>
+        <value>File's primary language is not Cg</value>
     </data>
     <data name="CgSyntaxHighlightingProcess_VisitSemanticNode_Semantic__packoffset_or_register_expected" xml:space="preserve">
         <value>Semantic, packoffset, or register expected</value>

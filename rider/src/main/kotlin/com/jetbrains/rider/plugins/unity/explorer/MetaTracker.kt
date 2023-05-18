@@ -5,26 +5,24 @@ import com.intellij.openapi.command.CommandEvent
 import com.intellij.openapi.command.CommandListener
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.command.undo.UndoManager
-import com.intellij.openapi.components.serviceIfCreated
+import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.rd.createNestedDisposable
+import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.findFile
 import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.vfs.newvfs.events.*
 import com.intellij.util.PathUtil
 import com.intellij.util.application
-import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.jetbrains.rd.platform.util.getLogger
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.addUnique
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
-import com.jetbrains.rider.plugins.unity.workspace.getPackages
-import com.jetbrains.rider.projectDir
-import com.jetbrains.rider.projectView.solutionDirectory
-import com.jetbrains.rdclient.util.idea.toVirtualFile
+import com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater
 import com.jetbrains.rider.projectView.VfsBackendRequester
 import org.jetbrains.annotations.Nls
 import java.nio.file.Path
@@ -34,24 +32,38 @@ import java.time.ZoneOffset
 import java.util.*
 import kotlin.io.path.name
 
-class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
+class MetaTrackerInitializer : ProjectActivity {
+    override suspend fun execute(project: Project) {
+        if (project.isUnityProjectFolder()){
+            MetaTracker.getInstance().register(project)
+        }
+    }
+}
+
+@Service(Service.Level.APP)
+class MetaTracker {
+
+    private val lock = Object()
+    private var projects = mutableSetOf<Project>()
     companion object {
+        fun getInstance() = service<MetaTracker>()
         private val logger = getLogger<MetaTracker>()
+    }
+
+    fun register(project: Project) {
+        project.lifetime.bracketIfAlive({ synchronized(lock) { projects.add(project) } },
+                                        { synchronized(lock) { projects.remove(project) } })
     }
 
     private val actionsPerProject = mutableMapOf<Project, MetaActionList>()
 
-    override fun after(events: MutableList<out VFileEvent>) {
-        val projectManager = serviceIfCreated<ProjectManager>() ?: return
-        val openedUnityProjects = projectManager.openProjects.filter {
-            !it.isDisposed &&
-            it.solutionDirectory.toVirtualFile(false) != null && // RIDER-91651 Solution Explorer sometimes isn't properly loaded
-            it.isUnityProjectFolder() && !isUndoRedoInProgress(it)
-        }.toList()
+    fun onEvent(events: MutableList<out VFileEvent>) {
+
+        val unityProjects = synchronized(lock) { mutableListOf<Project>().also { it.addAll(projects) } }.filter { !isUndoRedoInProgress(it) && !it.isDisposed }.toList()
 
         for (event in events) {
             if (!isValidEvent(event)) continue
-            for (project in openedUnityProjects) {
+            for (project in unityProjects) {
                 if (isApplicableForProject(event, project)) {
                     val actions = getOrCreate(project)
                     if (isMetaFile(event)) // Collect modified meta files at first (LocalHistory or git or something else)
@@ -65,7 +77,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
                                     val ls = event.file?.detectedLineSeparator
                                              ?: "\n" // from what I see, Unity 2020.3 always uses "\n", but lets use same as the main file.
                                     actions.add(metaFile, project) {
-                                        createMetaFile(event.file, event.parent, metaFileName, ls)
+                                        if (shouldCreateMetaFile(project, event.file, event.parent)) createMetaFile(event.parent, metaFileName, ls)
                                     }
                                 }
                                 is VFileDeleteEvent -> {
@@ -78,13 +90,13 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
                                     val metaFile = getMetaFile(event.file.path) ?: continue
                                     val ls = event.file.detectedLineSeparator ?: "\n"
                                     actions.add(metaFile, project) {
-                                        createMetaFile(event.file, event.newParent, getMetaFileName(event.newChildName), ls)
+                                        if (shouldCreateMetaFile(project, event.file, event.newParent))
+                                            createMetaFile(event.newParent, getMetaFileName(event.newChildName), ls)
                                     }
                                 }
                                 is VFileMoveEvent -> {
                                     val metaFile = getMetaFile(event.oldPath) ?: continue
-                                    actions.add(metaFile, project) {
-                                        VfsUtil.findFile(metaFile, true)?.move(this, event.newParent)
+                                    actions.add(metaFile, project) { VfsUtil.findFile(metaFile, true)?.move(this, event.newParent)
                                     }
                                 }
                                 is VFilePropertyChangeEvent -> {
@@ -138,18 +150,9 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
     }
 
     private fun isApplicableForProject(event: VFileEvent, project: Project): Boolean {
+        application.assertIsDispatchThread()
         val file = event.file ?: return false
-        val assets = project.projectDir.findChild("Assets") ?: return false
-        if (VfsUtil.isAncestor(assets, file, false))
-            return true
-
-        val editablePackages = WorkspaceModel.getInstance(project).getPackages().filter { it.isEditable() }
-        for (pack in editablePackages) {
-            val packageFolder = pack.packageFolder ?: continue
-            if (VfsUtil.isAncestor(packageFolder, file, false)) return true
-        }
-
-        return false
+        return UnityWorkspacePackageUpdater.getInstance(project).sourceRootsTree.getAncestors(file).any()
     }
 
     private fun getMetaFile(path: String?): Path? {
@@ -159,19 +162,35 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
         return file.parent.resolve(metaFileName)
     }
 
+    private fun getMetaFile(file: VirtualFile?): VirtualFile? {
+        file ?: return null
+        val metaFileName = getMetaFileName(file.name)
+        return file.parent.findFile(metaFileName)
+    }
+
     private fun getMetaFileName(fileName: String) = "$fileName.meta"
 
-    private fun createMetaFile(assetFile: VirtualFile?, parent: VirtualFile, metaFileName: String, ls: String) {
-        if (assetFile != null && UnityExplorerFileSystemNode.isHiddenAsset(
-                assetFile)) return // not that children of a hidden folder (like `Documentation~`), would still pass this check. I think it is fine.
+    private fun shouldCreateMetaFile(project: Project, assetFile: VirtualFile?, parent: VirtualFile):Boolean {
+        // avoid adding a meta file for:
+        // a hidden Asset (like `Documentation~`), but not its children
+        // if parent folder (except SourceRoots) doesn't have meta file, this would cover children of the HiddenAssetFolder, see RIDER-93037
+        application.assertIsDispatchThread()
+        val roots = UnityWorkspacePackageUpdater.getInstance(project).sourceRootsTree
+        if (UnityExplorerFileSystemNode.isHiddenAsset(assetFile) || (!roots.contains(parent) && getMetaFile(parent) == null)) {
+            logger.info("avoid adding meta file for $assetFile.")
+            return false
+        }
+
+        return true
+    }
+
+    private fun createMetaFile(parent: VirtualFile, metaFileName: String, ls: String) {
         val metaFile = parent.createChildData(this, metaFileName)
         val guid = UUID.randomUUID().toString().replace("-", "").substring(0, 32)
         val timestamp = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC).toEpochSecond() // LocalDateTime to epoch seconds
         val content = "fileFormatVersion: 2${ls}guid: ${guid}${ls}timeCreated: $timestamp"
         VfsUtil.saveText(metaFile, content)
     }
-
-    override fun dispose() = Unit
 
     private class MetaActionList(project: Project) {
 
@@ -181,7 +200,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
                 override fun beforeCommandFinished(event: CommandEvent) {
                     // apply all changes from Map<Runnable, List<Path>> and add our changes to meta files
 
-                    execute(event)
+                    execute()
                     clear()
 
                     super.beforeCommandFinished(event)
@@ -209,7 +228,7 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
             actions.add(MetaAction(metaFile, project, action))
         }
 
-        fun execute(event: CommandEvent) {
+        fun execute() {
             if (actions.isEmpty()) return
 
             val commandProcessor = CommandProcessor.getInstance()
@@ -254,4 +273,11 @@ class MetaTracker : BulkFileListener, VfsBackendRequester, Disposable {
     private class MetaGroupId(val index: Int) {
         override fun toString() = "MetaGroupId$index"
     }
+}
+
+class MetaTrackerListener: BulkFileListener, VfsBackendRequester, Disposable {
+    override fun after(events: MutableList<out VFileEvent>) {
+        MetaTracker.getInstance().onEvent(events)
+    }
+    override fun dispose() = Unit
 }
