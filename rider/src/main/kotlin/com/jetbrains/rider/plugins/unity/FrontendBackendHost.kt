@@ -8,9 +8,9 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.BitUtil
 import com.jetbrains.rd.framework.impl.RdTask
-import com.jetbrains.rd.ide.model.Solution
+import com.jetbrains.rd.platform.client.ProtocolProjectSession
 import com.jetbrains.rd.platform.util.idea.LifetimedService
-import com.jetbrains.rd.protocol.ProtocolExtListener
+import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.valueOrDefault
@@ -30,7 +30,7 @@ import kotlin.math.max
 class FrontendBackendHost(project: Project) : LifetimedService() {
     val model = project.solution.frontendBackendModel
 
-    class ProtocolListener : ProtocolExtListener<Solution, FrontendBackendModel> {
+    class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
         private fun activateRider(project: Project) {
             ProjectUtil.focusProjectWindow(project, true)
             val frame = WindowManager.getInstance().getFrame(project)
@@ -40,23 +40,23 @@ class FrontendBackendHost(project: Project) : LifetimedService() {
             }
         }
 
-        override fun extensionCreated(lifetime: Lifetime, project: Project, parent: Solution, model: FrontendBackendModel) {
+        override fun extensionCreated(lifetime: Lifetime, session: ProtocolProjectSession, model: FrontendBackendModel) {
             model.activateRider.advise(lifetime) {
-                activateRider(project)
+                activateRider(session.project)
             }
 
             model.startUnity.advise(lifetime) {
-                StartUnityAction.startUnity(project)
+                StartUnityAction.startUnity(session.project)
             }
 
             model.attachDebuggerToUnityEditor.set { lt, _ ->
-                if (isAttachedToUnityEditor(project)) {
+                if (isAttachedToUnityEditor(session.project)) {
                     return@set RdTask.fromResult(true)
                 }
 
                 RdTask<Boolean>().also { task ->
                     val processTracker: RiderDebugActiveDotNetSessionsTracker =
-                        RiderDebugActiveDotNetSessionsTracker.getInstance(project)
+                        RiderDebugActiveDotNetSessionsTracker.getInstance(session.project)
                     processTracker.dotNetDebugProcesses.change.advise(lt) { (event, debugProcess) ->
                         if (event == AddRemove.Add) {
                             debugProcess.initializeDebuggerTask.debuggerInitializingState.advise(lt) {
@@ -67,7 +67,7 @@ class FrontendBackendHost(project: Project) : LifetimedService() {
                     }
 
                     // Run an existing "Attach to Unity Editor" configuration, or create it, and attach
-                    attachToUnityEditor(project)
+                    attachToUnityEditor(session.project)
                 }
             }
 
@@ -84,11 +84,11 @@ class FrontendBackendHost(project: Project) : LifetimedService() {
             }
 
             model.openFileLineCol.set { _, arg ->
-                val manager = FileEditorManager.getInstance(project)
+                val manager = FileEditorManager.getInstance(session.project)
                 val file = VfsUtil.findFileByIoFile(File(arg.path), true) ?: return@set RdTask.fromResult(false)
-                manager.openEditor(OpenFileDescriptor(project, file, max(0, arg.line - 1), max(0, arg.col - 1)), true)
+                manager.openEditor(OpenFileDescriptor(session.project, file, max(0, arg.line - 1), max(0, arg.col - 1)), true)
 
-                activateRider(project)
+                activateRider(session.project)
                 RdTask.fromResult(true)
             }
         }

@@ -14,9 +14,9 @@ import com.intellij.workspaceModel.ide.getInstance
 import com.intellij.workspaceModel.ide.toVirtualFileUrl
 import com.intellij.workspaceModel.storage.MutableEntityStorage
 import com.intellij.workspaceModel.storage.url.VirtualFileUrlManager
-import com.jetbrains.rd.ide.model.Solution
+import com.jetbrains.rd.platform.client.ProtocolProjectSession
 import com.jetbrains.rd.platform.util.idea.LifetimedService
-import com.jetbrains.rd.protocol.ProtocolExtListener
+import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.adviseUntil
@@ -46,8 +46,8 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
         sourceRootsTree.add(assets)
     }
 
-    class ProtocolListener : ProtocolExtListener<Solution, FrontendBackendModel> {
-        override fun extensionCreated(lifetime: Lifetime, project: Project, parent: Solution, model: FrontendBackendModel) {
+    class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
+        override fun extensionCreated(lifetime: Lifetime, session: ProtocolProjectSession, model: FrontendBackendModel) {
             // Subscribe to package changes. If we subscribe after the backend has loaded the initial list of packages,
             // this map will already be populated, and we'll be called for each item. If we subscribe before the list
             // is loaded, updateWorkspaceModel will cache the changes until the packagesUpdating flag is reset. At this
@@ -55,14 +55,14 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
             // Unity to only add/remove a single package at a time.
             model.packages.adviseAddRemove(lifetime) { action, _, unityPackage ->
                 application.assertIsDispatchThread()
-                val updater = getInstance(project)
+                val updater = getInstance(session.project)
                 val packageFolder = unityPackage.packageFolderPath?.let { VfsUtil.findFile(Paths.get(it), true) }
                 when (action) {
-                    AddRemove.Add -> getInstance(project).updateWorkspaceModel { entityStorage ->
+                    AddRemove.Add -> getInstance(session.project).updateWorkspaceModel { entityStorage ->
                         if (packageFolder != null) updater.sourceRootsTree.add(packageFolder)
                         updater.addPackage(unityPackage, packageFolder, entityStorage)
                     }
-                    AddRemove.Remove -> getInstance(project).updateWorkspaceModel { entityStorage ->
+                    AddRemove.Remove -> getInstance(session.project).updateWorkspaceModel { entityStorage ->
                         if (packageFolder != null) updater.sourceRootsTree.remove(packageFolder)
                         updater.removePackage(unityPackage, entityStorage)
                     }
@@ -75,7 +75,7 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
             // so we can flush the cached changes from the initial update.
             model.packagesUpdating.adviseUntil(lifetime) { updating ->
                 if (updating == false) {
-                    getInstance(project).syncInitialEntityStorage()
+                    getInstance(session.project).syncInitialEntityStorage()
                     return@adviseUntil true
                 }
                 return@adviseUntil false

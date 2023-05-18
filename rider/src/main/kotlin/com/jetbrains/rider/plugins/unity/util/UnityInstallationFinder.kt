@@ -3,18 +3,11 @@ package com.jetbrains.rider.plugins.unity.util
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
-import com.jetbrains.rd.ide.model.Solution
-import com.jetbrains.rd.protocol.ProtocolExtListener
+import com.jetbrains.rd.platform.client.ProtocolProjectSession
+import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.reactive.Property
-import com.jetbrains.rd.util.reactive.adviseNotNull
-import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.plugins.unity.model.UnityApplicationData
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.plugins.unity.ui.unitTesting.UnitTestLauncherState
-import com.jetbrains.rider.projectView.hasSolution
-import com.jetbrains.rider.projectView.solution
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -120,13 +113,13 @@ class UnityInstallationFinder {
 
     fun requiresRiderPackage() = requiresRiderPackage
 
-    class ProtocolListener : ProtocolExtListener<Solution, FrontendBackendModel> {
-        override fun extensionCreated(lifetime: Lifetime, project: Project, parent: Solution, model: FrontendBackendModel) {
+    class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
+        override fun extensionCreated(lifetime: Lifetime, session: ProtocolProjectSession, model: FrontendBackendModel) {
             model.unityApplicationData.advise(lifetime) {
-                getInstance(project).unityApplicationData = it
+                getInstance(session.project).unityApplicationData = it
             }
             model.requiresRiderPackage.advise(lifetime) {
-                getInstance(project).requiresRiderPackage = it
+                getInstance(session.project).requiresRiderPackage = it
             }
         }
     }
