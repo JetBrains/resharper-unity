@@ -5,6 +5,7 @@ using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
+using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
@@ -33,6 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
+        private readonly UnityProcessTracker myUnityProcessTracker;
         private readonly JetHashSet<VirtualFileSystemPath> myPluginInstallations;
 
         public readonly IViewableProperty<bool> Connected = new ViewableProperty<bool> { Value = false };
@@ -47,7 +49,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                                     IShellLocks locks,
                                     ISolution solution,
                                     UnitySolutionTracker unitySolutionTracker,
-                                    IFileSystemTracker fileSystemTracker)
+                                    IFileSystemTracker fileSystemTracker,
+                                    UnityProcessTracker unityProcessTracker)
         {
             myPluginInstallations = new JetHashSet<VirtualFileSystemPath>();
 
@@ -57,6 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             myDispatcher = dispatcher;
             myLocks = locks;
             mySolution = solution;
+            myUnityProcessTracker = unityProcessTracker;
             mySessionLifetimes = new SequentialLifetimes(lifetime);
 
             if (!solution.HasProtocolSolution())
@@ -74,6 +78,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
                 // connect on start of Rider
                 CreateProtocol(protocolInstancePath);
+                
+                myUnityProcessTracker.UnityProcessId.When(lf, (int?)null,
+                    _ =>
+                    {
+                        myLogger.Info($"UnityProcess was terminated, terminating the connection lifetime.");
+                        mySessionLifetimes.TerminateCurrent();
+                    });
             });
         }
 
