@@ -84,6 +84,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
         private void OnProtocolInstanceJsonChange(FileSystemChangeDelta delta)
         {
+            // terminate the lifetime, when  protocols.json is removed
+            if (delta.ChangeType == FileSystemChangeType.DELETED)
+            {
+                myLogger.Info($"{delta.NewPath} was removed, terminating the connection lifetime.");
+                mySessionLifetimes.TerminateCurrent();
+                return;
+            }
+
             // Connect when protocols.json is updated (AppDomain start/reload in Unity editor)
             if (delta.ChangeType != FileSystemChangeType.ADDED && delta.ChangeType != FileSystemChangeType.CHANGED) return;
             if (!delta.NewPath.ExistsFile) return;
