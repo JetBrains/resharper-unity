@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Json.Feature.Services.Daemon
                 return ErrorStripeRequestWithDescription.StripeAndErrors;
             }
 
-            return ErrorStripeRequestWithDescription.None("File's primary language in not Json");
+            return ErrorStripeRequestWithDescription.None("File's primary language is not JSON");
         }
 
         public bool CanShowErrorBox => true;

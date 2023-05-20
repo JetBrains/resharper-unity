@@ -11,7 +11,7 @@ import com.intellij.openapi.rd.util.launchNonUrgentBackground
 import com.intellij.openapi.rd.util.withUiContext
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.util.NlsSafe
-import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.isFile
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
 import com.intellij.util.application
 import com.intellij.util.ui.EdtInvocationManager
@@ -22,6 +22,7 @@ import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rd.util.reactive.whenTrue
+import com.jetbrains.rdclient.util.idea.toVirtualFile
 import com.jetbrains.rider.model.RdUnloadProjectDescriptor
 import com.jetbrains.rider.model.RdUnloadProjectState
 import com.jetbrains.rider.plugins.unity.UnityBundle
@@ -32,10 +33,10 @@ import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.workspace.hasPackage
-import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionManager
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
+import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntityVisitor
 import com.jetbrains.rider.projectView.workspace.getSolutionEntity
@@ -140,9 +141,9 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                         }
                     })
 
-                    val baseDir: VirtualFile = project.projectDir
+                    val baseDir = project.solutionDirectory.toVirtualFile(false) ?: error("Virtual file not found for solution directory: ${project.solutionDirectory}")
                     val solutionFile = baseDir.findChild(baseDir.name + ".sln")
-                    if (solutionFile != null && solutionFile.exists()) {
+                    if (solutionFile != null && solutionFile.isFile) {
                         notification.addAction(object : NotificationAction(
                             UnityBundle.message("notification.content.reopen.as.unity.project")) {
                             override fun actionPerformed(e: AnActionEvent, n: Notification) {

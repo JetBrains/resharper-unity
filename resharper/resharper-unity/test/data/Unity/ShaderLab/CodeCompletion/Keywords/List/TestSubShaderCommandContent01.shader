@@ -1,0 +1,5 @@
+Shader "MyShader" {
+    SubShader {
+        {caret}
+    }
+}

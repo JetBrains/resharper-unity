@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     {
         typeof(UnknownResourceWarning)
     })]
-    public class LoadUnknownResourceAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
+    internal class LoadUnknownResourceAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         private readonly ResourceLoadCache myResourceLoadCache;
 

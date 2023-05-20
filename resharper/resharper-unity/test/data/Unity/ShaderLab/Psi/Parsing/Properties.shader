@@ -11,5 +11,8 @@
     _Fresnel ("Fresnel (A) ", 2D) = "" {}
     _BumpMap ("Bumpmap (RGB) ", 2D) = "" {} 
     _MainTex ("Texture", any) = "" {}
+    _FloatValue ("FloatValue", Float) = 12.5
+    _IntValue ("IntValue", Int) = 12
+    _IntegerValue("IntegerValue", Integer) = 23  
   }
 }

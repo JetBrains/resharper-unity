@@ -1,0 +1,26 @@
+{
+  "name": "com.unity.ide.rider",
+  "displayName": "JetBrains Rider Editor",
+  "description": "The JetBrains Rider Editor package provides an integration for using the JetBrains Rider IDE as a code editor for Unity. It adds support for generating .csproj files for code completion and auto-discovery of installations.",
+  "version": "3.0.18",
+  "unity": "2019.2",
+  "unityRelease": "6f1",
+  "dependencies": {
+    "com.unity.ext.nunit": "1.0.6"
+  },
+  "relatedPackages": {
+    "com.unity.ide.rider.tests": "3.0.18"
+  },
+  "_upm": {
+    "changelog": "- fixes RIDER-74818 Unity doesn't get to play mode if Editor is not running and user starts debug or profiling\r\n- Improve performance of project generation - avoid using Directory.Exists\r\n- avoid doing ProjectGeneration twice on the first start-up"
+  },
+  "upmCi": {
+    "footprint": "31a8020715d94d80e3fb34a730cb70a177948af4"
+  },
+  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.ide.rider@3.0/manual/index.html",
+  "repository": {
+    "url": "https://github.cds.internal.unity3d.com/unity/com.unity.ide.rider.git",
+    "type": "git",
+    "revision": "b40b39e6834c2915637f431d002d1f3dd8ec9ce5"
+  }
+}

@@ -1,19 +1,17 @@
 import com.jetbrains.rd.generator.gradle.RdGenExtension
 import com.jetbrains.rd.generator.gradle.RdGenTask
-import com.jetbrains.rider.plugins.gradle.BackendPaths
-import com.jetbrains.rider.plugins.gradle.buildServer.initBuildServer
-import com.jetbrains.rider.plugins.gradle.tasks.DotNetBuildTask
-import com.jetbrains.rider.plugins.gradle.tasks.GenerateDotNetSdkPathPropsTask
-import com.jetbrains.rider.plugins.gradle.tasks.GenerateNuGetConfig
 import com.ullink.gradle.nunit.NUnit
 import groovy.xml.XmlParser
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.ChangelogPluginExtension
-import org.jetbrains.intellij.tasks.IntelliJInstrumentCodeTask
+
+import org.jetbrains.intellij.tasks.InstrumentCodeTask
 import org.jetbrains.intellij.tasks.PatchPluginXmlTask
 import org.jetbrains.intellij.tasks.PrepareSandboxTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.util.*
+
 
 plugins {
     id("idea")
@@ -23,9 +21,9 @@ plugins {
     id("com.ullink.nunit") version "2.8"
     id("me.filippov.gradle.jvm.wrapper") version "0.14.0"
     id("org.jetbrains.changelog") version "2.0.0"
-    id("org.jetbrains.intellij") // version in rider/buildSrc/build.gradle.kts
+    id("org.jetbrains.intellij") version "1.13.3" // https://github.com/JetBrains/gradle-intellij-plugin/releases
     id("org.jetbrains.grammarkit") version "2022.3"
-    kotlin("jvm") // version comes from buildSrc
+    kotlin("jvm") version "1.8.20"
 }
 
 repositories {
@@ -37,34 +35,42 @@ apply {
 }
 
 val repoRoot = projectDir.parentFile!!
-val isWindows = System.getProperty("os.name").toLowerCase().startsWith("win")
+val isWindows = System.getProperty("os.name").lowercase(Locale.getDefault()).startsWith("win")
 val bundledRiderSdkRoot = File(projectDir, "build/rider")  // SDK from TC configuration/artifacts
 val bundledMavenArtifacts = File(projectDir, "build/maven-artifacts")
 val productVersion = extra["productVersion"].toString()
 val maintenanceVersion = extra["maintenanceVersion"].toString()
 val pluginVersion = "$productVersion.$maintenanceVersion"
 val buildCounter = extra["BuildCounter"].toString()
-val buildServer = initBuildServer(gradle)
 val releaseConfiguration = "Release"
-val buildConfiguration = if (buildServer.isAutomatedBuild) {
+val isAutomatedBuild = System.getenv("TEAMCITY_VERSION") != null
+val buildConfiguration = if (isAutomatedBuild) {
     releaseConfiguration
 } else {
     extra["BuildConfiguration"]
 }
 val isReleaseBuild = buildConfiguration == releaseConfiguration
-val warningsAsErrors = extra["warningsAsErrors"].toString().toLowerCase().toBoolean()
+val warningsAsErrors = extra["warningsAsErrors"].toString().lowercase(Locale.getDefault()).toBoolean()
 val modelSrcDir = File(repoRoot, "rider/protocol/src/main/kotlin/model")
 val hashBaseDir = File(repoRoot, "rider/build/rdgen")
-val skipDotnet = extra["skipDotnet"].toString().toLowerCase().toBoolean()
-val runTests = extra["RunTests"].toString().toLowerCase().toBoolean()
-val backend = BackendPaths(project, logger, repoRoot, productVersion).apply {
-    extra["backend"] = this
+val skipDotnet = extra["skipDotnet"].toString().lowercase(Locale.getDefault()).toBoolean()
+val runTests = extra["RunTests"].toString().lowercase(Locale.getDefault()).toBoolean()
+val monoRepoRootDir by lazy {
+    var currentDir = projectDir
+    while (currentDir.parentFile != null) {
+        if (currentDir.resolve(".dotnet-products.root.marker").exists()) {
+            return@lazy currentDir
+        }
+        currentDir = currentDir.parentFile
+    }
+    return@lazy null
 }
-val productMonorepoDir = backend.getProductMonorepoRoot()
-val monorepoPreGeneratedRootDir by lazy { productMonorepoDir?.resolve("Plugins/_Unity.Pregenerated") ?: error("Building not in monorepo") }
-val monorepoPreGeneratedFrontendDir by lazy {  monorepoPreGeneratedRootDir.resolve("Frontend") }
-val monorepoPreGeneratedBackendDir by lazy {  monorepoPreGeneratedRootDir.resolve("BackendModel") }
-val monorepoPreGeneratedUnityDir by lazy {  monorepoPreGeneratedRootDir.resolve("UnityModel") }
+val monorepoPreGeneratedRootDir by lazy {
+    monoRepoRootDir?.resolve("Plugins/_Unity.Pregenerated") ?: error("Building not in monorepo")
+}
+val monorepoPreGeneratedFrontendDir by lazy { monorepoPreGeneratedRootDir.resolve("Frontend") }
+val monorepoPreGeneratedBackendDir by lazy { monorepoPreGeneratedRootDir.resolve("BackendModel") }
+val monorepoPreGeneratedUnityDir by lazy { monorepoPreGeneratedRootDir.resolve("UnityModel") }
 val dotnetDllFiles = files(
     "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.dll",
     "../resharper/build/Unity/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.pdb",
@@ -103,6 +109,20 @@ val unityEditorDllFiles = files(
     "../unity/build/EditorPlugin.SinceUnity.2019.2/bin/$buildConfiguration/net472/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll",
     "../unity/build/EditorPlugin.SinceUnity.2019.2/bin/$buildConfiguration/net472/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.pdb"
 )
+
+val rdLibDirectory: () -> File = { file("${tasks.setupDependencies.get().idea.get().classes}/lib/rd") }
+
+val rdModelJarFile: File by lazy {
+    val jarFile = File(rdLibDirectory(), "rider-model.jar").canonicalFile
+    assert(jarFile.isFile)
+    return@lazy jarFile
+}
+
+extra["rdLibDirectory"] = rdLibDirectory
+extra["monoRepoRootDir"] = monoRepoRootDir
+
+val backendDir = projectDir.parentFile.resolve("resharper")
+val resharperHostPluginSolution =  backendDir.resolve("resharper-unity.sln")
 
 version = "${pluginVersion}.$buildCounter"
 
@@ -149,6 +169,7 @@ intellij {
     } else {
         version.set("${productVersion}-SNAPSHOT")
     }
+
     intellijRepository.set("https://cache-redirector.jetbrains.com/intellij-repository")
 
     // Sources aren't available for Rider
@@ -167,7 +188,7 @@ configure<ChangelogPluginExtension> {
 fun getChangelogItem(): Changelog.Item {
     return changelog.getOrNull(pluginVersion)
         ?: if (changelog.has(changelog.unreleasedTerm.get())) changelog.getUnreleased() else null
-        ?: changelog.getLatest()
+            ?: changelog.getLatest()
 }
 
 logger.lifecycle("Version=$version")
@@ -179,13 +200,21 @@ tasks {
     val protocolGroup = "protocol"
     val testGroup = "verification"
 
+    val dotNetSdkPath by lazy {
+        val sdkPath = setupDependencies.get().idea.get().classes.resolve("lib").resolve("DotNetSdkForRdPlugins")
+        if (sdkPath.isDirectory.not()) error("$sdkPath does not exist or not a directory")
+
+        println("SDK path: $sdkPath")
+        return@lazy sdkPath
+    }
+
     buildSearchableOptions {
         enabled = isReleaseBuild
     }
 
-    withType<IntelliJInstrumentCodeTask> {
-        // For SDK from local folder you also need to manually download maven-artefacts folder
-        // from SDK build artefacts on TC and put it into build folder.
+    withType<InstrumentCodeTask> {
+        // For SDK from local folder, you also need to manually download maven-artefacts folder
+        // from SDK build artefacts on TC and put it into the build folder.
         if (bundledMavenArtifacts.exists()) {
             logger.lifecycle("Use ant compiler artifacts from local folder: $bundledMavenArtifacts")
             compilerClassPathFromMaven.set(
@@ -207,7 +236,7 @@ tasks {
     }
 
     named<Wrapper>("wrapper") {
-        gradleVersion = "7.6"
+        gradleVersion = "8.1"
         distributionType = Wrapper.DistributionType.BIN
     }
 
@@ -263,24 +292,25 @@ tasks {
     val publishCiBuildNumber by registering {
         group = ciGroup
         doLast {
-            buildServer.setBuildNumber(version.toString())
+            println("##teamcity[buildNumber '$version']")
         }
     }
 
     fun getRdModelsSources(): List<File> {
-        val productsHome = backend.getProductMonorepoRoot()
+        val productsHome = monoRepoRootDir
         assert(productsHome != null) { "Monorepo root not found" }
 
         return listOf(
             File("$productsHome/Rider/Frontend/model/src"),
             File("$productsHome/Rider/ultimate/remote-dev/rd-ide-model-sources"),
-            modelSrcDir)
+            modelSrcDir
+        )
     }
 
     fun generateLibModel(monorepo: Boolean) = registering(RdGenTask::class) {
         group = protocolGroup
 
-        if (monorepo && productMonorepoDir == null) {
+        if (monorepo && monoRepoRootDir == null) {
             doFirst {
                 throw GradleException("Building not in monorepo")
             }
@@ -309,7 +339,7 @@ tasks {
             if (monorepo)
                 sources(getRdModelsSources())
             else {
-                classpath({ backend.getRiderModelJar() })
+                classpath({ rdModelJarFile })
                 sources(modelSrcDir)
             }
 
@@ -319,10 +349,12 @@ tasks {
             if (!monorepo) {
                 // rdgen has a hash file that will handle rebuilds, but we still pay for launching rdgen
                 inputs.files(modelSrcDir.resolve("lib/Library.kt"))
-                outputs.files(frontendKtOutDir.resolve("Library.Generated.kt"),
-                        backendCsOutDir.resolve("Library.Generated.cs"),
-                        unityEditorCsOutDir.resolve("Library.Generated.cs"),
-                        "$hashFolder/lib/.rdgen")
+                outputs.files(
+                    frontendKtOutDir.resolve("Library.Generated.kt"),
+                    backendCsOutDir.resolve("Library.Generated.cs"),
+                    unityEditorCsOutDir.resolve("Library.Generated.cs"),
+                    "$hashFolder/lib/.rdgen"
+                )
             }
 
             // Library is used as backend in backendUnityModel and backend in frontendBackendModel, so needs to be both
@@ -334,7 +366,7 @@ tasks {
                 directory = backendCsOutDir.canonicalPath
                 if (monorepo) generatedFileSuffix = ".Pregenerated"
             }
-            // Library is used as unity in backendUnityModel, so has reversed perspective
+            // The Library is used as unity in backendUnityModel, so has reversed perspective
             generator {
                 language = "csharp"
                 transform = "reversed"
@@ -342,7 +374,7 @@ tasks {
                 directory = unityEditorCsOutDir.canonicalPath
                 if (monorepo) generatedFileSuffix = ".Pregenerated"
             }
-            // Library is used as frontend in frontendBackendModel, so has same perspective. Generate as-is
+            // Library is used as frontend in frontendBackendModel, so has the same perspective. Generate as-is
             generator {
                 language = "kotlin"
                 transform = "asis"
@@ -359,7 +391,7 @@ tasks {
     fun generateFrontendBackendModel(monorepo: Boolean) = registering(RdGenTask::class) {
         group = protocolGroup
 
-        if (monorepo && productMonorepoDir == null) {
+        if (monorepo && monoRepoRootDir == null) {
             doFirst {
                 throw GradleException("Building not in monorepo")
             }
@@ -388,7 +420,7 @@ tasks {
             if (monorepo)
                 sources(getRdModelsSources())
             else {
-                classpath({ backend.getRiderModelJar() })
+                classpath({ rdModelJarFile })
                 sources(modelSrcDir)
             }
 
@@ -397,12 +429,16 @@ tasks {
 
             if (!monorepo) {
                 // rdgen has a hash file that will handle rebuilds, but we still pay for launching rdgen
-                inputs.files(modelSrcDir.resolve("lib/Library.kt"),
-                        modelSrcDir.resolve("frontendBackend/FrontendBackendModel.kt"))
-                outputs.files(frontendKtOutDir.resolve("FrontendBackendModel.Generated.kt"),
-                        backendCsOutDir.resolve("FrontendBackendModel.Generated.cs"),
-                        "$hashFolder/lib/.rdgen",
-                        "$hashFolder/frontendBackend/.rdgen")
+                inputs.files(
+                    modelSrcDir.resolve("lib/Library.kt"),
+                    modelSrcDir.resolve("frontendBackend/FrontendBackendModel.kt")
+                )
+                outputs.files(
+                    frontendKtOutDir.resolve("FrontendBackendModel.Generated.kt"),
+                    backendCsOutDir.resolve("FrontendBackendModel.Generated.cs"),
+                    "$hashFolder/lib/.rdgen",
+                    "$hashFolder/frontendBackend/.rdgen"
+                )
             }
 
             generator {
@@ -429,7 +465,7 @@ tasks {
     fun generateBackendUnityModel(monorepo: Boolean) = registering(RdGenTask::class) {
         group = protocolGroup
 
-        if (monorepo && productMonorepoDir == null) {
+        if (monorepo && monoRepoRootDir == null) {
             doFirst {
                 throw GradleException("Building not in monorepo")
             }
@@ -457,7 +493,7 @@ tasks {
             if (monorepo)
                 sources(getRdModelsSources())
             else {
-                classpath({ backend.getRiderModelJar() })
+                classpath({ rdModelJarFile })
                 sources(modelSrcDir)
             }
 
@@ -466,12 +502,16 @@ tasks {
 
             if (!monorepo) {
                 // rdgen has a hash file that will handle rebuilds, but we still pay for launching rdgen
-                inputs.files(modelSrcDir.resolve("lib/Library.kt"),
-                        modelSrcDir.resolve("backendUnity/BackendUnityModel.kt"))
-                outputs.files(backendCsOutDir.resolve("BackendUnityModel.Generated.cs"),
-                        unityEditorCsOutDir.resolve("BackendUnityModel.Generated.cs"),
-                        "$hashFolder/lib/.rdgen",
-                        "$hashFolder/backendUnity/.rdgen")
+                inputs.files(
+                    modelSrcDir.resolve("lib/Library.kt"),
+                    modelSrcDir.resolve("backendUnity/BackendUnityModel.kt")
+                )
+                outputs.files(
+                    backendCsOutDir.resolve("BackendUnityModel.Generated.cs"),
+                    unityEditorCsOutDir.resolve("BackendUnityModel.Generated.cs"),
+                    "$hashFolder/lib/.rdgen",
+                    "$hashFolder/backendUnity/.rdgen"
+                )
             }
 
             generator {
@@ -498,7 +538,7 @@ tasks {
     fun generateDebuggerWorkerModel(monorepo: Boolean) = registering(RdGenTask::class) {
         group = protocolGroup
 
-        if (monorepo && productMonorepoDir == null) {
+        if (monorepo && monoRepoRootDir == null) {
             doFirst {
                 throw GradleException("Building not in monorepo")
             }
@@ -524,7 +564,7 @@ tasks {
             if (monorepo)
                 sources(getRdModelsSources())
             else {
-                classpath({ backend.getRiderModelJar() })
+                classpath({ rdModelJarFile })
                 sources(modelSrcDir)
             }
 
@@ -534,9 +574,11 @@ tasks {
             if (!monorepo) {
                 // rdgen has a hash file that will handle rebuilds, but we still pay for launching rdgen
                 inputs.files(modelSrcDir.resolve("debuggerWorker/UnityDebuggerWorkerModel.kt"))
-                outputs.files(frontendKtOutDir.resolve("UnityDebuggerWorkerModel.Generated.kt"),
-                        backendCsOutDir.resolve("UnityDebuggerWorkerModel.Generated.cs"),
-                        "$hashFolder/debuggerWorker/.rdgen")
+                outputs.files(
+                    frontendKtOutDir.resolve("UnityDebuggerWorkerModel.Generated.kt"),
+                    backendCsOutDir.resolve("UnityDebuggerWorkerModel.Generated.cs"),
+                    "$hashFolder/debuggerWorker/.rdgen"
+                )
             }
 
             generator {
@@ -557,20 +599,23 @@ tasks {
         }
     }
 
-
     val generateDebuggerWorkerModel by generateDebuggerWorkerModel(false)
     val generateDebuggerWorkerModelMonorepo by generateDebuggerWorkerModel(true)
 
-    val generateModels by registering {
+    val generateModels = create("generateModels") {
         group = protocolGroup
         description = "Generates protocol models."
         dependsOn(generateFrontendBackendModel, generateBackendUnityModel, generateDebuggerWorkerModel)
     }
 
-    val generateModelsMonorepo by registering {
+    create("generateModelsMonorepo") {
         group = protocolGroup
         description = "Generates protocol models for monorepo."
-        dependsOn(generateFrontendBackendModelMonorepo, generateBackendUnityModelMonorepo, generateDebuggerWorkerModelMonorepo)
+        dependsOn(
+            generateFrontendBackendModelMonorepo,
+            generateBackendUnityModelMonorepo,
+            generateDebuggerWorkerModelMonorepo
+        )
     }
 
     named<KotlinCompile>("compileKotlin") {
@@ -589,32 +634,115 @@ tasks {
         }
     }
 
-    val prepareRiderBuildProps by registering(GenerateDotNetSdkPathPropsTask::class) {
+    val prepareRiderBuildProps = register("prepareRiderBuildProps") {
+        val propsFile =
+            File("${project.projectDir}/../resharper/build/generated/DotNetSdkPath.generated.props")
         group = backendGroup
-        dotNetSdkPath = { backend.getDotNetSdkPath() }
+        inputs.dir(dotNetSdkPath)
+        outputs.file(propsFile)
+        doLast {
+            val dotNetSdkFile= dotNetSdkPath
+            assert(dotNetSdkFile.isDirectory)
+            logger.info("Generating :${propsFile.canonicalPath}...")
+            project.file(propsFile).writeText("""<Project>
+          <PropertyGroup>
+            <DotNetSdkPath>${dotNetSdkFile.canonicalPath}</DotNetSdkPath>
+          </PropertyGroup>
+        </Project>""".trimIndent())
+        }
     }
 
-    val prepareNuGetConfig by registering(GenerateNuGetConfig::class) {
-        group = backendGroup
+    val prepareNuGetConfig = register("prepareNuGetConfig") {
+        val nuGetConfigFile = File("${project.projectDir}/../NuGet.Config")
         dependsOn(prepareRiderBuildProps)
-        dotNetSdkPath = { backend.getDotNetSdkPath() }
+        group = backendGroup
+        doLast {
+            logger.info("dotNetSdk location: '$dotNetSdkPath'")
+            assert(dotNetSdkPath.isDirectory)
+
+            logger.info("Generating :${nuGetConfigFile.canonicalPath}...")
+            val nugetConfigText = """<?xml version="1.0" encoding="utf-8"?>
+            |<configuration>
+            |  <packageSources>
+            |    <clear />
+            |    <add key="local-dotnet-sdk" value="${dotNetSdkPath.canonicalPath}" />
+            |    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
+            |  </packageSources>
+            |</configuration>
+            """.trimMargin()
+            nuGetConfigFile.writeText(nugetConfigText)
+
+            logger.info("Generated content:\n$nugetConfigText")
+
+            val sb = StringBuilder("Dump dotNetSdkFile content:\n")
+            for(file in dotNetSdkPath.listFiles() ?: emptyArray()) {
+                sb.append("${file.canonicalPath}\n")
+            }
+            logger.info(sb.toString())
+        }
     }
 
-    val buildReSharperHostPlugin by registering(DotNetBuildTask::class) {
+    val buildReSharperHostPlugin = register("buildReSharperHostPlugin") {
         group = backendGroup
         description = "Builds the full ReSharper backend plugin solution"
         dependsOn(prepareNuGetConfig, generateModels)
         onlyIf {
             skipDotnet.not()
         }
-        buildFile.set(backend.resharperHostPluginSolution)
+
+        doLast {
+            val buildConfiguration = project.ext.get("BuildConfiguration").toString()
+            val warningsAsErrors = project.ext.get("warningsAsErrors").toString()
+            logger.info("Building $buildFile ($buildConfiguration)")
+
+            val dotNetCliPath = projectDir.parentFile.resolve("dotnet-sdk.cmd")
+            val verbosity = if (isAutomatedBuild) {
+                "normal"
+            } else {
+                when (project.gradle.startParameter.logLevel) {
+                    LogLevel.QUIET -> "quiet"
+                    LogLevel.LIFECYCLE -> "minimal"
+                    LogLevel.INFO -> "normal"
+                    LogLevel.DEBUG -> "detailed"
+                    else -> "normal"
+                }
+            }
+            val buildArguments = listOf(
+                "build",
+                resharperHostPluginSolution.canonicalPath,
+                "/p:Configuration=$buildConfiguration",
+                "/p:Version=${project.version}",
+                "/p:TreatWarningsAsErrors=$warningsAsErrors",
+                "/v:$verbosity",
+                "/bl:${resharperHostPluginSolution.name + ".binlog"}",
+                "/nologo"
+            )
+
+            logger.info("dotnet call: '$dotNetCliPath' '$buildArguments' in '$backendDir'")
+            project.exec {
+                executable = dotNetCliPath.canonicalPath
+                args = buildArguments
+                workingDir = backendDir
+            }
+        }
     }
 
     val packReSharperPlugin by creating(com.ullink.NuGetPack::class) {
+        // Don't know the way to rewrite this task in a lazy manner (using registering) because NuGetPack uses `project.afterEvaluate` in its implementation,
+        // so it's just workaround to not download the Rider SDK in the monorepo mode
+        if (monoRepoRootDir != null) {
+            doFirst {
+                throw GradleException("This task is not expected to be run in the monorepo environment")
+            }
+
+            return@creating
+        }
+
+
         group = backendGroup
         onlyIf { isWindows } // non-windows builds are just for running tests, and agents don't have `mono` installed. NuGetPack requires `mono` though.
         description = "Packs resulting DLLs into a NuGet package which is an R# extension."
-        dependsOn(buildReSharperHostPlugin)
+        //dependsOn(buildReSharperHostPlugin)
 
         val changelogNotes = changelog.renderItem(getChangelogItem().withFilter { line ->
             !line.startsWith("- Rider:") && !line.startsWith("- Unity editor:")
@@ -635,18 +763,22 @@ $changelogNotes
 See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.""".let {
             if (isWindows) {
                 it.replace("&quot;", "\\\"")
-            }
-            else {
+            } else {
                 it.replace("&quot;", "\"")
             }
         }
 
-        // The command line to call nuget pack passes properties as a semi-colon delimited string
+        // The command line to call nuget pack passes properties as a semicolon-delimited string
         // We can't have HTML encoded entities (e.g. &quot;)
         if (releaseNotes.contains(";")) throw GradleException("Release notes cannot semi-colon")
 
-        setNuspecFile(File(backend.backendRoot, "resharper-unity/src/Unity/resharper-unity.resharper.nuspec").canonicalPath)
-        setDestinationDir(File(backend.backendRoot, "build/distributions/$buildConfiguration").canonicalPath)
+        setNuspecFile(
+            File(
+                backendDir,
+                "resharper-unity/src/Unity/resharper-unity.resharper.nuspec"
+            ).canonicalPath
+        )
+        setDestinationDir(File(backendDir, "build/distributions/$buildConfiguration").canonicalPath)
         packageAnalysis = false
         packageVersion = version
         properties = mapOf(
@@ -654,7 +786,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
             "ReleaseNotes" to releaseNotes
         )
         doFirst {
-            buildServer.progress("Packing: ${nuspecFile.name}")
+            logger.info("Packing: ${nuspecFile.name}")
         }
     }
 
@@ -714,7 +846,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         // nunit3 defaults to running test assemblies in parallel, which causes problems with shared access to databases
         // The nunit plugin doesn't have the ability to disable this, so we'll do it long hand...
         dependsOn(
-            buildReSharperHostPlugin,
+            //buildReSharperHostPlugin,
             nunitReSharperJson,
             nunitReSharperYaml,
             nunitReSharperUnity,
@@ -722,18 +854,20 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         )
     }
 
-    // It might be better to make it top-level task that is called separately, e.g. gradle buildPlugin nunit
+    // It might be better to make it a top-level task that is called separately, e.g. gradle buildPlugin nunit
     // (and we could get rid of RunTests then, too)
     if (runTests) {
         runNunit.get().shouldRunAfter(buildReSharperHostPlugin)
-        buildReSharperHostPlugin.get().finalizedBy(runNunit)
+        buildReSharperHostPlugin.configure {
+            finalizedBy(runNunit)
+        }
     }
 
     val publishCiBackendArtifacts by registering {
         group = ciGroup
         inputs.files(packReSharperPlugin.outputs)
         doLast {
-            buildServer.publishArtifact(packReSharperPlugin.packageFile)
+            println("##teamcity[publishArtifacts '${packReSharperPlugin.packageFile.absolutePath}']")
         }
     }
 
@@ -742,7 +876,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         dependsOn(publishCiBuildNumber, publishCiBackendArtifacts)
     }
 
-    if (buildServer.isAutomatedBuild) {
+    if (isAutomatedBuild) {
         named("buildPlugin") {
             finalizedBy(publishCiBuildData)
         }
@@ -782,10 +916,12 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         from("projectTemplates") { into("${pluginName}/projectTemplates") }
     }
 
-    withType<Test> {
+    withType<Test>().configureEach {
         useTestNG()
 
-        if (project.hasProperty("ignoreFailures")) { ignoreFailures = true }
+        if (project.hasProperty("ignoreFailures")) {
+            ignoreFailures = true
+        }
 
         if (project.hasProperty("integrationTests")) {
             val testsType = project.property("integrationTests").toString()

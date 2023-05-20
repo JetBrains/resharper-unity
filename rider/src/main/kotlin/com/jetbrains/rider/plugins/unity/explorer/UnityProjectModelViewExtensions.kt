@@ -9,7 +9,6 @@ import com.jetbrains.rider.projectView.ProjectEntityView
 import com.jetbrains.rider.projectView.ProjectModelViewExtensions
 import com.jetbrains.rider.projectView.workspace.*
 
-@Suppress("UnstableApiUsage")
 class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtensions(project) {
 
     // this is called for rename, we should filter .Player projects and return node itself

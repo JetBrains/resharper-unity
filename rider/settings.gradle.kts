@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 rootProject.name = "rider-unity"
 
 pluginManagement {
@@ -5,6 +7,8 @@ pluginManagement {
     repositories {
         if (rdVersion == "SNAPSHOT")
             mavenLocal()
+
+        maven { setUrl("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies") }
         maven { setUrl("https://cache-redirector.jetbrains.com/plugins.gradle.org") }
         // This is for snapshot version of 'org.jetbrains.intellij' plugin
         maven { setUrl("https://oss.sonatype.org/content/repositories/snapshots/") }

@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
@@ -28,6 +30,7 @@ using JetBrains.TextControl.CodeWithMe;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
     [SolutionComponent]
+    [ZoneMarker(typeof(ICodeEditingZone))]
     public class TypeDetector : UnityDeclarationHighlightingProviderBase
     {
         private readonly UnityApi myUnityApi;
@@ -64,8 +67,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 }
                 else if (typeElement.IsDotsImplicitlyUsedType())
                 {
-                    //TODO obsolete
-                    AddUnityDOTSHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_DOTS, Strings.TypeDetector_AddDeclarationHighlighting_Unity_entities_system,
+                    var tooltip = string.Format(Strings.TypeDetector_AddDeclarationHighlighting_Unity_entities,
+                        typeElement.GetDotsCLRBaseTypeName()!.ShortName);
+                    AddUnityDOTSHighlighting(consumer, element, 
+                        Strings.TypeDetector_AddDeclarationHighlighting_DOTS,
+                        tooltip,
                         context);
                 }
 

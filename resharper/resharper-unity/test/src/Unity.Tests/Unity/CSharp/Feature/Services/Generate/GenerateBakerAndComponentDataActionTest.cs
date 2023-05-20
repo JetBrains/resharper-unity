@@ -38,6 +38,21 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
+
+        [Test] public void ExistingBakerWithCustomGetEntity()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
+
+        [Test] public void ExistingBakerWithCustomGetEntity2()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
+
+        [Test] public void ExistingBakerWithCustomGetEntity3()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
                 
         [Test] public void ExistingBakerAndComponent()
         {

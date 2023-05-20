@@ -1,9 +1,11 @@
 ﻿using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
+using JetBrains.ReSharper.Psi.Resources;
 using JetBrains.Text;
 using JetBrains.UI.Icons;
 
@@ -37,6 +39,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi
             }
         }
 
-        public override IconId Icon => ShaderFileTypeThemedIcons.FileShader.Id;
+        public override IconId Icon => PsiSymbolsThemedIcons.FileShader.Id;
     }
 }

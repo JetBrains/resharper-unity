@@ -88,7 +88,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             {
                 // we may schedule secondary refresh here, which will start after first refresh and protocol reconnect
                 // we already do something like that in UnitTesting
-                myLogger.Verbose("Refresh already running. Skip starting a new one.");
+                myLogger.Trace("Refresh already running. Skip starting a new one.");
                 return myRunningRefreshTask;
             }
 
@@ -155,17 +155,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                 {
                     await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
                     await myBackendUnityProtocol.Connected.NextTrueValueAsync(lifetimeDef.Lifetime);
-                    myLogger.Verbose("await Connected finished.");
+                    myLogger.Trace("await Connected finished.");
                     await myBackendUnityHost.BackendUnityModel.NextValueAsync(lifetimeDef.Lifetime);
-                    myLogger.Verbose("await for BackendUnityModel finished.");
+                    myLogger.Trace("await for BackendUnityModel finished.");
 
-                    myLogger.Verbose($"Refresh, force = {refreshType} Finished");
+                    myLogger.Trace($"Refresh, force = {refreshType} Finished");
                     var solution = mySolution.GetProtocolSolution();
                     var solFolder = mySolution.SolutionDirectory;
                     var list = new List<string> { solFolder.FullPath };
                     await solution.GetFileSystemModel().RefreshPaths
                         .Start(lifetimeDef.Lifetime, new RdFsRefreshRequest(list, true)).AsTask();
-                    myLogger.Verbose("RefreshPaths.StartAsTask Finished.");
+                    myLogger.Trace("RefreshPaths.StartAsTask Finished.");
                     await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
                 }
             }
@@ -261,7 +261,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         {
             if (delta.NewPath.ExtensionNoDot == "cs" || delta.NewPath.ExtensionNoDot == "asmdef")
             {
-                myLogger.Verbose($"fileSystemTracker.AdviseDirectoryChanges {delta.ChangeType}, {delta.NewPath}, {delta.OldPath}");
+                myLogger.Trace($"fileSystemTracker.AdviseDirectoryChanges {delta.ChangeType}, {delta.NewPath}, {delta.OldPath}");
                 myGroupingEvent.FireIncoming();
             }
         }

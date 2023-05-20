@@ -42,6 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
             // TODO: Not sure if this would be better handled in a .dotSettings file
             var pos = 0;
             AddToQuickList(mountPoint, myProjectMainPoint, "MonoBehaviour", ++pos, "5ff5ac38-7207-4256-91ae-b5436552db13");
+            
             AddToQuickList(mountPoint, myProjectMainPoint, "ScriptableObject", ++pos, "1404A333-DA7C-47AC-8CB5-7C944DD1422D");
             AddToQuickList(mountPoint, myProjectMainPoint, "StateMachineBehaviour", ++pos, "AFA01340-773E-488A-93D6-E19540AE2F1B");
             AddToQuickList(mountPoint, myProjectMainPoint, "PlayModeTest", ++pos, "0bcdbc13-d26e-4512-9750-fb930f532e88");
@@ -65,6 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
             AddToQuickList(mountPoint, myProjectMainPoint, "System", ++pos, "3A8DDF9A-86ED-4877-8721-6D064DF61D77");
             AddToQuickList(mountPoint, myProjectMainPoint, "SystemBase", ++pos, "9C5472EF-F807-4BB4-8E39-56D5B38C96B5");
             AddToQuickList(mountPoint, myProjectMainPoint, "IJobEntity", ++pos, "60A9DD1A-9237-49A8-BFAA-D8510DF7FAE0");
+            AddToQuickList(mountPoint, myProjectMainPoint, "AuthoringMonoBehaviour", ++pos, "E7134AFA-22FA-439E-AC0B-F572EA75D5FC");
         }
 
         private void InitialiseQuickList(ISettingsStorageMountPoint mountPoint, IMainScopePoint quickList)

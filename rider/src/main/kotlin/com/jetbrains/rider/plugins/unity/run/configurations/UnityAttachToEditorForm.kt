@@ -1,8 +1,11 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.openapi.observable.properties.AtomicProperty
-import com.intellij.ui.dsl.builder.*
-import com.intellij.ui.dsl.gridLayout.Gaps
+import com.intellij.ui.dsl.builder.Align
+import com.intellij.ui.dsl.builder.Row
+import com.intellij.ui.dsl.builder.bindText
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import javax.swing.JPanel
@@ -10,6 +13,7 @@ import javax.swing.JPanel
 class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel){
     protected var rootPanel: JPanel? = null
     protected lateinit var commentRow: Row
+    protected lateinit var usingProcessRow: Row
     protected lateinit var editorInstanceJsonInfoRow: Row
     protected var processIdInfo = AtomicProperty("")
     protected var editorInstanceJsonError = AtomicProperty("")
@@ -27,19 +31,19 @@ class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel){
 
             indent {
                 commentRow = row {
-                    label("").customize(Gaps(0))
+                    label("").customize(UnscaledGaps.Companion.EMPTY)
                         .comment(UnityBundle.message(
                         "comment.label.text.editorinstance.json.file.required.to.automatically.configure.run.configuration"))
                 }
             }
 
-            row {
+            usingProcessRow = row {
                 label(UnityBundle.message("using.process")).bindText(processIdInfo)
             }
 
             row {
                 cell(processesList)
-                    .customize(Gaps(50, 0))
+                    .customize(UnscaledGaps(50, 0))
                     .align(Align.FILL)
             }
         }
@@ -52,7 +56,8 @@ class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel){
                                                 else -> ""
                                             })
 
-            commentRow.visible(it != null && it != EditorInstanceJsonStatus.Valid)
+            commentRow.visible(it != EditorInstanceJsonStatus.Valid)
+            usingProcessRow.visible(it == EditorInstanceJsonStatus.Valid)
 
             // EditorInstance.json always takes priority of manually choosing
             processesList.isEnabled = it != EditorInstanceJsonStatus.Valid

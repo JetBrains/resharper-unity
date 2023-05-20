@@ -78,17 +78,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         }
 
         private bool TryAddMethodHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer, IReadOnlyCallGraphContext context,
-                                              IMethod method)
+            IMethod method)
         {
             var eventHandlersCount = UnityEventsElementContainer.GetAssetUsagesCount(method, out var estimated);
             var animExplicitCount = myAnimExplicitUsagesContainer.GetEventUsagesCountFor(method, out var estimated2);
             var animImplicitCount = myAnimImplicitUsagesContainer.GetEventUsagesCountFor(method, out var estimated3);
             if (eventHandlersCount == 0 && (animExplicitCount != 0 || animImplicitCount != 0))
+            {
                 AddAnimationEventHighlighting(treeNode, consumer, context);
-            else if (estimated || estimated2 || estimated3 || animExplicitCount + eventHandlersCount + animImplicitCount > 0)
+                return true;
+            }
+
+            if (estimated || estimated2 || estimated3 || animExplicitCount + eventHandlersCount + animImplicitCount > 0)
+            {
                 AddEventHandlerHighlighting(treeNode, consumer, context);
+                return true;
+            }
             
-            return true;
+            return false;
         }
 
         private void AddEventHandlerHighlighting([NotNull] ITreeNode treeNode,

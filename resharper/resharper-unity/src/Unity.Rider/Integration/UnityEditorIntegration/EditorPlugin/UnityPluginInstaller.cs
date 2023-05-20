@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.Application.Notifications;
@@ -22,6 +23,7 @@ using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.Application.I18n;
+using JetBrains.Threading;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration.EditorPlugin
 {
@@ -80,12 +82,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
             myBoundSettingsStore = settingsStore.BoundSettingsStore;
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
-            
-            if(!myPluginPathsProvider.ShouldRunInstallation())
-            {
-                myLogger.Verbose("myPluginPathsProvider.ShouldRunInstallation returned false.");
-                return;
-            }
 
             frontendBackendHost.Do(frontendBackendModel =>
             {
@@ -102,26 +98,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             unitySolutionTracker.IsUnityProjectFolder.AdviseOnce(lifetime, args =>
             {
                 if (!args) return;
-                myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "IsAbleToEstablishProtocolConnectionWithUnity", InstallPluginIfRequired);
-                BindToInstallationSettingChange();
+
+                shellLocks.Tasks.StartNew(lifetime, Scheduling.FreeThreaded, () =>
+                {
+                    var info = myDetector.GetInstallationInfo(myCurrentVersion,
+                        previousInstallationDir: VirtualFileSystemPath.GetEmptyPathFor(InteractionContext
+                            .SolutionContext));
+
+                    myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "IsAbleToEstablishProtocolConnectionWithUnity",
+                        () => InstallPluginIfRequired(info));
+                    BindToInstallationSettingChange(info);
+                    return Task.CompletedTask;
+                }).NoAwait();
             });
             
             myBackendUnityProtocol.OutOfSync.Advise(lifetime, ShowOutOfSyncNotification);
         }
 
-        private void BindToInstallationSettingChange()
+        private void BindToInstallationSettingChange(UnityPluginDetector.InstallationInfo info)
         {
             var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
             myBoundSettingsStore.GetValueProperty<bool>(myLifetime, entry, null).Change.Advise_NoAcknowledgement(myLifetime, args =>
             {
                 if (!args.GetNewOrNull()) return;
-                myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.CheckAllProjectsIfAutoInstallEnabled", InstallPluginIfRequired);
+                myShellLocks.ExecuteOrQueueReadLockEx(myLifetime,
+                    "UnityPluginInstaller.CheckAllProjectsIfAutoInstallEnabled", () => InstallPluginIfRequired(info));
             });
         }
 
         readonly Version myCurrentVersion = typeof(UnityPluginInstaller).Assembly.GetName().Version;
 
-        private void InstallPluginIfRequired()
+        private void InstallPluginIfRequired(UnityPluginDetector.InstallationInfo installationInfo)
         {
             if (!myUnitySolutionTracker.IsUnityProjectFolder.Value)
                 return;
@@ -135,11 +142,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             var versionForSolution = myUnityVersion.ActualVersionForSolution.Value;
             if (versionForSolution >= new Version("2019.2")) // 2019.2+ would not work fine either without Rider package, and when package is present it loads EditorPlugin directly from Rider installation.
             {
-                var installationInfoToRemove = myDetector.GetInstallationInfo(myCurrentVersion, previousInstallationDir: VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext));
-                if (!installationInfoToRemove.PluginDirectory.IsAbsolute)
+                if (!installationInfo.PluginDirectory.IsAbsolute)
                     return;
 
-                var pluginDll = installationInfoToRemove.PluginDirectory.Combine(PluginPathsProvider.BasicPluginDllFile);
+                var pluginDll = installationInfo.PluginDirectory.Combine(PluginPathsProvider.BasicPluginDllFile);
                 if (pluginDll.ExistsFile)
                 {
                     myQueue.Enqueue(() =>
@@ -149,7 +155,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                         VirtualFileSystemPath.Parse(pluginDll.FullPath + ".meta", InteractionContext.SolutionContext).DeleteFile();
 
                         // jetbrainsDir is usually "Assets\Plugins\Editor\JetBrains", however custom locations were also possible
-                        var jetbrainsDir = installationInfoToRemove.PluginDirectory;
+                        var jetbrainsDir = installationInfo.PluginDirectory;
                         if (jetbrainsDir.GetChildren().Any() || jetbrainsDir.Name != "JetBrains") return;
                         jetbrainsDir.DeleteDirectoryNonRecursive();
                         VirtualFileSystemPath.Parse(jetbrainsDir.FullPath + ".meta", InteractionContext.SolutionContext).DeleteFile();
@@ -168,7 +174,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
             // forcing fresh install due to being unable to provide proper setting until InputField is patched in Rider
             // ReSharper disable once ArgumentsStyleNamedExpression
-            var installationInfo = myDetector.GetInstallationInfo(myCurrentVersion, previousInstallationDir: VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext));
             if (!installationInfo.ShouldInstallPlugin)
             {
                 myLogger.Info("Plugin should not be installed.");
@@ -198,6 +203,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
         private void Install(UnityPluginDetector.InstallationInfo installationInfo, bool force)
         {
+            if(!myPluginPathsProvider.ShouldRunInstallation())
+            {
+                myLogger.Info("Skip Install, because myPluginPathsProvider.ShouldRunInstallation returned false.");
+                return;
+            }
+            
             if (!force)
             {
                 if (!installationInfo.ShouldInstallPlugin)

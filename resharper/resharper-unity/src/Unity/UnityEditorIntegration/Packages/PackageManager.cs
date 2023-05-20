@@ -111,9 +111,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
                 ScheduleRefresh();
 
-                // Track changes to the Packages folder, non-recursively. This will handle manifest.json,
-                // packages-lock.json and any folders that are added/deleted/renamed
-                fileSystemTracker.AdviseDirectoryChanges(lifetime, myPackagesFolder, false, OnPackagesFolderUpdate);
+                // Track changes to the Packages folder. This will handle manifest.json,
+                // packages-lock.json and package.json in the local packages
+                fileSystemTracker.AdviseDirectoryChanges(lifetime, myPackagesFolder, true, OnPackagesFolderUpdate);
 
                 // We're all set up, terminate the advise
                 return true;
@@ -190,7 +190,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 myWaitForPackagesLockJsonGroupingEvent.CancelIncoming();
                 myDoRefreshGroupingEvent.FireIncoming();
             }
-            else
+            else if (change.GetChildren().Any(a=>a.GetChildren().Any(b=>b.NewPath.Name == "package.json")))
             {
                 myLogger.Trace("Other file modification in Packages folder. Scheduling normal refresh");
                 myDoRefreshGroupingEvent.FireIncoming();
@@ -221,11 +221,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 var existingPackages = myPackagesById.Keys.ToJetHashSet();
                 foreach (var packageData in newPackages)
                 {
-                    // If the package.json file has been updated, remove the entry and add the new one. This should
+                    // 1. If the package.json file has been updated, remove the entry and add the new one. This should
                     // capture all changes to data + metadata. We don't care too much about duplicates, as this is
-                    // invalid JSON and Unity complains. Last write wins, but at least we won't crash
+                    // invalid JSON and Unity complains. Last write wins, but at least we won't crash.
+                    // 2. If package was drag-n-dropped from registry to local or smth similar, remove the old one and add a new one
                     if (myPackagesById.TryGetValue(packageData.Id, out var existingPackageData)
-                        && existingPackageData.PackageJsonTimestamp != packageData.PackageJsonTimestamp)
+                        && (existingPackageData.PackageJsonTimestamp != packageData.PackageJsonTimestamp
+                        || existingPackageData.Source != packageData.Source)
+                        )
                     {
                         RemovePackage(packageData.Id);
                     }
