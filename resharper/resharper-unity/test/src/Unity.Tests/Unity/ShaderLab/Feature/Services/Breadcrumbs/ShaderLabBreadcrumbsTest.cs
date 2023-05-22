@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Breadcrumbs
 {
-    [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
+    [RequireHlslSupport, TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabBreadcrumbsTest : BreadcrumbsTestBase
     {
         protected override string RelativeTestDataPath => @"ShaderLab\Breadcrumbs";
