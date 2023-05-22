@@ -1,6 +1,5 @@
 package integrationTests
 
-import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.scriptingApi.checkCrumbs
 import com.jetbrains.rider.test.scriptingApi.setCaretToPosition
@@ -11,7 +10,6 @@ import org.testng.annotations.Test
 class BreadcrumbsTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName() = "SimpleUnityProjectWithShaders"
 
-    @Mute
     @Test
     fun simpleCheck() {
         withOpenedEditor(project, "Assets/Shaders/MyShader.shader") {
