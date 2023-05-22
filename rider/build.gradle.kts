@@ -119,6 +119,8 @@ val rdModelJarFile: File by lazy {
 }
 
 extra["rdLibDirectory"] = rdLibDirectory
+extra["monoRepoRootDir"] = monoRepoRootDir
+
 val backendDir = projectDir.parentFile.resolve("resharper")
 val resharperHostPluginSolution =  backendDir.resolve("resharper-unity.sln")
 
@@ -632,7 +634,7 @@ tasks {
         }
     }
 
-    val prepareRiderBuildProps = create("prepareRiderBuildProps") {
+    val prepareRiderBuildProps = register("prepareRiderBuildProps") {
         val propsFile =
             File("${project.projectDir}/../resharper/build/generated/DotNetSdkPath.generated.props")
         group = backendGroup
@@ -650,7 +652,7 @@ tasks {
         }
     }
 
-    val prepareNuGetConfig = create("prepareNuGetConfig") {
+    val prepareNuGetConfig = register("prepareNuGetConfig") {
         val nuGetConfigFile = File("${project.projectDir}/../NuGet.Config")
         dependsOn(prepareRiderBuildProps)
         group = backendGroup
@@ -680,7 +682,7 @@ tasks {
         }
     }
 
-    val buildReSharperHostPlugin = create("buildReSharperHostPlugin") {
+    val buildReSharperHostPlugin = register("buildReSharperHostPlugin") {
         group = backendGroup
         description = "Builds the full ReSharper backend plugin solution"
         dependsOn(prepareNuGetConfig, generateModels)
@@ -726,6 +728,17 @@ tasks {
     }
 
     val packReSharperPlugin by creating(com.ullink.NuGetPack::class) {
+        // Don't know the way to rewrite this task in a lazy manner (using registering) because NuGetPack uses `project.afterEvaluate` in its implementation,
+        // so it's just workaround to not download the Rider SDK in the monorepo mode
+        if (monoRepoRootDir != null) {
+            doFirst {
+                throw GradleException("This task is not expected to be run in the monorepo environment")
+            }
+
+            return@creating
+        }
+
+
         group = backendGroup
         onlyIf { isWindows } // non-windows builds are just for running tests, and agents don't have `mono` installed. NuGetPack requires `mono` though.
         description = "Packs resulting DLLs into a NuGet package which is an R# extension."
@@ -845,7 +858,9 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
     // (and we could get rid of RunTests then, too)
     if (runTests) {
         runNunit.get().shouldRunAfter(buildReSharperHostPlugin)
-        buildReSharperHostPlugin.finalizedBy(runNunit)
+        buildReSharperHostPlugin.configure {
+            finalizedBy(runNunit)
+        }
     }
 
     val publishCiBackendArtifacts by registering {
@@ -901,7 +916,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         from("projectTemplates") { into("${pluginName}/projectTemplates") }
     }
 
-    withType<Test> {
+    withType<Test>().configureEach {
         useTestNG()
 
         if (project.hasProperty("ignoreFailures")) {

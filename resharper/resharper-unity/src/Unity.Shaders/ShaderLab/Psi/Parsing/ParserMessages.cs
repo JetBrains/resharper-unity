@@ -15,6 +15,7 @@
         public const string IDS_BOOL_LITERAL = "bool";
         public const string IDS_BOOL_VALUE = "bool";
         public const string IDS_BRIGHTNESS_MODIFIER = "Brightness modifier";
+        public const string IDS_CODE_BLOCK = "code block";
         public const string IDS_COMPARISON_FUNCTION_VALUE = "comparison function";
         public const string IDS_COLOR_MASK_RGBA_FLAGS = "RGBA flags";
         public const string IDS_COLOR_MATERIAL_VALUE = "color material value";
@@ -54,6 +55,7 @@
         public const string IDS_VALUE = "value";
         public const string IDS_ZTEST_VALUE = "ZTest value";
         public const string IDS_FALLBACK_VALUE = "Fallback value";
+        public const string IDS_SHADER_LAB_COMMAND = "ShaderLab command";
 
         public static string GetString(string id) => id;
 

@@ -311,16 +311,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 {
                     if (entry.IsDirectory)
                     {
-                        // Do not add any directory tree that ends with `~`. Unity does not import these directories
-                        // into the asset database
-                        if (entry.RelativePath.FullPath.EndsWith("~"))
+                        // Do not add any directory tree that ends with `~` or starts with `.`.
+                        // Unity does not import these directories into the asset database
+                        if (IsHiddenAssetFolder(entry))
                             continue;
-                        CollectFiles(entry.GetAbsolutePath(), files, isProjectSettings);
+                        var entryAbsolutePath = entry.GetAbsolutePath();
+                        myLogger.Trace($"Processing directory {entryAbsolutePath}");
+                        CollectFiles(entryAbsolutePath, files, isProjectSettings);
                     }
                     else
                         files.ProcessExternalFile(entry, isUserEditable, isProjectSettings);
                 }
             }
+        }
+
+        private static bool IsHiddenAssetFolder(VirtualDirectoryEntryData entry)
+        {
+            return entry.RelativePath.FullPath.EndsWith("~") || entry.RelativePath.FullPath.StartsWith(".");
         }
 
         private void CollectExternalFilesForPackages(ExternalFiles externalFiles)
