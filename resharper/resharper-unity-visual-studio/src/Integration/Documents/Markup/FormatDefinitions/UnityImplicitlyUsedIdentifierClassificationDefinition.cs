@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Utilities;
 // Field is never assigned to, and will always have its default value null
 #pragma warning disable 649
 
-namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Documents.Markup.FormatDefinitions
+namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Integration.Documents.Markup.FormatDefinitions
 {
     [ClassificationType(ClassificationTypeNames = Name)]
     [Order(After = VsAnalysisPriorityClassificationDefinition.Name,
