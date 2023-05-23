@@ -2,7 +2,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.TextControl.DocumentMarkup;
 
-namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings
+namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Integration.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings
 {
     // VisualStudio doesn't support EffectType.LINE_MARKER, so we need a separate registration for SOLID_UNDERLINE
     [RegisterHighlighter(PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER,

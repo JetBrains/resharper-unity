@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.TextControl;
 
-namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Core.Psi.Modules
+namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Integration.Core.Psi.Modules
 {
     // When an external file is opened in VS through e.g. drag/drop, it's added to the Misc Files project and we get a
     // project file. Our IMiscFilesProjectPsiModuleProvider can provide the associated IPsiSourceFile and document
