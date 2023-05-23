@@ -5,7 +5,7 @@ using JetBrains.PsiFeatures.VisualStudio.ReSpeller;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Core.Feature.Respeller
+namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Integration.Core.Feature.Respeller
 {
     [SolutionComponent]
     public class UnityInstalledDictionarySettingsProvider : IUnitySolutionSettingsProvider

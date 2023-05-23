@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 
-namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Core.ProjectModel
+namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Integration.Core.ProjectModel
 {
     [SolutionComponent]
     public class VsUnityVersionPropertiesExtenderProvider : IPropertiesExtenderProvider
