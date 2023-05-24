@@ -8,6 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
 {
     public interface IShaderLabTokenNodeType : ITokenNodeType
     {
+        bool IsCommandKeyword(CachingLexer lexer); // check if this is ShaderLab command keyword
     }
 
     public static partial class ShaderLabTokenType
@@ -30,6 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
             public override bool IsConstantLiteral => false;    // LITERALS[this]
             public override bool IsIdentifier => false;  // this == IDENTIFIER
             public override bool IsKeyword => false;    // KEYWORDS[this]
+            public virtual bool IsCommandKeyword(CachingLexer cachingLexer) => false;
         }
     }
 }

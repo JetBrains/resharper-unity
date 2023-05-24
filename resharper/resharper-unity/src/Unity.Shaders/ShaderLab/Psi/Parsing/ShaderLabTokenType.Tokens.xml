@@ -71,8 +71,7 @@
     <Token name="PP_LINE" representation="#line" filtered="true" />
   </Tokens>
 
-  <!-- TODO: Should these be a keyword or just a fixed token? -->
-  <Commands NodeType="KeywordTokenNodeType">
+  <Commands NodeType="CommandKeywordTokenNodeType">
     <Command name="SHADER_KEYWORD" representation="Shader" />
     <Command name="PROPERTIES_KEYWORD" representation="Properties" />
     <Command name="CATEGORY_KEYWORD" representation="Category" />
@@ -83,11 +82,9 @@
   </Commands>
 
   <PropertyTypeKeywords NodeType="KeywordTokenNodeType">
-    <Keyword name="COLOR_KEYWORD" representation="Color" />
     <Keyword name="FLOAT_KEYWORD" representation="Float" />
     <Keyword name="INT_KEYWORD" representation="Int" />
     <Keyword name="INTEGER_KEYWORD" representation="Integer" />
-    <Keyword name="RANGE_KEYWORD" representation="Range" />
     <Keyword name="VECTOR_KEYWORD" representation="Vector" />
   </PropertyTypeKeywords>
   
@@ -101,14 +98,14 @@
     <Keyword name="TEXTURE_3D_KEYWORD" representation="3D" />
   </TextureDimensionKeywords>
 
-  <SubShaderCommands NodeType="KeywordTokenNodeType">
+  <SubShaderCommands NodeType="CommandKeywordTokenNodeType">
     <Command name="TAGS_KEYWORD" representation="Tags" />
     <Command name="PASS_KEYWORD" representation="Pass" />
     <Command name="USEPASS_KEYWORD" representation="UsePass" />
     <Command name="GRABPASS_KEYWORD" representation="GrabPass" />
   </SubShaderCommands>
 
-  <RenderStateCommands NodeType="KeywordTokenNodeType">
+  <RenderStateCommands NodeType="CommandKeywordTokenNodeType">
     <Command name="CULL_KEYWORD" representation="Cull" />
     <Command name="ZCLIP_KEYWORD" representation="ZClip" />
     <Command name="ZTEST_KEYWORD" representation="ZTest" />
@@ -181,7 +178,7 @@
     <Keyword name="HSL_LUMINOSITY_KEYWORD" representation="HSLLuminosity" />
   </BlendOpOperationKeywords>
 
-  <LegacyFixedFunctionCommands NodeType="KeywordTokenNodeType">
+  <LegacyFixedFunctionCommands NodeType="CommandKeywordTokenNodeType">
     <Command name="LIGHTING_KEYWORD" representation="Lighting" />
     <Command name="MATERIAL_KEYWORD" representation="Material" />
     <Command name="SEPARATE_SPECULAR_KEYWORD" representation="SeparateSpecular" />
@@ -191,14 +188,14 @@
     <Command name="SET_TEXTURE_KEYWORD" representation="SetTexture" />
   </LegacyFixedFunctionCommands>
 
-  <LegacyMaterialCommands NodeType="KeywordTokenNodeType">
+  <LegacyMaterialCommands NodeType="CommandKeywordTokenNodeType">
     <Command name="DIFFUSE_KEYWORD" representation="Diffuse" />
     <Command name="AMBIENT_KEYWORD" representation="Ambient" />
     <Command name="SPECULAR_KEYWORD" representation="Specular" />
     <Command name="SHININESS_KEYWORD" representation="Shininess" />
   </LegacyMaterialCommands>
 
-  <LegacyTextureCommands NodeType="KeywordTokenNodeType">
+  <LegacyTextureCommands NodeType="CommandKeywordTokenNodeType">
     <Keyword name="COMBINE_KEYWORD" representation="Combine" />
     <Keyword name="CONSTANT_COLOR_KEYWORD" representation="ConstantColor" />
     <Keyword name="MATRIX_KEYWORD" representation="Matrix" />
@@ -228,16 +225,26 @@
     <Keyword name="OBJECT_LINEAR_KEYWORD" representation="ObjectLinear" />
   </LegacyTexGenModeKeywords>
 
-  <LegacyBindChannelsCommands NodeType="KeywordTokenNodeType">
+  <LegacyBindChannelsCommands NodeType="CommandKeywordTokenNodeType">
     <Command name="BIND_KEYWORD" representation="Bind" />
   </LegacyBindChannelsCommands>
+  
+  <!-- region: Multipurpose commands -->
+  <ColorCommand NodeType="PropertyAndCommandKeywordTokenNodeType">
+    <Keyword name="COLOR_KEYWORD" representation="Color" />
+    <Keyword name="RANGE_KEYWORD" representation="Range" />
+  </ColorCommand>
+
+  <EmissionCommand NodeType="EmissionCommandKeywordTokenNodeType">
+    <Keyword name="EMISSION_KEYWORD" representation="Emission" />
+  </EmissionCommand>
+  <!-- endregion: Multipurpose commands -->
 
   <ColorMaterialKeywords NodeType="KeywordTokenNodeType">
     <Keyword name="AMBIENT_AND_DIFFUSE_KEYWORD" representation="AmbientAndDiffuse" />
-    <Keyword name="EMISSION_KEYWORD" representation="Emission" />
   </ColorMaterialKeywords>
 
-  <LegacyFogCommands NodeType="KeywordTokenNodeType">
+  <LegacyFogCommands NodeType="CommandKeywordTokenNodeType">
     <Command name="MODE_KEYWORD" representation="Mode" />
     <Command name="DENSITY_KEYWORD" representation="Density" />
   </LegacyFogCommands>
@@ -249,7 +256,7 @@
     <Keyword name="EXP2_KEYWORD" representation="Exp2" />
   </FogModeKeywords>
 
-  <StencilCommands NodeType="KeywordTokenNodeType">
+  <StencilCommands NodeType="CommandKeywordTokenNodeType">
     <Command name="REF_KEYWORD" representation="Ref" />
     <Command name="READ_MASK_KEYWORD" representation="ReadMask" />
     <Command name="WRITE_MASK_KEYWORD" representation="WriteMask" />
