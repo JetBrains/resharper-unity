@@ -2010,14 +2010,8 @@ nameCommand
 options { stubBase="ShaderLabCommandBase"; }
 :
   NAME_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
-  nameValue<SHADER_LAB_VALUE>
+  STRING_LITERAL<SHADER_LAB_VALUE, Name>
 ;
-
-nameValue
-:
-  STRING_LITERAL<SHADER_LAB_VALUE, Value>
-;
-
 
 // **************************************************************************
 //
