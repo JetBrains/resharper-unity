@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Features.ReSpeller;
 using JetBrains.ReSharper.Plugins.Json;
 using JetBrains.ReSharper.Psi.CSharp;
 
-namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Core.Feature.Respeller
+namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Integration.Core.Feature.Respeller
 {
     [ZoneMarker]
     public class ZoneMarker : IRequire<IReSpellerZone>, IRequire<ExternalSourcesZone>, IRequire<ILanguageCSharpZone>, IRequire<ILanguageJsonNewZone>

@@ -9,5 +9,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
     {
         [SettingsEntry(AutopopupType.HardAutopopup, DescriptionResourceType: typeof(Strings), DescriptionResourceName:nameof(Strings.ShaderLabAutopopupEnabledSettingsKey_s_In_variable_references))]
         public AutopopupType InVariableReferences;
+        
+        [SettingsEntry(AutopopupType.HardAutopopup, DescriptionResourceType: typeof(Strings), DescriptionResourceName:nameof(Strings.ShaderLabAutopopupEnabledSettingsKey_s_In_keywords))]
+        public AutopopupType InKeywords;
     }
 }
