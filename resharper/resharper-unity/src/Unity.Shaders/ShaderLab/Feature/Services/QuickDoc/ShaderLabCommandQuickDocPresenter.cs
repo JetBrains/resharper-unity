@@ -4,11 +4,12 @@ using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickDoc;
 using JetBrains.ReSharper.Feature.Services.QuickDoc.Render;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.OnlineHelp;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.QuickDoc
@@ -37,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Q
             
             var details = GetXmlDoc(commandElement);
             var text = myXmlDocHtmlPresenter.Run(details, null,
-                commandInstance, presentationLanguage, XmlDocHtmlUtil.NavigationStyle.None,
+                commandInstance, presentationLanguage, XmlDocHtmlUtil.NavigationStyle.ReadMore,
                 XmlDocHtmlUtil.CrefManager);
             
             return new QuickDocTitleAndText(text, title);
@@ -75,6 +76,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Q
 
         public void OpenInEditor(string navigationId = "") { }
 
-        public void ReadMore(string navigationId = "") { }
+        public void ReadMore(string navigationId = "")
+        {
+            if (myCommandPointer.Resolve() is { Element: { } command })
+                Shell.Instance.GetComponent<ShowUnityHelp>().ShowOnlineHelp<ShaderLabOnlineHelpProvider>(command);
+        }
     }
 }

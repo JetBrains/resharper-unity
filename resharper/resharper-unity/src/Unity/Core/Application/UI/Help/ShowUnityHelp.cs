@@ -4,7 +4,9 @@ using JetBrains.Application;
 using JetBrains.Application.StdApplicationUI;
 using JetBrains.Application.UI.Help;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.OnlineHelp;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
+using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures;
 
@@ -81,6 +83,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
             var res = myUnityDocumentation.GetDocumentationUri(mySolutionsManager.Solution?.GetComponent<IUnityVersion>(), UnityDocumentationCatalog.ScriptReference, offlineKeywords, onlineKeyword);
             myLogger.Trace($"GetUri offlineKeyword:{offlineKeyword}, onlineKeyword:{onlineKeyword} {res}");
             return res;
+        }
+
+        public void ShowOnlineHelp<TProvider>(IDeclaredElement element) where TProvider : class, IOnlineHelpProvider
+        {
+            var url = element.GetSolution().GetComponent<TProvider>().GetUrl(element);
+            if (url != null)
+                myUriOpener.OpenUri(url);
         }
     }
 }

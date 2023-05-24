@@ -18,18 +18,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.O
     {
         private readonly UnityDocumentation myDocumentation;
         private readonly UnityDocumentationCatalog myShaderLabCatalog;
-        private readonly SolutionsManager mySolutionsManager;
 
-        public ShaderLabOnlineHelpProvider(UnityDocumentation documentation, SolutionsManager solutionsManager)
+        public ShaderLabOnlineHelpProvider(UnityDocumentation documentation)
         {
             myDocumentation = documentation;
-            mySolutionsManager = solutionsManager;
             myShaderLabCatalog = UnityDocumentationCatalog.Create("ShaderLab", "Manual", "SL-");
         }
 
         public Uri? GetUrl(IDeclaredElement element)
         {
-            var unityVersion = mySolutionsManager.Solution?.GetComponent<IUnityVersion>();
+            var unityVersion = element.GetSolution().GetComponent<IUnityVersion>();
             if (element.GetElementType() != ShaderLabDeclaredElementType.Command)
                 return null;
             var keyword = element.ShortName;
