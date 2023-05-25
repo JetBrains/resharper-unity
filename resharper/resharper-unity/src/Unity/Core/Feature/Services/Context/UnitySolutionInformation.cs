@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.AI.Unity;
+using JetBrains.ReSharper.Feature.Services.Unity;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
