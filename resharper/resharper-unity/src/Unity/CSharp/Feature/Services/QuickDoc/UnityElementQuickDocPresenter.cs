@@ -71,12 +71,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
                 ((XmlElement)xmlDocNode).CreateLeafElementWithValue("description", myDescription);
             }
 
-            if (!element.GetPsiServices().Solution.HasComponent<IXmlDocLinkAppender>()) return xmlDocNode;
-            var provider = element.GetPsiServices().Solution.GetComponent<UnityOnlineHelpProvider>();
+            var solution = element.GetPsiServices().Solution;
+            if (solution.TryGetComponent<IXmlDocLinkAppender>() is not {} xmlDocLinkAppender) return xmlDocNode;
+            var provider = solution.GetComponent<UnityOnlineHelpProvider>();
             var uri = provider.GetUrl(element);
-            var xmlDocLinkAppender = element.GetPsiServices().Solution.GetComponent<IXmlDocLinkAppender>();
             xmlDocLinkAppender.AppendExternalDocumentationLink(uri, provider.GetPresentableName(element), xmlDocNode);
-
             return xmlDocNode;
         }
 
