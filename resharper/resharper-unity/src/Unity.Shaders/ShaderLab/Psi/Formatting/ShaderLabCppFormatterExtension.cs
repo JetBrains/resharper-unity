@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
 
       public ShaderLabIndentingRule()
       {
-        myNodePattern = AndNodePattern.Create(new NodeTypePattern(CppCompositeNodeTypes.FILE), new PredicateNodePattern((node, _) => node.Parent.NodeOrNull is IInjectedFileHolder inject && inject.OriginalNode is ICgContent));
+        myNodePattern = AndNodePattern.Create(new NodeTypePattern(CppCompositeNodeTypes.FILE), new PredicateNodePattern((node, _) => node.Parent.NodeOrNull is IInjectedFileHolder { OriginalNode: ICgContent }));
       }
 
       public long Group { get; set; }
@@ -84,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
             case '\n':
               return indent.ToString();
             default:
-              indent.Append(Char.IsWhiteSpace(c) ? c : ' ');
+              indent.Append(char.IsWhiteSpace(c) ? c : ' ');
               break;
           }
         }

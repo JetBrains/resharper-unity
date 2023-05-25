@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
         {
         }
         
-        // smart backspaces expecteed that GetExtraStub return not null value, "foo " is typical value
+        // smart backspaces expected that GetExtraStub return not null value, "foo " is typical value
         protected override string GetExtraStub(CachingLexer lexer, int offset, ITextControl textControl)
         {
             using (LexerStateCookie.Create(lexer))
