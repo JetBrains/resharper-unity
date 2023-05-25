@@ -1,5 +1,5 @@
 ﻿File: Shader01.shader
- Shader
+ Shader "Unlit/NewUnlitShader"
   Properties
   SubShader
    Tags
