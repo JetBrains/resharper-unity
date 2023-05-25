@@ -2,13 +2,15 @@
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Text;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
 {
     public interface IShaderLabTokenNodeType : ITokenNodeType
     {
-        bool IsCommandKeyword(CachingLexer lexer); // check if this is ShaderLab command keyword
+        bool IsCommandKeyword(CachingLexer lexer);  // check if this is ShaderLab command keyword
+        bool IsCommandKeyword(ITreeNode placement); // check if this is ShaderLab command keyword
     }
 
     public static partial class ShaderLabTokenType
@@ -32,6 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
             public override bool IsIdentifier => false;  // this == IDENTIFIER
             public override bool IsKeyword => false;    // KEYWORDS[this]
             public virtual bool IsCommandKeyword(CachingLexer cachingLexer) => false;
+            public virtual bool IsCommandKeyword(ITreeNode placement) => false;
         }
     }
 }
