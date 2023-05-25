@@ -1277,13 +1277,18 @@ texturePropertyValue
   )?
 ;
 
-private errorhandling texturePropertyValueBody
+private texturePropertyValueBody
 options { preCheckExpected; }
 :
-   texEnvProperty<TEX_ENV_PROPERTY, TexEnvProperty>*  
+   textureEnvPropertyAux*
 ;
 
-errorhandling interface texEnvProperty
+private errorhandling textureEnvPropertyAux
+:
+   texEnvProperty<TEX_ENV_PROPERTY, TexEnvProperty> 
+; 
+
+interface texEnvProperty
 :
   textureDimensionTexEnvProperty
   | texGenTexEnvProperty
@@ -2063,13 +2068,13 @@ colorMaterialCommand
 options { stubBase="ShaderLabCommandBase"; }
 :
   COLOR_MATERIAL_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
-  colorMaterialValue<SHADER_LAB_VALUE, Value>
+  colorMaterialValue
 ;
 
-colorMaterialValue
+private colorMaterialValue
+options { preCheckExpected; }
 :
-  AMBIENT_AND_DIFFUSE_KEYWORD<SHADER_LAB_VALUE, Value>
-  | EMISSION_KEYWORD<SHADER_LAB_VALUE, Value>
+    AMBIENT_AND_DIFFUSE_KEYWORD | EMISSION_KEYWORD
 ;
 
 materialCommand

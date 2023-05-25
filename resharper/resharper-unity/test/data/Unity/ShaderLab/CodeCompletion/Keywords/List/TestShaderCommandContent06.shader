@@ -4,6 +4,5 @@ Shader ""
     {
     }
     
-    Category { }
-    {caret}
+    Category { }{caret}
 }
