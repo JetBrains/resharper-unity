@@ -233,6 +233,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
                                         launch.ClientControllerInfo);
                                     model.UnitTestLaunch.SetValue(launch);
                                     SubscribeResults(run, lt, launch);
+                                    launch.RunResult.Advise(lt, result => { tcs.SetResult(result.Passed); });
                                     StartTests(model, run, tcs, lt);
                                 }
                             });
