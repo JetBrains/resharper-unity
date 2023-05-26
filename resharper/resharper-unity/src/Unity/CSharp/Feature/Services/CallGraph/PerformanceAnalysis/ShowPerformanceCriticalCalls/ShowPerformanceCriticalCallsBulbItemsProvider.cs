@@ -4,6 +4,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl;
 
@@ -14,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
     {
         private readonly SolutionAnalysisConfiguration myConfiguration;
 
-        public ShowPerformanceCriticalCallsBulbItemsProvider(SolutionAnalysisConfiguration configuration, ISolution solution) : base(solution)
+        public ShowPerformanceCriticalCallsBulbItemsProvider(SolutionAnalysisConfiguration configuration, PerformanceCriticalContextProvider performanceCriticalContextProvider, ISolution solution) : base(solution, performanceCriticalContextProvider)
         {
             myConfiguration = configuration;
         }

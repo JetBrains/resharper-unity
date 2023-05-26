@@ -19,7 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
         public ShowExpensiveCallsBulbItemsProvider(
             ExpensiveInvocationContextProvider expensiveContextProvider, 
             SolutionAnalysisConfiguration configuration,
-            ISolution solution) : base(solution)
+            PerformanceCriticalContextProvider performanceCriticalContextProvider,
+            ISolution solution) : base(solution, performanceCriticalContextProvider)
         {
             myExpensiveContextProvider = expensiveContextProvider;
             myConfiguration = configuration;
