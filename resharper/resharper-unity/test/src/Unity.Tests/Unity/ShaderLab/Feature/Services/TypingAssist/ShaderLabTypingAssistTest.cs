@@ -39,6 +39,14 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Typ
         [Test] public void SmartBackspace02() { DoNamedTest(); }
         [Test] public void SmartBackspace03() { DoNamedTest(); }
         [Test] public void SmartBackspaceHlsl01() { DoNamedTest(); }
+        [Test] public void SmartLBrace01() { DoNamedTest(); }
+        [Test] public void SmartLBrace02() { DoNamedTest(); }
+        [Test] public void SmartLBracket01() { DoNamedTest(); }
+        [Test] public void SmartLBracket02() { DoNamedTest(); }
+        [Test] public void SmartLParen01() { DoNamedTest(); }
+        [Test] public void SmartLParen02() { DoNamedTest(); }
+        [Test] public void SmartQuot01() { DoNamedTest(); }
+        [Test] public void SmartQuot02() { DoNamedTest(); }
 
         protected override void DoTest(Lifetime lifetime)
         {

@@ -2,12 +2,31 @@
 
 package com.jetbrains.rider.plugins.unity.workspace
 
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.workspaceModel.ide.virtualFile
 import com.intellij.workspaceModel.storage.*
+import com.intellij.workspaceModel.storage.EntityInformation
+import com.intellij.workspaceModel.storage.EntitySource
+import com.intellij.workspaceModel.storage.EntityStorage
+import com.intellij.workspaceModel.storage.GeneratedCodeApiVersion
+import com.intellij.workspaceModel.storage.GeneratedCodeImplVersion
+import com.intellij.workspaceModel.storage.MutableEntityStorage
+import com.intellij.workspaceModel.storage.WorkspaceEntity
 import com.intellij.workspaceModel.storage.bridgeEntities.ContentRootEntity
-import com.intellij.workspaceModel.storage.impl.*
+import com.intellij.workspaceModel.storage.impl.ConnectionId
+import com.intellij.workspaceModel.storage.impl.EntityLink
+import com.intellij.workspaceModel.storage.impl.ModifiableWorkspaceEntityBase
+import com.intellij.workspaceModel.storage.impl.UsedClassesCollector
+import com.intellij.workspaceModel.storage.impl.WorkspaceEntityBase
+import com.intellij.workspaceModel.storage.impl.WorkspaceEntityData
+import com.intellij.workspaceModel.storage.impl.extractOneToOneChild
+import com.intellij.workspaceModel.storage.impl.updateOneToOneChildOfParent
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityGitDetails
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
+import org.jetbrains.deft.ObjBuilder
+import org.jetbrains.deft.Type
+import org.jetbrains.deft.annotations.Child
 
 @GeneratedCodeApiVersion(1)
 @GeneratedCodeImplVersion(1)
@@ -39,11 +58,9 @@ open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : Unit
 
   class Builder(result: UnityPackageEntityData?) : ModifiableWorkspaceEntityBase<UnityPackageEntity, UnityPackageEntityData>(
     result), UnityPackageEntity.Builder {
-
-    @Suppress("unused")
     constructor() : this(UnityPackageEntityData())
 
-      override fun applyToBuilder(builder: MutableEntityStorage) {
+    override fun applyToBuilder(builder: MutableEntityStorage) {
       if (this.diff != null) {
         if (existsInBuilder(builder)) {
           this.diff = builder
@@ -67,7 +84,8 @@ open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : Unit
       checkInitialization() // TODO uncomment and check failed tests
     }
 
-    private fun checkInitialization() {
+    fun checkInitialization() {
+      val _diff = diff
       if (!getEntityData().isEntitySourceInitialized()) {
         error("Field WorkspaceEntity#entitySource should be initialized")
       }
@@ -85,6 +103,7 @@ open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : Unit
       dataSource as UnityPackageEntity
       if (this.entitySource != dataSource.entitySource) this.entitySource = dataSource.entitySource
       if (this.descriptor != dataSource.descriptor) this.descriptor = dataSource.descriptor
+      updateChildToParentReferences(parents)
     }
 
 
@@ -94,6 +113,7 @@ open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : Unit
         checkModificationAllowed()
         getEntityData(true).entitySource = value
         changedProperty.add("entitySource")
+
       }
 
     override var descriptor: UnityPackage
@@ -120,7 +140,9 @@ open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : Unit
         checkModificationAllowed()
         val _diff = diff
         if (_diff != null && value is ModifiableWorkspaceEntityBase<*, *> && value.diff == null) {
-          value.entityLinks[EntityLink(false, CONTENTROOTENTITY_CONNECTION_ID)] = this
+          if (value is ModifiableWorkspaceEntityBase<*, *>) {
+            value.entityLinks[EntityLink(false, CONTENTROOTENTITY_CONNECTION_ID)] = this
+          }
           // else you're attaching a new entity to an existing entity that is not modifiable
           _diff.addEntity(value)
         }
@@ -179,9 +201,10 @@ class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
     }
   }
 
-    override fun getRequiredParents(): List<Class<out WorkspaceEntity>> {
-        return mutableListOf()
-    }
+  override fun getRequiredParents(): List<Class<out WorkspaceEntity>> {
+    val res = mutableListOf<Class<out WorkspaceEntity>>()
+    return res
+  }
 
   override fun equals(other: Any?): Boolean {
     if (other == null) return false
@@ -220,7 +243,7 @@ class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
     collector.add(UnityPackage::class.java)
     collector.add(UnityGitDetails::class.java)
     collector.add(UnityPackageSource::class.java)
-    this.descriptor.let { collector.addDataToInspect(it) }
+    this.descriptor?.let { collector.addDataToInspect(it) }
     collector.sameForAllEntities = true
   }
 }
