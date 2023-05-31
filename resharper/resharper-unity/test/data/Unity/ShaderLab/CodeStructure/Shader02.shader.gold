@@ -1,7 +1,7 @@
 ﻿File: Shader02.shader
- Shader
+ Shader "Unlit/NewUnlitShader"
   Properties
-  Category
+  Category "ABC"
    Tags
    Cull
    ZWrite
@@ -45,13 +45,13 @@
   SubShader
    Tags
    LOD
-   Pass
+   Pass "ABC"
     Name
     SetTexture
      ConstantColor
      Combine
      Matrix
-   GrabPass
+   GrabPass "My Pass"
     Tags
    UsePass
   Fallback

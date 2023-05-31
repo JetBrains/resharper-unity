@@ -21,19 +21,30 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CachingLexers;
 using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.Cpp.Parsing;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Format;
 using JetBrains.ReSharper.Psi.Parsing;
+using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Text;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.TypingAssist
 {
     [SolutionComponent]
-    public class ShaderLabTypingAssist : TypingAssistLanguageBase<ShaderLabLanguage>, ITypingHandler
+    public class ShaderLabTypingAssist : TypingAssistForCLikeSyntax<ShaderLabLanguage>, ITypingHandler
     {
+        private static readonly Pair<TokenNodeType, TokenNodeType>[] ourBracketPairs = {
+            Pair.Of(ShaderLabTokenType.LBRACK,  ShaderLabTokenType.RBRACK),
+            Pair.Of(ShaderLabTokenType.LPAREN,  ShaderLabTokenType.RPAREN)
+        };
+        private static readonly Pair<TokenNodeType, TokenNodeType>[] ourBracePairs = {
+            Pair.Of(ShaderLabTokenType.LBRACE, ShaderLabTokenType.RBRACE)
+        };
+        
         private readonly ISolution mySolution;
         private readonly InjectedHlslDummyFormatter myInjectedHlslDummyFormatter;
-
+        
         public ShaderLabTypingAssist(
             Lifetime lifetime,
             ISolution solution,
@@ -47,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
             SkippingTypingAssist skippingTypingAssist,
             LastTypingAction lastTypingAssistAction,
             StructuralRemoveManager structuralRemoveManager)
-            : base(solution, settingsStore, cachingLexerService, commandProcessor, psiServices,
+            : base(ShaderLabSyntax.CLike, solution, settingsStore, cachingLexerService, commandProcessor, psiServices,
                 externalIntellisenseHost,
                 skippingTypingAssist, lastTypingAssistAction, structuralRemoveManager)
         {
@@ -61,6 +72,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
             typingAssistManager.AddActionHandler(lifetime, TextControlActions.ActionIds.TabLeft, this,
                 HandleTabLeftPressed,
                 IsActionHandlerAvailable);
+            typingAssistManager.AddTypingHandler(lifetime, '{', this, HandleLeftBraceTyped, IsTypingHandlerAvailable);
+            typingAssistManager.AddTypingHandler(lifetime, '}', this, HandleRightBraceTyped, IsTypingHandlerAvailable);
+            typingAssistManager.AddTypingHandler(lifetime, '[', this, HandleLeftBracketOrParenthTyped, IsTypingHandlerAvailable);
+            typingAssistManager.AddTypingHandler(lifetime, ']', this, HandleRightBracketTyped, IsTypingHandlerAvailable);
+            typingAssistManager.AddTypingHandler(lifetime, '(', this, HandleLeftBracketOrParenthTyped, IsTypingHandlerAvailable);
+            typingAssistManager.AddTypingHandler(lifetime, ')', this, HandleRightBracketTyped, IsTypingHandlerAvailable);
+            typingAssistManager.AddTypingHandler(lifetime, '"', this, HandleQuoteTyped, IsTypingHandlerAvailable);
         }
 
         private bool HandleBackspaceAction(IActionContext actionContext)
@@ -226,5 +244,63 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
             if (sourceFile == null) return FormatSettingsKeyBase.Default;
             return sourceFile.GetFormatterSettings(ShaderLabLanguage.Instance);
         }
+        
+        protected override bool IsTokenSuitableForCloseBracket(TokenNodeType nextTokenType)
+        {
+            return nextTokenType == WHITE_SPACE
+                   || nextTokenType == NEW_LINE
+                   || nextTokenType == C_STYLE_COMMENT
+                   || nextTokenType == END_OF_LINE_COMMENT
+                   || nextTokenType == SEMICOLON
+                   || nextTokenType == ShaderLabTokenType.COMMA
+                   || nextTokenType == RBRACKET
+                   || nextTokenType == RBRACE
+                   || nextTokenType == RPARENTH;
+        }
+
+        protected override BracketMatcher CreateBracketMatcher() => new GenericBracketMatcher(ourBracketPairs);
+
+        protected override bool GetPreferWrapBeforeOpSignSetting(IContextBoundSettingsStore settingsStore) => false;
+
+        protected override bool DoReformatForSmartEnter(ITextControl textControl, TreeOffset lBraceTreePos, TreeOffset rBraceTreePos, int charPos, ITokenNode lBraceNode, ITokenNode rBraceNode, bool afterLBrace, IFile file, bool oneLine) => false;
+
+        protected override bool IsNodeSuitableAsSemicolonFormatParent(ITreeNode node) => false;
+
+        protected override ITreeNode? GetParentForFormatOnSemicolon(ITreeNode node) => null;
+
+        protected override bool CheckThatCLikeLineEndsInOpenStringLiteral(ITextControl textControl, CachingLexer lexer, int lineEndPos, char c, NodeTypeSet correspondingTokenType, bool isStringWithAt, ref int charPos, bool defaultReturnValue)
+        {
+            return lexer.FindTokenAt(lineEndPos - 1)
+                   && lexer.TokenType == ShaderLabTokenType.STRING_LITERAL
+                   && (lexer.GetTokenLength() == 1 || lexer.Buffer[lineEndPos - 1] != '"'); // either '"' or unfinished string
+        }
+
+        protected override bool IsNextCharDoesNotStartNewLiteral(ITypingContext typingContext, CachingLexer lexer, int charPos, IBuffer buffer) => lexer.TokenStart != charPos && buffer[lexer.TokenStart] == typingContext.Char;
+
+        protected override bool IsStopperTokenForStringLiteral(TokenNodeType tokenType)
+        {
+            return tokenType == WHITE_SPACE
+                   || tokenType == NEW_LINE
+                   || tokenType == C_STYLE_COMMENT
+                   || tokenType == END_OF_LINE_COMMENT
+                   || tokenType == SEMICOLON
+                   || tokenType == PLUS
+                   || tokenType == ShaderLabTokenType.COMMA
+                   || tokenType == RBRACKET
+                   || tokenType == RBRACE
+                   || tokenType == RPARENTH
+                   || STRING_LITERALS.Contains(tokenType);
+        }
+
+        protected override BracketMatcher CreateBraceMatcher() => new GenericBracketMatcher(ourBracePairs);
+
+        protected override bool GetAutoInsertDataForRBrace(ITextControl textControl, ITokenNode rBraceToken, TreeTextRange treeLBraceRange, int lBracePos, int position, IDocument document, out TreeOffset positionForRBrace, out string rBraceText, ref IFile file)
+        {
+            positionForRBrace = rBraceToken.GetTreeEndOffset();
+            rBraceText = "}";
+            return false;
+        }
+
+        public override Pair<ITreeRange, ITreeRangePointer> GetRangeToFormatAfterRBrace(ITextControl textControl) => default;
     }
 }

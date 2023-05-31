@@ -54,6 +54,9 @@ interface UnityPackageEntity : WorkspaceEntity {
   }
 
   companion object : Type<UnityPackageEntity, Builder>() {
+    @JvmOverloads
+    @JvmStatic
+    @JvmName("create")
     operator fun invoke(descriptor: UnityPackage, entitySource: EntitySource, init: (Builder.() -> Unit)? = null): UnityPackageEntity {
       val builder = builder()
       builder.descriptor = descriptor

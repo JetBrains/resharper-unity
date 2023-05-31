@@ -1,6 +1,8 @@
 ﻿#nullable enable
 using JetBrains.Diagnostics;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
+using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
 {
@@ -26,6 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
             }
 
             public override bool IsCommandKeyword(CachingLexer lexer) => true;
+            public override bool IsCommandKeyword(ITreeNode placement) => true;
         }
         
         private class PropertyAndCommandKeywordTokenNodeType : KeywordTokenNodeType
@@ -39,6 +42,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
                 Assertion.Assert(cachingLexer.TokenType == this);
                 return GetPreviousTokenType(cachingLexer) != COMMA;
             }
+
+            public override bool IsCommandKeyword(ITreeNode placement) => placement.Parent is not IPropertyDeclaration;
         }
         
         private class EmissionCommandKeywordTokenNodeType : KeywordTokenNodeType
@@ -52,6 +57,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
                 Assertion.Assert(cachingLexer.TokenType == this);
                 return GetPreviousTokenType(cachingLexer) != COLOR_MATERIAL_KEYWORD;
             }
+
+            public override bool IsCommandKeyword(ITreeNode placement) => placement.Parent is not IColorMaterialCommand;
         }
     }
 }

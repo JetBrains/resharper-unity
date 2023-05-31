@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Linq;
 using JetBrains.ReSharper.FeaturesTestFramework.CodeStructure;
