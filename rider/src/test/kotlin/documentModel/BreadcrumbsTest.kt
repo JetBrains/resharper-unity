@@ -15,7 +15,7 @@ class BreadcrumbsTest : BaseTestWithSolution() {
         withOpenedEditor(project, "Assets/Shaders/MyShader.shader") {
             setCaretToPosition(12, 20)
 
-            checkCrumbs("Shader", "SubShader", "Pass", "CGPROGRAM", "hsv2rgb")
+            checkCrumbs("Shader \"MyShader\"", "SubShader", "Pass", "CGPROGRAM", "hsv2rgb")
         }
     }
 }

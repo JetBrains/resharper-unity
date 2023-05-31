@@ -43,13 +43,7 @@ abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
     }
 
     protected fun disableAllGroups() {
-        occurrenceTypeGrouping(false)
-        solutionFolderGrouping(false)
-        projectGrouping(false)
-        directoryGrouping(false)
-        fileGrouping(false)
-        namespaceGrouping(false)
-        typeGrouping(false)
+        disableAllFindUsagesGroups(project)
         unityGameObjectGrouping(false)
         unityComponentGrouping(false)
     }

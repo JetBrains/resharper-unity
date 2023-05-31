@@ -10,6 +10,7 @@ import com.intellij.util.text.VersionComparatorUtil
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
+import com.jetbrains.rd.framework.protocolOrThrow
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
@@ -268,7 +269,7 @@ fun IntegrationTestWithFrontendBackendModel.refreshUnityModel() = frontendBacken
 
 private fun IntegrationTestWithFrontendBackendModel.executeMethod(runMethodData: RunMethodData): RunMethodResult {
     frameworkLogger.info("Executing method ${runMethodData.methodName} from ${runMethodData.typeName} (assembly: ${runMethodData.assemblyName})")
-    val runMethodResult = frontendBackendModel.runMethodInUnity.callSynchronously(runMethodData, frontendBackendModel.protocol)!!
+    val runMethodResult = frontendBackendModel.runMethodInUnity.callSynchronously(runMethodData, frontendBackendModel.protocolOrThrow)!!
     assertTrue(runMethodResult.success, "runMethodResult.success is false \n${runMethodResult.message} \n${runMethodResult.stackTrace}")
     frameworkLogger.info("Method was executed")
     return runMethodResult

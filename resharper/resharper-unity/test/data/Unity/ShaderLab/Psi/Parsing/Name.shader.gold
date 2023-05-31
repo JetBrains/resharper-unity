@@ -30,8 +30,7 @@ IShaderLabFile
                   INameCommand
                     ShaderLabTokenType+KeywordTokenElement(type:NAME_KEYWORD, text:Name)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    INameValue
-                      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"MyName")
+                    ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"MyName")
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:        ) spaces: "        "
                   ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

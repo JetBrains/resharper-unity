@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.B
     {
         public ShaderLabBreadcrumbsProvider(IIconHost iconHost, PsiIconManager iconManager) : base(iconHost, iconManager) { }
 
-        protected override bool CanGoToFileMember(IStructuralDeclaration declaration) => true;
+        protected override bool CanGoToFileMember(IStructuralDeclaration declaration) => false;
         protected override bool CanShowFileStructure(IStructuralDeclaration declaration) => true;
 
         protected override void CollectNodeBreadcrumbs(ITreeNode node, IStructuralDeclaration? declaration, DocumentOffset documentOffset, ref LocalList<CrumbModel> crumbs)
