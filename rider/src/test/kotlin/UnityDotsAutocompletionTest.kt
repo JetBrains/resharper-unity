@@ -47,7 +47,7 @@ class UnityDotsAutocompletionTest : BaseTestWithSolution() {
             "JetBrains.ReSharper.Psi.Files",
             "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages")
 
-    //@Test
+    @Test
     fun test_DotsSourceGenCompletion() {
         waitForRoslynReady()
         buildSolutionWithReSharperBuild()
