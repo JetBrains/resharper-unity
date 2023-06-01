@@ -10,9 +10,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Bu
     {
         private readonly BurstContextProvider myBurstContextProvider;
 
-        protected BurstBulbItemsProvider(ISolution solution) : base(solution)
+        protected BurstBulbItemsProvider(ISolution solution, BurstContextProvider burstContextProvider) : base(solution)
         {
-            myBurstContextProvider = solution.GetComponent<BurstContextProvider>();
+            myBurstContextProvider = burstContextProvider;
         }
         protected override bool CheckCallGraph(IMethodDeclaration methodDeclaration, IReadOnlyCallGraphContext context)
         {
