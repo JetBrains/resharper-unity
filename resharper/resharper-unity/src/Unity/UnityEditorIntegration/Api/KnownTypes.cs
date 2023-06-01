@@ -22,6 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static readonly IClrTypeName Color = new ClrTypeName("UnityEngine.Color");
         public static readonly IClrTypeName Color32 = new ClrTypeName("UnityEngine.Color32");
         public static readonly IClrTypeName Component = new ClrTypeName("UnityEngine.Component");
+        public static readonly IClrTypeName ComputeShader = new ClrTypeName("UnityEngine.ComputeShader");
         public static readonly IClrTypeName CreateAssetMenuAttribute = new ClrTypeName("UnityEngine.CreateAssetMenuAttribute");
         public static readonly IClrTypeName Debug = new ClrTypeName("UnityEngine.Debug");
         public static readonly IClrTypeName ExecuteInEditMode = new ClrTypeName("UnityEngine.ExecuteInEditMode");
