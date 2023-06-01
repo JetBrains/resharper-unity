@@ -22,6 +22,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Typ
         [Test] public void SmartEnter05() { DoNamedTest(); }
         [Test] public void SmartEnter06() { DoNamedTest(); }
         [Test] public void SmartEnter07() { DoNamedTest(); }
+        [Test] public void SmartEnter08() { DoNamedTest(); }
+        [Test] public void SmartEnter09() { DoNamedTest(); }
+        [Test] public void SmartEnter10() { DoNamedTest(); }
+        [Test] public void SmartEnter11() { DoNamedTest(); }
         [Test] public void SmartEnterHlsl01() { DoNamedTest(); }
         [Test] public void SmartEnterHlsl02() { DoNamedTest(); }
         [Test] public void SmartEnterHlsl03() { DoNamedTest(); }
@@ -35,6 +39,14 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Typ
         [Test] public void SmartBackspace02() { DoNamedTest(); }
         [Test] public void SmartBackspace03() { DoNamedTest(); }
         [Test] public void SmartBackspaceHlsl01() { DoNamedTest(); }
+        [Test] public void SmartLBrace01() { DoNamedTest(); }
+        [Test] public void SmartLBrace02() { DoNamedTest(); }
+        [Test] public void SmartLBracket01() { DoNamedTest(); }
+        [Test] public void SmartLBracket02() { DoNamedTest(); }
+        [Test] public void SmartLParen01() { DoNamedTest(); }
+        [Test] public void SmartLParen02() { DoNamedTest(); }
+        [Test] public void SmartQuot01() { DoNamedTest(); }
+        [Test] public void SmartQuot02() { DoNamedTest(); }
 
         protected override void DoTest(Lifetime lifetime)
         {
