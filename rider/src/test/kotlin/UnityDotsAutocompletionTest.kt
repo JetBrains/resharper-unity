@@ -1,21 +1,15 @@
 import base.integrationTests.prepareAssemblies
 import com.intellij.codeInsight.CodeInsightSettings
-import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
-import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.testFramework.TestModeFlags
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rdclient.daemon.util.backendAttributeId
-import com.jetbrains.rdclient.util.idea.pumpMessages
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
+import com.jetbrains.rider.diagnostics.LogTraceScenarios
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.annotations.TestEnvironment
-import com.jetbrains.rider.test.asserts.shouldBeTrue
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
@@ -29,6 +23,7 @@ import java.time.Duration
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_7)
 class UnityDotsAutocompletionTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String = "UnityDotsAutocompletionTestData"
+
     override val traceCategories: List<String>
         get() = listOf(
             "#com.jetbrains.rdclient.completion",
@@ -45,7 +40,8 @@ class UnityDotsAutocompletionTest : BaseTestWithSolution() {
             "JetBrains.ReSharper.Host.Features.TextControls",
             "JetBrains.ReSharper.Psi.Caches",
             "JetBrains.ReSharper.Psi.Files",
-            "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages")
+            "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages",
+            *LogTraceScenarios.Roslyn.categories.toTypedArray())
 
     @Test
     fun test_DotsSourceGenCompletion() {
