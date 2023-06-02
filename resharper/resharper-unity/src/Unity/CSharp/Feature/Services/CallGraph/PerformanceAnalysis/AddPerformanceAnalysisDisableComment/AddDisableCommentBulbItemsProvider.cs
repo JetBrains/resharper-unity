@@ -3,6 +3,7 @@ using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl;
 
@@ -11,7 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
     [SolutionComponent]
     public sealed class AddDisableCommentBulbItemsProvider : PerformanceCriticalBulbItemsProvider
     {
-        public AddDisableCommentBulbItemsProvider(ISolution solution) : base(solution)
+        public AddDisableCommentBulbItemsProvider(ISolution solution, PerformanceCriticalContextProvider performanceCriticalContextProvider)
+            : base(solution, performanceCriticalContextProvider)
         {
         }
         
