@@ -79,6 +79,9 @@
     <data name="ShaderLabAutopopupEnabledSettingsKey_s_In_variable_references" xml:space="preserve">
         <value>In variable references</value>
     </data>
+    <data name="ShaderLabAutopopupEnabledSettingsKey_s_In_keywords" xml:space="preserve">
+        <value>In keywords</value>
+    </data>
     <data name="ShaderLabAutopopupEnabledSettingsKey_s_ShaderLab" xml:space="preserve">
         <value>ShaderLab</value>
         <comment>Don't localize</comment>

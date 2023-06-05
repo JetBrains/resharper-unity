@@ -15,8 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
     {
         private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;
 
-        public AddExpensiveCommentBulbItemsProvider(ExpensiveInvocationContextProvider expensiveContextProvider, ISolution solution)
-            : base(solution)
+        public AddExpensiveCommentBulbItemsProvider(ExpensiveInvocationContextProvider expensiveContextProvider, PerformanceCriticalContextProvider performanceCriticalContextProvider, ISolution solution)
+            : base(solution, performanceCriticalContextProvider)
         {
             myExpensiveContextProvider = expensiveContextProvider;
         }

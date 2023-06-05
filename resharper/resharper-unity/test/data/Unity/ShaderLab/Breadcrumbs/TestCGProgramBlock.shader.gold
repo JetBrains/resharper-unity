@@ -1,4 +1,4 @@
-﻿[ ] Shader -- Shader\nClick to navigate
+﻿[ ] Shader "MyShader" -- Shader "MyShader"\nClick to navigate
 [ ] SubShader -- SubShader\nClick to navigate
 [ ] Pass -- Pass\nClick to navigate
 [ ] CGPROGRAM -- CGPROGRAM\nClick to navigate

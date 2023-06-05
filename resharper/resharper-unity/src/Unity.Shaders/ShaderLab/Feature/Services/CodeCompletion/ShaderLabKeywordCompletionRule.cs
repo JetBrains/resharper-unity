@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.CodeCompletion.Keywords;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.CodeCompletion
@@ -12,7 +13,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
     [Language(typeof(ShaderLabLanguage))]
     public class ShaderLabKeywordCompletionRule : ItemsProviderOfSpecificContext<ShaderLabCodeCompletionContext>
     {
-        private readonly ShaderLabKeywordSuggester myKeywordSuggester = new();
+        private readonly ShaderLabKeywordSuggester myKeywordSuggester;
+
+        public ShaderLabKeywordCompletionRule(ShaderLabCodeFormatter codeFormatter)
+        {
+            myKeywordSuggester = new(codeFormatter);
+        }
 
         protected override bool IsAvailable(ShaderLabCodeCompletionContext context) => context.BasicContext.CodeCompletionType == CodeCompletionType.BasicCompletion;
         

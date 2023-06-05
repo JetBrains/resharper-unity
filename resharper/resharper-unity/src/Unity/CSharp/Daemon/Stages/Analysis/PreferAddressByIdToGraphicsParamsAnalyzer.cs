@@ -22,6 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             {KnownTypes.Animator, (KnownTypes.Animator, "StringToHash")},
             {KnownTypes.Shader, (KnownTypes.Shader, "PropertyToID")},
+            {KnownTypes.ComputeShader, (KnownTypes.Shader, "PropertyToID")},
             {KnownTypes.Material, (KnownTypes.Shader, "PropertyToID")},
             {KnownTypes.MaterialPropertyBlock, (KnownTypes.Shader, "PropertyToID")},
         };
