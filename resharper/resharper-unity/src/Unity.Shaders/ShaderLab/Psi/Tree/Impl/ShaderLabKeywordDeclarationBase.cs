@@ -14,16 +14,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl
     {
         private readonly CachedPsiValueWithOffsets<IDeclaredElement> myCachedDeclaredElement = new();
 
-        private string? Name => (Keyword?.NodeType as ITokenNodeType)?.TokenRepresentation;
+        protected virtual string? TryGetDeclaredName() => (Keyword?.NodeType as ITokenNodeType)?.TokenRepresentation;
         
         protected abstract ITokenNode? Keyword { get; }
         protected abstract DeclaredElementType ElementType { get; }
 
-        public sealed override IDeclaredElement? DeclaredElement => Name is { } name ? 
+        public sealed override IDeclaredElement? DeclaredElement => TryGetDeclaredName() is { } name ? 
             myCachedDeclaredElement.GetValue(this, name, static (self, name) => self.CreateDeclaredElement(name)) : 
             null;
         
-        public override string DeclaredName => Name ?? SharedImplUtil.MISSING_DECLARATION_NAME; 
+        public sealed override string DeclaredName => TryGetDeclaredName() ?? SharedImplUtil.MISSING_DECLARATION_NAME; 
         public override void SetName(string name) => throw new NotSupportedException();
         public override TreeTextRange GetNameRange() => Keyword?.GetTreeTextRange() ?? TreeTextRange.InvalidRange;
 

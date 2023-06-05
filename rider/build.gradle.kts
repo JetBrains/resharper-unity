@@ -175,7 +175,7 @@ intellij {
     // Sources aren't available for Rider
     downloadSources.set(false)
 
-    plugins.set(listOf("rider.intellij.plugin.appender", "com.intellij.css", "yaml", "dotCover"))
+    plugins.set(listOf("rider.intellij.plugin.appender", "com.intellij.css", "yaml", "dotCover", "org.intellij.intelliLang"))
 }
 
 configure<ChangelogPluginExtension> {
@@ -742,7 +742,7 @@ tasks {
         group = backendGroup
         onlyIf { isWindows } // non-windows builds are just for running tests, and agents don't have `mono` installed. NuGetPack requires `mono` though.
         description = "Packs resulting DLLs into a NuGet package which is an R# extension."
-        //dependsOn(buildReSharperHostPlugin)
+        dependsOn(buildReSharperHostPlugin)
 
         val changelogNotes = changelog.renderItem(getChangelogItem().withFilter { line ->
             !line.startsWith("- Rider:") && !line.startsWith("- Unity editor:")

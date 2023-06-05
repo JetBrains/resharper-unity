@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
@@ -21,7 +22,7 @@ using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 {
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UsageInspectionsSuppressor : IUsageInspectionsSuppressor
     {
         private readonly JetHashSet<IClrTypeName> myImplicitlyUsedInterfaces = new()
