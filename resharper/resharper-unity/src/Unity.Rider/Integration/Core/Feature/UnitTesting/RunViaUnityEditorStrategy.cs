@@ -233,6 +233,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
                                         launch.ClientControllerInfo);
                                     model.UnitTestLaunch.SetValue(launch);
                                     SubscribeResults(run, lt, launch);
+                                    launch.RunResult.Advise(lt, result => { tcs.SetResult(result.Passed); });
                                     StartTests(model, run, tcs, lt);
                                 }
                             });
@@ -293,12 +294,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
 
             cancellationToken.Register(() =>
             {
-                // On cancel we don't want to stop run, if tests are already running, but we want to stop, if we are waiting for refresh
-                if (refreshLifetimeDef.Lifetime.IsAlive)
-                {
-                    tcs.TrySetCanceled();
-                    refreshLifetimeDef.Terminate();
-                }
+                // We may not be able to stop tests in Unity, but still we need to allow stopping Rider part of the tests
+                tcs.TrySetCanceled();
+                refreshLifetimeDef.Terminate();
             });
 
             WaitForUnityEditorConnectedAndIdle(refreshLifetime)
