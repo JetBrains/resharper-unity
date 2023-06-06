@@ -14,6 +14,7 @@ using JetBrains.Rd.Impl;
 using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Util;
@@ -72,8 +73,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                 var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
                 fileSystemTracker.AdviseFileChanges(lf, protocolInstancePath, OnProtocolInstanceJsonChange);
 
-                // connect on start of Rider
-                CreateProtocol(protocolInstancePath);
+                lf.StartBackground(() =>
+                {
+                    var protocolInstance = GetProtocolInstanceData(protocolInstancePath);
+                    if (protocolInstance == null)
+                        return;
+                    
+                    // connect on start of Rider
+                    SafeExecuteOrQueueEx("CreateProtocol", () => CreateProtocol(protocolInstance));
+                });
             });
         }
 
@@ -90,15 +98,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             if (delta.NewPath.FileModificationTimeUtc == myLastChangeTime) return;
             myLastChangeTime = delta.NewPath.FileModificationTimeUtc;
 
-            SafeExecuteOrQueueEx("CreateProtocol", () => CreateProtocol(delta.NewPath));
-        }
-
-        private void CreateProtocol(VirtualFileSystemPath protocolInstancePath)
-        {
-            var protocolInstance = GetProtocolInstanceData(protocolInstancePath);
+            var protocolInstance = GetProtocolInstanceData(delta.NewPath);
             if (protocolInstance == null)
                 return;
 
+            SafeExecuteOrQueueEx("CreateProtocol", () => CreateProtocol(protocolInstance));
+        }
+
+        private void CreateProtocol(ProtocolInstance protocolInstance)
+        {
             myLogger.Info($"EditorPlugin protocol port {protocolInstance.Port} for Solution: {protocolInstance.SolutionName}.");
 
             var thisSessionLifetime = mySessionLifetimes.Next();
@@ -147,6 +155,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                             // Clear model
                             myBackendUnityHost.BackendUnityModel.SetValue(null);
                         });
+                        myLogger.Verbose("mySessionLifetimes.TerminateCurrent()");
                         mySessionLifetimes.TerminateCurrent(); // avoid any reconnection attempts
                     });
                 });
