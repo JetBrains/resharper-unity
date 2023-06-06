@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Diagnostics;
@@ -108,8 +110,21 @@ namespace JetBrains.Rider.Unity.Editor
       {
         if (lifetime.IsAlive)
         {
-          ourLogger.Verbose("Recreating protocol, project lifetime is alive");
-          Initialise(lifetime, initTime, logger);
+          ourLogger.Verbose("Schedule recreating protocol, project lifetime is alive");
+          new Thread(() =>
+          {
+            Thread.Sleep(1000);
+
+            if (lifetime.IsAlive)
+              EditorApplication.delayCall += () =>
+              {
+                if (lifetime.IsAlive)
+                {
+                  ourLogger.Verbose("Recreating protocol, project lifetime is alive");
+                  Initialise(lifetime, initTime, logger);
+                }
+              };
+          }).Start();
         }
         else
         {
