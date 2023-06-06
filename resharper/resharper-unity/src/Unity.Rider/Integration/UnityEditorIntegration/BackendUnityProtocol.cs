@@ -5,7 +5,6 @@ using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
-using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.Platform.RdFramework.Util;
 using JetBrains.ProjectModel;
@@ -34,7 +33,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
-        private readonly UnityProcessTracker myUnityProcessTracker;
         private readonly JetHashSet<VirtualFileSystemPath> myPluginInstallations;
 
         public readonly IViewableProperty<bool> Connected = new ViewableProperty<bool> { Value = false };
@@ -49,8 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                                     IShellLocks locks,
                                     ISolution solution,
                                     UnitySolutionTracker unitySolutionTracker,
-                                    IFileSystemTracker fileSystemTracker,
-                                    UnityProcessTracker unityProcessTracker)
+                                    IFileSystemTracker fileSystemTracker)
         {
             myPluginInstallations = new JetHashSet<VirtualFileSystemPath>();
 
@@ -60,7 +57,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             myDispatcher = dispatcher;
             myLocks = locks;
             mySolution = solution;
-            myUnityProcessTracker = unityProcessTracker;
             mySessionLifetimes = new SequentialLifetimes(lifetime);
 
             if (!solution.HasProtocolSolution())
@@ -78,13 +74,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
                 // connect on start of Rider
                 CreateProtocol(protocolInstancePath);
-                
-                myUnityProcessTracker.UnityProcessId.When(lf, (int?)null,
-                    _ =>
-                    {
-                        myLogger.Info($"UnityProcess was terminated, terminating the connection lifetime.");
-                        mySessionLifetimes.TerminateCurrent();
-                    });
             });
         }
 
@@ -95,14 +84,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
         private void OnProtocolInstanceJsonChange(FileSystemChangeDelta delta)
         {
-            // terminate the lifetime, when  protocols.json is removed
-            if (delta.ChangeType == FileSystemChangeType.DELETED)
-            {
-                myLogger.Info($"{delta.NewPath} was removed, terminating the connection lifetime.");
-                mySessionLifetimes.TerminateCurrent();
-                return;
-            }
-
             // Connect when protocols.json is updated (AppDomain start/reload in Unity editor)
             if (delta.ChangeType != FileSystemChangeType.ADDED && delta.ChangeType != FileSystemChangeType.CHANGED) return;
             if (!delta.NewPath.ExistsFile) return;
@@ -166,6 +147,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                             // Clear model
                             myBackendUnityHost.BackendUnityModel.SetValue(null);
                         });
+                        mySessionLifetimes.TerminateCurrent(); // avoid any reconnection attempts
                     });
                 });
             }
