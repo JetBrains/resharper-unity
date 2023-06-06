@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.Caches;
+using JetBrains.ReSharper.Feature.Services.DeferredCaches;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;

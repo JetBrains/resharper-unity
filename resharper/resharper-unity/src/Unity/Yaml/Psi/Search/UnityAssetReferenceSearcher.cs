@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 using System;
 using System.Linq;
 using JetBrains.DocumentModel;
-using JetBrains.ReSharper.Feature.Services.Caches;
+using JetBrains.ReSharper.Feature.Services.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Explicit;
