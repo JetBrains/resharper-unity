@@ -10,10 +10,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
     {
         private readonly PerformanceCriticalContextProvider myPerformanceCriticalContextProvider;
 
-        protected PerformanceCriticalBulbItemsProvider(ISolution solution)
+        protected PerformanceCriticalBulbItemsProvider(ISolution solution, PerformanceCriticalContextProvider performanceCriticalContextProvider)
             : base(solution)
         {
-            myPerformanceCriticalContextProvider = solution.GetComponent<PerformanceCriticalContextProvider>();
+            myPerformanceCriticalContextProvider = performanceCriticalContextProvider;
         }
 
         protected override bool CheckCallGraph(IMethodDeclaration methodDeclaration, IReadOnlyCallGraphContext context)
