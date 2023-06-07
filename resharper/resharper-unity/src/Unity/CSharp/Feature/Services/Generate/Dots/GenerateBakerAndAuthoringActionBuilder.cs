@@ -374,22 +374,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             var authoringDeclaration = GetOrCreateAuthoringClassDeclaration(context, authoringGenerationInfo);
 
             var selectedGeneratorElements = context.InputElements.OfType<GeneratorDeclaredElement>();
-            var existingFields =  authoringDeclaration.DeclaredElement.NotNull().Fields.ToDictionary(f => f.ShortName, f => f);
+            var existingAuthoringFields =  authoringDeclaration.DeclaredElement.NotNull().Fields.ToDictionary(f => f.ShortName, f => f);
             foreach (var generatorElement in selectedGeneratorElements)
             {  
-                if (!(generatorElement.DeclaredElement is IField selectedField)) 
+                if (generatorElement.DeclaredElement is not IField selectedField) 
                     continue;
                 
                 var fieldShortName = selectedField.ShortName;
+
+                var authoringFieldName = fieldShortName;
+                if (authoringFieldName.Equals("Value"))
+                    authoringFieldName = selectedField.ContainingType?.ShortName ?? fieldShortName;
+                
                 var authoringFieldType = BakerGeneratorUtils.GetFieldType(selectedField, ComponentToAuthoringConverter.Convert);
                 Assertion.AssertNotNull(authoringFieldType);
 
-                if (existingFields.TryGetValue(fieldShortName, out var existingField))
+                if (existingAuthoringFields.TryGetValue(authoringFieldName, out var existingField))
                 {
                     //Same field with same type
                     if (existingField.Type.Equals(authoringFieldType))
                     {
-                        componentToAuthoringFieldNames.Add(fieldShortName, fieldShortName);
+                        componentToAuthoringFieldNames.Add(fieldShortName, existingField.ShortName);
                         continue;
                     }
                     else
@@ -399,8 +404,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 }
                 
                 //Add field to Authoring class
-                var authoringFieldName = NamingUtil.GetUniqueName(authoringDeclaration.Body, fieldShortName, NamedElementKinds.PublicFields, null,
-                    element => existingFields.ContainsKey(element.ShortName));
+                authoringFieldName = NamingUtil.GetUniqueName(authoringDeclaration.Body, authoringFieldName, NamedElementKinds.PublicFields, null,
+                    element => existingAuthoringFields.ContainsKey(element.ShortName));
                 componentToAuthoringFieldNames.Add(fieldShortName, authoringFieldName);
                 
                 var fieldDeclaration = authoringGenerationInfo.Factory.CreateFieldDeclaration(authoringFieldType, authoringFieldName);
