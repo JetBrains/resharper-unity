@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
           Node().In(ElementType.BIND_CHANNELS_VALUE, ElementType.CATEGORY_VALUE, ElementType.FOG_VALUE, 
             ElementType.GRAB_PASS_VALUE, ElementType.MATERIAL_VALUE, ElementType.PROPERTIES_VALUE,
             ElementType.SET_TEXTURE_VALUE, ElementType.STENCIL_VALUE,
-            ElementType.SUB_SHADER_VALUE, ElementType.TAGS_VALUE, ElementType.TEXTURE_PASS_VALUE, ElementType.TEXTURE_PROPERTY_VALUE))
+            ElementType.SUB_SHADER_VALUE, ElementType.TAGS_VALUE, ElementType.TEXTURE_PASS_VALUE, ElementType.TEXTURE_PROPERTY_VALUE, ElementType.PACKAGE_REQUIREMENTS_VALUE))
         .BraceSetting(it => it.BraceStyle)
         // .InsertBlankLinesInsideBracesSetting(it => it.BLANK_LINES_INSIDE_TYPE)
         .Priority(2)

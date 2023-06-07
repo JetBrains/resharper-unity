@@ -54,6 +54,7 @@
     <Token name="RBRACK" representation="]" />
     <Token name="LBRACE" representation="{" />
     <Token name="RBRACE" representation="}" />
+    <Token name="COLON" representation=":" />
     <Token name="COMMA" representation="," />
     <Token name="DOT" representation="." />
     <Token name="EQUALS" representation="=" />
@@ -103,6 +104,7 @@
     <Command name="PASS_KEYWORD" representation="Pass" />
     <Command name="USEPASS_KEYWORD" representation="UsePass" />
     <Command name="GRABPASS_KEYWORD" representation="GrabPass" />
+    <Command name="PACKAGE_REQUIREMENTS_KEYWORD" representation="PackageRequirements" />
   </SubShaderCommands>
 
   <RenderStateCommands NodeType="CommandKeywordTokenNodeType">
