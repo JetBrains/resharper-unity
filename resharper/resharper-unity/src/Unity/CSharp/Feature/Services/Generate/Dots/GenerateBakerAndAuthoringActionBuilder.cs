@@ -235,7 +235,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                     var authoringFieldType = TypeFactory.CreateTypeByCLRName(fieldTypeName, NullableAnnotation.NotAnnotated, selectedField.Module);
 
                     var initializationFormat = "$0.$1";
-                    var convertAuthoringToComponentField = BakerGeneratorUtils.ConvertComponentToAuthoringField(authoringFieldType.GetClrName(), selectedField.Module);
+                    var convertAuthoringToComponentField = ComponentToAuthoringConverter.Convert(authoringFieldType.GetClrName(), selectedField.Module);
                     if(convertAuthoringToComponentField.HasValue)
                         initializationFormat = convertAuthoringToComponentField.Value.FunctionTemplate;
                 
@@ -381,7 +381,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                     continue;
                 
                 var fieldShortName = selectedField.ShortName;
-                var authoringFieldType = GetFieldType(selectedField);
+                var authoringFieldType = BakerGeneratorUtils.GetFieldType(selectedField, ComponentToAuthoringConverter.Convert);
                 Assertion.AssertNotNull(authoringFieldType);
 
                 if (existingFields.TryGetValue(fieldShortName, out var existingField))
@@ -426,19 +426,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             Assertion.AssertNotNull(authoringDeclaration);
 
             return authoringGenerationInfo.InsertionHelper.Insert(authoringDeclaration);
-        }
-
-        private static IType GetFieldType(IField selectedField)
-        {
-            var fieldTypeName = selectedField.Type.GetTypeElement().NotNull().GetClrName();
-            var selectedFieldModule = selectedField.Module;
-            var authoringFieldType = TypeFactory.CreateTypeByCLRName(fieldTypeName, NullableAnnotation.NotAnnotated, selectedFieldModule);
-            var convertAuthoringToComponentField = BakerGeneratorUtils.ConvertComponentToAuthoringField(authoringFieldType.GetClrName(), selectedFieldModule);
-
-            if (convertAuthoringToComponentField.HasValue)
-                return TypeFactory.CreateTypeByCLRName(convertAuthoringToComponentField.Value.TypeName, NullableAnnotation.NotAnnotated, selectedFieldModule);
-            
-            return authoringFieldType;
         }
 
         private static bool IsInheritorOfComponentData(CSharpGeneratorContext context)
