@@ -6,7 +6,7 @@ using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.IDE;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.Caches;
+using JetBrains.ReSharper.Feature.Services.DeferredCaches;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
