@@ -50,6 +50,7 @@ class UnityDotsAutocompletionTest : BaseTestWithSolution() {
         waitForUnityPackagesCache {
             withOpenedEditor("DotsUserStructures.cs") {
                 waitForDaemon()
+                waitForNextRoslynReady()
                 setCaretAfterWord("//typing_position")
                 startNewLine()
 
