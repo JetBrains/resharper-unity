@@ -1,4 +1,4 @@
-﻿# 25 ITEMS #
+﻿# 26 ITEMS #
 
 + AlphaTest
 AlphaToMask
@@ -17,6 +17,7 @@ Lighting
 Material
 Name
 Offset
+PackageRequirements
 Pass
 SeparateSpecular
 Stencil
@@ -26,7 +27,7 @@ ZClip
 ZTest
 ZWrite
 # AUTOMATIC #
-# 25 ITEMS #
+# 26 ITEMS #
 
 + AlphaTest
 AlphaToMask
@@ -45,6 +46,7 @@ Lighting
 Material
 Name
 Offset
+PackageRequirements
 Pass
 SeparateSpecular
 Stencil
