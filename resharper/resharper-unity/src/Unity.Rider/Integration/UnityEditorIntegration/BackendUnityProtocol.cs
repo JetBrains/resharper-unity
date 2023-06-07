@@ -107,6 +107,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
         private void CreateProtocol(ProtocolInstance protocolInstance)
         {
+            myLocks.AssertMainThread();
             myLogger.Info($"EditorPlugin protocol port {protocolInstance.Port} for Solution: {protocolInstance.SolutionName}.");
 
             var thisSessionLifetime = mySessionLifetimes.Next();
