@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
 
             public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
             {
-                return new ClosedChameleonElement(YamlTokenType.CHAMELEON, buffer, startOffset, endOffset);
+                return new ClosedChameleonElement(YamlTokenType.CHAMELEON, buffer, startOffset, endOffset.Offset - startOffset.Offset);
             }
 
             public override string TokenRepresentation => ToString();
