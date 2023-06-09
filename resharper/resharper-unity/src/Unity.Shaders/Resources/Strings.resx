@@ -41,7 +41,7 @@
         <value>Conflicting property '{0}' is defined below</value>
     </data>
     <data name="IgnoredCharacterConsiderInsertingNewLineForClarityMessage" xml:space="preserve">
-        <value>Ignored character. Consider inserting new line for clarity.</value>
+        <value>Suspicious non-digit character in '#line' directive</value>
     </data>
     <data name="InUnityShaderLabFile_PresentableShortName_ShaderLab__Unity_" xml:space="preserve">
         <value>ShaderLab (Unity)</value>

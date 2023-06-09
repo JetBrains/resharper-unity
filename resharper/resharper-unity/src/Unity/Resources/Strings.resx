@@ -332,25 +332,25 @@
         <value>Expected a method with '{0}' signature</value>
     </data>
     <data name="ExpectedBuiltInTypeDerivedFromComponentOrUserTypeDerivedFromMonoBehaviour" xml:space="preserve">
-        <value>Expected built in type derived from 'Component', or user type derived from 'MonoBehaviour'</value>
+        <value>A built-in type derived from 'Component' or a user-defined type derived from 'MonoBehaviour' is expected</value>
     </data>
     <data name="ExpectedTypeDerivedFromComponentOrMonoBehaviour" xml:space="preserve">
-        <value>Expected type derived from 'Component' or 'MonoBehaviour'</value>
+        <value>Expected a type derived from 'Component' or 'MonoBehaviour'</value>
     </data>
     <data name="ExpectedTypeDerivedFromMessage" xml:space="preserve">
-        <value>Expected type derived from '{0}'</value>
+        <value>Expected a type derived from '{0}'</value>
     </data>
     <data name="ExpectedTypeDerivedFromScriptableObject" xml:space="preserve">
-        <value>Expected type derived from 'ScriptableObject'</value>
+        <value>Expected a type derived from 'ScriptableObject'</value>
     </data>
     <data name="ExpectedTypeDerivedFromScriptableObject3" xml:space="preserve">
-        <value>Expected type derived from 'ScriptableObject'</value>
+        <value>Expected a type derived from 'ScriptableObject'</value>
     </data>
     <data name="ExpectedTypeDerivedFromUnityEngineScriptableObjectMessage" xml:space="preserve">
-        <value>Expected type derived from 'UnityEngine.ScriptableObject'</value>
+        <value>Expected a type derived from 'UnityEngine.ScriptableObject'</value>
     </data>
     <data name="ExpensiveCameraMainUsage_RiderPresentableName" xml:space="preserve">
-        <value>Expensive `Camera.main` usage</value>
+        <value>Expensive 'Camera.main' usage</value>
     </data>
     <data name="ExpensiveMethodInvocation" xml:space="preserve">
         <value>Expensive method invocation</value>
