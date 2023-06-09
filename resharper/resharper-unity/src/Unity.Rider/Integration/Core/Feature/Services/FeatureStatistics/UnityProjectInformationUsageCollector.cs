@@ -12,6 +12,7 @@ using JetBrains.ReSharper.Feature.Services.Project;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
@@ -89,23 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
         {
             return myGroup;
         }
-
-        public static (string, bool) GetUnityVersion(string versionInfo)
-        {
-            const string unknownVersion = "0.0.0f0";
-            versionInfo = versionInfo ?? unknownVersion;
-            var match = Regex.Match(versionInfo, UnityVersion.VersionRegex);
-            if (match.Success)
-            {
-                var matchedSubstring = match.Value;
-                return (matchedSubstring, !matchedSubstring.Equals(versionInfo));
-            }
-            else
-            {
-                return (unknownVersion, false);
-            }
-        }
-
+        
         public override async Task<ISet<MetricEvent>> GetMetricsAsync(Lifetime lifetime)
         {
             return await lifetime.StartMainReadAsync(async () =>
@@ -119,7 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
 
                 return await mySolution.GetPsiServices().Files.CommitWithRetryBackgroundRead(lifetime, () =>
                 {
-                    var (verifiedVersion, isCustom) = GetUnityVersion(UnityVersion.GetProjectSettingsUnityVersion(mySolution.SolutionDirectory));
+                    var (verifiedVersion, isCustom) = UnityVersionUtils.GetUnityVersion(UnityVersion.GetProjectSettingsUnityVersion(mySolution.SolutionDirectory));
                     
                     var hashSet = new HashSet<MetricEvent>();
                     hashSet.Add(myProjectKindEvent.Metric(GetProjectType()));
