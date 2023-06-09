@@ -4,8 +4,10 @@ using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
+using JetBrains.Util;
 using JetBrains.Util.Extension;
 using ProjectExtensions = JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.ProjectExtensions;
 
@@ -13,13 +15,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
     public static class UnityProjectSettingsUtils
     {
-        public static string GetUnityPathFor([NotNull] IPsiSourceFile psiSourceFile)
+        public static string GetUnityPathFor([NotNull] IPsiSourceFile psiSourceFile, PackageManager packageManager)
         {
             var solution = psiSourceFile.GetSolution();
-            var solutionPath = solution.SolutionDirectory;
+            var rootDirectory = solution.SolutionDirectory;
             var psiPath = psiSourceFile.GetLocation();
-            var components = psiPath.MakeRelativeTo(solutionPath).Components.ToArray();
-
+            
+            var packageData = packageManager.GetOwningPackage(psiPath);
+            if (packageData is { Source: PackageSource.Local } && packageData.PackageFolder != null)
+            {
+                // RIDER-94615 Support Scenes in the local packages - "Packages/com.unity.ide.rider/Rider/New Scene"
+                rootDirectory = packageData.PackageFolder.Directory;
+                var relPath = RelativePath.Parse(ProjectExtensions.PackagesFolder).Combine(psiPath.MakeRelativeTo(rootDirectory));
+                return relPath.NormalizeSeparators(FileSystemPathEx.SeparatorStyle.Unix).RemoveEnd(relPath.ExtensionWithDot);
+            }
+            
+            var components = psiPath.MakeRelativeTo(rootDirectory).Components.ToArray();
             var sb = new StringBuilder();
             // skip "Assets/
 

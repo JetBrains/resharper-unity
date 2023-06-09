@@ -15,6 +15,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
@@ -75,6 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Ser
         private IEnumerable<(IPsiSourceFile file, string unityPath)> GetCorrespondingSourceFiles(string scene, UnityExternalFilesPsiModule psiModule)
         {
             var files = psiModule.SourceFiles;
+            var packageManager = psiModule.GetSolution().GetComponent<PackageManager>();
             if (IsScenePath(scene))
             {
                 var sceneName = scene.Split('/').Last();
@@ -85,19 +87,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Ser
                     var psiPath = psiSourceFile.GetLocation();
                     if (!psiPath.NameWithoutExtension.Equals(sceneName))
                         return false;
-
-                    return GetUnityPathFor(psiSourceFile).Equals(scene);
+                    
+                    return GetUnityPathFor(psiSourceFile, packageManager).Equals(scene);
                 }
 
                 var file = files.FirstOrDefault(IsCorrespondingSourceFile);
                 if (file == null)
                     return EmptyList<(IPsiSourceFile, string)>.Instance;
-                return new[] {(file, GetUnityPathFor(file))};
+                return new[] {(file, GetUnityPathFor(file, packageManager))};
 
             }
 
             return files.Where(f => f.Name.Equals(scene + UnityFileExtensions.SceneFileExtensionWithDot))
-                .Select(f => (f, GetUnityPathFor(f)));
+                .Select(f => (f, GetUnityPathFor(f, packageManager)));
         }
 
         private bool IsScenePath(string sceneName)
