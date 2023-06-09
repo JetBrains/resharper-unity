@@ -53,15 +53,15 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     {
       if (tokenNodeType == YamlTokenType.CHAMELEON)
       {
-        return new ClosedChameleonElement(YamlTokenType.CHAMELEON, buffer, new TreeOffset(startOffset),
-          new TreeOffset(endOffset));
+        return new ClosedChameleonElement(YamlTokenType.CHAMELEON, buffer, new TreeOffset(startOffset), 
+          endOffset - startOffset);
       }
 
       if (tokenNodeType.Equals(YamlTokenType.CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_ANY_INDENT))
       {
         // Yes. Any indent. We push correct lexer indent via ContentContext
         return new ClosedChameleonElement(YamlTokenType.CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_ANY_INDENT, buffer, new TreeOffset(startOffset),
-          new TreeOffset(endOffset));
+          endOffset - startOffset);
       }
 
       // We define tokens in terms of buffers and ranges to avoid allocation of strings and substrings - nothing is
