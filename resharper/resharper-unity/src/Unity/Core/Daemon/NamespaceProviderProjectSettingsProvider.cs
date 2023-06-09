@@ -57,6 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Daemon
         //   parent of all files in the project. This is usually the asmdef location, AND IS INCORRECT.
         //   The linked folder is not included in namespace suggestions
         //   TODO: The linked folder should be the package root folder (which we normally ignore)
+        //   TODO: Use the PackageManager and try to avoid recursive subfolders processing
         //   This requires changes to the generated files. Either we include package.json to make a new default folder,
         //   or we add Link attributes to each file item
         // * After package root, ignore Runtime, Scripts and any combination of the two
@@ -133,7 +134,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Daemon
                 //
                 // NOTE: KEEP UP TO DATE WITH ExternalPackageCustomNamespaceProvider!
                 if (folder.IsLinked && folder.ParentFolder != null)
-                    path = folder.Location.MakeRelativeTo(folder.ParentFolder.Location).FullPath;
+                    path = folder.Location.TryMakeRelativeTo(folder.ParentFolder.Location).FullPath; // DEXP-716299 Cannot calculate a relative path because the paths Path1 and Path2 are unrelated.
                 ExcludeFolderFromNamespace(mountPoint, path + @"\Runtime");
                 ExcludeFolderFromNamespace(mountPoint, path + @"\Scripts");
                 ExcludeFolderFromNamespace(mountPoint, path + @"\Runtime\Scripts");
