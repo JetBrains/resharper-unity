@@ -27,8 +27,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
             {
             }
 
-            public override bool IsCommandKeyword(CachingLexer lexer) => true;
-            public override bool IsCommandKeyword(ITreeNode placement) => true;
+            public override ShaderLabKeywordType GetKeywordType(CachingLexer lexer) => ShaderLabKeywordType.RegularCommand;
+            public override ShaderLabKeywordType GetKeywordType(ITreeNode placement) => ShaderLabKeywordType.RegularCommand;
+        }
+        
+        /// <summary>Sub-class of keyword token types for ShaderLab block command keywords.</summary>
+        private class BlockCommandKeywordTokenNodeType : CommandKeywordTokenNodeType
+        {
+            public BlockCommandKeywordTokenNodeType(string s, int index, string representation) : base(s, index, representation)
+            {
+            }
+
+            public override ShaderLabKeywordType GetKeywordType(CachingLexer lexer) => ShaderLabKeywordType.BlockCommand;
+            public override ShaderLabKeywordType GetKeywordType(ITreeNode placement) => ShaderLabKeywordType.BlockCommand;
         }
         
         private class PropertyAndCommandKeywordTokenNodeType : KeywordTokenNodeType
@@ -37,13 +48,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
             {
             }
 
-            public override bool IsCommandKeyword(CachingLexer cachingLexer)
+            public override ShaderLabKeywordType GetKeywordType(CachingLexer cachingLexer)
             {
                 Assertion.Assert(cachingLexer.TokenType == this);
-                return GetPreviousTokenType(cachingLexer) != COMMA;
+                return GetPreviousTokenType(cachingLexer) == COMMA ? ShaderLabKeywordType.PropertyType : ShaderLabKeywordType.RegularCommand;
             }
 
-            public override bool IsCommandKeyword(ITreeNode placement) => placement.Parent is not IPropertyDeclaration;
+            public override ShaderLabKeywordType GetKeywordType(ITreeNode placement) => placement.Parent is IPropertyDeclaration ? ShaderLabKeywordType.PropertyType : ShaderLabKeywordType.RegularCommand;
         }
         
         private class EmissionCommandKeywordTokenNodeType : KeywordTokenNodeType
@@ -52,13 +63,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
             {
             }
             
-            public override bool IsCommandKeyword(CachingLexer cachingLexer)
+            public override ShaderLabKeywordType GetKeywordType(CachingLexer cachingLexer)
             {
                 Assertion.Assert(cachingLexer.TokenType == this);
-                return GetPreviousTokenType(cachingLexer) != COLOR_MATERIAL_KEYWORD;
+                return GetPreviousTokenType(cachingLexer) == COLOR_MATERIAL_KEYWORD ? ShaderLabKeywordType.Unknown : ShaderLabKeywordType.RegularCommand;
             }
 
-            public override bool IsCommandKeyword(ITreeNode placement) => placement.Parent is not IColorMaterialCommand;
+            public override ShaderLabKeywordType GetKeywordType(ITreeNode placement) => placement.Parent is IColorMaterialCommand ? ShaderLabKeywordType.Unknown : ShaderLabKeywordType.RegularCommand;
         }
     }
 }

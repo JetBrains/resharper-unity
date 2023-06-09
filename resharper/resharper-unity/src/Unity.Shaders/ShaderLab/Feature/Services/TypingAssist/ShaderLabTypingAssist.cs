@@ -35,8 +35,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
     public class ShaderLabTypingAssist : TypingAssistForCLikeSyntax<ShaderLabLanguage>, ITypingHandler
     {
         private static readonly Pair<TokenNodeType, TokenNodeType>[] ourBracketPairs = {
-            Pair.Of(ShaderLabTokenType.LBRACK,  ShaderLabTokenType.RBRACK),
-            Pair.Of(ShaderLabTokenType.LPAREN,  ShaderLabTokenType.RPAREN)
+            Pair.Of(ShaderLabTokenType.LBRACK, ShaderLabTokenType.RBRACK),
+            Pair.Of(ShaderLabTokenType.LPAREN, ShaderLabTokenType.RPAREN),
+            Pair.Of(ShaderLabTokenType.LBRACE, ShaderLabTokenType.RBRACE)
         };
         private static readonly Pair<TokenNodeType, TokenNodeType>[] ourBracePairs = {
             Pair.Of(ShaderLabTokenType.LBRACE, ShaderLabTokenType.RBRACE)
@@ -143,25 +144,64 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
 
                     //<caret>    {
                     var sb = new StringBuilder("\n");
-                    if (!TryGetLineIndent(cachingLexer, document, out var indent))
+                    if (!TryGetLineIndent(cachingLexer, document, out var lineIndent))
                         return false;
-                    sb.Append(indent);
+                    var indent = lineIndent;
                     if (shouldAppendBlockIndent)
-                        sb.Append(GetFormatSettingsService(textControl).GetIndentStr());
-                    var caretOffset = sb.Length;
+                        indent += GetFormatSettingsService(textControl).GetIndentStr();
+                    // if Enter pressed inside of empty braces on same line and these are not on own line yet then insert line before opening brace
+                    string? prologIndent = null;
                     // if Enter pressed before end of block then we want to insert extra empty line inside of the block
-                    if (isEndOfBlock && (stoppedAtStartOfBlock || MoveLexerToIdentReference(cachingLexer, false) && TryGetLineIndent(cachingLexer, document, out indent)))
+                    string? epilogueIndent = null;
+                    if (isEndOfBlock && (stoppedAtStartOfBlock || MoveLexerToIdentReference(cachingLexer, false) && TryGetLineIndent(cachingLexer, document, out lineIndent)))
                     {
+                        epilogueIndent = lineIndent;
                         sb.Append("\n");
-                        sb.Append(indent);
+                        sb.Append(lineIndent);
+                        if (GetClosestTokenNodeTypeSkippingWhitespaces(cachingLexer, 1) == ShaderLabTokenType.RBRACE
+                            && MoveToClosestTokenNodeTypeSkippingWhitespaces(cachingLexer, -1) is { IsWhitespace: false })
+                        {
+                            range = range.SetStartTo(cachingLexer.TokenEnd);
+                            prologIndent = epilogueIndent;
+                        }
                     }
-                    document.ReplaceText(range, sb.ToString());
-                    textControl.Caret.MoveTo(range.StartDocOffset() + caretOffset, CaretVisualPlacement.DontScrollIfVisible);
+
+                    CommitPsiOnlyAndProceedWithDirtyCaches(textControl, _ =>
+                    {
+                        var newLine = GetNewLineText(textControl.Document.GetPsiSourceFile(Solution));
+                        var sb = new StringBuilder();
+                        if (prologIndent != null)
+                            sb.Append(newLine).Append(prologIndent).Append(ShaderLabTokenType.LBRACE.TokenRepresentation);
+                        sb.Append(newLine).Append(indent);
+                        var caretOffset = sb.Length;
+                        if (epilogueIndent != null)
+                            sb.Append(newLine).Append(epilogueIndent);
+                        document.DeleteText(range);
+                        document.InsertText(range.StartOffset, sb.ToString());
+                        textControl.Caret.MoveTo(range.StartDocOffset() + caretOffset, CaretVisualPlacement.DontScrollIfVisible);
+                    });
                     return true;
                 }
             }
 
             return false;
+        }
+        
+        private TokenNodeType? MoveToClosestTokenNodeTypeSkippingWhitespaces(CachingLexer lexer, int direction)
+        {
+            TokenNodeType? tt;
+            do
+            {
+                lexer.Advance(direction);
+                tt = lexer.TokenType;
+            } while (tt != null && tt == WHITE_SPACE);
+            return tt;
+        }
+        
+        private TokenNodeType? GetClosestTokenNodeTypeSkippingWhitespaces(CachingLexer lexer, int direction)
+        {
+            using (LexerStateCookie.Create(lexer))
+                return MoveToClosestTokenNodeTypeSkippingWhitespaces(lexer, direction);
         }
 
         private bool TryGetLineIndent(CachingLexer cachingLexer, IDocument document, [MaybeNullWhen(false)] out string indent)
@@ -186,7 +226,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
             var tt = (IShaderLabTokenNodeType?)cachingLexer.TokenType;
             while (tt != null)
             {
-                if (stopOnCommandKeyword && tt.IsCommandKeyword(cachingLexer))
+                if (stopOnCommandKeyword && tt.GetKeywordType(cachingLexer).IsCommandKeyword())
                     return true;
                 if (tt == ShaderLabTokenType.RBRACE)
                     closedCount++;

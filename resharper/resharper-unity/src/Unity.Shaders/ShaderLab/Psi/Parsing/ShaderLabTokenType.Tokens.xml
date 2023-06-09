@@ -71,12 +71,24 @@
     <Token name="PP_ERROR" representation="#error" filtered="true" />
     <Token name="PP_LINE" representation="#line" filtered="true" />
   </Tokens>
-
-  <Commands NodeType="CommandKeywordTokenNodeType">
+  
+  <BlockCommands NodeType="BlockCommandKeywordTokenNodeType">
     <Command name="SHADER_KEYWORD" representation="Shader" />
     <Command name="PROPERTIES_KEYWORD" representation="Properties" />
     <Command name="CATEGORY_KEYWORD" representation="Category" />
     <Command name="SUB_SHADER_KEYWORD" representation="SubShader" />
+    <Command name="TAGS_KEYWORD" representation="Tags" />
+    <Command name="STENCIL_KEYWORD" representation="Stencil" />
+    <Command name="MATERIAL_KEYWORD" representation="Material" />
+    <Command name="SET_TEXTURE_KEYWORD" representation="SetTexture" />
+    <Command name="FOG_KEYWORD" representation="Fog" />
+    <Command name="BIND_CHANNELS_KEYWORD" representation="BindChannels" />
+    <Command name="GRABPASS_KEYWORD" representation="GrabPass" />
+    <Command name="PASS_KEYWORD" representation="Pass" />
+    <Command name="PACKAGE_REQUIREMENTS_KEYWORD" representation="PackageRequirements" />
+  </BlockCommands>
+
+  <Commands NodeType="CommandKeywordTokenNodeType">
     <Command name="FALLBACK_KEYWORD" representation="Fallback" />
     <Command name="CUSTOM_EDITOR_KEYWORD" representation="CustomEditor" />
     <Command name="DEPENDENCY_KEYWORD" representation="Dependency" />
@@ -100,11 +112,7 @@
   </TextureDimensionKeywords>
 
   <SubShaderCommands NodeType="CommandKeywordTokenNodeType">
-    <Command name="TAGS_KEYWORD" representation="Tags" />
-    <Command name="PASS_KEYWORD" representation="Pass" />
     <Command name="USEPASS_KEYWORD" representation="UsePass" />
-    <Command name="GRABPASS_KEYWORD" representation="GrabPass" />
-    <Command name="PACKAGE_REQUIREMENTS_KEYWORD" representation="PackageRequirements" />
   </SubShaderCommands>
 
   <RenderStateCommands NodeType="CommandKeywordTokenNodeType">
@@ -118,10 +126,8 @@
     <Command name="BLEND_OP_KEYWORD" representation="BlendOp" />
     <Command name="ALPHA_TO_MASK_KEYWORD" representation="AlphaToMask" />
     <Command name="COLOR_MASK_KEYWORD" representation="ColorMask" />
-    <Command name="STENCIL_KEYWORD" representation="Stencil" />
     <Command name="NAME_KEYWORD" representation="Name" />
     <Command name="LOD_KEYWORD" representation="LOD" />
-    <Command name="BIND_CHANNELS_KEYWORD" representation="BindChannels" />
   </RenderStateCommands>
   
   <CullOrientationKeywords NodeType="KeywordTokenNodeType">
@@ -182,12 +188,9 @@
 
   <LegacyFixedFunctionCommands NodeType="CommandKeywordTokenNodeType">
     <Command name="LIGHTING_KEYWORD" representation="Lighting" />
-    <Command name="MATERIAL_KEYWORD" representation="Material" />
     <Command name="SEPARATE_SPECULAR_KEYWORD" representation="SeparateSpecular" />
-    <Command name="COLOR_MATERIAL_KEYWORD" representation="ColorMaterial" />
-    <Command name="FOG_KEYWORD" representation="Fog" />
+    <Command name="COLOR_MATERIAL_KEYWORD" representation="ColorMaterial" />1
     <Command name="ALPHA_TEST_KEYWORD" representation="AlphaTest" />
-    <Command name="SET_TEXTURE_KEYWORD" representation="SetTexture" />
   </LegacyFixedFunctionCommands>
 
   <LegacyMaterialCommands NodeType="CommandKeywordTokenNodeType">
