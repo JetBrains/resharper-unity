@@ -3,15 +3,23 @@ package unityExplorer
 import base.addNewFolder2
 import base.addNewItem2
 import base.dump
+import base.integrationTests.prepareAssemblies
 import base.withUnityExplorerPane
+import com.jetbrains.rd.platform.util.lifetime
+import com.jetbrains.rd.util.reactive.valueOrDefault
+import com.jetbrains.rdclient.util.idea.waitAndPump
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.OpenSolutionParams
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
+import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.prepareProjectView
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
 import org.testng.annotations.Test
+import java.time.Duration
 
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class UnityExplorerTest : BaseTestWithSolutionBase() {
@@ -67,6 +75,21 @@ class UnityExplorerTest : BaseTestWithSolutionBase() {
                     }
                 }
             }
+        }
+    }
+
+    @Test
+    @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6, platform = arrayOf(PlatformType.MAC_OS_ALL, PlatformType.LINUX_ALL))
+    fun test_RIDER_92886() { // infinite loading caused by a "..\\" folder
+        val params = OpenSolutionParams()
+        withSolution("AnimImplicitUsageTest", params, preprocessTempDirectory = {
+            prepareAssemblies(activeSolutionDirectory)
+            val processBuilder = ProcessBuilder("mkdir", "..\\")
+            processBuilder.directory(it.resolve("Assets"))
+            processBuilder.start()
+        }) { project ->
+            prepareProjectView(project)
+            waitAndPump(project.lifetime, { project.solution.frontendBackendModel.isDeferredCachesCompletedOnce.valueOrDefault(false)}, Duration.ofSeconds(10), { "Deferred caches are not completed" })
         }
     }
 
