@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.VersionUtils;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.TextControl.DocumentMarkup.IntraTextAdornments;
+using JetBrains.TextControl.DocumentMarkup.Adornments;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 {
@@ -125,7 +125,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 
             var mode = ElementProblemAnalyzerUtils.GetInlayHintsMode(data,
                 settings => settings.ShowAsmDefVersionDefinePackageVersions);
-            if (mode != InlayHintsMode.Never)
+            if (mode != PushToHintMode.Never)
             {
                 var documentOffset = element.GetDocumentEndOffset();
 
@@ -135,7 +135,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Daemon
 
                 // This highlight adds alt+enter context actions to configure the inlay. It's separate so that
                 // we don't get alt+enter actions for an invisible push-to-hint inlay
-                if (mode == InlayHintsMode.Always)
+                if (mode == PushToHintMode.Always)
                 {
                     consumer.AddHighlighting(
                         new AsmDefPackageVersionInlayHintContextActionHighlighting(element.GetHighlightingRange()));

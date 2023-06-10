@@ -16,25 +16,25 @@ using JetBrains.ReSharper.Feature.Services.InlayHints;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
-using JetBrains.TextControl.DocumentMarkup.IntraTextAdornments;
+using JetBrains.TextControl.DocumentMarkup.Adornments;
 using JetBrains.UI.RichText;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 {
-    public class AsmDefIntraTextAdornmentModel : IIntraTextAdornmentDataModel
+    public class AsmDefIntraTextAdornmentModel : IAdornmentDataModel
     {
         private readonly IAsmDefInlayHintHighlighting myHighlighting;
-        private readonly Expression<Func<UnityInlayHintSettings, InlayHintsMode>> myOption;
+        private readonly Expression<Func<UnityInlayHintSettings, PushToHintMode>> myOption;
         private readonly ISolution mySolution;
         private readonly ISettingsStore mySettingsStore;
         private IList<BulbMenuItem>? myContextMenuItems;
 
-        private readonly IntraTextAdornmentData myData;
+        private readonly AdornmentData myData;
 
         public AsmDefIntraTextAdornmentModel(IAsmDefInlayHintHighlighting highlighting,
-                                             Expression<Func<UnityInlayHintSettings, InlayHintsMode>> option,
+                                             Expression<Func<UnityInlayHintSettings, PushToHintMode>> option,
                                              ISolution solution,
                                              ISettingsStore settingsStore)
         {
@@ -46,10 +46,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
             ContextMenuTitle = new PresentableItem(FeaturesIntellisenseThemedIcons.ParameterInfoPage.Id,
                 highlighting.ContextMenuTitle);
             
-            myData = IntraTextAdornmentData.New.
+            myData = AdornmentData.New.
                 WithText(myHighlighting.Text).
                 WithMode(myHighlighting.Mode).
-                WithFlags(IntraTextAdornmentFlags.HasContextMenu); // Context menu appears to be ReSharper only. Rider doesn't show any context menus for inlay hints
+                WithFlags(AdornmentFlags.HasContextMenu); // Context menu appears to be ReSharper only. Rider doesn't show any context menus for inlay hints
         }
 
         public void ExecuteNavigation(PopupWindowContextSource popupWindowContextSource)
@@ -81,6 +81,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
         }
 
         /// <inheritdoc />
-        IntraTextAdornmentData IIntraTextAdornmentDataModel.Data => myData;
+        AdornmentData IAdornmentDataModel.Data => myData;
     }
 }
