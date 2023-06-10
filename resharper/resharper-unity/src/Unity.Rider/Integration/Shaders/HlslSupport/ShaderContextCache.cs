@@ -1,3 +1,4 @@
+using JetBrains.Application.I18n;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers;
 using JetBrains.DocumentModel;
@@ -52,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             var psiFiles = solution.GetPsiServices().Files;
 
             psiFiles.InvalidatePsiFilesCache(psiSourceFile);
-            solution.GetComponent<IDaemon>().Invalidate();
+            solution.GetComponent<IDaemon>().Invalidate("ShaderContextCache.SetContext".NON_LOCALIZABLE());
         }
 
         public CppFileLocation GetPreferredRootFile(CppFileLocation currentFile)
