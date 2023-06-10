@@ -8,7 +8,6 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
-using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.Util;
@@ -23,7 +22,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
     {
         private readonly AssetSerializationMode myAssetSerializationMode;
         private readonly IEnumerable<IProjectSettingsAssetHandler> myProjectSettingsAssetHandlers;
-        private readonly PackageManager myPackageManager;
         private readonly ProjectSettingsCacheItem myLocalCache = new();
 
         private readonly CountingSet<string> myShortNameAtBuildSettings = new();
@@ -34,13 +32,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                                          IShellLocks shellLocks,
                                          IPersistentIndexManager persistentIndexManager,
                                          AssetSerializationMode assetSerializationMode,
-                                         IEnumerable<IProjectSettingsAssetHandler> projectSettingsAssetHandlers,
-                                         PackageManager packageManager)
+                                         IEnumerable<IProjectSettingsAssetHandler> projectSettingsAssetHandlers)
             : base(lifetime, shellLocks, persistentIndexManager, ProjectSettingsCacheItem.Marshaller)
         {
             myAssetSerializationMode = assetSerializationMode;
             myProjectSettingsAssetHandlers = projectSettingsAssetHandlers;
-            myPackageManager = packageManager;
 
             myLocalCache.Tags.AddItems("Finish", "Player", "Respawn", "Untagged", "EditorOnly", "MainCamera", "GameController");
         }
@@ -59,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
             var cacheItem = new ProjectSettingsCacheItem();
             if (sourceFile.IsScene())
-                cacheItem.Scenes.SceneNames.Add(GetUnityPathFor(sourceFile, myPackageManager));
+                cacheItem.Scenes.SceneNames.Add(GetUnityPathFor(sourceFile));
 
             foreach (var projectSettingsAssetHandler in myProjectSettingsAssetHandlers)
             {
