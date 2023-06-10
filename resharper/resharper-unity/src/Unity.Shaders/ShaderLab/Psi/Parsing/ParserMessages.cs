@@ -43,6 +43,7 @@
         public const string IDS_SHADER_BLOCK = "shader block";
         public const string IDS_SHADER_LAB_IDENTIFIER = "identifier";
         public const string IDS_SIMPLE_PROPERTY_TYPE = "property type";
+        public const string IDS_STATE_COMMAND_OR_PACKAGE_REQUIREMENTS = "state command or package requirements";
         public const string IDS_STATE_COMMAND = "state command";
         public const string IDS_STENCIL_CONTENTS = "Stencil command";
         public const string IDS_STENCIL_OPERATION = "stencil operation";
@@ -55,7 +56,7 @@
         public const string IDS_VALUE = "value";
         public const string IDS_ZTEST_VALUE = "ZTest value";
         public const string IDS_FALLBACK_VALUE = "Fallback value";
-        public const string IDS_SHADER_LAB_COMMAND = "ShaderLab command";
+        public const string IDS_SHADER_LAB_COMMAND = "ShaderLab command";        
 
         public static string GetString(string id) => id;
 

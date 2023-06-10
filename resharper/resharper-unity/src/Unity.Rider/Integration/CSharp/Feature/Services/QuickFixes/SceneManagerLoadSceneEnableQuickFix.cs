@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using JetBrains.Application.I18n;
 using JetBrains.Application.Progress;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
@@ -72,7 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Ser
                     }
                 }
 
-                solution.GetComponent<IDaemon>().Invalidate();
+                solution.GetComponent<IDaemon>().Invalidate("SceneManagerLoadSceneEnableQuickFix.ExecutePsiTransaction".NON_LOCALIZABLE());
                 solution.GetComponent<UnityRefresher>().StartRefresh(RefreshType.Normal);
             }
 
