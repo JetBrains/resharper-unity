@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.I18n;
 using JetBrains.Application.Progress;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
@@ -152,7 +153,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Ser
                     myArgument.Expression.ReplaceBy(CSharpElementFactory.GetInstance(myArgument)
                         .CreateStringLiteralExpression(mySceneName));
 
-                solution.GetComponent<IDaemon>().Invalidate();
+                solution.GetComponent<IDaemon>().Invalidate("SceneManagerLoadSceneQuickFix.LoadSceneFixBulbAction.ExecutePsiTransaction".NON_LOCALIZABLE());
 
                 solution.GetComponent<UnityRefresher>().StartRefresh(RefreshType.Normal);
                 return null;
