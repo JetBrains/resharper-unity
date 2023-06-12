@@ -7,7 +7,6 @@ using JetBrains.ProjectModel.Caches;
 using JetBrains.ProjectModel.Tasks;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.Util;
 using JetBrains.Util.Threading.Tasks;
 
@@ -20,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport
 
         public CgIncludeDirectoryTracker(Lifetime lifetime, UnitySolutionTracker unitySolutionTracker,
             SolutionCaches solutionCaches, IShellLocks shellLocks, ISolutionLoadTasksScheduler scheduler,
-            CppGlobalCacheImpl cppGlobalCache, UnityVersion unityVersion, ILogger logger)
+            CppGlobalCacheImpl cppGlobalCache, ILogger logger, ICgIncludeDirectoryProvider cgIncludeDirectoryProvider)
         {
             scheduler.EnqueueTask(new SolutionLoadTask("InitCgIncludeDirectoryTracker", SolutionLoadTaskKinds.PreparePsiModules,
                 () =>
@@ -30,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport
                         if (solutionCaches.PersistentProperties.TryGetValue(CG_INCLUDE_DIRECTORY_PATH, out var result))
                         {
                             var oldPath = VirtualFileSystemPath.TryParse(result, InteractionContext.SolutionContext, FileSystemPathInternStrategy.INTERN);
-                            var newPath = GetCgIncludeFolderPath(unityVersion);
+                            var newPath = cgIncludeDirectoryProvider.GetCgIncludeFolderPath();
                             if (!oldPath.Equals(newPath))
                             {
                                 cppGlobalCache.IsCacheStarted.Change.Advise(lifetime, v =>
@@ -49,22 +48,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport
                         }
                         else
                         {
-                            solutionCaches.PersistentProperties[CG_INCLUDE_DIRECTORY_PATH] = GetCgIncludeFolderPath(unityVersion).FullPath;
+                            solutionCaches.PersistentProperties[CG_INCLUDE_DIRECTORY_PATH] = cgIncludeDirectoryProvider.GetCgIncludeFolderPath().FullPath;
                         }
                     });
                 }));
-
-        }
-
-
-        public static VirtualFileSystemPath GetCgIncludeFolderPath(UnityVersion unityVersion)
-        {
-            var path = unityVersion.GetActualAppPathForSolution();
-            if (path.IsEmpty)
-                return VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext);
-
-            var contentPath = UnityInstallationFinder.GetApplicationContentsPath(path);
-            return contentPath.Combine("CGIncludes");
         }
     }
 }

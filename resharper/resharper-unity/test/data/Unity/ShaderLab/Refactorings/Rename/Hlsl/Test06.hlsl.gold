@@ -1,0 +1,4 @@
+﻿#pragma fragment zzz
+
+int zzz()
+{}

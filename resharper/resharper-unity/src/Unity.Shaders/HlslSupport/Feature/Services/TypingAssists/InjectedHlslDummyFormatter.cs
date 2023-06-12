@@ -2,6 +2,7 @@ using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.TypingAssist;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi.CachingLexers;
 using JetBrains.ReSharper.Psi.Cpp.Language;
@@ -16,19 +17,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
     public class InjectedHlslDummyFormatter : CppDummyFormatterBase
     {
         private readonly ISolution mySolution;
+        private readonly UnityHlslCppCompilationPropertiesProvider myCompilationPropertiesProvider;
 
         public InjectedHlslDummyFormatter(ISolution solution, CachingLexerService cachingLexerService,
-            DocumentToProjectFileMappingStorage projectFileMappingStorage)
+            DocumentToProjectFileMappingStorage projectFileMappingStorage, UnityHlslCppCompilationPropertiesProvider compilationPropertiesProvider)
             : base(solution, cachingLexerService, projectFileMappingStorage)
         {
             mySolution = solution;
+            myCompilationPropertiesProvider = compilationPropertiesProvider;
         }
 
         public CppCachingKeywordResolvingLexer ComposeKeywordResolvingLexer(ITextControl textControl)
         {
-            var dialect = new CppHLSLDialect(true, false);
-            var cachingLexer = LexerExtensions.ToCachingLexer(new ShaderLabLexerGenerated(textControl.Document.Buffer, CppLexer.Create)).TokenBuffer.CreateLexer();
-
+            var dialect = myCompilationPropertiesProvider.ShaderLabHlslDialect;
+            var cachingLexer = new ShaderLabLexerGenerated(textControl.Document.Buffer, CppLexer.Create).ToCachingLexer().TokenBuffer.CreateLexer();
             return new CppCachingKeywordResolvingLexer(cachingLexer, dialect);
         }
 
@@ -88,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
             return doc.GetText(new TextRange(tokenLineStart, lexer.TokenStart));
         }
 
-        public class HlslDummyFormatterContext : CppDummyFormatterContext
+        private class HlslDummyFormatterContext : CppDummyFormatterContext
         {
             public HlslDummyFormatterContext(ISolution solution, ITextControl originalTextControl,
                 ITextControl textControl, CppLanguageDialect dialect)
@@ -98,17 +100,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
 
             public override CppCachingKeywordResolvingLexer ComposeKeywordResolvingLexer()
             {
-                var dialect = new CppHLSLDialect(true, false);
-                var cachingLexer = LexerExtensions.ToCachingLexer(new ShaderLabLexerGenerated(Document.Buffer, CppLexer.Create))
-                    .TokenBuffer.CreateLexer();
-                return new CppCachingKeywordResolvingLexer(cachingLexer, dialect);
+                var cachingLexer = new ShaderLabLexerGenerated(Document.Buffer, CppLexer.Create).ToCachingLexer().TokenBuffer.CreateLexer();
+                return new CppCachingKeywordResolvingLexer(cachingLexer, Dialect);
             }
         }
 
         public override CppDummyFormatterContext CreateContext(ITextControl textControl,
             ITextControl originalTextControl)
         {
-            var dialect = new CppHLSLDialect(true, false);
+            var dialect = myCompilationPropertiesProvider.ShaderLabHlslDialect;
             return new HlslDummyFormatterContext(mySolution, originalTextControl, textControl, dialect);
         }
     }
