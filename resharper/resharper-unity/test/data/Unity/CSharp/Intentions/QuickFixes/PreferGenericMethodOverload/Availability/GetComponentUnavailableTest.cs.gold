@@ -14,5 +14,5 @@ public class Test02
 }
 
 ------------------------------------------------
-0: Expected type derived from 'UnityEngine.MonoBehaviour'
+0: Expected a type derived from 'UnityEngine.MonoBehaviour'
 NO QUICKFIXES
