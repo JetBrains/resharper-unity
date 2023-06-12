@@ -310,9 +310,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
 
         protected override bool CheckThatCLikeLineEndsInOpenStringLiteral(ITextControl textControl, CachingLexer lexer, int lineEndPos, char c, NodeTypeSet correspondingTokenType, bool isStringWithAt, ref int charPos, bool defaultReturnValue)
         {
-            return lexer.FindTokenAt(lineEndPos - 1)
+            return lexer.FindTokenAt(lineEndPos)
                    && lexer.TokenType == ShaderLabTokenType.STRING_LITERAL
-                   && (lexer.GetTokenLength() == 1 || lexer.Buffer[lineEndPos - 1] != '"'); // either '"' or unfinished string
+                   && (lexer.GetTokenLength() == 1 || lexer.Buffer[lineEndPos] != '"'); // either '"' or unfinished string
         }
 
         protected override bool IsNextCharDoesNotStartNewLiteral(ITypingContext typingContext, CachingLexer lexer, int charPos, IBuffer buffer) => lexer.TokenStart != charPos && buffer[lexer.TokenStart] == typingContext.Char;

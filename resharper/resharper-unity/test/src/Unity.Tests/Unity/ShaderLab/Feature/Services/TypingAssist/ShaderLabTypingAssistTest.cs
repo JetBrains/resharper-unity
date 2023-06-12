@@ -48,6 +48,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Typ
         [Test] public void SmartLParen02() { DoNamedTest(); }
         [Test] public void SmartQuot01() { DoNamedTest(); }
         [Test] public void SmartQuot02() { DoNamedTest(); }
+        [Test] public void SmartQuot03() { DoNamedTest(); }
+        [Test] public void SmartQuot04() { DoNamedTest(); }
 
         protected override void DoTest(Lifetime lifetime)
         {
