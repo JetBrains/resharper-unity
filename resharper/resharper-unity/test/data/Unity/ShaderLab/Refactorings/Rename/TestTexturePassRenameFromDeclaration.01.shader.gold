@@ -1,0 +1,10 @@
+Shader "Foo"
+{
+    SubShader
+    {
+        Pass
+        {
+            Name "zzz"
+        }
+    }
+}

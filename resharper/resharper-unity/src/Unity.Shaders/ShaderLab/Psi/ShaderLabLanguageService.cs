@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System.Collections.Generic;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
@@ -20,8 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi
     {
         private readonly CommonIdentifierIntern myCommonIdentifierIntern;
         private readonly ShaderLabCodeFormatter myCodeFormatter;
-        private IDeclaredElementPresenter myPresenter;
-
+        private IDeclaredElementPresenter? myPresenter;
+        
         public ShaderLabLanguageService(ShaderLabLanguage psiLanguageType, IConstantValueService constantValueService, CommonIdentifierIntern commonIdentifierIntern, ShaderLabCodeFormatter codeFormatter)
             : base(psiLanguageType, constantValueService)
         {
@@ -29,10 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi
           myCodeFormatter = codeFormatter;
         }
 
-        public override ILexerFactory GetPrimaryLexerFactory()
-        {
-            return new ShaderLabLexerFactory();
-        }
+        public override ILexerFactory GetPrimaryLexerFactory() => new ShaderLabLexerFactory();
 
         public override ICodeFormatter CodeFormatter => myCodeFormatter;
 
@@ -43,23 +41,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi
             return new ShaderLabFilteringLexer(lexer, null);
         }
 
-        public override IParser CreateParser(ILexer lexer, IPsiModule module, IPsiSourceFile sourceFile)
-        {
-            return new ShaderLabParser(lexer as ILexer<int> ?? lexer.ToCachingLexer(), myCommonIdentifierIntern);
-        }
+        public override IParser CreateParser(ILexer lexer, IPsiModule? module, IPsiSourceFile? sourceFile) => new ShaderLabParser(lexer as ILexer<int> ?? lexer.ToCachingLexer(), myCommonIdentifierIntern);
 
-        public override IEnumerable<ITypeDeclaration> FindTypeDeclarations(IFile file)
-        {
-            return EmptyList<ITypeDeclaration>.Enumerable;
-        }
+        public override IEnumerable<ITypeDeclaration> FindTypeDeclarations(IFile file) => EmptyList<ITypeDeclaration>.Enumerable;
 
-        public override ILanguageCacheProvider CacheProvider => null;
+        public override ILanguageCacheProvider? CacheProvider => null;
         public override bool IsCaseSensitive => true;
         public override bool SupportTypeMemberCache => false;
         public override ITypePresenter TypePresenter => DefaultTypePresenter.Instance;
+        public override IDeclaredElementPresenter DeclaredElementPresenter => myPresenter ??= ShaderLabDeclaredElementPresenter.Instance;
 
-        public override IDeclaredElementPresenter DeclaredElementPresenter =>
-            myPresenter ?? (myPresenter = ShaderLabDeclaredElementPresenter.Instance);
+        public override bool IsValidName(DeclaredElementType elementType, string name)
+        {
+            if (elementType == ShaderLabDeclaredElementType.Shader)
+                return IsValidShaderName(name);
+            return base.IsValidName(elementType, name);
+        }
+
+        private bool IsValidShaderName(string name) => !string.IsNullOrEmpty(name);
 
         private class ShaderLabLexerFactory : ILexerFactory
         {

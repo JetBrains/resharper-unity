@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+﻿#nullable enable
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements
@@ -33,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElemen
             return string.Equals(ShortName, other.ShortName) && TreeOffset == other.TreeOffset;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;

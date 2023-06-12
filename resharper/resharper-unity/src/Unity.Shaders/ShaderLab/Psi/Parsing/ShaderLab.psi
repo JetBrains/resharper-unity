@@ -2628,15 +2628,21 @@ errorhandling interface passDef
 :
   usePassDef
   | grabPassDef
-  | texturePassDef
+  | texturePassDeclaration
 ;
 
 usePassDef
 options { stubBase="ShaderLabCommandBase"; }
 :
   USEPASS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
-  STRING_LITERAL<SHADER_LAB_VALUE, UsePassValue>
+  qualifiedPassReferenceElement<SHADER_LAB_VALUE, UsePassValue>
 ;
+
+qualifiedPassReferenceElement
+options { customConstructor; }
+:
+  STRING_LITERAL<QUALIFIED_PASS_NAME, QualifiedName>
+; 
 
 grabPassDef
 options { stubBase="ShaderLabBlockCommandBase"; }
@@ -2668,6 +2674,12 @@ optionalNameCommand
 :
   NAME_KEYWORD<SHADER_LAB_KEYWORD, NameKeyword>?
   STRING_LITERAL<SHADER_LAB_NAME, Name>
+;
+
+texturePassDeclaration
+options { stubBase="ShaderLabDeclarationBase"; }
+:
+  texturePassDef<SHADER_LAB_COMMAND, Command>
 ;
 
 texturePassDef
@@ -2719,13 +2731,19 @@ options { stubBase="ShaderLabCommandBase"; }
 fallbackValue
 :
   (
-    STRING_LITERAL<SHADER_LAB_NAME, Name>
+    shaderReferenceElement<REFERENCE, ShaderReference>
     (
       COMMA<COMMA, Comma>
       lodValue<SHADER_LAB_VALUE, LodValue> // legacy, not actually used by Unity
     )?
   )
   | falseLiteral{FALSE_LITERAL, FalseLiteral}
+;
+
+shaderReferenceElement
+options { customConstructor; } 
+:
+    STRING_LITERAL<SHADER_NAME, Name>
 ;
 
 

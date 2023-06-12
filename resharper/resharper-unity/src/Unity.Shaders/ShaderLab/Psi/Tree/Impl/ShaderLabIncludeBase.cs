@@ -7,6 +7,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl
 {
     public abstract class ShaderLabIncludeBase : ShaderLabCodeBlockBase
     {
-        protected sealed override DeclaredElementType ElementType => ShaderLabDeclaredElementType.IncludeBlock;
+        protected sealed override DeclaredElementType DeclaredElementType => ShaderLabDeclaredElementType.IncludeBlock;
     }
 }
