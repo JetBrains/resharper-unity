@@ -67,8 +67,11 @@
     <rider.externalDirectoryProvider implementation="com.jetbrains.rider.plugins.unity.workspace.UnityExternalDirectoryProvider" />
 
     <!-- Options pages -->
-    <applicationConfigurable groupId="language" instance="com.jetbrains.rider.plugins.unity.settings.UnityPluginOptionsPage"
-                             id="preferences.build.unityPlugin" key="configurable.name.unity.engine" />
+    <applicationConfigurable groupId="language"
+                             id="preferences.build.unityPlugin"
+                             bundle="messages.UnityBundle"
+                             instance="com.jetbrains.rider.plugins.unity.settings.UnityPluginOptionsPage"
+                             key="configurable.name.unity.engine"/>
 
     <projectConfigurable parentId="FileTemplatesSettingsId" instance="com.jetbrains.rider.plugins.unity.settings.templates.UnityFileTemplatesOptionPage" groupWeight="-120" />
     <projectConfigurable parentId="LiveTemplatesSettingsId" instance="com.jetbrains.rider.plugins.unity.settings.templates.UnityLiveTemplatesOptionPage" groupWeight="-120" />
