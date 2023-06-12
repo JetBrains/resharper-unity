@@ -1,7 +1,3 @@
-﻿Provided elements:
- 0: ScavsCount:System.Int32
- 1: FieldDimensions:Unity.Mathematics.float2
-
 // ${KIND:Unity.GenerateBakerAndComponent}
 // ${SELECT0:ScavsCount:System.Int32}
 // ${SELECT1:FieldDimensions:Unity.Mathematics.float2}
@@ -23,18 +19,14 @@ namespace ComponentsAndTags
     {
         public override void Bake(GraveyardPropertiesAuthoring authoring)
         {
-          var entity = GetEntity(TransformUsageFlags.Dynamic);
-          AddComponent(entity,
-            new GraveyardPropertiesComponentData
-              {
-                ScavsCount = authoring.ScavsCount, FieldDimensions = authoring.FieldDimensions
-              });
+            var entity = GetEntity(TransformUsageFlags.Dynamic);
+
+            AddComponentObject(entity, new GraveyardPropertiesComponentData { FieldDimensions = authoring.FieldDimensions });
         }
     }
 
-    public struct GraveyardPropertiesComponentData : IComponentData
+    public class GraveyardPropertiesComponentData : IComponentData
     {
         public float2 FieldDimensions;
-        public int ScavsCount;
     }
 }

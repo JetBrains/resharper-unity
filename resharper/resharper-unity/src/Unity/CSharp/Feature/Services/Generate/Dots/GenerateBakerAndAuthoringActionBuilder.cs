@@ -253,7 +253,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
                 componentCreationExpression.RemoveArgumentList();
                 
-                componentCreationExpression.FormatNode(CodeFormatProfile.COMPACT);
+                componentCreationExpression.FormatNode(CodeFormatProfile.STRICT);
             }
         }
 
@@ -278,7 +278,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 return bakerClassDeclarations ;
             }
 
-            bakerClassDeclarations = new[]
+            bakerClassDeclarations = new IClassLikeDeclaration[]
             {
                 (IClassDeclaration)generationInfo.Factory
                     .CreateTypeMemberDeclaration("public class $0 : $1 { }", generationInfo.BakerUniqueClassName,
@@ -331,90 +331,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             return bakeMethodExpression;
         }
 
-        private static TreeNodeActionType FindIBakerAddComponentExpression(ITreeNode node,
-            ITypeElement componentDeclaredType)
-        {
-            if (node is IMethodDeclaration)
-                return TreeNodeActionType.IGNORE_SUBTREE;
-
-            if (node is not IInvocationExpression invocationExpression)
-                return TreeNodeActionType.CONTINUE;
-
-            if (!invocationExpression.IsIBakerAddComponentMethod())
-                return TreeNodeActionType.CONTINUE;
-
-            var arguments = invocationExpression.ArgumentList.Arguments;
-            if (arguments.Count == 0)
-                return TreeNodeActionType.CONTINUE;
-
-            var firstArgumentName = arguments[0].MatchingParameter.Element.ShortName;
-
-            if (!firstArgumentName.Equals("entity"))
-                return TreeNodeActionType.CONTINUE;
-
-            var typeArguments = invocationExpression.TypeArguments;
-
-            //if AddComponent(entity, new Component(){})
-            if (typeArguments.Count == 0)
-            {
-                if (arguments.Count != 2)
-                    return TreeNodeActionType.CONTINUE;
-
-                var matchingParameterType = arguments[1].MatchingParameter.Type.GetTypeElement();
-                return componentDeclaredType.Equals(matchingParameterType)
-                    ? TreeNodeActionType.ACCEPT
-                    : TreeNodeActionType.CONTINUE;
-            }                
-                
-            
-            //check if AddComponent<Component>(entity)
-            if (typeArguments.Count == 1 && componentDeclaredType.Equals(typeArguments[0].GetTypeElement()))
-                    return TreeNodeActionType.ACCEPT;
-            
-            return TreeNodeActionType.CONTINUE;
-        }
-
-        private static TreeNodeActionType FindIBakerAddComponentObjectExpression(ITreeNode node,
-            ITypeElement componentDeclaredType)
-        {
-            
-            if (node is IMethodDeclaration)
-                return TreeNodeActionType.IGNORE_SUBTREE;
-
-            if (node is not IInvocationExpression invocationExpression)
-                return TreeNodeActionType.CONTINUE;
-
-            if (!invocationExpression.IsIBakerAddComponentObjectMethod())
-                return TreeNodeActionType.CONTINUE;
-            
-            var arguments = invocationExpression.ArgumentList.Arguments;
-            if (arguments.Count == 0)
-                return TreeNodeActionType.CONTINUE;
-
-            var firstArgumentName = arguments[0].MatchingParameter.Element.ShortName;
-
-            if (!firstArgumentName.Equals("entity"))
-                return TreeNodeActionType.CONTINUE;
-
-            //if AddComponentObject(entity, new Component(){})
-            if (arguments.Count != 2)
-                return TreeNodeActionType.CONTINUE;
-
-            var matchingParameterType = arguments[1].MatchingParameter.Type.GetTypeElement();
-            return componentDeclaredType.Equals(matchingParameterType)
-                ? TreeNodeActionType.ACCEPT
-                : TreeNodeActionType.CONTINUE;
-
-        }
-        
-         private static void CreateEmptyAddComponentExpression(CSharpElementFactory factory,
+        private static void CreateEmptyAddComponentExpression(CSharpElementFactory factory,
             IMethodDeclaration bakeMethodExpression, ITypeElement componentDeclaredType, ITreeNode entityExpression)
         {
             var isStructComponent = componentDeclaredType is IStruct;
 
             var existingAddComponentExpression = bakeMethodExpression.Body.FindNextNode(node => isStructComponent
-                ? FindIBakerAddComponentExpression(node, componentDeclaredType)
-                : FindIBakerAddComponentObjectExpression(node, componentDeclaredType));
+                ? BakerGeneratorUtils.FindIBakerAddComponentExpression(node, componentDeclaredType)
+                : BakerGeneratorUtils.FindIBakerAddComponentObjectExpression(node, componentDeclaredType));
 
             if (existingAddComponentExpression != null)
                 return;
@@ -455,7 +379,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
             if (isStructComponent
                 && bakeMethodExpression.Body.FindNextNode(node =>
-                        FindIBakerAddComponentExpression(node, componentDeclaredType)) 
+                        BakerGeneratorUtils.FindIBakerAddComponentExpression(node, componentDeclaredType))
                     is IInvocationExpression invocationExpression)
             {
                 var statement = invocationExpression.GetContainingStatement();
@@ -465,44 +389,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             else
             {
                 var existingCreationExpression = bakeMethodExpression.Body.FindNextNode(node =>
-                {
-                    if (node is IMethodDeclaration)
-                        return TreeNodeActionType.IGNORE_SUBTREE;
-
-                    if (node is not IObjectCreationExpression objectCreationExpression)
-                        return TreeNodeActionType.CONTINUE;
-                
-                    if(!componentDeclaredType.Equals(objectCreationExpression.Type().GetTypeElement()))
-                        return TreeNodeActionType.CONTINUE;
-
-                    var parentInvocationExpression = objectCreationExpression.GetContainingNode<IInvocationExpression>();
-
-                    if (parentInvocationExpression == null)
-                        return TreeNodeActionType.CONTINUE;
-
-                    if (!parentInvocationExpression.IsIBakerAddComponentMethod() &&
-                        !parentInvocationExpression.IsIBakerAddComponentObjectMethod()) 
-                        return TreeNodeActionType.CONTINUE;
-                
-                    var arguments = parentInvocationExpression.ArgumentList.Arguments;
-                    if (arguments.Count == 0)
-                        return TreeNodeActionType.CONTINUE;
-
-                    var firstArgumentName = arguments[0].MatchingParameter.Element.ShortName;
-
-                    if (!firstArgumentName.Equals("entity"))
-                        return TreeNodeActionType.CONTINUE;
-
-                    //if AddComponentObject(entity, new Component(){})
-                    if (arguments.Count != 2)
-                        return TreeNodeActionType.CONTINUE;
-
-                    var matchingParameterType = arguments[1].MatchingParameter.Type.GetTypeElement();
-                    return componentDeclaredType.Equals(matchingParameterType)
-                        ? TreeNodeActionType.ACCEPT
-                        : TreeNodeActionType.CONTINUE;
-
-                });
+                    BakerGeneratorUtils.FindAddComponentCreationExpression(node, componentDeclaredType));
 
                 if (existingCreationExpression != null)
                     return (IObjectCreationExpression)existingCreationExpression;

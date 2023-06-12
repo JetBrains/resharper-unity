@@ -23,16 +23,17 @@ namespace ComponentsAndTags
     {
         public override void Bake(GraveyardPropertiesAuthoring authoring)
         {
-          var entity = GetEntity(TransformUsageFlags.Dynamic);
-          AddComponent(entity,
-            new GraveyardPropertiesComponentData
-              {
-                ScavsCount = authoring.ScavsCount, FieldDimensions = authoring.FieldDimensions
-              });
+            var entity = GetEntity(TransformUsageFlags.Dynamic);
+
+            AddComponentObject(entity,
+              new GraveyardPropertiesComponentData
+                {
+                  ScavsCount = authoring.ScavsCount, FieldDimensions = authoring.FieldDimensions
+                });
         }
     }
 
-    public struct GraveyardPropertiesComponentData : IComponentData
+    public class GraveyardPropertiesComponentData : IComponentData
     {
         public float2 FieldDimensions;
         public int ScavsCount;
