@@ -2,6 +2,6 @@
 }
 
 ------------------------------------------------
-0: Ignored character. Consider inserting new line for clarity.
+0: Suspicious non-digit character in '#line' directive
 QUICKFIXES:
 Insert new line

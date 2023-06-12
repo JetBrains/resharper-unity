@@ -16,5 +16,5 @@ public class Test
 }
 
 ---------------------------------------------------------
-(0): ReSharper Warning: Expected type derived from 'UnityEngine.Component'
-(1): ReSharper Warning: Expected type derived from 'UnityEngine.Component'
+(0): ReSharper Warning: Expected a type derived from 'UnityEngine.Component'
+(1): ReSharper Warning: Expected a type derived from 'UnityEngine.Component'
