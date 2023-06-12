@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace ComponentsAndTags
 {
-    struct Graveyard{caret}Properties : IComponentData
+    class Graveyard{caret}Properties : IComponentData
     {
     }
 
@@ -20,7 +20,7 @@ namespace ComponentsAndTags
       public override void Bake(GraveyardPropertiesAuthoring authoring)
       {
         var entity = GetEntity(TransformUsageFlags.Dynamic);
-        AddComponent<GraveyardProperties>(entity);
+        AddComponentObject(entity, new GraveyardProperties());
       }
     }
 }

@@ -33,14 +33,13 @@ namespace ComponentsAndTags
     {
         public override void Bake(GraveyardPropertiesAuthoring authoring)
         {
-            var entity = GetEntity(TransformUsageFlags.Dynamic);
-
-            AddComponent(entity,
-              new GraveyardProperties
-                {
-                  FieldDimensions = authoring.FieldDimensions,
-                  TombstonePrefab = GetEntity(authoring.Prefab, TransformUsageFlags.Dynamic)
-                });
+          var entity = GetEntity(TransformUsageFlags.Dynamic);
+          AddComponent(entity,
+            new GraveyardProperties
+              {
+                FieldDimensions = authoring.FieldDimensions,
+                TombstonePrefab = GetEntity(authoring.Prefab, TransformUsageFlags.Dynamic)
+              });
         }
     }
 

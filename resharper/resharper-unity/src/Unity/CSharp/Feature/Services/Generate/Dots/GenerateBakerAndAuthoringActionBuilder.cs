@@ -387,7 +387,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             if (!invocationExpression.IsIBakerAddComponentObjectMethod())
                 return TreeNodeActionType.CONTINUE;
             
-            //TODO check for number of params
             var arguments = invocationExpression.ArgumentList.Arguments;
             if (arguments.Count == 0)
                 return TreeNodeActionType.CONTINUE;

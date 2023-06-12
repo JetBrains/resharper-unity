@@ -1,9 +1,8 @@
 ﻿// ${KIND:Unity.GenerateBakerAndAuthoring}
-// ${GLOBAL0:SelectedBaker=New Baker}
+// ${GLOBAL0:SelectedBaker=ComponentsAndTags.GraveyardPropertiesBaker}
 
 using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace ComponentsAndTags
 {
