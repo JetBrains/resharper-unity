@@ -260,6 +260,7 @@ options {
   | FALLBACK_KEYWORD
   | CUSTOM_EDITOR_KEYWORD
   | DEPENDENCY_KEYWORD
+  | PACKAGE_REQUIREMENTS_KEYWORD
 
   | COLOR_KEYWORD
   | FLOAT_KEYWORD
@@ -472,6 +473,7 @@ options {
   | FALLBACK_KEYWORD
   | CUSTOM_EDITOR_KEYWORD
   | DEPENDENCY_KEYWORD
+  | PACKAGE_REQUIREMENTS_KEYWORD
 
   | COLOR_KEYWORD
   | FLOAT_KEYWORD
@@ -680,6 +682,7 @@ options {
   | FALLBACK_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
   | CUSTOM_EDITOR_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
   | DEPENDENCY_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | PACKAGE_REQUIREMENTS_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
 
   | COLOR_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
   | FLOAT_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
@@ -1089,6 +1092,7 @@ interface blockCommand
   | bindChannelsCommand  
   | grabPassDef
   | texturePassDef
+  | packageRequirementsCommand
 ;
 
 interface blockValue
@@ -1106,6 +1110,7 @@ interface blockValue
   | bindChannelsValue
   | grabPassValue
   | texturePassValue
+  | packageRequirementsValue
 ;
 
 
@@ -1482,7 +1487,13 @@ subShaderValue
 private errorhandling subShaderValueBody
 options { preCheckExpected; }
 :
-    pass<PASS, Passes>*
+  packageRequirementsForSubShaderValueBody?
+  pass<PASS, Passes>*
+;
+
+private errorhandling packageRequirementsForSubShaderValueBody
+:
+  packageRequirementsCommand
 ;
 
 pass
@@ -1505,8 +1516,6 @@ interface stateCommand
   | renderStateCommand
   | legacyRenderStateCommand
 ;
-
-
 
 // **************************************************************************
 //
@@ -2678,8 +2687,14 @@ texturePassValue
 private errorhandling texturePassContents
 options { preCheckExpected; } 
 :
+  packageRequirementsForTexturePassContents?    
   stateCommandForTexturePass*
   setTextureCommand<SET_TEXTURE_COMMAND, SetTextureCommands>*
+;
+
+private errorhandling packageRequirementsForTexturePassContents
+:
+  packageRequirementsCommand
 ;
 
 private errorhandling stateCommandForTexturePass
@@ -2757,4 +2772,36 @@ dependencyValue
   STRING_LITERAL<DEPENDENCY_KIND, Kind>
   EQUALS<EQUALS, Equals>
   STRING_LITERAL<SHADER_LAB_NAME, Name>
+;
+
+// **************************************************************************
+//
+// PackageRequirements
+//
+// **************************************************************************
+// https://docs.unity3d.com/2021.2/Documentation/Manual/SL-PackageRequirements.html
+packageRequirementsCommand
+options { stubBase="ShaderLabBlockCommandBase"; }
+:
+  PACKAGE_REQUIREMENTS_KEYWORD<SHADER_LAB_KEYWORD, CommandKeyword>
+  packageRequirementsValue<SHADER_LAB_VALUE, Value>
+;
+
+packageRequirementsValue
+:
+  LBRACE<LBRACE, LBrace>
+  packageRequirementsValueBody  
+  RBRACE<RBRACE, RBrace>
+;
+
+private errorhandling packageRequirementsValueBody
+options { preCheckExpected; }
+:
+  packageRequirementEntry<PACKAGE_REQUIREMENT_ENTRY, Entries>*
+;
+
+errorhandling packageRequirementEntry
+:
+  STRING_LITERAL<PACKAGE_NAME, PackageName>
+  (COLON STRING_LITERAL<VERSION_SPEC, PackageVersionSpec>)?    
 ;

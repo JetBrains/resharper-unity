@@ -136,8 +136,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
       {
         var buffer = ProjectedBuffer.Create(cachingLexer.Buffer,
           new TextRange(currentStartOffset.Offset, currentStartOffset.Offset + newLength));
-        var closedChameleon = new ClosedChameleonElement(YamlTokenType.CHAMELEON, buffer, TreeOffset.Zero,
-          new TreeOffset(buffer.Length));
+        var closedChameleon = new ClosedChameleonElement(YamlTokenType.CHAMELEON, buffer, TreeOffset.Zero, buffer.Length);
         return new ChameleonDocumentBody(closedChameleon);
       }
 

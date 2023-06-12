@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
       public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
       {
-        return new ClosedChameleonElement(YamlTokenType.GetChameleonMapEntryValueWithIndent(LexerIndent), startOffset, endOffset);
+        return new ClosedChameleonElement(YamlTokenType.GetChameleonMapEntryValueWithIndent(LexerIndent), endOffset.Offset - startOffset.Offset);
       }
 
       public override string TokenRepresentation { get; }

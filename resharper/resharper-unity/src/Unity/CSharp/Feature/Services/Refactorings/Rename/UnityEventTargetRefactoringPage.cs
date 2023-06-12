@@ -1,6 +1,6 @@
 using JetBrains.IDE.UI.Extensions;
 using JetBrains.Lifetimes;
-using JetBrains.ReSharper.Feature.Services.Caches;
+using JetBrains.ReSharper.Feature.Services.DeferredCaches;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
 using JetBrains.Rider.Model.UIAutomation;
 

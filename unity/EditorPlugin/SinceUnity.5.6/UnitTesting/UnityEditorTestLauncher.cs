@@ -102,27 +102,20 @@ namespace JetBrains.Rider.Unity.Editor.UnitTesting
     {
       try
       {
-        const string assemblyName = "UnityEditor.TestRunner";
-        const string typeName = "UnityEditor.TestTools.TestRunner.Api.TestRunnerApi";
-        const string methodName = "CancelAllTestRuns";
-
-        MethodInfo stopRunMethod = null;
-
-        var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name.Equals(assemblyName));
-        if (assembly == null)
-          ourLogger.Verbose($"Could not find {assemblyName} in the AppDomain.");
-        else
+        var riderPackageAssembly = RiderPackageInterop.GetAssembly();
+        var apiType = riderPackageAssembly?.GetType("Packages.Rider.Editor.UnitTesting.RiderTestRunner");
+        if (apiType == null)
         {
-          var apiType = assembly.GetType(typeName);
-          if (apiType == null)
-            ourLogger.Verbose($"Could not find {typeName} in the {assemblyName}.");
-          else
-          {
-            stopRunMethod = apiType.GetMethod(methodName);
-            if (stopRunMethod == null)
-              ourLogger.Verbose($"Could not find {methodName} in the {typeName}.");
-          }
-        }
+          ourLogger.Verbose($"Could not find RiderTestRunner in the {riderPackageAssembly}.");
+          return;
+        };
+        
+        var methodName = "CancelTestRun";
+        var stopRunMethod = apiType.GetMethod(methodName); 
+        if (stopRunMethod == null)
+          stopRunMethod = apiType.GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic);
+        if (stopRunMethod == null) 
+          ourLogger.Verbose($"Could not find {methodName} in the {apiType.Name}.");
 
         launch.Abort.Set((lifetime, _) =>
         {

@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <ItemGroup>
         <PackageReference Include="JetBrains.RdFramework">
-            <Version>2022.1.1</Version> <!-- Update this manually for the InternalBuild -->
+            <Version>2023.2.2-preview2</Version> <!-- Update this manually for the InternalBuild -->
         </PackageReference>
     </ItemGroup>
 </Project>

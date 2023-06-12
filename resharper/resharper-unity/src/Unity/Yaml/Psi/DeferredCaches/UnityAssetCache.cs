@@ -11,7 +11,7 @@ using JetBrains.DocumentManagers;
 using JetBrains.DocumentManagers.impl;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.Caches;
+using JetBrains.ReSharper.Feature.Services.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
@@ -36,7 +36,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly PrefabImportCache myPrefabImportCache;
         private readonly IShellLocks myShellLocks;
-        private readonly ILogger myLogger;
         private readonly List<IUnityAssetDataElementContainer> myOrderedContainers;
         private readonly List<IUnityAssetDataElementContainer> myOrderedIncreasingContainers;
         private readonly ConcurrentDictionary<IPsiSourceFile, (UnityAssetData, int)> myDocumentNumber = new ConcurrentDictionary<IPsiSourceFile, (UnityAssetData, int)>();
@@ -44,13 +43,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         public UnityAssetsCache(Lifetime lifetime, DocumentToProjectFileMappingStorage documentToProjectFileMappingStorage, AssetIndexingSupport assetIndexingSupport,
             PrefabImportCache prefabImportCache, IPersistentIndexManager persistentIndexManager, IEnumerable<IUnityAssetDataElementContainer> unityAssetDataElementContainers,
             IShellLocks shellLocks, ILogger logger)
-            : base(lifetime, persistentIndexManager, new UniversalMarshaller<UnityAssetData>(UnityAssetData.ReadDelegate, UnityAssetData.WriteDelegate))
+            : base(lifetime, persistentIndexManager, new UniversalMarshaller<UnityAssetData>(UnityAssetData.ReadDelegate, UnityAssetData.WriteDelegate), logger)
         {
             myDocumentToProjectFileMappingStorage = documentToProjectFileMappingStorage;
             myAssetIndexingSupport = assetIndexingSupport;
             myPrefabImportCache = prefabImportCache;
             myShellLocks = shellLocks;
-            myLogger = logger;
             myOrderedContainers = unityAssetDataElementContainers.OrderByDescending(t => t.Order).ToList();
             myOrderedIncreasingContainers = myOrderedContainers.OrderBy(t => t.Order).ToList();
 
@@ -77,7 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             if (!location.IsAnim() && !location.IsController())
                 return true;
             
-            return myLogger.CatchSilent(() =>
+            return Logger.CatchSilent(() =>
             {
                 return location.GetFileLength() <= AnimMaxSize;
             });
@@ -104,7 +102,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                     }
                     catch (Exception e)
                     {
-                        myLogger.Error(e, "An error occurred while merging data in {0}", container.GetType().Name);
+                        Logger.Error(e, "An error occurred while merging data in {0}", container.GetType().Name);
                     }
                 }
             }
@@ -211,7 +209,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 }
                 catch (Exception e)
                 {
-                    myLogger.Warn(e, $"An error occured while building document: {unityAssetDataElementContainer.GetType().Name}");
+                    Logger.Warn(e, $"An error occured while building document: {unityAssetDataElementContainer.GetType().Name}");
                 }
             }
 
@@ -221,7 +219,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             }
         }
 
-        public override void DropData(IPsiSourceFile sourceFile, UnityAssetData data)
+        protected override void DropData(IPsiSourceFile sourceFile, UnityAssetData data)
         {
             myDocumentNumber.TryRemove(sourceFile, out _);
             myCurrentTimeStamp.TryRemove(sourceFile, out _);
@@ -240,7 +238,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                     }
                     catch (Exception e)
                     {
-                        myLogger.Error(e, "An error occurred while dropping data in {0}", container.GetType().Name);
+                        Logger.Error(e, "An error occurred while dropping data in {0}", container.GetType().Name);
                     }
                 }
             }
@@ -257,7 +255,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             base.OnDocumentChange(sourceFile, change);
         }
 
-        public override void InvalidateData()
+        protected override void InvalidateData()
         {
             foreach (var increasingContainer in myOrderedIncreasingContainers)
             {
