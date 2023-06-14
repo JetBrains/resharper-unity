@@ -404,6 +404,8 @@
     public static string UnityDots_AspectWrongFieldsType => ResourceManager.GetString("UnityDots_AspectWrongFieldsType");
     public static string UnityDots_AspectWrongFieldsType_WrapWith => ResourceManager.GetString("UnityDots_AspectWrongFieldsType_WrapWith");
     public static string UnityDots_DotsPartialClassesQuickFix_Add_Partial_Readonly => ResourceManager.GetString("UnityDots_DotsPartialClassesQuickFix_Add_Partial_Readonly");
+    public static string UnityDots_AddFieldToExistingBakerAndAuthoring_Description => ResourceManager.GetString("UnityDots_AddFieldToExistingBakerAndAuthoring_Description");
+    public static string UnityDots_AddFieldToExistingBakerAndAuthoring_Text => ResourceManager.GetString("UnityDots_AddFieldToExistingBakerAndAuthoring_Text");
     public static string UnityEditorFolder_Text => ResourceManager.GetString("UnityEditorFolder_Text");
     public static string UnityEventFunctionInheritanceMarkOnGutter_KindName_Unity_event_function => ResourceManager.GetString("UnityEventFunctionInheritanceMarkOnGutter_KindName_Unity_event_function");
     public static string UnityFindUsagesProvider_GetNotFoundMessage__are_only_implicit_ => ResourceManager.GetString("UnityFindUsagesProvider_GetNotFoundMessage__are_only_implicit_");
