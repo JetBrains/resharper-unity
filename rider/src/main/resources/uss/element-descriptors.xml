@@ -470,6 +470,54 @@
     <inline id="dimension-auto" inline="yes"/>
   </property>
 
+  <!-- 2021.2 -->
+  <named-value id="timing-function" declared-in="0">
+    <group type="any">
+      <!--  https://github.com/hybloid/UnityCsReference/blob/4d031e55aeeb51d36bd94c7f20182978d77807e4/ModuleOverrides/com.unity.ui/Core/Style/Generated/StylePropertyCache.cs#L121   -->
+      <name value="ease"/>
+      <name value="ease-in"/>
+      <name value="ease-out"/>
+      <name value="ease-in-out"/>
+      <name value="linear"/>
+      <name value="ease-in-sine" />
+      <name value="ease-out-sine" />
+      <name value="ease-in-out-sine" />
+      <name value="ease-in-cubic" />
+      <name value="ease-out-cubic" />
+      <name value="ease-in-out-cubic" />
+      <name value="ease-in-circ" />
+      <name value="ease-out-circ" />
+      <name value="ease-in-out-circ" />
+      <name value="ease-in-elastic" />
+      <name value="ease-out-elastic" />
+      <name value="ease-in-out-elastic" />
+      <name value="ease-in-back" />
+      <name value="ease-out-back" />
+      <name value="ease-in-out-back" />
+      <name value="ease-in-bounce" />
+      <name value="ease-out-bounce" />
+      <name value="ease-in-out-bounce" />
+    </group>
+  </named-value>
+  <property id="transition-timing-function" declared-in="4.0" url="https://docs.unity3d.com/Manual/UIE-Transitions.html"
+            initial="ease" >
+    <description><![CDATA[
+            Specifies how the property moves between values over time. Defaults to ease.
+      ]]></description>
+
+    <group>
+      <group type="any">
+        <inline id="timing-function" inline="yes"/>
+      </group>
+      <group min="0" max="-1">
+        <text value=","/>
+        <group type="any">
+          <inline id="timing-function" inline="yes"/>
+        </group>
+      </group>
+    </group>
+  </property>
+
   <!-- Functions -->
   <function id="rgb" declared-in="0">
     <group>
