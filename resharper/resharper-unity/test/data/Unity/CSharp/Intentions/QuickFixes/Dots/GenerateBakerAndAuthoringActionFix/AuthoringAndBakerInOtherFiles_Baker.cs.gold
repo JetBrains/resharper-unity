@@ -10,7 +10,6 @@ namespace ComponentsAndTags
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
 
-            float f = 1.0f + 41.0f //existing code must be saved
             AddComponent(entity,
               new GraveyardProperties
                 {
@@ -18,6 +17,8 @@ namespace ComponentsAndTags
                   TombstonePrefab = GetEntity(authoring.TombstonePrefab, TransformUsageFlags.Dynamic),
                   NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn
                 });
+
+            float f = 1.0f + 41.0f //existing code must be saved
         }
     }
 }

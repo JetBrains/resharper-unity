@@ -2,6 +2,7 @@
 // ${SELECT0:FieldDimensions:Unity.Mathematics.float2}
 // ${SELECT1:TombstonePrefab:Unity.Entities.Entity}
 // ${GLOBAL0:SelectedBaker=ComponentsAndTags.GraveyardPropertiesAuthoring+GraveyardPropertiesBaker}
+// ${GLOBAL1:OverrideComponentInBaker=False}
 
 using Unity.Entities;
 using Unity.Mathematics;
@@ -29,7 +30,7 @@ namespace ComponentsAndTags
 
                 AddComponent(entity, new GraveyardProperties
                 {
-                    NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn,
+                    NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn + 42,
                 });
             }
         }

@@ -375,6 +375,7 @@
     public static string UnityDots_AddComponentLookupScoped_Update_Text => ResourceManager.GetString("UnityDots_AddComponentLookupScoped_Update_Text");
     public static string UnityDots_ComponentLookupFieldMustBeUpdated => ResourceManager.GetString("UnityDots_ComponentLookupFieldMustBeUpdated");
     public static string UnityDots_CurrentComponentLookupMustBeUpdated => ResourceManager.GetString("UnityDots_CurrentComponentLookupMustBeUpdated");
+    public static string UnityDots_GenerateBakerAndAuthoring_Override_Component_In_Baker => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Override_Component_In_Baker");
     public static string UnityDots_GenerateBakerAndAuthoring_Baker => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Baker");
     public static string UnityDots_GenerateBakerAndAuthoring_Description => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Description");
     public static string UnityDots_GenerateBakerAndAuthoring_Name => ResourceManager.GetString("UnityDots_GenerateBakerAndAuthoring_Name");

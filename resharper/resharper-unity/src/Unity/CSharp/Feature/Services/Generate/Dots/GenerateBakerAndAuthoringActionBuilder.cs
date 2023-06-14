@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Progress;
@@ -33,6 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
         public override double Priority => 100;
 
         private const string SelectedBaker = "SelectedBaker";
+        private const string OverrideComponentInBaker = "OverrideComponentInBaker";
 
         private readonly Dictionary<string, ITypeElement> myExistedBakers = new(100);
 
@@ -71,6 +73,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 myExistedBakers[name] = typeElement;
             }
 
+            var componentTypeName = context.ClassDeclaration.DeclaredName;
+            var overrideComponentInitialization = new GeneratorOptionBoolean(OverrideComponentInBaker,
+                string.Format(Strings.UnityDots_GenerateBakerAndAuthoring_Override_Component_In_Baker,
+                    componentTypeName), true);
+
+            options.Add(overrideComponentInitialization);
             var selector = new GeneratorOptionSelector(SelectedBaker, Strings.UnityDots_GenerateBakerAndAuthoring_Baker, availableBakers.ToIReadOnlyList())
                 { Value = Strings.UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested };
             
@@ -95,20 +103,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 return;
             
             var (selectedBaker, generateAsNested) = GetSelectedBaker(context);
+            
+            var overrideComponentInitialization = context.GetBooleanOption(OverrideComponentInBaker);
             var selectedAuthoringComponent = GetSelectedAuthoringComponent(selectedBaker);
 
-            var componentToAuthoringFieldNames = new Dictionary<string, string>(context.InputElements.Count);
             var componentStructDeclaration = context.ClassDeclaration;
             var factory = CSharpElementFactory.GetInstance(componentStructDeclaration);
-            
-            var authoringGenerationInfo = new AuthoringGenerationInfo(selectedAuthoringComponent, componentStructDeclaration, factory); 
-            var authoringGenerationResult = GenerateAuthoringDeclaration(context, authoringGenerationInfo, ref componentToAuthoringFieldNames);
-            
-            var bakerGenerationInfo = new BakerGenerationInfo(selectedBaker, generateAsNested, authoringGenerationResult, componentStructDeclaration, factory, context.PsiModule);
-            GenerateBaker(context, componentToAuthoringFieldNames, bakerGenerationInfo);
+
+            var selectedFields = context.InputElements.OfType<GeneratorDeclaredElement>().Select(e => e.DeclaredElement).OfType<IField>().ToList();
+            var psiModule = context.PsiModule;
+
+            var generationParameters = new GenerationParameters(selectedFields, componentStructDeclaration, selectedAuthoringComponent, selectedBaker, generateAsNested, factory, psiModule, overrideComponentInitialization);
+
+            GenerateBakerAndAuthoring(generationParameters);
         }
 
-        private static ITypeElement? GetSelectedAuthoringComponent(ITypeElement? selectedBaker)
+        public static void GenerateBakerAndAuthoring(GenerationParameters generationParameters)
+        {
+            var authoringGenerationInfo =
+                new AuthoringGenerationInfo(generationParameters.SelectedAuthoringComponent, generationParameters.ComponentStructDeclaration, generationParameters.Factory, generationParameters.PSIModule);
+            var authoringGenerationResult = GenerateAuthoringDeclaration(generationParameters.SelectedFields, authoringGenerationInfo,
+                out var componentToAuthoringFieldNames);
+            var bakerGenerationInfo = new BakerGenerationInfo(generationParameters.Baker, generationParameters.GenerateAsNested, authoringGenerationResult,
+                generationParameters.ComponentStructDeclaration, generationParameters.Factory, authoringGenerationInfo.PsiModule);
+            GenerateBaker(generationParameters.SelectedFields, componentToAuthoringFieldNames, bakerGenerationInfo, generationParameters.OverrideComponentInitialization);
+        }
+
+        public static ITypeElement? GetSelectedAuthoringComponent(ITypeElement? selectedBaker)
         {
             if (selectedBaker == null)
                 return null;
@@ -140,8 +161,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             var asNested = selectedBaker.Equals(Strings.UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested);
             return (null, asNested);
         }
-        
-           private static ITreeNode GetOrCreateGetEntityExpression(ICSharpFunctionDeclaration bakeMethodExpression, CSharpElementFactory factory)
+
+        private static ITreeNode GetOrCreateGetEntityExpression(ICSharpFunctionDeclaration bakeMethodExpression, CSharpElementFactory factory)
         {
             var entityNode = TryGetExistingEntityCreationNode(bakeMethodExpression);
             if (entityNode != null) 
@@ -204,7 +225,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             return variableNameNode;
         }
 
-        private static void GenerateBaker(IGeneratorContext context, Dictionary<string, string> componentToAuthoringFieldNames, BakerGenerationInfo generationInfo)
+        private static void GenerateBaker(List<IField> selectedFields,
+            Dictionary<string, string> componentToAuthoringFieldNames, BakerGenerationInfo generationInfo,
+            bool overrideComponentInitialization)
         {
             var bakerClassDeclarations = generationInfo.ExistedBaker != null 
                 ? generationInfo.ExistedBaker.GetDeclarations().OfType<IClassLikeDeclaration>().ToArray()
@@ -212,7 +235,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             
             var bakeMethodExpression = GetOrCreateBakeMethodExpression(bakerClassDeclarations, generationInfo.Factory, generationInfo, out var authoringParameterName);
             var entityExpression = GetOrCreateGetEntityExpression(bakeMethodExpression, generationInfo.Factory);
-            var isEmptyComponent = context.InputElements.Count == 0;
+            var isEmptyComponent = selectedFields.Count == 0;
             if (isEmptyComponent)
             {
                 CreateEmptyAddComponentExpression(generationInfo.Factory, bakeMethodExpression,
@@ -224,16 +247,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
                 var creationExpressionInitializer = GetOrCreateInitializer(componentCreationExpression, generationInfo.Factory);
 
-                //remove all member initialization
+                var existingFieldsInitializers = new HashSet<string>();
                 foreach (var initializer in creationExpressionInitializer.MemberInitializers)
-                    creationExpressionInitializer.RemoveMemberInitializer(initializer);
-        
-                var selectedGeneratorElements = context.InputElements.OfType<GeneratorDeclaredElement>();
-                foreach (var generatorElement in selectedGeneratorElements)
                 {
-                    if (generatorElement.DeclaredElement is not IField selectedField)
+                    if (overrideComponentInitialization) //remove all member initialization
+                        creationExpressionInitializer.RemoveMemberInitializer(initializer);
+                    else if (initializer is INamedMemberInitializer namedMemberInitializer)
+                        existingFieldsInitializers.Add(namedMemberInitializer.MemberName);
+                }
+        
+                // var selectedGeneratorElements = context.InputElements.OfType<GeneratorDeclaredElement>();
+                foreach (var selectedField in selectedFields)
+                {
+                    if(existingFieldsInitializers.Contains(selectedField.ShortName))
                         continue;
-
+                    
                     var fieldTypeName = selectedField.Type.GetTypeElement()?.GetClrName();
                     Assertion.AssertNotNull(fieldTypeName);
                     var fieldShortName = selectedField.ShortName;
@@ -379,7 +407,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
             if (isStructComponent
                 && bakeMethodExpression.Body.FindNextNode(node =>
-                        BakerGeneratorUtils.FindIBakerAddComponentExpression(node, componentDeclaredType))
+                        BakerGeneratorUtils.FindIBakerAddComponentExpression(node, componentDeclaredType, BakerGeneratorUtils.AddComponentMethodType.EmptyComponent))
                     is IInvocationExpression invocationExpression)
             {
                 var statement = invocationExpression.GetContainingStatement();
@@ -422,24 +450,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             return (IObjectInitializer)objectCreationExpression.SetInitializer(elementFactory.CreateObjectInitializer());
         }
 
-        private static AuthoringGenerationResult GenerateAuthoringDeclaration(
-            CSharpGeneratorContext context, AuthoringGenerationInfo authoringGenerationInfo,
-            ref Dictionary<string, string> componentToAuthoringFieldNames)
+        private static AuthoringGenerationResult GenerateAuthoringDeclaration(List<IField> selectedFields,
+            AuthoringGenerationInfo authoringGenerationInfo,
+            out Dictionary<string, string> componentToAuthoringFieldNames)
         {
-            var authoringDeclaration = GetOrCreateAuthoringClassDeclaration(context, authoringGenerationInfo);
+            var authoringDeclaration = GetOrCreateAuthoringClassDeclaration(authoringGenerationInfo.PsiModule, authoringGenerationInfo);
+            componentToAuthoringFieldNames = new Dictionary<string, string>(selectedFields.Count);
 
-            var selectedGeneratorElements = context.InputElements.OfType<GeneratorDeclaredElement>();
             var existingAuthoringFields =  authoringDeclaration.DeclaredElement.NotNull().Fields.ToDictionary(f => f.ShortName, f => f);
-            foreach (var generatorElement in selectedGeneratorElements)
+            foreach (var selectedField in selectedFields)
             {  
-                if (generatorElement.DeclaredElement is not IField selectedField) 
-                    continue;
-                
                 var fieldShortName = selectedField.ShortName;
 
                 var authoringFieldName = fieldShortName;
-                if (authoringFieldName.Equals("Value"))
-                    authoringFieldName = selectedField.ContainingType?.ShortName ?? fieldShortName;
+
+                const string valueName = "Value";
+                var containingTypeShortName = selectedField.ContainingType?.ShortName;
+                if (containingTypeShortName != null && authoringFieldName.Contains(valueName))
+                {
+                    if (authoringFieldName.Equals(valueName))
+                    {
+                        authoringFieldName = containingTypeShortName;
+                    }
+                    else if (!authoringFieldName.Contains(containingTypeShortName))
+                    {
+                        var lastIndexOf = authoringFieldName.LastIndexOf(valueName, StringComparison.Ordinal);
+                        authoringFieldName = authoringFieldName[..lastIndexOf] + containingTypeShortName +
+                                             authoringFieldName.Substring(lastIndexOf,
+                                                 authoringFieldName.Length - lastIndexOf);
+                    }
+                }
                 
                 var authoringFieldType = BakerGeneratorUtils.GetFieldType(selectedField, ComponentToAuthoringConverter.Convert);
                 Assertion.AssertNotNull(authoringFieldType);
@@ -471,7 +511,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             return new AuthoringGenerationResult(TypeFactory.CreateType(authoringDeclaration.DeclaredElement!), authoringDeclaration);
         }
 
-        private static IClassLikeDeclaration GetOrCreateAuthoringClassDeclaration(IGeneratorContext context, AuthoringGenerationInfo authoringGenerationInfo)
+        private static IClassLikeDeclaration GetOrCreateAuthoringClassDeclaration(IPsiModule psiModule, AuthoringGenerationInfo authoringGenerationInfo)
         {
             // public class ComponentNameAuthoring : MonoBehaviour {}
 
@@ -482,7 +522,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
             var authoringDeclaration = authoringGenerationInfo.Factory.CreateTypeMemberDeclaration("public class $0 : $1{}", authoringGenerationInfo.NewAuthoringUniqueName,
                 TypeFactory.CreateTypeByCLRName(KnownTypes.MonoBehaviour, NullableAnnotation.NotAnnotated,
-                    context.PsiModule)) as IClassDeclaration;
+                    psiModule)) as IClassDeclaration;
             Assertion.AssertNotNull(authoringDeclaration);
 
             return authoringGenerationInfo.InsertionHelper.Insert(authoringDeclaration);
@@ -539,6 +579,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             }
         }
 
+        public readonly struct GenerationParameters
+        {
+            public readonly List<IField> SelectedFields;
+            public readonly IClassLikeDeclaration ComponentStructDeclaration;
+            public readonly ITypeElement? SelectedAuthoringComponent;
+            public readonly ITypeElement? Baker;
+            public readonly bool GenerateAsNested;
+            public readonly CSharpElementFactory Factory;
+            public readonly IPsiModule PSIModule;
+            public readonly bool OverrideComponentInitialization;
+
+            public GenerationParameters(List<IField> selectedFields, IClassLikeDeclaration componentStructDeclaration,
+                ITypeElement? selectedAuthoringComponent, ITypeElement? baker, bool generateAsNested,
+                CSharpElementFactory factory, IPsiModule psiModule, bool overrideComponentInitialization)
+            {
+                SelectedFields = selectedFields;
+                ComponentStructDeclaration = componentStructDeclaration;
+                SelectedAuthoringComponent = selectedAuthoringComponent;
+                Baker = baker;
+                GenerateAsNested = generateAsNested;
+                Factory = factory;
+                PSIModule = psiModule;
+                OverrideComponentInitialization = overrideComponentInitialization;
+            }
+        }
+
         private interface IBakerInsertionHelper
         {
             IClassLikeDeclaration Insert(IClassLikeDeclaration bakerDeclaration);
@@ -583,8 +649,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             
             public readonly string NewAuthoringUniqueName;
             public readonly CSharpElementFactory Factory;
-
-            public AuthoringGenerationInfo(ITypeElement? existingAuthoring, IClassLikeDeclaration componentStructDeclaration, CSharpElementFactory factory)
+            public readonly IPsiModule PsiModule;
+            
+            public AuthoringGenerationInfo(ITypeElement? existingAuthoring, IClassLikeDeclaration componentStructDeclaration, CSharpElementFactory factory, IPsiModule psiModule)
             {
                 ExistingAuthoring = existingAuthoring;
                 InsertionHelper = new AuthoringInsertionHelper(componentStructDeclaration);
@@ -592,7 +659,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                     ? NamingUtil.GetUniqueName(componentStructDeclaration, $"{componentStructDeclaration.DeclaredName}Authoring", NamedElementKinds.TypesAndNamespaces)
                     : string.Empty;
                 Factory = factory;
+                PsiModule = psiModule;
             }
+
+            
         }
 
         private readonly struct AuthoringGenerationResult

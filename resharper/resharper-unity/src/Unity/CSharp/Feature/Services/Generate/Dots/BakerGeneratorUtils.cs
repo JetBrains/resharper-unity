@@ -58,6 +58,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
     public static class BakerGeneratorUtils
     {
+        [Flags]
+        public enum AddComponentMethodType
+        {
+            EmptyComponent = 1 << 0,
+            ComponentWithInitialization = 1 << 1,
+            Both = EmptyComponent | ComponentWithInitialization
+        }
+        
         public static IType GetFieldType(ITypeOwner selectedField, Func<IClrTypeName, IPsiModule, ConversionData?> converter)
         {
             var fieldTypeName = selectedField.Type.GetTypeElement().NotNull().GetClrName();
@@ -74,7 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
         }
 
         public static TreeNodeActionType FindIBakerAddComponentExpression(ITreeNode node,
-            ITypeElement componentDeclaredType)
+            ITypeElement componentDeclaredType, AddComponentMethodType addComponentMethodType = AddComponentMethodType.Both)
         {
             if (node is IMethodDeclaration)
                 return TreeNodeActionType.IGNORE_SUBTREE;
@@ -97,7 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             var typeArguments = invocationExpression.TypeArguments;
 
             //if AddComponent(entity, new Component(){})
-            if (typeArguments.Count == 0)
+            if (typeArguments.Count == 0 &&  addComponentMethodType.HasFlag(AddComponentMethodType.ComponentWithInitialization))
             {
                 if (arguments.Count != 2)
                     return TreeNodeActionType.CONTINUE;
@@ -110,7 +118,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 
             
             //check if AddComponent<Component>(entity)
-            if (typeArguments.Count == 1 && componentDeclaredType.Equals(typeArguments[0].GetTypeElement()))
+            if (typeArguments.Count == 1 && addComponentMethodType.HasFlag(AddComponentMethodType.EmptyComponent) &&
+                componentDeclaredType.Equals(typeArguments[0].GetTypeElement()))
                 return TreeNodeActionType.ACCEPT;
             
             return TreeNodeActionType.CONTINUE;
