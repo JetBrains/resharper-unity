@@ -93,6 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 
             var psiServices = solution.GetPsiServices();
             var finder = psiServices.Finder;
+            progress.Start(3);
 
             using (var spi = new SubProgressIndicator(progress, 1))
             {
@@ -107,7 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 return null;
 
             IReference[]? componentReferences;
-            using (var spi = new SubProgressIndicator(progress, 2))
+            using (var spi = new SubProgressIndicator(progress, 1))
             {
                 componentReferences = finder.FindReferences(componentDeclaredElement, bakers.UnionSearchDomains(), spi);
             }
@@ -115,7 +116,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             if (componentReferences.IsEmpty())
                 return null;
 
-            using (var spi = new SubProgressIndicator(progress, 3))
+            using (var spi = new SubProgressIndicator(progress, 1))
             {
                 spi.Start(componentReferences.Length);
                 for (var index = 0; index < componentReferences.Length; index++)
