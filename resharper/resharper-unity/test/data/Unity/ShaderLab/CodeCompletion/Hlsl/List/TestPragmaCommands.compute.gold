@@ -1,0 +1,25 @@
+# 10 ITEMS #
+
++ disable_fastmath
+enable_d3d11_debug_symbols
+exclude_renderers
+hlslcc_bytecode_disassembly
+kernel
+multi_compile
+multi_compile_local
+only_renderers
+require
+warning
+# AUTOMATIC #
+# 10 ITEMS #
+
++ disable_fastmath
+enable_d3d11_debug_symbols
+exclude_renderers
+hlslcc_bytecode_disassembly
+kernel
+multi_compile
+multi_compile_local
+only_renderers
+require
+warning
