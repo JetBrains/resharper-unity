@@ -210,6 +210,7 @@
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.vcs.MetaFilesCheckinState"/>
 
     <rider.action.technical.support.info.provider implementation="com.jetbrains.rider.plugins.unity.actions.UnityVersionRiderTechnicalSupportInfoProvider" />
+    <rider.unityDetector implementation="com.jetbrains.rider.plugins.unity.UnityDetectorImpl"/>
   </extensions>
 
   <applicationListeners>
