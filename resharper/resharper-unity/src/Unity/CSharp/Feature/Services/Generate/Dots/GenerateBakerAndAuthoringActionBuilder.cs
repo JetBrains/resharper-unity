@@ -72,17 +72,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 availableBakers.Add(name);
                 myExistedBakers[name] = typeElement;
             }
-
+         
+            var selector = new GeneratorOptionSelector(SelectedBaker, Strings.UnityDots_GenerateBakerAndAuthoring_Baker, availableBakers.ToIReadOnlyList())
+                { Value = Strings.UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested };
+            
+            options.Add(selector);
             var componentTypeName = context.ClassDeclaration.DeclaredName;
             var overrideComponentInitialization = new GeneratorOptionBoolean(OverrideComponentInBaker,
                 string.Format(Strings.UnityDots_GenerateBakerAndAuthoring_Override_Component_In_Baker,
                     componentTypeName), false);
 
             options.Add(overrideComponentInitialization);
-            var selector = new GeneratorOptionSelector(SelectedBaker, Strings.UnityDots_GenerateBakerAndAuthoring_Baker, availableBakers.ToIReadOnlyList())
-                { Value = Strings.UnityDots_GenerateBakerAndAuthoring_NewBaker_As_Nested };
-            
-            options.Add(selector);
         }
 
         // Enables/disables the menu item
