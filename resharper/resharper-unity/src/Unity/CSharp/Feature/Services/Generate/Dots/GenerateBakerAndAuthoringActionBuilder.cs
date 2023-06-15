@@ -256,7 +256,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                         existingFieldsInitializers.Add(namedMemberInitializer.MemberName);
                 }
         
-                // var selectedGeneratorElements = context.InputElements.OfType<GeneratorDeclaredElement>();
                 foreach (var selectedField in selectedFields)
                 {
                     if(existingFieldsInitializers.Contains(selectedField.ShortName))
@@ -459,28 +458,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
             var existingAuthoringFields =  authoringDeclaration.DeclaredElement.NotNull().Fields.ToDictionary(f => f.ShortName, f => f);
             foreach (var selectedField in selectedFields)
-            {  
-                var fieldShortName = selectedField.ShortName;
+            {
+                var authoringFieldName = CalculateAuthoringFieldName(selectedField);
 
-                var authoringFieldName = fieldShortName;
-
-                const string valueName = "Value";
-                var containingTypeShortName = selectedField.ContainingType?.ShortName;
-                if (containingTypeShortName != null && authoringFieldName.Contains(valueName))
-                {
-                    if (authoringFieldName.Equals(valueName))
-                    {
-                        authoringFieldName = containingTypeShortName;
-                    }
-                    else if (!authoringFieldName.Contains(containingTypeShortName))
-                    {
-                        var lastIndexOf = authoringFieldName.LastIndexOf(valueName, StringComparison.Ordinal);
-                        authoringFieldName = authoringFieldName[..lastIndexOf] + containingTypeShortName +
-                                             authoringFieldName.Substring(lastIndexOf,
-                                                 authoringFieldName.Length - lastIndexOf);
-                    }
-                }
-                
                 var authoringFieldType = BakerGeneratorUtils.GetFieldType(selectedField, ComponentToAuthoringConverter.Convert);
                 Assertion.AssertNotNull(authoringFieldType);
 
@@ -489,7 +469,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                     //Same field with same type
                     if (existingField.Type.Equals(authoringFieldType))
                     {
-                        componentToAuthoringFieldNames.Add(fieldShortName, existingField.ShortName);
+                        componentToAuthoringFieldNames.Add(selectedField.ShortName, existingField.ShortName);
                         continue;
                     }
                     else
@@ -501,7 +481,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 //Add field to Authoring class
                 authoringFieldName = NamingUtil.GetUniqueName(authoringDeclaration.Body, authoringFieldName, NamedElementKinds.PublicFields, null,
                     element => existingAuthoringFields.ContainsKey(element.ShortName));
-                componentToAuthoringFieldNames.Add(fieldShortName, authoringFieldName);
+                componentToAuthoringFieldNames.Add(selectedField.ShortName, authoringFieldName);
                 
                 var fieldDeclaration = authoringGenerationInfo.Factory.CreateFieldDeclaration(authoringFieldType, authoringFieldName);
                 fieldDeclaration.SetAccessRights(AccessRights.PUBLIC);
@@ -509,6 +489,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             }
             
             return new AuthoringGenerationResult(TypeFactory.CreateType(authoringDeclaration.DeclaredElement!), authoringDeclaration);
+        }
+
+        private static string CalculateAuthoringFieldName(IField selectedField)
+        {
+            const string valueName = "Value";
+            var authoringFieldName = selectedField.ShortName;
+            var containingTypeShortName = selectedField.ContainingType?.ShortName;
+            
+            if (containingTypeShortName == null || !authoringFieldName.Contains(valueName)) 
+                return authoringFieldName;
+            
+            if (authoringFieldName.Equals(valueName))
+                return containingTypeShortName;
+
+            if (authoringFieldName.Contains(containingTypeShortName)) 
+                return authoringFieldName;
+            
+            var lastIndexOf = authoringFieldName.LastIndexOf(valueName, StringComparison.Ordinal);
+            return authoringFieldName[..lastIndexOf] + containingTypeShortName +
+                   authoringFieldName.Substring(lastIndexOf, authoringFieldName.Length - lastIndexOf);
         }
 
         private static IClassLikeDeclaration GetOrCreateAuthoringClassDeclaration(IPsiModule psiModule, AuthoringGenerationInfo authoringGenerationInfo)
