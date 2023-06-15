@@ -32,13 +32,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
             var result = new LocalList<KeywordCompletionResult>();
             foreach (var it in expectedNodeTypes)
             {
-                if (
-                    it is IShaderLabTokenNodeType { IsKeyword: true } tt
-                    // only offer ShaderLab command keywords if they are first on line, they are still valid for parser, but looks bad for code style
-                    // exclusion for ITexturePropertyValue block to let it one-line
-                    && (isFirstOnLine || errorElement.Parent is ITexturePropertyValue || !tt.IsCommandKeyword(errorElement))  
-                )
-                    result.Add(new KeywordCompletionResult(tt));
+                if (it is not IShaderLabTokenNodeType { IsKeyword: true } tt)
+                    continue;
+                var keywordType = tt.GetKeywordType(errorElement);
+                // only offer ShaderLab command keywords if they are first on line, they are still valid for parser, but looks bad for code style
+                // exclusion for ITexturePropertyValue block to let it one-line
+                if (isFirstOnLine || errorElement.Parent is ITexturePropertyValue || !keywordType.IsCommandKeyword())
+                    result.Add(CreateKeywordCompletionResult(tt, keywordType));
             }
             return result.ReadOnlyList();
         }
@@ -50,7 +50,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
             
             var keywords = GetKeywords(context);
             foreach (var keyword in keywords)
-                keywordsCollector.Add(keyword.Token, context.CompletionRanges, TailType.None);
+                keywordsCollector.Add(keyword.Token, context.CompletionRanges, keyword.TailType);
+        }
+
+        private KeywordCompletionResult CreateKeywordCompletionResult(IShaderLabTokenNodeType nodeType, ShaderLabKeywordType keywordType)
+        {
+            var tailType = keywordType switch
+            {
+                ShaderLabKeywordType.RegularCommand => ShaderLabTailType.Space,
+                ShaderLabKeywordType.BlockCommand when nodeType == ShaderLabTokenType.SET_TEXTURE_KEYWORD => ShaderLabTailType.Brackets,
+                ShaderLabKeywordType.BlockCommand when nodeType == ShaderLabTokenType.SHADER_KEYWORD => ShaderLabTailType.Space,
+                ShaderLabKeywordType.BlockCommand => ShaderLabTailType.Braces,
+                _ => TailType.None
+            };
+            return new KeywordCompletionResult(nodeType, tailType);
         }
         
         struct KeywordCompletionResult
@@ -58,8 +71,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
             public ITokenNodeType Token { get; }
             public TailType TailType { get; }
 
-            public KeywordCompletionResult(ITokenNodeType token) : this(token, TailType.None) { }
-            
             public KeywordCompletionResult(ITokenNodeType token, TailType tailType)
             {
                 Token = token;

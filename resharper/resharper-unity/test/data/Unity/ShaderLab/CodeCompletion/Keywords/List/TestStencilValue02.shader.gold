@@ -1,35 +1,35 @@
 ﻿# 15 ITEMS #
 
-+ Comp
-CompBack
-CompFront
-Fail
-FailBack
-FailFront
-Pass
-PassBack
-PassFront
-ReadMask
-Ref
-WriteMask
-ZFail
-ZFailBack
-ZFailFront
++ Comp(Space)
+CompBack(Space)
+CompFront(Space)
+Fail(Space)
+FailBack(Space)
+FailFront(Space)
+Pass(Braces)
+PassBack(Space)
+PassFront(Space)
+ReadMask(Space)
+Ref(Space)
+WriteMask(Space)
+ZFail(Space)
+ZFailBack(Space)
+ZFailFront(Space)
 # AUTOMATIC #
 # 15 ITEMS #
 
-+ Comp
-CompBack
-CompFront
-Fail
-FailBack
-FailFront
-Pass
-PassBack
-PassFront
-ReadMask
-Ref
-WriteMask
-ZFail
-ZFailBack
-ZFailFront
++ Comp(Space)
+CompBack(Space)
+CompFront(Space)
+Fail(Space)
+FailBack(Space)
+FailFront(Space)
+Pass(Braces)
+PassBack(Space)
+PassFront(Space)
+ReadMask(Space)
+Ref(Space)
+WriteMask(Space)
+ZFail(Space)
+ZFailBack(Space)
+ZFailFront(Space)

@@ -1,55 +1,55 @@
 ﻿# 25 ITEMS #
 
-+ AlphaTest
-AlphaToMask
-BindChannels
-Blend
-BlendOp
-Color
-ColorMask
-ColorMaterial
-Conservative
-Cull
-Fog
-GrabPass
-LOD
-Lighting
-Material
-Name
-Offset
-Pass
-SeparateSpecular
-Stencil
-Tags
-UsePass
-ZClip
-ZTest
-ZWrite
++ AlphaTest(Space)
+AlphaToMask(Space)
+BindChannels(Braces)
+Blend(Space)
+BlendOp(Space)
+Color(Space)
+ColorMask(Space)
+ColorMaterial(Space)
+Conservative(Space)
+Cull(Space)
+Fog(Braces)
+GrabPass(Braces)
+LOD(Space)
+Lighting(Space)
+Material(Braces)
+Name(Space)
+Offset(Space)
+Pass(Braces)
+SeparateSpecular(Space)
+Stencil(Braces)
+Tags(Braces)
+UsePass(Space)
+ZClip(Space)
+ZTest(Space)
+ZWrite(Space)
 # AUTOMATIC #
 # 25 ITEMS #
 
-+ AlphaTest
-AlphaToMask
-BindChannels
-Blend
-BlendOp
-Color
-ColorMask
-ColorMaterial
-Conservative
-Cull
-Fog
-GrabPass
-LOD
-Lighting
-Material
-Name
-Offset
-Pass
-SeparateSpecular
-Stencil
-Tags
-UsePass
-ZClip
-ZTest
-ZWrite
++ AlphaTest(Space)
+AlphaToMask(Space)
+BindChannels(Braces)
+Blend(Space)
+BlendOp(Space)
+Color(Space)
+ColorMask(Space)
+ColorMaterial(Space)
+Conservative(Space)
+Cull(Space)
+Fog(Braces)
+GrabPass(Braces)
+LOD(Space)
+Lighting(Space)
+Material(Braces)
+Name(Space)
+Offset(Space)
+Pass(Braces)
+SeparateSpecular(Space)
+Stencil(Braces)
+Tags(Braces)
+UsePass(Space)
+ZClip(Space)
+ZTest(Space)
+ZWrite(Space)
