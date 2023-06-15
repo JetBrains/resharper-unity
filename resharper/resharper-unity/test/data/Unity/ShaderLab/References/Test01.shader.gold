@@ -1,0 +1,103 @@
+﻿Shader "ABC"
+{
+    SubShader
+    {
+        Pass
+        {
+CGPROGRAM
+#define VEC(X)           \
+    |X|(0) ## 1 my ## |X|(1) ## 1; \
+    |X|(2) ## 2 my ## |X|(3) ## 2; \
+    |X|(4) ## 3 my ## |X|(5) ## 3; \
+    |X|(6) ## 4 my ## |X|(7) ## 4;
+
+#define MATRIX(X)           \
+    |X|(8) ## 1x1 my ## |X|(9) ## 11; \
+    |X|(10) ## 1x2 my ## |X|(11) ## 12; \
+    |X|(12) ## 1x3 my ## |X|(13) ## 13; \
+    |X|(14) ## 1x4 my ## |X|(15) ## 14; \
+                            \
+    |X|(16) ## 2x1 my ## |X|(17) ## 21; \
+    |X|(18) ## 2x2 my ## |X|(19) ## 22; \
+    |X|(20) ## 2x3 my ## |X|(21) ## 23; \
+    |X|(22) ## 2x4 my ## |X|(23) ## 24; \
+                            \
+    |X|(24) ## 3x1 my ## |X|(25) ## 31; \
+    |X|(26) ## 3x2 my ## |X|(27) ## 32; \
+    |X|(28) ## 3x3 my ## |X|(29) ## 33; \
+    |X|(30) ## 3x4 my ## |X|(31) ## 34; \
+                            \
+    |X|(32) ## 4x1 my ## |X|(33) ## 41; \
+    |X|(34) ## 4x2 my ## |X|(35) ## 42; \
+    |X|(36) ## 4x3 my ## |X|(37) ## 43; \
+    |X|(38) ## 4x4 my ## |X|(39) ## 44;
+
+|VEC|(40)(fixed)||(41)||(42)||(43)
+|MATRIX|(44)(fixed)||(45)||(46)||(47)||(48)||(49)||(50)||(51)||(52)||(53)||(54)||(55)||(56)||(57)||(58)||(59)||(60)
+ENDCG
+        }
+    }
+}
+
+------------------------------------------------
+0: result=OK declaredElem=Name:X, macro:13
+1: result=OK declaredElem=Name:X, macro:13
+2: result=OK declaredElem=Name:X, macro:13
+3: result=OK declaredElem=Name:X, macro:13
+4: result=OK declaredElem=Name:X, macro:13
+5: result=OK declaredElem=Name:X, macro:13
+6: result=OK declaredElem=Name:X, macro:13
+7: result=OK declaredElem=Name:X, macro:13
+8: result=OK declaredElem=Name:X, macro:150
+9: result=OK declaredElem=Name:X, macro:150
+10: result=OK declaredElem=Name:X, macro:150
+11: result=OK declaredElem=Name:X, macro:150
+12: result=OK declaredElem=Name:X, macro:150
+13: result=OK declaredElem=Name:X, macro:150
+14: result=OK declaredElem=Name:X, macro:150
+15: result=OK declaredElem=Name:X, macro:150
+16: result=OK declaredElem=Name:X, macro:150
+17: result=OK declaredElem=Name:X, macro:150
+18: result=OK declaredElem=Name:X, macro:150
+19: result=OK declaredElem=Name:X, macro:150
+20: result=OK declaredElem=Name:X, macro:150
+21: result=OK declaredElem=Name:X, macro:150
+22: result=OK declaredElem=Name:X, macro:150
+23: result=OK declaredElem=Name:X, macro:150
+24: result=OK declaredElem=Name:X, macro:150
+25: result=OK declaredElem=Name:X, macro:150
+26: result=OK declaredElem=Name:X, macro:150
+27: result=OK declaredElem=Name:X, macro:150
+28: result=OK declaredElem=Name:X, macro:150
+29: result=OK declaredElem=Name:X, macro:150
+30: result=OK declaredElem=Name:X, macro:150
+31: result=OK declaredElem=Name:X, macro:150
+32: result=OK declaredElem=Name:X, macro:150
+33: result=OK declaredElem=Name:X, macro:150
+34: result=OK declaredElem=Name:X, macro:150
+35: result=OK declaredElem=Name:X, macro:150
+36: result=OK declaredElem=Name:X, macro:150
+37: result=OK declaredElem=Name:X, macro:150
+38: result=OK declaredElem=Name:X, macro:150
+39: result=OK declaredElem=Name:X, macro:150
+40: result=OK declaredElem=Name:VEC, macro:9
+41: result=OK declaredElem=Name:fixed2, macro:100
+42: result=OK declaredElem=Name:fixed3, macro:121
+43: result=OK declaredElem=Name:fixed4, macro:142
+44: result=OK declaredElem=Name:MATRIX, macro:143
+45: result=OK declaredElem=Name:fixed1x1, macro:176
+46: result=OK declaredElem=Name:fixed1x2, macro:201
+47: result=OK declaredElem=Name:fixed1x3, macro:226
+48: result=OK declaredElem=Name:fixed1x4, macro:251
+49: result=OK declaredElem=Name:fixed2x1, macro:277
+50: result=OK declaredElem=Name:fixed2x2, macro:302
+51: result=OK declaredElem=Name:fixed2x3, macro:327
+52: result=OK declaredElem=Name:fixed2x4, macro:352
+53: result=OK declaredElem=Name:fixed3x1, macro:378
+54: result=OK declaredElem=Name:fixed3x2, macro:403
+55: result=OK declaredElem=Name:fixed3x3, macro:428
+56: result=OK declaredElem=Name:fixed3x4, macro:453
+57: result=OK declaredElem=Name:fixed4x1, macro:479
+58: result=OK declaredElem=Name:fixed4x2, macro:504
+59: result=OK declaredElem=Name:fixed4x3, macro:529
+60: result=OK declaredElem=Name:fixed4x4, macro:554

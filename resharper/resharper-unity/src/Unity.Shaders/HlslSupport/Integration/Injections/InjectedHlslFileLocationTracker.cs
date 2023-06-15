@@ -7,7 +7,6 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Injections;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
-using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
@@ -23,17 +22,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
     public class InjectedHlslFileLocationTracker : CppFileLocationTrackerBase<InjectedHlslLocationInfo>
     {
         private readonly ISolution mySolution;
-        private readonly UnityVersion myUnityVersion;
         private readonly CppExternalModule myCppExternalModule;
+        private readonly CgIncludeDirectoryProvider myCgIncludeDirectoryProvider;
 
-        public InjectedHlslFileLocationTracker(Lifetime lifetime, ISolution solution, UnityVersion unityVersion,
-            IPersistentIndexManager persistentIndexManager, CppExternalModule cppExternalModule)
+        public InjectedHlslFileLocationTracker(Lifetime lifetime, ISolution solution,
+            IPersistentIndexManager persistentIndexManager, CppExternalModule cppExternalModule, CgIncludeDirectoryProvider cgIncludeDirectoryProvider)
             : base(
                 lifetime, solution, persistentIndexManager, InjectedHlslLocationInfo.Read, InjectedHlslLocationInfo.Write)
         {
             mySolution = solution;
-            myUnityVersion = unityVersion;
             myCppExternalModule = cppExternalModule;
+            myCgIncludeDirectoryProvider = cgIncludeDirectoryProvider;
         }
 
         protected override CppFileLocation GetCppFileLocation(InjectedHlslLocationInfo t)
@@ -156,6 +155,53 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
             return definedMacroses;
         }
 
+        private void AddImplicitCgIncludes(List<CppFileLocation> includeList, bool isSurface)
+        {
+            var cgIncludeFolder = myCgIncludeDirectoryProvider.GetCgIncludeFolderPath();
+            if (cgIncludeFolder.ExistsDirectory)
+            {
+                var hlslSupport = cgIncludeFolder.Combine("HLSLSupport.cginc");
+                if (hlslSupport.ExistsFile)
+                {
+                    includeList.Add(new CppFileLocation(myCppExternalModule, hlslSupport));
+                }
+
+                var variables = cgIncludeFolder.Combine("UnityShaderVariables.cginc");
+                if (variables.ExistsFile)
+                {
+                    includeList.Add(new CppFileLocation(myCppExternalModule, variables));
+                }
+
+                var unityCG = cgIncludeFolder.Combine("UnityCG.cginc");
+                if (unityCG.ExistsFile)
+                {
+                    includeList.Add(new CppFileLocation(myCppExternalModule, unityCG));
+                }
+
+                // from surface shader generated code
+                if (isSurface)
+                {
+                    var lighting = cgIncludeFolder.Combine("Lighting.cginc");
+                    if (lighting.ExistsFile)
+                    {
+                        includeList.Add(new CppFileLocation(myCppExternalModule, lighting));
+                    }
+
+                    var unityPbsLighting = cgIncludeFolder.Combine("UnityPBSLighting.cginc");
+                    if (unityPbsLighting.ExistsFile)
+                    {
+                        includeList.Add(new CppFileLocation(myCppExternalModule, unityPbsLighting));
+                    }
+
+                    var autoLight = cgIncludeFolder.Combine("AutoLight.cginc");
+                    if (autoLight.ExistsFile)
+                    {
+                        includeList.Add(new CppFileLocation(myCppExternalModule, autoLight));
+                    }
+                }
+            }
+        }
+
         private IEnumerable<CppFileLocation> GetIncludes(IPsiSourceFile sourceFile, InjectedHlslProgramType type, bool isSurface)
         {
             var includeType = GetIncludeProgramType(type);
@@ -172,52 +218,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
                 }
             }
 
-            var cgIncludeFolder = CgIncludeDirectoryTracker.GetCgIncludeFolderPath(myUnityVersion);
-            if (cgIncludeFolder.ExistsDirectory)
-            {
-                if (type == InjectedHlslProgramType.CGProgram)
-                {
-                    var hlslSupport = cgIncludeFolder.Combine("HLSLSupport.cginc");
-                    if (hlslSupport.ExistsFile)
-                    {
-                        includeList.Add(new CppFileLocation(myCppExternalModule, hlslSupport));
-                    }
-
-                    var variables = cgIncludeFolder.Combine("UnityShaderVariables.cginc");
-                    if (variables.ExistsFile)
-                    {
-                        includeList.Add(new CppFileLocation(myCppExternalModule, variables));
-                    }
-
-                    var unityCG = cgIncludeFolder.Combine("UnityCG.cginc");
-                    if (unityCG.ExistsFile)
-                    {
-                        includeList.Add(new CppFileLocation(myCppExternalModule, unityCG));
-                    }
-
-                    // from surface shader generated code
-                    if (isSurface)
-                    {
-                        var lighting = cgIncludeFolder.Combine("Lighting.cginc");
-                        if (lighting.ExistsFile)
-                        {
-                            includeList.Add(new CppFileLocation(myCppExternalModule, lighting));
-                        }
-
-                        var unityPbsLighting = cgIncludeFolder.Combine("UnityPBSLighting.cginc");
-                        if (unityPbsLighting.ExistsFile)
-                        {
-                            includeList.Add(new CppFileLocation(myCppExternalModule, unityPbsLighting));
-                        }
-
-                        var autoLight = cgIncludeFolder.Combine("AutoLight.cginc");
-                        if (autoLight.ExistsFile)
-                        {
-                            includeList.Add(new CppFileLocation(myCppExternalModule, autoLight));
-                        }
-                    }
-                }
-            }
+            if (type == InjectedHlslProgramType.CGProgram)
+                AddImplicitCgIncludes(includeList, isSurface);
 
             return includeList;
         }

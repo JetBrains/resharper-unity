@@ -1,0 +1,4 @@
+﻿#pragma kernel zzz
+
+int zzz()
+{}

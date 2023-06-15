@@ -1,0 +1,4 @@
+#pragma kernel main
+
+int m{caret}ain()
+{}

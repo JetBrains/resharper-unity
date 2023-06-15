@@ -1,0 +1,4 @@
+﻿#pragma hull zzz
+
+int zzz()
+{}
