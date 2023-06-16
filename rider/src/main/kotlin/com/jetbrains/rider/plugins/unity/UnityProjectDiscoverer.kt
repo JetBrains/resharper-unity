@@ -11,6 +11,14 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.solutionFile
+import com.jetbrains.rider.unity.UnityDetector
+
+class UnityDetectorImpl(private val project: Project) : UnityDetector {
+    override fun isUnitySolution(): Boolean
+    {
+        return project.service<UnityProjectDiscoverer>().isUnityProject
+    }
+}
 
 class UnityProjectDiscoverer(private val project: Project) : LifetimedService() {
     // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
