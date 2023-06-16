@@ -261,14 +261,16 @@ namespace ApiParser
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/96187e5fc1a23847206bf66b6f2d0e4a1ad43301/Editor/Mono/AssetPostprocessor.cs#L96
                 var description = Strings.AssetPostprocessor_OnGeneratedCSProjectFiles_Description;
                 eventFunction = new UnityApiEventFunction("OnGeneratedCSProjectFiles",
-                    true, false, ApiType.Void, apiVersion, description, undocumented: true);
+                    true, false, ApiType.Void, apiVersion, undocumented: true);
+                eventFunction.AddDescription(description, RiderSupportedLanguages.iv);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 // Technically, return type is optional
                 // https://github.com/Unity-Technologies/UnityCsReference/blob/96187e5fc1a23847206bf66b6f2d0e4a1ad43301/Editor/Mono/AssetPostprocessor.cs#L138
                 description = Strings.AssetPostprocessor_OnPreGeneratingCSProjectFiles_Description;
                 eventFunction = new UnityApiEventFunction("OnPreGeneratingCSProjectFiles",
-                    true, false, ApiType.Bool, apiVersion, description, undocumented: true);
+                    true, false, ApiType.Bool, apiVersion, undocumented: true);
+                eventFunction.AddDescription(description, RiderSupportedLanguages.iv);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 // These two were added in 2018.1, as verified on GitHub
@@ -280,18 +282,20 @@ namespace ApiParser
                     // https://github.com/Unity-Technologies/UnityCsReference/blob/96187e5fc1a23847206bf66b6f2d0e4a1ad43301/Editor/Mono/AssetPostprocessor.cs#L123
                     description = Strings.AssetPostprocessor_OnGeneratedCSProject_Description;
                     eventFunction = new UnityApiEventFunction("OnGeneratedCSProject",
-                        true, false, ApiType.String, apiVersion, description, undocumented: true);
+                        true, false, ApiType.String, apiVersion, undocumented: true);
                     eventFunction.AddParameter("path", ApiType.String);
                     eventFunction.AddParameter("content", ApiType.String);
+                    eventFunction.AddDescription(description, RiderSupportedLanguages.iv);
                     type.MergeEventFunction(eventFunction, apiVersion);
 
                     // Technically, return type is optional
                     // https://github.com/Unity-Technologies/UnityCsReference/blob/96187e5fc1a23847206bf66b6f2d0e4a1ad43301/Editor/Mono/AssetPostprocessor.cs#L108
                     description = Strings.AssetPostprocessor_OnGeneratedSlnSolution_Description;
                     eventFunction = new UnityApiEventFunction("OnGeneratedSlnSolution",
-                        true, false, ApiType.String, apiVersion, description, undocumented: true);
+                        true, false, ApiType.String, apiVersion, undocumented: true);
                     eventFunction.AddParameter("path", ApiType.String);
                     eventFunction.AddParameter("content", ApiType.String);
+                    eventFunction.AddDescription(description, RiderSupportedLanguages.iv);
                     type.MergeEventFunction(eventFunction, apiVersion);
                 }
 
@@ -330,7 +334,8 @@ namespace ApiParser
             {
                 var description = Strings.MonoBehaviour_OnRectTransformDimensionsChange_Description;
                 var eventFunction = new UnityApiEventFunction("OnRectTransformDimensionsChange",
-                    false, false, ApiType.Void, apiVersion, description, undocumented: true);
+                    false, false, ApiType.Void, apiVersion, undocumented: true);
+                eventFunction.AddDescription(description, RiderSupportedLanguages.iv);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
                 eventFunction = new UnityApiEventFunction("OnBeforeTransformParentChanged",

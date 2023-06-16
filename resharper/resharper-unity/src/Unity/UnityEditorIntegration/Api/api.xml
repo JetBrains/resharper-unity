@@ -529,6 +529,9 @@
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnGeneratedCSProject" static="True" minimumVersion="2018.1" undocumented="True">
+      <descriptions>
+        <description text="This callback is used by C# code editors to modify the .csproj files." langCode="iv" />
+      </descriptions>
       <parameters>
         <parameter type="System.String" array="False" name="path" />
         <parameter type="System.String" array="False" name="content" />
@@ -536,9 +539,15 @@
       <returns type="System.String" array="False" />
     </message>
     <message name="OnGeneratedCSProjectFiles" static="True" undocumented="True">
+      <descriptions>
+        <description text="This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or just completely replace them). Hopefully we'll never need this." langCode="iv" />
+      </descriptions>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnGeneratedSlnSolution" static="True" minimumVersion="2018.1" undocumented="True">
+      <descriptions>
+        <description text="This callback is used by C# code editors to modify the .sln file" langCode="iv" />
+      </descriptions>
       <parameters>
         <parameter type="System.String" array="False" name="path" />
         <parameter type="System.String" array="False" name="content" />
@@ -546,6 +555,9 @@
       <returns type="System.String" array="False" />
     </message>
     <message name="OnPreGeneratingCSProjectFiles" static="True" undocumented="True">
+      <descriptions>
+        <description text="This callback is used by UnityVS to take over project generation from Unity" langCode="iv" />
+      </descriptions>
       <returns type="System.Boolean" array="False" />
     </message>
     <message name="OnPreprocessAssembly" static="False" undocumented="True">
@@ -1924,6 +1936,9 @@
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnRectTransformDimensionsChange" static="False" undocumented="True">
+      <descriptions>
+        <description text="This callback is called if an associated RectTransform has its dimensions changed." langCode="iv" />
+      </descriptions>
       <returns type="System.Void" array="False" />
     </message>
   </type>
