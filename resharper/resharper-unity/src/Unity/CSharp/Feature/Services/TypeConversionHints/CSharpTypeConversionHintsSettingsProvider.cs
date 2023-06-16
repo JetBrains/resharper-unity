@@ -3,7 +3,7 @@ using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CSharp.TypeConversionHints;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
-using JetBrains.TextControl.DocumentMarkup.IntraTextAdornments;
+using JetBrains.TextControl.DocumentMarkup.Adornments;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.TypeConversionHints
@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.TypeConversi
             // is to see when an implicit conversion is happening between Vector2 and Vector3, as this is a lossy conversion
             // This can still be overridden at the solution or personal level
             var entry = mySettingsSchema.GetScalarEntry((CSharpTypeConversionHintsOptions o) => o.ShowTypeConversionHints);
-            ScalarSettingsStoreAccess.SetValue(mountPoint, entry, null, InlayHintsMode.Always, true, null, myLogger);
+            ScalarSettingsStoreAccess.SetValue(mountPoint, entry, null, PushToHintMode.Always, true, null, myLogger);
 
             // Show as a hint, not as an icon
             entry = mySettingsSchema.GetScalarEntry((CSharpTypeConversionHintsOptions o) =>
