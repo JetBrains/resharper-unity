@@ -1099,6 +1099,12 @@
     <data name="UnityDots_AddFieldToExistingBakerAndAuthoring_Text" xml:space="preserve">
         <value>Add '{0}' to existing Baker</value>
     </data>
+    <data name="UnityDots_AddFieldToExistingBakerAndAuthoring_NoBakersFound" xml:space="preserve">
+        <value>No Bakers found in the project</value>
+    </data>
+    <data name="UnityDots_AddFieldToExistingBakerAndAuthoring_NoBakersForComponent" xml:space="preserve">
+        <value>No Bakers found for '{0}' component</value>
+    </data>
     <data name="UnityEditorFolder_Text" xml:space="preserve">
         <value>Unity Editor folder</value>
     </data>

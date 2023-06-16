@@ -243,24 +243,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             }
             else
             {
-                var componentCreationExpression = GetOrCreateComponentCreationExpression(generationInfo.Factory, bakeMethodExpression, generationInfo.ComponentStructDeclaration.DeclaredElement!, entityExpression);
+                var hasModifications = false;
+                var componentCreationExpression = GetOrCreateComponentCreationExpression(generationInfo.Factory, bakeMethodExpression, generationInfo.ComponentStructDeclaration.DeclaredElement!, entityExpression, ref hasModifications);
 
-                var creationExpressionInitializer = GetOrCreateInitializer(componentCreationExpression, generationInfo.Factory);
+                var creationExpressionInitializer = GetOrCreateInitializer(componentCreationExpression, generationInfo.Factory, ref hasModifications);
 
                 var existingFieldsInitializers = new HashSet<string>();
                 foreach (var initializer in creationExpressionInitializer.MemberInitializers)
                 {
                     if (overrideComponentInitialization) //remove all member initialization
+                    {
                         creationExpressionInitializer.RemoveMemberInitializer(initializer);
+                        hasModifications = true;
+                    }
                     else if (initializer is INamedMemberInitializer namedMemberInitializer)
                         existingFieldsInitializers.Add(namedMemberInitializer.MemberName);
                 }
-        
+
                 foreach (var selectedField in selectedFields)
                 {
                     if(existingFieldsInitializers.Contains(selectedField.ShortName))
                         continue;
-                    
+
+                    hasModifications = true;
                     var fieldTypeName = selectedField.Type.GetTypeElement()?.GetClrName();
                     Assertion.AssertNotNull(fieldTypeName);
                     var fieldShortName = selectedField.ShortName;
@@ -280,7 +285,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
 
                 componentCreationExpression.RemoveArgumentList();
                 
-                componentCreationExpression.FormatNode(CodeFormatProfile.STRICT);
+                if(hasModifications)
+                    componentCreationExpression.FormatNode(CodeFormatProfile.STRICT);
             }
         }
 
@@ -400,7 +406,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
         }
 
         private static IObjectCreationExpression GetOrCreateComponentCreationExpression(CSharpElementFactory factory,
-            IMethodDeclaration bakeMethodExpression, ITypeElement componentDeclaredType, ITreeNode entityExpression)
+            IMethodDeclaration bakeMethodExpression, ITypeElement componentDeclaredType, ITreeNode entityExpression,
+            ref bool hasModifications)
         {
             var isStructComponent = componentDeclaredType is IStruct;
 
@@ -412,6 +419,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 var statement = invocationExpression.GetContainingStatement();
                 var containingNode = statement?.GetContainingNode<IBlock>();
                 containingNode?.RemoveStatement(statement!);
+                hasModifications = true;
             }
             else
             {
@@ -421,6 +429,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 if (existingCreationExpression != null)
                     return (IObjectCreationExpression)existingCreationExpression;
             }
+
+            hasModifications = true;
 
             //AddComponent/AddComponentObject(new ComponentData{})
             var addComponentMethod = componentDeclaredType is IStruct ? 
@@ -440,12 +450,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             return componentCreationExpression!;
         }
 
-        private static IObjectInitializer GetOrCreateInitializer(IObjectCreationExpression objectCreationExpression, CSharpElementFactory elementFactory)
+        private static IObjectInitializer GetOrCreateInitializer(IObjectCreationExpression objectCreationExpression,
+            CSharpElementFactory elementFactory, ref bool hasModifications)
         {
             var initializer = objectCreationExpression.Initializer;
             if (initializer is IObjectInitializer objectInitializer) 
                 return objectInitializer;
 
+            hasModifications = true;
             return (IObjectInitializer)objectCreationExpression.SetInitializer(elementFactory.CreateObjectInitializer());
         }
 
@@ -496,19 +508,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             const string valueName = "Value";
             var authoringFieldName = selectedField.ShortName;
             var containingTypeShortName = selectedField.ContainingType?.ShortName;
-            
-            if (containingTypeShortName == null || !authoringFieldName.Contains(valueName)) 
-                return authoringFieldName;
-            
-            if (authoringFieldName.Equals(valueName))
-                return containingTypeShortName;
 
-            if (authoringFieldName.Contains(containingTypeShortName)) 
+            if (containingTypeShortName == null || !authoringFieldName.EndsWith(valueName))
                 return authoringFieldName;
-            
-            var lastIndexOf = authoringFieldName.LastIndexOf(valueName, StringComparison.Ordinal);
-            return authoringFieldName[..lastIndexOf] + containingTypeShortName +
-                   authoringFieldName.Substring(lastIndexOf, authoringFieldName.Length - lastIndexOf);
+
+            if (authoringFieldName.Contains(containingTypeShortName))
+                return authoringFieldName;
+
+            return authoringFieldName.Replace(valueName, containingTypeShortName);
         }
 
         private static IClassLikeDeclaration GetOrCreateAuthoringClassDeclaration(IPsiModule psiModule, AuthoringGenerationInfo authoringGenerationInfo)

@@ -101,7 +101,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             }
 
             if (bakers.Count == 0)
-                return null;
+            {
+                return textControl =>
+                {
+                    ShowTooltip(textControl, Strings.UnityDots_AddFieldToExistingBakerAndAuthoring_NoBakersFound);
+                };
+            }
 
             var componentDeclaredElement = myFieldDeclaration.GetContainingTypeDeclaration()?.DeclaredElement;
             if (componentDeclaredElement == null)
@@ -114,8 +119,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             }
 
             if (componentReferences.IsEmpty())
-                return null;
-
+            {
+                return textControl =>
+                {
+                    ShowTooltip(textControl, string.Format(Strings.UnityDots_AddFieldToExistingBakerAndAuthoring_NoBakersForComponent, componentDeclaredElement.ShortName));
+                };
+            }
             using (var spi = new SubProgressIndicator(progress, 1))
             {
                 spi.Start(componentReferences.Length);
