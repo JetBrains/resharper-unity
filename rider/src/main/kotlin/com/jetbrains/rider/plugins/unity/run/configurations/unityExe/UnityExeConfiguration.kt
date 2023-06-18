@@ -12,6 +12,8 @@ import com.jetbrains.rider.run.configurations.exe.ExeConfiguration
 import com.jetbrains.rider.run.configurations.exe.ExeConfigurationParameters
 import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.MonoRemoteConfigType
+import org.jetbrains.concurrency.Promise
+import org.jetbrains.concurrency.resolvedPromise
 
 class UnityExeConfiguration(name: String,
                             project: Project,
@@ -30,12 +32,12 @@ class UnityExeConfiguration(name: String,
         return newConfiguration
     }
 
-    override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState{
+    override fun getStateAsync(executor: Executor, environment: ExecutionEnvironment): Promise<RunProfileState> {
         val executorId = executor.id
 
         if (executorId == DefaultDebugExecutor.EXECUTOR_ID)
-            return UnityExeDebugProfileState(this, DotNetRemoteConfiguration(project, ConfigurationTypeUtil.findConfigurationType(MonoRemoteConfigType::class.java).factory, name), environment)
+            return resolvedPromise(UnityExeDebugProfileState(this, DotNetRemoteConfiguration(project, ConfigurationTypeUtil.findConfigurationType(MonoRemoteConfigType::class.java).factory, name), environment))
 
-        return super.getState(executor, environment)
+        return super.getStateAsync(executor, environment)
     }
 }
