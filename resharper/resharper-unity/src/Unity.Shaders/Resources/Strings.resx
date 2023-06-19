@@ -98,4 +98,16 @@
     <data name="ShaderLabFormattingStylePageSchema_PageName_ShaderLab_Formatting_Style" xml:space="preserve">
         <value>ShaderLab Formatting Style</value>
     </data>
+    <data name="InUnityShaderLabBlock_PresentableShortName" xml:space="preserve">
+        <value>Unity ShaderLab {0} Block</value>
+    </data>
+    <data name="InUnityShaderLabFile_Presentation" xml:space="preserve">
+        <value>In Unity ShaderLab file</value>
+    </data>
+    <data name="InUnityShaderLabBlock_Presentation" xml:space="preserve">
+        <value>In Unity ShaderLab {0} Block</value>
+    </data>
+    <data name="BlockCommand_Text" xml:space="preserve">
+        <value>Block Command</value>
+    </data>
 </root>

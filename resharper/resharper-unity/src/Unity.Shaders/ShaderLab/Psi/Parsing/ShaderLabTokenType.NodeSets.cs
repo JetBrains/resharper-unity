@@ -5,6 +5,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
     public partial class ShaderLabTokenType
     {
         public static readonly NodeTypeSet KEYWORDS;
+        public static readonly NodeTypeSet BLOCK_COMMAND_KEYWORDS;
 
         static ShaderLabTokenType()
         {
@@ -191,6 +192,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
                 ONE_MINUS_DST_COLOR_KEYWORD,
                 ONE_MINUS_DST_ALPHA_KEYWORD
               );
+            BLOCK_COMMAND_KEYWORDS = new NodeTypeSet(
+                SHADER_KEYWORD,
+                PROPERTIES_KEYWORD,
+                CATEGORY_KEYWORD,
+                SUB_SHADER_KEYWORD,
+                TAGS_KEYWORD,
+                STENCIL_KEYWORD,
+                MATERIAL_KEYWORD,
+                SET_TEXTURE_KEYWORD,
+                FOG_KEYWORD,
+                BIND_CHANNELS_KEYWORD,
+                GRABPASS_KEYWORD,
+                PASS_KEYWORD,
+                PACKAGE_REQUIREMENTS_KEYWORD
+            );
         }
     }
 }
