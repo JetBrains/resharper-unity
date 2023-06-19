@@ -12,14 +12,14 @@ namespace Systems
   public class AngleAuthoring : MonoBehaviour
   {
     public float Angle;
-    public float MaxAngleValue;
+    public float MaxAngle;
 
     public class AngleBaker : Baker<AngleAuthoring>
     {
       public override void Bake(AngleAuthoring authoring)
       {
         var entity = GetEntity(TransformUsageFlags.Dynamic);
-        AddComponent(entity, new Angle { MaxValue = authoring.MaxAngleValue });
+        AddComponent(entity, new Angle { MaxValue = authoring.MaxAngle });
       }
     }
   }
