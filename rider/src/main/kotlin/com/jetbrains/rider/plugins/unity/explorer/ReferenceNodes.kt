@@ -5,7 +5,7 @@ import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.FileStatus
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.workspaceModel.ide.virtualFile
+import com.intellij.platform.backend.workspace.virtualFile
 import com.jetbrains.rd.util.getOrCreate
 import com.jetbrains.rider.model.RdCustomLocation
 import com.jetbrains.rider.projectView.workspace.*
