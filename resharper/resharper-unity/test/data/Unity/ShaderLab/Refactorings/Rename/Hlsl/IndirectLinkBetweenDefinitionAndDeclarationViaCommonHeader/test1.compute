@@ -1,0 +1,10 @@
+#include "common.hlsl"
+
+void {caret}bar()
+{
+}
+
+void foo()
+{
+    bar();
+}

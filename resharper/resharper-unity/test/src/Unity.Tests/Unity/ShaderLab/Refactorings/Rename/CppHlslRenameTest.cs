@@ -3,6 +3,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
 using JetBrains.ReSharper.FeaturesTestFramework.Refactorings;
 using JetBrains.ReSharper.TestFramework;
+using JetBrains.Util;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Refactorings.Rename
@@ -30,6 +31,20 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Refactorings.Rename
         [TestCase("Test13")]
         [TestCase("Test14")]
         public void TestRenaming(string testName) => DoOneTest(testName);
+
+        [Test]
+        public void TestShadersWithSameDefinition()
+        {
+            const string dir = "ShadersWithSameDefinitions";
+            DoTestSolution($"{dir}/test1.compute", $"{dir}/test2.hlsl", $"{dir}/test3.shader");
+        }
+        
+        [Test]
+        public void TestIndirectLinkBetweenDefinitionAndDeclarationViaCommonHeader()
+        {
+            const string dir = "IndirectLinkBetweenDefinitionAndDeclarationViaCommonHeader";
+            DoTestSolution($"{dir}/test1.compute", $"{dir}/common.hlsl", $"{dir}/test2.hlsl", $"{dir}/test3.shader");
+        }
 
         protected override void DoTest(Lifetime lifetime, IProject testProject)
         {
