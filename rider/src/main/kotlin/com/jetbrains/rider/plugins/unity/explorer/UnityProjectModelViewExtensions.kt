@@ -2,7 +2,7 @@ package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.workspaceModel.ide.WorkspaceModel
+import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.ProjectElementView
 import com.jetbrains.rider.projectView.ProjectEntityView

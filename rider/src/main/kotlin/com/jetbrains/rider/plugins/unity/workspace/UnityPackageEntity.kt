@@ -3,18 +3,12 @@
 package com.jetbrains.rider.plugins.unity.workspace
 
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.workspaceModel.ide.virtualFile
-import com.intellij.workspaceModel.storage.*
-import com.intellij.workspaceModel.storage.EntitySource
-import com.intellij.workspaceModel.storage.GeneratedCodeApiVersion
-import com.intellij.workspaceModel.storage.MutableEntityStorage
-import com.intellij.workspaceModel.storage.bridgeEntities.ContentRootEntity
+import com.intellij.platform.backend.workspace.virtualFile
+import com.intellij.platform.workspace.jps.entities.ContentRootEntity
+import com.intellij.platform.workspace.storage.*
+import com.intellij.platform.workspace.storage.annotations.Child
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
-import com.intellij.workspaceModel.storage.WorkspaceEntity
-import org.jetbrains.deft.ObjBuilder
-import org.jetbrains.deft.Type
-import org.jetbrains.deft.annotations.Child
 
 
 interface UnityPackageEntity : WorkspaceEntity {
@@ -47,13 +41,13 @@ interface UnityPackageEntity : WorkspaceEntity {
 
   //region generated code
   @GeneratedCodeApiVersion(1)
-  interface Builder : UnityPackageEntity, WorkspaceEntity.Builder<UnityPackageEntity>, ObjBuilder<UnityPackageEntity> {
+  interface Builder : UnityPackageEntity, WorkspaceEntity.Builder<UnityPackageEntity> {
     override var entitySource: EntitySource
     override var descriptor: UnityPackage
     override var contentRootEntity: ContentRootEntity?
   }
 
-  companion object : Type<UnityPackageEntity, Builder>() {
+  companion object : EntityType<UnityPackageEntity, Builder>() {
     @JvmOverloads
     @JvmStatic
     @JvmName("create")
