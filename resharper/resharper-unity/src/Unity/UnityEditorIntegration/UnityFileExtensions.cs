@@ -102,9 +102,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         public static bool IsInputActions(this IPsiSourceFile sourceFile) =>
             SourceFileNameEndsWith(sourceFile, InputActionsExtensionWithDot);
 
-        public static bool IsIndexedExternalFile(this IPath path) =>
-            path.IsYamlDataFile() || path.IsMeta() || path.IsAsmDef() || path.IsAsmRef() || path.IsInputActions();
-
         public static bool IsYamlDataFile(this IPath path)
         {
             foreach (var extension in YamlDataFileExtensionsWithDot)

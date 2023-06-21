@@ -9,6 +9,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel
         public new const string Name = "SHADERLAB";
         public const string SHADERLAB_EXTENSION = ".shader";
 
+        public bool ShouldBeIndexedInExternalModule => true;
+
         [CanBeNull, UsedImplicitly]
         public new static ShaderLabProjectFileType Instance { get; private set; }
 

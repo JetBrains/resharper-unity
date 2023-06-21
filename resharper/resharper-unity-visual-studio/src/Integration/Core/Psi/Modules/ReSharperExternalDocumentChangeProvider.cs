@@ -35,7 +35,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Integration.Core.Psi.Mo
                                                        ITextControlManager textControlManager,
                                                        IPsiModules psiModules,
                                                        IPsiCaches psiCaches,
-                                                       UnityExternalFilesModuleFactory moduleFactory)
+                                                       UnityExternalFilesModuleFactory moduleFactory,
+                                                       UnityIndexedExternalProjectFileTypeFilter progetFileTypeFilter)
         {
             // We want to listen to changes published by DocumentChangeManager, and publish our changes to PsiCaches.
             // However, PsiCaches only handles PsiModuleChanges published by PsiModules, so we have to publish to
@@ -72,7 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.Integration.Core.Psi.Mo
                 var location = document.TryGetFilePath();
                 if (location.IsEmpty) return;
 
-                if (location.IsIndexedExternalFile())
+                if (progetFileTypeFilter.Accept(location, true))
                 {
                     if (module.TryGetFileByPath(location, out var psiSourceFile)
                         && psiSourceFile is UnityExternalPsiSourceFile sourceFile)
