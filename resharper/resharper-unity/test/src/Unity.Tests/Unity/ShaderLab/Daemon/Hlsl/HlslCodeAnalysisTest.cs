@@ -12,5 +12,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Hlsl
         [Test] public void TestHlsl01() { DoNamedTest2(); }
         [Test] public void TestHlsl02() { DoNamedTest2(); }
         [Test] public void TestHlsl03() { DoNamedTest2(); }
+        [Test] public void TestIncludes() { DoTestSolution("Includes/Test01.shader", "Includes/Used.hlsl", "Includes/Unused.hlsl"); }
     }
 }

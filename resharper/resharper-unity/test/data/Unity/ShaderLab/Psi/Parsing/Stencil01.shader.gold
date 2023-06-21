@@ -19,145 +19,147 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-                  IStencilCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:STENCIL_KEYWORD, text:Stencil)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+                  Whitespace(type:WHITESPACE, text: ) spaces: " "
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                     NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                     Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-                    IStencilValue
-                      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      IRefCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:REF_KEYWORD, text:Ref)
-                        Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        INumericValue
-                          ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:255)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      IReadMaskCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:READ_MASK_KEYWORD, text:ReadMask)
-                        Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        INumericValue
-                          ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:134)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      IWriteMaskCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:WRITE_MASK_KEYWORD, text:WriteMask)
-                        Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        INumericValue
-                          ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:155)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      ICompCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:COMP_KEYWORD, text:Comp)
-                        Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        IComparisonFunctionValue
-                          ShaderLabTokenType+KeywordTokenElement(type:GREATER_KEYWORD, text:Greater)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      IPassCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                        Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        IStencilOperation
-                          ShaderLabTokenType+KeywordTokenElement(type:KEEP_KEYWORD, text:Keep)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      IFailCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:FAIL_KEYWORD, text:Fail)
-                        Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        IStencilOperation
-                          ShaderLabTokenType+KeywordTokenElement(type:ZERO_KEYWORD, text:Zero)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      IZfailCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:ZFAIL_KEYWORD, text:ZFail)
-                        Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        IStencilOperation
-                          ShaderLabTokenType+KeywordTokenElement(type:REPLACE_KEYWORD, text:Replace)
+                    IStencilCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:STENCIL_KEYWORD, text:Stencil)
                       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                       Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-                      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                  Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                      IStencilValue
+                        ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        IRefCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:REF_KEYWORD, text:Ref)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          INumericValue
+                            ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:255)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        IReadMaskCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:READ_MASK_KEYWORD, text:ReadMask)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          INumericValue
+                            ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:134)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        IWriteMaskCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:WRITE_MASK_KEYWORD, text:WriteMask)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          INumericValue
+                            ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:155)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        ICompCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:COMP_KEYWORD, text:Comp)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          IComparisonFunctionValue
+                            ShaderLabTokenType+KeywordTokenElement(type:GREATER_KEYWORD, text:Greater)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        IPassCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          IStencilOperation
+                            ShaderLabTokenType+KeywordTokenElement(type:KEEP_KEYWORD, text:Keep)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        IFailCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:FAIL_KEYWORD, text:Fail)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          IStencilOperation
+                            ShaderLabTokenType+KeywordTokenElement(type:ZERO_KEYWORD, text:Zero)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        IZfailCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:ZFAIL_KEYWORD, text:ZFail)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          IStencilOperation
+                            ShaderLabTokenType+KeywordTokenElement(type:REPLACE_KEYWORD, text:Replace)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                        ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-                  IStencilCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:STENCIL_KEYWORD, text:Stencil)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+                  Whitespace(type:WHITESPACE, text: ) spaces: " "
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                     NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                     Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-                    IStencilValue
-                      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      IRefCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:REF_KEYWORD, text:Ref)
-                        Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        INumericValue
-                          ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:255)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      IReadMaskCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:READ_MASK_KEYWORD, text:ReadMask)
-                        Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        INumericValue
-                          ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:134)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      IWriteMaskCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:WRITE_MASK_KEYWORD, text:WriteMask)
-                        Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        INumericValue
-                          ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:155)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      ICompCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:COMP_KEYWORD, text:Comp)
-                        Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        IComparisonFunctionValue
-                          ShaderLabTokenType+KeywordTokenElement(type:LESS_KEYWORD, text:Less)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      IPassCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                        Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        IStencilOperation
-                          ShaderLabTokenType+KeywordTokenElement(type:INCR_SAT_KEYWORD, text:IncrSat)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      IFailCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:FAIL_KEYWORD, text:Fail)
-                        Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        IStencilOperation
-                          ShaderLabTokenType+KeywordTokenElement(type:DECR_SAT_KEYWORD, text:DecrSat)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      IZfailCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:ZFAIL_KEYWORD, text:ZFail)
-                        Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        IStencilOperation
-                          ShaderLabTokenType+KeywordTokenElement(type:INVERT_KEYWORD, text:Invert)
+                    IStencilCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:STENCIL_KEYWORD, text:Stencil)
                       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                       Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-                      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                  Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                      IStencilValue
+                        ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        IRefCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:REF_KEYWORD, text:Ref)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          INumericValue
+                            ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:255)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        IReadMaskCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:READ_MASK_KEYWORD, text:ReadMask)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          INumericValue
+                            ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:134)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        IWriteMaskCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:WRITE_MASK_KEYWORD, text:WriteMask)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          INumericValue
+                            ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:155)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        ICompCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:COMP_KEYWORD, text:Comp)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          IComparisonFunctionValue
+                            ShaderLabTokenType+KeywordTokenElement(type:LESS_KEYWORD, text:Less)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        IPassCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          IStencilOperation
+                            ShaderLabTokenType+KeywordTokenElement(type:INCR_SAT_KEYWORD, text:IncrSat)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        IFailCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:FAIL_KEYWORD, text:Fail)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          IStencilOperation
+                            ShaderLabTokenType+KeywordTokenElement(type:DECR_SAT_KEYWORD, text:DecrSat)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        IZfailCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:ZFAIL_KEYWORD, text:ZFail)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          IStencilOperation
+                            ShaderLabTokenType+KeywordTokenElement(type:INVERT_KEYWORD, text:Invert)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                        ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:    ) spaces: "    "
             ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

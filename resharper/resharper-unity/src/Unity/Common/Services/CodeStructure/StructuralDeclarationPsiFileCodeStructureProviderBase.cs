@@ -4,10 +4,10 @@ using JetBrains.Application;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.CodeStructure;
-using JetBrains.ReSharper.Plugins.Unity.Services.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Common.Services.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Services.CodeStructure
+namespace JetBrains.ReSharper.Plugins.Unity.Common.Services.CodeStructure
 {
     /// <summary>
     /// Base class for code structure providers based on <see cref="IStructuralDeclaration"/>.

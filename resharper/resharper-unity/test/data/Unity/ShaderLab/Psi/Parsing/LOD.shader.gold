@@ -19,22 +19,23 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-                  ILodCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:LOD_KEYWORD, text:LOD)
-                    Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    ILodValue
-                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:100)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                    ILodCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:LOD_KEYWORD, text:LOD)
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      ILodValue
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:100)
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:    ) spaces: "    "
             ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

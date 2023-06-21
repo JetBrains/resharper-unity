@@ -1,0 +1,4 @@
+Shader "Bar"
+{
+    Fallback "Foo"
+}

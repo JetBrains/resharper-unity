@@ -2,6 +2,7 @@
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -40,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages.Reso
                 if (highlighting != null)
                     consumer.AddHighlighting(highlighting);
             }
-            else
+            else if (reference is IVariableReferenceReference)
             {
                 // The default is unresolved. But we can't use something like NotResolvedError because:
                 // a) Using an undeclared property in ShaderLab isn't a compile time error. An undeclared

@@ -14,7 +14,8 @@ IShaderLabFile
           ShaderLabTokenType+KeywordTokenElement(type:FALLBACK_KEYWORD, text:Fallback)
           Whitespace(type:WHITESPACE, text: ) spaces: " "
           IFallbackValue
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"fallbackShader")
+            IShaderReferenceElement
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"fallbackShader")
             ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
             ILodValue
         ErrorElement:0.0 expected

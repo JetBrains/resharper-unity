@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using JetBrains.ReSharper.Plugins.Unity.Services.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Common.Services.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 

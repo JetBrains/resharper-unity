@@ -8,7 +8,7 @@ using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Feature.Services.Breadcrumbs;
 using JetBrains.ReSharper.Feature.Services.Navigation;
 using JetBrains.ReSharper.Feature.Services.Resources;
-using JetBrains.ReSharper.Plugins.Unity.Services.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Common.Services.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Pointers;
@@ -17,7 +17,7 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Services.Breadcrumbs
+namespace JetBrains.ReSharper.Plugins.Unity.Common.Services.Breadcrumbs
 {
     public abstract class StructuralDeclarationBreadcrumbsProviderBase : ILanguageSpecificBreadcrumbsProvider
     {
@@ -58,8 +58,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Services.Breadcrumbs
                 actions.Add(new CrumbAction(Strings.GoToFileMembers_Text, "FileStructurePopup"));
             if (CanShowFileStructure(declaration))
                 actions.Add(new CrumbAction(Strings.ShowFileStructure_Text, "Structure"));
-            
-            var crumbModel = new CrumbModel(targetElement.ShortName, $"{presentation}\n{Strings.ClickToNavigate_Text}", myIconHost.Transform(icon), rdRange, actions);
+
+            var name = DeclaredElementPresenter.Format(language, DeclaredElementPresenter.NAME_PRESENTER, targetElement);
+            var crumbModel = new CrumbModel(name.Text, $"{presentation}\n{Strings.ClickToNavigate_Text}", myIconHost.Transform(icon), rdRange, actions);
             var elementPointer = targetElement.CreateElementPointer();
             crumbModel.Navigate.SetVoid(_ => NavigateTo(sourceFile, elementPointer));
             return crumbModel;

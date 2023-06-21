@@ -1,0 +1,9 @@
+Shader "Bar"
+{
+    SubShader
+    {
+        UsePass "Foo/ZZZ"
+    }
+
+    Fallback "Foo"
+}

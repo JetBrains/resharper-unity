@@ -1,0 +1,8 @@
+void {caret}bar()
+{
+}
+
+void foo()
+{
+    bar();
+}

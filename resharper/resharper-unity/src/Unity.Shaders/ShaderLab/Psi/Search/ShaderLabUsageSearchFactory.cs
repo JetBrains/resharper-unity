@@ -19,10 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Search
             mySearchDomainFactory = searchDomainFactory;
         }
 
-        public bool IsCompatibleWithLanguage(PsiLanguageType languageType)
-        {
-            return languageType.Is<ShaderLabLanguage>();
-        }
+        public bool IsCompatibleWithLanguage(PsiLanguageType languageType) => languageType.Is<ShaderLabLanguage>();
 
         public IDomainSpecificSearcher CreateConstructorSpecialReferenceSearcher(ICollection<IConstructor> constructors)
         {
@@ -42,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Search
 
         public IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements, ReferenceSearcherParameters referenceSearcherParameters)
         {
-            if (elements.Any(element => !(element is IShaderLabDeclaredElement)))
+            if (elements.Any(element => element is not IShaderLabDeclaredElement))
                 return null;
             return new ShaderLabReferenceSearcher(elements, referenceSearcherParameters);
         }
@@ -104,10 +101,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Search
 
         public ISearchDomain GetDeclaredElementSearchDomain(IDeclaredElement declaredElement)
         {
-            if (!(declaredElement is IShaderLabDeclaredElement))
+            if (declaredElement is not IShaderLabDeclaredElement)
                 return EmptySearchDomain.Instance;
 
-            return mySearchDomainFactory.CreateSearchDomain(declaredElement.GetSourceFiles());
+            if (declaredElement is IPropertyDeclaredElement)
+                return mySearchDomainFactory.CreateSearchDomain(declaredElement.GetSourceFiles());
+            return mySearchDomainFactory.CreateSearchDomain(declaredElement.GetSolution(), false);
         }
     }
 }
