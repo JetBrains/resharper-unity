@@ -204,7 +204,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                     if (fieldOrProperty is not ITypeOwner selectedField)
                         continue;
                     
-                    var fieldTypeName = selectedField!.Type.GetTypeElement()?.GetClrName();
+                    var fieldTypeName = selectedField.Type.GetTypeElement()?.GetClrName();
                     
                     if(fieldTypeName == null)
                         continue;
@@ -216,7 +216,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                     var authoringFieldType = TypeFactory.CreateTypeByCLRName(fieldTypeName, NullableAnnotation.NotAnnotated, selectedFieldModule);
 
                     var initializationFormat = "$0.$1";
-                    var convertAuthoringToComponentField = BakerGeneratorUtils.ConvertAuthoringToComponentField(authoringFieldType.GetClrName(), selectedFieldModule);
+                    var convertAuthoringToComponentField = AuthoringToComponentConverter.Convert(authoringFieldType.GetClrName(), selectedFieldModule);
                     
                     if(convertAuthoringToComponentField.HasValue)
                         initializationFormat = convertAuthoringToComponentField.Value.FunctionTemplate;
@@ -229,7 +229,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 componentCreationExpression.RemoveArgumentList();
             }
             
-            componentCreationExpression.FormatNode(CodeFormatProfile.COMPACT);
+            componentCreationExpression.FormatNode(CodeFormatProfile.STRICT);
         }
 
         private static IClassLikeDeclaration[] CreateBakerClassDeclaration(BakerGenerationInfo generationInfo)
@@ -253,7 +253,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 return bakerClassDeclarations ;
             }
 
-            bakerClassDeclarations = new[]
+            bakerClassDeclarations = new IClassLikeDeclaration[]
             {
                 (IClassDeclaration)generationInfo.Factory
                     .CreateTypeMemberDeclaration("public class $0 : $1 { }", generationInfo.BakerUniqueClassName,
@@ -372,20 +372,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
         private static IObjectCreationExpression GetOrCreateComponentCreationExpression(CSharpElementFactory factory,
             IMethodDeclaration bakeMethodExpression, ITypeElement componentDeclaredType, ITreeNode entityExpression)
         {
-            var existingCreationExpression = bakeMethodExpression.Body.FindNextNode(node =>
-            {
-                if (node is IMethodDeclaration)
-                    return TreeNodeActionType.IGNORE_SUBTREE;
-                
-                return (node is IObjectCreationExpression expression
-                        && componentDeclaredType.Equals(expression.Type().GetTypeElement()))
-                    ? TreeNodeActionType.ACCEPT
-                    : TreeNodeActionType.CONTINUE;
-            });
-
-            if (existingCreationExpression != null)
-                return (IObjectCreationExpression)existingCreationExpression;
             
+            var isStructComponent = componentDeclaredType is IStruct;
+
+            if (isStructComponent
+                && bakeMethodExpression.Body.FindNextNode(node =>
+                        BakerGeneratorUtils.FindIBakerAddComponentExpression(node, componentDeclaredType))
+                    is IInvocationExpression invocationExpression)
+            {
+                var statement = invocationExpression.GetContainingStatement();
+                var containingNode = statement?.GetContainingNode<IBlock>();
+                containingNode?.RemoveStatement(statement!);
+            }
+            else
+            {
+                var existingCreationExpression = bakeMethodExpression.Body.FindNextNode(node =>
+                    BakerGeneratorUtils.FindAddComponentCreationExpression(node, componentDeclaredType));
+
+                if (existingCreationExpression != null)
+                    return (IObjectCreationExpression)existingCreationExpression;
+            }
+
             //AddComponent(new ComponentData{})
             var addComponentStatement =
                 (IExpressionStatement)bakeMethodExpression.Body.AddStatementBefore(factory.CreateStatement("AddComponent();"),
@@ -428,7 +435,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 var selectedField = declaredElement as ITypeOwner;
 
                 var authoringFieldShortName = selectedField!.ShortName;
-                var componentFieldType = GetFieldType(selectedField);
+                var componentFieldType = BakerGeneratorUtils.GetFieldType(selectedField, AuthoringToComponentConverter.Convert);
                 Assertion.AssertNotNull(componentFieldType);
 
                 if (existingFields.TryGetValue(authoringFieldShortName, out var existingField))
@@ -475,19 +482,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             Assertion.AssertNotNull(componentDataDeclaration);
 
             return componentDataGenerationInfo.InsertionHelper.Insert(componentDataDeclaration);
-        }
-
-        private static IType GetFieldType(ITypeOwner selectedField)
-        {
-            var fieldTypeName = selectedField.Type.GetTypeElement().NotNull().GetClrName();
-            var selectedFieldModule = selectedField.Module;
-            var authoringFieldType = TypeFactory.CreateTypeByCLRName(fieldTypeName, NullableAnnotation.NotAnnotated, selectedFieldModule);
-            var convertAuthoringToComponentField = BakerGeneratorUtils.ConvertAuthoringToComponentField(authoringFieldType.GetClrName(), selectedFieldModule);
-
-            if (convertAuthoringToComponentField.HasValue)
-                return TypeFactory.CreateTypeByCLRName(convertAuthoringToComponentField.Value.TypeName, NullableAnnotation.NotAnnotated, selectedFieldModule);
-            
-            return authoringFieldType;
         }
 
         private static bool HasUnityBaseType(CSharpGeneratorContext context)

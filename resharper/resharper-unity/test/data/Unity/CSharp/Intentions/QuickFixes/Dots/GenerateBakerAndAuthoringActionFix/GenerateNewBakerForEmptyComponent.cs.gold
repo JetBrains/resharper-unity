@@ -20,7 +20,7 @@ namespace ComponentsAndTags
       public override void Bake(GraveyardPropertiesAuthoring authoring)
       {
         var entity = GetEntity(TransformUsageFlags.Dynamic);
-        AddComponent(entity, new GraveyardProperties());
+        AddComponent<GraveyardProperties>(entity);
       }
     }
 }

@@ -6,10 +6,10 @@
 Any
 Cube
 CubeArray
-LightmapMode
-Matrix
+LightmapMode(Space)
+Matrix(Space)
 Rect
-TexGen
+TexGen(Space)
 # AUTOMATIC #
 # 10 ITEMS #
 
@@ -19,7 +19,7 @@ TexGen
 Any
 Cube
 CubeArray
-LightmapMode
-Matrix
+LightmapMode(Space)
+Matrix(Space)
 Rect
-TexGen
+TexGen(Space)

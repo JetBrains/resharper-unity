@@ -1,0 +1,4 @@
+﻿#pragma domain zzz
+
+int zzz()
+{}

@@ -112,6 +112,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
         {
             return invocationExpression.InvocationExpressionReference.IsAssetDataBaseLoadMethod();
         }
+        
+        public static bool IsIBakerAddComponentMethod(this IInvocationExpression invocationExpression)
+        {
+            return invocationExpression.InvocationExpressionReference.IsIBakerAddComponentMethod();
+        }
+        
+        public static bool IsIBakerAddComponentObjectMethod(this IInvocationExpression invocationExpression)
+        {
+            return invocationExpression.InvocationExpressionReference.IsIBakerAddComponentObjectMethod();
+        }
 
         private static bool IsSpecificMethod(IInvocationExpression invocationExpression, IClrTypeName typeName, params string[] methodNames)
         {
@@ -147,6 +157,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
         public static bool IsAssetDataBaseLoadMethod(this IInvocationExpressionReference reference)
         {
             return IsRelatedMethod(reference, IsAssetDataBaseLoad);
+        }
+
+        public static bool IsIBakerAddComponentMethod(this IInvocationExpressionReference reference)
+        {
+            return IsRelatedMethod(reference, IsBakerAddComponentMethod);
+        }
+        
+        public static bool IsIBakerAddComponentObjectMethod(this IInvocationExpressionReference reference)
+        {
+            return IsRelatedMethod(reference, IsIBakerAddComponentObjectMethod);
         }
 
         private static bool IsRelatedMethod(IInvocationExpressionReference reference, Func<IMethod, bool> checker)
@@ -193,6 +213,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
         {
             return method != null &&
                    method.ShortName.StartsWith("Load") && method.ContainingType?.GetClrName().Equals(KnownTypes.AssetDatabase) == true;
+        }
+
+        private static bool IsBakerAddComponentMethod(IMethod method)
+        {
+            return method is { ShortName: "AddComponent" } &&
+                   method.ContainingType?.GetClrName().Equals(KnownTypes.IBaker) == true;
+        }
+
+        private static bool IsIBakerAddComponentObjectMethod(IMethod method)
+        {
+            return method is { ShortName: "AddComponentObject" } &&
+                   method.ContainingType?.GetClrName().Equals(KnownTypes.IBaker) == true;
         }
     }
 }

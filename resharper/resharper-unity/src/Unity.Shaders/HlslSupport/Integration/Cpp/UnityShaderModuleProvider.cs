@@ -122,7 +122,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
         public Tuple<IProjectPsiModuleHandler, IPsiModuleDecorator> OverrideHandler(Lifetime lifetime, IProject project,
             IProjectPsiModuleHandler handler)
         {
-            if (handler.PrimaryModule != null && project.GetComponent<UnitySolutionTracker>().IsUnityProject.HasTrueValue())
+            if (handler.PrimaryModule != null && (project.IsUnityProject() || project.GetComponent<UnitySolutionTracker>().IsUnityProject.HasTrueValue()))
             {
                 var module = new UnityShaderModule(project.GetSolution(), project.Name, handler.PrimaryModule.TargetFrameworkId);
                 var newHandlerAndDecorator = new UnityShaderModuleHandlerAndDecorator(module, handler);

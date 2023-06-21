@@ -9,8 +9,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
 {
     public interface IShaderLabTokenNodeType : ITokenNodeType
     {
-        bool IsCommandKeyword(CachingLexer lexer);  // check if this is ShaderLab command keyword
-        bool IsCommandKeyword(ITreeNode placement); // check if this is ShaderLab command keyword
+        ShaderLabKeywordType GetKeywordType(CachingLexer lexer);  // recognize keyword type (i.e. command keyword, block command keyword etc for analysis and intentions)
+        ShaderLabKeywordType GetKeywordType(ITreeNode placement); // recognize keyword type (i.e. command keyword, block command keyword etc for analysis and intentions)
     }
 
     public static partial class ShaderLabTokenType
@@ -33,8 +33,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
             public override bool IsConstantLiteral => false;    // LITERALS[this]
             public override bool IsIdentifier => false;  // this == IDENTIFIER
             public override bool IsKeyword => false;    // KEYWORDS[this]
-            public virtual bool IsCommandKeyword(CachingLexer cachingLexer) => false;
-            public virtual bool IsCommandKeyword(ITreeNode placement) => false;
+            public virtual ShaderLabKeywordType GetKeywordType(CachingLexer cachingLexer) => ShaderLabKeywordType.Unknown;
+            public virtual ShaderLabKeywordType GetKeywordType(ITreeNode placement) => ShaderLabKeywordType.Unknown;
         }
     }
 }

@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             // There are 3 ways to present scene name in unity
             // Consider scene : Assets/Scenes/myScene.unity
-            // User could use "myScene", "Scenes/myScene" and "Assets/Scenes/myScene.unity" to load scene
+            // User could use "myScene", "Scenes/myScene" and "Assets/Scenes/myScene.unity" // todo: maybe consider RIDER-94615 Support Scenes in the local packages
             // Internally, we work only with first and second format (see UnityProjectSettingsCache)
 
             if (!literalExpression.ConstantValue.IsString(out var constantValue) || constantValue == null)

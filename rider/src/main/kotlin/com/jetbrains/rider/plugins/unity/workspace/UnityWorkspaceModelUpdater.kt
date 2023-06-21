@@ -2,7 +2,11 @@
 
 package com.jetbrains.rider.plugins.unity.workspace
 
+import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.util.withUiContext
+import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.util.application
 import com.intellij.workspaceModel.ide.WorkspaceModel
 import com.intellij.workspaceModel.ide.getInstance
@@ -15,20 +19,22 @@ import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
 import com.jetbrains.rider.projectView.workspace.getOrCreateRiderModuleEntity
 
-class UnityWorkspaceModelUpdater(private val project: Project) {
-    init {
-        application.invokeLater {
-            if (project.isDisposed)
-                return@invokeLater
-
-            if (project.isUnityProject()) {
-                rebuildWorkspaceModel()
-            }
+class UnityWorkspaceModelUpdaterInitializer : ProjectActivity {
+    override suspend fun execute(project: Project) {
+        if (!project.isDisposed && project.isUnityProject()) {
+            withUiContext { UnityWorkspaceModelUpdater.getInstance(project).rebuildModel() }
         }
+    }
+}
+
+@Service(Service.Level.PROJECT)
+class UnityWorkspaceModelUpdater(private val project: Project) {
+    companion object {
+        fun getInstance(project: Project):UnityWorkspaceModelUpdater =  project.service()
     }
 
     @Suppress("UnstableApiUsage")
-    private fun rebuildWorkspaceModel() {
+    fun rebuildModel() {
         application.assertIsDispatchThread()
         if (!project.isUnityProject()) return
 

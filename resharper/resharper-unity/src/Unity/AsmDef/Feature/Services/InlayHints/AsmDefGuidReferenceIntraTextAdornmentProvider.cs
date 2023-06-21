@@ -1,14 +1,14 @@
 using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
 using JetBrains.TextControl.DocumentMarkup;
-using JetBrains.TextControl.DocumentMarkup.IntraTextAdornments;
+using JetBrains.TextControl.DocumentMarkup.Adornments;
 
 #nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 {
     [SolutionComponent]
-    public class AsmDefGuidReferenceIntraTextAdornmentProvider : IHighlighterIntraTextAdornmentProvider
+    public class AsmDefGuidReferenceIntraTextAdornmentProvider : IHighlighterAdornmentProvider
     {
         private readonly ISolution mySolution;
         private readonly ISettingsStore mySettingsStore;
@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
                    highlighting.IsValid();
         }
 
-        public IIntraTextAdornmentDataModel? CreateDataModel(IHighlighter highlighter)
+        public IAdornmentDataModel? CreateDataModel(IHighlighter highlighter)
         {
             if (highlighter.UserData is AsmDefGuidReferenceInlayHintHighlighting highlighting && highlighting.IsValid())
             {

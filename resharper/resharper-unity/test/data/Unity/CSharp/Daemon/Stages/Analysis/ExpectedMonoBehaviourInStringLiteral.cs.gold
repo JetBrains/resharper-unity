@@ -31,7 +31,7 @@ public class MyMonoBehaviour : MonoBehaviour
 }
 
 ---------------------------------------------------------
-(0): ReSharper Warning: Expected type derived from 'UnityEngine.MonoBehaviour'
-(1): ReSharper Warning: Expected type derived from 'UnityEngine.MonoBehaviour'
-(2): ReSharper Warning: Expected type derived from 'UnityEngine.MonoBehaviour'
-(3): ReSharper Warning: Expected type derived from 'UnityEngine.MonoBehaviour'
+(0): ReSharper Warning: Expected a type derived from 'UnityEngine.MonoBehaviour'
+(1): ReSharper Warning: Expected a type derived from 'UnityEngine.MonoBehaviour'
+(2): ReSharper Warning: Expected a type derived from 'UnityEngine.MonoBehaviour'
+(3): ReSharper Warning: Expected a type derived from 'UnityEngine.MonoBehaviour'

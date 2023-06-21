@@ -1,0 +1,4 @@
+#pragma kernel ma{caret}in
+
+int main()
+{}

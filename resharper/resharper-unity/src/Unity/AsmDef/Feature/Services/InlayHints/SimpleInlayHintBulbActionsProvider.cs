@@ -12,15 +12,15 @@ using JetBrains.ReSharper.Feature.Services.InlayHints;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options;
-using JetBrains.TextControl.DocumentMarkup.IntraTextAdornments;
+using JetBrains.TextControl.DocumentMarkup.Adornments;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.InlayHints
 {
     public class SimpleInlayHintBulbActionsProvider : IInlayHintBulbActionsProvider
     {
-        private readonly Expression<Func<UnityInlayHintSettings, InlayHintsMode>> myOption;
+        private readonly Expression<Func<UnityInlayHintSettings, PushToHintMode>> myOption;
 
-        protected SimpleInlayHintBulbActionsProvider(Expression<Func<UnityInlayHintSettings, InlayHintsMode>> option)
+        protected SimpleInlayHintBulbActionsProvider(Expression<Func<UnityInlayHintSettings, PushToHintMode>> option)
         {
             myOption = option;
         }

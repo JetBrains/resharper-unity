@@ -26,7 +26,7 @@
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.notifications.OpenUnityProjectAsFolderNotification"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ProtocolInstanceWatcher"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.explorer.MetaTrackerInitializer"/>
-
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspaceModelUpdaterInitializer"/>
 
     <rider.externalDirectoryProvider implementation="com.jetbrains.rider.plugins.unity.workspace.UnityExternalDirectoryProvider" />
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService"/>
@@ -67,7 +67,11 @@
     <rider.externalDirectoryProvider implementation="com.jetbrains.rider.plugins.unity.workspace.UnityExternalDirectoryProvider" />
 
     <!-- Options pages -->
-    <applicationConfigurable groupId="language" instance="com.jetbrains.rider.plugins.unity.settings.UnityPluginOptionsPage" id="preferences.build.unityPlugin" />
+    <applicationConfigurable groupId="language"
+                             id="preferences.build.unityPlugin"
+                             bundle="messages.UnityBundle"
+                             instance="com.jetbrains.rider.plugins.unity.settings.UnityPluginOptionsPage"
+                             key="configurable.name.unity.engine"/>
 
     <projectConfigurable parentId="FileTemplatesSettingsId" instance="com.jetbrains.rider.plugins.unity.settings.templates.UnityFileTemplatesOptionPage" groupWeight="-120" />
     <projectConfigurable parentId="LiveTemplatesSettingsId" instance="com.jetbrains.rider.plugins.unity.settings.templates.UnityLiveTemplatesOptionPage" groupWeight="-120" />
@@ -195,7 +199,6 @@
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.UnityUIManager"/>
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer"/>
 
-    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspaceModelUpdater" preload="true"/>
     <solutionManagerExtensions implementation="com.jetbrains.rider.plugins.unity.workspace.UnitySolutionManagerExtensions"/>
 
     <diff.merge.external.AutomaticExternalMergeTool implementation="com.jetbrains.rider.plugins.unity.diff.UnityYamlAutomaticExternalMergeTool"/>
@@ -207,6 +210,7 @@
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.vcs.MetaFilesCheckinState"/>
 
     <rider.action.technical.support.info.provider implementation="com.jetbrains.rider.plugins.unity.actions.UnityVersionRiderTechnicalSupportInfoProvider" />
+    <rider.unityDetector implementation="com.jetbrains.rider.plugins.unity.UnityDetectorImpl"/>
   </extensions>
 
   <applicationListeners>

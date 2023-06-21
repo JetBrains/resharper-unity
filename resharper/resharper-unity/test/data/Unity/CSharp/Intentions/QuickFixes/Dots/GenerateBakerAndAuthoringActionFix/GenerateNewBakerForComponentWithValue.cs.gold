@@ -1,0 +1,32 @@
+﻿Provided elements:
+ 0: Value:System.Int32
+
+// ${KIND:Unity.GenerateBakerAndAuthoring}
+// ${SELECT0:Value:System.Int32}
+// ${GLOBAL0:SelectedBaker=New Baker}
+
+using Unity.Entities;
+using Unity.Mathematics;
+using UnityEngine;
+
+namespace ComponentsAndTags
+{
+    struct Move{caret}Speed : IComponentData
+    {
+        public int Value;
+    }
+
+    public class MoveSpeedAuthoring : MonoBehaviour
+    {
+      public int MoveSpeed;
+    }
+
+    public class MoveSpeedBaker : Baker<MoveSpeedAuthoring>
+    {
+      public override void Bake(MoveSpeedAuthoring authoring)
+      {
+        var entity = GetEntity(TransformUsageFlags.Dynamic);
+        AddComponent(entity, new MoveSpeed { Value = authoring.MoveSpeed });
+      }
+    }
+}

@@ -1,0 +1,4 @@
+#pragma kernel
+
+int main()
+{}

@@ -54,6 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         private readonly Dictionary<VirtualFileSystemPath, LifetimeDefinition> myRootPathLifetimes;
         private readonly VirtualFileSystemPath mySolutionDirectory;
         private readonly VirtualFileSystemPath myProjectSettingsFolder;
+        private readonly UnityIndexedExternalProjectFileTypeFilter myIndexedExternalProjectFileTypeFilter;
 
         public UnityExternalFilesModuleProcessor(Lifetime lifetime, ILogger logger, ISolution solution,
                                                  ChangeManager changeManager,
@@ -66,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                                                  UnityExternalFilesModuleFactory moduleFactory,
                                                  UnityExternalFilesIndexDisablingStrategy indexDisablingStrategy,
                                                  UnityAssetInfoCollector usageStatistics,
-                                                 AssetIndexingSupport assetIndexingSupport)
+                                                 AssetIndexingSupport assetIndexingSupport, UnityIndexedExternalProjectFileTypeFilter indexedExternalProjectFileTypeFilter)
         {
             myLifetime = lifetime;
             myLogger = logger;
@@ -81,6 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             myIndexDisablingStrategy = indexDisablingStrategy;
             myUsageStatistics = usageStatistics;
             myAssetIndexingSupport = assetIndexingSupport;
+            myIndexedExternalProjectFileTypeFilter = indexedExternalProjectFileTypeFilter;
 
             myRootPathLifetimes = new Dictionary<VirtualFileSystemPath, LifetimeDefinition>();
 
@@ -110,20 +112,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         private bool IsIndexedWithCurrentIndexingSupport(VirtualFileSystemPath path)
         {
             if (myAssetIndexingSupport.IsEnabled.Value)
-                return true;
+                return myIndexedExternalProjectFileTypeFilter.Accept(path, true);
 
             return IsIndexedFileWithDisabledAssetSupport(path);
         }
 
-        private bool IsIndexedFileWithDisabledAssetSupport(VirtualFileSystemPath path)
-        {
-            return path.IsAsmDefMeta() || path.IsAsmRef() || path.IsAsmDef() || IsFromProjectSettingsFolder(path) || path.IsFromResourceFolder();
-        }
+        private bool IsIndexedFileWithDisabledAssetSupport(VirtualFileSystemPath path) => 
+            myIndexedExternalProjectFileTypeFilter.Accept(path, false) || path.IsAsmDefMeta() /* HACK, normally .meta files excluded */ || IsFromProjectSettingsFolder(path) || path.IsFromResourceFolder();
 
-        private bool IsFromProjectSettingsFolder(VirtualFileSystemPath path)
-        {
-            return path.StartsWith(myProjectSettingsFolder);
-        }
+        private bool IsFromProjectSettingsFolder(VirtualFileSystemPath path) => path.StartsWith(myProjectSettingsFolder);
 
         private ExternalFiles FilterFiles(ExternalFiles files)
         {
@@ -612,11 +609,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
         }
-
-        private bool IsIndexedExternalFile(VirtualFileSystemPath path)
-        {
-            return path.IsIndexedExternalFile() && IsIndexedWithCurrentIndexingSupport(path) && !IsBinaryAsset(path) && !IsAssetExcludedByName(path);
-        }
+        
+        private bool IsIndexedExternalFile(VirtualFileSystemPath path) => IsIndexedWithCurrentIndexingSupport(path) && !IsBinaryAsset(path) && !IsAssetExcludedByName(path);
 
         private static bool IsBinaryAsset(VirtualDirectoryEntryData directoryEntry)
         {
