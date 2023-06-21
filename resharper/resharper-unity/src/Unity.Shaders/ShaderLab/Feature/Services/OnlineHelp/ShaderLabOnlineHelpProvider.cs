@@ -28,13 +28,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.O
         public Uri? GetUrl(IDeclaredElement element)
         {
             var unityVersion = element.GetSolution().GetComponent<IUnityVersion>();
-            if (element.GetElementType() != ShaderLabDeclaredElementType.Command)
+            if (element is not IShaderLabCommandDeclaredElement commandElement)
                 return null;
-            var keyword = element.ShortName;
+            var keyword = commandElement.ShortName;
             return myDocumentation.GetDocumentationUri(unityVersion, myShaderLabCatalog, new HybridCollection<string>(keyword), keyword);
         }
 
-        public string GetPresentableName(IDeclaredElement element) => element.ShortName;
+        public string GetPresentableName(IDeclaredElement element) => DeclaredElementPresenter.Format(element.PresentationLanguage, DeclaredElementPresenter.QUALIFIED_NAME_PRESENTER, element).Text;
 
         public int Priority => 0;
         public bool ShouldValidate => false;
