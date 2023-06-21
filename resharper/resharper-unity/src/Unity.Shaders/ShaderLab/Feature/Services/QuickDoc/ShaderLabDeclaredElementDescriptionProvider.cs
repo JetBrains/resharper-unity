@@ -10,15 +10,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Q
     [DeclaredElementDescriptionProvider]
     public class ShaderLabDeclaredElementDescriptionProvider : IDeclaredElementDescriptionProvider
     {
-        public RichTextBlock? GetElementDescription(IDeclaredElement element, DeclaredElementDescriptionStyle style, PsiLanguageType language, IPsiModule module = null)
-        {
-            var type = element.GetElementType();
-            return type switch
+        public RichTextBlock? GetElementDescription(IDeclaredElement element, DeclaredElementDescriptionStyle style, PsiLanguageType language, IPsiModule? module = null) =>
+            element switch
             {
-                _ when type == ShaderLabDeclaredElementType.Command => new RichTextBlock($"ShaderLab command {element.ShortName}"), 
+                IShaderLabCommandDeclaredElement => new RichTextBlock(DeclaredElementPresenter.Format(language, DeclaredElementPresenter.QUALIFIED_NAME_PRESENTER, element).Prepend("ShaderLab command ")),
                 _ => null
             };
-        }
 
         public bool? IsElementObsolete(IDeclaredElement element, out RichTextBlock? obsoleteDescription, DeclaredElementDescriptionStyle style)
         {

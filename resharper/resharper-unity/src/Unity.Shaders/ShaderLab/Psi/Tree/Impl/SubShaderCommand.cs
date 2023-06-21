@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using JetBrains.ReSharper.Plugins.Unity.Services.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Common.Services.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl
 {
@@ -19,6 +19,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl
 
                 if (pass.PassDefinition is IStructuralDeclaration passDeclaration)
                     yield return passDeclaration;
+                else if (pass.PassDefinition is ITexturePassDeclaration texturePassDeclaration)
+                    yield return texturePassDeclaration.Command;
+                
             }
         }
     }

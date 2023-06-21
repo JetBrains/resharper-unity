@@ -1,5 +1,7 @@
-﻿using System.Text;
+﻿#nullable enable
+using System.Text;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.UI.RichText;
 using JetBrains.Util;
@@ -11,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElemen
     {
         public static ShaderLabDeclaredElementPresenter Instance => PsiShared.GetComponent<ShaderLabDeclaredElementPresenter>();
 
-        public RichText Format(DeclaredElementPresenterStyle style, IDeclaredElement element, ISubstitution substitution,
+        public RichText? Format(DeclaredElementPresenterStyle style, IDeclaredElement element, ISubstitution substitution,
             out DeclaredElementPresenterMarking marking)
         {
             marking = new DeclaredElementPresenterMarking();
@@ -47,7 +49,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElemen
 
             if (style.ShowName != NameStyle.NONE)
             {
-                marking.NameRange = AppendString(result, element.ShortName);
+                if (element is ShaderLabCommandDeclaredElement command)
+                    marking.NameRange = AppendCommandName(result, command.ShortName, command.EntityName);
+                else 
+                    marking.NameRange = AppendString(result, element.ShortName);
                 result.Append(" ");
             }
 
@@ -89,6 +94,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElemen
         {
             while (sb.Length > 0 && sb[sb.Length - 1] == ' ')
                 sb.Remove(sb.Length - 1, 1);
+        }
+
+        private static TextRange AppendCommandName(StringBuilder sb, string commandKeyword, string? entityName)
+        {
+            var start = sb.Length;
+            sb.Append(commandKeyword);
+            if (!string.IsNullOrEmpty(entityName))
+                sb.Append(' ').Append(entityName);
+            
+            return new TextRange(start, sb.Length);
         }
 
         private static TextRange AppendString(StringBuilder sb, string substr)

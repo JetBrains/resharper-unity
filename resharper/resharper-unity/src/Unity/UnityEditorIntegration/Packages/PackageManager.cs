@@ -150,6 +150,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         public PackageData? GetOwningPackage(VirtualFileSystemPath path) =>
             myFileSystemPathTrie.FindLongestPrefix(path);
 
+        public bool IsLocalPackageCacheFile(VirtualFileSystemPath path) => path.StartsWith(myLocalPackageCacheFolder);
+
         public void RefreshPackages() => ScheduleRefresh();
 
         private void ScheduleRefresh()

@@ -1,0 +1,11 @@
+Shader "Bar"
+{
+    SubShader
+    {
+        UsePass "|Foo|(0)/|BAZ|(1)"
+    }
+}
+
+------------------------------------------------
+0: result=OK declaredElem=Foo
+1: result=OK declaredElem=BAZ

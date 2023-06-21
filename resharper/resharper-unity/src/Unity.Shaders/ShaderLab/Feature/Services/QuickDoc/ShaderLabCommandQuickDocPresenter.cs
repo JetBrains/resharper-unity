@@ -1,6 +1,5 @@
 #nullable enable
 using System.Xml;
-using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickDoc;
 using JetBrains.ReSharper.Feature.Services.QuickDoc.Render;
@@ -16,13 +15,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Q
 {
     public class ShaderLabCommandQuickDocPresenter : IQuickDocPresenter
     {
-        private readonly IElementInstancePointer<IDeclaredElement> myCommandPointer;
+        private readonly IElementInstancePointer<IShaderLabCommandDeclaredElement> myCommandPointer;
         private readonly XmlDocHtmlPresenter myXmlDocHtmlPresenter;
         private readonly string myDescription;
         
-        public ShaderLabCommandQuickDocPresenter(IDeclaredElement command, string description, XmlDocHtmlPresenter xmlDocHtmlPresenter)
+        public ShaderLabCommandQuickDocPresenter(IShaderLabCommandDeclaredElement command, string description, XmlDocHtmlPresenter xmlDocHtmlPresenter)
         {
-            Assertion.Assert(command.GetElementType() == ShaderLabDeclaredElementType.Command, "ShaderLabCommandQuickDocPresenter requires ShaderLab command");
             myCommandPointer = command.CreateElementInstancePointer();
             myDescription = description;
             myXmlDocHtmlPresenter = xmlDocHtmlPresenter;
@@ -32,10 +30,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Q
         {
             if (myCommandPointer.Resolve() is not {} commandInstance)
                 return QuickDocTitleAndText.Empty;
+            
             var commandElement = commandInstance.Element;
-            
             var title = DeclaredElementPresenter.Format(presentationLanguage, DeclaredElementPresenter.FULL_NESTED_NAME_PRESENTER, commandElement);
-            
             var details = GetXmlDoc(commandElement);
             var text = myXmlDocHtmlPresenter.Run(details, null,
                 commandInstance, presentationLanguage, XmlDocHtmlUtil.NavigationStyle.ReadMore,
@@ -44,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Q
             return new QuickDocTitleAndText(text, title);
         }
 
-        private XmlNode GetXmlDoc(IDeclaredElement element)
+        private XmlNode GetXmlDoc(IShaderLabCommandDeclaredElement element)
         {
             var xmlDocNode = element.GetXMLDoc(true);
             if (xmlDocNode == null)
