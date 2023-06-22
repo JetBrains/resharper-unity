@@ -19,197 +19,207 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IBlendCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:BLEND_KEYWORD, text:Blend)
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IBlendValue
-                      ShaderLabTokenType+KeywordTokenElement(type:OFF_KEYWORD, text:Off)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                    IBlendCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:BLEND_KEYWORD, text:Blend)
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      IBlendValue
+                        ShaderLabTokenType+KeywordTokenElement(type:OFF_KEYWORD, text:Off)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IBlendCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:BLEND_KEYWORD, text:Blend)
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IBlendValue
-                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:2)
+                    IBlendCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:BLEND_KEYWORD, text:Blend)
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
-                      ShaderLabTokenType+KeywordTokenElement(type:OFF_KEYWORD, text:Off)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                      IBlendValue
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:2)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        ShaderLabTokenType+KeywordTokenElement(type:OFF_KEYWORD, text:Off)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IBlendCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:BLEND_KEYWORD, text:Blend)
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IBlendValue
-                      IBlendFactor
-                        ShaderLabTokenType+KeywordTokenElement(type:SRC_ALPHA_KEYWORD, text:SrcAlpha)
+                    IBlendCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:BLEND_KEYWORD, text:Blend)
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
-                      IBlendFactor
-                        ShaderLabTokenType+KeywordTokenElement(type:ONE_MINUS_SRC_ALPHA_KEYWORD, text:OneMinusSrcAlpha)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                      IBlendValue
+                        IBlendFactor
+                          ShaderLabTokenType+KeywordTokenElement(type:SRC_ALPHA_KEYWORD, text:SrcAlpha)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        IBlendFactor
+                          ShaderLabTokenType+KeywordTokenElement(type:ONE_MINUS_SRC_ALPHA_KEYWORD, text:OneMinusSrcAlpha)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IBlendCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:BLEND_KEYWORD, text:Blend)
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IBlendValue
-                      IBlendFactor
-                        ShaderLabTokenType+KeywordTokenElement(type:ONE_KEYWORD, text:One)
+                    IBlendCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:BLEND_KEYWORD, text:Blend)
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
-                      IBlendFactor
-                        ShaderLabTokenType+KeywordTokenElement(type:ONE_KEYWORD, text:One)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                      IBlendValue
+                        IBlendFactor
+                          ShaderLabTokenType+KeywordTokenElement(type:ONE_KEYWORD, text:One)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        IBlendFactor
+                          ShaderLabTokenType+KeywordTokenElement(type:ONE_KEYWORD, text:One)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IBlendCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:BLEND_KEYWORD, text:Blend)
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IBlendValue
-                      IBlendFactor
-                        ShaderLabTokenType+KeywordTokenElement(type:ONE_KEYWORD, text:One)
+                    IBlendCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:BLEND_KEYWORD, text:Blend)
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
-                      IBlendFactor
-                        ShaderLabTokenType+KeywordTokenElement(type:ONE_KEYWORD, text:One)
-                      ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-                      Whitespace(type:WHITESPACE, text: ) spaces: " "
-                      IBlendFactor
-                        ShaderLabTokenType+KeywordTokenElement(type:ZERO_KEYWORD, text:Zero)
-                      Whitespace(type:WHITESPACE, text: ) spaces: " "
-                      IBlendFactor
-                        ShaderLabTokenType+KeywordTokenElement(type:SRC_COLOR_KEYWORD, text:SrcColor)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                      IBlendValue
+                        IBlendFactor
+                          ShaderLabTokenType+KeywordTokenElement(type:ONE_KEYWORD, text:One)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        IBlendFactor
+                          ShaderLabTokenType+KeywordTokenElement(type:ONE_KEYWORD, text:One)
+                        ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        IBlendFactor
+                          ShaderLabTokenType+KeywordTokenElement(type:ZERO_KEYWORD, text:Zero)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        IBlendFactor
+                          ShaderLabTokenType+KeywordTokenElement(type:SRC_COLOR_KEYWORD, text:SrcColor)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IBlendCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:BLEND_KEYWORD, text:Blend)
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IBlendValue
-                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:2)
+                    IBlendCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:BLEND_KEYWORD, text:Blend)
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
-                      IBlendFactor
-                        ShaderLabTokenType+KeywordTokenElement(type:ONE_KEYWORD, text:One)
-                      Whitespace(type:WHITESPACE, text: ) spaces: " "
-                      IBlendFactor
-                        ShaderLabTokenType+KeywordTokenElement(type:ONE_KEYWORD, text:One)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                      IBlendValue
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:2)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        IBlendFactor
+                          ShaderLabTokenType+KeywordTokenElement(type:ONE_KEYWORD, text:One)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        IBlendFactor
+                          ShaderLabTokenType+KeywordTokenElement(type:ONE_KEYWORD, text:One)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IBlendOpCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IBlendOpValue
-                      ShaderLabTokenType+KeywordTokenElement(type:ADD_KEYWORD, text:Add)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                    IBlendOpCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      IBlendOpValue
+                        ShaderLabTokenType+KeywordTokenElement(type:ADD_KEYWORD, text:Add)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IBlendOpCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IBlendOpValue
-                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:3)
+                    IBlendOpCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
-                      ShaderLabTokenType+KeywordTokenElement(type:SUB_KEYWORD, text:Sub)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                      IBlendOpValue
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:3)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        ShaderLabTokenType+KeywordTokenElement(type:SUB_KEYWORD, text:Sub)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IBlendOpCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IBlendOpValue
-                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:3)
+                    IBlendOpCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
-                      ShaderLabTokenType+KeywordTokenElement(type:MIN_KEYWORD, text:Min)
-                      ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
-                      Whitespace(type:WHITESPACE, text: ) spaces: " "
-                      ShaderLabTokenType+KeywordTokenElement(type:MAX_KEYWORD, text:Max)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                      IBlendOpValue
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:3)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        ShaderLabTokenType+KeywordTokenElement(type:MIN_KEYWORD, text:Min)
+                        ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        ShaderLabTokenType+KeywordTokenElement(type:MAX_KEYWORD, text:Max)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IAlphaToMaskCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:ALPHA_TO_MASK_KEYWORD, text:AlphaToMask)
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IBoolValue
-                      ShaderLabTokenType+KeywordTokenElement(type:ON_KEYWORD, text:On)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                    IAlphaToMaskCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:ALPHA_TO_MASK_KEYWORD, text:AlphaToMask)
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      IBoolValue
+                        ShaderLabTokenType+KeywordTokenElement(type:ON_KEYWORD, text:On)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:    ) spaces: "    "
             ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

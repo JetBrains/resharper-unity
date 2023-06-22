@@ -7,7 +7,7 @@ import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
-import com.intellij.workspaceModel.ide.WorkspaceModel
+import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.jetbrains.rider.model.RdSolutionDescriptor
 import com.jetbrains.rider.model.RdSolutionState
 import com.jetbrains.rider.plugins.unity.UnityBundle

@@ -1,0 +1,28 @@
+﻿Shader "Foo" {
+    HLSLINCLUDE
+    #include "Unused.hlsl"
+    #include "Used.hlsl"
+    ENDHLSL
+    
+    SubShader
+    {
+        Pass
+        {
+            HLSLPROGRAM
+            #pragma fragment frag
+
+            |#include "Unused.hlsl"|(0)
+            |#include "Used.hlsl"|(1)
+
+            void frag()
+            {
+                usedFn();
+            }
+            ENDHLSL
+        }
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Dead Code: Possibly unused #include directive
+(1): ReSharper Dead Code: Possibly unused #include directive

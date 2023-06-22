@@ -25,6 +25,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
         // IUnityReferenceChangeHandler
         public readonly ViewableProperty<bool> HasUnityReference = new(false);
 
+        public bool IsUnityProjectOrHasUnityReference => IsUnityProject.HasTrueValue() || HasUnityReference.HasTrueValue();
+
         public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
                                     bool inTests = false)
         {

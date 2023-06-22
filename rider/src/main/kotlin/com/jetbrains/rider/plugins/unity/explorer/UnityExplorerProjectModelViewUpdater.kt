@@ -5,10 +5,10 @@ package com.jetbrains.rider.plugins.unity.explorer
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.platform.backend.workspace.WorkspaceModelChangeListener
 import com.intellij.ui.tree.TreeVisitor
-import com.intellij.workspaceModel.ide.WorkspaceModelChangeListener
-import com.intellij.workspaceModel.ide.WorkspaceModelTopics
-import com.intellij.workspaceModel.storage.VersionedStorageChange
+import com.intellij.platform.backend.workspace.WorkspaceModelTopics
+import com.intellij.platform.workspace.storage.VersionedStorageChange
 import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 import com.jetbrains.rider.projectView.ProjectModelViewUpdater
 import com.jetbrains.rider.projectView.solutionDirectory

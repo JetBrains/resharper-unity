@@ -1,0 +1,7 @@
+Shader "abc"
+{
+    Properties
+    {
+        {caret}
+    }
+}
