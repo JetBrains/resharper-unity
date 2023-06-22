@@ -10,7 +10,7 @@ import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
-import com.intellij.workspaceModel.ide.WorkspaceModel
+import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
 import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity

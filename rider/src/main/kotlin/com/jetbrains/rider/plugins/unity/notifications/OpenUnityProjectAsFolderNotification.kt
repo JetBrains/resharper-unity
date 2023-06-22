@@ -15,7 +15,7 @@ import com.intellij.openapi.vfs.isFile
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
 import com.intellij.util.application
 import com.intellij.util.ui.EdtInvocationManager
-import com.intellij.workspaceModel.ide.WorkspaceModel
+import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.ide.model.RdVirtualSolution
 import com.jetbrains.rd.platform.util.lifetime

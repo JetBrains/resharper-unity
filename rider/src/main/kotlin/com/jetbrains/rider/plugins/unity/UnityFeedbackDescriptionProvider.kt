@@ -4,7 +4,7 @@ package com.jetbrains.rider.plugins.unity
 
 import com.intellij.ide.FeedbackDescriptionProvider
 import com.intellij.openapi.project.Project
-import com.intellij.workspaceModel.ide.WorkspaceModel
+import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.workspace.tryGetPackage
 
