@@ -3,6 +3,7 @@ using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Rd.Tasks;
 using JetBrains.Rider.Model.Unity.BackendUnity;
+using JetBrains.Rider.PathLocator;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -56,7 +57,7 @@ namespace JetBrains.Rider.Unity.Editor
           // * macOS: /Applications/Unity/Hub/Editor/2022.2.3f1/PlaybackEngines/AndroidPlayer
           // * Windows: C:\Program Files\Unity\Hub\Editor\2022.2.3f1\Editor\Data\PlaybackEngines\AndroidPlayer
           var unityAppBaseDataFolder =
-            PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX
+            PluginSettings.SystemInfoRiderPlugin.OS == OS.MacOSX
               ? Path.GetFullPath(Path.Combine(Path.GetFullPath(EditorApplication.applicationPath), ".."))
               : Path.GetFullPath(EditorApplication.applicationContentsPath);
           sdkRoot = Path.Combine(unityAppBaseDataFolder, "PlaybackEngines/AndroidPlayer");

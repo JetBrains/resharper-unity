@@ -1,11 +1,18 @@
 ﻿using System.IO;
 using System.Linq;
+using JetBrains.Rider.PathLocator;
 
 namespace JetBrains.Rider.Unity.Editor
 {
   internal class RiderPathProvider
   {
     private readonly IPluginSettings myPluginSettings;
+    public static readonly RiderPathLocator RiderPathLocator;
+
+    static RiderPathProvider()
+    {
+      RiderPathLocator = new RiderPathLocator(new RiderLocatorEnvironment());
+    }
 
     public RiderPathProvider(IPluginSettings pluginSettings)
     {
@@ -23,14 +30,14 @@ namespace JetBrains.Rider.Unity.Editor
       if (!string.IsNullOrEmpty(externalEditor))
       {
         var alreadySetPath = new FileInfo(externalEditor).FullName;
-        if (RiderPathExist(alreadySetPath, myPluginSettings.OperatingSystemFamilyRider))
+        if (RiderPathExist(alreadySetPath, myPluginSettings.OSRider))
         {
           return alreadySetPath;
         }
       }
 
-      var paths = RiderPathLocator.GetAllFoundPaths(myPluginSettings.OperatingSystemFamilyRider);
-      return paths.FirstOrDefault();
+      var paths = RiderPathLocator.GetAllRiderPaths();
+      return paths.Select(a=>a.Path).FirstOrDefault();
     }
 
     /// <summary>
@@ -48,7 +55,7 @@ namespace JetBrains.Rider.Unity.Editor
       if (!string.IsNullOrEmpty(externalEditor))
       {
         var alreadySetPath = new FileInfo(externalEditor).FullName;
-        if (RiderPathExist(alreadySetPath, myPluginSettings.OperatingSystemFamilyRider))
+        if (RiderPathExist(alreadySetPath, myPluginSettings.OSRider))
         {
           if (!allFoundPaths.Any() || allFoundPaths.Any() && allFoundPaths.Contains(alreadySetPath))
           {
@@ -60,7 +67,7 @@ namespace JetBrains.Rider.Unity.Editor
       return allFoundPaths.FirstOrDefault();
     }
 
-    internal static bool RiderPathExist(string path, OperatingSystemFamilyRider operatingSystemFamilyRider)
+    internal static bool RiderPathExist(string path, OS osRider)
     {
       if (string.IsNullOrEmpty(path))
         return false;
@@ -69,7 +76,7 @@ namespace JetBrains.Rider.Unity.Editor
       if (!fileInfo.Name.ToLower().Contains("rider"))
         return false;
       var directoryInfo = new DirectoryInfo(path);
-      var isMac = operatingSystemFamilyRider == OperatingSystemFamilyRider.MacOSX;
+      var isMac = osRider == OS.MacOSX;
       return fileInfo.Exists || (isMac && directoryInfo.Exists);
     }
   }

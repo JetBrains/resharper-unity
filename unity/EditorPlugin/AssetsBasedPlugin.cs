@@ -39,7 +39,7 @@ namespace JetBrains.Rider.Unity.Editor
       // system.
       // If there are multiple Rider installs, the sort order is undefined/implementation specific (system install,
       // followed by Toolbox, in order of channel directories read from disk)
-      var allPossibleRiderPaths = RiderPathLocator.GetAllFoundPaths(pluginSettings.OperatingSystemFamilyRider);
+      var allPossibleRiderPaths = RiderPathProvider.RiderPathLocator.GetAllRiderPaths().Select(a=>a.Path).ToArray();
       var riderPath = riderPathProvider.GetActualRider(EditorPrefsWrapper.ExternalScriptEditor,
         allPossibleRiderPaths);
       if (!string.IsNullOrEmpty(riderPath))

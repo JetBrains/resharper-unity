@@ -9,6 +9,7 @@ using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
+using JetBrains.Rider.PathLocator;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -127,7 +128,7 @@ namespace JetBrains.Rider.Unity.Editor
       }
 
       var proc = new Process();
-      if (myPluginSettings.OperatingSystemFamilyRider == OperatingSystemFamilyRider.MacOSX)
+      if (myPluginSettings.OSRider == OS.MacOSX)
       {
         proc.StartInfo.FileName = "open";
         proc.StartInfo.Arguments = $"-n \"{defaultApp}\" --args {args}";
@@ -152,7 +153,7 @@ namespace JetBrains.Rider.Unity.Editor
     // This is required to be called to help frontend Focus itself
     private void AllowSetForegroundWindow(int? processId=null)
     {
-      if (myPluginSettings.OperatingSystemFamilyRider != OperatingSystemFamilyRider.Windows)
+      if (myPluginSettings.OSRider != OS.Windows)
         return;
 
       try

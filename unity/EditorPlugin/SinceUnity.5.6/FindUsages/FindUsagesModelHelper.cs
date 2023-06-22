@@ -100,7 +100,7 @@ namespace JetBrains.Rider.Unity.Editor.FindUsages
 
     private static void ExpandMinimizedUnityWindow()
     {
-      if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+      if (PluginSettings.SystemInfoRiderPlugin.OS == PathLocator.OS.Windows)
       {
         var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
         var windowHandles = topLevelWindows
