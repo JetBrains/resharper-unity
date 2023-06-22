@@ -94,8 +94,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
 
             AddPerformanceAnalysisSubSection();
             AddBurstAnalysisSubSection();
-            using (Indent())
-                AddNamingSubSection();
+            AddNamingSubSection();
         }
 
         private void AddRefactoringSection()
