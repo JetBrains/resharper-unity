@@ -64,7 +64,8 @@ IShaderLabFile
               IUsePassDef
                 ShaderLabTokenType+KeywordTokenElement(type:USEPASS_KEYWORD, text:UsePass)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"MyPassName")
+                IQualifiedPassReferenceElement
+                  ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"MyPassName")
             Whitespace(type:WHITESPACE, text: ) spaces: " "
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:    ) spaces: "    "

@@ -27,6 +27,8 @@ namespace Unity.Entities
 
         public void AddComponent<T>(Entity entity, in T component) where T : unmanaged, IComponentData {}
         public void AddComponent<T>(Entity entity) {}
+        public void AddComponentObject<T>(T component) where T : class {}
+        public void AddComponentObject<T>(Entity entity, T component) where T : class {} 
     }
     
     public abstract class Baker<TAuthoringType> : IBaker {}

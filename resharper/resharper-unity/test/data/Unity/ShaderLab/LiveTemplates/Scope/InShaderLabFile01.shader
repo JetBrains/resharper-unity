@@ -1,0 +1,4 @@
+{caret}Shader "abc"
+{
+    
+}

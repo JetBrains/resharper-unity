@@ -54,6 +54,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 if (psiSourceFile == null)
                     return;
 
+                if (string.IsNullOrEmpty(literal))
+                {
+                    var (declaredElement, _) = element.InvocationExpressionReference.Resolve();
+                    if(declaredElement is IMethod { ShortName: "LoadAll" })
+                        return;
+                }
+                
                 var dependencyStore = psiSourceFile.GetPsiServices().DependencyStore;
                 if (dependencyStore.HasDependencySet)
                     dependencyStore.AddDependency(ResourceLoadCache.CreateDependency(psiSourceFile, literal));

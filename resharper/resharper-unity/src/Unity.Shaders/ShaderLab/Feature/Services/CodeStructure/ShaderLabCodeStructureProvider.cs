@@ -1,8 +1,8 @@
 #nullable enable
 
 using JetBrains.ReSharper.Feature.Services.CodeStructure;
-using JetBrains.ReSharper.Plugins.Unity.Services.CodeStructure;
-using JetBrains.ReSharper.Plugins.Unity.Services.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Common.Services.CodeStructure;
+using JetBrains.ReSharper.Plugins.Unity.Common.Services.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;

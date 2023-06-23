@@ -34,7 +34,7 @@ namespace ComponentsAndTags
                 AddComponent(entity, new GraveyardProperties
                 {
                     NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn,
-                    TombstonePrefab = GetEntity(authoring.TombstonePrefab)
+                    TombstonePrefab = GetEntity(authoring.TombstonePrefab, TransformUsageFlags.Dynamic)
                 });
             }
         }

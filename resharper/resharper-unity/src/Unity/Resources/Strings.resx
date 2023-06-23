@@ -446,7 +446,7 @@
         <value>Used implicitly</value>
     </data>
     <data name="InitialiseOnLoadCctorDetector_AddDeclarationHighlighting_Tooltip" xml:space="preserve">
-        <value>Called when Unity first launches the editor, the player, or recompiles scripts</value>
+        <value>Called when Unity first launches the editor or the player, or when it recompiles scripts</value>
     </data>
     <data name="InitializeComponentBulbActionBase_Text_Initialize_in___0__" xml:space="preserve">
         <value>Initialize in '{0}'</value>
@@ -1003,6 +1003,9 @@
     <data name="UnityDots_CurrentComponentLookupMustBeUpdated" xml:space="preserve">
         <value>Field of 'ComponentLookup' type must be updated before being used.</value>
     </data>
+    <data name="UnityDots_GenerateBakerAndAuthoring_Override_Component_In_Baker" xml:space="preserve">
+        <value>Override '{0}' initialization in Baker</value>
+    </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_Baker" xml:space="preserve">
         <value>Baker</value>
         <comment>Don't localize</comment>
@@ -1090,15 +1093,24 @@
     <data name="UnityDots_DotsPartialClassesQuickFix_Add_Partial_Readonly" xml:space="preserve">
         <value>Add '{0}' to {1}</value>
     </data>
+    <data name="UnityDots_AddFieldToExistingBakerAndAuthoring_Description" xml:space="preserve">
+        <value>Add IComponentData field to existing Baker</value>
+    </data>
+    <data name="UnityDots_AddFieldToExistingBakerAndAuthoring_Text" xml:space="preserve">
+        <value>Add '{0}' to existing Baker</value>
+    </data>
+    <data name="UnityDots_AddFieldToExistingBakerAndAuthoring_NoBakersFound" xml:space="preserve">
+        <value>No Bakers found in the project</value>
+    </data>
+    <data name="UnityDots_AddFieldToExistingBakerAndAuthoring_NoBakersForComponent" xml:space="preserve">
+        <value>No Bakers found for the '{0}' component</value>
+    </data>
     <data name="UnityEditorFolder_Text" xml:space="preserve">
         <value>Unity Editor folder</value>
     </data>
     <data name="UnityEventFunctionInheritanceMarkOnGutter_KindName_Unity_event_function" xml:space="preserve">
         <value>Unity event function</value>
-    </data>
-    <data name="UnityFindUsagesProvider_GetNotFoundMessage__are_only_implicit_" xml:space="preserve">
-        <value> are only implicit.</value>
-    </data>
+    </data>    
     <data name="UnityFindUsagesProvider_GetNotFoundMessage_SearchRequestLocalizedTitle_are_only_implicit_" xml:space="preserve">
         <value>{0} are only implicit.</value>
     </data>
@@ -1155,7 +1167,7 @@
     </data>
     <data name="UnityOptionsPage_AddDebuggingSection_Break_on_unhandled_exceptions__setting_for_IL2CPP_players_Comment" xml:space="preserve">
         <value>Unity's Mono 4.x runtime ignores the 'Break on unhandled exceptions' setting.
-This option applies the same behaviour to IL2CPP players.</value>
+This option applies the same behavior to IL2CPP players.</value>
     </data>
     <data name="UnityOptionsPage_AddDebuggingSection_Debugging" xml:space="preserve">
         <value>Debugging</value>
@@ -1353,7 +1365,7 @@ a plugin to be installed to a project.</value>
         <value>Prefab cache</value>
     </data>
     <data name="UnitySettings_t_Should_yaml_heuristic_be_applied_" xml:space="preserve">
-        <value>Should YAML heuristic be applied?</value>
+        <value>Whether to apply YAML heuristic</value>
     </data>
     <data name="UnitySettings_t_Show_Inspector_properties_changes_in_editor" xml:space="preserve">
         <value>Show Inspector properties changes in editor</value>

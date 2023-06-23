@@ -1,0 +1,21 @@
+Shader "ABC"
+{
+    SubShader
+    {
+        Pass
+        {
+            HLSLPROGRAM
+            #include "common.hlsl"
+
+            void zzz()
+            {
+            }
+
+            void foo()
+            {
+                zzz();
+            }
+            ENDHLSL
+        }
+    }
+}

@@ -3,8 +3,8 @@
 using JetBrains.DocumentModel;
 using JetBrains.IDE.UI;
 using JetBrains.ReSharper.Feature.Services.Breadcrumbs;
-using JetBrains.ReSharper.Plugins.Unity.Services.Breadcrumbs;
-using JetBrains.ReSharper.Plugins.Unity.Services.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Common.Services.Breadcrumbs;
+using JetBrains.ReSharper.Plugins.Unity.Common.Services.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
