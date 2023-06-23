@@ -114,9 +114,9 @@ public class ||AllWrong|(34)|(35) : AssetPostprocessor
 (20): ReSharper Unity Implicitly Used Identifier: 
 (21): UnityCodeInsights: Unity type | Unity type | Custom Unity type
 (22): ReSharper Unity Implicitly Used Identifier: 
-(23): UnityCodeInsights: Event function | Event function | 
+(23): UnityCodeInsights: Event function | Event function | This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or just completely replace them). Hopefully we'll never need this.
 (24): ReSharper Unity Implicitly Used Identifier: 
-(25): UnityCodeInsights: Event function | Event function | 
+(25): UnityCodeInsights: Event function | Event function | This callback is used by UnityVS to take over project generation from Unity
 (26): ReSharper Unity Implicitly Used Identifier: 
 (27): UnityCodeInsights: Event function | Event function | 
 (28): ReSharper Unity Implicitly Used Identifier: 
@@ -128,4 +128,4 @@ public class ||AllWrong|(34)|(35) : AssetPostprocessor
 (34): ReSharper Unity Implicitly Used Identifier: 
 (35): UnityCodeInsights: Unity type | Unity type | Custom Unity type
 (36): ReSharper Unity Implicitly Used Identifier: 
-(37): UnityCodeInsights: Event function | Event function | 
+(37): UnityCodeInsights: Event function | Event function | This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or just completely replace them). Hopefully we'll never need this.
