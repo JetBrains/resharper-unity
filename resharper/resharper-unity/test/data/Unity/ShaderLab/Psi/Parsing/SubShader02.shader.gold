@@ -64,22 +64,23 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-                  ICgProgramBlock
-                    ShaderLabTokenType+CgProgramTokenElement(type:CG_PROGRAM, text:CGPROGRAM)
-                    ICgContent
-                      ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:\n            #pragma vertex vert\n            #pragma fragment frag\n            \n            // vertex shader\n            // this time instead of using "appdata" struct, just spell inputs manually,\n            // and instead of returning v2f struct, also just return a single output\n            // float4 clip position\n            float4 vert (float4 vertex : POSITION) : SV_POSITION\n            {\n                return mul(UNITY_MATRIX_MVP, vertex);\n            }\n            \n            // color from the material\n            fixed4 _Color;\n\n            // pixel shader, no inputs needed\n            fixed4 frag () : SV_Target\n            {\n                return _Color; // just return it\n            }\n            )
-                    ShaderLabTokenType+CgEndTokenElement(type:CG_END, text:ENDCG)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                    ICgProgramBlock
+                      ShaderLabTokenType+CgProgramTokenElement(type:CG_PROGRAM, text:CGPROGRAM)
+                      ICgContent
+                        ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:\n            #pragma vertex vert\n            #pragma fragment frag\n            \n            // vertex shader\n            // this time instead of using "appdata" struct, just spell inputs manually,\n            // and instead of returning v2f struct, also just return a single output\n            // float4 clip position\n            float4 vert (float4 vertex : POSITION) : SV_POSITION\n            {\n                return mul(UNITY_MATRIX_MVP, vertex);\n            }\n            \n            // color from the material\n            fixed4 _Color;\n\n            // pixel shader, no inputs needed\n            fixed4 frag () : SV_Target\n            {\n                return _Color; // just return it\n            }\n            )
+                      ShaderLabTokenType+CgEndTokenElement(type:CG_END, text:ENDCG)
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:    ) spaces: "    "
             ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
@@ -95,22 +96,23 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-                  ICgProgramBlock
-                    ShaderLabTokenType+CgProgramTokenElement(type:CG_PROGRAM, text:CGPROGRAM)
-                    ICgContent
-                      ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:\n            #pragma vertex vert\n            #pragma fragment frag\n            \n            // vertex shader\n            // this time instead of using "appdata" struct, just spell inputs manually,\n            // and instead of returning v2f struct, also just return a single output\n            // float4 clip position\n            float4 vert (float4 vertex : POSITION) : SV_POSITION\n            {\n                return mul(UNITY_MATRIX_MVP, vertex);\n            }\n            \n            // color from the material\n            fixed4 _Color;\n\n            // pixel shader, no inputs needed\n            fixed4 frag () : SV_Target\n            {\n                return _Color; // just return it\n            }\n            )
-                    ShaderLabTokenType+CgEndTokenElement(type:CG_END, text:ENDCG)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                    ICgProgramBlock
+                      ShaderLabTokenType+CgProgramTokenElement(type:CG_PROGRAM, text:CGPROGRAM)
+                      ICgContent
+                        ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:\n            #pragma vertex vert\n            #pragma fragment frag\n            \n            // vertex shader\n            // this time instead of using "appdata" struct, just spell inputs manually,\n            // and instead of returning v2f struct, also just return a single output\n            // float4 clip position\n            float4 vert (float4 vertex : POSITION) : SV_POSITION\n            {\n                return mul(UNITY_MATRIX_MVP, vertex);\n            }\n            \n            // color from the material\n            fixed4 _Color;\n\n            // pixel shader, no inputs needed\n            fixed4 frag () : SV_Target\n            {\n                return _Color; // just return it\n            }\n            )
+                      ShaderLabTokenType+CgEndTokenElement(type:CG_END, text:ENDCG)
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:    ) spaces: "    "
             ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

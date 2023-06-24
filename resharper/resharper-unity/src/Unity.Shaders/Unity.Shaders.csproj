@@ -63,10 +63,23 @@
     </Compile>
   </ItemGroup>
   <!-- ********** -->
+  <ItemGroup Label="Live templates">
+    <LiveTemplate Include="Templates\**\*.md">
+      <OutputFile>Templates\templates.generated.dotSettings</OutputFile>
+      <ReadmeFile>Templates\README.md</ReadmeFile>
+    </LiveTemplate>
+    <EmbeddedResource Include="Templates\templates.generated.dotSettings">
+      <LogicalName>JetBrains.ReSharper.Plugins.Unity.Shaders.Templates.templates.dotSettings</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <!-- ********** -->
   <ItemGroup Label="References">
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler">
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <ProjectReference Include="..\Unity\Unity.csproj" />
     <Reference Include="System" />

@@ -12,6 +12,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElemen
         public static readonly ShaderLabDeclaredElementType Command = new("Command", null);
         public static readonly ShaderLabDeclaredElementType IncludeBlock = new("IncludeBlock", null);
         public static readonly ShaderLabDeclaredElementType ProgramBlock = new("ProgramBlock", null);
+        public static readonly ShaderLabDeclaredElementType Shader = new("Shader", PsiSymbolsThemedIcons.FileShader.Id);
+        public static readonly ShaderLabDeclaredElementType TexturePass = new("TexturePass", null);
+        public static readonly ShaderLabDeclaredElementType Category = new("Category", null);
+        public static readonly ShaderLabDeclaredElementType GrabPass = new("GrabPass", null);
 
         private readonly IconId? myIconId;
 

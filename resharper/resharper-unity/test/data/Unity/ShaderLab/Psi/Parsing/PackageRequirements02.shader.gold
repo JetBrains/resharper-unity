@@ -35,32 +35,33 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-                  IPackageRequirementsCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:PACKAGE_REQUIREMENTS_KEYWORD, text:PackageRequirements)
-                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                    Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-                    IPackageRequirementsValue
-                      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      ErrorElement:'}' or '"XXX"' expected
-                        ShaderLabTokenType+FixedTokenElement(type:COLON, text::)
-                      Whitespace(type:WHITESPACE, text: ) spaces: " "
-                      IPackageRequirementEntry
-                        ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"[10.2.1,11.0]")
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                    IPackageRequirementsCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:PACKAGE_REQUIREMENTS_KEYWORD, text:PackageRequirements)
+                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                      Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                      IPackageRequirementsValue
+                        ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        ErrorElement:'}' or '"XXX"' expected
+                          ShaderLabTokenType+FixedTokenElement(type:COLON, text::)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        IPackageRequirementEntry
+                          ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"[10.2.1,11.0]")
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"

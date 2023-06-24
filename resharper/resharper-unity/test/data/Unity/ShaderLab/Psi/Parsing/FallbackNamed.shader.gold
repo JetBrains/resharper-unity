@@ -15,7 +15,8 @@ IShaderLabFile
           ShaderLabTokenType+KeywordTokenElement(type:FALLBACK_KEYWORD, text:Fallback)
           Whitespace(type:WHITESPACE, text: ) spaces: " "
           IFallbackValue
-            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"foo")
+            IShaderReferenceElement
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"foo")
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"
       ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
   NewLine(type:NEW_LINE, text:\n) spaces: "\n"

@@ -529,6 +529,12 @@
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnGeneratedCSProject" static="True" minimumVersion="2018.1" undocumented="True">
+      <descriptions>
+        <description text="This callback is used by C# code editors to modify the .csproj files." langCode="iv" />
+        <description text="このコールバックは C# コードエディターが .csproj ファイルを変更するために使用されます。" langCode="ja" />
+        <description text="이 콜백은 .csproj 파일을 수정하기 위해 C# 코드 에디터에 의해 사용됩니다" langCode="ko" />
+        <description text="C# 代码编辑器使用此回调来修改 .csproj 文件。" langCode="zh" />
+      </descriptions>
       <parameters>
         <parameter type="System.String" array="False" name="path" />
         <parameter type="System.String" array="False" name="content" />
@@ -536,9 +542,21 @@
       <returns type="System.String" array="False" />
     </message>
     <message name="OnGeneratedCSProjectFiles" static="True" undocumented="True">
+      <descriptions>
+        <description text="This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or just completely replace them). Hopefully we'll never need this." langCode="iv" />
+        <description text="これはドキュメント化されておらず、Visual Studio が Unity と互換性のない新しいリリースになったときの 'セーフガード' であるため、ユーザーは csproj ファイルを後処理して問題を解決できます (または単に完全に置換できます)。うまくいけば、これは不要になります。" langCode="ja" />
+        <description text="이는 문서화되지 않았으며 Visual Studio의 새 릴리스가 Unity와 호환되지 않는 경우를 위한 '보호 장치'로서, 이를 통해 사용자는 csproj 파일을 후처리하여 문제를 해결할 수 있습니다(또는 단순히 전면 교체). 이것이 필요한 상황이 오지 않기를 바랍니다." langCode="ko" />
+        <description text="此项目未记录，并且是 Visual Studio 获得与 Unity 不兼容的新版本时的“保障”，这样用户便可对我们的 csproj 文件进行后处理来修正问题(或完全替换它们)。希望我们永远不需要这个。" langCode="zh" />
+      </descriptions>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnGeneratedSlnSolution" static="True" minimumVersion="2018.1" undocumented="True">
+      <descriptions>
+        <description text="This callback is used by C# code editors to modify the .sln file" langCode="iv" />
+        <description text="このコールバックは C# コードエディターが .sln ファイルを変更するために使用されます。" langCode="ja" />
+        <description text="이 콜백은 .sln 파일을 수정하기 위해 C# 코드 에디터에 의해 사용됩니다" langCode="ko" />
+        <description text="C# 代码编辑器使用此回调来修改 .sln 文件。" langCode="zh" />
+      </descriptions>
       <parameters>
         <parameter type="System.String" array="False" name="path" />
         <parameter type="System.String" array="False" name="content" />
@@ -546,6 +564,12 @@
       <returns type="System.String" array="False" />
     </message>
     <message name="OnPreGeneratingCSProjectFiles" static="True" undocumented="True">
+      <descriptions>
+        <description text="This callback is used by UnityVS to take over project generation from Unity" langCode="iv" />
+        <description text="このコールバックは UnityVS が Unity からプロジェクトの生成を引き継ぐために使用されます" langCode="ja" />
+        <description text="이 콜백은 프로젝트 생성을 Unity에서 인계받기 위해 UnityVS에 의해 사용됩니다" langCode="ko" />
+        <description text="UnityVS 使用此回调从 Unity 接管项目生成" langCode="zh" />
+      </descriptions>
       <returns type="System.Boolean" array="False" />
     </message>
     <message name="OnPreprocessAssembly" static="False" undocumented="True">
@@ -912,22 +936,34 @@
     <message name="OnPreSceneGUI" static="False" minimumVersion="2017.1" undocumented="True">
       <descriptions>
         <description text="Called before the Scene view is drawn." langCode="iv" />
+        <description text="シーンビューが描画される前に呼び出されます。" langCode="ja" />
+        <description text="씬 뷰가 그려지기 전에 호출됩니다." langCode="ko" />
+        <description text="在绘制场景视图之前调用。" langCode="zh" />
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnSceneDrag" static="False" minimumVersion="2017.1" undocumented="True">
       <descriptions>
         <description text="Called for each object dragged onto the scene view" langCode="iv" />
+        <description text="シーンビューにドラッグされる各オブジェクトに対して呼び出されます" langCode="ja" />
+        <description text="씬 뷰로 드래그된 각 객체에 대해 호출됩니다" langCode="ko" />
+        <description text="为拖动到场景视图上的每个对象调用" langCode="zh" />
       </descriptions>
       <parameters>
         <parameter type="UnityEditor.SceneView" array="False" name="sceneView">
           <descriptions>
             <description text="The current scene view" langCode="iv" />
+            <description text="現在のシーンビュー" langCode="ja" />
+            <description text="현재 씬 뷰" langCode="ko" />
+            <description text="当前场景视图" langCode="zh" />
           </descriptions>
         </parameter>
         <parameter type="System.Int32" array="False" name="index">
           <descriptions>
             <description text="The index into the DragAndDrop.objectReferences array" langCode="iv" />
+            <description text="DragAndDrop.objectReferences 配列へのインデックス" langCode="ja" />
+            <description text="DragAndDrop.objectReferences 배열로의 색인" langCode="ko" />
+            <description text="DragAndDrop.objectReferences 数组中的索引" langCode="zh" />
           </descriptions>
         </parameter>
       </parameters>
@@ -1037,54 +1073,81 @@
     <message name="ModifierKeysChanged" static="False" minimumVersion="2017.1" undocumented="True">
       <descriptions>
         <description text="Called when the modifier keys are changed. Automatically registers and de-registers the EditorApplication.modifierKeysChanged event" langCode="iv" />
+        <description text="修飾キーが変更されると呼び出されます。EditorApplication.modifierKeysChanged イベントを自動的に登録および登録解除します" langCode="ja" />
+        <description text="제어자 키가 변경될 때 호출됩니다. EditorApplication.modifierKeysChanged 이벤트를 자동으로 등록 및 등록 취소합니다" langCode="ko" />
+        <description text="当修改键更改时调用。自动注册和取消注册 EditorApplication.modifierKeysChanged 事件" langCode="zh" />
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnAddedAsTab" static="False" minimumVersion="2019.1" undocumented="True">
       <descriptions>
         <description text="Called when the editor window is added as a tab" langCode="iv" />
+        <description text="エディターウィンドウがタブとして追加されると呼び出されます" langCode="ja" />
+        <description text="에디터 창이 탭으로서 추가될 때 호출됩니다" langCode="ko" />
+        <description text="当编辑器窗口被添加为标签页时调用" langCode="zh" />
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnBecameInvisible" static="False" minimumVersion="2017.1" undocumented="True">
       <descriptions>
         <description text="Called when an editor window has been closed" langCode="iv" />
+        <description text="エディターウィンドウが閉じられると呼び出されます" langCode="ja" />
+        <description text="에디터 창이 닫혔을 때 호출됩니다" langCode="ko" />
+        <description text="关闭编辑器窗口时调用" langCode="zh" />
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnBecameVisible" static="False" minimumVersion="2017.1" undocumented="True">
       <descriptions>
         <description text="Called when an editor window has been opened" langCode="iv" />
+        <description text="エディターウィンドウが開かれると呼び出されます" langCode="ja" />
+        <description text="에디터 창이 열렸을 때 호출됩니다" langCode="ko" />
+        <description text="打开编辑器窗口时调用" langCode="zh" />
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnBeforeRemovedAsTab" static="False" minimumVersion="2020.3" maximumVersion="2020.3" undocumented="True">
       <descriptions>
         <description text="Called before an editor window is removed as a tab" langCode="iv" />
+        <description text="エディターウィンドウがタブとして除去されると呼び出されます" langCode="ja" />
+        <description text="에디터 창이 탭으로서 제거될 때 호출됩니다" langCode="ko" />
+        <description text="在将编辑器窗口从标签页中移除之前调用" langCode="zh" />
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnDidOpenScene" static="False" minimumVersion="2017.1" undocumented="True">
       <descriptions>
         <description text="Called when a scene has been opened" langCode="iv" />
+        <description text="シーンが開かれると呼び出されます" langCode="ja" />
+        <description text="씬이 열렸을 때 호출됩니다" langCode="ko" />
+        <description text="打开场景时调用" langCode="zh" />
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnMainWindowMove" static="False" minimumVersion="2020.1" undocumented="True">
       <descriptions>
         <description text="Called when the main window is moved" langCode="iv" />
+        <description text="メインウィンドウが移動されると呼び出されます" langCode="ja" />
+        <description text="메인 창이 이동될 때 호출됩니다" langCode="ko" />
+        <description text="移动主窗口时调用" langCode="zh" />
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnTabDetached" static="False" minimumVersion="2019.3" undocumented="True">
       <descriptions>
         <description text="Called during drag and drop, when an editor window tab is detached" langCode="iv" />
+        <description text="ドラッグアンドドロップ中にエディターウィンドウがデタッチされると呼び出されます" langCode="ja" />
+        <description text="에디터 창 탭이 분리될 때 드래그앤드롭 중에 호출됩니다" langCode="ko" />
+        <description text="拖放期间，当编辑器窗口标签页分离时调用" langCode="zh" />
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
     <message name="ShowButton" static="False" minimumVersion="2017.1" undocumented="True">
       <descriptions>
         <description text="Allow Editor panes to show a small button next to the generic menu (e.g. inspector lock icon)" langCode="iv" />
+        <description text="エディターペインの一般的なメニューの横に小さなボタンを表示できるようにします (例: インスペクターのロックアイコン)" langCode="ja" />
+        <description text="에디터 패널에서 일반 메뉴 옆에 작은 버튼이 표시되도록 허용(예: 검사 도구 잠금 아이콘)" langCode="ko" />
+        <description text="允许编辑器窗格在通用菜单旁边显示一个小按钮(如检查器锁定图标)" langCode="zh" />
       </descriptions>
       <parameters>
         <parameter type="UnityEngine.Rect" array="False" name="rect">
@@ -1924,6 +1987,12 @@
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnRectTransformDimensionsChange" static="False" undocumented="True">
+      <descriptions>
+        <description text="This callback is called if an associated RectTransform has its dimensions changed." langCode="iv" />
+        <description text="このコールバックは関連付けられた RectTransform の寸法が変更された場合に呼び出されます。" langCode="ja" />
+        <description text="이 콜백은 연결된 RectTransform의 크기가 변경된 경우 호출됩니다." langCode="ko" />
+        <description text="如果关联的 RectTransform 的维度发生更改，则会调用此回调。" langCode="zh" />
+      </descriptions>
       <returns type="System.Void" array="False" />
     </message>
   </type>
