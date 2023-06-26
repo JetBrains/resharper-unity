@@ -134,8 +134,12 @@ Callback for setting up animation IK (inverse kinematics).
 (21): Unity Gutter Icon: Custom Unity type
 (22): ReSharper Unity Implicitly Used Identifier: 
 (23): Unity Gutter Icon: Unity event function
+
+This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or just completely replace them). Hopefully we'll never need this.
 (24): ReSharper Unity Implicitly Used Identifier: 
 (25): Unity Gutter Icon: Unity event function
+
+This callback is used by UnityVS to take over project generation from Unity
 (26): ReSharper Unity Implicitly Used Identifier: 
 (27): Unity Gutter Icon: Unity event function
 (28): ReSharper Unity Implicitly Used Identifier: 
@@ -151,3 +155,5 @@ This function can be a coroutine.
 (35): Unity Gutter Icon: Custom Unity type
 (36): ReSharper Unity Implicitly Used Identifier: 
 (37): Unity Gutter Icon: Unity event function
+
+This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or just completely replace them). Hopefully we'll never need this.
