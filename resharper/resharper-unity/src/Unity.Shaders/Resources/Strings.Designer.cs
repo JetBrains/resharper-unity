@@ -88,5 +88,7 @@
     public static string TypeIdentifier_RiderPresentableName => ResourceManager.GetString("TypeIdentifier_RiderPresentableName");
     public static string VariableIdentifier_RiderPresentableName => ResourceManager.GetString("VariableIdentifier_RiderPresentableName");
     public static string PreprocessorLineContent_RiderPresentableName => ResourceManager.GetString("PreprocessorLineContent_RiderPresentableName");
+    public static string InjectedLanguageFragment_RiderPresentableName => ResourceManager.GetString("InjectedLanguageFragment_RiderPresentableName");
+    public static string String_RiderPresentableName => ResourceManager.GetString("String_RiderPresentableName");
   }
 }

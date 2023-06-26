@@ -131,4 +131,10 @@
     <data name="PreprocessorLineContent_RiderPresentableName" xml:space="preserve">
         <value>Preprocessor Line Content</value>
     </data>
+    <data name="InjectedLanguageFragment_RiderPresentableName" xml:space="preserve">
+        <value>Injected Language Fragment</value>
+    </data>
+    <data name="String_RiderPresentableName" xml:space="preserve">
+        <value>String</value>
+    </data>
 </root>
