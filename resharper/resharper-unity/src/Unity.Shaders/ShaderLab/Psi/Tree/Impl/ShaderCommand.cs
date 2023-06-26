@@ -1,7 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
-using JetBrains.ReSharper.Plugins.Unity.Services.Tree;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Common.Services.Tree;
+using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl
 {
@@ -20,10 +20,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl
             }
         }
 
-        protected override string TryGetDeclaredName()
-        {
-            var nameToken = (Value as IShaderValue)?.Name;
-            return ShaderLabTreeHelpers.FormatCommandDeclaredName(ShaderLabTokenType.SHADER_KEYWORD, nameToken);
-        }
+        public override ITokenNode? GetEntityNameToken() => (Value as IShaderValue)?.Name;
     }
 }

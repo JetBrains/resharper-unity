@@ -255,15 +255,16 @@ IShaderLabFile
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:    ) spaces: "    "
             ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

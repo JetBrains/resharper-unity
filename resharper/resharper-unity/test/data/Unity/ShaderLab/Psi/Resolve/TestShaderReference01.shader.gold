@@ -1,0 +1,7 @@
+Shader "Bar"
+{
+    Fallback "|Foo|(0)"
+}
+
+------------------------------------------------
+0: result=OK declaredElem=Foo

@@ -36,54 +36,55 @@ IShaderLabFile
                   ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-                  IStencilCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:STENCIL_KEYWORD, text:Stencil)
-                    Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IStencilValue
-                      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      IRefCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:REF_KEYWORD, text:Ref)
-                        Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        INumericValue
-                          ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:2)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      ICompCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:COMP_KEYWORD, text:Comp)
-                        Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        IComparisonFunctionValue
-                          ShaderLabTokenType+KeywordTokenElement(type:ALWAYS_KEYWORD, text:always)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:                ) spaces: "                "
-                      IPassCommand
-                        ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                        Whitespace(type:WHITESPACE, text: ) spaces: " "
-                        IStencilOperation
-                          ShaderLabTokenType+KeywordTokenElement(type:REPLACE_KEYWORD, text:replace)
-                      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                      Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-                      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                  Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                  Whitespace(type:WHITESPACE, text:            ) spaces: "            "
-                  ICgProgramBlock
-                    ShaderLabTokenType+CgProgramTokenElement(type:CG_PROGRAM, text:CGPROGRAM)
-                    ICgContent
-                      ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:\n            #pragma vertex vert\n            #pragma fragment frag\n            struct appdata {\n                float4 vertex : POSITION;\n            };\n            struct v2f {\n                float4 pos : SV_POSITION;\n            };\n            v2f vert(appdata v) {\n                v2f o;\n                o.pos = UnityObjectToClipPos(v.vertex);\n                return o;\n            }\n            half4 frag(v2f i) : SV_Target {\n                return half4(1,0,0,1);\n            }\n            )
-                    ShaderLabTokenType+CgEndTokenElement(type:CG_END, text:ENDCG)
-                  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                  Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+                  Whitespace(type:WHITESPACE, text: ) spaces: " "
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                    IStencilCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:STENCIL_KEYWORD, text:Stencil)
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      IStencilValue
+                        ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        IRefCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:REF_KEYWORD, text:Ref)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          INumericValue
+                            ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:2)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        ICompCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:COMP_KEYWORD, text:Comp)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          IComparisonFunctionValue
+                            ShaderLabTokenType+KeywordTokenElement(type:ALWAYS_KEYWORD, text:always)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:                ) spaces: "                "
+                        IPassCommand
+                          ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+                          Whitespace(type:WHITESPACE, text: ) spaces: " "
+                          IStencilOperation
+                            ShaderLabTokenType+KeywordTokenElement(type:REPLACE_KEYWORD, text:replace)
+                        NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                        Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                        ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:            ) spaces: "            "
+                    ICgProgramBlock
+                      ShaderLabTokenType+CgProgramTokenElement(type:CG_PROGRAM, text:CGPROGRAM)
+                      ICgContent
+                        ShaderLabTokenType+GenericTokenElement(type:CG_CONTENT, text:\n            #pragma vertex vert\n            #pragma fragment frag\n            struct appdata {\n                float4 vertex : POSITION;\n            };\n            struct v2f {\n                float4 pos : SV_POSITION;\n            };\n            v2f vert(appdata v) {\n                v2f o;\n                o.pos = UnityObjectToClipPos(v.vertex);\n                return o;\n            }\n            half4 frag(v2f i) : SV_Target {\n                return half4(1,0,0,1);\n            }\n            )
+                      ShaderLabTokenType+CgEndTokenElement(type:CG_END, text:ENDCG)
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:    ) spaces: "    "
             ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

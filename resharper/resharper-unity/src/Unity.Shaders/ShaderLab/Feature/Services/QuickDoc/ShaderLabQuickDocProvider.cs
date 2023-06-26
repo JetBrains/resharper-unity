@@ -8,8 +8,11 @@ using JetBrains.ReSharper.Feature.Services.QuickDoc;
 using JetBrains.ReSharper.Feature.Services.QuickDoc.Render;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.QuickDoc
@@ -37,10 +40,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.Q
                 resolved(new ShaderLabCommandQuickDocPresenter(element, description.Text, myXmlDocHtmlPresenter), ShaderLabLanguage.Instance);
         }
 
-        private IDeclaredElement? GetShaderLabCommandDeclaredElement(IDataContext context)
+        private IShaderLabCommandDeclaredElement? GetShaderLabCommandDeclaredElement(IDataContext context)
         {
-            var declaredElements = context.GetData(PsiDataConstants.DECLARED_ELEMENTS);
-            return declaredElements?.FirstOrDefault(it => it.GetElementType() == ShaderLabDeclaredElementType.Command);
+            var nodes = context.GetData(PsiDataConstants.SELECTED_TREE_NODES);
+            return nodes?.FirstOrDefault(it => it.GetTokenType() is IShaderLabTokenNodeType tokenType && tokenType.GetKeywordType(it).IsCommandKeyword())?.GetContainingNode<ShaderLabCommandBase>()?.DeclaredElement as IShaderLabCommandDeclaredElement;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
         protected override string RelativeTestDataPath =>
             @"CSharp\Intentions\QuickFixes\Dots\GenerateRefAccessorsActionFix";
 
-        protected override void CheckProjectFile(IProjectFile projectItem, Action<TextWriter> test = null)
+        protected override void CheckProjectFile(IProjectFile projectItem, Action<TextWriter>? test = null)
         {
             if (projectItem.Location.Name.Equals(DotsClassesFileName))
                 return;
