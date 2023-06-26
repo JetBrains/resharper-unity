@@ -81,5 +81,12 @@
     public static string InUnityShaderLabFile_Presentation => ResourceManager.GetString("InUnityShaderLabFile_Presentation");
     public static string InUnityShaderLabBlock_Presentation => ResourceManager.GetString("InUnityShaderLabBlock_Presentation");
     public static string BlockCommand_Text => ResourceManager.GetString("BlockCommand_Text");
+    public static string Keyword_RiderPresentableName => ResourceManager.GetString("Keyword_RiderPresentableName");
+    public static string Number_RiderPresentableName => ResourceManager.GetString("Number_RiderPresentableName");
+    public static string FieldIdentifier_RiderPresentableName => ResourceManager.GetString("FieldIdentifier_RiderPresentableName");
+    public static string FunctionIdentifier_RiderPresentableName => ResourceManager.GetString("FunctionIdentifier_RiderPresentableName");
+    public static string TypeIdentifier_RiderPresentableName => ResourceManager.GetString("TypeIdentifier_RiderPresentableName");
+    public static string VariableIdentifier_RiderPresentableName => ResourceManager.GetString("VariableIdentifier_RiderPresentableName");
+    public static string PreprocessorLineContent_RiderPresentableName => ResourceManager.GetString("PreprocessorLineContent_RiderPresentableName");
   }
 }
