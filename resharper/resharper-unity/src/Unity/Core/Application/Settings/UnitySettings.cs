@@ -91,5 +91,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
         
         [SettingsEntry(false, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property))]
         public bool ShowPopupForAddingFormallySerializedAttributeOnRenaming;
+        
+        //Dots
+        [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_Dots_Hide_generated_code_from_navigation))]
+        public bool HideGeneratedCodeFromNavigation;
     }
 }

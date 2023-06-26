@@ -1382,6 +1382,12 @@ a plugin to be installed to a project.</value>
     <data name="UnitySettings_t_Unity_plugin_settings" xml:space="preserve">
         <value>Unity plugin settings</value>
     </data>
+    <data name="UnitySettings_Dots_Header" xml:space="preserve">
+        <value>DOTS</value>
+    </data>
+    <data name="UnitySettings_Dots_Hide_generated_code_from_navigation" xml:space="preserve">
+        <value>Exclude DOTS-generated code from navigation results</value>
+    </data>
     <data name="UnityWillIgnoreTheSerializeFieldAttributeIfAFieldIsAlsoMarkedWithTheNonSerializedAttribute" xml:space="preserve">
         <value>Unity will ignore the 'SerializeField' attribute if a field is also marked with the 'NonSerialized' attribute</value>
     </data>

@@ -95,6 +95,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             AddPerformanceAnalysisSubSection();
             AddBurstAnalysisSubSection();
             AddNamingSubSection();
+            AddDotsSubSection();
         }
 
         private void AddRefactoringSection()
@@ -138,6 +139,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
                     Strings.UnityOptionsPage_AddBurstAnalysisSubSection_Show_gutter_icons_for_Burst_compiled_called_methods);
                 BindToEnabledProperty(option, ourEnableBurstHighlightingAccessor);
             }
+        }
+
+        private void AddDotsSubSection()
+        {
+            AddHeader(Strings.UnitySettings_Dots_Header);
+            AddBoolOption((UnitySettings s) => s.HideGeneratedCodeFromNavigation,
+                Strings.UnitySettings_Dots_Hide_generated_code_from_navigation);
         }
 
         private void AddNamingSubSection()
