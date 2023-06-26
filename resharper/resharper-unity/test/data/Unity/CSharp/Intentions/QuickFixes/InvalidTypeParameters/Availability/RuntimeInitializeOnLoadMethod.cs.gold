@@ -3,7 +3,7 @@
 public class Foo
 {
     [RuntimeInitializeOnLoadMethod]
-    public static void OnLoad|<|T1|(1), |T2|(2)>|(0)()
+    public static void OnLoad|<T1, T2>|(0)()
     {
     }
 }
@@ -12,9 +12,3 @@ public class Foo
 0: Incorrect type parameters
 QUICKFIXES:
 Remove type parameters
-1: Type parameter 'T1' is never used
-QUICKFIXES:
-Remove redundant type parameter 'T1'
-2: Type parameter 'T2' is never used
-QUICKFIXES:
-Remove redundant type parameter 'T2'
