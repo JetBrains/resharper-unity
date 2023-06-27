@@ -17,7 +17,7 @@ import com.intellij.platform.workspace.storage.url.VirtualFileUrlManager
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
-import com.jetbrains.rider.projectView.workspace.getOrCreateRiderModuleEntity
+import com.jetbrains.rider.workspaceModel.getOrCreateRiderModuleEntity
 
 class UnityWorkspaceModelUpdaterInitializer : ProjectActivity {
     override suspend fun execute(project: Project) {
