@@ -129,5 +129,6 @@
     </data>
     <data name="EditorWindow_ShowButton_rect_Description" xml:space="preserve">
         <value>Position to draw the button</value>
+        <comment>Don't localize</comment>
     </data>
 </root>

@@ -1,6 +1,5 @@
-﻿using Strings = JetBrains.ReSharper.Plugins.Unity.Shaders.Resources.Strings;
-
-using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
+﻿using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.TextControl.DocumentMarkup;
 
@@ -16,22 +15,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
     // Define the highlighters, which describe how a highlighting is displayed
     [RegisterHighlighter(INJECTED_LANGUAGE_FRAGMENT,
         GroupId = GROUP_ID,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.SYNTAX,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.InjectedLanguageFragment_RiderPresentableName))]
     [RegisterHighlighter(NUMBER,
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
         FallbackAttributeId = DefaultLanguageAttributeIds.NUMBER,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.SYNTAX,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.Number_RiderPresentableName))]
     [RegisterHighlighter(KEYWORD,
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
         FallbackAttributeId = DefaultLanguageAttributeIds.KEYWORD,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.SYNTAX,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.Keyword_RiderPresentableName))]
     [RegisterHighlighter(STRING,
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
         FallbackAttributeId = DefaultLanguageAttributeIds.STRING,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.SYNTAX,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.String_RiderPresentableName))]
     [RegisterHighlighter(LINE_COMMENT,
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
