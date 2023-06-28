@@ -197,6 +197,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                 ? TreeNodeActionType.ACCEPT
                 : TreeNodeActionType.CONTINUE;
         }
+
+        public static string CalculateValueFieldName(string originalFieldName, string? containingTypeName)
+        {
+            const string valueName = "Value";
+
+            if (containingTypeName == null || !originalFieldName.EndsWith(valueName))
+                return originalFieldName;
+
+            if (originalFieldName.Contains(containingTypeName))
+                return originalFieldName;
+
+            return originalFieldName.Replace(valueName, containingTypeName);
+        }
     }
 
     public readonly struct ConversionData

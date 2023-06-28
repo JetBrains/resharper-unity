@@ -81,7 +81,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
                     continue;
 
                 var fieldShortName = fieldOrProperty.ShortName;
-                var uniquePropertyName = NamingUtil.GetUniqueName(classLikeDeclaration.Body, fieldShortName, NamedElementKinds.Property);
+                var generatedPropertyName = BakerGeneratorUtils.CalculateValueFieldName(fieldShortName, fieldOrProperty.GetContainingType()?.ShortName);
+                var uniquePropertyName = NamingUtil.GetUniqueName(classLikeDeclaration.Body, generatedPropertyName, NamedElementKinds.Property);
 
                 var propertyDeclaration = factory.CreatePropertyDeclaration(fieldOrProperty.Type, uniquePropertyName);
                 propertyDeclaration.SetAccessRights(AccessRights.PUBLIC);
