@@ -144,6 +144,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         
         
         // Jobs
+        public static readonly IClrTypeName LambdaSingleJobDescriptionConstructionMethods = new ClrTypeName("Unity.Entities.LambdaSingleJobDescriptionConstructionMethods");
+        public static readonly IClrTypeName LambdaForEachDescriptionConstructionMethods = new ClrTypeName("Unity.Entities.LambdaForEachDescriptionConstructionMethods");
         // public static readonly IClrTypeName Job = new ClrTypeName("Unity.Jobs.IJob");
         // public static readonly IClrTypeName JobFor = new ClrTypeName("Unity.Jobs.IJobFor");
         // public static readonly IClrTypeName JobParallelFor = new ClrTypeName("Unity.Jobs.IJobParallelFor");
