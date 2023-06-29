@@ -124,16 +124,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
             foreach (var methodDeclaration in classLikeDeclaration.MethodDeclarations)
             {
-                var burstableLambda = methodDeclaration.Body.FindNextNode(Predicate);
+                var burstableLambda = methodDeclaration.Body.FindNextNode(FindBurstableLambdaNode);
                 while (burstableLambda is ILambdaExpression lambdaExpression)
                 {
                     result.Add(lambdaExpression.DeclaredElement);
-                    burstableLambda = burstableLambda.GetContainingNode<IInvocationExpression>()?.NextSibling?.FindNextNode(Predicate);
+                    burstableLambda = burstableLambda.GetContainingNode<IInvocationExpression>()?.NextSibling?.FindNextNode(FindBurstableLambdaNode);
                 }
             }
         }
 
-        private static TreeNodeActionType Predicate(ITreeNode node)
+        private static TreeNodeActionType FindBurstableLambdaNode(ITreeNode node)
         {
             if (node is IMethodDeclaration)
                 return TreeNodeActionType.IGNORE_SUBTREE;
