@@ -1,23 +1,22 @@
 package integrationTests
 
-import base.integrationTests.IntegrationTestWithEditorBase
-import com.jetbrains.rider.test.annotations.Mute
-import com.jetbrains.rider.test.annotations.Mutes
+import base.integrationTests.IntegrationTestWithUnityEditorBase
+import base.integrationTests.UnityVersion
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.test.scriptingApi.*
+import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
+import com.jetbrains.rider.test.scriptingApi.changeFileContent
+import com.jetbrains.rider.test.scriptingApi.withUtFacade
 import org.testng.annotations.Test
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class UnitTestingTest2020 : IntegrationTestWithEditorBase() {
+class UnitTestingTest2020 : IntegrationTestWithUnityEditorBase() {
     override fun getSolutionDirectoryName() = "UnitTesting/Project2020"
-
+    override val unityMajorVersion = UnityVersion.V2020
     @Test
-    @Mute("RIDER-89390")
     fun checkRunAllTestsFromProject() {
         withUtFacade(project) {
-            val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
-            waitForDiscoveringWorkaround(file, 5, it)
+            it.waitForDiscovering()
 
             val session = it.runAllTestsInProject(
                 "Tests",
@@ -37,8 +36,7 @@ class UnitTestingTest2020 : IntegrationTestWithEditorBase() {
     fun checkRefreshBeforeTest() {
         withUtFacade(project) {
             val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
-            waitForDiscoveringWorkaround(file, 5, it)
-
+            it.waitForDiscovering()
             it.runAllTestsInProject(
                 "Tests",
                 5,
@@ -53,6 +51,11 @@ class UnitTestingTest2020 : IntegrationTestWithEditorBase() {
             }
             waitForDiscoveringWorkaround(file, 5, it)
 
+            it.runAllTestsInProject(
+                "Tests",
+                5,
+                RiderUnitTestScriptingFacade.defaultTimeout, -1
+            )
             val session2 = it.runAllTestsInProject(
                 "Tests",
                 5,
