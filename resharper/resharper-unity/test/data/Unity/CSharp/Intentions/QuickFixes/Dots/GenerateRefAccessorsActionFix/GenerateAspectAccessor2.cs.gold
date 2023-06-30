@@ -56,7 +56,7 @@ namespace ComponentsAndTags
     public readonly partial struct ThirdLevelAspect : IAspect
     {
         private readonly SecondLevelAspect _second{caret}LevelAspect;
-        public FirstLevelAspect LevelAspect => _secondLevelAspect.FirstLevelAspect;
+        public FirstLevelAspect FirstLevelAspect => _secondLevelAspect.FirstLevelAspect;
         public int AICount => _secondLevelAspect.AICount;
 
         public int PlayersCount

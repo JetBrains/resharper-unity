@@ -29,9 +29,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 var memberSourceFile = typeMember.GetSingleOrDefaultSourceFile();
                 if (memberSourceFile == null) 
                     return false;
-                
-                return memberSourceFile.IsSourceGeneratedFile()
-                       && typeMember.ContainingType.IsDotsImplicitlyUsedType();
+
+                return typeMember is IDeclaredElement element && element.ShortName.StartsWith("__") &&
+                       memberSourceFile.IsSourceGeneratedFile() && typeMember.ContainingType.IsDotsImplicitlyUsedType();
             });
         }
     }

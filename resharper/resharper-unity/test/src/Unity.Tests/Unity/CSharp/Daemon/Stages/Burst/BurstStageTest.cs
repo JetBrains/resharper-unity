@@ -26,6 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Burst
         [Test] public void BugRider53010() { DoNamedTest(); }
         [Test] public void BugRider68193() { DoNamedTest(); }
         [Test] public void BugRider68095() { DoNamedTest(); }
+        [Test] public void BugRider92491() { DoNamedTest(); }
+        [Test] public void BugRider92491_2() { DoNamedTest(); }
         // Bug - youtrack
         // Issue - github.com/jetbrains/resharper-unity
         [Test] public void IssueRider2181() { DoNamedTest(); }
