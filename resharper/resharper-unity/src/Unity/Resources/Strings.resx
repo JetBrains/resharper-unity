@@ -1004,7 +1004,7 @@
         <value>Field of 'ComponentLookup' type must be updated before being used.</value>
     </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_Override_Component_In_Baker" xml:space="preserve">
-        <value>Override '{0}' initialization in Baker</value>
+        <value>Regenerate existing '{0}' initialization in Baker</value>
     </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_Baker" xml:space="preserve">
         <value>Baker</value>
