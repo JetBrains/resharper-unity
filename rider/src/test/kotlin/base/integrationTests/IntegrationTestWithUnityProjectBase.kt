@@ -3,13 +3,8 @@ package base.integrationTests
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.encoding.EncodingProjectManagerImpl
 import com.intellij.util.WaitFor
-import com.jetbrains.rdclient.editors.FrontendTextControlHost
 import com.jetbrains.rider.test.asserts.shouldBeTrue
 import com.jetbrains.rider.test.framework.frameworkLogger
-import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
-import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
-import com.jetbrains.rider.test.scriptingApi.waitBackendDocumentChange
-import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.BeforeSuite
@@ -18,9 +13,9 @@ import java.time.Duration
 
 /**
  * Class should be used when we want to start Unity Editor before Rider to get csproj/sln generated
- * IntegrationTestWithEditorBase always opens Rider first and expect sln files to exist in the test-data
+ * IntegrationTestWithGeneratedSolutionBase always opens Rider first and expect sln files to exist in the test-data
  */
-abstract class IntegrationTestWithUnityEditorBase : IntegrationTestWithSolutionBase() {
+abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithSolutionBase() {
     private lateinit var unityExecutable: File
     private lateinit var unityProjectPath: File
     protected abstract val unityMajorVersion: UnityVersion
@@ -49,7 +44,7 @@ abstract class IntegrationTestWithUnityEditorBase : IntegrationTestWithSolutionB
     }
 
     @BeforeSuite()
-    fun getUnity() {
+    fun getUnityEditorExecutablePath() {
         unityExecutable = getUnityExecutableInstallationPath(unityMajorVersion)
     }
 

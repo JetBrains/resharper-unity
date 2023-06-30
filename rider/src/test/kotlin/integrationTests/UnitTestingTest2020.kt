@@ -1,6 +1,6 @@
 package integrationTests
 
-import base.integrationTests.IntegrationTestWithUnityEditorBase
+import base.integrationTests.IntegrationTestWithUnityProjectBase
 import base.integrationTests.UnityVersion
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
@@ -10,7 +10,7 @@ import com.jetbrains.rider.test.scriptingApi.withUtFacade
 import org.testng.annotations.Test
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class UnitTestingTest2020 : IntegrationTestWithUnityEditorBase() {
+class UnitTestingTest2020 : IntegrationTestWithUnityProjectBase() {
     override fun getSolutionDirectoryName() = "UnitTesting/Project2020"
     override val unityMajorVersion = UnityVersion.V2020
     @Test

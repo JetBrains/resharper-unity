@@ -14,7 +14,7 @@ import org.testng.annotations.Test
 import java.io.File
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class DebuggerTest2020 : IntegrationTestWithEditorBase() {
+class DebuggerTest2020 : IntegrationTestWithGeneratedSolutionBase() {
     override fun getSolutionDirectoryName() = "UnitTesting/Project2020"
 
     override fun preprocessTempDirectory(tempDir: File) {
