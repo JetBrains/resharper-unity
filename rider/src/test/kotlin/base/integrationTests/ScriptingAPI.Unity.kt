@@ -48,8 +48,10 @@ import com.jetbrains.rider.test.scriptingApi.*
 import java.io.File
 import java.io.PrintStream
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.Duration
+import kotlin.io.path.Path
 import kotlin.io.path.notExists
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -125,9 +127,50 @@ fun allowUnityPathVfsRootAccess(lifetimeDefinition: LifetimeDefinition) {
     VfsRootAccess.allowRootAccess(lifetimeDefinition.createNestedDisposable("Unity path disposable"), unityPath)
 }
 
+fun getUnityExecutableInstallationPath(unityMajorVersion : UnityVersion): File {
+    val defaultUnityPaths = when {
+        SystemInfo.isWindows ->
+            listOf("C:/Program Files/Unity/Hub/Editor/")
+        SystemInfo.isMac -> listOf("/Applications/Unity/Hub/Editor/")
+        SystemInfo.isLinux -> listOf(
+            "${System.getProperty("user.home")}",
+            "${System.getProperty("user.home")}/Unity/Hub/Editor",
+            "/opt/Unity/Hub/Editor"
+        )
+        else -> { throw Exception("Unknown OS while detecting Unity Editor path") }
+    }
+
+    val potentialEditors = mutableListOf<File>()
+    defaultUnityPaths.forEach { path ->
+        potentialEditors.addAll(File(path).walk().maxDepth(1).filter { file -> file.isDirectory && file.name.contains(unityMajorVersion.version) })
+    }
+    // Get latest minor with matching major Unity Version
+    val editorDirPath = potentialEditors.sortedWith { unity, otherUnity ->
+        VersionComparatorUtil.compare(unity.name, otherUnity.name)
+    }.last()
+
+    val editorExecutablePath = when {
+        SystemInfo.isWindows -> "${editorDirPath.canonicalPath}/Editor/Unity.exe"
+        SystemInfo.isMac -> "${editorDirPath.canonicalPath}/Unity.app"
+        SystemInfo.isLinux ->"${editorDirPath.canonicalPath}/Editor/Unity"
+        else -> { throw Exception("Unknown OS while detecting Unity Editor path") }
+    }
+    val editorExecutable = File(UnityInstallationFinder.getOsSpecificPath(Path(editorExecutablePath)).toString())
+    if(!editorExecutable.exists()) {
+        frameworkLogger.error("Could not find Unity Editor in the default paths, please install $unityMajorVersion in one of the default locations:\n" +
+                              "${defaultUnityPaths.joinToString { it }}")
+    }
+
+    return editorExecutable
+}
+
 fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean): ProcessHandle {
-    val args = getUnityArgs(project).withProjectPath(project).withDebugCodeOptimization()
-    args.addAll(arrayOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests"))
+    val args = getUnityArgs(project).withProjectPath(project)
+    return startUnity(args, logPath, withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
+}
+
+private fun startUnity(args: MutableList<String>, logPath: File, withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean): ProcessHandle {
+    args.withDebugCodeOptimization().addAll(arrayOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests"))
     if (batchMode) {
         args.add("-batchMode")
     }
@@ -203,6 +246,11 @@ fun getUnityProcessHandle(project: Project): ProcessHandle {
 
 fun BaseTestWithSolutionBase.startUnity(project: Project, withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean) =
     startUnity(project, testMethod.logDirectory.resolve("UnityEditor.log"), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
+
+fun BaseTestWithSolutionBase.startUnity(executable: String, projectPath: String, withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean): ProcessHandle {
+    val args = mutableListOf(executable).withProjectPath(projectPath)
+    return startUnity(args, testMethod.logDirectory.resolve("UnityEditor.log"), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
+}
 
 fun BaseTestWithSolution.startUnity(withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean) =
     startUnity(project, withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
