@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dots
 {
@@ -208,7 +209,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             if (originalFieldName.Contains(containingTypeName))
                 return originalFieldName;
 
-            return originalFieldName.Replace(valueName, containingTypeName);
+            return originalFieldName.RemoveEnd(valueName) + containingTypeName;
         }
     }
 
