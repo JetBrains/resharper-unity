@@ -23,15 +23,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.L
         {
             // Used when creating scope point from settings
             Creators.Add(TryToCreate<InUnityShaderLabFile>);
-            Creators.Add(TryToCreate<MustBeInShaderLabRoot>);
+            Creators.Add(TryToCreate<InShaderLabRoot>);
         }
 
         public override ITemplateScopePoint? CreateScope(Guid scopeGuid, string typeName, IEnumerable<Pair<string, string>> customProperties)
         {
-            if (typeName == nameof(MustBeInShaderLabBlock))
+            if (typeName == nameof(InShaderLabBlock))
             {
-                if (customProperties.FirstOrNull(x => x.First == MustBeInShaderLabBlock.BlockKeywordAttributeName) is { } property
-                    && MustBeInShaderLabBlock.TryCreateFromCommandKeyword(property.Second) is { } scope)
+                if (customProperties.FirstOrNull(x => x.First == InShaderLabBlock.BlockKeywordAttributeName) is { } property
+                    && InShaderLabBlock.TryCreateFromCommandKeyword(property.Second) is { } scope)
                 {
                     scope.UID = scopeGuid;
                     return scope;
@@ -69,14 +69,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.L
                 if (isInsideBlock)
                 {
                     if (command.CommandKeyword is { } keyword)
-                        yield return new MustBeInShaderLabBlock(keyword.GetTokenType());
+                        yield return new InShaderLabBlock(keyword.GetTokenType());
                     yield break;
                 }
                 // if we're in middle of other command then don't produce any scope 
                 if (command.FindFirstTokenIn() != token)
                     yield break;
             }
-            yield return new MustBeInShaderLabRoot();
+            yield return new InShaderLabRoot();
         }
 
         private bool IsValidToken(ITokenNode token)

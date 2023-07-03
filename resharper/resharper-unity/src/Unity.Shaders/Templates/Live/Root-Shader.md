@@ -4,7 +4,7 @@ type: Live
 reformat: True
 shortenReferences: True
 categories: unity
-scopes: InUnityCSharpProject;MustBeInShaderLabRoot
+scopes: InShaderLabRoot
 parameterOrder: NAME
 ---
 

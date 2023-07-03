@@ -4,7 +4,7 @@ type: Live
 reformat: True
 shortenReferences: True
 categories: unity
-scopes: InUnityCSharpProject;MustBeInShaderLabBlock(blockKeyword=Properties)
+scopes: InShaderLabBlock(blockKeyword=Properties)
 parameterOrder: NAME, R, G, B, A
 R-expression: constant("0")
 G-expression: constant("0")

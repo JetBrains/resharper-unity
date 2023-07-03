@@ -4,7 +4,7 @@ type: Live
 reformat: True
 shortenReferences: True
 categories: unity
-scopes: InUnityCSharpProject;MustBeInShaderLabBlock(blockKeyword=Shader)
+scopes: InShaderLabBlock(blockKeyword=Shader)
 ---
 
 # vfshader

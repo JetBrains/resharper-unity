@@ -11,15 +11,15 @@ using JetBrains.Util.DataStructures.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.LiveTemplates.Scope
 {
-    /// Mandatory scope point. Must be directly inside of ShaderLab block. Can be used for creation of HLSL blocks, Blend commands, Properties, Shader passes etc. 
-    public class MustBeInShaderLabBlock : InUnityShaderLabFile, IMandatoryScopePoint
+    /// Directly inside of ShaderLab block. Can be used for creation of HLSL blocks, Blend commands, Properties, Shader passes etc. 
+    public class InShaderLabBlock : InUnityShaderLabFile
     {
         public const string BlockKeywordAttributeName = "blockKeyword";
         
         private static readonly Guid ourDefaultGuid = new("0ACEC8E2-0B11-4318-9264-9221D7E632A3");
         private static readonly Dictionary<string, TokenNodeType> ourKnownKeywords = new();
 
-        static MustBeInShaderLabBlock()
+        static InShaderLabBlock()
         {
             foreach (var keyword in ShaderLabTokenType.BLOCK_COMMAND_KEYWORDS)
             {
@@ -30,17 +30,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.L
         
         public TokenNodeType CommandKeyword { get; }
 
-        public MustBeInShaderLabBlock(TokenNodeType commandKeyword) => CommandKeyword = commandKeyword;
+        public InShaderLabBlock(TokenNodeType commandKeyword) => CommandKeyword = commandKeyword;
 
         public static IEnumerable<string> KnownKeywords => ourKnownKeywords.Keys;
         
-        public static MustBeInShaderLabBlock? TryCreateFromCommandKeyword(string commandKeyword) => ourKnownKeywords.TryGetValue(commandKeyword, out var tokenNodeType) ? new MustBeInShaderLabBlock(tokenNodeType) : null; 
+        public static InShaderLabBlock? TryCreateFromCommandKeyword(string commandKeyword) => ourKnownKeywords.TryGetValue(commandKeyword, out var tokenNodeType) ? new InShaderLabBlock(tokenNodeType) : null; 
 
         public override IEnumerable<Pair<string, string>> EnumerateCustomProperties() => FixedList.Of(new Pair<string, string>(BlockKeywordAttributeName, CommandKeyword.TokenRepresentation));
 
         public override bool IsSubsetOf(ITemplateScopePoint other) => 
             base.IsSubsetOf(other) 
-            && (other is not MustBeInShaderLabBlock otherInShaderLabBlock || otherInShaderLabBlock.CommandKeyword == CommandKeyword);
+            && (other is not InShaderLabBlock otherInShaderLabBlock || otherInShaderLabBlock.CommandKeyword == CommandKeyword);
 
         public override Guid GetDefaultUID() => ourDefaultGuid;
         public override string PresentableShortName => Strings.InUnityShaderLabBlock_PresentableShortName.Format(CommandKeyword.TokenRepresentation);
