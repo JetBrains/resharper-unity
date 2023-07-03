@@ -38,6 +38,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.L
 
         public override IEnumerable<Pair<string, string>> EnumerateCustomProperties() => FixedList.Of(new Pair<string, string>(BlockKeywordAttributeName, CommandKeyword.TokenRepresentation));
 
+        public override bool IsSubsetOf(ITemplateScopePoint other) => 
+            base.IsSubsetOf(other) 
+            && (other is not MustBeInShaderLabBlock otherInShaderLabBlock || otherInShaderLabBlock.CommandKeyword == CommandKeyword);
+
         public override Guid GetDefaultUID() => ourDefaultGuid;
         public override string PresentableShortName => Strings.InUnityShaderLabBlock_PresentableShortName.Format(CommandKeyword.TokenRepresentation);
         public override string ToString() => PresentableShortName;
