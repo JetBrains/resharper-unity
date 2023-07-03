@@ -23,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.L
         {
             // Used when creating scope point from settings
             Creators.Add(TryToCreate<InUnityShaderLabFile>);
+            Creators.Add(TryToCreate<MustBeInShaderLabRoot>);
         }
 
         public override ITemplateScopePoint? CreateScope(Guid scopeGuid, string typeName, IEnumerable<Pair<string, string>> customProperties)
@@ -60,49 +61,47 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.L
                 yield break;
 
             yield return new InUnityShaderLabFile();
-            var node = file.FindTokenAt(documentOffset);
-            if (node is ITokenNode token && TryGetContainingBlockCommand(token) is { CommandKeyword: { } commandKeyword })
-                yield return new MustBeInShaderLabBlock(commandKeyword.GetTokenType()); 
+            if (file.FindTokenAt(documentOffset) is not ITokenNode token || !IsValidToken(token))
+                yield break;
+            var containingNodes = token.ContainingNodes();
+            while (MoveToContainingCommand(ref containingNodes, out var isInsideBlock) is { } command)
+            {
+                if (isInsideBlock)
+                {
+                    if (command.CommandKeyword is { } keyword)
+                        yield return new MustBeInShaderLabBlock(keyword.GetTokenType());
+                    yield break;
+                }
+                // if we're in middle of other command then don't produce any scope 
+                if (command.FindFirstTokenIn() != token)
+                    yield break;
+            }
+            yield return new MustBeInShaderLabRoot();
         }
 
-        private IBlockCommand? TryGetContainingBlockCommand(ITokenNode node)
+        private bool IsValidToken(ITokenNode token)
         {
-            var enumerator = node.ContainingNodes().GetEnumerator();
-            if (!MoveToBlockValue(enumerator, node))
-                return null;
-                
-            return MoveToCommand(enumerator);
-
-            static IBlockCommand? MoveToCommand(TreeNodeExtensions.ContainingNodeEnumerator enumerator)
+            if (ShaderLabSyntax.CLike.TryGetSingleNonWhitespaceTokenOnLine(token, out var nonWhitespaceToken))
             {
-                while (enumerator.MoveNext())
-                {
-                    if (enumerator.Current is IBlockCommand command)
-                        return command;
-                }
-
-                return null;
+                var tt = nonWhitespaceToken.GetTokenType();
+                return tt.IsIdentifier || tt.IsKeyword; // check if there just a single token on line either identifier or keyword 
             }
 
-            static bool MoveToBlockValue(TreeNodeExtensions.ContainingNodeEnumerator enumerator, ITokenNode token)
-            {
-                while (enumerator.MoveNext())
-                {
-                    var containingNode = enumerator.Current;
-                    if (containingNode is IBlockValue)
-                    {
-                        if (ShaderLabSyntax.CLike.TryGetSingleNonWhitespaceTokenOnLine(token, out var nonWhitespaceToken))
-                        {
-                            var tt = nonWhitespaceToken.GetTokenType();
-                            return tt.IsIdentifier || tt.IsKeyword; // check if there just a single token on line either identifier or keyword 
-                        }
+            return nonWhitespaceToken == null; // check for blank line as a valid case
+        }
 
-                        return nonWhitespaceToken == null; // check for blank line as a valid case
-                    }
-                }
-                
-                return false;
+        private IShaderLabCommand? MoveToContainingCommand(ref TreeNodeExtensions.ContainingNodeEnumerator containingNodes, out bool isInsideBlock)
+        {
+            isInsideBlock = false;
+            while (containingNodes.MoveNext())
+            {
+                var containingNode = containingNodes.Current;
+                if (containingNode is IShaderLabCommand command)
+                    return command;
+                if (containingNode is IBlockValue)
+                    isInsideBlock = true;
             }
+            return null;
         }
     }
 }

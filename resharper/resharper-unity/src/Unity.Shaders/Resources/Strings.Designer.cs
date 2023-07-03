@@ -78,7 +78,9 @@
     public static string ShaderLabFormattingStylePageSchema_Describe_Brace_rules => ResourceManager.GetString("ShaderLabFormattingStylePageSchema_Describe_Brace_rules");
     public static string ShaderLabFormattingStylePageSchema_PageName_ShaderLab_Formatting_Style => ResourceManager.GetString("ShaderLabFormattingStylePageSchema_PageName_ShaderLab_Formatting_Style");
     public static string InUnityShaderLabBlock_PresentableShortName => ResourceManager.GetString("InUnityShaderLabBlock_PresentableShortName");
+    public static string InUnityShaderLabRoot_PresentableShortName => ResourceManager.GetString("InUnityShaderLabRoot_PresentableShortName");
     public static string InUnityShaderLabFile_Presentation => ResourceManager.GetString("InUnityShaderLabFile_Presentation");
+    public static string InUnityShaderLabRoot_Presentation => ResourceManager.GetString("InUnityShaderLabRoot_Presentation");
     public static string InUnityShaderLabBlock_Presentation => ResourceManager.GetString("InUnityShaderLabBlock_Presentation");
     public static string BlockCommand_Text => ResourceManager.GetString("BlockCommand_Text");
     public static string Keyword_RiderPresentableName => ResourceManager.GetString("Keyword_RiderPresentableName");

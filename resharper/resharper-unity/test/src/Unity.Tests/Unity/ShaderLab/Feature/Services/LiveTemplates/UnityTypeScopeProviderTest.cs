@@ -15,7 +15,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Liv
 
         [Test] public void TestInShaderLabFile01() { DoNamedTest2(); }
         [Test] public void TestInShaderLabFile02() { DoNamedTest2(); }
+        [Test] public void TestMustBeInShaderLabRoot01() { DoNamedTest2(); }
+        [Test] public void TestMustBeInShaderLabRoot02() { DoNamedTest2(); }
         [Test] public void TestMustBeInShaderBlock01() { DoNamedTest2(); }
+        [Test] public void TestMustBeInShaderBlock02() { DoNamedTest2(); }
         [Test] public void TestMustBeInPropertiesBlock01() { DoNamedTest2(); }
         [Test] public void TestMustBeInTexturePassBlock01() { DoNamedTest2(); }
     }

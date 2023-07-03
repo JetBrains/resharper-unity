@@ -36,6 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.L
         public override IEnumerable<ITemplateScopePoint> BuildAllPoints()
         {
             yield return new InUnityShaderLabFile();
+            yield return new MustBeInShaderLabRoot();
             yield return new MustBeInShaderLabBlock(ShaderLabTokenType.SHADER_KEYWORD);
         }
 
@@ -45,6 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.L
         {
             return point switch
             {
+                MustBeInShaderLabRoot => Strings.InUnityShaderLabRoot_Presentation,
                 MustBeInShaderLabBlock inShaderLabBlock => Strings.InUnityShaderLabBlock_Presentation.Format(inShaderLabBlock.CommandKeyword.TokenRepresentation),
                 InUnityShaderLabFile => Strings.InUnityShaderLabFile_Presentation,
                 _ => base.Present(point)

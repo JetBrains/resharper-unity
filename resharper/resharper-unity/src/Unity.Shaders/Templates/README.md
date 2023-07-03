@@ -15,6 +15,7 @@ Categorised:
 | [cubearr](Live/Properties-TextureCubeArrayProperty.md) | ShaderLab CubeArray property          |
 | [float](Live/Properties-FloatProperty.md)              | ShaderLab Float property              |
 | [int](Live/Properties-IntegerProperty.md)              | ShaderLab Integer property            |
+| [shader](Live/Root-Shader.md)                          | ShaderLab Shader block                |
 | [surf](Live/Shader-SurfaceShader.md)                   | ShaderLab Surface Shader              |
 | [tex2d](Live/Properties-Texture2DProperty.md)          | ShaderLab 2D property                 |
 | [tex2darr](Live/Properties-Texture2DArrayProperty.md)  | ShaderLab 2DArray property            |
@@ -35,6 +36,7 @@ Categorised:
 | [cubearr](Live/Properties-TextureCubeArrayProperty.md) | ShaderLab CubeArray property          |
 | [float](Live/Properties-FloatProperty.md)              | ShaderLab Float property              |
 | [int](Live/Properties-IntegerProperty.md)              | ShaderLab Integer property            |
+| [shader](Live/Root-Shader.md)                          | ShaderLab Shader block                |
 | [surf](Live/Shader-SurfaceShader.md)                   | ShaderLab Surface Shader              |
 | [tex2d](Live/Properties-Texture2DProperty.md)          | ShaderLab 2D property                 |
 | [tex2darr](Live/Properties-Texture2DArrayProperty.md)  | ShaderLab 2DArray property            |

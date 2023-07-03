@@ -101,8 +101,14 @@
     <data name="InUnityShaderLabBlock_PresentableShortName" xml:space="preserve">
         <value>Unity ShaderLab {0} Block</value>
     </data>
+    <data name="InUnityShaderLabRoot_PresentableShortName" xml:space="preserve">
+        <value>Unity ShaderLab Root</value>
+    </data>
     <data name="InUnityShaderLabFile_Presentation" xml:space="preserve">
         <value>In Unity ShaderLab file</value>
+    </data>
+    <data name="InUnityShaderLabRoot_Presentation" xml:space="preserve">
+        <value>In Unity ShaderLab Root</value>
     </data>
     <data name="InUnityShaderLabBlock_Presentation" xml:space="preserve">
         <value>In Unity ShaderLab {0} Block</value>
