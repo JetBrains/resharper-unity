@@ -53,6 +53,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 case not null when type.IsOpenType:
                 case not null when IsFixedString(type):
                     return true;
+                case not null when type.IsString(): //string type is partially supported by the Burst
+                    return true;
                 default:
                     return false;
             }
