@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             if (cSharpLiteralExpression != null && cSharpLiteralExpression.Literal.GetTokenType().IsStringLiteral)
                 return BurstProblemSubAnalyzerStatus.NO_WARNING_STOP;
 
-            consumer?.AddHighlighting(new BurstDebugLogInvalidArgumentWarning(firstArgument.Expression));
+            consumer?.AddHighlighting(new BurstStringFormatInvalidArgumentWarning(firstArgument.Expression));
 
             return BurstProblemSubAnalyzerStatus.WARNING_PLACED_STOP;
         }

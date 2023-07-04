@@ -97,6 +97,7 @@
     public static string BurstCompiledCode_Text => ResourceManager.GetString("BurstCompiledCode_Text");
     public static string BurstCreatingAManagedTypeIsNotSupportedMessage => ResourceManager.GetString("BurstCreatingAManagedTypeIsNotSupportedMessage");
     public static string BurstDebugLoggingFunctionsAcceptsOnlyStringsMessage => ResourceManager.GetString("BurstDebugLoggingFunctionsAcceptsOnlyStringsMessage");
+    public static string BurstStringFormatFunctionsAcceptsOnlyStringsMessage => ResourceManager.GetString("BurstStringFormatFunctionsAcceptsOnlyStringsMessage");
     public static string BurstLoadingFromANonReadonlyStaticFieldIsNotSupportedMessage => ResourceManager.GetString("BurstLoadingFromANonReadonlyStaticFieldIsNotSupportedMessage");
     public static string BurstLoadingManagedTypeIsNotSupportedMessage => ResourceManager.GetString("BurstLoadingManagedTypeIsNotSupportedMessage");
     public static string BurstSignatureContainsManagedTypesMessage => ResourceManager.GetString("BurstSignatureContainsManagedTypesMessage");
@@ -140,6 +141,7 @@
     public static string CreatingAManagedTypeIsNotSupported => ResourceManager.GetString("CreatingAManagedTypeIsNotSupported");
     public static string CurrentFileNameWithoutWhitespaceCharacters_Text => ResourceManager.GetString("CurrentFileNameWithoutWhitespaceCharacters_Text");
     public static string DebugLoggingFunctionsAcceptsOnlyStrings => ResourceManager.GetString("DebugLoggingFunctionsAcceptsOnlyStrings");
+    public static string StringFormatFunctionsAcceptsOnlyStrings => ResourceManager.GetString("StringFormatFunctionsAcceptsOnlyStrings");
     public static string DisabledIndexingOfUnityAssets_Text => ResourceManager.GetString("DisabledIndexingOfUnityAssets_Text");
     public static string DocumentationNavigationAction_Text_View_documentation => ResourceManager.GetString("DocumentationNavigationAction_Text_View_documentation");
     public static string DueToTheSizeOfTheProjectIndexingOfUnity_Text => ResourceManager.GetString("DueToTheSizeOfTheProjectIndexingOfUnity_Text");
