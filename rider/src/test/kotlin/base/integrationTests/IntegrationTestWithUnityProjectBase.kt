@@ -82,12 +82,7 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithSolution
         frameworkLogger.info("Unity Editor has been started, waiting for sln/csproj structure to be generated")
         waitForSlnGeneratedByUnityFile(unityProjectPath.canonicalPath)
         frameworkLogger.info("Sln/csproj structure has been created, opening project in Rider")
-        setParamsAndOpenSolution(testMethod.environment.solution ?: getSolutionDirectoryName())
-        (EncodingProjectManagerImpl.getInstance(project) as EncodingProjectManagerImpl).setBOMForNewUtf8Files(
-            EncodingProjectManagerImpl.BOMForNewUTF8Files.ALWAYS)
-
-        activateRiderFrontendTest()
-
+        super.setUpTestCaseSolution()
     }
 
     @BeforeMethod(dependsOnMethods = ["setUpTestCaseSolution"])
