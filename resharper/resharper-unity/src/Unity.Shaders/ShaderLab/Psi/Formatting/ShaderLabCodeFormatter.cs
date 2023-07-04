@@ -3,6 +3,7 @@ using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeStyle;
+using JetBrains.ReSharper.Psi.Cpp.Language;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Format;
@@ -63,7 +64,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
 
       var settings = GetFormattingSettings(task.FirstElement, parameters, myShaderLabFormattingInfo);
       settings.Settings.SetValue((key => key.WRAP_LINES), false);
-      
+
+      // TODO: this is a hack to warmup injected CPP nodes in PSI to avoid problems with parsing under write lock during formatting, we need more robust solution for that problem 
+      if (firstElement.GetSourceFile() is {} sourceFile)
+        _ = sourceFile.GetPsiFiles<CppLanguage>().Count;
       DoDeclarativeFormat(settings, myShaderLabFormattingInfo, null, new[] { task }, parameters,
         null, FormatChildren, false);
 

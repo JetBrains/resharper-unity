@@ -72,9 +72,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.L
                         yield return new InShaderLabBlock(keyword.GetTokenType());
                     yield break;
                 }
-                // if we're in middle of other command then don't produce any scope 
-                if (command.FindFirstTokenIn() != token)
-                    yield break;
             }
             yield return new InShaderLabRoot();
         }
