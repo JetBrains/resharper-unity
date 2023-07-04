@@ -157,6 +157,9 @@
     <data name="BurstDebugLoggingFunctionsAcceptsOnlyStringsMessage" xml:space="preserve">
         <value>Burst: Debug logging functions accepts only strings</value>
     </data>
+    <data name="BurstStringFormatFunctionsAcceptsOnlyStringsMessage" xml:space="preserve">
+        <value>Burst: String.Format(format, ...) accepts only string literal or const string</value>
+    </data>
     <data name="BurstLoadingFromANonReadonlyStaticFieldIsNotSupportedMessage" xml:space="preserve">
         <value>Burst: Loading from a non-readonly static field '{0}' is not supported</value>
     </data>
@@ -285,6 +288,9 @@
     </data>
     <data name="DebugLoggingFunctionsAcceptsOnlyStrings" xml:space="preserve">
         <value>Debug logging functions accepts only strings</value>
+    </data>
+    <data name="StringFormatFunctionsAcceptsOnlyStrings" xml:space="preserve">
+        <value>String.Format(format, ...) accepts only string literal or const string</value>
     </data>
     <data name="DisabledIndexingOfUnityAssets_Text" xml:space="preserve">
         <value>Disabled indexing of Unity assets</value>

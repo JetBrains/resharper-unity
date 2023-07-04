@@ -52,6 +52,10 @@
         <Title resourceName="DebugLoggingFunctionsAcceptsOnlyStrings" resourceType="Strings" />
         <Description resourceName="DebugLoggingFunctionsAcceptsOnlyStrings" resourceType="Strings" />
       </Tag>
+      <Tag externalName="BurstStringFormatInvalidArgumentWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="StringFormatFunctionsAcceptsOnlyStrings" resourceType="Strings" />
+        <Description resourceName="StringFormatFunctionsAcceptsOnlyStrings" resourceType="Strings" />
+      </Tag>
       <Tag externalName="BurstTypeofExpressionWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title resourceName="TypeofIsProhibitedInBurst" resourceType="Strings" />
         <Description resourceName="TypeofIsProhibitedInBurst" resourceType="Strings" />
@@ -152,6 +156,13 @@
   <Warning name="BurstDebugLogInvalidArgument" configurableSeverity="Unity.BurstDebugLogInvalidArgument">
     <Parameter type="ITreeNode" name="node" />
     <Message resourceName="BurstDebugLoggingFunctionsAcceptsOnlyStringsMessage" resourceType="Strings" />
+    <Range>Node.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="BurstStringFormatInvalidArgument" configurableSeverity="Unity.BurstStringFormatInvalidArgument">
+    <Parameter type="ITreeNode" name="node" />
+    <Message resourceName="BurstStringFormatFunctionsAcceptsOnlyStringsMessage" resourceType="Strings" />
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>

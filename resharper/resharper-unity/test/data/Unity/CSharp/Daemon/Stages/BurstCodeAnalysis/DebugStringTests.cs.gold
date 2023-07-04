@@ -202,5 +202,5 @@ namespace DebugStringTests
 (0): ReSharper Warning: Burst: 'Format' signature contains managed types
 (1): ReSharper Warning: Burst: Creating a managed type 'CultureInfo' is not supported
 (2): ReSharper Warning: Burst: Debug logging functions accepts only strings
-(3): ReSharper Warning: Burst: Loading managed type 'String' is not supported
+(3): ReSharper Warning: Burst: String.Format(format, ...) accepts only string literal or const string
 (4): ReSharper Warning: Burst: Debug logging functions accepts only strings
