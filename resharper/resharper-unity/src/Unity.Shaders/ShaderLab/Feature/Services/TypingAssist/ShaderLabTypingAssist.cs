@@ -226,7 +226,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
             var tt = (IShaderLabTokenNodeType?)cachingLexer.TokenType;
             while (tt != null)
             {
-                if (stopOnCommandKeyword && tt.GetKeywordType(cachingLexer).IsCommandKeyword())
+                if (stopOnCommandKeyword && closedCount == 0 && tt.GetKeywordType(cachingLexer).IsCommandKeyword())
                     return true;
                 if (tt == ShaderLabTokenType.RBRACE)
                     closedCount++;
