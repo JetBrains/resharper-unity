@@ -1,10 +1,10 @@
 package base.integrationTests
 
 import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.vfs.encoding.EncodingProjectManagerImpl
 import com.intellij.util.WaitFor
 import com.jetbrains.rider.test.asserts.shouldBeTrue
 import com.jetbrains.rider.test.framework.frameworkLogger
+import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.BeforeSuite
@@ -86,9 +86,25 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithSolution
     }
 
     @BeforeMethod(dependsOnMethods = ["setUpTestCaseSolution"])
+    override fun setUpModelSettings() {
+        activateRiderFrontendTest()
+    }
+
+    @BeforeMethod(dependsOnMethods = ["setUpModelSettings"])
+    fun waitForUnityConnection() {
+        waitFirstScriptCompilation(project)
+        waitConnectionToUnityEditor(project)
+    }
+
+    @BeforeMethod(dependsOnMethods = ["waitForUnityConnection"])
     fun waitForUnityRunConfigurations() {
         refreshUnityModel()
         waitForUnityRunConfigurations(project)
+    }
+
+    @BeforeMethod(dependsOnMethods = ["waitForUnityRunConfigurations"])
+    fun buildSolutionAfterUnityStarts() {
+        buildSolutionWithReSharperBuild(project, ignoreReferencesResolve = true)
     }
 
     @AfterMethod(alwaysRun = true)
@@ -96,16 +112,4 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithSolution
         killUnity(project, unityProcessHandle)
         checkSweaInSolution()
     }
-
-    @BeforeMethod(dependsOnMethods = ["setUpTestCaseSolution"])
-    override fun setUpModelSettings() {
-        activateRiderFrontendTest()
-    }
-
-    @BeforeMethod
-    fun waitForUnityConnection() {
-        waitFirstScriptCompilation(project)
-        waitConnectionToUnityEditor(project)
-    }
-
 }

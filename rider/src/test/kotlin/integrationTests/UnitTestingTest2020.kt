@@ -2,6 +2,7 @@ package integrationTests
 
 import base.integrationTests.IntegrationTestWithUnityProjectBase
 import base.integrationTests.UnityVersion
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
