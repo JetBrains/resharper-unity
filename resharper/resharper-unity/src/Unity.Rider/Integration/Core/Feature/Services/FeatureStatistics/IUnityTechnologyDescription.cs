@@ -234,4 +234,193 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
             yield return "UnityEngine.TestRunner";
         }
     }
+
+    public class PackageBasedUnityTechnologyDescription : IUnityTechnologyDescription
+    {
+        private readonly string myPackageId;
+        public string Id { get; }
+
+        public PackageBasedUnityTechnologyDescription(string id, string packageId)
+        {
+            myPackageId = packageId;
+            Id = id;
+        }
+        public IEnumerable<string> GetPossiblePackageName()
+        {
+            yield return myPackageId;
+        }
+
+        public IEnumerable<string> GetPossibleAssemblyName()
+        {
+            yield break;
+        }
+
+        public IEnumerable<string> GetPossibleProjectName()
+        {
+            yield break;
+        }
+    }
+
+    public class PythonScriptingUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public PythonScriptingUnityTechnologyDescription() : base("PythonScripting", "com.unity.scripting.python")
+        {
+        }
+    }
+    
+    public class AddressablesUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public AddressablesUnityTechnologyDescription() : base("Addressables", "com.unity.addressables")
+        {
+        }
+    }
+    
+    public class AndroidLogCatUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public AndroidLogCatUnityTechnologyDescription() : base("AndroidLogCat", "com.unity.mobile.android-logcat")
+        {
+        }
+    }
+    
+    public class CodeCoverageUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public CodeCoverageUnityTechnologyDescription() : base("CodeCoverage", "com.unity.testtools.codecoverage")
+        {
+        }
+    }
+    
+    public class UnityCollectionsUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public UnityCollectionsUnityTechnologyDescription() : base("UnityCollections", "com.unity.collections")
+        {
+        }
+    }
+    
+    public class EditorCoroutinesUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public EditorCoroutinesUnityTechnologyDescription() : base("EditorCoroutines", "com.unity.editorcoroutines")
+        {
+        }
+    }
+    
+    public class EntitiesGraphicsUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public EntitiesGraphicsUnityTechnologyDescription() : base("EntitiesGraphics", "com.unity.entities.graphics")
+        {
+        }
+    }
+    
+    public class LocalizationUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public LocalizationUnityTechnologyDescription() : base("Localization", "com.unity.localization")
+        {
+        }
+    }
+    
+    public class MathematicsUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public MathematicsUnityTechnologyDescription() : base("Mathematics", "com.unity.mathematics")
+        {
+        }
+    }
+    
+    public class TransportUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public TransportUnityTechnologyDescription() : base("Transport", "com.unity.transport")
+        {
+        }
+    }
+    
+    public class UnityPhysicsUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public UnityPhysicsUnityTechnologyDescription() : base("UnityPhysics", "com.unity.physics")
+        {
+        }
+    }
+    
+    public class HavokUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public HavokUnityTechnologyDescription() : base("Havok", "com.havok.physics")
+        {
+        }
+    }
+    
+    public class MlAgentsUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public MlAgentsUnityTechnologyDescription() : base("MlAgents", "com.unity.ml-agents")
+        {
+        }
+    }
+    
+    public class MultiplayerToolsTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public MultiplayerToolsTechnologyDescription() : base("MultiplayerTools", "com.unity.multiplayer.tools")
+        {
+        }
+    }
+    
+    public class NetCodeUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public NetCodeUnityTechnologyDescription() : base("NetCode", "com.unity.netcode")
+        {
+        }
+    }
+    
+    public class NetCodeGameObjectsUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public NetCodeGameObjectsUnityTechnologyDescription() : base("NetCodeGameObjects", "com.unity.netcode.gameobjects")
+        {
+        }
+    }
+    
+    
+    public class SerializationUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public SerializationUnityTechnologyDescription() : base("Serialization", "com.unity.serialization")
+        {
+        }
+    }
+    
+    public class LoggingUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public LoggingUnityTechnologyDescription() : base("Logging", "com.unity.logging")
+        {
+        }
+    }
+    
+    public class MemoryProfilerUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public MemoryProfilerUnityTechnologyDescription() : base("MemoryProfiler", "com.unity.memoryprofiler")
+        {
+        }
+    }
+    
+    public class ProfilerAnalyzerUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public ProfilerAnalyzerUnityTechnologyDescription() : base("ProfilerAnalyzer", "com.unity.performance.profile-analyzer")
+        {
+        }
+    }
+    
+    
+    public class ProfilingCoreUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public ProfilingCoreUnityTechnologyDescription() : base("ProfilerCore", "com.unity.profiling.core")
+        {
+        }
+    }
+    
+    public class CollabUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public CollabUnityTechnologyDescription() : base("Collab", "com.unity.collab-proxy")
+        {
+        }
+    }
+    
+    public class VisualScriptingUnityTechnologyDescription : PackageBasedUnityTechnologyDescription
+    {
+        public VisualScriptingUnityTechnologyDescription() : base("VisualScripting", "com.unity.visualscripting")
+        {
+        }
+    }
 }
