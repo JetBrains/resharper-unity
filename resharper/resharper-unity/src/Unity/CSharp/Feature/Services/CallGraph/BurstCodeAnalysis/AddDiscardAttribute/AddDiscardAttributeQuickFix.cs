@@ -9,7 +9,8 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.BurstCodeAnalysis.AddDiscardAttribute
 {
-    [QuickFix]
+    // [QuickFix] 
+    // removed due to possible uselessness 
     public sealed class AddDiscardAttributeQuickFix : CallGraphQuickFixBase
     {
         public AddDiscardAttributeQuickFix([NotNull] IBurstHighlighting burstHighlighting)
