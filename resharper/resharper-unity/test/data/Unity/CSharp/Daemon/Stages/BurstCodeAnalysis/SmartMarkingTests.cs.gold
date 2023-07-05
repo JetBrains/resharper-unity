@@ -135,4 +135,4 @@ namespace SmartMarkingTests
 (0): ReSharper Warning: Burst: Creating a managed type 'Object' is not supported
 (1): ReSharper Warning: Burst: Creating a managed type 'Object' is not supported
 (2): ReSharper Warning: Burst: Creating a managed type 'Object' is not supported
-(3): ReSharper Warning: Burst: Loading managed type 'SimpleClass' is not supported
+(3):<overlapped> ReSharper Warning: Burst: Loading managed type 'SimpleClass' is not supported

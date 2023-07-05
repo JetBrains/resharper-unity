@@ -170,4 +170,4 @@ namespace PrimitivesTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: Burst: Loading managed type 'String' is not supported
+(0): ReSharper Warning: Burst: Accessing managed method '`get_Chars' from type 'System.String' is not supported
