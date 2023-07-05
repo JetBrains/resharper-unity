@@ -57,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Bu
             var providerId = myBurstCodeInsightProvider.ProviderId;
             void Fallback() => base.Analyze(methodDeclaration, consumer, context);
 
-            return isBurstIconsEnabled
+            return isBurstIconsEnabled && !HasBurstAttributeInstance(methodDeclaration)
                    && RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, Fallback, out _);
         }
 

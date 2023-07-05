@@ -60,6 +60,12 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.Genera
         {
             DoNamedTest($"../{DotsClassesFileName}");
         }
+
+        [Test]
+        public void GenerateRefRWValueNamed()
+        {
+            DoNamedTest($"../{DotsClassesFileName}");
+        }
     }
 
     [TestUnity]

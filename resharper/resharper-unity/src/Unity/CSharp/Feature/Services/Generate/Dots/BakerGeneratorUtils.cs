@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dots
 {
@@ -196,6 +197,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             return componentDeclaredType.Equals(matchingParameterType)
                 ? TreeNodeActionType.ACCEPT
                 : TreeNodeActionType.CONTINUE;
+        }
+
+        public static string CalculateValueFieldName(string originalFieldName, string? containingTypeName)
+        {
+            const string valueName = "Value";
+
+            if (containingTypeName == null || !originalFieldName.EndsWith(valueName))
+                return originalFieldName;
+
+            if (originalFieldName.Contains(containingTypeName))
+                return originalFieldName;
+
+            return originalFieldName.RemoveEnd(valueName) + containingTypeName;
         }
     }
 

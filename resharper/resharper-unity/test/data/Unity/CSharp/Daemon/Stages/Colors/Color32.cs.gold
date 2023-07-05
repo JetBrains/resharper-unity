@@ -21,15 +21,15 @@ namespace UnityTest
 }
 
 ---------------------------------------------------------
-(0): ReSharper Parameter Name Hint: (T) '|   | 
+(0): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
 ARGB:  255, 255, 0, 0
 HEX:  FF, FF, 0, 0' (E) ''
-(1): ReSharper Parameter Name Hint: (T) '|   | 
+(1): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
 ARGB:  127, 0, 255, 255
 HEX:  7F, 0, FF, FF' (E) ''
-(2): ReSharper Parameter Name Hint: (T) '|   | 
+(2): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
 ARGB:  255, 127, 128, 128
 HEX:  FF, 7F, 80, 80' (E) ''
-(3): ReSharper Parameter Name Hint: (T) '|   | 
+(3): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
 ARGB:  255, 200, 180, 190
 HEX:  FF, C8, B4, BE' (E) ''

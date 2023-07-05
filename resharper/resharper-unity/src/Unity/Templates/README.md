@@ -42,6 +42,7 @@ Categorised:
 |-----------------------------------------------------|----------------------------------------------|
 | [assetmenu](Live/CreateAssetMenu.md)                | Unity CreateAssetMenu attribute              |
 | [baker](Live/DotsBaker.md)                          | DOTS Baker                                   |
+| [componentdata](Live/ComponentData.md)              | DOTS IComponentData                          |
 | [cor](Live/Coroutine.md)                            | Unity coroutine method                       |
 | [jobentity](Live/JobEntity.md)                      | DOTS IJob Entity                             |
 | [log](Live/DebugLog.md)                             | Unity log object/message                     |
@@ -93,6 +94,7 @@ Categorised:
 |-----------------------------------------------------|----------------------------------------------|
 | [assetmenu](Live/CreateAssetMenu.md)                | Unity CreateAssetMenu attribute              |
 | [baker](Live/DotsBaker.md)                          | DOTS Baker                                   |
+| [componentdata](Live/ComponentData.md)              | DOTS IComponentData                          |
 | [cor](Live/Coroutine.md)                            | Unity coroutine method                       |
 | [jobentity](Live/JobEntity.md)                      | DOTS IJob Entity                             |
 | [log](Live/DebugLog.md)                             | Unity log object/message                     |

@@ -404,9 +404,14 @@ namespace ApiParser
             var returnType = new ApiType(type + (isArray ? "[]" : string.Empty));
             var function = new UnityApiEventFunction(name, isStatic, isCoroutine, returnType, new Version(int.MaxValue, 0),
                 path, isUndocumented);
-            function.myDescriptions.ImportFrom(message.Descendants("description"));
+            foreach (var description in message.Elements("descriptions"))
+            {
+                function.myDescriptions.ImportFrom(description.Elements("description"));
+            }
+
             function.ImportVersionRange(message, versions);
-            foreach (var parameter in message.Descendants("parameter"))
+            foreach (var parameters in message.Elements("parameters"))
+            foreach (var parameter in parameters.Elements("parameter"))
                 function.myParameters.Add(UnityApiParameter.ImportFrom(parameter));
             return function;
         }
@@ -539,7 +544,12 @@ namespace ApiParser
             var isOptional = justification != null && bool.Parse(parameter.Attribute("optional").Value);
             var apiType = new ApiType(typeName + (isArray ? "[]" : string.Empty) + (isByRef ? "&" : string.Empty));
             var p = new UnityApiParameter(name, apiType);
-            p.myDescriptions.ImportFrom(parameter.Descendants("description"));
+            
+            foreach (var description in parameter.Elements("descriptions"))
+            {
+                p.myDescriptions.ImportFrom(description.Elements("description"));
+            }
+            
             if (isOptional)
                 p.SetOptional(justification);
             return p;

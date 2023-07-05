@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.Settings;
+using JetBrains.Lifetimes;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -14,6 +17,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
     [PsiSharedComponent]
     public class UnityDotsSearchFactory : IDomainSpecificSearcherFactory
     {
+        private readonly IContextBoundSettingsStore mySettingsStore;
+
+        public UnityDotsSearchFactory(Lifetime lifetime, ISettingsStore settingsStore)
+        {
+            mySettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.ApplicationWide);
+        }
         public bool IsCompatibleWithLanguage(PsiLanguageType languageType)
         {
             return languageType.Is<CSharpLanguage>();
@@ -97,6 +106,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Search
 
         public ICollection<FindResult> TransformNavigationTargets(ICollection<FindResult> targets)
         {
+            var hideGeneratedCode =
+                mySettingsStore.GetValue((UnitySettings s) => s.HideGeneratedCodeFromNavigation);
+            
+            if (!hideGeneratedCode)
+                return null;
+            
             foreach (var result in targets)
             {
                 if (IsDotsRelatedCodeGeneratedDeclaration(result))

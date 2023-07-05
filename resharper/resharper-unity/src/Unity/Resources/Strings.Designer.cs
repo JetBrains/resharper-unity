@@ -498,6 +498,8 @@
     public static string UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_ => ResourceManager.GetString("UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_");
     public static string UnitySettings_t_Unity_highlighter_scheme_for_editor_ => ResourceManager.GetString("UnitySettings_t_Unity_highlighter_scheme_for_editor_");
     public static string UnitySettings_t_Unity_plugin_settings => ResourceManager.GetString("UnitySettings_t_Unity_plugin_settings");
+    public static string UnitySettings_Dots_Header => ResourceManager.GetString("UnitySettings_Dots_Header");
+    public static string UnitySettings_Dots_Hide_generated_code_from_navigation => ResourceManager.GetString("UnitySettings_Dots_Hide_generated_code_from_navigation");
     public static string UnityWillIgnoreTheSerializeFieldAttributeIfAFieldIsAlsoMarkedWithTheNonSerializedAttribute => ResourceManager.GetString("UnityWillIgnoreTheSerializeFieldAttributeIfAFieldIsAlsoMarkedWithTheNonSerializedAttribute");
     public static string UnityYamlProjectFileType_UnityYamlProjectFileType_Unity_Yaml => ResourceManager.GetString("UnityYamlProjectFileType_UnityYamlProjectFileType_Unity_Yaml");
     public static string UnmetDefineConstraintInfo_Unmet_define_constraint => ResourceManager.GetString("UnmetDefineConstraintInfo_Unmet_define_constraint");

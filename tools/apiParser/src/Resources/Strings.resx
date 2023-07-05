@@ -124,4 +124,11 @@
     <data name="EditorWindow_OnMainWindowMove_Description" xml:space="preserve">
         <value>Called when the main window is moved</value>
     </data>
+    <data name="ScriptableObject_Reset_Description" xml:space="preserve">
+        <value>Reset to default values.</value>
+    </data>
+    <data name="EditorWindow_ShowButton_rect_Description" xml:space="preserve">
+        <value>Position to draw the button</value>
+        <comment>Don't localize</comment>
+    </data>
 </root>

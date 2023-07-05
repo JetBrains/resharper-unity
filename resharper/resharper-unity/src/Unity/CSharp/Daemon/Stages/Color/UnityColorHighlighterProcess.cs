@@ -4,6 +4,7 @@ using System.Linq;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Daemon.VisualElements;
+using JetBrains.ReSharper.Feature.Services.ColorHints;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors;
 using JetBrains.ReSharper.Psi;
@@ -38,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Color
             var colorReference = GetColorReference(element);
             var range = colorReference?.ColorConstantRange;
             return range?.IsValid() == true
-                ? new HighlightingInfo(range.Value, new ColorHighlighting(colorReference))
+                ? new HighlightingInfo(range.Value, new ColorHintHighlighting(colorReference))
                 : null;
         }
 

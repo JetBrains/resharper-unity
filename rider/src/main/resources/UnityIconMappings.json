@@ -1,13 +1,36 @@
 {
     "expui": {
         "resharper": {
-            "Logo": {
-                "Unity.svg": "resharper/Logo/Unity.svg"
-            },
             "Toolbar": {
                 "UnityToolbar.svg": "resharper/Toolbar/UnityToolbar.svg",
                 "UnityToolbarConnected.svg": "resharper/Toolbar/UnityToolbarConnected.svg",
                 "UnityToolbarDisconnected.svg": "resharper/Toolbar/UnityToolbarDisconnected.svg"
+            },
+            "UnityFileType": {
+                "Asmdef.svg": "resharper/UnityFileType/Asmdef.svg",
+                "AsmdefPackage.svg": "resharper/UnityFileType/AsmdefPackage.svg",
+                "Asmref.svg": "resharper/UnityFileType/Asmref.svg",
+                "FileAnimationClip.svg": "resharper/UnityFileType/FileAnimationClip.svg",
+                "FileAnimatorController.svg": "resharper/UnityFileType/FileAnimatorController.svg",
+                "FileUnity.svg": "resharper/UnityFileType/FileUnity.svg",
+                "FileUnityAsset.svg": "resharper/UnityFileType/FileUnityAsset.svg",
+                "FileUnityMeta.svg": "resharper/UnityFileType/FileUnityMeta.svg",
+                "FileUnityPrefab.svg": "resharper/UnityFileType/FileUnityPrefab.svg",
+                "FolderPackageReferenced.svg": "resharper/UnityFileType/FolderPackageReferenced.svg",
+                "InputActions.svg": "resharper/UnityFileType/InputActions.svg",
+                "UsageAsmdef.svg": "resharper/UnityFileType/UsageAsmdef.svg",
+                "UsageInputActions.svg": "resharper/UnityFileType/UsageInputActions.svg"
+            },
+            "UnityObjectType": {
+                "UnityComponent.svg": "resharper/UnityObjectType/UnityComponent.svg",
+                "UnityGameObject.svg": "resharper/UnityObjectType/UnityGameObject.svg",
+                "UnityPackages.svg": "resharper/UnityObjectType/UnityPackages.svg",
+                "UsageAnimationClip.svg": "resharper/UnityObjectType/UsageAnimationClip.svg",
+                "UsageAnimatorState.svg": "resharper/UnityObjectType/UsageAnimatorState.svg",
+                "UsageAnimatorStateMachine.svg": "resharper/UnityObjectType/UsageAnimatorStateMachine.svg"
+            },
+            "YamlFileType": {
+                "FileYaml.svg": "resharper/YamlFileType/FileYaml.svg"
             }
         },
         "unityIcons": {
@@ -24,6 +47,40 @@
                 "unityEditMode.svg": "unityIcons/common/unityEditMode.svg",
                 "unityPlayMode.svg": "unityIcons/common/unityPlayMode.svg",
                 "unityToolWindow.svg": "unityIcons/common/unityToolWindow.svg"
+            },
+            "Explorer": {
+                "FolderAssets.svg": "unityIcons/Explorer/FolderAssets.svg",
+                "FolderAssetsAlt.svg": "unityIcons/Explorer/FolderAssetsAlt.svg",
+                "FolderDependencies.svg": "unityIcons/Explorer/FolderDependencies.svg",
+                "FolderEditor.svg": "unityIcons/Explorer/FolderEditor.svg",
+                "FolderEditorResources.svg": "unityIcons/Explorer/FolderEditorResources.svg",
+                "FolderGit.svg": "unityIcons/Explorer/FolderGit.svg",
+                "FolderGizmos.svg": "unityIcons/Explorer/FolderGizmos.svg",
+                "FolderModules.svg": "unityIcons/Explorer/FolderModules.svg",
+                "FolderPackageEmbedded.svg": "unityIcons/Explorer/FolderPackageEmbedded.svg",
+                "FolderPackageLocal.svg": "unityIcons/Explorer/FolderPackageLocal.svg",
+                "FolderPlugins.svg": "unityIcons/Explorer/FolderPlugins.svg",
+                "FolderReadOnly.svg": "unityIcons/Explorer/FolderReadOnly.svg",
+                "FolderResources.svg": "unityIcons/Explorer/FolderResources.svg",
+                "FolderStreamingAssets.svg": "unityIcons/Explorer/FolderStreamingAssets.svg",
+                "FolderUnloaded.svg": "unityIcons/Explorer/FolderUnloaded.svg",
+                "UnityAssets.svg": "unityIcons/Explorer/UnityAssets.svg",
+                "UnityModule.svg": "unityIcons/Explorer/UnityModule.svg",
+                "UnityPackageDependency.svg": "unityIcons/Explorer/UnityPackageDependency.svg",
+                "UnityPackageUnresolved.svg": "unityIcons/Explorer/UnityPackageUnresolved.svg"
+            },
+            "fileTypes": {
+                "uss.svg": "unityIcons/fileTypes/uss.svg",
+                "uxml.svg": "unityIcons/fileTypes/uxml.svg"
+            },
+            "ide": {
+                "error.svg": "unityIcons/ide/error.svg",
+                "info.svg": "unityIcons/ide/info.svg",
+                "warning.svg": "unityIcons/ide/warning.svg"
+            },
+            "logView": {
+                "filterBeforePlay.svg": "unityIcons/logView/filterBeforePlay.svg",
+                "filterBeforeRefresh.svg": "unityIcons/logView/filterBeforeRefresh.svg"
             }
         }
     }
