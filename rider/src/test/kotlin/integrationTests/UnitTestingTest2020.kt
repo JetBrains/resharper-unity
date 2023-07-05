@@ -31,10 +31,6 @@ class UnitTestingTest2020 : IntegrationTestWithUnityProjectBase() {
 
     @Mute("RIDER-95762")
     @Test(description = "RIDER-54359")
-    @Mutes([
-        Mute("RIDER-86046", platforms = [PlatformType.MAC_OS_ARM64]),
-        Mute("RIDER-89390")
-    ])
     fun checkRefreshBeforeTest() {
         withUtFacade(project) {
             val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
@@ -51,7 +47,6 @@ class UnitTestingTest2020 : IntegrationTestWithUnityProjectBase() {
             changeFileContent(project, file) {
                 it.replace("NewTestScriptSimplePasses(", "NewTestScriptSimplePasses2(")
             }
-            waitForDiscoveringWorkaround(file, 5, it)
 
             it.runAllTestsInProject(
                 "Tests",
