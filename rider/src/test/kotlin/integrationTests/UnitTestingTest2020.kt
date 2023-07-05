@@ -29,6 +29,7 @@ class UnitTestingTest2020 : IntegrationTestWithUnityProjectBase() {
         }
     }
 
+    @Mute("RIDER-95762")
     @Test(description = "RIDER-54359")
     @Mutes([
         Mute("RIDER-86046", platforms = [PlatformType.MAC_OS_ARM64]),
