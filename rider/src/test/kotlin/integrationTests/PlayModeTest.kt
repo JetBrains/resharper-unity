@@ -8,7 +8,7 @@ import com.jetbrains.rider.test.scriptingApi.replaceFileContent
 import org.testng.annotations.Test
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class PlayModeTest : IntegrationTestWithEditorBase() {
+class PlayModeTest : IntegrationTestWithGeneratedSolutionBase() {
     override fun getSolutionDirectoryName() = "SimpleUnityProjectWithoutPlugin"
 
     @Test(enabled = false)

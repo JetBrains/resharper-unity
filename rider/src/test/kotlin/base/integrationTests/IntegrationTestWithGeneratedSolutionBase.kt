@@ -9,7 +9,11 @@ import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import java.io.File
 
-abstract class IntegrationTestWithEditorBase : IntegrationTestWithSolutionBase() {
+/**
+ * Class is used in tests where initial sln/csproj structure exists. We might regenerate afterwards, but Rider is opened
+ * first. This was done initially to be able to use whole available API from the Rider, which is not available before project is opened.
+ */
+abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSolutionBase() {
     protected open val withCoverage: Boolean
         get() = false
 

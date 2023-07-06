@@ -1,6 +1,6 @@
 package integrationTests
 
-import base.integrationTests.IntegrationTestWithEditorBase
+import base.integrationTests.IntegrationTestWithGeneratedSolutionBase
 import base.integrationTests.preferStandaloneNUnitLauncherInTests
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
@@ -9,7 +9,7 @@ import org.testng.annotations.Test
 import java.io.File
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class UnitTestingTest : IntegrationTestWithEditorBase() {
+class UnitTestingTest : IntegrationTestWithGeneratedSolutionBase() {
     override fun getSolutionDirectoryName() = "SimpleUnityUnitTestingProject"
 
     override fun preprocessTempDirectory(tempDir: File) {
