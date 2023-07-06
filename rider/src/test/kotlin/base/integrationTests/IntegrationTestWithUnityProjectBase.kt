@@ -109,7 +109,9 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithSolution
 
     @AfterMethod(alwaysRun = true)
     fun killUnityAndCheckSwea() {
-        killUnity(project, unityProcessHandle)
+        if (::unityProcessHandle.isInitialized) {
+            killUnity(project, unityProcessHandle)
+        }
         checkSweaInSolution()
     }
 }
