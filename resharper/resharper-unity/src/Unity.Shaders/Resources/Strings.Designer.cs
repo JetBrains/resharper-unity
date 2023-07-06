@@ -94,5 +94,6 @@
     public static string PreprocessorLineContent_RiderPresentableName => ResourceManager.GetString("PreprocessorLineContent_RiderPresentableName");
     public static string InjectedLanguageFragment_RiderPresentableName => ResourceManager.GetString("InjectedLanguageFragment_RiderPresentableName");
     public static string String_RiderPresentableName => ResourceManager.GetString("String_RiderPresentableName");
+    public static string ShaderNameNotRevoled => ResourceManager.GetString("ShaderNameNotRevoled");
   }
 }

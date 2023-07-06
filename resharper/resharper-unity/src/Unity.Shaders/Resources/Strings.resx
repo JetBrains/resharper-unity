@@ -149,4 +149,7 @@
     <data name="String_RiderPresentableName" xml:space="preserve">
         <value>String</value>
     </data>
+    <data name="ShaderNameNotRevoled" xml:space="preserve">
+        <value>Unresolved Shader name</value>
+    </data>
 </root>
