@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Resolve
 {
-    public class ShaderReference<TOwner> : ReferenceWithOrigin<TOwner> where TOwner : ITreeNode
+    public class ShaderReference<TOwner> : ReferenceWithOrigin<TOwner>, IShaderReference where TOwner : ITreeNode
     {
         public ShaderReference(TOwner owner, IReferenceOrigin<TOwner> origin) : base(owner, origin)
         {

@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Resolve
 {
-    public class TexturePassReference<TOwner> : ReferenceWithOrigin<TOwner> where TOwner : ITreeNode
+    public class TexturePassReference<TOwner> : ReferenceWithOrigin<TOwner>, ITexturePassReference where TOwner : ITreeNode
     {
         private readonly ShaderReference<TOwner> myShaderReference;
         
