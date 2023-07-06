@@ -14,6 +14,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         public BurstProblemSubAnalyzerStatus CheckAndAnalyze(
             IInvocationExpression invocationExpression, IHighlightingConsumer consumer)
         {
+            if(invocationExpression.GetSourceFile()?.IsSourceGeneratedFile() == true)
+                return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
+            
             var invokedMethod = invocationExpression.Reference.Resolve().DeclaredElement as IMethod;
 
             if (invokedMethod == null || UnityCallGraphUtil.IsQualifierOpenType(invocationExpression))
