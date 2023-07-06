@@ -27,7 +27,7 @@ public class Example : |MonoBehaviour|(1)
 8: result=OK declaredElem=Foo
 9: result=OK declaredElem=UnityEngine.Shader
 10: result=OK declaredElem=UnityEngine.Shader UnityEngine.Shader.Find(System.String name)
-11: result=NOT_RESOLVED declaredElem=null
+11: result=SHADERLAB_SHADER_REFERENCE_UNRESOLVED_WARNING declaredElem=null
 12: result=OK declaredElem=UnityEngine.Material material
 13: result=OK declaredElem=UnityEngine.Color UnityEngine.Material.color
 14: result=OK declaredElem=UnityEngine.Color

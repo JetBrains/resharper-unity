@@ -61,6 +61,14 @@
     <Compile Update="ShaderLab\Daemon\Errors\ShaderLabErrors.generated.cs">
       <DependentUpon>ShaderLabErrors.xml</DependentUpon>
     </Compile>
+    <ErrorsGen Include="ShaderLab\Daemon\Errors\ShaderLabCSharpErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Errors</Namespace>
+      <OutputFile>ShaderLab\Daemon\Errors\ShaderLabCSharpErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="ShaderLab\Daemon\Errors\ShaderLabCSharpErrors.generated.cs">
+      <DependentUpon>ShaderLabCSharpErrors.xml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="Live templates">
