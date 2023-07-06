@@ -72,6 +72,8 @@
     public static string IntellisenseEnabledSettingShaderLab_s_ShaderLab__Unity__shader_files_ => ResourceManager.GetString("IntellisenseEnabledSettingShaderLab_s_ShaderLab__Unity__shader_files_");
     public static string ShaderLabAutopopupEnabledSettingsKey_s_In_variable_references => ResourceManager.GetString("ShaderLabAutopopupEnabledSettingsKey_s_In_variable_references");
     public static string ShaderLabAutopopupEnabledSettingsKey_s_In_keywords => ResourceManager.GetString("ShaderLabAutopopupEnabledSettingsKey_s_In_keywords");
+    public static string ShaderLabAutopopupEnabledSettingsKey_s_In_shader_references => ResourceManager.GetString("ShaderLabAutopopupEnabledSettingsKey_s_In_shader_references");
+    public static string ShaderLabAutopopupEnabledSettingsKey_s_In_pass_references => ResourceManager.GetString("ShaderLabAutopopupEnabledSettingsKey_s_In_pass_references");
     public static string ShaderLabAutopopupEnabledSettingsKey_s_ShaderLab => ResourceManager.GetString("ShaderLabAutopopupEnabledSettingsKey_s_ShaderLab");
     public static string ShaderLabFormatSettingsKey_s_Code_formatting_in_ShaderLab => ResourceManager.GetString("ShaderLabFormatSettingsKey_s_Code_formatting_in_ShaderLab");
     public static string ShaderLabFormatSettingsKey_s_BraceStyle => ResourceManager.GetString("ShaderLabFormatSettingsKey_s_BraceStyle");
