@@ -129,6 +129,8 @@ namespace DebugStringTests
                 FixedString128 variable = "string";
 
                 string.Format("{0} asdasd", variable);
+
+                string.Format("there should be a warningn {0}", |"my warning"|(0));
             }
         }
 
@@ -155,7 +157,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                |string.Format(|new CultureInfo(1)|(1), "", null)|(0);
+                |string.Format(|new CultureInfo(1)|(2), "", null)|(1);
             }
         }
 
@@ -164,7 +166,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                string.Format(||toFormat|(2)|(3), 12);
+                string.Format(||toFormat|(3)|(4), 12);
             }
         }
 
@@ -173,7 +175,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                Debug.Log(|12|(4));
+                Debug.Log(|12|(5));
             }
         }
 
@@ -199,8 +201,9 @@ namespace DebugStringTests
     }
 }
 ---------------------------------------------------------
-(0):<overlapped> ReSharper Warning: Burst: 'Format' signature contains managed types
-(1):<overlapped> ReSharper Warning: Burst: Creating a managed type 'CultureInfo' is not supported
-(2):<overlapped> ReSharper Warning: Burst: Loading from a non-readonly static field 'DebugStringTests.toFormat' is not supported
-(3):<overlapped> ReSharper Warning: Burst: String.Format(format, ...) accepts only string literal or const string
-(4):<overlapped> ReSharper Warning: Burst: Debug logging functions accepts only strings
+(0):<overlapped> ReSharper Warning: Burst: String.Format invalid argument type 'String' with index '0'. Only value types are supported
+(1):<overlapped> ReSharper Warning: Burst: 'Format' signature contains managed types
+(2):<overlapped> ReSharper Warning: Burst: Creating a managed type 'CultureInfo' is not supported
+(3):<overlapped> ReSharper Warning: Burst: Loading from a non-readonly static field 'DebugStringTests.toFormat' is not supported
+(4):<overlapped> ReSharper Warning: Burst: String.Format(format, ...) format can be a string literal or const string
+(5):<overlapped> ReSharper Warning: Burst: Debug logging functions accepts only strings

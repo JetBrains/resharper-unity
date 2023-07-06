@@ -52,9 +52,13 @@
         <Title resourceName="DebugLoggingFunctionsAcceptsOnlyStrings" resourceType="Strings" />
         <Description resourceName="DebugLoggingFunctionsAcceptsOnlyStrings" resourceType="Strings" />
       </Tag>
-      <Tag externalName="BurstStringFormatInvalidArgumentWarning.HIGHLIGHTING_ID" default="WARNING">
+      <Tag externalName="BurstStringFormatInvalidFormatWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title resourceName="StringFormatFunctionsAcceptsOnlyStrings" resourceType="Strings" />
         <Description resourceName="StringFormatFunctionsAcceptsOnlyStrings" resourceType="Strings" />
+      </Tag>
+      <Tag externalName="BurstStringFormatInvalidArgumentWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title resourceName="BurstStringFormatFunctionsInvalidArgumentType" resourceType="Strings" />
+        <Description resourceName="BurstStringFormatFunctionsInvalidArgumentType" resourceType="Strings" />
       </Tag>
       <Tag externalName="BurstTypeofExpressionWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title resourceName="TypeofIsProhibitedInBurst" resourceType="Strings" />
@@ -160,13 +164,25 @@
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
-  <Warning name="BurstStringFormatInvalidArgument" configurableSeverity="Unity.BurstStringFormatInvalidArgument">
+  <Warning name="BurstStringFormatInvalidFormat" configurableSeverity="Unity.BurstStringFormatInvalidFormat">
     <Parameter type="ITreeNode" name="node" />
     <Message resourceName="BurstStringFormatFunctionsAcceptsOnlyStringsMessage" resourceType="Strings" />
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
+  <Warning name="BurstStringFormatInvalidArgument" configurableSeverity="Unity.BurstStringFormatInvalidArgument">
+    <Parameter type="ITreeNode" name="node" />
+    <Parameter type ="string" name="typeName"/>
+    <Parameter type ="int" name="argumentIndex"/>
+    <Message resourceName="BurstStringFormatFunctionsInvalidArgumentTypeMessage" resourceType="Strings">
+      <Argument>TypeName</Argument>
+      <Argument>ArgumentIndex</Argument>
+    </Message>
+    <Range>Node.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
   <Warning name="BurstTypeofExpression" configurableSeverity="Unity.BurstTypeofExpression">
     <Parameter type="ITreeNode" name="node" />
     <Message resourceName="BurstTypeofIsProhibitedMessage" resourceType="Strings" />
