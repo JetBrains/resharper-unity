@@ -4,7 +4,7 @@ type: Live
 reformat: True
 shortenReferences: True
 categories: unity
-scopes: InUnityCSharpProject;MustBeInShaderLabBlock(blockKeyword=Properties)
+scopes: InShaderLabBlock(blockKeyword=Properties)
 parameterOrder: NAME, VALUE
 VALUE-expression: constant("0.0")
 ---

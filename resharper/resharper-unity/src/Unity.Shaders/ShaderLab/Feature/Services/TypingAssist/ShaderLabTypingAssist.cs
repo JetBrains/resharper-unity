@@ -223,7 +223,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
         private bool MoveLexerToIdentReference(CachingLexer cachingLexer, bool stopOnCommandKeyword)
         {
             var closedCount = 0;
-            var tt = (IShaderLabTokenNodeType?)cachingLexer.TokenType;
+            var tt = cachingLexer.TokenType as IShaderLabTokenNodeType;
             while (tt != null)
             {
                 if (stopOnCommandKeyword && closedCount == 0 && tt.GetKeywordType(cachingLexer).IsCommandKeyword())

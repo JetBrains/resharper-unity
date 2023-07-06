@@ -1,3 +1,4 @@
+using JetBrains.ReSharper.Plugins.Unity.Common.Services.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 
