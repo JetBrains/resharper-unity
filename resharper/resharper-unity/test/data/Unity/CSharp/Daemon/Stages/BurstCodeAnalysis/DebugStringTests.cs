@@ -129,6 +129,8 @@ namespace DebugStringTests
                 FixedString128 variable = "string";
 
                 string.Format("{0} asdasd", variable);
+
+                string.Format("there should be a warningn {0}", "my warning");
             }
         }
 
