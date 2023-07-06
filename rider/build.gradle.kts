@@ -301,7 +301,7 @@ tasks {
         assert(productsHome != null) { "Monorepo root not found" }
 
         return listOf(
-            File("$productsHome/Rider/Frontend/model/src"),
+            File("$productsHome/Rider/Frontend/rider/model/sources"),
             File("$productsHome/Rider/ultimate/remote-dev/rd-ide-model-sources"),
             modelSrcDir
         )
