@@ -107,6 +107,8 @@
     public static string BurstTryStatementIsNotSupportedMessage => ResourceManager.GetString("BurstTryStatementIsNotSupportedMessage");
     public static string BurstTypeofIsProhibitedMessage => ResourceManager.GetString("BurstTypeofIsProhibitedMessage");
     public static string BurstWritingToAStaticFieldIsNotSupportedMessage => ResourceManager.GetString("BurstWritingToAStaticFieldIsNotSupportedMessage");
+    public static string BurstLocalStringVariableDeclarationMessage => ResourceManager.GetString("BurstLocalStringVariableDeclarationMessage");
+    public static string BurstLocalStringVariableDeclarationQuickFix => ResourceManager.GetString("BurstLocalStringVariableDeclarationQuickFix");
     public static string CachePropertyValueQuickFix_Text_Introduce_variable => ResourceManager.GetString("CachePropertyValueQuickFix_Text_Introduce_variable");
     public static string CameraMainIsExpensive => ResourceManager.GetString("CameraMainIsExpensive");
     public static string CameraMainIsExpensiveMessage => ResourceManager.GetString("CameraMainIsExpensiveMessage");

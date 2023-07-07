@@ -186,6 +186,13 @@
     </data>
     <data name="BurstWritingToAStaticFieldIsNotSupportedMessage" xml:space="preserve">
         <value>Burst: Writing to a static field '{0}' is not supported</value>
+    </data>    
+    <data name="BurstLocalStringVariableDeclarationMessage" xml:space="preserve">
+        <value>Burst: This string could be not valid as you're using it from a Burst compiled call-stack</value>
+    </data>
+    <data name="BurstLocalStringVariableDeclarationQuickFix" xml:space="preserve">
+        <value>Specify {0} type explicitly</value>
+        <comment>FixedString type as parameter (FixedString32Bytes, FixedString64Bytes, etc.)</comment>
     </data>
     <data name="CachePropertyValueQuickFix_Text_Introduce_variable" xml:space="preserve">
         <value>Introduce variable</value>

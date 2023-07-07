@@ -68,6 +68,10 @@
         <Title resourceName="SomeSharedStaticGetOrCreateOverloadsCauseCompilerErrors" resourceType="Strings" />
         <Description resourceName="SomeSharedStaticGetOrCreateOverloadsCauseCompilerErrors" resourceType="Strings" />
       </Tag>
+      <Tag externalName="BurstLocalStringVariableDeclarationWarning.HIGHLIGHTING_ID" default="HINT">
+        <Title resourceName="BurstLocalStringVariableDeclarationMessage" resourceType="Strings" />
+        <Description resourceName="BurstLocalStringVariableDeclarationMessage" resourceType="Strings" />
+      </Tag>
     </Group>
   </SeverityConfiguration>
   
@@ -195,5 +199,13 @@
     <Message resourceName="BurstThisMethodIsAvailableInCOnlyNotHPCMessage" resourceType="Strings" />
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
+  <Warning name="BurstLocalStringVariableDeclaration" configurableSeverity="Unity.BurstLocalStringVariableDeclaration">
+    <Parameter type="ITreeNode" name="node" />
+    <Parameter type="IMultipleDeclarationMember" name="multipleDeclarationMember" />
+    <Message resourceName="BurstLocalStringVariableDeclarationMessage" resourceType="Strings" />
+    <Range>Node.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 </Errors>
