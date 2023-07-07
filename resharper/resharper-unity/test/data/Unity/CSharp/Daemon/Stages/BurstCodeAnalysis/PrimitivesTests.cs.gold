@@ -138,7 +138,7 @@ namespace PrimitivesTests
                 str1 = str2;
                 if (str1 != null)
                 {
-                    char c = |str2|(0)[0]; 
+                    char c = str2[0]; 
                 }
             }
 
@@ -170,4 +170,3 @@ namespace PrimitivesTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: Burst: Accessing managed method '`get_Chars' from type 'System.String' is not supported
