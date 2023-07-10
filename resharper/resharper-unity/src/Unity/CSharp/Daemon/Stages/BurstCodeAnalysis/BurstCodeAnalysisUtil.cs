@@ -168,7 +168,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
         public static bool IsBurstProhibitedObjectMethod([NotNull] IMethod method)
         {
-            var containingTypeElement = method.GetContainingType();
+            var containingTypeElement = method.ContainingType;
 
             // GetHashCode permitted in burst only if no boxing happens i.e. calling base.GetHashCode
             // Equals is prohibited because it works through System.Object and require boxing, which 

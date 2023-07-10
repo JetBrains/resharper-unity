@@ -19,6 +19,9 @@
     <data name="AccessingManagedMethodsIsNotSupported" xml:space="preserve">
         <value>Accessing managed methods is not supported</value>
     </data>
+    <data name="AccessingManagedIndexerIsNotSupported" xml:space="preserve">
+        <value>Accessing managed indexer is not supported</value>
+    </data>
     <data name="AccessingMultidimensionalArraysIsInefficientUseAJaggedOrOneDimensionalArrayInsteadMessage" xml:space="preserve">
         <value>Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead.</value>
     </data>
@@ -144,6 +147,9 @@
     </data>
     <data name="BurstAccessingManagedMethodFromTypeIsNotSupportedMessage" xml:space="preserve">
         <value>Burst: Accessing managed method '{0}' from type '{1}' is not supported</value>
+    </data>
+    <data name="BurstAccessingManagedIndexerFromTypeIsNotSupportedMessage" xml:space="preserve">
+        <value>Burst: Managed type '{0}' doesn't support indexer operator</value>
     </data>
     <data name="BurstBoxingIsNotSupportedMessage" xml:space="preserve">
         <value>Burst: Boxing '{0}' is not supported</value>

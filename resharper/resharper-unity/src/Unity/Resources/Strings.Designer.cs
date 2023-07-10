@@ -51,6 +51,7 @@
     }
 
     public static string AccessingManagedMethodsIsNotSupported => ResourceManager.GetString("AccessingManagedMethodsIsNotSupported");
+    public static string AccessingManagedIndexerIsNotSupported => ResourceManager.GetString("AccessingManagedIndexerIsNotSupported");
     public static string AccessingMultidimensionalArraysIsInefficientUseAJaggedOrOneDimensionalArrayInsteadMessage => ResourceManager.GetString("AccessingMultidimensionalArraysIsInefficientUseAJaggedOrOneDimensionalArrayInsteadMessage");
     public static string AddAttributeAction_Text_Add___0__ => ResourceManager.GetString("AddAttributeAction_Text_Add___0__");
     public static string AddAttributeAction_Text_Add___0___before_all_fields => ResourceManager.GetString("AddAttributeAction_Text_Add___0___before_all_fields");
@@ -93,6 +94,7 @@
     public static string baseOnGUIWillPrintNoGUIImplementedInTheUnityInspectorMessage => ResourceManager.GetString("baseOnGUIWillPrintNoGUIImplementedInTheUnityInspectorMessage");
     public static string BoxingIsNotSupported => ResourceManager.GetString("BoxingIsNotSupported");
     public static string BurstAccessingManagedMethodFromTypeIsNotSupportedMessage => ResourceManager.GetString("BurstAccessingManagedMethodFromTypeIsNotSupportedMessage");
+    public static string BurstAccessingManagedIndexerFromTypeIsNotSupportedMessage => ResourceManager.GetString("BurstAccessingManagedIndexerFromTypeIsNotSupportedMessage");
     public static string BurstBoxingIsNotSupportedMessage => ResourceManager.GetString("BurstBoxingIsNotSupportedMessage");
     public static string BurstCompiledCode_Text => ResourceManager.GetString("BurstCompiledCode_Text");
     public static string BurstCreatingAManagedTypeIsNotSupportedMessage => ResourceManager.GetString("BurstCreatingAManagedTypeIsNotSupportedMessage");
