@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 if (multipleDeclarationMember is ILocalVariableDeclaration { IsVar: true,  } localVariableDeclaration
                     && localVariableDeclaration.Type.IsString())
                 {
-                    consumer?.AddHighlighting(new BurstLocalStringVariableDeclarationWarning(t.VarKeyword, multipleDeclarationMember));
+                    consumer?.AddHighlighting(new BurstLocalStringVariableDeclarationWarning(localVariableDeclaration.Initial, multipleDeclarationMember));
                 }
             }
 
