@@ -186,7 +186,7 @@ namespace DebugStringTests
             {
                 FixedString128 variable = "string";
 
-                |var|(6) lola = string.Format("{0} asdasd", variable);
+                var lola = |string.Format("{0} asdasd", variable)|(6);
             }
         }
 
@@ -207,4 +207,4 @@ namespace DebugStringTests
 (3):<overlapped> ReSharper Warning: Burst: Loading from a non-readonly static field 'DebugStringTests.toFormat' is not supported
 (4):<overlapped> ReSharper Warning: Burst: String.Format(format, ...) format can be a string literal or const string
 (5):<overlapped> ReSharper Warning: Burst: Debug logging functions accepts only strings
-(6): ReSharper Hint: Burst: This string could be not valid as you're using it from a Burst compiled call-stack
+(6):<overlapped> ReSharper Suggestion: Burst: This string could be not valid as you're using it from a Burst compiled call-stack
