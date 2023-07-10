@@ -183,7 +183,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var symbolAfterCaretOffset = context.BasicContext.CaretTreeOffset;
             var symbolBeforeCaretOffset = symbolAfterCaretOffset - 1;
 
-            var lastSymbolIndexBeforeCaret = symbolBeforeCaretOffset - firstLetterOffset;
+            var lastSymbolIndexBeforeCaret = Math.Max(0, symbolBeforeCaretOffset - firstLetterOffset);
             var lastSlashIndex = originalInput.LastIndexOf('/', lastSymbolIndexBeforeCaret);
 
             var substringLength = lastSlashIndex >= 0 ? lastSlashIndex + 1 : 0;
@@ -401,7 +401,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             {
                 myCompletionItemName = completionItemName;
                 Ranges = ranges;
-                Text = $"{completionItemName}{(isDirectory ? '/' : "")}\"";
+                Text = $"{completionItemName}\"";
                 Image = isDirectory
                     ? ProjectModelThemedIcons.Directory.Id
                     : UnityFileTypeThemedIcons.FileUnity.Id;
@@ -409,9 +409,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             protected override RichText GetDisplayName()
             {
-                if (myCompletionItemName.Contains("/"))
-                    System.Diagnostics.Debugger.Launch();
-
                 return LookupUtil.FormatLookupString(myCompletionItemName, TextColor);
             }
 
