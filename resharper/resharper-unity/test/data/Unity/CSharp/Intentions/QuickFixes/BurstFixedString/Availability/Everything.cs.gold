@@ -68,7 +68,7 @@ namespace BurstFixedStringTests
 }
 
 ------------------------------------------------
-0: Burst: This string could be not valid as you're using it from a Burst compiled call-stack
+0: Burst: The variable resolves to System.String, which may result in invalid managed method calls at the Burst-compiled call stack
 QUICKFIXES:
 Specify FixedString type explicitly
 --Specify FixedString32Bytes type explicitly
