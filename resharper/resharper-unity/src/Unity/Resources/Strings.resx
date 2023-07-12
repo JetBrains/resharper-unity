@@ -161,13 +161,13 @@
         <value>Burst: Creating a managed type '{0}' is not supported</value>
     </data>
     <data name="BurstDebugLoggingFunctionsAcceptsOnlyStringsMessage" xml:space="preserve">
-        <value>Burst: Debug logging functions accepts only strings</value>
+        <value>Burst: Debug logging functions only accept strings</value>
     </data>
     <data name="BurstStringFormatFunctionsAcceptsOnlyStringsMessage" xml:space="preserve">
-        <value>Burst: String.Format(format, ...) format can be a string literal or const string</value>
+        <value>Burst: The 'format' argument in String.Format(format, ...) must be either a string literal or a const string</value>
     </data>
     <data name="BurstStringFormatFunctionsInvalidArgumentTypeMessage" xml:space="preserve">
-        <value>Burst: String.Format invalid argument type '{0}' with index '{1}'. Only value types are supported</value>
+        <value>Burst: String.Format argument with index '{1}' has an invalid type '{0}'. Only value types are supported.</value>
     </data>
     <data name="BurstLoadingFromANonReadonlyStaticFieldIsNotSupportedMessage" xml:space="preserve">
         <value>Burst: Loading from a non-readonly static field '{0}' is not supported</value>
@@ -194,7 +194,7 @@
         <value>Burst: Writing to a static field '{0}' is not supported</value>
     </data>    
     <data name="BurstLocalStringVariableDeclarationMessage" xml:space="preserve">
-        <value>Burst: This string could be not valid as you're using it from a Burst compiled call-stack</value>
+        <value>Burst: The variable resolves to System.String, which may result in invalid managed method calls at the Burst-compiled call stack</value>
     </data>
     <data name="BurstLocalStringVariableDeclarationQuickFix" xml:space="preserve">
         <value>Specify {0} type explicitly</value>
@@ -303,10 +303,10 @@
         <value>Current file name without whitespace characters</value>
     </data>
     <data name="DebugLoggingFunctionsAcceptsOnlyStrings" xml:space="preserve">
-        <value>Debug logging functions accepts only strings</value>
+        <value>Debug logging functions only accept strings</value>
     </data>
     <data name="StringFormatFunctionsAcceptsOnlyStrings" xml:space="preserve">
-        <value>String.Format(format, ...) accepts only string literal or const string</value>
+        <value>String.Format(format, ...) only accepts string literals and const strings</value>
     </data>
     <data name="BurstStringFormatFunctionsInvalidArgumentType" xml:space="preserve">
         <value>Burst: String.Format(format, ...) invalid argument type</value>
