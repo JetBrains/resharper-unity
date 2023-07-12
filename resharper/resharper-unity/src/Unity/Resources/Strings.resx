@@ -20,7 +20,7 @@
         <value>Accessing managed methods is not supported</value>
     </data>
     <data name="AccessingManagedIndexerIsNotSupported" xml:space="preserve">
-        <value>Accessing managed indexer is not supported</value>
+        <value>Accessing managed indexers is not supported</value>
     </data>
     <data name="AccessingMultidimensionalArraysIsInefficientUseAJaggedOrOneDimensionalArrayInsteadMessage" xml:space="preserve">
         <value>Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead.</value>
