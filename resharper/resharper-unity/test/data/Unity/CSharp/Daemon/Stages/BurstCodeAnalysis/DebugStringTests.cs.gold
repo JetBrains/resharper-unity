@@ -201,7 +201,7 @@ namespace DebugStringTests
     }
 }
 ---------------------------------------------------------
-(0):<overlapped> ReSharper Warning: Burst: String.Format invalid argument type 'String' with index '0'. Only value types are supported
+(0):<overlapped> ReSharper Warning: Burst: String.Format argument with index '0' has an invalid type 'String'. Only value types are supported.
 (1):<overlapped> ReSharper Warning: Burst: 'Format' signature contains managed types
 (2):<overlapped> ReSharper Warning: Burst: Creating a managed type 'CultureInfo' is not supported
 (3):<overlapped> ReSharper Warning: Burst: Loading from a non-readonly static field 'DebugStringTests.toFormat' is not supported
