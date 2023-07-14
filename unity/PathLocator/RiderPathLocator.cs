@@ -154,9 +154,6 @@ namespace JetBrains.Rider.PathLocator
     {
       var installInfos = new List<RiderInfo>();
 
-      installInfos.AddRange(CollectToolbox20Windows("*Rider*", "bin/rider64.exe"));
-      installInfos.AddRange(CollectToolbox20Windows("*Fleet*", "Fleet.exe"));
-
       var appsPath = GetAppsRootPathInToolbox();
       var riderRootPath = Path.Combine(appsPath, "Rider");
       installInfos.AddRange(CollectPathsFromToolbox(riderRootPath, "bin", "rider64.exe", false).ToList()
@@ -165,28 +162,13 @@ namespace JetBrains.Rider.PathLocator
       var fleetRootPath = Path.Combine(appsPath, "Fleet");
       installInfos.AddRange(CollectPathsFromToolbox(fleetRootPath, string.Empty, "Fleet.exe", false).ToList()
         .Select(a => new RiderInfo(this, a, true)).ToList());
-
-      var installPaths = new List<string>();
+      
       const string registryKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
-      CollectPathsFromRegistry(registryKey, installPaths);
+      CollectPathsFromRegistry(registryKey, installInfos);
       const string wowRegistryKey = @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall";
-      CollectPathsFromRegistry(wowRegistryKey, installPaths);
-
-      installInfos.AddRange(installPaths.Select(a => new RiderInfo(this, a, false)).ToList());
+      CollectPathsFromRegistry(wowRegistryKey, installInfos);
 
       return installInfos.ToArray();
-    }
-
-    private IEnumerable<RiderInfo> CollectToolbox20Windows(string pattern, string relPath)
-    {
-      var result = new List<RiderInfo>();
-      var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-      if (!string.IsNullOrEmpty(localAppData))
-      {
-        CollectToolbox20(Path.Combine(localAppData, "Programs"), pattern, relPath, result);
-      }
-
-      return result;
     }
 
     private void CollectToolbox20(string dir, string pattern, string relPath, List<RiderInfo> result)
@@ -324,7 +306,7 @@ namespace JetBrains.Rider.PathLocator
     }
 
     [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
-    private void CollectPathsFromRegistry(string registryKey, List<string> installPaths)
+    private void CollectPathsFromRegistry(string registryKey, List<RiderInfo> installPaths)
     {
       using (var key = Registry.CurrentUser.OpenSubKey(registryKey))
       {
@@ -338,7 +320,7 @@ namespace JetBrains.Rider.PathLocator
     }
 
     [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
-    private void CollectPathsFromRegistry(List<string> installPaths, RegistryKey key)
+    private void CollectPathsFromRegistry(List<RiderInfo> installPaths, RegistryKey key)
     {
       if (key == null) return;
       foreach (var subkeyName in key.GetSubKeyNames())
@@ -357,7 +339,7 @@ namespace JetBrains.Rider.PathLocator
             {
               var possiblePath = Path.Combine(folder, @"bin\rider64.exe");
               if (File.Exists(possiblePath))
-                installPaths.Add(possiblePath);
+                installPaths.Add(new RiderInfo(this, possiblePath, subkeyName.Contains("JetBrains Toolbox")));
             }
             catch (ArgumentException)
             {
@@ -369,7 +351,7 @@ namespace JetBrains.Rider.PathLocator
             {
               var possiblePath = Path.Combine(folder, @"Fleet.exe");
               if (File.Exists(possiblePath))
-                installPaths.Add(possiblePath);
+                installPaths.Add(new RiderInfo(this, possiblePath, subkeyName.Contains("JetBrains Toolbox")));
             }
             catch (ArgumentException)
             {
