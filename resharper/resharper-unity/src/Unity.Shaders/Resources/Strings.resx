@@ -101,13 +101,46 @@
     <data name="InUnityShaderLabBlock_PresentableShortName" xml:space="preserve">
         <value>Unity ShaderLab {0} Block</value>
     </data>
+    <data name="InUnityShaderLabRoot_PresentableShortName" xml:space="preserve">
+        <value>Unity ShaderLab Root</value>
+    </data>
     <data name="InUnityShaderLabFile_Presentation" xml:space="preserve">
         <value>In Unity ShaderLab file</value>
+    </data>
+    <data name="InUnityShaderLabRoot_Presentation" xml:space="preserve">
+        <value>In Unity ShaderLab Root</value>
     </data>
     <data name="InUnityShaderLabBlock_Presentation" xml:space="preserve">
         <value>In Unity ShaderLab {0} Block</value>
     </data>
     <data name="BlockCommand_Text" xml:space="preserve">
         <value>Block Command</value>
+    </data>
+    <data name="Keyword_RiderPresentableName" xml:space="preserve">
+        <value>Keyword</value>
+    </data>
+    <data name="Number_RiderPresentableName" xml:space="preserve">
+        <value>Number</value>
+    </data>
+    <data name="FieldIdentifier_RiderPresentableName" xml:space="preserve">
+        <value>Field Identifier</value>
+    </data>
+    <data name="FunctionIdentifier_RiderPresentableName" xml:space="preserve">
+        <value>Function Identifier</value>
+    </data>
+    <data name="TypeIdentifier_RiderPresentableName" xml:space="preserve">
+        <value>Type Identifier</value>
+    </data>
+    <data name="VariableIdentifier_RiderPresentableName" xml:space="preserve">
+        <value>Variable Identifier</value>
+    </data>
+    <data name="PreprocessorLineContent_RiderPresentableName" xml:space="preserve">
+        <value>Preprocessor Line Content</value>
+    </data>
+    <data name="InjectedLanguageFragment_RiderPresentableName" xml:space="preserve">
+        <value>Injected Language Fragment</value>
+    </data>
+    <data name="String_RiderPresentableName" xml:space="preserve">
+        <value>String</value>
     </data>
 </root>

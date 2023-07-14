@@ -24,10 +24,9 @@ import com.jetbrains.rdclient.util.idea.toVirtualFile
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
-import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
-import com.jetbrains.rider.projectView.workspace.getOrCreateRiderModuleEntity
+import com.jetbrains.rider.workspaceModel.getOrCreateRiderModuleEntity
 import java.nio.file.Paths
 
 class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedService() {

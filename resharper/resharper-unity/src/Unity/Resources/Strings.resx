@@ -19,6 +19,9 @@
     <data name="AccessingManagedMethodsIsNotSupported" xml:space="preserve">
         <value>Accessing managed methods is not supported</value>
     </data>
+    <data name="AccessingManagedIndexerIsNotSupported" xml:space="preserve">
+        <value>Accessing managed indexer is not supported</value>
+    </data>
     <data name="AccessingMultidimensionalArraysIsInefficientUseAJaggedOrOneDimensionalArrayInsteadMessage" xml:space="preserve">
         <value>Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead.</value>
     </data>
@@ -145,6 +148,9 @@
     <data name="BurstAccessingManagedMethodFromTypeIsNotSupportedMessage" xml:space="preserve">
         <value>Burst: Accessing managed method '{0}' from type '{1}' is not supported</value>
     </data>
+    <data name="BurstAccessingManagedIndexerFromTypeIsNotSupportedMessage" xml:space="preserve">
+        <value>Burst: Managed type '{0}' doesn't support indexer operator</value>
+    </data>
     <data name="BurstBoxingIsNotSupportedMessage" xml:space="preserve">
         <value>Burst: Boxing '{0}' is not supported</value>
     </data>
@@ -156,6 +162,12 @@
     </data>
     <data name="BurstDebugLoggingFunctionsAcceptsOnlyStringsMessage" xml:space="preserve">
         <value>Burst: Debug logging functions accepts only strings</value>
+    </data>
+    <data name="BurstStringFormatFunctionsAcceptsOnlyStringsMessage" xml:space="preserve">
+        <value>Burst: String.Format(format, ...) format can be a string literal or const string</value>
+    </data>
+    <data name="BurstStringFormatFunctionsInvalidArgumentTypeMessage" xml:space="preserve">
+        <value>Burst: String.Format invalid argument type '{0}' with index '{1}'. Only value types are supported</value>
     </data>
     <data name="BurstLoadingFromANonReadonlyStaticFieldIsNotSupportedMessage" xml:space="preserve">
         <value>Burst: Loading from a non-readonly static field '{0}' is not supported</value>
@@ -180,6 +192,13 @@
     </data>
     <data name="BurstWritingToAStaticFieldIsNotSupportedMessage" xml:space="preserve">
         <value>Burst: Writing to a static field '{0}' is not supported</value>
+    </data>    
+    <data name="BurstLocalStringVariableDeclarationMessage" xml:space="preserve">
+        <value>Burst: This string could be not valid as you're using it from a Burst compiled call-stack</value>
+    </data>
+    <data name="BurstLocalStringVariableDeclarationQuickFix" xml:space="preserve">
+        <value>Specify {0} type explicitly</value>
+        <comment>FixedString type as parameter (FixedString32Bytes, FixedString64Bytes, etc.)</comment>
     </data>
     <data name="CachePropertyValueQuickFix_Text_Introduce_variable" xml:space="preserve">
         <value>Introduce variable</value>
@@ -285,6 +304,12 @@
     </data>
     <data name="DebugLoggingFunctionsAcceptsOnlyStrings" xml:space="preserve">
         <value>Debug logging functions accepts only strings</value>
+    </data>
+    <data name="StringFormatFunctionsAcceptsOnlyStrings" xml:space="preserve">
+        <value>String.Format(format, ...) accepts only string literal or const string</value>
+    </data>
+    <data name="BurstStringFormatFunctionsInvalidArgumentType" xml:space="preserve">
+        <value>Burst: String.Format(format, ...) invalid argument type</value>
     </data>
     <data name="DisabledIndexingOfUnityAssets_Text" xml:space="preserve">
         <value>Disabled indexing of Unity assets</value>
@@ -1004,7 +1029,7 @@
         <value>Field of 'ComponentLookup' type must be updated before being used.</value>
     </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_Override_Component_In_Baker" xml:space="preserve">
-        <value>Override '{0}' initialization in Baker</value>
+        <value>Regenerate existing '{0}' initialization in Baker</value>
     </data>
     <data name="UnityDots_GenerateBakerAndAuthoring_Baker" xml:space="preserve">
         <value>Baker</value>
@@ -1151,16 +1176,16 @@
         <value>Enable analysis for Burst compiler issues</value>
     </data>
     <data name="UnityOptionsPage_AddBurstAnalysisSubSection_Show_gutter_icons_for_Burst_compiled_called_methods" xml:space="preserve">
-        <value>Show gutter icons for Burst compiled called methods</value>
+        <value>Show gutter mark or Code Vision for Burst-compiled methods</value>
     </data>
     <data name="UnityOptionsPage_AddCSharpSection_Always" xml:space="preserve">
         <value>Always</value>
     </data>
     <data name="UnityOptionsPage_AddCSharpSection_Show_gutter_icons_for_implicit_script_usages" xml:space="preserve">
-        <value>Show gutter icons for implicit script usages</value>
+        <value>Show gutter mark or Code Vision for implicit script usages</value>
     </data>
     <data name="UnityOptionsPage_AddCSharpSection_Show_gutter_icons_for_implicit_script_usages_" xml:space="preserve">
-        <value>Show gutter icons for implicit script usages:</value>
+        <value>Show gutter mark or Code Vision for implicit script usages:</value>
     </data>
     <data name="UnityOptionsPage_AddCSharpSection_When_Code_Vision_is_disabled" xml:space="preserve">
         <value>When Code Vision is disabled</value>
@@ -1263,7 +1288,7 @@ a plugin to be installed to a project.</value>
         <value>Never</value>
     </data>
     <data name="UnityOptionsPage_AddPerformanceAnalysisSubSection_Show_gutter_icons_for_frequently_called_methods" xml:space="preserve">
-        <value>Show gutter icons for frequently called methods</value>
+        <value>Show gutter mark or Code Vision for frequently called methods</value>
     </data>
     <data name="UnityOptionsPage_AddShadersSection_Shaders" xml:space="preserve">
         <value>Shaders</value>
@@ -1381,6 +1406,12 @@ a plugin to be installed to a project.</value>
     </data>
     <data name="UnitySettings_t_Unity_plugin_settings" xml:space="preserve">
         <value>Unity plugin settings</value>
+    </data>
+    <data name="UnitySettings_Dots_Header" xml:space="preserve">
+        <value>DOTS</value>
+    </data>
+    <data name="UnitySettings_Dots_Hide_generated_code_from_navigation" xml:space="preserve">
+        <value>Exclude DOTS-generated code from navigation results</value>
     </data>
     <data name="UnityWillIgnoreTheSerializeFieldAttributeIfAFieldIsAlsoMarkedWithTheNonSerializedAttribute" xml:space="preserve">
         <value>Unity will ignore the 'SerializeField' attribute if a field is also marked with the 'NonSerialized' attribute</value>

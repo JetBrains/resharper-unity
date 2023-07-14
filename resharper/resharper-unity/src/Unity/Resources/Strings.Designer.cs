@@ -51,6 +51,7 @@
     }
 
     public static string AccessingManagedMethodsIsNotSupported => ResourceManager.GetString("AccessingManagedMethodsIsNotSupported");
+    public static string AccessingManagedIndexerIsNotSupported => ResourceManager.GetString("AccessingManagedIndexerIsNotSupported");
     public static string AccessingMultidimensionalArraysIsInefficientUseAJaggedOrOneDimensionalArrayInsteadMessage => ResourceManager.GetString("AccessingMultidimensionalArraysIsInefficientUseAJaggedOrOneDimensionalArrayInsteadMessage");
     public static string AddAttributeAction_Text_Add___0__ => ResourceManager.GetString("AddAttributeAction_Text_Add___0__");
     public static string AddAttributeAction_Text_Add___0___before_all_fields => ResourceManager.GetString("AddAttributeAction_Text_Add___0___before_all_fields");
@@ -93,10 +94,13 @@
     public static string baseOnGUIWillPrintNoGUIImplementedInTheUnityInspectorMessage => ResourceManager.GetString("baseOnGUIWillPrintNoGUIImplementedInTheUnityInspectorMessage");
     public static string BoxingIsNotSupported => ResourceManager.GetString("BoxingIsNotSupported");
     public static string BurstAccessingManagedMethodFromTypeIsNotSupportedMessage => ResourceManager.GetString("BurstAccessingManagedMethodFromTypeIsNotSupportedMessage");
+    public static string BurstAccessingManagedIndexerFromTypeIsNotSupportedMessage => ResourceManager.GetString("BurstAccessingManagedIndexerFromTypeIsNotSupportedMessage");
     public static string BurstBoxingIsNotSupportedMessage => ResourceManager.GetString("BurstBoxingIsNotSupportedMessage");
     public static string BurstCompiledCode_Text => ResourceManager.GetString("BurstCompiledCode_Text");
     public static string BurstCreatingAManagedTypeIsNotSupportedMessage => ResourceManager.GetString("BurstCreatingAManagedTypeIsNotSupportedMessage");
     public static string BurstDebugLoggingFunctionsAcceptsOnlyStringsMessage => ResourceManager.GetString("BurstDebugLoggingFunctionsAcceptsOnlyStringsMessage");
+    public static string BurstStringFormatFunctionsAcceptsOnlyStringsMessage => ResourceManager.GetString("BurstStringFormatFunctionsAcceptsOnlyStringsMessage");
+    public static string BurstStringFormatFunctionsInvalidArgumentTypeMessage => ResourceManager.GetString("BurstStringFormatFunctionsInvalidArgumentTypeMessage");
     public static string BurstLoadingFromANonReadonlyStaticFieldIsNotSupportedMessage => ResourceManager.GetString("BurstLoadingFromANonReadonlyStaticFieldIsNotSupportedMessage");
     public static string BurstLoadingManagedTypeIsNotSupportedMessage => ResourceManager.GetString("BurstLoadingManagedTypeIsNotSupportedMessage");
     public static string BurstSignatureContainsManagedTypesMessage => ResourceManager.GetString("BurstSignatureContainsManagedTypesMessage");
@@ -105,6 +109,8 @@
     public static string BurstTryStatementIsNotSupportedMessage => ResourceManager.GetString("BurstTryStatementIsNotSupportedMessage");
     public static string BurstTypeofIsProhibitedMessage => ResourceManager.GetString("BurstTypeofIsProhibitedMessage");
     public static string BurstWritingToAStaticFieldIsNotSupportedMessage => ResourceManager.GetString("BurstWritingToAStaticFieldIsNotSupportedMessage");
+    public static string BurstLocalStringVariableDeclarationMessage => ResourceManager.GetString("BurstLocalStringVariableDeclarationMessage");
+    public static string BurstLocalStringVariableDeclarationQuickFix => ResourceManager.GetString("BurstLocalStringVariableDeclarationQuickFix");
     public static string CachePropertyValueQuickFix_Text_Introduce_variable => ResourceManager.GetString("CachePropertyValueQuickFix_Text_Introduce_variable");
     public static string CameraMainIsExpensive => ResourceManager.GetString("CameraMainIsExpensive");
     public static string CameraMainIsExpensiveMessage => ResourceManager.GetString("CameraMainIsExpensiveMessage");
@@ -140,6 +146,8 @@
     public static string CreatingAManagedTypeIsNotSupported => ResourceManager.GetString("CreatingAManagedTypeIsNotSupported");
     public static string CurrentFileNameWithoutWhitespaceCharacters_Text => ResourceManager.GetString("CurrentFileNameWithoutWhitespaceCharacters_Text");
     public static string DebugLoggingFunctionsAcceptsOnlyStrings => ResourceManager.GetString("DebugLoggingFunctionsAcceptsOnlyStrings");
+    public static string StringFormatFunctionsAcceptsOnlyStrings => ResourceManager.GetString("StringFormatFunctionsAcceptsOnlyStrings");
+    public static string BurstStringFormatFunctionsInvalidArgumentType => ResourceManager.GetString("BurstStringFormatFunctionsInvalidArgumentType");
     public static string DisabledIndexingOfUnityAssets_Text => ResourceManager.GetString("DisabledIndexingOfUnityAssets_Text");
     public static string DocumentationNavigationAction_Text_View_documentation => ResourceManager.GetString("DocumentationNavigationAction_Text_View_documentation");
     public static string DueToTheSizeOfTheProjectIndexingOfUnity_Text => ResourceManager.GetString("DueToTheSizeOfTheProjectIndexingOfUnity_Text");
@@ -498,6 +506,8 @@
     public static string UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_ => ResourceManager.GetString("UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_");
     public static string UnitySettings_t_Unity_highlighter_scheme_for_editor_ => ResourceManager.GetString("UnitySettings_t_Unity_highlighter_scheme_for_editor_");
     public static string UnitySettings_t_Unity_plugin_settings => ResourceManager.GetString("UnitySettings_t_Unity_plugin_settings");
+    public static string UnitySettings_Dots_Header => ResourceManager.GetString("UnitySettings_Dots_Header");
+    public static string UnitySettings_Dots_Hide_generated_code_from_navigation => ResourceManager.GetString("UnitySettings_Dots_Hide_generated_code_from_navigation");
     public static string UnityWillIgnoreTheSerializeFieldAttributeIfAFieldIsAlsoMarkedWithTheNonSerializedAttribute => ResourceManager.GetString("UnityWillIgnoreTheSerializeFieldAttributeIfAFieldIsAlsoMarkedWithTheNonSerializedAttribute");
     public static string UnityYamlProjectFileType_UnityYamlProjectFileType_Unity_Yaml => ResourceManager.GetString("UnityYamlProjectFileType_UnityYamlProjectFileType_Unity_Yaml");
     public static string UnmetDefineConstraintInfo_Unmet_define_constraint => ResourceManager.GetString("UnmetDefineConstraintInfo_Unmet_define_constraint");

@@ -17,13 +17,14 @@ public readonly partial struct {typeName} : IAspect
 {{
         private readonly ComponentLookup<UserComponentData> UserAspect___userComponentData;
     
-        public void PublicVoidMethod()
-        {{
-        }}
+        // Temporary commented due to IJobEntity.Schedule public methods must be available
+       // public void PublicVoidMethod()
+       // {{
+       // }}
 
-        public static void PublicStaticMethod()
-        {{
-        }}
+        //public static void PublicStaticMethod()
+        //{{
+        //}}
 
         public static void __codegen_PublicCodeGenMethod()
         {{

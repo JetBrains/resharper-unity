@@ -169,6 +169,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
             return IsRelatedMethod(reference, IsIBakerAddComponentObjectMethod);
         }
 
+        public static bool IsJobWithCodeMethod(this IInvocationExpression invocationExpression)
+        {
+            return IsRelatedMethod(invocationExpression.InvocationExpressionReference, IsJobWithCodeMethod);
+        }
+
+        public static bool IsEntitiesForEach(this IInvocationExpression invocationExpression)
+        {
+            return IsRelatedMethod(invocationExpression.InvocationExpressionReference, IsEntitiesForEach);
+        }
+        
         private static bool IsRelatedMethod(IInvocationExpressionReference reference, Func<IMethod, bool> checker)
         {
             var result = reference.Resolve();
@@ -225,6 +235,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
         {
             return method is { ShortName: "AddComponentObject" } &&
                    method.ContainingType?.GetClrName().Equals(KnownTypes.IBaker) == true;
+        }
+
+        private static bool IsJobWithCodeMethod(IMethod method)
+        {
+            return method is { ShortName: "WithCode" } &&
+                   method.ContainingType?.GetClrName().Equals(KnownTypes.LambdaSingleJobDescriptionConstructionMethods) == true;
+        }
+
+        private static bool IsEntitiesForEach(IMethod method)
+        {
+            return method is { ShortName: "ForEach" } &&
+                   method.ContainingType?.GetClrName().Equals(KnownTypes.LambdaForEachDescriptionConstructionMethods) == true;
         }
     }
 }

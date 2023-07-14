@@ -6,6 +6,7 @@ import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.ProjectModelBaseTest
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.scriptingApi.TemplateType
+import com.jetbrains.rider.test.scriptingApi.callUndo
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
 import org.testng.Assert
 import org.testng.annotations.Test
@@ -108,9 +109,12 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         }
 
         Assert.assertFalse(metaFile.exists(), "We expect meta file removed.")
+        callUndo(project)
+        Assert.assertTrue(metaFile.exists(), "We expect meta file restored.")
+
     }
 
-    @Test // RIDER-41182
+    @Test // RIDER-41182, RIDER-91321
     fun testMoveFile() {
         val originFile = project.solutionDirectory.resolve("Assets").resolve("Class1.cs")
         val originMetaFile = File(originFile.absolutePath + ".meta")
@@ -132,6 +136,13 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         val movedMetaFile = File(movedFile.absolutePath + ".meta")
         Assert.assertTrue(movedMetaFile.exists(), "meta file $movedMetaFile doesn't exist.")
         Assert.assertEquals(metaFileContent, movedMetaFile.readText())
+
+        callUndo(project)
+        Assert.assertTrue(originFile.exists(), "We expect $originFile removed.")
+        Assert.assertTrue(originMetaFile.exists(), "We expect $originMetaFile file removed.")
+        Assert.assertFalse(movedFile.exists(), "$movedFile should have been moved.")
+        Assert.assertFalse(movedMetaFile.exists(), "meta file $movedMetaFile doesn't exist.")
+        Assert.assertEquals(metaFileContent, originMetaFile.readText())
     }
 
     @Test // RIDER-63575

@@ -1,12 +1,12 @@
 package integrationTests
 
-import base.integrationTests.IntegrationTestWithEditorBase
+import base.integrationTests.IntegrationTestWithGeneratedSolutionBase
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
 import com.jetbrains.rider.test.scriptingApi.withDcFacade
 import org.testng.annotations.Test
 import java.io.File
 
-class DotCoverTest : IntegrationTestWithEditorBase() {
+class DotCoverTest : IntegrationTestWithGeneratedSolutionBase() {
     override fun getSolutionDirectoryName() = "SimpleUnityUnitTestingProject"
 
     override val withCoverage: Boolean

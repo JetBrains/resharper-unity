@@ -42,6 +42,11 @@ fun MutableList<String>.withProjectPath(project: Project) : MutableList<String> 
     return this
 }
 
+fun MutableList<String>.withProjectPath(projectPath: String) : MutableList<String> {
+    this.addAll(mutableListOf("-projectPath", projectPath))
+    return this
+}
+
 fun MutableList<String>.withBatchMode(): MutableList<String> {
     this.add("-batchmode")
     return this

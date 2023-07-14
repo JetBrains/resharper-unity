@@ -128,8 +128,8 @@ public class SharedStaticCreateTests2 : MonoBehaviour
         }
     }
 ---------------------------------------------------------
-(0): ReSharper Warning: Burst: this method is available in C# only, not HPC#
-(1): ReSharper Warning: Burst: Loading managed type 'Type' is not supported
-(2): ReSharper Warning: Burst: this method is available in C# only, not HPC#
-(3): ReSharper Warning: Burst: Loading managed type 'Type' is not supported
-(4): ReSharper Warning: Burst: Loading managed type 'Type' is not supported
+(0):<overlapped> ReSharper Warning: Burst: this method is available in C# only, not HPC#
+(1):<overlapped> ReSharper Warning: Burst: Loading managed type 'Type' is not supported
+(2):<overlapped> ReSharper Warning: Burst: this method is available in C# only, not HPC#
+(3):<overlapped> ReSharper Warning: Burst: Loading managed type 'Type' is not supported
+(4):<overlapped> ReSharper Warning: Burst: Loading managed type 'Type' is not supported

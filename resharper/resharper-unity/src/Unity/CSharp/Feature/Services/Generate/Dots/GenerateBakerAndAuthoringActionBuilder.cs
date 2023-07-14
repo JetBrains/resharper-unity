@@ -471,7 +471,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             var existingAuthoringFields =  authoringDeclaration.DeclaredElement.NotNull().Fields.ToDictionary(f => f.ShortName, f => f);
             foreach (var selectedField in selectedFields)
             {
-                var authoringFieldName = CalculateAuthoringFieldName(selectedField);
+                var authoringFieldName = BakerGeneratorUtils.CalculateValueFieldName(selectedField.ShortName, selectedField.ContainingType?.ShortName);
 
                 var authoringFieldType = BakerGeneratorUtils.GetFieldType(selectedField, ComponentToAuthoringConverter.Convert);
                 Assertion.AssertNotNull(authoringFieldType);
@@ -501,21 +501,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dot
             }
             
             return new AuthoringGenerationResult(TypeFactory.CreateType(authoringDeclaration.DeclaredElement!), authoringDeclaration);
-        }
-
-        private static string CalculateAuthoringFieldName(IField selectedField)
-        {
-            const string valueName = "Value";
-            var authoringFieldName = selectedField.ShortName;
-            var containingTypeShortName = selectedField.ContainingType?.ShortName;
-
-            if (containingTypeShortName == null || !authoringFieldName.EndsWith(valueName))
-                return authoringFieldName;
-
-            if (authoringFieldName.Contains(containingTypeShortName))
-                return authoringFieldName;
-
-            return authoringFieldName.Replace(valueName, containingTypeShortName);
         }
 
         private static IClassLikeDeclaration GetOrCreateAuthoringClassDeclaration(IPsiModule psiModule, AuthoringGenerationInfo authoringGenerationInfo)

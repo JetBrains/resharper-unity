@@ -1,6 +1,5 @@
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
-using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -14,16 +13,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         private static readonly IClrTypeName[] ourFixedStrings =
         {
-            new ClrTypeName("Unity.Collections.FixedString32"),
-            new ClrTypeName("Unity.Collections.FixedString64"),
-            new ClrTypeName("Unity.Collections.FixedString128"),
-            new ClrTypeName("Unity.Collections.FixedString512"),
-            new ClrTypeName("Unity.Collections.FixedString4096"),
-            new ClrTypeName("Unity.Collections.FixedString32Bytes"),
-            new ClrTypeName("Unity.Collections.FixedString64Bytes"),
-            new ClrTypeName("Unity.Collections.FixedString128Bytes"),
-            new ClrTypeName("Unity.Collections.FixedString512Bytes"),
-            new ClrTypeName("Unity.Collections.FixedString4096Bytes")
+            KnownTypes.FixedString32, 
+            KnownTypes.FixedString64,
+            KnownTypes.FixedString128,
+            KnownTypes.FixedString512,
+            KnownTypes.FixedString4096,
+            KnownTypes.FixedString32Bytes,
+            KnownTypes.FixedString64Bytes,
+            KnownTypes.FixedString128Bytes,
+            KnownTypes.FixedString512Bytes,
+            KnownTypes.FixedString4096Bytes
         };
 
         public static readonly string BurstDisplayName = Strings.BurstCompiledCode_Text;
@@ -52,6 +51,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 case not null when type.IsPointerType():
                 case not null when type.IsOpenType:
                 case not null when IsFixedString(type):
+                    return true;
+                case not null when type.IsString(): //string type is partially supported by the Burst
                     return true;
                 default:
                     return false;
@@ -166,7 +167,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
         public static bool IsBurstProhibitedObjectMethod([NotNull] IMethod method)
         {
-            var containingTypeElement = method.GetContainingType();
+            var containingTypeElement = method.ContainingType;
 
             // GetHashCode permitted in burst only if no boxing happens i.e. calling base.GetHashCode
             // Equals is prohibited because it works through System.Object and require boxing, which 

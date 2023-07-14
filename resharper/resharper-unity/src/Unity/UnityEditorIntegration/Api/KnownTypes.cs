@@ -144,6 +144,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         
         
         // Jobs
+        public static readonly IClrTypeName LambdaSingleJobDescriptionConstructionMethods = new ClrTypeName("Unity.Entities.LambdaSingleJobDescriptionConstructionMethods");
+        public static readonly IClrTypeName LambdaForEachDescriptionConstructionMethods = new ClrTypeName("Unity.Entities.LambdaForEachDescriptionConstructionMethods");
         // public static readonly IClrTypeName Job = new ClrTypeName("Unity.Jobs.IJob");
         // public static readonly IClrTypeName JobFor = new ClrTypeName("Unity.Jobs.IJobFor");
         // public static readonly IClrTypeName JobParallelFor = new ClrTypeName("Unity.Jobs.IJobParallelFor");
@@ -152,5 +154,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         // public static readonly IClrTypeName JobParticleSystem = new ClrTypeName("UnityEngine.ParticleSystemJobs.IJobParticleSystem");
         // public static readonly IClrTypeName JobParticleSystemParallelFor = new ClrTypeName("UnityEngine.ParticleSystemJobs.IJobParticleSystemParallelFor");
         // public static readonly IClrTypeName JobParticleSystemParallelForBatch = new ClrTypeName("UnityEngine.ParticleSystemJobs.IJobParticleSystemParallelForBatch");
+        
+        //Unity.Collections
+        
+        //Obsolete types
+        public static readonly ClrTypeName FixedString32 = new("Unity.Collections.FixedString32");
+        public static readonly ClrTypeName FixedString64 = new("Unity.Collections.FixedString64");
+        public static readonly ClrTypeName FixedString128 = new("Unity.Collections.FixedString128");
+        public static readonly ClrTypeName FixedString512 = new("Unity.Collections.FixedString512");
+        public static readonly ClrTypeName FixedString4096 = new("Unity.Collections.FixedString4096");
+        
+        public static readonly ClrTypeName FixedString32Bytes = new("Unity.Collections.FixedString32Bytes");
+        public static readonly ClrTypeName FixedString64Bytes = new("Unity.Collections.FixedString64Bytes");
+        public static readonly ClrTypeName FixedString128Bytes = new("Unity.Collections.FixedString128Bytes");
+        public static readonly ClrTypeName FixedString512Bytes = new("Unity.Collections.FixedString512Bytes");
+        public static readonly ClrTypeName FixedString4096Bytes = new("Unity.Collections.FixedString4096Bytes");
     }
 }

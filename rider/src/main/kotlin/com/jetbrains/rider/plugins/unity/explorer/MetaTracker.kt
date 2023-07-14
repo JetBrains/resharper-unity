@@ -10,10 +10,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.startup.ProjectActivity
-import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.openapi.vfs.VfsUtil
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.findFile
+import com.intellij.openapi.vfs.*
 import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.vfs.newvfs.events.*
 import com.intellij.util.PathUtil
@@ -83,7 +80,11 @@ class MetaTracker {
                                 is VFileDeleteEvent -> {
                                     val metaFile = getMetaFile(event.path) ?: continue
                                     actions.add(metaFile, project) {
-                                        VfsUtil.findFile(metaFile, true)?.delete(this)
+                                        val fileToDelete = VfsUtil.findFile(metaFile, true)
+                                        if (fileToDelete != null) {
+                                            fileToDelete.readBytes() // Preload file content into VFS to allow local history to restore it on undo operation
+                                            fileToDelete.delete(this)
+                                        }
                                     }
                                 }
                                 is VFileCopyEvent -> {

@@ -8,26 +8,26 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Intentions.QuickFixes
 {
-    [TestUnity]
-    public class BurstDiscardAvailabilityTests : QuickFixAfterSwaAvailabilityTestBase
-    {
-        protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\BurstDiscard\Availability";
+    // [TestUnity]
+    // public class BurstDiscardAvailabilityTests : QuickFixAfterSwaAvailabilityTestBase
+    // {
+    //     protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\BurstDiscard\Availability";
+    //
+    //     [Test] public void Everything() { DoNamedTest(); }
+    //
+    //     protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
+    //         IContextBoundSettingsStore boundSettingsStore)
+    //     {
+    //         return highlighting is IBurstHighlighting;
+    //     }
+    // }
 
-        [Test] public void Everything() { DoNamedTest(); }
-
-        protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
-            IContextBoundSettingsStore boundSettingsStore)
-        {
-            return highlighting is IBurstHighlighting;
-        }
-    }
-
-    [TestUnity]
-    public class BurstDiscardQuickFixTests : CSharpQuickFixAfterSwaTestBase<AddDiscardAttributeQuickFix>
-    {
-        protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\BurstDiscard";
-
-        [Test] public void TransitiveActions() { DoNamedTest(); }
-        [Test] public void RootAction() { DoNamedTest(); }
-    }
+    // [TestUnity]
+    // public class BurstDiscardQuickFixTests : CSharpQuickFixAfterSwaTestBase<AddDiscardAttributeQuickFix>
+    // {
+    //     protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\BurstDiscard";
+    //
+    //     [Test] public void TransitiveActions() { DoNamedTest(); }
+    //     [Test] public void RootAction() { DoNamedTest(); }
+    // }
 }

@@ -197,4 +197,4 @@ namespace DirectivesTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: Burst: Creating a managed type 'Object' is not supported
+(0):<overlapped> ReSharper Warning: Burst: Creating a managed type 'Object' is not supported
