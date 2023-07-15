@@ -47,8 +47,8 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution() {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "EmptyPathTest.cs") {
                 typeWithLatency("\"")
                 assertLookupContains(
-                    "Assets/\"",
-                    "Packages/\"",
+                    "Assets\"",
+                    "Packages\"",
                     checkFocus = false)
             }
         }
@@ -60,7 +60,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution() {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "NotFullAssetsPathTest.cs") {
                 callBasicCompletion()
                 assertLookupContains(
-                    "Assets/\"",
+                    "Assets\"",
                     checkFocus = false)
             }
         }
@@ -72,9 +72,9 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution() {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "AssetsFolderTest.cs") {
                 typeWithLatency("/")
                 assertLookupContains(
-                    "Editor/\"",
-                    "Resources/\"",
-                    "Scenes/\"",
+                    "Editor\"",
+                    "Resources\"",
+                    "Scenes\"",
                     "EscapeFromRider.cs\"",
                     checkFocus = false)
             }
@@ -87,7 +87,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution() {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "AssetsFolderTest.cs") {
                 callBasicCompletion()
                 assertLookupContains(
-                    "Editor/\"",
+                    "Editor\"",
                     checkFocus = false)
             }
         }
@@ -111,11 +111,11 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution() {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "PackagesFolderTest.cs") {
                 typeWithLatency("/")
                 assertLookupContains(
-                    "com.jetbrains.from_disk/\"",
-                    "com.jetbrains.from_git/\"",
-                    "com.jetbrains.from_pack_folder/\"",
-                    "com.unity.ext.nunit/\"",
-                    "com.unity.ide.rider/\"",
+                    "com.jetbrains.from_disk\"",
+                    "com.jetbrains.from_git\"",
+                    "com.jetbrains.from_pack_folder\"",
+                    "com.unity.ext.nunit\"",
+                    "com.unity.ide.rider\"",
                     checkFocus = false)
             }
         }
@@ -127,7 +127,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution() {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "PackagesInternalFolderTest.cs") {
                 typeWithLatency("/")
                 assertLookupContains(
-                    "Resources/\"",
+                    "Resources\"",
                     "Unity.com.jetbrains.from_git.asmdef\"",
                     checkFocus = false)
             }
