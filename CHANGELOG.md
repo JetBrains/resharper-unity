@@ -9,12 +9,128 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 Since 2018.1, the version numbers and release cycle match Rider's versions and release dates. The plugin is always bundled with Rider, but is released for ReSharper separately. Sometimes the ReSharper version isn't released. This is usually because the changes are not applicable to ReSharper, but also by mistake.
 
 ## 2023.2.0
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net231...net232)
-* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/59?closed=1)
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net231...net232-rtm-2023.2.0)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/59?closed=1) (Not used in this release)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net232-rtm-2023.2.0)
+
+### Added
+
+* Add asset path completion for string literals in asset database APIs ([RIDER-84223](https://youtrack.jetbrains.com/issue/RIDER-84223))
+* Add completion for pragmas in HLSL
+* Add typing assistance for quotes, brackets and braces to ShaderLab files ([RIDER-93843](https://youtrack.jetbrains.com/issue/RIDER-93843))
+* Add completion for ShaderLab files ([RIDER-92651](https://youtrack.jetbrains.com/issue/RIDER-92651))
+* Add completion, ctrl+click navigation and rename to shader and pass names in `Fallback` and `UsePass` commands, etc. ([RIDER-56518](https://youtrack.jetbrains.com/issue/RIDER-56518))
+* Add completion, ctrl+click navigation and rename to shader names in `Shader.Find`
+* Add warning highlight if shader name not recognised in `Shader.Find`
+* Add structure view for ShaderLab files ([RIDER-53270](https://youtrack.jetbrains.com/issue/RIDER-53270))
+* Add breadcrumbs to ShaderLab files ([RIDER-53270](https://youtrack.jetbrains.com/issue/RIDER-53270))
+* Add QuickDoc and only help for ShaderLab files ([RIDER-89801](https://youtrack.jetbrains.com/issue/RIDER-89801))
+* Add auto-completion for ShaderLab files ([RIDER-93839](https://youtrack.jetbrains.com/issue/RIDER-93839))
+* Add completion for `Blend` and `BlendOp` keyword parameters in shader files ([RIDER-93196](https://youtrack.jetbrains.com/issue/RIDER-93196))
+* Add support for `PackageRequirements` keyword in ShaderLab files ([RIDER-94416](https://youtrack.jetbrains.com/issue/RIDER-94416))
+* Add Live Templates for ShaderLab blocks ([RIDER-93844](https://youtrack.jetbrains.com/issue/RIDER-93844))
+* Add inspection and quick fix to suggest using `Shader.PropertyToID` instead of name for `ComputeShader` methods ([RIDER-55823](https://youtrack.jetbrains.com/issue/RIDER-55823))
+* Add quick fix to convert string usage to `FixedString` in a Burst context ([RIDER-95554](https://youtrack.jetbrains.com/issue/RIDER-95554))
+* Add warning accessing a custom indexer implementation in a Burst context
+* Add context action to add DOTS component field to existing baker ([RIDER-94463](https://youtrack.jetbrains.com/issue/RIDER-94463))
+* Add option to DOTS Baker generation dialog to regenerate existing initialization when adding new fields ([RIDER-94463](https://youtrack.jetbrains.com/issue/RIDER-94463))
+* Add File Template for DOTS authoring component ([RIDER-91117](https://youtrack.jetbrains.com/issue/RIDER-91117))
+* Add Live Templates to create DOTS component data, baker nested class, and `IJob` entity ([RIDER-91118](https://youtrack.jetbrains.com/issue/RIDER-91118))
+* Add support for `var` function in USS files ([RIDER-88190](https://youtrack.jetbrains.com/issue/RIDER-88190))
+* Add support for `root` pseudo class in USS files ([RIDER-88190](https://youtrack.jetbrains.com/issue/RIDER-88190))
+* Add extra properties in USS files ([RIDER-88190](https://youtrack.jetbrains.com/issue/RIDER-88190))
+* Add support for `transition-timing-function` values in USS files ([RIDER-94657](https://youtrack.jetbrains.com/issue/RIDER-94657))
+* Add translations for undocumented Unity event messages
+* Add external annotations to fix incorrect impure method warnings ([RIDER-26872](https://youtrack.jetbrains.com/issue/RIDER-26872))
+* Add `ECB` to list of known abbreviations
+* Rider: Show values of `RefRO`/`RefRW` DOTS types as top level items in debugger ([RIDER-92632](https://youtrack.jetbrains.com/issue/RIDER-92632))
+
+### Changed
+
+* Extend Burst analysis context to include various `ISystem` methods with the `[BurstCompile]` attribute ([RIDER-92491](https://youtrack.jetbrains.com/issue/RIDER-92491))
+* Extend Burst analysis context to include lambdas inside `SystemBase` classes ([RIDER-92491](https://youtrack.jetbrains.com/issue/RIDER-92491))
+* Improve analysis of valid string usage in a Burst context ([RIDER-95554](https://youtrack.jetbrains.com/issue/RIDER-95554))
+* Improve analysis of valid `string.Format` arguments in a Burst context to only allow fixed string or value types ([RIDER-95554](https://youtrack.jetbrains.com/issue/RIDER-95554))
+* Allow multiple Burst analysis warnings on the same piece of code
+* Generate authoring component with descriptive name if DOTS component has single field called `Value` ([RIDER-94463](https://youtrack.jetbrains.com/issue/RIDER-94463))
+* Use generic `AddComponent` or `AddComponentObject` when adding empty component during DOTS baking ([RIDER-94463](https://youtrack.jetbrains.com/issue/RIDER-94463))
+* Filter source generated DOTS code from completion and navigation, with option ([RIDER-91827](https://youtrack.jetbrains.com/issue/RIDER-91827), [RIDER-95175](https://youtrack.jetbrains.com/issue/RIDER-95175))
+* Improve error handling while parsing ShaderLab files
+* Boost priority of "Generate baker and authoring script" context action ([RIDER-90985](https://youtrack.jetbrains.com/issue/RIDER-90985))
+* Avoid indexing scenes in packages ([RIDER-94615](https://youtrack.jetbrains.com/issue/RIDER-94615))
+* Reduce frequency of re-calculating package lists
+* Rider: Update Unity specific icons for new UI ([RIDER-94204](https://youtrack.jetbrains.com/issue/RIDER-94204))
+
+### Fixed
+
+* Fix missing `UNITY_VERSION` predefined symbol in shader files ([RIDER-93029](https://youtrack.jetbrains.com/issue/RIDER-87586))
+* Fix missing `WorldReflectionVector` and `WorldNormalVector` predefined macros in shader files ([RIDER-93029](https://youtrack.jetbrains.com/issue/RIDER-87586))
+* Fix completion of paths to packages in `#include` statements in shader files ([RIDER-87586](https://youtrack.jetbrains.com/issue/RIDER-87586))
+* Fix include files being incorrectly shown as unused in ShaderLab files ([RIDER-94904](https://youtrack.jetbrains.com/issue/RIDER-94904))
+* Fix unrecognised `Integer` type in ShaderLab files ([RIDER-90047](https://youtrack.jetbrains.com/issue/RIDER-90047))
+* Fix ShaderLab `SetTexture` combine operator to correctly handle multiply scenarios ([RIDER-93198](https://youtrack.jetbrains.com/issue/RIDER-93198))
+* Fix new line indent to match contents of Cg/HLSL block rather than ShaderLab keyword ([RIDER-69835](https://youtrack.jetbrains.com/issue/RIDER-69835))
+* Fix duplicate target classes when generating baker components with player projects enabled ([RIDER-90984](https://youtrack.jetbrains.com/issue/RIDER-90984))
+* Fix "Generate accessor properties" context action not available on first character of aspect class name ([RIDER-90351](https://youtrack.jetbrains.com/issue/RIDER-90351))
+* Fix exception when local package is located on different drive to project ([DEXP-716299](https://youtrack.jetbrains.com/issue/DEXP-716299))
+* Fix incorrect warning for use of folder in `Resources.LoadAll` ([RIDER-92423](https://youtrack.jetbrains.com/issue/RIDER-92423))
+* Fix incorrect warning for empty string in `Resources.LoadAll` ([RIDER-94624](https://youtrack.jetbrains.com/issue/RIDER-94624))
+* Rider: Fix mapping package source files based on relative path in PDB ([RIDER-93923](https://youtrack.jetbrains.com/issue/RIDER-93923))
+* Rider: Fix not selecting game object in Unity editor when looking at Find Usage results of multiple children ([RIDER-91090](https://youtrack.jetbrains.com/issue/RIDER-91090))
+* Rider: Fix incorrect force refresh of asset database when running tests ([RIDER-90121](https://youtrack.jetbrains.com/issue/RIDER-90121))
+* Rider: Fix Unity Play button state not updating correctly ([RIDER-91703](https://youtrack.jetbrains.com/issue/RIDER-91703))
+* Rider: Fix Unity run configuration editor incorrectly showing process ID found via `EditorInstance.json` when the file does not exist ([RIDER-92743](https://youtrack.jetbrains.com/issue/RIDER-91703))
+* Rider: Fix cancelling play mode tests leaving test session unfinished ([RIDER-91705](https://youtrack.jetbrains.com/issue/RIDER-91705))
+* Rider: Fix incorrectly generating `.meta` files inside hidden folders ([RIDER-93037](https://youtrack.jetbrains.com/issue/RIDER-93037))
+* Rider: Fix issues refreshing packages list when drag and drop read only package to `Packages` folder
+* Rider: Fix incorrect indent in settings dialog ([RIDER-94186](https://youtrack.jetbrains.com/issue/RIDER-94186))
+* Rider: Fix red code due to race condition checking for project files when Unity regenerates due to AppDomain reload ([RIDER-77343](https://youtrack.jetbrains.com/issue/RIDER-77343))
+* Rider: Fix issue with undo restoring a deleted `.meta` file ([RIDER-91320](https://youtrack.jetbrains.com/issue/RIDER-91320))
+
+
+
+## 2023.1.3
+* Released: [2023-06-23](https://blog.jetbrains.com/dotnet/2023/06/23/rsrp-and-rd-2023-1-3-bug-fix/)
+* Build: 2023.1.0.164
+* [No code changes](https://github.com/JetBrains/resharper-unity/compare/net231-rtm-2023.1.2...net231-rtm-2023.1.3)
+
+
+
+## 2023.1.2
+* Released: [2023-05-17](https://blog.jetbrains.com/dotnet/2023/05/17/rsrp-and-rider-2023-1-2-bug-fixes/)
+* Build: 2023.1.0.150
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net231-rtm-2023.1.1...net231-rtm-2023.1.2)
+* No milestone
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net231-rtm-2023.1.2)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2023.1.0.150)
+
+### Fixed
+
+* Fixed Find Usages not working in shader files [RIDER-92598](https://youtrack.jetbrains.com/issue/RIDER-92598/Find-Usages-doesnt-find-usages-in-shader-files)
+
+
+
+## 2023.1.1
+* Released: [2023-04-27](https://blog.jetbrains.com/dotnet/2023/04/27/resharper-and-rider-2023-1-1-bug-fixes/)
+* Build: 2023.1.0.138
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net231-rtm-2023.1.0...net231-rtm-2023.1.1)
+* No milestone
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net231-rtm-2023.1.1)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2023.1.0.138)
+
+### Fixed
+
+* Fixed generating obsolete DOTS baker code due to Unity API changes ([RIDER-92392](https://youtrack.jetbrains.com/issue/RIDER-92392))
+
+
 
 ## 2023.1.0
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net223...net231)
+* Released: [2023-04-05](https://blog.jetbrains.com/dotnet/2023/04/05/rider-2023-1/)
+* Build: 2023.1.0.120
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net223...net231-rtm-2023.1.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/58?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net231-rtm-2023.1.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2023.1.0.120)
 
 ### Added
 
@@ -76,6 +192,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix exception while generating UIElements schema in newer versions of Unity ([#2386](https://github.com/JetBrains/resharper-unity/issues/2386))
 - Rider: Fix incorrect icons in Unity run configurations ([RIDER-88500](https://youtrack.jetbrains.com/issue/RIDER-84724))
 - Rider: Fix incorrect file VCS status colour for hidden assets inside read only packages
+- Rider: Fix occasional hang while creating main window after opening solution via drag and drop ([RIDER-91413](https://youtrack.jetbrains.com/issue/RIDER-91413))
 
 
 
