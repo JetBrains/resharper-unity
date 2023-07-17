@@ -12,7 +12,7 @@ using JetBrains.Symbols;
 using JetBrains.Symbols.SourceLinks;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.ExternalSources
 {
     [SolutionComponent]
     public class UnityPdbServiceImpl : PdbServiceImpl
