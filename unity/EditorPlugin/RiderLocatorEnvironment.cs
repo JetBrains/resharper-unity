@@ -34,5 +34,11 @@ namespace JetBrains.Rider.Unity.Editor
       var logger = Log.GetLog(GetType());
       logger.Error(message, e);
     }
+
+    public void Verbose(string message, Exception e = null)
+    {
+      var logger = Log.GetLog(GetType());
+      logger.Verbose(message, e);
+    }
   }
 }

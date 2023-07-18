@@ -15,12 +15,11 @@ namespace JetBrains.Rider.Unity.Editor
   // introduced
   internal static class AssetsBasedPlugin
   {
-    public static void Initialise(Lifetime lifetime, RiderPathProvider riderPathProvider,
-                                  IPluginSettings pluginSettings, ILog logger)
+    public static void Initialise(Lifetime lifetime, RiderPathProvider riderPathProvider, ILog logger)
     {
       if (IsLoadedFromAssets())
       {
-        UpdateExternalScriptEditor(riderPathProvider, pluginSettings);
+        UpdateExternalScriptEditor(riderPathProvider);
         InitialiseOncePerSession(lifetime, logger);
       }
     }
@@ -32,7 +31,7 @@ namespace JetBrains.Rider.Unity.Editor
       return location.StartsWith(currentDir, StringComparison.InvariantCultureIgnoreCase);
     }
 
-    private static void UpdateExternalScriptEditor(RiderPathProvider riderPathProvider, IPluginSettings pluginSettings)
+    private static void UpdateExternalScriptEditor(RiderPathProvider riderPathProvider)
     {
       // Find the instance of Rider that is the currently selected external editor. If Rider isn't the currently
       // selected external editor, or the currently selected path doesn't exist, return the first Rider found on the

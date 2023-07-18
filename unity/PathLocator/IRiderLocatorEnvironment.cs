@@ -11,5 +11,6 @@ namespace JetBrains.Rider.PathLocator
     void Info(string message, Exception e = null);
     void Warn(string message, Exception e = null);
     void Error(string message, Exception e = null);
+    void Verbose(string message, Exception e = null);
   }
 }

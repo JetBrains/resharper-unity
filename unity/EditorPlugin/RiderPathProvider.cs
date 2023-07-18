@@ -6,17 +6,11 @@ namespace JetBrains.Rider.Unity.Editor
 {
   internal class RiderPathProvider
   {
-    private readonly IPluginSettings myPluginSettings;
     public static readonly RiderPathLocator RiderPathLocator;
 
     static RiderPathProvider()
     {
       RiderPathLocator = new RiderPathLocator(new RiderLocatorEnvironment());
-    }
-
-    public RiderPathProvider(IPluginSettings pluginSettings)
-    {
-      myPluginSettings = pluginSettings;
     }
 
     /// <summary>
@@ -30,7 +24,7 @@ namespace JetBrains.Rider.Unity.Editor
       if (!string.IsNullOrEmpty(externalEditor))
       {
         var alreadySetPath = new FileInfo(externalEditor).FullName;
-        if (RiderPathExist(alreadySetPath, myPluginSettings.OSRider))
+        if (RiderPathExist(alreadySetPath, RiderPathLocator.RiderLocatorEnvironment.CurrentOS))
         {
           return alreadySetPath;
         }
@@ -55,7 +49,7 @@ namespace JetBrains.Rider.Unity.Editor
       if (!string.IsNullOrEmpty(externalEditor))
       {
         var alreadySetPath = new FileInfo(externalEditor).FullName;
-        if (RiderPathExist(alreadySetPath, myPluginSettings.OSRider))
+        if (RiderPathExist(alreadySetPath, RiderPathLocator.RiderLocatorEnvironment.CurrentOS))
         {
           if (!allFoundPaths.Any() || allFoundPaths.Any() && allFoundPaths.Contains(alreadySetPath))
           {

@@ -35,5 +35,10 @@ namespace JetBrains.Rider.Unity.Editor.Tests
     {
       Info(message, e);
     }
+
+    public void Verbose(string message, Exception e = null)
+    {
+      Info(message, e);
+    }
   }
 }

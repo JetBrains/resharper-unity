@@ -21,7 +21,7 @@ namespace JetBrains.Rider.Unity.Editor
       UnityUtils.SyncSolution();
 
       // Load Project
-      PluginEntryPoint.CallRider(string.Format("{0}{1}{0}", "\"", PluginEntryPoint.SlnFile));
+      PluginEntryPoint.OpenAssetHandler.OpenInRider(PluginEntryPoint.SlnFile, string.Empty, -1, -1);
     }
 
     [MenuItem("Assets/Open C# Project in Rider", true, 1000)]

@@ -286,6 +286,7 @@ namespace JetBrains.Rider.PathLocator
       return version;
     }
 
+    [UsedImplicitly] // Rider package
     public bool GetIsToolbox(string path)
     {
       return Path.GetFullPath(path).StartsWith(Path.GetFullPath(GetAppsRootPathInToolbox()));
@@ -587,7 +588,7 @@ namespace JetBrains.Rider.PathLocator
         var filename = path.Name;
         if (filename.StartsWith("rider", StringComparison.OrdinalIgnoreCase))
           return "Rider";
-        if (filename.StartsWith("fleet", StringComparison.OrdinalIgnoreCase))
+        if (RiderFileOpener.IsFleet(path))
           return "Fleet";
         return filename;
       }
