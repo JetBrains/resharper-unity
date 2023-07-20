@@ -173,4 +173,4 @@ namespace ExceptionsTests
 (2): ReSharper Warning: Burst: Try statement is not supported
 (3): ReSharper Warning: Burst: Try statement is not supported
 (4): ReSharper Warning: Burst: The 'foreach' construction is not supported
-(5): ReSharper Warning: Burst: Debug logging functions accepts only strings
+(5): ReSharper Warning: Burst: Debug logging functions only accept strings

@@ -63,8 +63,8 @@ class UnityClassLibTest : BaseTestWithSolutionBase() {
         closeProjectsWaitForBackendWillBeClosed(Duration.ofSeconds(60), false, false)
         val parameters: HashMap<String, String> = hashMapOf()
 
-        VfsRootAccess.allowRootAccess(lifetime.createNestedDisposable(), testDirectory.combine("lib", "UnityEngine.dll").absolutePath)
-        parameters["PathToUnityEngine"] = testDirectory.combine("lib", "UnityEngine.dll").absolutePath
+        VfsRootAccess.allowRootAccess(lifetime.createNestedDisposable(), testClassDataDirectory.combine("lib", "UnityEngine.dll").absolutePath)
+        parameters["PathToUnityEngine"] = testClassDataDirectory.combine("lib", "UnityEngine.dll").absolutePath
         val newProject = createSolutionFromTemplate(templateId, null, activeSolutionDirectory, sameDirectory, null, parameters) { }!!
 
         newProject.enableBackendAsserts()
