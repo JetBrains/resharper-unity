@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.S
                 {
                     if (containingNode is IBlockValue blockValue && ShaderLabBlockValueSelection.TryCreate(FileNode, blockValue, Range) is {} blockValueSelection)
                         return blockValueSelection; 
-                    if (containingNode is IShaderLabCommand or IPropertyDeclaration)
+                    if (containingNode is IShaderLabCommand or IPropertyDeclaration or ICodeBlock)
                         return new ShaderLabTreeNodeSelection(FileNode, containingNode);
                 }
 
