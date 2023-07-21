@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.SelectEmbracingConstruct
 {
-    [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
+    [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION), RequireHlslSupport]
     public class ShaderLabSelectEmbracingConstructTest : SelectEmbracingConstructTestBase
     {
         protected override string RelativeTestDataPath => @"ShaderLab\SelectEmbracingConstruct";
@@ -14,6 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Sel
         [TestCase("Test02")]
         [TestCase("Test03")]
         [TestCase("Test04")]
+        [TestCase("Test05")]
         public void Test(string testName) => DoOneTest(testName);
     }
 }
