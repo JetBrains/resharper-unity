@@ -1,0 +1,105 @@
+Shader "MyShader"
+{
+    SubShader
+    {
+        Name "|Sub1|"
+        Blend One One
+    }
+    
+    SubShader
+    {
+        Name "Sub2"
+        Blend DstColor Zero
+    }
+}
+---------------------------------------------------------
+Shader "MyShader"
+{
+    SubShader
+    {
+        Name |"Sub1"|
+        Blend One One
+    }
+    
+    SubShader
+    {
+        Name "Sub2"
+        Blend DstColor Zero
+    }
+}
+---------------------------------------------------------
+Shader "MyShader"
+{
+    SubShader
+    {
+|        Name "Sub1"
+|        Blend One One
+    }
+    
+    SubShader
+    {
+        Name "Sub2"
+        Blend DstColor Zero
+    }
+}
+---------------------------------------------------------
+Shader "MyShader"
+{
+    SubShader
+    {
+|        Name "Sub1"
+        Blend One One
+|    }
+    
+    SubShader
+    {
+        Name "Sub2"
+        Blend DstColor Zero
+    }
+}
+---------------------------------------------------------
+Shader "MyShader"
+{
+|    SubShader
+    {
+        Name "Sub1"
+        Blend One One
+    }
+|    
+    SubShader
+    {
+        Name "Sub2"
+        Blend DstColor Zero
+    }
+}
+---------------------------------------------------------
+Shader "MyShader"
+{
+|    SubShader
+    {
+        Name "Sub1"
+        Blend One One
+    }
+    
+    SubShader
+    {
+        Name "Sub2"
+        Blend DstColor Zero
+    }
+|}
+---------------------------------------------------------
+|Shader "MyShader"
+{
+    SubShader
+    {
+        Name "Sub1"
+        Blend One One
+    }
+    
+    SubShader
+    {
+        Name "Sub2"
+        Blend DstColor Zero
+    }
+}|
+---------------------------------------------------------
