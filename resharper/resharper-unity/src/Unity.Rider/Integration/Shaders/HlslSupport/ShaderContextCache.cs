@@ -58,6 +58,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
 
         public CppFileLocation GetPreferredRootFile(CppFileLocation currentFile)
         {
+            if (currentFile.IsInjected())
+                return currentFile;
+            
             using (ReadLockCookie.Create())
             {
                 var sourceFile = currentFile.GetRandomSourceFile(mySolution);
