@@ -12,6 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         protected override string RelativeTestDataPath => "ShaderLab/CodeCleanup";
 
         [TestCase("Test01")]
+        [TestCase("Test02")]
+        [TestCase("Test03")]
         public void Test(string testName) => DoOneTest(testName);
     }
 }
