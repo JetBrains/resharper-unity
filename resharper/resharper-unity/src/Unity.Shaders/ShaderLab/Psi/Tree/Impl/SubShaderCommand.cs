@@ -1,27 +1,20 @@
-using System.Collections.Generic;
 using JetBrains.ReSharper.Plugins.Unity.Common.Services.Tree;
+using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl
 {
     internal partial class SubShaderCommand
     {
-        public override IEnumerable<IStructuralDeclaration> GetMemberDeclarations()
+        protected override void CollectCustomChildDeclarations(ITreeNode child, ref LocalList<IStructuralDeclaration> declarations)
         {
-            if (Value is not ISubShaderValue subShaderValue)
-                yield break;
-            foreach (var pass in subShaderValue.Passes)
+            if (child is not IPass pass) return;
+            foreach (var passChild in pass.Children())
             {
-                foreach (var stateCommand in pass.StateCommands)
-                {
-                    if (stateCommand is IStructuralDeclaration declaration)
-                        yield return declaration;
-                }
-
-                if (pass.PassDefinition is IStructuralDeclaration passDeclaration)
-                    yield return passDeclaration;
-                else if (pass.PassDefinition is ITexturePassDeclaration texturePassDeclaration)
-                    yield return texturePassDeclaration.Command;
-                
+                if (passChild is IStructuralDeclaration passChildDeclaration)
+                    declarations.Add(passChildDeclaration);
+                else if (passChild is ITexturePassDeclaration { Command: { } command })
+                    declarations.Add(command);
             }
         }
     }
