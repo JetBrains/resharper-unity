@@ -6,7 +6,6 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.CodeCompletion.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
@@ -37,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.C
 
         public bool ProcessSubsequentTyping(char c, ITextControl textControl) => IsPartOfKeyword(c);
 
-        public bool AcceptsFile(IFile file, ITextControl textControl) => file.Language.Is<ShaderLabLanguage>() && this.MatchToken(file, textControl, tt => tt.GetContainingNode<IVariableReference>() is null);
+        public bool AcceptsFile(IFile file, ITextControl textControl) => file.Language.Is<ShaderLabLanguage>();
 
         public bool ForceHideCompletion => false;
 
