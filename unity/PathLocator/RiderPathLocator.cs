@@ -26,16 +26,27 @@ namespace JetBrains.Rider.PathLocator
     [UsedImplicitly] // Used in com.unity.ide.rider
     public RiderInfo[] GetAllRiderPaths()
     {
+      var results = new List<RiderInfo>();
       try
       {
+        var toolboxPath = GetToolboxPath();
+        var jsonFile = Path.Combine(toolboxPath, "state.json");
+        if (File.Exists(jsonFile))
+          results.AddRange(ToolboxState.GetStateFromJson(this, File.ReadAllText(jsonFile)));
+        
         switch (RiderLocatorEnvironment.CurrentOS)
         {
           case OS.Windows:
-            return CollectRiderInfosWindows();
+            results.AddRange(CollectRiderInfosWindows());
+            break;
           case OS.MacOSX:
-            return CollectRiderInfosMac();
+            results.AddRange(CollectRiderInfosMac());
+            break;
           case OS.Linux:
-            return CollectAllRiderPathsLinux();
+            results.AddRange(CollectAllRiderPathsLinux());
+            break;
+          default:
+            throw new ArgumentOutOfRangeException();
         }
       }
       catch (Exception e)
@@ -43,7 +54,7 @@ namespace JetBrains.Rider.PathLocator
         RiderLocatorEnvironment.Error("GetAllRiderPaths failed", e);
       }
 
-      return new RiderInfo[0];
+      return results.Distinct().ToArray();
     }
 
     private RiderInfo[] CollectAllRiderPathsLinux()
@@ -78,9 +89,7 @@ namespace JetBrains.Rider.PathLocator
             var path = line.Split('"').Where((_, index) => index == 1).SingleOrDefault();
             if (string.IsNullOrEmpty(path))
               continue;
-
-            if (installInfos.Any(a => a.Path == path)) // avoid adding similar build as from toolbox
-              continue;
+            
             installInfos.Add(new RiderInfo(this, path, false));
           }
         }
@@ -190,6 +199,12 @@ namespace JetBrains.Rider.PathLocator
 
     private string GetAppsRootPathInToolbox()
     {
+      var toolboxPath = GetToolboxPath();
+      return Path.Combine(toolboxPath, "apps");
+    }
+
+    private string GetToolboxPath()
+    {
       string localAppData = string.Empty;
       switch (RiderLocatorEnvironment.CurrentOS)
       {
@@ -232,7 +247,7 @@ namespace JetBrains.Rider.PathLocator
           toolboxPath = path;
       }
 
-      return Path.Combine(toolboxPath, "apps");
+      return toolboxPath;
     }
 
     [PublicAPI]
@@ -436,6 +451,45 @@ namespace JetBrains.Rider.PathLocator
 #pragma warning disable 0649
     
     [Serializable]
+    class ToolboxState
+    {
+      [UsedImplicitly] public int version;
+      [UsedImplicitly] public List<Tool> tools;
+
+      [Annotations.NotNull]
+      public static RiderInfo[] GetStateFromJson(RiderPathLocator riderPathLocator, string json)
+      {
+        try
+        {
+          var state = riderPathLocator.RiderLocatorEnvironment.FromJson<ToolboxState>(json);
+          var version = state.version;
+          if (version > 1) return new RiderInfo[0];
+          
+          var tools = state.tools;
+          return tools.Where(tool => tool.toolId is "Rider" or "Fleet").Select(a => new RiderInfo(true, $"{a.displayName} {a.displayVersion}", riderPathLocator.GetBuildNumberFromInput(a.buildNumber),
+            riderPathLocator.RiderLocatorEnvironment.CurrentOS != OS.MacOSX ? Path.Combine(a.installLocation, a.launchCommand) : a.installLocation)).ToArray();
+        }
+        catch (Exception)
+        {
+          riderPathLocator.RiderLocatorEnvironment.Warn($"Failed to get toolbox state from {json}");
+        }
+
+        return new RiderInfo[0];
+      }
+      
+      [Serializable]
+      public class Tool
+      {
+        [UsedImplicitly] public string toolId;
+        [UsedImplicitly] public string displayName;
+        [UsedImplicitly] public string displayVersion;
+        [UsedImplicitly] public string buildNumber;
+        [UsedImplicitly] public string installLocation;
+        [UsedImplicitly] public string launchCommand;
+      }
+    }
+    
+    [Serializable]
     class SettingsJson
     {
       // ReSharper disable once InconsistentNaming
@@ -545,11 +599,12 @@ namespace JetBrains.Rider.PathLocator
 
 #pragma warning restore 0649
     
+    [Serializable]
     public struct RiderInfo
     {
       public bool IsToolbox;
       public string Presentation;
-      public Version BuildNumber;
+      public string BuildNumber;
       public ProductInfo ProductInfo;
       public string Path;
 
@@ -559,10 +614,20 @@ namespace JetBrains.Rider.PathLocator
       {
       }
 
+      public RiderInfo(bool isToolbox, string presentation, Version buildNumber, string path)
+      {
+        IsToolbox = isToolbox;
+        Presentation = presentation;
+        BuildNumber = buildNumber != null ? buildNumber.ToString() : string.Empty;
+        Path = new FileInfo(path).FullName; // normalize separators
+
+        ProductInfo = null;
+      }
+
       [PublicAPI]
       public RiderInfo(string path, bool isToolbox, Version buildNumber, ProductInfo productInfo)
       {
-        BuildNumber = buildNumber; 
+        BuildNumber =  buildNumber != null ? buildNumber.ToString() : string.Empty;
         ProductInfo = productInfo;
         
         var fileInfo = new FileInfo(path);
@@ -581,6 +646,18 @@ namespace JetBrains.Rider.PathLocator
 
         Presentation = presentation;
         IsToolbox = isToolbox;
+      }
+
+      public override bool Equals(object obj)
+      {
+        if (obj == null) return false;
+        if (obj.GetType() != GetType()) return false;
+        return Path == ((RiderInfo)obj).Path;
+      }
+      
+      public override int GetHashCode()
+      {
+        return Path.GetHashCode();
       }
 
       private static string GetProductNameForPresentation(FileInfo path)
