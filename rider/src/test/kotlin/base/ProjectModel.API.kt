@@ -5,7 +5,7 @@ import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
-import com.intellij.refactoring.rename.RenameHandlerRegistry
+import com.jetbrains.rd.ide.model.RdDndOrderType
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rdclient.protocol.protocolHost
 import com.jetbrains.rider.ideaInterop.vfs.VfsWriteOperationsHost
@@ -17,11 +17,9 @@ import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorerFileSystemNode
 import com.jetbrains.rider.projectView.*
 import com.jetbrains.rider.projectView.actions.newFile.RiderNewDirectoryAction
-import com.jetbrains.rider.projectView.actions.renameAction.RiderRenameItemHandler
 import com.jetbrains.rider.projectView.moveProviders.RiderCutProvider
 import com.jetbrains.rider.projectView.moveProviders.RiderDeleteProvider
 import com.jetbrains.rider.projectView.moveProviders.RiderPasteProvider
-import com.jetbrains.rider.projectView.moveProviders.impl.ActionOrderType
 import com.jetbrains.rider.projectView.moveProviders.impl.DuplicateNameDialog
 import com.jetbrains.rider.projectView.nodes.getVirtualFile
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
@@ -172,7 +170,7 @@ fun cutItem2(project: Project, paths: Array<Array<String>>) {
     RiderCutProvider.performCut(dataContext)
 }
 
-fun pasteItem2(project: Project, path: Array<String>, customName: String? = null, orderType : ActionOrderType? = null) {
+fun pasteItem2(project: Project, path: Array<String>, customName: String? = null, orderType : RdDndOrderType? = null) {
     val dataContext = createDataContextForUnityExplorer(project, arrayOf(path))
     assert(RiderPasteProvider.isPasteEnabled(dataContext)) { "Can't paste elements. isPasteEnabled" }
     assert(RiderPasteProvider.isPastePossible(dataContext)) { "Can't paste elements. isPastePossible" }

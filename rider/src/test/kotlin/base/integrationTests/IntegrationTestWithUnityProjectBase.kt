@@ -2,12 +2,12 @@ package base.integrationTests
 
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.WaitFor
+import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.test.asserts.shouldBeTrue
 import com.jetbrains.rider.test.framework.frameworkLogger
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
-import org.testng.annotations.BeforeSuite
 import java.io.File
 import java.time.Duration
 
@@ -16,9 +16,9 @@ import java.time.Duration
  * IntegrationTestWithGeneratedSolutionBase always opens Rider first and expect sln files to exist in the test-data
  */
 abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithSolutionBase() {
-    private lateinit var unityExecutable: File
     private lateinit var unityProjectPath: File
     protected abstract val unityMajorVersion: UnityVersion
+    private val unityExecutable: File by lazy { getUnityExecutableInstallationPath(unityMajorVersion) }
 
     protected open val withCoverage: Boolean
         get() = false
@@ -31,8 +31,10 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithSolution
 
     private lateinit var unityProcessHandle: ProcessHandle
 
-    private fun putUnityProjectToTempTestDir(solutionDirectoryName: String,
-                                             filter: ((File) -> Boolean)? = null): File {
+    private fun putUnityProjectToTempTestDir(
+        solutionDirectoryName: String,
+        filter: ((File) -> Boolean)? = null
+    ): File {
 
         val workDirectory = File(tempTestDirectory, solutionDirectoryName)
         val sourceDirectory = File(solutionSourceRootDirectory, solutionDirectoryName)
@@ -43,18 +45,14 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithSolution
         return workDirectory
     }
 
-    @BeforeSuite()
-    fun getUnityEditorExecutablePath() {
-        unityExecutable = getUnityExecutableInstallationPath(unityMajorVersion)
-    }
-
-    private fun waitForSlnGeneratedByUnityFile(slnDirPath: String, timeoutMinutes: Int = 5) {
-        object: WaitFor(Duration.ofMinutes(timeoutMinutes.toLong()).toMillis().toInt()) {
-            override fun condition() = run {
+    private fun waitForSlnGeneratedByUnityFile(slnDirPath: String, timeoutMinutes: Duration = Duration.ofMinutes(5L)) {
+        object : WaitFor(timeoutMinutes.toMillis().toInt(), 10000) {
+            override fun condition(): Boolean {
                 val slnFiles = File(slnDirPath).listFiles { _, name -> name.endsWith(".sln") }
-                slnFiles != null && slnFiles.isNotEmpty()
+                val startFile = File(slnDirPath, ".start")
+                return slnFiles != null && slnFiles.isNotEmpty() && startFile.exists()
             }
-        }
+        }.assertCompleted("Sln/csproj structure has been created, opening project in Rider")
     }
 
     @BeforeMethod(alwaysRun = true)
@@ -63,25 +61,29 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithSolution
         val unityTestEnvironment = testMethod.unityEnvironment
         unityProcessHandle = when {
             unityTestEnvironment != null ->
-                startUnity(executable = unityExecutable.canonicalPath,
-                           projectPath = unityProjectPath.canonicalPath,
-                           withCoverage = unityTestEnvironment.withCoverage,
-                           resetEditorPrefs = unityTestEnvironment.resetEditorPrefs,
-                           useRiderTestPath = unityTestEnvironment.useRiderTestPath,
-                           batchMode = unityTestEnvironment.batchMode)
+                startUnity(
+                    executable = unityExecutable.canonicalPath,
+                    projectPath = unityProjectPath.canonicalPath,
+                    withCoverage = unityTestEnvironment.withCoverage,
+                    resetEditorPrefs = unityTestEnvironment.resetEditorPrefs,
+                    useRiderTestPath = unityTestEnvironment.useRiderTestPath,
+                    batchMode = unityTestEnvironment.batchMode
+                )
+
             else ->
-                startUnity(executable = unityExecutable.canonicalPath,
-                           projectPath = unityProjectPath.canonicalPath,
-                           withCoverage = withCoverage,
-                           resetEditorPrefs = resetEditorPrefs,
-                           useRiderTestPath = useRiderTestPath,
-                           batchMode = batchMode)
+                startUnity(
+                    executable = unityExecutable.canonicalPath,
+                    projectPath = unityProjectPath.canonicalPath,
+                    withCoverage = withCoverage,
+                    resetEditorPrefs = resetEditorPrefs,
+                    useRiderTestPath = useRiderTestPath,
+                    batchMode = batchMode
+                )
         }
 
         //Generate sln and csproj
         frameworkLogger.info("Unity Editor has been started, waiting for sln/csproj structure to be generated")
         waitForSlnGeneratedByUnityFile(unityProjectPath.canonicalPath)
-        frameworkLogger.info("Sln/csproj structure has been created, opening project in Rider")
         super.setUpTestCaseSolution()
     }
 
@@ -102,7 +104,7 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithSolution
         waitForUnityRunConfigurations(project)
     }
 
-    @BeforeMethod(dependsOnMethods = ["waitForUnityRunConfigurations"])
+    @BeforeMethod(dependsOnMethods = ["waitForUnityConnection"])
     fun buildSolutionAfterUnityStarts() {
         buildSolutionWithReSharperBuild(project, ignoreReferencesResolve = true)
     }
