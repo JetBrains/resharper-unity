@@ -15,12 +15,11 @@ namespace JetBrains.Rider.Unity.Editor
   // introduced
   internal static class AssetsBasedPlugin
   {
-    public static void Initialise(Lifetime lifetime, RiderPathProvider riderPathProvider,
-                                  IPluginSettings pluginSettings, ILog logger)
+    public static void Initialise(Lifetime lifetime, RiderPathProvider riderPathProvider, ILog logger)
     {
       if (IsLoadedFromAssets())
       {
-        UpdateExternalScriptEditor(riderPathProvider, pluginSettings);
+        UpdateExternalScriptEditor(riderPathProvider);
         InitialiseOncePerSession(lifetime, logger);
       }
     }
@@ -32,14 +31,14 @@ namespace JetBrains.Rider.Unity.Editor
       return location.StartsWith(currentDir, StringComparison.InvariantCultureIgnoreCase);
     }
 
-    private static void UpdateExternalScriptEditor(RiderPathProvider riderPathProvider, IPluginSettings pluginSettings)
+    private static void UpdateExternalScriptEditor(RiderPathProvider riderPathProvider)
     {
       // Find the instance of Rider that is the currently selected external editor. If Rider isn't the currently
       // selected external editor, or the currently selected path doesn't exist, return the first Rider found on the
       // system.
       // If there are multiple Rider installs, the sort order is undefined/implementation specific (system install,
       // followed by Toolbox, in order of channel directories read from disk)
-      var allPossibleRiderPaths = RiderPathLocator.GetAllFoundPaths(pluginSettings.OperatingSystemFamilyRider);
+      var allPossibleRiderPaths = RiderPathProvider.RiderPathLocator.GetAllRiderPaths().Select(a=>a.Path).ToArray();
       var riderPath = riderPathProvider.GetActualRider(EditorPrefsWrapper.ExternalScriptEditor,
         allPossibleRiderPaths);
       if (!string.IsNullOrEmpty(riderPath))
