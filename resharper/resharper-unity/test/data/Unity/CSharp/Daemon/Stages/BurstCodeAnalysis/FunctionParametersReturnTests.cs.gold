@@ -164,6 +164,6 @@ namespace FunctionParametersReturnTests
     }
 }
 ---------------------------------------------------------
-(0):<overlapped> ReSharper Warning: Burst: 'Fobject' signature contains managed types
-(1):<overlapped> ReSharper Warning: Burst: 'FFoo' signature contains managed types
-(2):<overlapped> ReSharper Warning: Burst: 'FReturn' signature contains managed types
+(0): ReSharper Warning: Burst: 'Fobject' signature contains managed types
+(1): ReSharper Warning: Burst: 'FFoo' signature contains managed types
+(2): ReSharper Warning: Burst: 'FReturn' signature contains managed types

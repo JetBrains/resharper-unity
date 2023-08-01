@@ -135,7 +135,7 @@ namespace ReferenceExpressionTests
     }
 }
 ---------------------------------------------------------
-(0):<overlapped> ReSharper Warning: Burst: Creating a managed type 'SimpleClass' is not supported
-(1):<overlapped> ReSharper Warning: Burst: Writing to a static field 'getSetProp' is not supported
-(2):<overlapped> ReSharper Warning: Burst: Writing to a static field 'field1' is not supported
-(3):<overlapped> ReSharper Warning: Burst: Loading from a non-readonly static field 'ReferenceExpressionTest4.field1' is not supported
+(0): ReSharper Warning: Burst: Creating a managed type 'SimpleClass' is not supported
+(1): ReSharper Warning: Burst: Writing to a static field 'getSetProp' is not supported
+(2): ReSharper Warning: Burst: Writing to a static field 'field1' is not supported
+(3): ReSharper Warning: Burst: Loading from a non-readonly static field 'ReferenceExpressionTest4.field1' is not supported
