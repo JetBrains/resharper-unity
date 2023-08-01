@@ -5,7 +5,7 @@ type: File
 reformat: True
 shortenReferences: True
 categories: unity
-customProperties: Extension=cs, FileName=Aspect, ValidateFileName=True
+customProperties: Extension=cs, FileName=JobEntity, ValidateFileName=True
 scopes: UnityDotsScope
 uitag: DOTS
 parameterOrder: HEADER, (JOBENTITY), (NAMESPACE)
