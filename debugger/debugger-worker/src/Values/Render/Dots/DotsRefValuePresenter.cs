@@ -23,7 +23,13 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.Dots
             "Unity.Entities.RefRO`1", 
             "Unity.Entities.RefRW`1",
             "Unity.Entities.EnabledRefRO`1",
-            "Unity.Entities.EnabledRefRW`1"
+            "Unity.Entities.EnabledRefRW`1",
+        }); 
+
+        public static readonly HashSet<string> SupportedInternalRefTypes = new(new []
+        {
+            "Unity.Entities.InternalCompilerInterface+UncheckedRefRO`1",
+            "Unity.Entities.InternalCompilerInterface+UncheckedRefRW`1"
         }); 
     }
     
@@ -44,12 +50,16 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.Dots
         protected override IEnumerable<IValueEntity> GetChildren(IObjectValueRole<TValue> valueRole, IMetadataTypeLite instanceType, IPresentationOptions options,
             IUserDataHolder dataHolder, CancellationToken token)
         {
-            //Get all children from ValueRO property
-            var isValidProperty = valueRole.GetInstancePropertyReference(DotsUnityConstants.IsValidPropertyName);
-            if (isValidProperty == null)
-                Logger.Warn("Unable to retrieve IsValid property");
-            else
-                yield return isValidProperty.ToValue(ValueServices);
+            var genericTypeName = instanceType.GetGenericTypeDefinition().FullName;
+            if(!DotsUnityConstants.SupportedInternalRefTypes.Contains(genericTypeName))
+            {
+                //Get all children from ValueRO property
+                var isValidProperty = valueRole.GetInstancePropertyReference(DotsUnityConstants.IsValidPropertyName);
+                if (isValidProperty == null)
+                    Logger.Warn("Unable to retrieve IsValid property");
+                else
+                    yield return isValidProperty.ToValue(ValueServices);
+            }
 
             
             var valueRoRefRole = valueRole.GetInstancePropertyReference(DotsUnityConstants.ValueRoPropertyName)?.AsObjectSafe(options);
@@ -76,8 +86,10 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.Dots
 
         protected override bool IsApplicable(IMetadataTypeLite type, IPresentationOptions options, IUserDataHolder dataHolder)
         {
+            var genericTypeName = type.GetGenericTypeDefinition().FullName;
             return myUnityOptions.ExtensionsEnabled && 
-                   DotsUnityConstants.SupportedRefTypes.Contains(type.GetGenericTypeDefinition().FullName);
+                   ( DotsUnityConstants.SupportedRefTypes.Contains(genericTypeName)
+                     || DotsUnityConstants.SupportedInternalRefTypes.Contains(genericTypeName));
         }
     }
 }
