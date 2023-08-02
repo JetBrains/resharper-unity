@@ -32,13 +32,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
             if (literal == null)
                 return ReferenceCollection.Empty;
 
-            if (!IsFirstArgumentInMethod(literal))
+            if (CSharpResolveUtils.TryGetInvocationByArgumentValue(literal, out var argument) is not {} invocationExpression)
                 return ReferenceCollection.Empty;
 
-            var invocationExpression = literal.GetContainingNode<IInvocationExpression>();
-            var invocationReference = invocationExpression?.Reference;
-            var invokedMethod = invocationReference?.Resolve().DeclaredElement as IMethod;
-            if (invokedMethod == null)
+            if (invocationExpression.ArgumentList.Arguments[0] != argument)
+                return ReferenceCollection.Empty;
+
+            if (invocationExpression.TryGetInvokedMethod() is not {} invokedMethod)
                 return ReferenceCollection.Empty;
 
             var isInvokedFunction = ourInvokeMethodNames.Contains(invokedMethod.ShortName);
@@ -46,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
 
             if (isInvokedFunction || isCoroutine)
             {
-                var containingType = invokedMethod.GetContainingType();
+                var containingType = invokedMethod.ContainingType;
                 if (containingType != null && Equals(containingType.GetClrName(), KnownTypes.MonoBehaviour))
                 {
                     var targetType = invocationExpression.ExtensionQualifier?.GetExpressionType()
@@ -65,13 +65,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
             }
 
             return ReferenceCollection.Empty;
-        }
-
-        private static bool IsFirstArgumentInMethod(ILiteralExpression literal)
-        {
-            var argument = CSharpArgumentNavigator.GetByValue(literal as ICSharpExpression);
-            var argumentsOwner = CSharpArgumentsOwnerNavigator.GetByArgument(argument);
-            return argumentsOwner != null && argumentsOwner.ArgumentsEnumerable.FirstOrDefault() == argument;
         }
 
         private static bool IsCoroutine(IMethod invokedMethod)

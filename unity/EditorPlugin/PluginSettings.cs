@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Diagnostics;
 using JetBrains.Rider.Model.Unity;
+using JetBrains.Rider.PathLocator;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,7 +12,7 @@ namespace JetBrains.Rider.Unity.Editor
 {
   internal interface IPluginSettings
   {
-    OperatingSystemFamilyRider OperatingSystemFamilyRider { get; }
+    OS OSRider { get; }
   }
 
   internal class PluginSettings : IPluginSettings
@@ -30,7 +31,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static string[] GetInstalledNetFrameworks()
     {
-      if (SystemInfoRiderPlugin.operatingSystemFamily != OperatingSystemFamilyRider.Windows)
+      if (SystemInfoRiderPlugin.OS != OS.Windows)
         throw new InvalidOperationException("GetTargetFrameworkVersionWindowsMono2 is designed for Windows only");
 
       var programFiles86 = Environment.GetEnvironmentVariable("PROGRAMFILES(X86)") ??
@@ -164,7 +165,7 @@ namespace JetBrains.Rider.Unity.Editor
       EditorGUIUtility.labelWidth = 200f;
       EditorGUILayout.BeginVertical();
 
-      var alternatives = RiderPathLocator.GetAllFoundInfos(SystemInfoRiderPlugin.operatingSystemFamily);
+      var alternatives = RiderPathProvider.RiderPathLocator.GetAllRiderPaths();
       if (alternatives.Any()) // from known locations
       {
         var paths = alternatives.Select(a => a.Path).ToList();
@@ -185,7 +186,7 @@ namespace JetBrains.Rider.Unity.Editor
         EditorPrefsWrapper.ExternalScriptEditor = result;
       }
 
-      if (PluginEntryPoint.IsRiderDefaultEditor() && !RiderPathProvider.RiderPathExist(EditorPrefsWrapper.ExternalScriptEditor, SystemInfoRiderPlugin.operatingSystemFamily))
+      if (PluginEntryPoint.IsRiderDefaultEditor() && !RiderPathProvider.RiderPathExist(EditorPrefsWrapper.ExternalScriptEditor, SystemInfoRiderPlugin.OS))
       {
         EditorGUILayout.HelpBox($"Rider is selected as preferred ExternalEditor, but doesn't exist on disk {EditorPrefsWrapper.ExternalScriptEditor}", MessageType.Warning);
       }
@@ -225,7 +226,7 @@ namespace JetBrains.Rider.Unity.Editor
       }
 
       // Unity 2018.1 doesn't require installed dotnet framework, it references everything from Unity installation
-      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows && UnityUtils.UnityVersion < new Version(2018, 1))
+      if (SystemInfoRiderPlugin.OS == OS.Windows && UnityUtils.UnityVersion < new Version(2018, 1))
       {
         var detectedDotnetText = string.Empty;
         var installedFrameworks = GetInstalledNetFrameworks();
@@ -339,7 +340,7 @@ namespace JetBrains.Rider.Unity.Editor
         Application.OpenURL(url);
     }
 
-    public OperatingSystemFamilyRider OperatingSystemFamilyRider => SystemInfoRiderPlugin.operatingSystemFamily;
+    public OS OSRider => SystemInfoRiderPlugin.OS;
 
     internal static class SystemInfoRiderPlugin
     {
@@ -348,26 +349,26 @@ namespace JetBrains.Rider.Unity.Editor
 
       // Do not rename. Explicitly disabled for consistency/compatibility with future Unity API
       // ReSharper disable once InconsistentNaming
-      public static OperatingSystemFamilyRider operatingSystemFamily
+      public static OS OS
       {
         get
         {
           if (ourOperatingSystem.StartsWith("Mac", StringComparison.InvariantCultureIgnoreCase))
           {
-            return OperatingSystemFamilyRider.MacOSX;
+            return OS.MacOSX;
           }
 
           if (ourOperatingSystem.StartsWith("Win", StringComparison.InvariantCultureIgnoreCase))
           {
-            return OperatingSystemFamilyRider.Windows;
+            return OS.Windows;
           }
 
           if (ourOperatingSystem.StartsWith("Lin", StringComparison.InvariantCultureIgnoreCase))
           {
-            return OperatingSystemFamilyRider.Linux;
+            return OS.Linux;
           }
 
-          return OperatingSystemFamilyRider.Other;
+          return OS.Other;
         }
       }
     }
