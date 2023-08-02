@@ -38,7 +38,7 @@ class MetaTrackerInitializer : ProjectActivity {
 }
 
 @Service(Service.Level.APP)
-class MetaTracker {
+class MetaTracker : VfsBackendRequester {
 
     private val lock = Object()
     private var projects = mutableSetOf<Project>()
@@ -276,7 +276,7 @@ class MetaTracker {
     }
 }
 
-class MetaTrackerListener: BulkFileListener, VfsBackendRequester, Disposable {
+class MetaTrackerListener: BulkFileListener, Disposable {
     override fun after(events: MutableList<out VFileEvent>) {
         MetaTracker.getInstance().onEvent(events)
     }
