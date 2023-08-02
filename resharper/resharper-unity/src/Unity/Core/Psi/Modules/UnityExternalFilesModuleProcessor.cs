@@ -387,6 +387,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 if (solutionChanges.IsEmpty())
                     return;
 
+                var processedFiles = new HashSet<VirtualFileSystemPath>(); // avoid DEXP-730021 SourceFile is not valid.
                 var builder = new PsiModuleChangeBuilder();
                 var visitor = new RecursiveProjectModelChangeDeltaVisitor(null, itemChange =>
                 {
@@ -411,13 +412,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                         else if ((itemChange.IsRemoved || itemChange.IsMovedOut) && itemChange.OldLocation.ExistsFile 
                                  && mySolution.FindProjectItemsByLocation(itemChange.OldLocation).All(t => t.IsMiscProjectItem()))
                         {
-                            myLogger.Trace(
-                                "External Unity file removed from project {0}. Adding to external files module: {1}",
-                                itemChange.GetOldProject()?.Name ?? "<null>", itemChange.OldLocation);
-
                             var isUserEditable = IsUserEditable(itemChange.OldLocation, out var isKnownExternalFile);
-                            if (isKnownExternalFile)
+                            if (isKnownExternalFile && !processedFiles.Contains(itemChange.OldLocation))
                             {
+                                myLogger.Trace(
+                                    "External Unity file removed from project {0}. Adding to external files module: {1}",
+                                    itemChange.GetOldProject()?.Name ?? "<null>", itemChange.OldLocation);
+                                
+                                processedFiles.Add(itemChange.OldLocation);
                                 AddOrUpdateExternalPsiSourceFile(builder, itemChange.OldLocation,
                                     myProjectFileExtensions.GetFileType(projectFile.Location), isUserEditable);
                             }

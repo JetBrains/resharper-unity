@@ -1,6 +1,6 @@
 .<INFORMATION>screen</INFORMATION> {
     flex-grow: 1;
-    background-image: url("project:Assets/UI/TitleScreen.png");
+    background-image: url("project:/Assets/UI/TitleScreen.png");
     align-items: center;
     justify-content: center;
     -unity-font: url('/Assets/UI/Fonts/LilitaOne-Regular.ttf');
