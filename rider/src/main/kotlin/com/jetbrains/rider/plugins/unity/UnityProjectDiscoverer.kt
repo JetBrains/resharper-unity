@@ -28,9 +28,6 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
     // lives in the same folder as generated unity project (not the same as a class library project, which could live
     // anywhere)
     val isUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project) && hasLibraryFolder(project)
-    val isUnityGeneratedProject = isUnityProject && solutionNameMatchesUnityProjectName(project)
-    @Suppress("unused")
-    val isUnitySidecarProject = isUnityProject && !solutionNameMatchesUnityProjectName(project)
 
     // Note that this will only return a sensible value once the solution + backend have finished loading
     val isUnityClassLibraryProject: Boolean?
@@ -84,7 +81,6 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
     }
 }
 
-fun Project.isUnityGeneratedProject() = UnityProjectDiscoverer.getInstance(this).isUnityGeneratedProject
 fun Project.isUnityClassLibraryProject() = UnityProjectDiscoverer.getInstance(this).isUnityClassLibraryProject
 fun Project.isUnityProject()= UnityProjectDiscoverer.getInstance(this).isUnityProject
 fun Project.isUnityProjectFolder()= UnityProjectDiscoverer.getInstance(this).isUnityProjectFolder
