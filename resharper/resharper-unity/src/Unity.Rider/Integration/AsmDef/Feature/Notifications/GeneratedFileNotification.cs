@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
             if (solutionLifecycleHost == null || notificationPanelHost == null)
                 return;
 
-            if (!solutionTracker.IsUnityGeneratedProject.Value)
+            if (!solutionTracker.IsUnityProject.Value)
                 return;
             
             solutionLifecycleHost.BeforeFullStartupFinished.AdviseOnce(lifetime, _ =>

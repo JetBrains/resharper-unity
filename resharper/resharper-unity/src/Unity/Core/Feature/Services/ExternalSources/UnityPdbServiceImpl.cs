@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.ExternalSource
         {
             var paths = base.GetFilePathsWithFolderSubstitution(fsp);
             foreach (var path in paths) yield return path;
-            if (!mySolutionTracker.IsUnityGeneratedProject.Value || !fsp.IsAbsolute ||
+            if (!mySolutionTracker.IsUnityProject.Value || !fsp.IsAbsolute ||
                 !SolutionDirectory.IsPrefixOf(fsp)) yield break;
             var fullPath = "." + FileSystemDefinition.GetPathSeparator(InteractionContext.Local) +
                            fsp.MakeRelativeTo(SolutionDirectory).FullPath;

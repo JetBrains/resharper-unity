@@ -154,7 +154,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
 
         private UnityProjectKind GetProjectType()
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             if (myUnitySolutionTracker.IsUnityGeneratedProject.Value)
+#pragma warning restore CS0618 // Type or member is obsolete
                 return UnityProjectKind.Generated;
             else if (myUnitySolutionTracker.IsUnityProject.Value)
                 return UnityProjectKind.Sidecar;

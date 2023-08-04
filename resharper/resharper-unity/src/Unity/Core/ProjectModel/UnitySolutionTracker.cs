@@ -19,6 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
 
         public readonly ViewableProperty<bool> IsUnityProjectFolder = new();
         public readonly ViewableProperty<bool> IsUnityProject = new();
+        [Obsolete("Use IsUnityProject instead")] // Only use this for collecting statistics
         public readonly ViewableProperty<bool> IsUnityGeneratedProject = new();
 
         // If all you're interested in is being notified that we're a Unity solution, advise this. If you need to know
@@ -26,21 +27,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
         // IUnityReferenceChangeHandler
         public readonly ViewableProperty<bool> HasUnityReference = new(false);
 
-        public bool IsUnityProjectOrHasUnityReference => IsUnityProject.HasTrueValue() || HasUnityReference.HasTrueValue();
-
         public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
                                     bool inTests = false)
         {
             mySolution = solution;
             if (inTests)
             {
-                IsUnityGeneratedProject.Value = false;
                 IsUnityProject.Value = false;
                 IsUnityProjectFolder.Value = false;
                 HasUnityReference.Value = false;
                 return;
             }
-            
+
             // SolutionDirectory isn't absolute in tests, and will throw an exception if we use it when we call Exists
             mySolutionDirectory = solution.SolutionDirectory;
             if (!mySolutionDirectory.IsAbsolute)
@@ -66,7 +64,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             IsUnityProject.SetValue(IsUnityProjectFolder.Value && mySolution.IsValid() &&
                                     mySolution.SolutionFilePath.ExistsFile &&
                                     HasLibraryFolder(mySolutionDirectory));
+#pragma warning disable CS0618 // Type or member is obsolete
             IsUnityGeneratedProject.SetValue(IsUnityProject.Value && SolutionNameMatchesUnityProjectName());
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         private void OnChangeAction(FileSystemChangeDelta delta)
