@@ -1,23 +1,21 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
-import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
-import com.jetbrains.rd.ide.model.RdDocumentId
+import com.intellij.openapi.rd.createLifetime
 import com.jetbrains.rd.platform.util.lifetime
-import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.lifetime.SequentialLifetimes
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rdclient.document.getFirstDocumentId
-import com.jetbrains.rider.cpp.fileType.HlslHeaderFileType
-import com.jetbrains.rider.cpp.fileType.HlslSourceFileType
+import com.jetbrains.rdclient.document.textControlId
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.AutoShaderContextData
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.SelectShaderContextDataInteraction
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextDataBase
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import icons.UnityIcons
 import org.jetbrains.annotations.Nls
@@ -29,11 +27,10 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 
 
-class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayout()), RiderResolveContextWidget {
+class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayout()), RiderResolveContextWidget, Disposable {
     private val label = JLabel(UnityIcons.FileTypes.ShaderLab)
-    private val requestLifetime = SequentialLifetimes(project.lifetime)
+    private val widgetLifetime = this.createLifetime()
     private val currentContextMode : IProperty<ShaderContextData?> = Property(null)
-    private var documentId: RdDocumentId? = null
 
     companion object {
         @Nls
@@ -50,6 +47,24 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
             }
         })
 
+        FrontendBackendHost.getInstance(project).model.let { model ->
+            model.shaderContexts.advise(widgetLifetime) { event ->
+                if (event.key == editor.textControlId?.documentId) {
+                    when (val value = event.newValueOpt) {
+                        is ShaderContextData -> {
+                            currentContextMode.value = value
+                            isVisible = true
+                        }
+                        is AutoShaderContextData -> {
+                            currentContextMode.value = null
+                            isVisible = true
+                        }
+                        else -> isVisible = false
+                    }
+                }
+            }
+        }
+
         currentContextMode.advise(project.lifetime) {
             if (it == null) {
                 label.text = UnityUIBundle.message("auto")
@@ -58,64 +73,46 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
                 label.text = getContextPresentation(it)
                 label.toolTipText = UnityUIBundle.message("file.and.symbol.context.derived.from.include.at.context", getContextPresentation(it))
             }
-            updateState()
-        }
-    }
-
-    private fun getHlslDocumentId(): RdDocumentId? {
-        val file = editor.virtualFile
-        if (file == null || !file.fileType.let { it == HlslSourceFileType || it == HlslHeaderFileType }) {
-            return null
-        }
-
-        return editor.document.getFirstDocumentId(project)
-    }
-
-    private fun updateState() {
-        val newDocumentId = getHlslDocumentId()
-        if (newDocumentId == documentId) return
-
-        val lifetime = requestLifetime.next().lifetime
-        documentId = newDocumentId
-        if (newDocumentId == null) {
-            isVisible = false
-            return
-        }
-
-        val host = FrontendBackendHost.getInstance(project)
-        host.model.requestCurrentContext.start(lifetime, newDocumentId).result.advise(lifetime) {
-            val result = it.unwrap()
-            isVisible = true
-            if (result is ShaderContextData)
-                currentContextMode.value = result
-            else
-                currentContextMode.value = null
         }
     }
 
     override val component: Component = this
-    override fun update() = updateState()
+    override fun update() = Unit
 
     fun showPopup(label: JLabel) {
-        val lt: Lifetime = Lifetime.Eternal
+        val lt = widgetLifetime.createNested()
         val id = editor.document.getFirstDocumentId(project) ?: return
         val host = FrontendBackendHost.getInstance(project)
-        host.model.requestShaderContexts.start(lt, id).result.advise(lt) {
-            val items = it.unwrap()
-            val actions = createActions(host, id, items)
-            val group = DefaultActionGroup().apply {
-                addAll(actions)
+        host.model.createSelectShaderContextInteraction.start(lt, id).result.advise(lt) {
+            try {
+                val interaction = it.unwrap()
+
+                val actions = createActions(interaction)
+                val group = DefaultActionGroup().apply {
+                    addAll(actions)
+                }
+                val popup = ShaderContextPopup(group, SimpleDataContext.getProjectContext(project), currentContextMode)
+                val terminateLifetime = Runnable { lt.terminate(true) }
+                popup.setFinalRunnable(terminateLifetime)
+                // in current implementation it isn't possible to combine multiple setFinalRunnable and if action performed then it will override final runnable and lifetime won't be terminated
+                // to work around this we add onPerformed callback for every possible action
+                for (action in actions)
+                    action.onPerformed = terminateLifetime
+                popup.showInCenterOf(label)
+            } catch (t: Throwable) {
+                lt.terminate(true)
+                throw t
             }
-            val popup = ShaderContextPopup(group, SimpleDataContext.getProjectContext(project), currentContextMode)
-            popup.showInCenterOf(label)
         }
     }
 
-    private fun createActions(host: FrontendBackendHost, id: RdDocumentId, items: List<ShaderContextDataBase>): List<AnAction> {
-        val result = mutableListOf<AnAction>(ShaderAutoContextSwitchAction(project, id, host, currentContextMode))
-        for (item in items) {
-            result.add(ShaderContextSwitchAction(project, id, host, item as ShaderContextData, currentContextMode))
+    private fun createActions(interaction: SelectShaderContextDataInteraction): List<AbstractShaderContextSwitchAction> {
+        val result = mutableListOf<AbstractShaderContextSwitchAction>(ShaderAutoContextSwitchAction(interaction, currentContextMode))
+        for (index in 0 until interaction.items.size) {
+            result.add(ShaderContextSwitchAction(interaction, index, currentContextMode))
         }
         return result
     }
+
+    override fun dispose() {}
 }

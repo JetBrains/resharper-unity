@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JetBrains.Collections;
 using JetBrains.Diagnostics;
+using JetBrains.DocumentManagers;
+using JetBrains.DocumentModel;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Injections;
@@ -24,15 +27,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
         private readonly ISolution mySolution;
         private readonly CppExternalModule myCppExternalModule;
         private readonly CgIncludeDirectoryProvider myCgIncludeDirectoryProvider;
+        private readonly DocumentManager myDocumentManager;
+        private readonly Dictionary<IPsiSourceFile, IReadOnlyList<IRangeMarker>> myIncludeRanges = new();
 
         public InjectedHlslFileLocationTracker(Lifetime lifetime, ISolution solution,
-            IPersistentIndexManager persistentIndexManager, CppExternalModule cppExternalModule, CgIncludeDirectoryProvider cgIncludeDirectoryProvider)
+            IPersistentIndexManager persistentIndexManager, CppExternalModule cppExternalModule, CgIncludeDirectoryProvider cgIncludeDirectoryProvider, DocumentManager documentManager)
             : base(
                 lifetime, solution, persistentIndexManager, InjectedHlslLocationInfo.Read, InjectedHlslLocationInfo.Write)
         {
             mySolution = solution;
             myCppExternalModule = cppExternalModule;
             myCgIncludeDirectoryProvider = cgIncludeDirectoryProvider;
+            myDocumentManager = documentManager;
         }
 
         protected override CppFileLocation GetCppFileLocation(InjectedHlslLocationInfo t)
@@ -50,6 +56,49 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
             var injections = InjectedHlslLocationHelper.GetCppFileLocations(sourceFile).Select(t =>
                 new InjectedHlslLocationInfo(t.Location.Location, t.Location.RootRange, t.ProgramType));
             return new HashSet<InjectedHlslLocationInfo>(injections);
+        }
+
+        public override void Drop(IPsiSourceFile sourceFile)
+        {
+            base.Drop(sourceFile);
+            RemoveFromLocalCache(sourceFile);
+        }
+
+        public override void Merge(IPsiSourceFile sourceFile, object builtPart)
+        {
+            base.Merge(sourceFile, builtPart);
+            if (builtPart is HashSet<InjectedHlslLocationInfo> { Count: > 0 } locations)
+                AddToLocalCache(sourceFile, locations);
+            else
+                RemoveFromLocalCache(sourceFile);
+        }
+
+        public override void MergeLoaded(object data)
+        {
+            foreach (var (sourceFile, cacheItem) in Map)
+            {
+                if (cacheItem.Count > 0)
+                    AddToLocalCache(sourceFile, cacheItem);
+            }
+            base.MergeLoaded(data);
+        }
+
+        private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
+        {
+            myIncludeRanges.Remove(sourceFile);    
+        }
+
+        private void AddToLocalCache(IPsiSourceFile sourceFile, HashSet<InjectedHlslLocationInfo> locations)
+        {
+            var document = sourceFile.Document;
+            var ranges = new LocalList<IRangeMarker>();
+            foreach (var location in locations)
+            {
+                var range = myDocumentManager.CreateRangeMarker(new DocumentRange(document, location.Range));
+                ranges.Add(range);
+            }
+
+            myIncludeRanges[sourceFile] = ranges.ReadOnlyList();
         }
 
         public bool Exists(CppFileLocation cppFileLocation)

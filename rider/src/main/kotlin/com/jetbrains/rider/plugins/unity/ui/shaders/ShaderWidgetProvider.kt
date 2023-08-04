@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.ex.util.EditorUtil
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.ide.model.TextControlId
 import com.jetbrains.rd.ide.model.TextControlModel
@@ -17,6 +18,6 @@ class ShaderWidgetProvider : RiderResolveContextWidgetProvider {
                                editor: Editor): RiderResolveContextWidget? {
         if (!UnityProjectDiscoverer.getInstance(project).isUnityProject)
             return null
-        return ShaderWidget(project, editor)
+        return ShaderWidget(project, editor).also { EditorUtil.disposeWithEditor(editor, it) }
     }
 }
