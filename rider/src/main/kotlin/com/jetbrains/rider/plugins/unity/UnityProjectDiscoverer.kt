@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity
 
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -9,17 +10,16 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendMo
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
-import com.jetbrains.rider.projectView.solutionDirectory
-import com.jetbrains.rider.projectView.solutionFile
 import com.jetbrains.rider.unity.UnityDetector
 
 class UnityDetectorImpl(private val project: Project) : UnityDetector {
     override fun isUnitySolution(): Boolean
     {
-        return project.service<UnityProjectDiscoverer>().isUnityProject
+        return UnityProjectDiscoverer.getInstance(project).isUnityProject
     }
 }
 
+@Service(Service.Level.PROJECT)
 class UnityProjectDiscoverer(private val project: Project) : LifetimedService() {
     // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
     val isUnityProjectFolder = hasUnityFileStructure(project)
@@ -73,11 +73,6 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
     // Returns false when opening a Unity project as a plain folder
     private fun isCorrectlyLoadedSolution(project: Project): Boolean {
         return project.solutionDescription is RdExistingSolution
-    }
-
-    private fun solutionNameMatchesUnityProjectName(project: Project): Boolean {
-        val solutionFile = project.solutionFile
-        return solutionFile.nameWithoutExtension == project.solutionDirectory.name
     }
 }
 

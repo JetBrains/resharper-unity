@@ -1,10 +1,15 @@
 package com.jetbrains.rider.plugins.unity.ui
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ToggleAction
 import com.jetbrains.rider.plugins.unity.isUnityProject
 
 class SwitchUIMode : ToggleAction() {
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.BGT
+    }
+
     override fun isSelected(e: AnActionEvent): Boolean {
         val project = e.project ?: return false
         val uiManager = UnityUIManager.getInstance(project)

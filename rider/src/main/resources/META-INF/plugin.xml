@@ -197,7 +197,6 @@
     <navbar implementation="com.jetbrains.rider.plugins.unity.ide.navigationToolbar.UnityNavBarModelExtension"/>
 
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.UnityUIManager"/>
-    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer"/>
 
     <solutionManagerExtensions implementation="com.jetbrains.rider.plugins.unity.workspace.UnitySolutionManagerExtensions"/>
 
