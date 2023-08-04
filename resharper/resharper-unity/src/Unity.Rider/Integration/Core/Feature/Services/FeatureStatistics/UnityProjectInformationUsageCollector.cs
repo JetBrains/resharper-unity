@@ -40,6 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
             Generated,
             Library,
             Sidecar,
+            Folder,
             Other
         }
 
@@ -157,6 +158,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
                 return UnityProjectKind.Generated;
             else if (myUnitySolutionTracker.IsUnityProject.Value)
                 return UnityProjectKind.Sidecar;
+            else if (myUnitySolutionTracker.IsUnityProjectFolder.Value)
+                return UnityProjectKind.Folder;
             else if (myUnitySolutionTracker.HasUnityReference.Value)
                 return UnityProjectKind.Library;
 
