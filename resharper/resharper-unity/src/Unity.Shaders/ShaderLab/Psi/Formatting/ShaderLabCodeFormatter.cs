@@ -69,7 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
       if (firstElement.GetSourceFile() is {} sourceFile)
         _ = sourceFile.GetPsiFiles<CppLanguage>().Count;
       DoDeclarativeFormat(settings, myShaderLabFormattingInfo, null, new[] { task }, parameters,
-        null, FormatChildren, false);
+        null, FormatChildren);
 
       return FormatterImplHelper.PointerToRange(pointer, firstElement, lastElement);
       
