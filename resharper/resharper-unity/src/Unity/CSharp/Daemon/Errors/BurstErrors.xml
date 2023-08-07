@@ -88,7 +88,7 @@
       <Argument>TypeQualification</Argument>
     </Message>
     <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
   
   <Warning name="BurstAccessingManagedIndexer" configurableSeverity="Unity.BurstAccessingManagedIndexer">
@@ -98,14 +98,14 @@
       <Argument>TypeQualification</Argument>
     </Message>
     <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="BurstTryNotSupported" configurableSeverity="Unity.BurstTryNotSupported">
     <Parameter type="ITreeNode" name="node" />
     <Message resourceName="BurstTryStatementIsNotSupportedMessage" resourceType="Strings" />
     <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="BurstFunctionSignatureContainsManagedTypes" configurableSeverity="Unity.BurstFunctionSignatureContainsManagedTypes">
@@ -115,7 +115,7 @@
       <Argument>FunctionSignature</Argument>
     </Message>
     <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="BurstBoxingNotSupported" configurableSeverity="Unity.BurstBoxingNotSupported">
@@ -125,7 +125,7 @@
       <Argument>TypeQualification</Argument>
     </Message>
     <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="BurstCreatingManagedType" configurableSeverity="Unity.BurstCreatingManagedType">
@@ -135,7 +135,7 @@
       <Argument>TypeQualification</Argument>
     </Message>
     <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="BurstWriteStaticField" configurableSeverity="Unity.BurstWriteStaticField">
@@ -145,14 +145,14 @@
       <Argument>FieldQualification</Argument>
     </Message>
     <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="BurstForeachNotSupported" configurableSeverity="Unity.BurstForeachNotSupported">
     <Parameter type="ITreeNode" name="node" />
     <Message resourceName="BurstTheforeachConstructionIsNotSupportedMessage" resourceType="Strings" />
     <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="BurstLoadingStaticNotReadonly" configurableSeverity="Unity.BurstLoadingStaticNotReadonly">
@@ -162,7 +162,7 @@
       <Argument>FieldQualification</Argument>
     </Message>
     <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="BurstLoadingManagedType" configurableSeverity="Unity.BurstLoadingManagedType">
@@ -172,21 +172,21 @@
       <Argument>TypeQualification</Argument>
     </Message>
     <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="BurstDebugLogInvalidArgument" configurableSeverity="Unity.BurstDebugLogInvalidArgument">
     <Parameter type="ITreeNode" name="node" />
     <Message resourceName="BurstDebugLoggingFunctionsAcceptsOnlyStringsMessage" resourceType="Strings" />
     <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="BurstStringFormatInvalidFormat" configurableSeverity="Unity.BurstStringFormatInvalidFormat">
     <Parameter type="ITreeNode" name="node" />
     <Message resourceName="BurstStringFormatFunctionsAcceptsOnlyStringsMessage" resourceType="Strings" />
     <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="BurstStringFormatInvalidArgument" configurableSeverity="Unity.BurstStringFormatInvalidArgument">
@@ -198,21 +198,21 @@
       <Argument>ArgumentIndex</Argument>
     </Message>
     <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
   
   <Warning name="BurstTypeofExpression" configurableSeverity="Unity.BurstTypeofExpression">
     <Parameter type="ITreeNode" name="node" />
     <Message resourceName="BurstTypeofIsProhibitedMessage" resourceType="Strings" />
     <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="BurstSharedStaticCreate" configurableSeverity="Unity.BurstSharedStaticCreate">
     <Parameter type="ITreeNode" name="node" />
     <Message resourceName="BurstThisMethodIsAvailableInCOnlyNotHPCMessage" resourceType="Strings" />
     <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="BurstLocalStringVariableDeclaration" configurableSeverity="Unity.BurstLocalStringVariableDeclaration">
@@ -220,6 +220,6 @@
     <Parameter type="IMultipleDeclarationMember" name="multipleDeclarationMember" />
     <Message resourceName="BurstLocalStringVariableDeclarationMessage" resourceType="Strings" />
     <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 </Errors>
