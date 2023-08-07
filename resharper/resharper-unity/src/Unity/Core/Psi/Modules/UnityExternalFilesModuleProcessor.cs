@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         private readonly Dictionary<VirtualFileSystemPath, LifetimeDefinition> myRootPathLifetimes;
         private readonly VirtualFileSystemPath mySolutionDirectory;
         private readonly VirtualFileSystemPath myProjectSettingsFolder;
-        private readonly UnityIndexedExternalProjectFileTypeFilter myIndexedExternalProjectFileTypeFilter;
+        private readonly UnityExternalProjectFileTypes myExternalProjectFileTypes;
 
         public UnityExternalFilesModuleProcessor(Lifetime lifetime, ILogger logger, ISolution solution,
                                                  ChangeManager changeManager,
@@ -67,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                                                  UnityExternalFilesModuleFactory moduleFactory,
                                                  UnityExternalFilesIndexDisablingStrategy indexDisablingStrategy,
                                                  UnityAssetInfoCollector usageStatistics,
-                                                 AssetIndexingSupport assetIndexingSupport, UnityIndexedExternalProjectFileTypeFilter indexedExternalProjectFileTypeFilter)
+                                                 AssetIndexingSupport assetIndexingSupport, UnityExternalProjectFileTypes externalProjectFileTypes)
         {
             myLifetime = lifetime;
             myLogger = logger;
@@ -82,7 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             myIndexDisablingStrategy = indexDisablingStrategy;
             myUsageStatistics = usageStatistics;
             myAssetIndexingSupport = assetIndexingSupport;
-            myIndexedExternalProjectFileTypeFilter = indexedExternalProjectFileTypeFilter;
+            myExternalProjectFileTypes = externalProjectFileTypes;
 
             myRootPathLifetimes = new Dictionary<VirtualFileSystemPath, LifetimeDefinition>();
 
@@ -112,13 +112,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         private bool IsIndexedWithCurrentIndexingSupport(VirtualFileSystemPath path)
         {
             if (myAssetIndexingSupport.IsEnabled.Value)
-                return myIndexedExternalProjectFileTypeFilter.Accept(path, true);
+                return myExternalProjectFileTypes.ShouldBeIndexed(path, true);
 
             return IsIndexedFileWithDisabledAssetSupport(path);
         }
 
         private bool IsIndexedFileWithDisabledAssetSupport(VirtualFileSystemPath path) => 
-            myIndexedExternalProjectFileTypeFilter.Accept(path, false) || path.IsAsmDefMeta() /* HACK, normally .meta files excluded */ || IsFromProjectSettingsFolder(path) || path.IsFromResourceFolder();
+            myExternalProjectFileTypes.ShouldBeIndexed(path, false) || path.IsAsmDefMeta() /* HACK, normally .meta files excluded */ || IsFromProjectSettingsFolder(path) || path.IsFromResourceFolder();
 
         private bool IsFromProjectSettingsFolder(VirtualFileSystemPath path) => path.StartsWith(myProjectSettingsFolder);
 
@@ -127,12 +127,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             if (myAssetIndexingSupport.IsEnabled.Value)
                 return files;
 
-            var newFiles = new ExternalFiles(mySolution, myLogger);
+            var newFiles = new ExternalFiles(mySolution, myExternalProjectFileTypes, myLogger);
 
             FilterFiles(files.MetaFiles, newFiles.MetaFiles);
             FilterFiles(files.AssetFiles, newFiles.AssetFiles);
-            FilterFiles(files.AsmDefFiles, newFiles.AsmDefFiles);
-            FilterFiles(files.AsmRefFiles, newFiles.AsmRefFiles);
+            FilterFiles(files.IndexableFiles, newFiles.IndexableFiles);
 
             newFiles.Directories.AddRange(files.Directories);
             
@@ -194,7 +193,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                         myRootPathLifetimes.Remove(root);
                     }
                     
-                    var files = new ExternalFiles(mySolution, myLogger);
+                    var files = new ExternalFiles(mySolution, myExternalProjectFileTypes, myLogger);
                     CollectExternalFilesForSolutionDirectory(files, "Assets");
                     CollectExternalFilesForSolutionDirectory(files, "ProjectSettings", true);
                     CollectExternalFilesForPackages(files);
@@ -354,7 +353,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 {
                     using (myLocks.UsingReadLock())
                     {
-                        var externalFiles = new ExternalFiles(mySolution, myLogger);
+                        var externalFiles = new ExternalFiles(mySolution, myExternalProjectFileTypes, myLogger);
                         CollectExternalFilesForDirectory(externalFiles, packageData.PackageFolder,
                             packageData.IsUserEditable);
                         AddExternalFiles(FilterFiles(externalFiles));
@@ -388,6 +387,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 if (solutionChanges.IsEmpty())
                     return;
 
+                var processedFiles = new HashSet<VirtualFileSystemPath>(); // avoid DEXP-730021 SourceFile is not valid.
                 var builder = new PsiModuleChangeBuilder();
                 var visitor = new RecursiveProjectModelChangeDeltaVisitor(null, itemChange =>
                 {
@@ -412,13 +412,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                         else if ((itemChange.IsRemoved || itemChange.IsMovedOut) && itemChange.OldLocation.ExistsFile 
                                  && mySolution.FindProjectItemsByLocation(itemChange.OldLocation).All(t => t.IsMiscProjectItem()))
                         {
-                            myLogger.Trace(
-                                "External Unity file removed from project {0}. Adding to external files module: {1}",
-                                itemChange.GetOldProject()?.Name ?? "<null>", itemChange.OldLocation);
-
                             var isUserEditable = IsUserEditable(itemChange.OldLocation, out var isKnownExternalFile);
-                            if (isKnownExternalFile)
+                            if (isKnownExternalFile && !processedFiles.Contains(itemChange.OldLocation))
                             {
+                                myLogger.Trace(
+                                    "External Unity file removed from project {0}. Adding to external files module: {1}",
+                                    itemChange.GetOldProject()?.Name ?? "<null>", itemChange.OldLocation);
+                                
+                                processedFiles.Add(itemChange.OldLocation);
                                 AddOrUpdateExternalPsiSourceFile(builder, itemChange.OldLocation,
                                     myProjectFileExtensions.GetFileType(projectFile.Location), isUserEditable);
                             }
@@ -439,9 +440,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             var builder = new PsiModuleChangeBuilder();
             AddExternalPsiSourceFiles(externalFiles.MetaFiles, builder, "meta");
             AddExternalPsiSourceFiles(externalFiles.AssetFiles, builder, "asset");
-            AddExternalPsiSourceFiles(externalFiles.AsmDefFiles, builder, "asmdef");
-            AddExternalPsiSourceFiles(externalFiles.AsmRefFiles, builder, "asmref");
-            AddExternalPsiSourceFiles(externalFiles.InputActionsFiles, builder, "inputactions");
+            AddExternalPsiSourceFiles(externalFiles.IndexableFiles, builder, "other");
             FlushChanges(builder);
 
             foreach (var (path, isUserEditable) in externalFiles.Directories)
@@ -496,7 +495,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             // parse all YAML files, which is Bad News for massive files.
             // TODO: Mark assets as non-user files, as they should not be edited manually
             // I'm not sure what this will affect
-            var properties = path.IsAsmDef() || path.IsAsmRef() || path.IsInputActions()
+            var properties = myExternalProjectFileTypes.ShouldBeTreatedAsNonGenerated(path)
                 ? new UnityExternalFileProperties(false, !isUserEditable)
                 : new UnityExternalFileProperties(true, false);
 
@@ -579,22 +578,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
 
-            foreach (var externalFile in externalFiles.AsmDefFiles)
+            foreach (var externalFile in externalFiles.IndexableFiles)
             {
-                myUsageStatistics.AddStatistic(UnityAssetInfoCollector.FileType.AsmDef,
-                    externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
-            }
-
-            foreach (var externalFile in externalFiles.AsmRefFiles)
-            {
-                myUsageStatistics.AddStatistic(UnityAssetInfoCollector.FileType.AsmRef,
-                    externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
-            }
-            
-            foreach (var externalFile in externalFiles.InputActionsFiles)
-            {
-                myUsageStatistics.AddStatistic(UnityAssetInfoCollector.FileType.InputActions,
-                    externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
+                UnityAssetInfoCollector.FileType fileType;
+                if (ReferenceEquals(externalFile.ProjectFileType, AsmDefProjectFileType.Instance))
+                    fileType = UnityAssetInfoCollector.FileType.AsmDef;
+                else if (ReferenceEquals(externalFile.ProjectFileType, AsmRefProjectFileType.Instance))
+                    fileType = UnityAssetInfoCollector.FileType.AsmRef;
+                else if (ReferenceEquals(externalFile.ProjectFileType, InputActionsProjectFileType.Instance))
+                    fileType = UnityAssetInfoCollector.FileType.InputActions;
+                else
+                    continue;
+                myUsageStatistics.AddStatistic(fileType, externalFile.FileSystemData.FileLength, externalFile.IsUserEditable);
             }
 
             foreach (var externalFile in externalFiles.KnownBinaryAssetFiles)
@@ -792,19 +787,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         private class ExternalFiles
         {
             private readonly ISolution mySolution;
+            private readonly UnityExternalProjectFileTypes myProjectFileTypes;
             private readonly ILogger myLogger;
             public readonly List<ExternalFile> MetaFiles = new();
             public readonly List<ExternalFile> AssetFiles = new();
-            public readonly List<ExternalFile> AsmDefFiles = new();
-            public readonly List<ExternalFile> AsmRefFiles = new();
-            public readonly List<ExternalFile> InputActionsFiles = new();
+            public readonly List<ExternalFile> IndexableFiles = new();
             public FrugalLocalList<ExternalFile> KnownBinaryAssetFiles;
             public FrugalLocalList<ExternalFile> ExcludedByNameAssetFiles;
             public FrugalLocalList<(VirtualFileSystemPath directory, bool isUserEditable)> Directories;
 
-            public ExternalFiles(ISolution solution, ILogger logger)
+            public ExternalFiles(ISolution solution, UnityExternalProjectFileTypes projectFileTypes, ILogger logger)
             {
                 mySolution = solution;
+                myProjectFileTypes = projectFileTypes;
                 myLogger = logger;
             }
 
@@ -827,8 +822,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     else
                         AssetFiles.Add(new ExternalFile(directoryEntry, projectFileType, isUserEditable));
                 }
-                else if (directoryEntry.RelativePath.IsAsmDef() || directoryEntry.RelativePath.IsAsmRef() 
-                                                                || directoryEntry.RelativePath.IsInputActions())
+                else if (myProjectFileTypes.TryGetFileInfo(directoryEntry.RelativePath, out var info))
                 {
                     // Do not add if this file is already part of a project. This might be because it's from an editable
                     // package, or because the user has package project generation enabled.
@@ -845,25 +839,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                     }
                     else
                     {
-                        List<ExternalFile> files;
-                        ProjectFileType? projectFileType;
-                        if (directoryEntry.RelativePath.IsAsmDef())
-                        {
-                            files = AsmDefFiles;
-                            projectFileType = AsmDefProjectFileType.Instance;
-                        }
-                        else if (directoryEntry.RelativePath.IsAsmRef())
-                        {
-                            files = AsmRefFiles;
-                            projectFileType = AsmRefProjectFileType.Instance;
-                        }
-                        else if (directoryEntry.RelativePath.IsInputActions())
-                        {
-                            files = InputActionsFiles;
-                            projectFileType = InputActionsProjectFileType.Instance;
-                        }
-                        else throw new InvalidOperationException();
-                        files.Add(new ExternalFile(directoryEntry, projectFileType, isUserEditable));
+                        IndexableFiles.Add(new ExternalFile(directoryEntry, info.ProjectFileType, isUserEditable));
                     }
                 }
             }
@@ -877,14 +853,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
             {
                 if (!myLogger.IsTraceEnabled()) return;
 
-                var total = MetaFiles.Count + AssetFiles.Count + AsmDefFiles.Count + AsmRefFiles.Count +
+                var total = MetaFiles.Count + AssetFiles.Count + IndexableFiles.Count +
                             KnownBinaryAssetFiles.Count + ExcludedByNameAssetFiles.Count;
                 myLogger.Trace("Collected {0} external files", total);
                 myLogger.Trace("Meta files: {0} ({1:n0} bytes)", MetaFiles.Count, GetTotalFileSize(MetaFiles));
                 myLogger.Trace("Asset files: {0} ({1:n0} bytes)", AssetFiles.Count, GetTotalFileSize(AssetFiles));
-                myLogger.Trace("AsmDef files: {0} ({1:n0} bytes)", AsmDefFiles.Count, GetTotalFileSize(AsmDefFiles));
-                myLogger.Trace("AsmRef files: {0} ({1:n0} bytes)", AsmRefFiles.Count, GetTotalFileSize(AsmRefFiles));
-                myLogger.Trace("InputActions files: {0} ({1:n0} bytes)", InputActionsFiles.Count, GetTotalFileSize(InputActionsFiles));
+                myLogger.Trace("Other indexable files: {0} ({1:n0} bytes)", IndexableFiles.Count, GetTotalFileSize(IndexableFiles));
                 myLogger.Trace("Known binary asset files: {0} ({1:n0} bytes)", KnownBinaryAssetFiles.Count, GetTotalFileSize(KnownBinaryAssetFiles.AsIReadOnlyList()));
                 myLogger.Trace("Excluded by name files: {0} ({1:n0} bytes)", ExcludedByNameAssetFiles.Count, GetTotalFileSize(ExcludedByNameAssetFiles.AsIReadOnlyList()));
                 myLogger.Trace("Directories: {0}", Directories.Count);

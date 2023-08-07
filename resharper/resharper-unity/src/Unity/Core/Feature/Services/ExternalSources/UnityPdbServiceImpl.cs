@@ -12,7 +12,7 @@ using JetBrains.Symbols;
 using JetBrains.Symbols.SourceLinks;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
+namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.ExternalSources
 {
     [SolutionComponent]
     public class UnityPdbServiceImpl : PdbServiceImpl
@@ -44,8 +44,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
         {
             var paths = base.GetFilePathsWithFolderSubstitution(fsp);
             foreach (var path in paths) yield return path;
-            if (!mySolutionTracker.IsUnityGeneratedProject.Value || !fsp.IsAbsolute) yield break;
-            var fullPath = "." + FileSystemDefinition.GetPathSeparator(InteractionContext.Local) + 
+            if (!mySolutionTracker.IsUnityProject.Value || !fsp.IsAbsolute ||
+                !SolutionDirectory.IsPrefixOf(fsp)) yield break;
+            var fullPath = "." + FileSystemDefinition.GetPathSeparator(InteractionContext.Local) +
                            fsp.MakeRelativeTo(SolutionDirectory).FullPath;
             yield return (FileSystemPath.TryParse(fullPath), fullPath);
         }

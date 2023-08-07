@@ -296,17 +296,6 @@ tasks {
         }
     }
 
-    fun getRdModelsSources(): List<File> {
-        val productsHome = monoRepoRootDir
-        assert(productsHome != null) { "Monorepo root not found" }
-
-        return listOf(
-            File("$productsHome/Rider/Frontend/rider/model/sources"),
-            File("$productsHome/Rider/ultimate/remote-dev/rd-ide-model-sources"),
-            modelSrcDir
-        )
-    }
-
     fun generateLibModel(monorepo: Boolean) = registering(RdGenTask::class) {
         group = protocolGroup
 
@@ -336,12 +325,15 @@ tasks {
                 || project.gradle.startParameter.logLevel == LogLevel.DEBUG
 
             // *** Classpath and sources ***
-            if (monorepo)
-                sources(getRdModelsSources())
-            else {
+            if (monorepo) {
+                classpath({
+                    val riderModelClassPathFile: String by project
+                    File(riderModelClassPathFile).readLines()
+                })
+            } else {
                 classpath({ rdModelJarFile })
-                sources(modelSrcDir)
             }
+            sources(modelSrcDir)
 
             hashFolder = "$hashBaseDir/lib"
             packages = "model.lib"
@@ -417,12 +409,15 @@ tasks {
                 || project.gradle.startParameter.logLevel == LogLevel.DEBUG
 
             // *** Classpath and sources ***
-            if (monorepo)
-                sources(getRdModelsSources())
-            else {
+            if (monorepo) {
+                classpath({
+                    val riderModelClassPathFile: String by project
+                    File(riderModelClassPathFile).readLines()
+                })
+            } else {
                 classpath({ rdModelJarFile })
-                sources(modelSrcDir)
             }
+            sources(modelSrcDir)
 
             hashFolder = "$hashBaseDir/frontendBackend"
             packages = "model.frontendBackend"
@@ -491,11 +486,14 @@ tasks {
 
             // *** Classpath and sources ***
             if (monorepo)
-                sources(getRdModelsSources())
+                classpath({
+                    val riderModelClassPathFile: String by project
+                    File(riderModelClassPathFile).readLines()
+                })
             else {
                 classpath({ rdModelJarFile })
-                sources(modelSrcDir)
             }
+            sources(modelSrcDir)
 
             hashFolder = "$hashBaseDir/backendUnity"
             packages = "model.backendUnity"
@@ -561,12 +559,15 @@ tasks {
                 || project.gradle.startParameter.logLevel == LogLevel.DEBUG
 
             // *** Classpath and sources ***
-            if (monorepo)
-                sources(getRdModelsSources())
-            else {
+            if (monorepo) {
+                classpath({
+                    val riderModelClassPathFile: String by project
+                    File(riderModelClassPathFile).readLines()
+                })
+            } else {
                 classpath({ rdModelJarFile })
-                sources(modelSrcDir)
             }
+            sources(modelSrcDir)
 
             hashFolder = "$hashBaseDir/debuggerWorker"
             packages = "model.debuggerWorker"

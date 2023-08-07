@@ -1,0 +1,8 @@
+﻿File: Shader03.shader
+ Shader "Unlit/NewUnlitShader"
+  SubShader
+   Tags
+   CGPROGRAM
+    Input, (185 - 252)
+     color -> float4, (220 - 241)
+    surf(Input IN, SurfaceOutput o) -> void, (262 - 350)

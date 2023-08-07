@@ -6,8 +6,7 @@ namespace JetBrains.Rider.Unity.Editor.Tests
   public class RiderPluginTest
   {
     private static readonly FileInfo ourRiderPathForTests = new FileInfo(Path.Combine(Path.GetTempPath(), "Rider.exe"));
-    private static readonly IPluginSettings ourTestPluginSettings = new TestPluginSettings();
-    private static readonly RiderPathProvider ourRiderPathProvider = new RiderPathProvider(ourTestPluginSettings);
+    private static readonly RiderPathProvider ourRiderPathProvider = new RiderPathProvider();
 
     public RiderPluginTest()
     {

@@ -1,10 +1,15 @@
 package com.jetbrains.rider.plugins.unity.ui
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ToggleAction
-import com.jetbrains.rider.plugins.unity.isUnityGeneratedProject
+import com.jetbrains.rider.plugins.unity.isUnityProject
 
 class SwitchUIMode : ToggleAction() {
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.BGT
+    }
+
     override fun isSelected(e: AnActionEvent): Boolean {
         val project = e.project ?: return false
         val uiManager = UnityUIManager.getInstance(project)
@@ -20,10 +25,7 @@ class SwitchUIMode : ToggleAction() {
     }
 
     override fun update(e: AnActionEvent) {
-        // Only enable UI switching for generated Unity projects. Sidecar projects
-        // (class library in the main Unity folder) are fairly advanced anyway, so
-        // leave things enabled. It also means these projects can access nuget
-        e.presentation.isEnabled = e.project?.isUnityGeneratedProject() == true
+        e.presentation.isEnabled = e.project?.isUnityProject() == true
         super.update(e)
     }
 }

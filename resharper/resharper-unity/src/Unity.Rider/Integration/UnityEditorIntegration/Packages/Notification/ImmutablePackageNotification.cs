@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             NotificationPanelHost notificationPanelHost,
             UnityVersion unityVersion)
         {
-            if (!solutionTracker.IsUnityGeneratedProject.Value)
+            if (!solutionTracker.IsUnityProject.Value)
                 return;
 
             var localPackageCacheFolder = UnityCachesFinder.GetLocalPackageCacheFolder(solution.SolutionDirectory);
