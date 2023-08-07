@@ -565,7 +565,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
             version = s.Substring(1);
             // for windows try to use installed dotnet framework
             // Unity 2018.1 doesn't require installed dotnet framework, it references everything from Unity installation
-            if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows && UnityUtils.UnityVersion < new Version(2018, 1))
+            if (PluginSettings.SystemInfoRiderPlugin.OS == PathLocator.OS.Windows && UnityUtils.UnityVersion < new Version(2018, 1))
             {
               var versions = PluginSettings.GetInstalledNetFrameworks();
               if (versions.Any())

@@ -1,0 +1,38 @@
+using |UnityEngine|(0);
+
+public class Example : |MonoBehaviour|(1)
+{
+    // Create a material from code
+    |void|(2) Start()
+    {
+        // Create a material with transparent diffuse shader
+        |Material|(3) material = new ||Material|(4)|(5)(|Shader|(6).|Find|(7)("|Foo|(8)"));
+        var shader = |Shader|(9).|Find|(10)("|Bar|(11)");
+        |material|(12).|color|(13) = |Color|(14).|green|(15);
+
+        // assign the material to the renderer
+        |GetComponent|(16)<|Renderer|(17)>().|material|(18) = |material|(19);
+    }
+}
+
+------------------------------------------------
+0: result=OK declaredElem=UnityEngine
+1: result=OK declaredElem=UnityEngine.MonoBehaviour
+2: result=NOT_RESOLVED declaredElem=null
+3: result=OK declaredElem=UnityEngine.Material
+4: result=OK declaredElem=UnityEngine.Material.Material(UnityEngine.Shader shader)
+5: result=OK declaredElem=UnityEngine.Material
+6: result=OK declaredElem=UnityEngine.Shader
+7: result=OK declaredElem=UnityEngine.Shader UnityEngine.Shader.Find(System.String name)
+8: result=OK declaredElem=Foo
+9: result=OK declaredElem=UnityEngine.Shader
+10: result=OK declaredElem=UnityEngine.Shader UnityEngine.Shader.Find(System.String name)
+11: result=SHADERLAB_SHADER_REFERENCE_UNRESOLVED_WARNING declaredElem=null
+12: result=OK declaredElem=UnityEngine.Material material
+13: result=OK declaredElem=UnityEngine.Color UnityEngine.Material.color
+14: result=OK declaredElem=UnityEngine.Color
+15: result=OK declaredElem=UnityEngine.Color UnityEngine.Color.green
+16: result=OK declaredElem=UnityEngine.Renderer UnityEngine.Component.GetComponent<Renderer>()
+17: result=OK declaredElem=UnityEngine.Renderer
+18: result=OK declaredElem=UnityEngine.Material UnityEngine.Renderer.material
+19: result=OK declaredElem=UnityEngine.Material material

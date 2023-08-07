@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <ItemGroup>
-        <PackageReference Include="JetBrains.RdFramework">
+        <PackageReference Include="JetBrains.RdFramework" Condition="'$(MSBuildProjectName)' != 'PathLocator'">
             <Version>2023.2.2-preview2</Version> <!-- Update this manually for the InternalBuild -->
         </PackageReference>
     </ItemGroup>

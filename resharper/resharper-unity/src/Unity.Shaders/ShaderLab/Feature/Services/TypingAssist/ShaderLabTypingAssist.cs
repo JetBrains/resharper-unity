@@ -239,7 +239,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
                 }
 
                 cachingLexer.Advance(-1);
-                tt = (IShaderLabTokenNodeType?)cachingLexer.TokenType;
+                tt = cachingLexer.TokenType as IShaderLabTokenNodeType;
             }
 
             return false;

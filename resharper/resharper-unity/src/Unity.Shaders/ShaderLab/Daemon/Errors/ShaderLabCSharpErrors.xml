@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Errors language="C#" configurableSeverityImplementationLanguage="CSHARP" baseClass="ShaderLabHighlightingBase">
+  <Usings>
+    JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
+    Strings = JetBrains.ReSharper.Plugins.Unity.Shaders.Resources.Strings;
+    JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Resolve;
+  </Usings>
+
+  <StaticSeverityGroups>
+    <Group name="ShaderLab Errors" key="ShaderLabErrors" />
+    <Group name="ShaderLab Warnings" key="ShaderLabWarnings" />
+  </StaticSeverityGroups>
+
+  <Warning name="ShaderLabShaderReferenceNotResolved" staticGroup="ShaderLabWarnings">
+    <Parameter type="IShaderReference" name="reference" />
+    <Message resourceName="ShaderNameNotRevoled" resourceType="Strings">
+      <Argument>Reference.GetName()</Argument>
+    </Message>
+    <Range>Reference.GetDocumentRange()</Range>
+    <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
+  </Warning>
+</Errors>
