@@ -187,8 +187,8 @@ namespace Burst.SharedStaticTests
     }
 }
 ---------------------------------------------------------
-(0):<overlapped> ReSharper Warning: Burst: this method is available in C# only, not HPC#
-(1):<overlapped> ReSharper Warning: Burst: Typeof is prohibited
-(2):<overlapped> ReSharper Warning: Burst: this method is available in C# only, not HPC#
-(3):<overlapped> ReSharper Warning: Burst: Typeof is prohibited
-(4):<overlapped> ReSharper Warning: Burst: Typeof is prohibited
+(0): ReSharper Warning: Burst: this method is available in C# only, not in Burst
+(1): ReSharper Warning: Burst: Typeof is prohibited
+(2): ReSharper Warning: Burst: this method is available in C# only, not in Burst
+(3): ReSharper Warning: Burst: Typeof is prohibited
+(4): ReSharper Warning: Burst: Typeof is prohibited

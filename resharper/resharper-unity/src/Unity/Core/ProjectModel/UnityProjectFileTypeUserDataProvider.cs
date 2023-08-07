@@ -14,16 +14,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
     {
         public void AddUserData(ReadonlyUserDataPerSubjectBuilder<ProjectFileType> builder)
         {
-            foreach (var projectFileType in new ProjectFileType?[] { AsmDefProjectFileType.Instance, AsmRefProjectFileType.Instance })
+            foreach (var projectFileType in new ProjectFileType?[] { InputActionsProjectFileType.Instance, AsmDefProjectFileType.Instance, AsmRefProjectFileType.Instance })
             {
                 if (projectFileType != null)
-                    builder.Add(projectFileType, UnityIndexedExternalProjectFileTypeFilter.ExternalModuleIndexingModeKey, ExternalModuleIndexingMode.Always);
+                    builder.Add(projectFileType, UnityExternalProjectFileTypes.ExternalModuleFileFlagsKey,  ExternalModuleFileFlags.IndexAlways | ExternalModuleFileFlags.TreatAsNonGenerated);
             }
 
-            foreach (var projectFileType in new ProjectFileType?[] { InputActionsProjectFileType.Instance, MetaProjectFileType.Instance, UnityYamlProjectFileType.Instance })
+            foreach (var projectFileType in new ProjectFileType?[] { MetaProjectFileType.Instance, UnityYamlProjectFileType.Instance })
             {
                 if (projectFileType != null)
-                    builder.Add(projectFileType, UnityIndexedExternalProjectFileTypeFilter.ExternalModuleIndexingModeKey, ExternalModuleIndexingMode.Assets);
+                    builder.Add(projectFileType, UnityExternalProjectFileTypes.ExternalModuleFileFlagsKey, ExternalModuleFileFlags.IndexWhenAssetsEnabled);
             }
         }
     }

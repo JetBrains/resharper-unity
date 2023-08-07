@@ -9,6 +9,7 @@ using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
+using JetBrains.Rider.PathLocator;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -18,18 +19,17 @@ namespace JetBrains.Rider.Unity.Editor
     private readonly ILog myLogger = Log.GetLog<OnOpenAssetHandler>();
     private readonly Lifetime myLifetime;
     private readonly RiderPathProvider myRiderPathProvider;
-    private readonly IPluginSettings myPluginSettings;
     private readonly string mySlnFile;
+    private readonly RiderFileOpener myOpener;
 
     internal OnOpenAssetHandler(Lifetime lifetime,
                                 RiderPathProvider riderPathProvider,
-                                IPluginSettings pluginSettings,
                                 string slnFile)
     {
       myLifetime = lifetime;
       myRiderPathProvider = riderPathProvider;
-      myPluginSettings = pluginSettings;
       mySlnFile = slnFile;
+      myOpener = new RiderFileOpener(RiderPathProvider.RiderPathLocator.RiderLocatorEnvironment);
     }
 
     // DO NOT RENAME OR CHANGE SIGNATURE!
@@ -101,23 +101,21 @@ namespace JetBrains.Rider.Unity.Editor
           myLogger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, column);
 
           if (model.RiderProcessId.HasValue())
-            AllowSetForegroundWindow(model.RiderProcessId.Value);
+            myOpener.AllowSetForegroundWindow(model.RiderProcessId.Value);
           else
-            AllowSetForegroundWindow();
+            myOpener.AllowSetForegroundWindow();
 
           model.OpenFileLineCol.Start(myLifetime, new RdOpenFileArgs(assetFilePath, line, column));
 
-          // todo: maybe fallback to CallRider, if returns false
+          // todo: maybe fallback to OpenFile, if returns false
           return true;
         }
       }
-
-      var argsString = assetFilePath == "" ? "" : $" --line {line} --column {column} \"{assetFilePath}\""; // on mac empty string in quotes is causing additional solution to be opened https://github.cds.internal.unity3d.com/unity/com.unity.ide.rider/issues/21
-      var args = $"\"{mySlnFile}\"{argsString}";
-      return CallRider(args);
+      
+      return OpenInRider(mySlnFile, assetFilePath, line, column);
     }
 
-    public bool CallRider(string args)
+    public bool OpenInRider(string slnFile, string assetFilePath, int line, int column)
     {
       var defaultApp = myRiderPathProvider.ValidateAndReturnActualRider(EditorPrefsWrapper.ExternalScriptEditor);
       if (string.IsNullOrEmpty(defaultApp))
@@ -126,68 +124,7 @@ namespace JetBrains.Rider.Unity.Editor
         return false;
       }
 
-      var proc = new Process();
-      if (myPluginSettings.OperatingSystemFamilyRider == OperatingSystemFamilyRider.MacOSX)
-      {
-        proc.StartInfo.FileName = "open";
-        proc.StartInfo.Arguments = $"-n \"{defaultApp}\" --args {args}";
-      }
-      else
-      {
-        proc.StartInfo.FileName = defaultApp;
-        proc.StartInfo.Arguments = args;
-      }
-      proc.StartInfo.UseShellExecute = true; // avoid HandleInheritance
-      var message = $"\"{proc.StartInfo.FileName}\" {proc.StartInfo.Arguments}";
-      myLogger.Verbose(message);
-      if (!proc.Start())
-      {
-        myLogger.Error($"Process failed to start. {message}");
-        return false;
-      }
-      AllowSetForegroundWindow(proc.Id);
-      return true;
-    }
-
-    // This is required to be called to help frontend Focus itself
-    private void AllowSetForegroundWindow(int? processId=null)
-    {
-      if (myPluginSettings.OperatingSystemFamilyRider != OperatingSystemFamilyRider.Windows)
-        return;
-
-      try
-      {
-        var process = processId == null ? GetRiderProcess() : Process.GetProcessById((int)processId);
-        if (process == null)
-          return;
-
-        if (process.Id > 0)
-          User32Dll.AllowSetForegroundWindow(process.Id);
-      }
-      catch (Exception e)
-      {
-        myLogger.Warn("Exception on AllowSetForegroundWindow: " + e);
-      }
-    }
-
-    private static Process GetRiderProcess()
-    {
-      var process = Process.GetProcesses().FirstOrDefault(p =>
-      {
-        string processName;
-        try
-        {
-          processName =
-            p.ProcessName; // some processes like kaspersky antivirus throw exception on attempt to get ProcessName
-        }
-        catch (Exception)
-        {
-          return false;
-        }
-
-        return !p.HasExited && processName.ToLower().Contains("rider");
-      });
-      return process;
+      return myOpener.OpenFile(defaultApp, slnFile, assetFilePath, line, column);
     }
   }
 }

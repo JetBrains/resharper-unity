@@ -2,6 +2,7 @@ package base.integrationTests
 
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.WaitFor
+import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.test.asserts.shouldBeTrue
 import com.jetbrains.rider.test.framework.frameworkLogger
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
@@ -44,13 +45,14 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithSolution
         return workDirectory
     }
 
-    private fun waitForSlnGeneratedByUnityFile(slnDirPath: String, timeoutMinutes: Int = 5) {
-        object : WaitFor(Duration.ofMinutes(timeoutMinutes.toLong()).toMillis().toInt()) {
-            override fun condition() = run {
+    private fun waitForSlnGeneratedByUnityFile(slnDirPath: String, timeoutMinutes: Duration = Duration.ofMinutes(5L)) {
+        object : WaitFor(timeoutMinutes.toMillis().toInt(), 10000) {
+            override fun condition(): Boolean {
                 val slnFiles = File(slnDirPath).listFiles { _, name -> name.endsWith(".sln") }
-                slnFiles != null && slnFiles.isNotEmpty()
+                val startFile = File(slnDirPath, ".start")
+                return slnFiles != null && slnFiles.isNotEmpty() && startFile.exists()
             }
-        }
+        }.assertCompleted("Sln/csproj structure has been created, opening project in Rider")
     }
 
     @BeforeMethod(alwaysRun = true)
@@ -82,7 +84,6 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithSolution
         //Generate sln and csproj
         frameworkLogger.info("Unity Editor has been started, waiting for sln/csproj structure to be generated")
         waitForSlnGeneratedByUnityFile(unityProjectPath.canonicalPath)
-        frameworkLogger.info("Sln/csproj structure has been created, opening project in Rider")
         super.setUpTestCaseSolution()
     }
 

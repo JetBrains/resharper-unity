@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Diagnostics;
@@ -16,8 +15,9 @@ using JetBrains.Rd.Impl;
 using JetBrains.Rd.Tasks;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Model.Unity.BackendUnity;
-using JetBrains.Rider.Unity.Editor.FindUsages;
 using JetBrains.Rider.Unity.Editor.NonUnity;
+using JetBrains.Rider.PathLocator;
+using JetBrains.Rider.Unity.Editor.FindUsages;
 using JetBrains.Rider.Unity.Editor.UnitTesting;
 using JetBrains.Rider.Unity.Editor.Utils;
 using UnityEditor;
@@ -255,9 +255,9 @@ namespace JetBrains.Rider.Unity.Editor
       var editorLogPath = string.Empty;
       var playerLogPath = string.Empty;
 
-      switch (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily)
+      switch (PluginSettings.SystemInfoRiderPlugin.OS)
       {
-        case OperatingSystemFamilyRider.Windows:
+        case OS.Windows:
         {
           var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
           editorLogPath = Path.Combine(localAppData, @"Unity\Editor\Editor.log");
@@ -271,7 +271,7 @@ namespace JetBrains.Rider.Unity.Editor
 
           break;
         }
-        case OperatingSystemFamilyRider.MacOSX:
+        case OS.MacOSX:
         {
           var home = Environment.GetEnvironmentVariable("HOME");
           if (!string.IsNullOrEmpty(home))
@@ -282,7 +282,7 @@ namespace JetBrains.Rider.Unity.Editor
 
           break;
         }
-        case OperatingSystemFamilyRider.Linux:
+        case OS.Linux:
         {
           var home = Environment.GetEnvironmentVariable("HOME");
           if (!string.IsNullOrEmpty(home))
@@ -303,7 +303,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       model.UnityProjectSettings.ScriptingRuntime.Value = UnityUtils.ScriptingRuntime;
       var path = EditorUserBuildSettings.GetBuildLocation(EditorUserBuildSettings.selectedStandaloneTarget);
-      if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX)
+      if (PluginSettings.SystemInfoRiderPlugin.OS == OS.MacOSX)
         path = Path.Combine(Path.Combine(Path.Combine(path, "Contents"), "MacOS"), PlayerSettings.productName);
       if (!string.IsNullOrEmpty(path) && File.Exists(path))
         model.UnityProjectSettings.BuildLocation.Value = path;

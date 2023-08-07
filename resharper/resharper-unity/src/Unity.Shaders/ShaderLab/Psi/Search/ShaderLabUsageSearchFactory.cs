@@ -2,6 +2,7 @@
 using System.Linq;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Impl.Search.SearchDomain;
 using JetBrains.ReSharper.Psi.Search;
@@ -19,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Search
             mySearchDomainFactory = searchDomainFactory;
         }
 
-        public bool IsCompatibleWithLanguage(PsiLanguageType languageType) => languageType.Is<ShaderLabLanguage>();
+        public bool IsCompatibleWithLanguage(PsiLanguageType languageType) => languageType.Is<ShaderLabLanguage>() || languageType.Is<CSharpLanguage>();
 
         public IDomainSpecificSearcher CreateConstructorSpecialReferenceSearcher(ICollection<IConstructor> constructors)
         {
