@@ -26,6 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
         // we're a Unity solution *and*/or know about Unity projects (and get a per-project lifetime), implement
         // IUnityReferenceChangeHandler
         public readonly ViewableProperty<bool> HasUnityReference = new(false);
+                 
+        public bool IsUnityProjectOrHasUnityReference => IsUnityProject.HasTrueValue() || HasUnityReference.HasTrueValue();
 
         public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
                                     bool inTests = false)
