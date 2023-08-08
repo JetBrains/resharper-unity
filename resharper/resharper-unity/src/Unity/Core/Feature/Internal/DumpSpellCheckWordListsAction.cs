@@ -92,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Internal
             var spellService = solution.GetComponent<ISpellServiceBackendDispatcher>().SpellService;
 
             var wordsCheckResult = SpellServiceExtensions.RunAsyncWithTimeout(() =>
-                spellService.CheckWords(Lifetime.Eternal, allWords.Concat(abbreviationsWithOriginalWord.Keys).AsList())
+                spellService.CheckWordsAsync(Lifetime.Eternal, allWords.Concat(abbreviationsWithOriginalWord.Keys).AsList())
             );
             if (wordsCheckResult == null)
             {
