@@ -10,12 +10,12 @@ import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rdclient.document.getFirstDocumentId
-import com.jetbrains.rdclient.document.textControlId
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.AutoShaderContextData
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.SelectShaderContextDataInteraction
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextDataBase
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import icons.UnityIcons
 import org.jetbrains.annotations.Nls
@@ -28,14 +28,14 @@ import javax.swing.JPanel
 
 
 class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayout()), RiderResolveContextWidget, Disposable {
-    private val label = JLabel(UnityIcons.FileTypes.ShaderLab)
-    private val widgetLifetime = this.createLifetime()
-    private val currentContextData : IProperty<ShaderContextData?> = Property(null)
-
     companion object {
         @Nls
         private fun getContextPresentation(data : ShaderContextData) = "${data.name}:${data.startLine}"
     }
+
+    private val label = JLabel(UnityIcons.FileTypes.ShaderLab)
+    private val widgetLifetime = this.createLifetime()
+    internal val currentContextData : IProperty<ShaderContextData?> = Property(null)
 
     init {
         label.text = "..."
@@ -46,24 +46,6 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
                 showPopup(label)
             }
         })
-
-        FrontendBackendHost.getInstance(project).model.let { model ->
-            model.shaderContexts.advise(widgetLifetime) { event ->
-                if (event.key == editor.textControlId?.documentId) {
-                    when (val value = event.newValueOpt) {
-                        is ShaderContextData -> {
-                            currentContextData.value = value
-                            isVisible = true
-                        }
-                        is AutoShaderContextData -> {
-                            currentContextData.value = null
-                            isVisible = true
-                        }
-                        else -> isVisible = false
-                    }
-                }
-            }
-        }
 
         currentContextData.advise(project.lifetime) {
             if (it == null) {
@@ -78,6 +60,14 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
 
     override val component: Component = this
     override fun update() = Unit
+
+    fun setData(data: ShaderContextDataBase?) {
+        when (data) {
+            is AutoShaderContextData -> currentContextData.value = null
+            is ShaderContextData -> currentContextData.value = data
+        }
+        isVisible = data != null
+    }
 
     fun showPopup(label: JLabel) {
         val lt = widgetLifetime.createNested()

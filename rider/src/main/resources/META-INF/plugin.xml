@@ -27,6 +27,7 @@
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ProtocolInstanceWatcher"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.explorer.MetaTrackerInitializer"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspaceModelUpdaterInitializer"/>
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetProvider"/>
 
     <rider.externalDirectoryProvider implementation="com.jetbrains.rider.plugins.unity.workspace.UnityExternalDirectoryProvider" />
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService"/>
