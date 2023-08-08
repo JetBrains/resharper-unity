@@ -30,7 +30,7 @@ import javax.swing.JPanel
 class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayout()), RiderResolveContextWidget, Disposable {
     private val label = JLabel(UnityIcons.FileTypes.ShaderLab)
     private val widgetLifetime = this.createLifetime()
-    private val currentContextMode : IProperty<ShaderContextData?> = Property(null)
+    private val currentContextData : IProperty<ShaderContextData?> = Property(null)
 
     companion object {
         @Nls
@@ -52,11 +52,11 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
                 if (event.key == editor.textControlId?.documentId) {
                     when (val value = event.newValueOpt) {
                         is ShaderContextData -> {
-                            currentContextMode.value = value
+                            currentContextData.value = value
                             isVisible = true
                         }
                         is AutoShaderContextData -> {
-                            currentContextMode.value = null
+                            currentContextData.value = null
                             isVisible = true
                         }
                         else -> isVisible = false
@@ -65,7 +65,7 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
             }
         }
 
-        currentContextMode.advise(project.lifetime) {
+        currentContextData.advise(project.lifetime) {
             if (it == null) {
                 label.text = UnityUIBundle.message("auto")
                 label.toolTipText = UnityUIBundle.message("default.file.and.symbol.context")
@@ -91,7 +91,7 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
                 val group = DefaultActionGroup().apply {
                     addAll(actions)
                 }
-                val popup = ShaderContextPopup(group, SimpleDataContext.getProjectContext(project), currentContextMode)
+                val popup = ShaderContextPopup(group, SimpleDataContext.getProjectContext(project), currentContextData)
                 val terminateLifetime = Runnable { lt.terminate(true) }
                 popup.setFinalRunnable(terminateLifetime)
                 // in current implementation it isn't possible to combine multiple setFinalRunnable and if action performed then it will override final runnable and lifetime won't be terminated
@@ -107,9 +107,9 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
     }
 
     private fun createActions(interaction: SelectShaderContextDataInteraction): List<AbstractShaderContextSwitchAction> {
-        val result = mutableListOf<AbstractShaderContextSwitchAction>(ShaderAutoContextSwitchAction(interaction, currentContextMode))
+        val result = mutableListOf<AbstractShaderContextSwitchAction>(ShaderAutoContextSwitchAction(interaction, currentContextData))
         for (index in 0 until interaction.items.size) {
-            result.add(ShaderContextSwitchAction(interaction, index, currentContextMode))
+            result.add(ShaderContextSwitchAction(interaction, index, currentContextData))
         }
         return result
     }
