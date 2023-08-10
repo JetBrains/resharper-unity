@@ -1,7 +1,7 @@
 #nullable enable
 using JetBrains.ReSharper.Feature.Services.SelectEmbracingConstruct;
-using JetBrains.ReSharper.Plugins.Unity.Common.Services.Tree;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.TypingAssist;
+using JetBrains.ReSharper.Plugins.Unity.Common.Psi.Syntax;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Syntax;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
