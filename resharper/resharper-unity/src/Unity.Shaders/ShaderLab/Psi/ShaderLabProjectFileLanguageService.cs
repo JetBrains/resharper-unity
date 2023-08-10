@@ -1,6 +1,6 @@
-﻿using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.Resources;
-using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+﻿#nullable enable
+using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Settings;
 using JetBrains.ReSharper.Psi;
@@ -22,23 +22,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi
             myShaderLabSupport = shaderLabSupport;
         }
 
-        public override ILexerFactory GetMixedLexerFactory(ISolution solution, IBuffer buffer, IPsiSourceFile sourceFile = null)
+        public override ILexerFactory? GetMixedLexerFactory(ISolution solution, IBuffer buffer, IPsiSourceFile? sourceFile = null)
         {
             var languageService = ShaderLabLanguage.Instance.LanguageService();
             return languageService?.GetPrimaryLexerFactory();
         }
 
-        protected override PsiLanguageType PsiLanguageType
-        {
-            get
-            {
-                var shaderLabLanguage = (PsiLanguageType) ShaderLabLanguage.Instance ?? UnknownLanguage.Instance;
-                return myShaderLabSupport.IsParsingEnabled.Value
-                    ? shaderLabLanguage
-                    : UnknownLanguage.Instance;
-            }
-        }
+        protected override PsiLanguageType PsiLanguageType => myShaderLabSupport.IsParsingEnabled.Value && ShaderLabLanguage.Instance is { } shaderLabLanguage ? shaderLabLanguage : UnknownLanguage.Instance!;
 
-        public override IconId Icon => PsiSymbolsThemedIcons.FileShader.Id;
+        /// Alexander.Bondarev:
+        /// todo: it only defines default properties for ShaderLab files, actual properties provided in <see cref="UnityShaderModuleHandlerAndDecorator.GetFileProperties"/>.
+        /// todo: it isn't clear without debugging if we can always provide properties in this method (with caching) or it is intended in <see cref="UnityShaderModuleHandlerAndDecorator.GetFileProperties"/> to always recalculate properties
+        /// todo: for hotfix 23.2 I decided not risk to change behavior and only provide a fallback for shader files outside of Shaders module (i.e. for Player project files).  
+        public override IPsiSourceFileProperties? GetPsiProperties(IProjectFile projectFile, IPsiSourceFile sourceFile, IsCompileService isCompileService) => ShaderFilesProperties.NoCacheFilesProperties;
+
+        public override IconId? Icon => PsiSymbolsThemedIcons.FileShader.Id;
     }
 }
