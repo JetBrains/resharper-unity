@@ -11,8 +11,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
     public class ShaderContext : IDisposable
     {
         private readonly LifetimeDefinition myLifetimeDefinition = new();
-        private readonly SequentialLifetimes myQueryLifetimes;
         private int myRefsCount = 1;
+
+        public readonly SequentialLifetimes ShaderDataLifetimes;
+        public readonly SequentialLifetimes RootLifetimes;
         
         public Lifetime Lifetime => myLifetimeDefinition.Lifetime;
         public readonly RdDocumentId DocumentId;
@@ -24,10 +26,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
         {
             DocumentId = documentId;
             SourceFile = sourceFile;
-            myQueryLifetimes = new(Lifetime);
+            ShaderDataLifetimes = new(Lifetime);
+            RootLifetimes = new(Lifetime);
         }
-
-        public Lifetime NextQueryLifetime() => myQueryLifetimes.Next();
 
         public void IncrementRefCount()
         {

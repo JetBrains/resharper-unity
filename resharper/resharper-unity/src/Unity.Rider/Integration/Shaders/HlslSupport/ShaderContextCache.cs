@@ -31,24 +31,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             myLogger = logger;
         }
 
-        public TextRange SetContext(IPsiSourceFile psiSourceFile, IRangeMarker? range)
+        public void SetContext(IPsiSourceFile psiSourceFile, IRangeMarker? range)
         {
-            TextRange textRange;
-            using (ReadLockCookie.Create())
-            {
-                textRange = range?.Range ?? TextRange.InvalidRange;
-                if (textRange.IsValid)
-                    myShaderContext.AddToCache(psiSourceFile.GetLocation(), range!);
-                else
-                    myShaderContext.RemoveFromCache(psiSourceFile.GetLocation());
-            }
+            if (range != null)
+                myShaderContext.AddToCache(psiSourceFile.GetLocation(), range);
+            else
+                myShaderContext.RemoveFromCache(psiSourceFile.GetLocation());
 
             var solution = psiSourceFile.GetSolution();
             var psiFiles = solution.GetPsiServices().Files;
 
             psiFiles.InvalidatePsiFilesCache(psiSourceFile);
             solution.GetComponent<IDaemon>().Invalidate("ShaderContextCache.SetContext".NON_LOCALIZABLE());
-            return textRange;
         }
 
         public CppFileLocation GetPreferredRootFile(CppFileLocation currentFile)

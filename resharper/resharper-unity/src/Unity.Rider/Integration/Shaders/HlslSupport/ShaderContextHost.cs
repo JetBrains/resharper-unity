@@ -27,7 +27,6 @@ using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.TextControl;
 using JetBrains.Threading;
 using JetBrains.Util;
-using RdTask = JetBrains.Rd.Tasks.RdTask;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport
 {
@@ -98,12 +97,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             {
                 context = new ShaderContext(documentId, sourceFile);
                 myActiveContexts.Add(context.Lifetime, documentId, context);
-                context.Lifetime.OnTermination(() =>
-                {
-                    if (context.RootFile is { } rootFile)
-                        StopRootTracking(rootFile, context);
-                    model.ShaderContexts.Remove(documentId);
-                });
                 QueryCurrentContextDataAsync(context).NoAwait();
             }
             else
@@ -112,23 +105,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             textControlLifetime.OnTermination(context.DecrementRefCount);
         }
 
-        private void StartRootTracking(IPsiSourceFile rootFile, ShaderContext context)
+        private void UpdateRoot(ShaderContext context, IPsiSourceFile? rootFile, IRangeMarker? rootRangeMarker)
         {
+            context.RootRangeMarker = rootRangeMarker;
+            if (rootFile == context.RootFile)
+                return;
+            
+            context.RootFile = rootFile;
+            if (rootFile == null)
+            {
+                context.RootLifetimes.TerminateCurrent();
+                return;
+            }
+
+            var rootLifetime = context.RootLifetimes.Next(); 
             if (!myTrackedFiles.TryGetValue(rootFile, out var trackingInfo))
             {
                 trackingInfo = new TrackingInfo(rootFile.Document.LastModificationStamp);
                 myTrackedFiles.Add(rootFile, trackingInfo);
             }
-
             trackingInfo.Contexts.Add(context);
-        }
 
-        private void StopRootTracking(IPsiSourceFile rootFile, ShaderContext context)
-        {
-            var contexts = myTrackedFiles[rootFile].Contexts;
-            contexts.Remove(context);
-            if (contexts.Count == 0)
-                myTrackedFiles.Remove(rootFile);
+            rootLifetime.OnTermination(() =>
+            {
+                var contexts = myTrackedFiles[rootFile].Contexts;
+                contexts.Remove(context);
+                if (contexts.Count == 0)
+                    myTrackedFiles.Remove(rootFile);
+            });
         }
 
         private void SyncTrackedRoots()
@@ -152,8 +156,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
                     {
                         foreach (var context in trackingInfo.Contexts)
                         {
-                            // cancel all lifetimes querying new context data
-                            context.NextQueryLifetime();
+                            // terminate current shader data lifetime
+                            context.ShaderDataLifetimes.TerminateCurrent();
                             
                             var rootRangeMarker = context.RootRangeMarker;
                             Assertion.Assert(context.RootFile == rootFile, "Tracked root mapped to wrong shader context");
@@ -170,17 +174,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
                 }
 
                 // root range or root file may be removed, have to reset contexts for such cases
-                foreach (var context in invalidContexts)
-                {
-                    myShaderContextCache.SetContext(context.SourceFile, null);
-                    UpdateContextData(context, null, null, myAutoContext);
-                }
+                foreach (var context in invalidContexts) 
+                    SetContextRoot(context, null, null);
             }
         }
 
         private async Task QueryCurrentContextDataAsync(ShaderContext context)
         {
-            var lifetime = context.NextQueryLifetime();
+            var lifetime = context.ShaderDataLifetimes.Next();
             var (rootFile, rootRangeMarker, contextData) = await lifetime.StartBackgroundRead(() =>
             {
                 var targetLocation = new CppFileLocation(context.SourceFile);
@@ -197,58 +198,56 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
 
         private void SetContextRoot(RdDocumentId targetDocumentId, IPsiSourceFile targetSourceFile, IPsiSourceFile? rootFile, IRangeMarker? rootRangeMarker)
         {
+            Assertion.Assert(rootRangeMarker is null == rootFile is null, "SetContextRoot: rootFile and rootRangeMarker should be both null or both not null");
             if (myActiveContexts.TryGetValue(targetDocumentId, out var context))
             {
-                // cancel any active query for the context
-                context.NextQueryLifetime();
-            }
-
-            if (rootFile != null)
-            {
-                var rootRange = myShaderContextCache.SetContext(targetSourceFile, rootRangeMarker);
-                if (context == null)
-                    return;
-
-                if (rootFile.IsValid())
-                {
-                    if (GetContextDataFor(rootFile, rootRange) is { } contextData)
-                    {
-                        UpdateContextData(context, rootFile, rootRangeMarker, contextData);
-                        return;
-                    }
-
-                    // reset mapped range if fail to resolve context data (we don't need to reset it if range is invalid, because in that case cache don't have mapping)
-                    myShaderContextCache.SetContext(targetSourceFile, null);
-                }
+                Assertion.Assert(context.SourceFile == targetSourceFile, "SetContextRoot: context mapped to document doesn't match target source file");
+                SetContextRoot(context, rootFile, rootRangeMarker);
             }
             else
-                myShaderContextCache.SetContext(targetSourceFile, null);
+                myShaderContextCache.SetContext(targetSourceFile, rootRangeMarker);
+        }
 
-            // Set auto-context if there no mapping
-            if (context != null)
+        private void SetContextRoot(ShaderContext context, IPsiSourceFile? rootFile, IRangeMarker? rootRangeMarker)
+        {
+            Assertion.Assert(rootRangeMarker is null == rootFile is null, "SetContextRoot: rootFile and rootRangeMarker should be both null or both not null");
+            
+            // terminal current shader data lifetime
+            context.ShaderDataLifetimes.TerminateCurrent();
+
+            if (rootFile != null 
+                && rootFile.IsValid() 
+                && rootRangeMarker!.Range is { IsValid: true } rootRange 
+                && GetContextDataFor(rootFile, rootRange) is {} contextData)
+            {
+                myShaderContextCache.SetContext(context.SourceFile, rootRangeMarker);
+                UpdateContextData(context, rootFile, rootRangeMarker, contextData);
+            }
+            else
+            {
+                // Set auto-context if there no mapping or mapping invalid 
+                myShaderContextCache.SetContext(context.SourceFile, null);
                 UpdateContextData(context, null, null, myAutoContext);
+            }
         }
 
         private void UpdateContextData(ShaderContext context, IPsiSourceFile? rootFile, IRangeMarker? rootRangeMarker, ShaderContextDataBase contextData)
         {
             // State modifications only allowed from main thread
             mySolution.Locks.AssertMainThread();
-
-            var oldRootFile = context.RootFile;
-            if (oldRootFile != rootFile)
-            {
-                if (oldRootFile != null)
-                    StopRootTracking(oldRootFile, context);
-                context.RootFile = rootFile;
-                if (rootFile != null)
-                    StartRootTracking(rootFile, context);
-            }
             
-            context.RootRangeMarker = rootRangeMarker;
+            UpdateRoot(context, rootFile, rootRangeMarker);
             SyncToFrontend(context, contextData);
         }
 
-        private void SyncToFrontend(ShaderContext context, ShaderContextDataBase contextData) => myFrontendBackendHost?.Do(model => model.ShaderContexts[context.DocumentId] = contextData);
+        private void SyncToFrontend(ShaderContext context, ShaderContextDataBase contextData) => myFrontendBackendHost?.Do(model =>
+        {
+            // Once synced to model.ShaderContexts it won't be removed as long as context exists. We don't use Add with lifetime, because it removes initially added pair, but we need to remove by key no matter of value.
+            if (!model.ShaderContexts.ContainsKey(context.DocumentId))
+                context.Lifetime.Bracket(() => model.ShaderContexts.Add(context.DocumentId, contextData), () => model.ShaderContexts.Remove(context.DocumentId));
+            else
+                model.ShaderContexts[context.DocumentId] = contextData;
+        });
 
         private IPsiSourceFile? GetSourceFile(RdDocumentId id)
         {
