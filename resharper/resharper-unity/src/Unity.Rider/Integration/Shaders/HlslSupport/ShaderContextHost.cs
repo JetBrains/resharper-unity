@@ -77,8 +77,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
                     {
                         var sourceFile = GetSourceFile(id);
                         if (sourceFile == null)
-                            return RdTask.Successful(new SelectShaderContextDataInteraction(new List<ShaderContextData>()));
-                        return CreateSelectShaderContextInteraction(lt, id, sourceFile).ToRdTask();
+                            return Task.FromResult(new SelectShaderContextDataInteraction(new List<ShaderContextData>()));
+                        return CreateSelectShaderContextInteraction(lt, id, sourceFile);
                     }
                 });
             });

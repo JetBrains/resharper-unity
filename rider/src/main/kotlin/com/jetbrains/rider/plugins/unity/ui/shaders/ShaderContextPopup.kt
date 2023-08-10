@@ -45,10 +45,6 @@ class ShaderContextPopup(group: ActionGroup, dataContext: DataContext, currentCo
         }, JBUI.Borders.emptyRight(2))
     }
 
-    override fun dispose() {
-        super.dispose()
-    }
-
     override fun getListElementRenderer() = object : PopupListElementRenderer<PopupFactoryImpl.ActionItem>(this) {
         private var myInfoLabel: JLabel? = null
         private var myPosLabel: JLabel? = null
