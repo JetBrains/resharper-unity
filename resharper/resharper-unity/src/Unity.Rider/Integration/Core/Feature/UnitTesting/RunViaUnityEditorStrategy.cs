@@ -384,15 +384,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
                     var parent = GetElementById(run, result.ProjectName, result.ParentId);
                     if (parent is NUnitTestElement elementParent)
                     {
-                        //TODO: add ShortName to TestResult and populate it on Unity side
-                        // Test cases in NUnit3 have the following ids:
-                        //   - {namespace}.{class}.{method}{parameters} if the test case is not given a custom name
-                        //   - {namespace}.{class}.{custom_name} if the test case is given a custom name
-                        // We want to extract either {method}{parameters} or {custom_name}. For that we remove the last 
-                        // part of parent id, which has the form {namespace}.{class}.{method}
-                        var shortName = result.TestId.SubstringAfter(result.ParentId.SubstringBeforeLast(".") + ".");
-                        
-                        run.CreateDynamicElement(() => new NUnitRowTestElement(result.TestId, shortName, elementParent));
+                        run.CreateDynamicElement(() => new NUnitRowTestElement(result.TestId, elementParent));
                     }
                     else if (parent is NUnitTestFixtureElement fixtureParent)
                     {
@@ -461,14 +453,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
         private List<TestFilter> GetFilters(IUnitTestRun run)
         {
             var filters = new List<TestFilter>();
+            var unitTestElements = new JetHashSet<IUnitTestElement>();
+            unitTestElements.AddRange(run.Elements);
+            var elements = unitTestElements
+                .Where(unitTestElement => unitTestElement is NUnitTestElement ||
+                                          unitTestElement is NUnitRowTestElement).ToArray();
+
             var groups = new List<string>();
             var categories = new List<string>();
-            var testNames = run.Elements
-                .Where(unitTestElement => unitTestElement is NUnitTestElement or NUnitRowTestElement)
+
+            var testNames = elements
                 .OfType<INUnitTestElement>()
                 .Where(a => a.RunState != RunState.Explicit || run.Launch.Criterion.Explicit.Contains(a.Id))
-                .Select(p => p.NUnitId)
-                .ToList();
+                .Select(p => p.NaturalId.TestId).ToList();
 
             filters.Add(new TestFilter(((UnityRuntimeEnvironment) run.RuntimeEnvironment).Project.Name, testNames, groups, categories));
             return filters;
@@ -490,11 +487,7 @@ else if (criterion is CategoryCriterion categoryCriterion)
 
         private IUnitTestElement? GetElementById(IUnitTestRun run, string projectName, string resultTestId)
         {
-            return run.Elements.SingleOrDefault(
-                a => a is INUnitTestElement nunitElement &&
-                     nunitElement.Project.Name == projectName &&
-                     nunitElement.NUnitId == resultTestId
-            );
+            return run.Elements.SingleOrDefault(a => a.Project.Name == projectName && resultTestId == a.NaturalId.TestId);
         }
 
         public void Cancel(IUnitTestRun run)
