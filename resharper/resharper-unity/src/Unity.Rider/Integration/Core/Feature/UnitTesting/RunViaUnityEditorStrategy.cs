@@ -392,11 +392,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
                         // part of parent id, which has the form {namespace}.{class}.{method}
                         var shortName = result.TestId.SubstringAfter(result.ParentId.SubstringBeforeLast(".") + ".");
                         
-                        run.CreateDynamicElement(() => new NUnitRowTestElement(shortName, elementParent));
+                        run.CreateDynamicElement(() => new NUnitRowTestElement(result.TestId, shortName, elementParent));
                     }
                     else if (parent is NUnitTestFixtureElement fixtureParent)
                     {
-                        run.CreateDynamicElement(() => new NUnitTestElement(fixtureParent,
+                        run.CreateDynamicElement(() => new NUnitTestElement(result.TestId, fixtureParent,
                             result.TestId.SubstringAfter($"{result.ParentId}."), null));
                     }
                 }
