@@ -23,6 +23,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.SessionStartup
         public virtual bool BreakOnUnhandledExceptions => DebuggerSessionOptionsImplementation.BreakOnUnhandledExceptions;
         public bool DisableJitOptimizationOnModuleLoad => DebuggerSessionOptionsImplementation.DisableJitOptimizationOnModuleLoad;
         public bool EnableExternalSourceDebug => DebuggerSessionOptionsImplementation.EnableExternalSourceDebug;
+        public bool StepIntoExternalCodeSupported => DebuggerSessionOptionsImplementation.StepIntoExternalCodeSupported;
         public bool AutomaticallyRefreshWatches => DebuggerSessionOptionsImplementation.AutomaticallyRefreshWatches;
         public bool EditAndContinueEnabled => DebuggerSessionOptionsImplementation.EditAndContinueEnabled;
         public bool EditAndContinueSupported => DebuggerSessionOptionsImplementation.EditAndContinueSupported;
