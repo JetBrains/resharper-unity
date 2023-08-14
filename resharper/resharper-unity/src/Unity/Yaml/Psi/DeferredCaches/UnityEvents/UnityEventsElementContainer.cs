@@ -429,12 +429,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             return result;
         }
 
-        public int GetUsageCountForEvent(IField field, out bool isEstimated)
+        public int GetUsageCountForEvent(ITypeOwner typeOwner, out bool isEstimated)
         {
             myShellLocks.AssertReadAccessAllowed();
 
             isEstimated = false;
-            var containingType = field?.GetContainingType();
+            var containingType = typeOwner?.GetContainingType();
             if (containingType == null)
                 return 0;
 
@@ -443,17 +443,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 return 0;
 
             var result = 0;
-            foreach (var name in AssetUtils.GetAllNamesFor(field))
+            foreach (var name in AssetUtils.GetAllNamesFor(typeOwner))
             {
                 result += myUnityEventUsageCount.GetCount((name, guid.Value));
             }
 
-            if (myUnityEventsWithModifications.Contains(field.ShortName))
+            if (myUnityEventsWithModifications.Contains(typeOwner.ShortName))
                 isEstimated = true;
 
             if (!isEstimated)
                 isEstimated = AssetUtils.HasPossibleDerivedTypesWithMember(guid.Value, containingType,
-                    AssetUtils.GetAllNamesFor(field), myUnityEventNameHashToScriptGuids);
+                    AssetUtils.GetAllNamesFor(typeOwner), myUnityEventNameHashToScriptGuids);
 
             return result;
         }

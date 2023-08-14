@@ -74,15 +74,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             myContexts = Shell.Instance.GetComponent<DataContexts>();
         }
 
-        private static (Guid? guid, string[] propertyNames) GetAssetGuidAndPropertyName(ISolution solution, IField declaredElement)
+        private static (Guid? guid, string[] propertyNames) GetAssetGuidAndPropertyName(ISolution solution, ITypeOwner declaredElement, ITypeElement typeElement)
         {
             Assertion.Assert(solution.Locks.IsReadAccessAllowed(), "ReadLock required");
 
-            var containingType = declaredElement.ContainingType;
-            if (containingType == null)
-                return (null, Array.Empty<string>());
-
-            var guid = AssetUtils.GetGuidFor(solution.GetComponent<MetaFileGuidCache>(), containingType);
+            var guid = AssetUtils.GetGuidFor(solution.GetComponent<MetaFileGuidCache>(), typeElement);
             return (guid, AssetUtils.GetAllNamesFor(declaredElement).ToArray());
         }
 
@@ -116,27 +112,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
         }
 
         public void AddInspectorHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element,
-            IDeclaredElement declaredElement, string baseDisplayName, string baseTooltip, string moreText, IconModel iconModel,
+            ITypeOwner? declaredElement, string baseDisplayName, string baseTooltip, string moreText, IconModel iconModel,
             IEnumerable<BulbMenuItem> items, List<CodeVisionEntryExtraActionModel> extraActions)
         {
-            string? displayName = null;
+            if(declaredElement == null)
+                return;
 
             var solution = element.GetSolution();
             Assertion.Assert(solution.Locks.IsReadAccessAllowed(), "ReadLock required");
 
-            var field = (declaredElement as IField).NotNull();
-            var type = field.Type;
-            var containingType = field.ContainingType;
+            var containingType = declaredElement.GetContainingType();
+            var type = declaredElement.Type;
+            
             if (containingType == null)
             {
-                base.AddHighlighting(consumer, element, field, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);
+                base.AddHighlighting(consumer, element, declaredElement, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);
                 return;
             }
 
-            var (guidN, propertyNames) = GetAssetGuidAndPropertyName(solution, field);
+            var (guidN, propertyNames) = GetAssetGuidAndPropertyName(solution, declaredElement, containingType);
             if (guidN == null || propertyNames.Length == 0)
             {
-                base.AddHighlighting(consumer, element, field, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);
+                base.AddHighlighting(consumer, element, declaredElement, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);
                 return;
             }
 
@@ -146,13 +143,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
 
             if (!myDeferredCacheController.CompletedOnce.Value || ShouldShowUnknownPresentation(presentationType))
             {
-                base.AddHighlighting(consumer, element, field, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);
+                base.AddHighlighting(consumer, element, declaredElement, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);
                 return;
             }
 
             if (presentationType == UnityPresentationType.UnityEvent)
             {
-                var count = myUnityEventsElementContainer.GetUsageCountForEvent(field, out var estimated);
+                var count = myUnityEventsElementContainer.GetUsageCountForEvent(declaredElement, out var estimated);
                 var text = NounUtilEx.ToEmptyPluralOrSingularQuick(count, estimated,
                     Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_No_methods,
                     Strings.UnityCodeInsightFieldUsageProvider_AddInspectorHighlighting_method,
@@ -164,15 +161,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
                 return;
             }
 
+            IVariableInitializer? initializer = element switch
+            {
+                IFieldDeclaration fieldDeclaration => fieldDeclaration.Initial,
+                IPropertyDeclaration propertyDeclaration => propertyDeclaration.Initial,
+                _ => null
+            };
 
-            var initializer = (element as IFieldDeclaration).NotNull().Initial;
             var initValue = (initializer as IExpressionInitializer)?.Value?.ConstantValue;
-
             var initValueUnityPresentation = GetUnitySerializedPresentation(presentationType, initValue);
 
             int changesCount;
-            bool isEstimated = false;
-            bool isUniqueChange = false;
+            var isEstimated = false;
+            var isUniqueChange = false;
+            var displayName = string.Empty;
+
             if (myInspectorValuesContainer.IsIndexResultEstimated(guid, containingType, propertyNames))
             {
                 changesCount = myInspectorValuesContainer.GetAffectedFiles(guid, propertyNames) -  myInspectorValuesContainer.GetAffectedFilesWithSpecificValue(guid, propertyNames, initValueUnityPresentation);
@@ -188,17 +191,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
                 {
                     isUniqueChange = true;
                     var value  = myInspectorValuesContainer.GetUniqueValueDifferTo(guid, propertyNames, null);
-                    displayName = value.GetPresentation(solution, field, false);
+                    displayName = value.GetPresentation(solution, declaredElement, false);
                 }
                 else if (initValueCount > 0 && myInspectorValuesContainer.GetUniqueValuesCount(guid, propertyNames) == 2)
                 {
                     isUniqueChange = true;
                     // original value & only one modified value
                     var anotherValueWithLocation = myInspectorValuesContainer.GetUniqueValueDifferTo(guid, propertyNames, initValueUnityPresentation);
-                    displayName = anotherValueWithLocation.GetPresentation(solution, field, false);
+                    displayName = anotherValueWithLocation.GetPresentation(solution, declaredElement, false);
                 }
 
-                if (displayName == null || displayName.Equals("..."))
+                if (string.IsNullOrEmpty(displayName) || displayName.Equals("..."))
                 {
                     changesCount = myInspectorValuesContainer.GetAffectedFiles(guid, propertyNames) -
                                    myInspectorValuesContainer.GetAffectedFilesWithSpecificValue(guid, propertyNames,
