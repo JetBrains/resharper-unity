@@ -39,8 +39,13 @@ object UnityRunUtil {
         // ProcessInfo#executableDisplayName is the executable name with `.exe` removed. This matches the behaviour of
         // .NET's Process.ProcessName
         // https://github.com/Unity-Technologies/MonoDevelop.Debugger.Soft.Unity/blob/9f116ee5d344bce5888e838a75ded418bd7852c7/UnityProcessDiscovery.cs#L155
-        return (name.equals("Unity", true) || name.equals("Unity Editor", true)
-            || canonicalName.equals("unity", true) || canonicalName.equals("Unity Editor", true))
+        return (name.equals("Unity", true)
+                || name.equals("Unity Editor", true)
+                || name.equals("Unity_s.debug", true)
+                || canonicalName.equals("unity", true)
+                || canonicalName.equals("Unity Editor", true)
+                || canonicalName.equals("Unity_s.debug", true) // RIDER-97262, only for linux
+                )
     }
 
     fun isValidUnityEditorProcess(pid: Int, processList: Array<out ProcessInfo>): Boolean {

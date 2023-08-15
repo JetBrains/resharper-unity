@@ -1,162 +1,108 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
-import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
-import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.openapi.fileEditor.FileEditorManagerEvent
-import com.intellij.openapi.fileEditor.FileEditorManagerListener
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.rd.createNestedDisposable
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.wm.CustomStatusBarWidget
-import com.intellij.openapi.wm.StatusBarWidget
-import com.intellij.openapi.wm.StatusBarWidget.Multiframe
-import com.intellij.openapi.wm.impl.status.EditorBasedWidget
-import com.jetbrains.rd.ide.model.RdDocumentId
+import com.intellij.openapi.rd.createLifetime
 import com.jetbrains.rd.platform.util.lifetime
-import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.lifetime.SequentialLifetimes
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rdclient.document.getFirstDocumentId
-import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
-import com.jetbrains.rider.cpp.fileType.CppFileType
+import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
+import com.jetbrains.rider.plugins.unity.FrontendBackendHost
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.AutoShaderContextData
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.SelectShaderContextDataInteraction
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextDataBase
-import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import icons.UnityIcons
 import org.jetbrains.annotations.Nls
 import java.awt.BorderLayout
+import java.awt.Component
+import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import java.awt.event.MouseListener
-import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
 
 
-class ShaderWidget(project: Project) : EditorBasedWidget(project), FileEditorManagerListener, CustomStatusBarWidget, Multiframe {
-
-    private val statusBarComponent = JPanel(BorderLayout())
-    private val label = JLabel(UnityIcons.FileTypes.ShaderLab)
-    private val requestLifetime = SequentialLifetimes(project.lifetime)
-    private val currentContextMode : IProperty<ShaderContextData?> = Property(null)
-
+class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayout()), RiderResolveContextWidget, Disposable {
     companion object {
-
         @Nls
         private fun getContextPresentation(data : ShaderContextData) = "${data.name}:${data.startLine}"
     }
 
+    private val label = JLabel(UnityIcons.FileTypes.ShaderLab)
+    private val widgetLifetime = this.createLifetime()
+    internal val currentContextData : IProperty<ShaderContextData?> = Property(null)
+
     init {
         label.text = "..."
-        statusBarComponent.isVisible = false
-        statusBarComponent.add(label)
-        label.addMouseListener(object : MouseListener {
-            override fun mouseClicked(e: MouseEvent?) {
-            }
-
-            override fun mousePressed(e: MouseEvent?) {
-            }
-
+        isVisible = false
+        add(label)
+        label.addMouseListener(object : MouseAdapter() {
             override fun mouseReleased(e: MouseEvent?) {
                 showPopup(label)
             }
-
-            override fun mouseEntered(e: MouseEvent?) {
-            }
-
-            override fun mouseExited(e: MouseEvent?) {
-            }
-
         })
 
-        if (UnityProjectDiscoverer.getInstance(project).isUnityProject) {
-
-            project.messageBus.connect(project.lifetime.createNestedDisposable())
-                .subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, this)
-
-            currentContextMode.advise(project.lifetime) {
-                if (it == null) {
-                    label.text = UnityUIBundle.message("auto")
-                    label.toolTipText = UnityUIBundle.message("default.file.and.symbol.context")
-                } else {
-                    label.text = getContextPresentation(it)
-                    label.toolTipText = UnityUIBundle.message("file.and.symbol.context.derived.from.include.at.context", getContextPresentation(it))
-                }
+        currentContextData.advise(project.lifetime) {
+            if (it == null) {
+                label.text = UnityUIBundle.message("auto")
+                label.toolTipText = UnityUIBundle.message("default.file.and.symbol.context")
+            } else {
+                label.text = getContextPresentation(it)
+                label.toolTipText = UnityUIBundle.message("file.and.symbol.context.derived.from.include.at.context", getContextPresentation(it))
             }
         }
     }
 
-    override fun selectionChanged(event: FileEditorManagerEvent) {
-        if (UnityProjectDiscoverer.getInstance(project).isUnityProject)
-            updateState((getEditor() as? EditorImpl)?.virtualFile)
-    }
+    override val component: Component = this
+    override fun update() = Unit
 
-    private fun updateState(file: VirtualFile?) {
-
-        val lifetimeDef = requestLifetime.next()
-        val host = FrontendBackendHost.getInstance(project)
-
-        if (file == null || file.fileType !is CppFileType) {
-            statusBarComponent.isVisible = false
-            return
+    fun setData(data: ShaderContextDataBase?) {
+        when (data) {
+            is AutoShaderContextData -> currentContextData.value = null
+            is ShaderContextData -> currentContextData.value = data
         }
-
-        if (getEditor() == null) {
-            statusBarComponent.isVisible = false
-            return
-        }
-
-        val id = getEditor()?.document?.getFirstDocumentId(project)
-        if (id == null) {
-            statusBarComponent.isVisible = false
-            return
-        }
-
-        host.model.requestCurrentContext.start(lifetimeDef.lifetime, id).result.advise(lifetimeDef.lifetime) {
-            val result = it.unwrap()
-            statusBarComponent.isVisible = true
-            if (result is ShaderContextData)
-                currentContextMode.value = result
-            else
-                currentContextMode.value = null
-        }
+        isVisible = data != null
     }
-
-    override fun ID(): String = "ShaderWidget"
-
-    override fun getComponent(): JComponent {
-        return statusBarComponent
-    }
-
-    override fun copy(): StatusBarWidget {
-        return ShaderWidget(project)
-    }
-
 
     fun showPopup(label: JLabel) {
-        val lt: Lifetime = Lifetime.Eternal
-        val id = getEditor()?.document?.getFirstDocumentId(project) ?: return
+        val lt = widgetLifetime.createNested()
+        val id = editor.document.getFirstDocumentId(project) ?: return
         val host = FrontendBackendHost.getInstance(project)
-        host.model.requestShaderContexts.start(lt, id).result.advise(lt) {
-            val items = it.unwrap()
-            val actions = createActions(host, id, items)
-            val group = DefaultActionGroup().apply {
+        host.model.createSelectShaderContextInteraction.start(lt, id).result.advise(lt) {
+            try {
+                val interaction = it.unwrap()
 
-                addAll(actions)
+                val actions = createActions(interaction)
+                val group = DefaultActionGroup().apply {
+                    addAll(actions)
+                }
+                val popup = ShaderContextPopup(group, SimpleDataContext.getProjectContext(project), currentContextData)
+                val terminateLifetime = Runnable { lt.terminate(true) }
+                popup.setFinalRunnable(terminateLifetime)
+                // in current implementation it isn't possible to combine multiple setFinalRunnable and if action performed then it will override final runnable and lifetime won't be terminated
+                // to work around this we add onPerformed callback for every possible action
+                for (action in actions)
+                    action.onPerformed = terminateLifetime
+                popup.showInCenterOf(label)
+            } catch (t: Throwable) {
+                lt.terminate(true)
+                throw t
             }
-            val popup = ShaderContextPopup(group, SimpleDataContext.getProjectContext(project), currentContextMode)
-            popup.showInCenterOf(label)
         }
     }
 
-    private fun createActions(host: FrontendBackendHost, id: RdDocumentId, items: List<ShaderContextDataBase>): List<AnAction> {
-        val result = mutableListOf<AnAction>(ShaderAutoContextSwitchAction(project, id, host, currentContextMode))
-        for (item in items) {
-            result.add(ShaderContextSwitchAction(project, id, host, item as ShaderContextData, currentContextMode))
+    private fun createActions(interaction: SelectShaderContextDataInteraction): List<AbstractShaderContextSwitchAction> {
+        val result = mutableListOf<AbstractShaderContextSwitchAction>(ShaderAutoContextSwitchAction(interaction, currentContextData))
+        for (index in 0 until interaction.items.size) {
+            result.add(ShaderContextSwitchAction(interaction, index, currentContextData))
         }
         return result
     }
+
+    override fun dispose() {}
 }

@@ -40,6 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
             Generated,
             Library,
             Sidecar,
+            Folder,
             Other
         }
 
@@ -153,10 +154,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
 
         private UnityProjectKind GetProjectType()
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             if (myUnitySolutionTracker.IsUnityGeneratedProject.Value)
+#pragma warning restore CS0618 // Type or member is obsolete
                 return UnityProjectKind.Generated;
             else if (myUnitySolutionTracker.IsUnityProject.Value)
                 return UnityProjectKind.Sidecar;
+            else if (myUnitySolutionTracker.IsUnityProjectFolder.Value)
+                return UnityProjectKind.Folder;
             else if (myUnitySolutionTracker.HasUnityReference.Value)
                 return UnityProjectKind.Library;
 

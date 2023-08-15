@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.CodeStructure
 {
-    [RequireHlslSupport, TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
+    [TestUnity, RequireHlslSupport, TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabCodeStructureTest : PsiFileCodeStructureTestBase, IEnumerable
     {
         protected override string RelativeTestDataPath => @"ShaderLab\CodeStructure";
