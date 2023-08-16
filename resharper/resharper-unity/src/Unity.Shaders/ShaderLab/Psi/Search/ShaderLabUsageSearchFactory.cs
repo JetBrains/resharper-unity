@@ -6,12 +6,11 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Impl.Search.SearchDomain;
 using JetBrains.ReSharper.Psi.Search;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Search
 {
     [PsiSharedComponent]
-    public class ShaderLabUsageSearchFactory : IDomainSpecificSearcherFactory
+    public class ShaderLabUsageSearchFactory : DomainSpecificSearcherFactoryBase
     {
         private readonly SearchDomainFactory mySearchDomainFactory;
 
@@ -20,87 +19,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Search
             mySearchDomainFactory = searchDomainFactory;
         }
 
-        public bool IsCompatibleWithLanguage(PsiLanguageType languageType) => languageType.Is<ShaderLabLanguage>() || languageType.Is<CSharpLanguage>();
+        public override bool IsCompatibleWithLanguage(PsiLanguageType languageType) => languageType.Is<ShaderLabLanguage>() || languageType.Is<CSharpLanguage>();
 
-        public IDomainSpecificSearcher CreateConstructorSpecialReferenceSearcher(ICollection<IConstructor> constructors)
-        {
-            return null;
-        }
-
-        public IDomainSpecificSearcher CreateTargetTypedObjectCreationSearcher(IReadOnlyList<IConstructor> constructors, IReadOnlyList<ITypeElement> typeElements, 
-            ReferenceSearcherParameters referenceSearcherParameters)
-        {
-            return null;
-        }
-
-        public IDomainSpecificSearcher CreateMethodsReferencedByDelegateSearcher(IDelegate @delegate)
-        {
-            return null;
-        }
-
-        public IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements, ReferenceSearcherParameters referenceSearcherParameters)
+        public override IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements, ReferenceSearcherParameters referenceSearcherParameters)
         {
             if (elements.Any(element => element is not IShaderLabDeclaredElement))
                 return null;
             return new ShaderLabReferenceSearcher(elements, referenceSearcherParameters);
         }
 
-        public IDomainSpecificSearcher CreateLateBoundReferenceSearcher(IDeclaredElementsSet elements, ReferenceSearcherParameters referenceSearcherParameters)
-        {
-            return null;
-        }
-
-        public IDomainSpecificSearcher CreateTextOccurrenceSearcher(IDeclaredElementsSet elements)
+        public override IDomainSpecificSearcher CreateTextOccurrenceSearcher(IDeclaredElementsSet elements)
         {
             return new ShaderLabTextOccurrenceSearcher(elements);
         }
 
-        public IDomainSpecificSearcher CreateTextOccurrenceSearcher(string subject)
+        public override IDomainSpecificSearcher CreateTextOccurrenceSearcher(string subject)
         {
             return new ShaderLabTextOccurrenceSearcher(subject);
         }
 
-        public IDomainSpecificSearcher CreateAnonymousTypeSearcher(IList<AnonymousTypeDescriptor> typeDescription, bool caseSensitive)
-        {
-            return null;
-        }
-
-        public IDomainSpecificSearcher CreateConstantExpressionSearcher(ConstantValue constantValue, bool onlyLiteralExpression)
-        {
-            return null;
-        }
-
-        public IEnumerable<string> GetAllPossibleWordsInFile(IDeclaredElement element)
+        public override IEnumerable<string> GetAllPossibleWordsInFile(IDeclaredElement element)
         {
             yield return element.ShortName;
         }
 
-        public IEnumerable<RelatedDeclaredElement> GetRelatedDeclaredElements(IDeclaredElement element)
-        {
-            return EmptyList<RelatedDeclaredElement>.InstanceList;
-        }
-
-        public IEnumerable<FindResult> GetRelatedFindResults(IDeclaredElement element)
-        {
-            return EmptyList<FindResult>.InstanceList;
-        }
-
-        public DerivedFindRequest GetDerivedFindRequest(IFindResultReference result)
-        {
-            return null;
-        }
-
-        public NavigateTargets GetNavigateToTargets(IDeclaredElement element)
-        {
-            return NavigateTargets.Empty;
-        }
-
-        public ICollection<FindResult> TransformNavigationTargets(ICollection<FindResult> targets)
-        {
-            return targets;
-        }
-
-        public ISearchDomain GetDeclaredElementSearchDomain(IDeclaredElement declaredElement)
+        public override ISearchDomain GetDeclaredElementSearchDomain(IDeclaredElement declaredElement)
         {
             if (declaredElement is not IShaderLabDeclaredElement)
                 return EmptySearchDomain.Instance;
