@@ -24,10 +24,12 @@ namespace JetBrains.Rider.PathLocator
       // on mac empty string in quotes is causing additional solution to be opened https://github.cds.internal.unity3d.com/unity/com.unity.ide.rider/issues/21
       var pathArguments = assetFilePath == string.Empty ? string.Empty : $" --line {line} --column {column} \"{assetFilePath}\""; 
       var args = $"\"{slnFile}\"{pathArguments}";
+
+      bool isFleet = IsFleet(new FileInfo(appPath));
       
-      if (IsFleet(new FileInfo(appPath)))
+      if (isFleet)
       {
-        var pathArgumentsFleet = assetFilePath == string.Empty ? string.Empty : $" -- --goto=\"{assetFilePath}\"";
+        var pathArgumentsFleet = assetFilePath == string.Empty ? string.Empty : $"--goto=\"{assetFilePath}\"";
         if (line >= 0) // FL-20548 Fleet doesn't like -1:-1 in the goto
         {
           pathArgumentsFleet += $":{line}";
@@ -38,14 +40,16 @@ namespace JetBrains.Rider.PathLocator
         }
         
         var solutionDir = new FileInfo(slnFile).Directory.FullName;
-        args = $"\"{solutionDir}\"{pathArgumentsFleet}";
+        args = $"fleet://open?arg_0=\"{solutionDir}\"&arg_1={pathArgumentsFleet}";
       }
 
       var proc = new Process();
       if (myRiderLocatorEnvironment.CurrentOS == OS.MacOSX)
       {
         proc.StartInfo.FileName = "open";
-        proc.StartInfo.Arguments = $"-n \"{appPath}\" --args {args}";
+        proc.StartInfo.Arguments = isFleet 
+          ? $"-a \"{appPath}\" \"{args}\"" 
+          : $"-n \"{appPath}\" --args {args}";
       }
       else
       {
