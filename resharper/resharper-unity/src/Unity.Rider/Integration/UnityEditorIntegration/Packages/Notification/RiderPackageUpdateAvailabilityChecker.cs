@@ -61,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             mySequentialLifetimes = new SequentialLifetimes(lifetime);
             myNotificationShown = new JetHashSet<Version>();
             myBoundSettingsStore = applicationWideContextBoundSettingStore.BoundSettingsStore;
-            unitySolutionTracker.IsUnityGeneratedProject.WhenTrue(lifetime, lt =>
+            unitySolutionTracker.IsUnityProject.WhenTrue(lifetime, lt =>
             {
                 ShowNotificationIfNeeded(lt, leastRiderPackageVersion);
                 BindToInstallationSettingChange(lt, leastRiderPackageVersion);

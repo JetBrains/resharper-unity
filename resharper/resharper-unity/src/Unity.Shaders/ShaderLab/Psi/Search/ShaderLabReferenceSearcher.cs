@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Diagnostics;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Finder;
 using JetBrains.ReSharper.Psi.Files;
@@ -15,6 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Search
         private readonly IDeclaredElementsSet myElements;
         private readonly ReferenceSearcherParameters myReferenceSearcherParameters;
         private readonly List<string> myElementNames;
+        private readonly bool mySearchInCSharp;
 
         public ShaderLabReferenceSearcher(IDeclaredElementsSet elements, ReferenceSearcherParameters referenceSearcherParameters)
         {
@@ -23,14 +25,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Search
 
             myElementNames = new List<string>();
             foreach (var element in elements)
+            {
+                if (CanHaveReferenceInCSharp(element))
+                    mySearchInCSharp = true;
                 myElementNames.Add(element.ShortName);
+            }
         }
+        
+        private static bool CanHaveReferenceInCSharp(IDeclaredElement declaredElement) => declaredElement is ShaderDeclaredElement;
 
         public bool ProcessProjectItem<TResult>(IPsiSourceFile sourceFile, IFindResultConsumer<TResult> consumer)
         {
-            if (!(sourceFile.GetPrimaryPsiFile() is ShaderLabFile shaderLabFile))
-                return false;
-            return ProcessElement(shaderLabFile, consumer);
+            var language = sourceFile.PrimaryPsiLanguage;
+            var languageSupported = language.Is<ShaderLabLanguage>() || (mySearchInCSharp && language.Is<CSharpLanguage>());
+            return languageSupported && sourceFile.GetPrimaryPsiFile() is { } psiFile && ProcessElement(psiFile, consumer);
         }
 
         public bool ProcessElement<TResult>(ITreeNode element, IFindResultConsumer<TResult> consumer)

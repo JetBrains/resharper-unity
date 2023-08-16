@@ -17,6 +17,7 @@ using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Syntax;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CachingLexers;
 using JetBrains.ReSharper.Psi.CodeStyle;
@@ -239,7 +240,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
                 }
 
                 cachingLexer.Advance(-1);
-                tt = (IShaderLabTokenNodeType?)cachingLexer.TokenType;
+                tt = cachingLexer.TokenType as IShaderLabTokenNodeType;
             }
 
             return false;

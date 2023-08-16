@@ -68,6 +68,7 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
 
     override suspend fun execute(project: Project) {
         application.invokeLater {
+            val model = project.solution.frontendBackendModel
             project.solution.isLoaded.whenTrue(project.lifetime) {
                 if (!UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder)
                     return@whenTrue
@@ -84,7 +85,7 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                         // We check that Library/EditorInstance.json is present, but protocol connection was not initialized
                         // also check that all projects are loaded fine
                         if (EditorInstanceJson.getInstance(project).status == EditorInstanceJsonStatus.Valid
-                            && !project.solution.frontendBackendModel.unityEditorConnected.valueOrDefault(false)
+                            && !model.unityEditorConnected.valueOrDefault(false)
                             && !hasUnloadedProjects(project)
                         ) {
                             if (!UnityInstallationFinder.getInstance(project).requiresRiderPackage())
@@ -93,7 +94,7 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                             val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
                             withUiContext { ->
                                 Notifications.Bus.notify(notification, project)
-                                project.solution.frontendBackendModel.unityEditorConnected.whenTrue(it) { notification.expire() }
+                                model.unityEditorConnected.whenTrue(it) { notification.expire() }
                             }
                         }
                     }

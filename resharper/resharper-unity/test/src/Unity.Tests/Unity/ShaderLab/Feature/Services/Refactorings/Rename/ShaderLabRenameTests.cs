@@ -15,5 +15,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Ref
         [Test] public void TestRenameShaderWithReferenceFromPassReference() => DoTestSolution("TestShader03.01.shader", "TestShader03.shader");
         [Test] public void TestRenameTexturePassFromDeclaration() => DoTestSolution("TestTexturePassRenameFromDeclaration.01.shader", "TestTexturePassRenameFromDeclaration.shader");
         [Test] public void TestRenameTexturePassFromUsage() => DoTestSolution("TestTexturePassRenameFromUsage.01.shader", "TestTexturePassRenameFromUsage.shader");
+        [Test] public void TestRenameShaderWithReferenceInCSharp() => DoTestSolution("TestShaderReferenceRenameInCSharp01.cs", "TestShaderReferenceRenameInCSharp01.01.shader");
     }
 }

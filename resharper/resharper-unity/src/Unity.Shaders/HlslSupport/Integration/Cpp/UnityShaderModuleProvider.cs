@@ -23,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
     {
         internal static readonly ShaderFilesProperties ShaderLabUserFileProperties = new(true);
         internal static readonly ShaderFilesProperties ShaderLabPackageLocalCacheFileProperties = new(true) { IsNonUserFile = true };
+        internal static readonly ShaderFilesProperties NoCacheFilesProperties = new(false);
         internal static readonly ShaderFilesProperties HlslUserFileProperties = new(false);
         internal static readonly ShaderFilesProperties HlslPackageLocalCacheFileProperties = new(false) { IsNonUserFile = true };
         
@@ -125,7 +126,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
         public Tuple<IProjectPsiModuleHandler, IPsiModuleDecorator>? OverrideHandler(Lifetime lifetime, IProject project,
             IProjectPsiModuleHandler handler)
         {
-            if (handler.PrimaryModule != null && (project.IsUnityProject() || project.GetComponent<UnitySolutionTracker>().IsUnityProject.HasTrueValue()))
+            if (handler.PrimaryModule != null && (project.IsUnityProject() || project.GetComponent<UnitySolutionTracker>().IsUnityProject.HasTrueValue()) && !project.IsPlayerProject())
             {
                 var module = new UnityShaderModule(project.GetSolution(), project.Name, handler.PrimaryModule.TargetFrameworkId);
                 var newHandlerAndDecorator = new UnityShaderModuleHandlerAndDecorator(module, handler);

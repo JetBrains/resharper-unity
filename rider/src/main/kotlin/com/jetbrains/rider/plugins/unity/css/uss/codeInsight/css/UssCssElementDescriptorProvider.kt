@@ -21,9 +21,6 @@ class UssCssElementDescriptorProvider : CssElementDescriptorProvider() {
     private val factory
         get() = UssCssElementDescriptorFactory.getInstance().getDescriptors()
 
-    private val cssElementDescriptorFactory2
-        get() = CssElementDescriptorFactory2.getInstance()
-
     override fun isMyContext(psiElement: PsiElement?) = psiElement?.containingFile?.language is UssLanguage
 
     // Allow all type names as simple selectors for now (e.g. TextField { ... })

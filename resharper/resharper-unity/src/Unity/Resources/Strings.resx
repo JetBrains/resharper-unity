@@ -20,7 +20,7 @@
         <value>Accessing managed methods is not supported</value>
     </data>
     <data name="AccessingManagedIndexerIsNotSupported" xml:space="preserve">
-        <value>Accessing managed indexer is not supported</value>
+        <value>Accessing managed indexers is not supported</value>
     </data>
     <data name="AccessingMultidimensionalArraysIsInefficientUseAJaggedOrOneDimensionalArrayInsteadMessage" xml:space="preserve">
         <value>Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead.</value>
@@ -182,7 +182,7 @@
         <value>Burst: The 'foreach' construction is not supported</value>
     </data>
     <data name="BurstThisMethodIsAvailableInCOnlyNotHPCMessage" xml:space="preserve">
-        <value>Burst: this method is available in C# only, not HPC#</value>
+        <value>Burst: this method is available in C# only, not in Burst</value>
     </data>
     <data name="BurstTryStatementIsNotSupportedMessage" xml:space="preserve">
         <value>Burst: Try statement is not supported</value>

@@ -47,8 +47,7 @@ class UnityUIMinimizer : ProjectActivity {
         application.invokeLater {
             if (project.isDisposed) return@invokeLater
             val unityUIManager = UnityUIManager.getInstance(project)
-            // Only hide UI for generated projects, so that sidecar projects can still access nuget
-            if (UnityProjectDiscoverer.getInstance(project).isUnityGeneratedProject) {
+            if (UnityProjectDiscoverer.getInstance(project).isUnityProject) {
                 if (unityUIManager.hasMinimizedUi.value == null || unityUIManager.hasMinimizedUi.hasTrueValue())
                     ensureMinimizedUI(project)
             }
