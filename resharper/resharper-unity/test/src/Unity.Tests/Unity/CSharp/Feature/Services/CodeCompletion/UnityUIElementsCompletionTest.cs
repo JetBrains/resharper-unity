@@ -9,24 +9,25 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.CodeCo
     [TestUnity(UnityVersion.Unity2022_3)]
     public class UnityUIElementsCompletionTest : CodeCompletionTestBase
     {
-        private LookupListSorting mySorting = LookupListSorting.ByRelevance;
+        // test solution for manual testing 
+        // https://jetbrains.team/p/dotnettestprojects/repositories/UIElementsDemo/
 
         protected override CodeCompletionTestType TestType => CodeCompletionTestType.List;
         protected override string RelativeTestDataPath => @"UnityUIElementsCompletionTest";
         protected override bool CheckAutomaticCompletionDefault() => true;
-        protected override LookupListSorting Sorting => mySorting;
+        protected override LookupListSorting Sorting => LookupListSorting.ByRelevance;
 
         protected override string SolutionFileName => SolutionItemsBasePath.Combine("Solutions/UIElementsDemo/UIElementsDemo.sln").FullPath;
 
-        private VirtualFileSystemPath[] myFiles =>
+        private VirtualFileSystemPath[] Files =>
             VirtualTestDataPath.Combine("Solutions/UIElementsDemo/")
                 .GetChildFiles("*", PathSearchFlags.RecurseIntoSubdirectories).ToArray();
 
-        [Test] public void UIController01() { DoNamedTest(myFiles.Select(a=>a.FullPath).ToArray()); }
-        [Test] public void UIController02() { DoNamedTest(myFiles.Select(a=>a.FullPath).ToArray()); }
-        [Test] public void UIController03() { DoNamedTest(myFiles.Select(a=>a.FullPath).ToArray()); }
-        [Test] public void UIController04() { DoNamedTest(myFiles.Select(a=>a.FullPath).ToArray()); }
-        [Test] public void UIController05() { DoNamedTest(myFiles.Select(a=>a.FullPath).ToArray()); }
-        [Test] public void UIController06() { DoNamedTest(myFiles.Select(a=>a.FullPath).ToArray()); }
+        [Test] public void UIController01() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
+        [Test] public void UIController02() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
+        [Test] public void UIController03() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
+        [Test] public void UIController04() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
+        [Test] public void UIController05() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
+        [Test] public void UIController06() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
     }
 }
