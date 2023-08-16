@@ -1,5 +1,6 @@
+#nullable enable
 using System;
-using JetBrains.Annotations;
+using System.Text;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
@@ -10,19 +11,113 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 {
     public static class UnityYamlPsiExtensions
     {
-        [CanBeNull]
-        public static IHierarchyReference ToHierarchyReference([CanBeNull] this INode node, IPsiSourceFile assetSourceFile)
+        public static string? GetUnicodeText(this INode node)
+        {
+            return node switch
+            {
+                IDoubleQuotedScalarNode doubleQuotedScalarNode => DecodeText(doubleQuotedScalarNode.Text.GetText()),
+                _ => node.GetScalarText() 
+            };
+        }
+
+        private static unsafe string? DecodeText(string text)
+        {
+            if (text.Length < 2 || text[0] != '"' || text[^1] != '"')
+                return null;
+            if (text.Length == 2)
+                return string.Empty;
+            var result = new StringBuilder(text.Length - 2);
+            fixed (char* chars = text) 
+                ProcessEscapedString(chars + 1, chars + text.Length - 1, result);
+            return result.ToString();
+        }
+        
+        private static unsafe void ProcessEscapedString(char* ptr, char* endPtr, StringBuilder output)
+        {
+            const char escapeCharacter = '\\';
+            const char quoteCharacter = '"';
+            
+            var inEscapeSequence = false;
+            while (ptr < endPtr)
+            {
+                var ch = *ptr++;
+                if (inEscapeSequence)
+                {
+                    switch (ch)
+                    {
+                        case 'x' when TryDecodeHexSequence(ref ptr, endPtr) is {} decodedChar:
+                            output.Append(decodedChar);
+                            break;
+                        case 'u' when TryDecodeUnicodeSequence(ref ptr, endPtr) is {} decodedChar:
+                            output.Append(decodedChar);
+                            break;
+                        case escapeCharacter:
+                        case quoteCharacter:
+                            output.Append(ch);
+                            break;
+                        default:
+                            output.Append(escapeCharacter);
+                            output.Append(ch);
+                            break;
+                    }
+                    inEscapeSequence = false;
+                }
+                else
+                {
+                    if (ch != escapeCharacter)
+                        output.Append(ch);
+                    else
+                        inEscapeSequence = true;
+                }
+            }
+        }
+
+        private static unsafe char? TryDecodeHexSequence(ref char* ptr, char* endPtr)
+        {
+            try
+            {
+                if (endPtr - ptr < 2)
+                    return null;
+                    
+                var ch = (char)((Uri.FromHex(*ptr) << 4) + Uri.FromHex(*(ptr + 1)));
+                ptr += 2;
+                return ch;
+            }
+            catch (ArgumentException)
+            {
+                return null;
+            }
+        }
+        
+        private static unsafe char? TryDecodeUnicodeSequence(ref char* ptr, char* endPtr)
+        {
+            try
+            {
+                if (endPtr - ptr < 4)
+                    return null;
+                    
+                var ch = (char)((Uri.FromHex(*ptr) << 12) + (Uri.FromHex(*(ptr + 1)) << 8) + (Uri.FromHex(*(ptr + 2)) << 4) + Uri.FromHex(*(ptr + 3)));
+                ptr += 4;
+                return ch;
+            }
+            catch (ArgumentException)
+            {
+                return null;
+            }
+        }
+
+        public static IHierarchyReference? ToHierarchyReference(this INode? node, IPsiSourceFile assetSourceFile)
         {
             if (node is IFlowMappingNode flowMappingNode)
             {
-                var localDocumentAnchor = flowMappingNode.GetMapEntryPlainScalarText("fileID");
+                var localDocumentAnchor = flowMappingNode.GetMapEntryScalarText("fileID");
                 if (localDocumentAnchor == null || !long.TryParse(localDocumentAnchor, out var result))
                     return new LocalReference(0, 0);
 
                 if (result == 0)
                     return LocalReference.Null;
 
-                var externalAssetGuid = flowMappingNode.GetMapEntryPlainScalarText("guid");
+                var externalAssetGuid = flowMappingNode.GetMapEntryScalarText("guid");
 
                 if (externalAssetGuid == null)
                 {
@@ -42,8 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         }
 
         // This will open the Body chameleon
-        [CanBeNull]
-        public static IYamlDocument GetFirstMatchingUnityObjectDocument([CanBeNull] this IYamlFile file, [NotNull] string objectType)
+        public static IYamlDocument? GetFirstMatchingUnityObjectDocument(this IYamlFile? file, string objectType)
         {
             if (file == null)
                 return null;
@@ -65,17 +159,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         }
 
         // This will open the Body chameleon
-        [CanBeNull]
-        public static T GetUnityObjectPropertyValue<T>([CanBeNull] this IYamlFile file, [NotNull] string objectType,
-                                                       [NotNull] string key)
+        public static T? GetUnityObjectPropertyValue<T>(this IYamlFile? file, string objectType, string key)
             where T : class, INode
         {
             return file.GetFirstMatchingUnityObjectDocument(objectType)?.GetUnityObjectPropertyValue<T>(key);
         }
 
         // This will open the Body chameleon
-        [CanBeNull]
-        public static T GetUnityObjectPropertyValue<T>([CanBeNull] this IYamlDocument document, [NotNull] string key)
+        public static T? GetUnityObjectPropertyValue<T>(this IYamlDocument? document, string key)
             where T : class, INode
         {
             // Get the object's properties as a map, and find the property by name
@@ -88,8 +179,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         // sequence nodes have a Content chameleon and flow sequence nodes don't)
 
         // This will open the Body chameleon
-        [CanBeNull]
-        public static IBlockMappingNode GetUnityObjectProperties([CanBeNull] this IYamlDocument document)
+        public static IBlockMappingNode? GetUnityObjectProperties(this IYamlDocument? document)
         {
             // A YAML document has a single root body node, which can more or less be anything (scalar, map or sequence
             // - it's in a block context, but that only affects parsing, and not much). For a Unity YAML document, the

@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 if (input == null)
                     continue;
 
-                var name = input.GetMapEntryPlainScalarText(UnityYamlConstants.NameProperty);
+                var name = input.GetMapEntryScalarText(UnityYamlConstants.NameProperty);
                 if (!name.IsNullOrEmpty())
                     cacheItem.Inputs.Add(name);
             }

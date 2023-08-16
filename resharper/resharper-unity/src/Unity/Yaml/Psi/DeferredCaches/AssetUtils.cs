@@ -213,7 +213,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                     var document = parser.ParseDocument();
                     
                     if (document.Body.BlockNode is not IFlowMappingNode flowMappingNode) continue;
-                    var localDocumentAnchor = flowMappingNode.GetMapEntryPlainScalarText("fileID");
+                    var localDocumentAnchor = flowMappingNode.GetMapEntryScalarText("fileID");
                     if (localDocumentAnchor != null && long.TryParse(localDocumentAnchor, out var result))
                         results.Add(result);
                     
@@ -235,12 +235,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return eol;
         }
 
-        public static string? GetGameObjectName(IBuffer buffer)
-        {
-            return GetPlainScalarValue(buffer, ourGameObjectNameSearcher);
-        }
+        public static string? GetGameObjectName(IBuffer buffer) => GetUnicodeText(buffer, ourGameObjectNameSearcher);
 
-        public static string? GetPlainScalarValue(IBuffer buffer, StringSearcher searcher)
+        public static string? GetUnicodeText(IBuffer buffer, StringSearcher searcher)
         {
             var start = searcher.Find(buffer, 0, buffer.Length);
             if (start < 0)
@@ -255,8 +252,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             var parser = new YamlParser(lexer.ToCachingLexer());
             var document = parser.ParseDocument();
 
-            return (document.Body.BlockNode as IBlockMappingNode)?.Entries.FirstOrDefault()?.Content.Value
-                .GetPlainScalarText();
+            return (document.Body.BlockNode as IBlockMappingNode)?.Entries.FirstOrDefault()?.Content.Value.GetUnicodeText();
         }
 
         public static IHierarchyReference? GetPrefabInstance(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
