@@ -17,5 +17,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Resolve
         protected override ISymbolTable GetLookupSymbolTable() => myOwner.GetSolution().GetComponent<ShaderLabCache>().GetShaderSymbolTable();
 
         protected override ResolveResultWithInfo ResolveByName(string name) => new(EmptyResolveResult.Instance, ShaderLabResolveErrorType.SHADERLAB_SHADER_REFERENCE_UNRESOLVED_WARNING);
+
+        public override ResolveResultWithInfo ResolveWithoutCache()
+        {
+            var resolveResult = base.ResolveWithoutCache();
+            if (resolveResult.ResolveErrorType == ResolveErrorType.MULTIPLE_CANDIDATES)
+                return new ResolveResultWithInfo(resolveResult.Result, ShaderLabResolveErrorType.SHADERLAB_SHADER_REFERENCE_MULTIPLE_CANDIDATES_WARNING);
+            return resolveResult;
+        }
     }
 }

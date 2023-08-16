@@ -62,9 +62,9 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
     }
 
     private val shaderInternScope = internScope()
-    private val shaderContextDataBase = baseclass {}
-    private val autoShaderContextData = classdef extends shaderContextDataBase {}
-    private val shaderContextData = classdef extends shaderContextDataBase {
+    private val shaderContextDataBase = basestruct {}
+    private val autoShaderContextData = structdef extends shaderContextDataBase {}
+    private val shaderContextData = structdef extends shaderContextDataBase {
         field("path", string.interned(shaderInternScope).attrs(KnownAttrs.NlsSafe))
         field("name", string.interned(shaderInternScope).attrs(KnownAttrs.NlsSafe))
         field("folder", string.interned(shaderInternScope).attrs(KnownAttrs.NlsSafe))
@@ -72,7 +72,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         field("end", int)
         field("startLine", int)
     }
-
 
     init {
         setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.plugins.unity.model.frontendBackend")
@@ -114,14 +113,10 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("unitTestPreference", UnitTestLaunchPreference.nullable).documentation = "Selected unit testing mode. Everything is handled by the backend, but this setting is from a frontend combobox"
 
         // Shader contexts
-        call("requestShaderContexts", RdDocumentId, immutableList(shaderContextDataBase))
-        call("requestCurrentContext", RdDocumentId, shaderContextDataBase)
-        source("setAutoShaderContext", RdDocumentId)
-        source("changeContext", structdef ("contextInfo"){
-            field("target", RdDocumentId)
-            field("path", string.interned(shaderInternScope))
-            field("start", int)
-            field("end", int)
+        map("shaderContexts", RdDocumentId, shaderContextDataBase).readonly
+        call("createSelectShaderContextInteraction", RdDocumentId, classdef("selectShaderContextDataInteraction") {
+            field("items", immutableList(shaderContextData))
+            source("selectItem", int) // -1 for no auto-context
         })
 
         // Actions called from the frontend to the backend (and/or indirectly, Unity)

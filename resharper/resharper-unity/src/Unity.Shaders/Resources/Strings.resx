@@ -150,6 +150,9 @@
         <value>String</value>
     </data>
     <data name="ShaderNameNotRevoled" xml:space="preserve">
-        <value>Unresolved Shader name</value>
+        <value>Unresolved Shader name "{0}"</value>
+    </data>
+    <data name="ShaderNameMultipleCandidates" xml:space="preserve">
+        <value>Multiple Shaders with same name "{0}"</value>
     </data>
 </root>

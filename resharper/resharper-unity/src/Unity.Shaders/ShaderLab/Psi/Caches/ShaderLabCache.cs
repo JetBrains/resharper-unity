@@ -5,6 +5,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
@@ -21,13 +22,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
     public class ShaderLabCache : PsiSourceFileCacheWithLocalCache<ShaderLabCacheItem>
     {
         private readonly ISolution mySolution;
-        private readonly ILogger myLogger;
         private readonly Dictionary<IPsiSourceFile, IDeclaredElement> myShaderElements = new();
         
-        public ShaderLabCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager, ISolution solution, ILogger logger) : base(lifetime, locks, persistentIndexManager, ShaderLabCacheItem.Marshaller, "Unity::Shaders::ShaderLabCacheUpdated")
+        public ShaderLabCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager, ISolution solution) : base(lifetime, locks, persistentIndexManager, ShaderLabCacheItem.Marshaller, "Unity::Shaders::ShaderLabCacheUpdated")
         {
             mySolution = solution;
-            myLogger = logger;
         }
 
         protected override bool IsApplicable(IPsiSourceFile sourceFile) => base.IsApplicable(sourceFile) && sourceFile.LanguageType.Is<ShaderLabProjectFileType>();
@@ -45,16 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
 
         protected override bool AddToLocalCache(IPsiSourceFile sourceFile, ShaderLabCacheItem newPart)
         {
-            if (sourceFile.GetDominantPsiFile<ShaderLabLanguage>() is not ShaderLabFile file || file.GetTreeStartOffset().Offset != newPart.DeclarationOffset)
-            {
-                myLogger.Error($"ShaderLab cache corrupted. {sourceFile.GetLocation()} has invalid cache entry for Shader \"{newPart.Name}\" declaration.");
-                return false;
-            }
-
-            if (file.DeclaredElement is not { } declaredElement)
-                return false;
-            
-            myShaderElements.Add(sourceFile, declaredElement);
+            myShaderElements.Add(sourceFile, new ShaderDeclaredElement(newPart.Name, sourceFile, newPart.DeclarationOffset));
             return true;
         }
 

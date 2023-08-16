@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Common.Services.Tree
+namespace JetBrains.ReSharper.Plugins.Unity.Common.Psi.Syntax
 {
     public static class SyntaxBaseEx
     {
