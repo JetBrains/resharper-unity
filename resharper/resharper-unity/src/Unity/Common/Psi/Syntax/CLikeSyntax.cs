@@ -2,7 +2,7 @@
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Common.Services.Tree
+namespace JetBrains.ReSharper.Plugins.Unity.Common.Psi.Syntax
 {
     public sealed class CLikeSyntax : SyntaxBase
     {

@@ -1,8 +1,8 @@
-using JetBrains.ReSharper.Plugins.Unity.Common.Services.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Common.Psi.Syntax;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.TypingAssist
+namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Syntax
 {
     public static class ShaderLabSyntax
     {
