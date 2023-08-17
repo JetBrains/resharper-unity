@@ -23,10 +23,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Uxml.Psi.Caches
     [PsiComponent]
     public class UxmlCache : SimpleICache<List<UxmlCacheItem>>
     {
+        private readonly ISolution mySolution;
         private readonly PackageManager myPackageManager;
         private readonly OneToListMap<IPsiSourceFile, UxmlCacheItem> myLocalCache = new();
         private readonly CountingSet<string> myMethodNames = new();
-        private readonly VirtualFileSystemPath myAssetsFolder;
 
         public UxmlCache(Lifetime lifetime,
             IShellLocks shellLocks,
@@ -35,14 +35,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Uxml.Psi.Caches
             PackageManager packageManager)
             : base(lifetime, shellLocks, persistentIndexManager, UxmlCacheItem.Marshaller)
         {
+            mySolution = solution;
             myPackageManager = packageManager;
-            myAssetsFolder = solution.SolutionDirectory.Combine("Assets");
         }
         
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
             return base.IsApplicable(sf) && sf.IsUxml() && sf.IsLanguageSupported<XmlLanguage>() 
-                   && (myAssetsFolder.IsPrefixOf(sf.GetLocation()) || myPackageManager.IsLocalPackageCacheFile(sf.GetLocation()));
+                   && (mySolution.SolutionDirectory.Combine("Assets").IsPrefixOf(sf.GetLocation()) || myPackageManager.IsLocalPackageCacheFile(sf.GetLocation()));
         }
 
         public override object? Build(IPsiSourceFile sourceFile, bool isStartup)

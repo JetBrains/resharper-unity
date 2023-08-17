@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.CodeCompletion
 {
-    [TestUnity(UnityVersion.Unity2022_3)]
+    [TestUnity(UnityVersion.Unity2022_3), ReuseSolutionScope("UnityUIElementsCompletionTest")]
     public class UnityUIElementsCompletionTest : CodeCompletionTestBase
     {
         // test solution for manual testing 
@@ -23,8 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Feature.Services.CodeCo
         private VirtualFileSystemPath[] Files =>
             VirtualTestDataPath.Combine("Solutions/UIElementsDemo/")
                 .GetChildFiles("*", PathSearchFlags.RecurseIntoSubdirectories).ToArray();
-
-        [ReuseSolution(false)]
+        
         [Test] public void UIController01() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
         [Test] public void UIController02() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
         [Test] public void UIController03() { DoNamedTest(Files.Select(a=>a.FullPath).ToArray()); }
