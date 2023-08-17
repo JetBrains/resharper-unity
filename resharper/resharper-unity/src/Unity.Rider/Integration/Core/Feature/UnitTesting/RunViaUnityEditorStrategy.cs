@@ -467,7 +467,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
                 .Where(unitTestElement => unitTestElement is NUnitTestElement or NUnitRowTestElement)
                 .OfType<INUnitTestElement>()
                 .Where(a => a.RunState != RunState.Explicit || run.Launch.Criterion.Explicit.Contains(a.Id))
-                .Select(p => p.NUnitId)
+                .Select(p => p.NaturalId.TestId)
                 .ToList();
 
             filters.Add(new TestFilter(((UnityRuntimeEnvironment) run.RuntimeEnvironment).Project.Name, testNames, groups, categories));
@@ -493,7 +493,7 @@ else if (criterion is CategoryCriterion categoryCriterion)
             return run.Elements.SingleOrDefault(
                 a => a is INUnitTestElement nunitElement &&
                      nunitElement.Project.Name == projectName &&
-                     nunitElement.NUnitId == resultTestId
+                     nunitElement.NaturalId.TestId == resultTestId
             );
         }
 
