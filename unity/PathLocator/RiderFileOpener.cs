@@ -29,7 +29,7 @@ namespace JetBrains.Rider.PathLocator
       
       if (isFleet)
       {
-        var pathArgumentsFleet = assetFilePath == string.Empty ? string.Empty : $"--goto=\"{assetFilePath}\"";
+        var pathArgumentsFleet = assetFilePath == string.Empty ? string.Empty : $"--goto=\"{Uri.EscapeDataString(assetFilePath)}\"";
         if (line >= 0) // FL-20548 Fleet doesn't like -1:-1 in the goto
         {
           pathArgumentsFleet += $":{line}";
@@ -39,7 +39,7 @@ namespace JetBrains.Rider.PathLocator
           }
         }
         
-        var solutionDir = new FileInfo(slnFile).Directory.FullName;
+        var solutionDir = Uri.EscapeDataString(new FileInfo(slnFile).Directory.FullName);
         args = $"fleet://open?arg_0=\"{solutionDir}\"&arg_1={pathArgumentsFleet}";
       }
 
