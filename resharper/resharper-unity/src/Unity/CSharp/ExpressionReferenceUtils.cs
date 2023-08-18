@@ -133,6 +133,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
                 return declaredElement.ContainingType?.GetClrName().Equals(typeName) == true;
             return false;
         }
+        
+        internal static string GetInvocationTypeArgumentName(IInvocationExpression invocationExpression)
+        {
+            var invocationTypeArguments = invocationExpression.Reference.Invocation.TypeArguments;
+            return invocationTypeArguments.Count == 1 ? invocationTypeArguments[0].GetScalarType()?.GetClrName().FullName : null;
+        }
 
         public static bool IsSceneManagerSceneRelatedMethod(this IInvocationExpressionReference reference)
         {
@@ -247,6 +253,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
         {
             return method is { ShortName: "ForEach" } &&
                    method.ContainingType?.GetClrName().Equals(KnownTypes.LambdaForEachDescriptionConstructionMethods) == true;
+        }
+        
+        public static bool IsUQueryExtensionsQueueMethod(this IInvocationExpression expr)
+        {
+            return IsSpecificMethod(expr, KnownTypes.UQueryExtensions, "Q", "Query");
         }
     }
 }
