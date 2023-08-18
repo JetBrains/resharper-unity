@@ -20,67 +20,73 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             };
         }
 
-        private static unsafe string? DecodeText(string text)
+        private static string? DecodeText(string text)
         {
             if (text.Length < 2 || text[0] != '"' || text[^1] != '"')
                 return null;
             if (text.Length == 2)
                 return string.Empty;
             var result = new StringBuilder(text.Length - 2);
-            fixed (char* chars = text) 
-                ProcessEscapedString(chars + 1, chars + text.Length - 1, result);
+            ProcessEscapedString(text.AsSpan(1, text.Length - 2), result);
             return result.ToString();
         }
         
-        private static unsafe void ProcessEscapedString(char* ptr, char* endPtr, StringBuilder output)
+        private static void ProcessEscapedString(ReadOnlySpan<char> str, StringBuilder output)
         {
             const char escapeCharacter = '\\';
             const char quoteCharacter = '"';
             
             var inEscapeSequence = false;
-            while (ptr < endPtr)
+            while (true)
             {
-                var ch = *ptr++;
-                if (inEscapeSequence)
+                str_loop: 
+                var index = 0;
+                foreach (var ch in str)
                 {
-                    switch (ch)
+                    ++index;
+                    if (inEscapeSequence)
                     {
-                        case 'x' when TryDecodeHexSequence(ref ptr, endPtr) is {} decodedChar:
-                            output.Append(decodedChar);
-                            break;
-                        case 'u' when TryDecodeUnicodeSequence(ref ptr, endPtr) is {} decodedChar:
-                            output.Append(decodedChar);
-                            break;
-                        case escapeCharacter:
-                        case quoteCharacter:
-                            output.Append(ch);
-                            break;
-                        default:
-                            output.Append(escapeCharacter);
-                            output.Append(ch);
-                            break;
+                        inEscapeSequence = false;
+                        
+                        switch (ch)
+                        {
+                            case 'x' when TryDecodeHexSequence(ref str, index) is { } decodedChar:
+                                output.Append(decodedChar);
+                                goto str_loop;
+                            case 'u' when TryDecodeUnicodeSequence(ref str, index) is { } decodedChar:
+                                output.Append(decodedChar);
+                                goto str_loop;
+                            case escapeCharacter:
+                            case quoteCharacter:
+                                output.Append(ch);
+                                break;
+                            default:
+                                output.Append(escapeCharacter);
+                                output.Append(ch);
+                                break;
+                        }
                     }
-                    inEscapeSequence = false;
-                }
-                else
-                {
-                    if (ch != escapeCharacter)
-                        output.Append(ch);
                     else
-                        inEscapeSequence = true;
+                    {
+                        if (ch != escapeCharacter)
+                            output.Append(ch);
+                        else
+                            inEscapeSequence = true;
+                    }
                 }
+                break;
             }
         }
 
-        private static unsafe char? TryDecodeHexSequence(ref char* ptr, char* endPtr)
+        private static char? TryDecodeHexSequence(ref ReadOnlySpan<char> str, int index)
         {
             try
             {
-                if (endPtr - ptr < 2)
+                if (str.Length - index < 2)
                     return null;
-                    
-                var ch = (char)((Uri.FromHex(*ptr) << 4) + Uri.FromHex(*(ptr + 1)));
-                ptr += 2;
+
+                var ch = (char)((Uri.FromHex(str[index]) << 4) + Uri.FromHex(str[index + 1]));
+                str = str.Slice(index + 2);
                 return ch;
             }
             catch (ArgumentException)
@@ -89,15 +95,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             }
         }
         
-        private static unsafe char? TryDecodeUnicodeSequence(ref char* ptr, char* endPtr)
+        private static char? TryDecodeUnicodeSequence(ref ReadOnlySpan<char> str, int index)
         {
             try
             {
-                if (endPtr - ptr < 4)
+                if (str.Length - index < 4)
                     return null;
                     
-                var ch = (char)((Uri.FromHex(*ptr) << 12) + (Uri.FromHex(*(ptr + 1)) << 8) + (Uri.FromHex(*(ptr + 2)) << 4) + Uri.FromHex(*(ptr + 3)));
-                ptr += 4;
+                var ch = (char)((Uri.FromHex(str[index]) << 12) + (Uri.FromHex(str[index + 1]) << 8) + (Uri.FromHex(str[index + 2]) << 4) + Uri.FromHex(str[index + 3]));
+                str = str.Slice(index + 4);
                 return ch;
             }
             catch (ArgumentException)
@@ -118,14 +124,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                     return LocalReference.Null;
 
                 var externalAssetGuid = flowMappingNode.GetMapEntryScalarText("guid");
-
                 if (externalAssetGuid == null)
-                {
-                    if (result == 0)
-                        return new LocalReference(0, 0);
-
                     return new LocalReference(assetSourceFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), result);
-                }
 
                 if (Guid.TryParse(externalAssetGuid, out var guid))
                     return new ExternalReference(guid, result);

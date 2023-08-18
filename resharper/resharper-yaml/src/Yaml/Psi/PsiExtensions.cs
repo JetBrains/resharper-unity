@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Text;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.Text;
@@ -17,24 +18,23 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
       _ => null
     };
 
-    private static unsafe string? GetUnquotedText(string text, char quoteCharacter, char escapeCharacter)
+    private static string? GetUnquotedText(string text, char quoteCharacter, char escapeCharacter)
     {
       if (text.Length < 2 || text[0] != quoteCharacter || text[^1] != quoteCharacter)
         return null;
       if (text.Length == 2)
         return string.Empty;
       var result = new StringBuilder(text.Length - 2);
-      fixed (char* chars = text) 
-        ProcessEscapedString(chars + 1, chars + text.Length - 1, quoteCharacter, escapeCharacter, result);
+      var str = text.AsSpan(1, text.Length - 2); 
+      ProcessEscapedString(str, quoteCharacter, escapeCharacter, result);
       return result.ToString();
     }
 
-    private static unsafe void ProcessEscapedString(char* ptr, char* endPtr, char quoteCharacter, char escapeCharacter, StringBuilder output)
+    private static void ProcessEscapedString(ReadOnlySpan<char> str, char quoteCharacter, char escapeCharacter, StringBuilder output)
     {
       var inEscapeSequence = false;
-      while (ptr < endPtr)
+      foreach (var ch in str)
       {
-        var ch = *ptr++;
         if (inEscapeSequence)
         {
           if (ch != escapeCharacter && ch != quoteCharacter)
