@@ -20,7 +20,7 @@ import java.time.Duration
 @TestEnvironment(platform = [PlatformType.MAC_OS_ALL, PlatformType.WINDOWS_ALL]) // requires mono
 class UnityClassLibTest : BaseTestWithSolutionBase() {
 
-    private val templateId = TemplateIdWithVersion("JetBrains.Common.Unity.Library.CSharp", SdkVersion.NONE)
+    private val templateId = TemplateIdWithVersion("JetBrains.Common.Unity.Library.CSharp")
     private val editorGoldFile: File
         get() = File(testCaseGoldDirectory, "${testMethod.name}_opened")
 
