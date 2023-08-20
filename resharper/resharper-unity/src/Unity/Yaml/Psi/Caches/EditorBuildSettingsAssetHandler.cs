@@ -44,9 +44,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                         if (scene == null || scene.Entries.Count < 2)
                             continue;
 
-                        var isEnabled = scene.GetMapEntryPlainScalarText("enabled")?.Equals("1");
+                        var isEnabled = scene.GetMapEntryScalarText("enabled")?.Equals("1");
 
-                        var scenePath = scene.GetMapEntryPlainScalarText("path");
+                        var scenePath = scene.GetMapEntryScalarText("path");
                         if (scenePath == null)
                             continue;
 

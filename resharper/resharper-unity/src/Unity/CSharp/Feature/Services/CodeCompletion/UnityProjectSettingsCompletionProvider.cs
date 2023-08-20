@@ -35,26 +35,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             IEnumerable<string> completionItems = null;
 
             // scene completion
-            if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out var argumentLiteral, IsLoadSceneMethod, UnityCompletionUtils.IsCorrespondingArgument("sceneName")))
+            if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out var argumentLiteral, out _, IsLoadSceneMethod, UnityCompletionUtils.IsCorrespondingArgument("sceneName")))
             {
                 var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllPossibleSceneNames();
 
             } // animator state completion
-            else if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, IsPlayAnimationMethod, UnityCompletionUtils.IsCorrespondingArgument("stateName")))
+            else if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, out _, IsPlayAnimationMethod, UnityCompletionUtils.IsCorrespondingArgument("stateName")))
             {
                 var container = context.NodeInFile.GetSolution().GetComponent<AnimatorScriptUsagesElementContainer>();
                 completionItems = container.GetStateNames();
             } // layer completion
-            else if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsLayerMaskNameToLayerMethod, UnityCompletionUtils.IsCorrespondingArgument("layerName")) || 
-                     UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsLayerMaskGetMaskMethod,
+            else if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, out _, ExpressionReferenceUtils.IsLayerMaskNameToLayerMethod, UnityCompletionUtils.IsCorrespondingArgument("layerName")) || 
+                     UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, out _, ExpressionReferenceUtils.IsLayerMaskGetMaskMethod,
                            (_, __) => true))
             {
                 var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllLayers();
             }  // input completion
-            else if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsInputButtonMethod, UnityCompletionUtils.IsCorrespondingArgument("buttonName")) ||
-                     UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsInputAxisMethod, UnityCompletionUtils.IsCorrespondingArgument("axisName")))
+            else if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, out _, ExpressionReferenceUtils.IsInputButtonMethod, UnityCompletionUtils.IsCorrespondingArgument("buttonName")) ||
+                     UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, out _, ExpressionReferenceUtils.IsInputAxisMethod, UnityCompletionUtils.IsCorrespondingArgument("axisName")))
             {
                 var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllInput();

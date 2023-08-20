@@ -157,6 +157,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         
         //Unity.Collections
         
+        //  UnityEngine.UIElements
+        public static readonly IClrTypeName UQueryExtensions = new ClrTypeName("UnityEngine.UIElements.UQueryExtensions");
+        
         //Obsolete types
         public static readonly ClrTypeName FixedString32 = new("Unity.Collections.FixedString32");
         public static readonly ClrTypeName FixedString64 = new("Unity.Collections.FixedString64");
