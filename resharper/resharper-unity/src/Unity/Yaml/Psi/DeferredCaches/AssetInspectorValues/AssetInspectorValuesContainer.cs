@@ -87,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
                 foreach (var entry in entries)
                 {
-                    var key = entry.Key.GetPlainScalarText();
+                    var key = entry.Key.GetScalarText();
                     if (key == null || ourIgnoredMonoBehaviourEntries.Contains(key))
                         continue;
 

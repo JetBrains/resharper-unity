@@ -65,7 +65,7 @@ val unityActionsTimeout: Duration = Duration.ofSeconds(30)
 
 //region UnityDll
 
-val unity2022_2_15f1_ref_asm by ZipFilePackagePreparer("Unity3d-2022.2.15f1-15-05-2023.zip")
+val unity2022_2_15f1_ref_asm by ZipFilePackagePreparer("Unity3d-2022.2.15f1-17-08-2023.zip")
 
 private fun downloadMsCorLib(): File {
     return downloadAndExtractArchiveArtifactIntoPersistentCache(
