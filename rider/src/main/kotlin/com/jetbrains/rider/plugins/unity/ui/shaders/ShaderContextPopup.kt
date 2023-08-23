@@ -2,7 +2,8 @@ package com.jetbrains.rider.plugins.unity.ui.shaders
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.ui.popup.IconButton
 import com.intellij.openapi.util.Condition
 import com.intellij.ui.ErrorLabel
@@ -25,7 +26,7 @@ import javax.swing.JList
 import javax.swing.JPanel
 
 
-class ShaderContextPopup(private val group: ActionGroup, private val dataContext: DataContext, currentContextMode: IProperty<ShaderContextData?>) :
+class ShaderContextPopup(group: ActionGroup, dataContext: DataContext, currentContextMode: IProperty<ShaderContextData?>) :
     PopupFactoryImpl.ActionGroupPopup(
         UnityUIBundle.message("popup.title.include.context.from"), group, dataContext, false, false,
         false, true, null, 10, Condition {

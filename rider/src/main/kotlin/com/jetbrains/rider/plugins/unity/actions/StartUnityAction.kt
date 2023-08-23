@@ -20,7 +20,7 @@ import com.jetbrains.rider.plugins.unity.util.withRiderPath
 import com.jetbrains.rider.projectView.solution
 
 
-open class StartUnityAction : DumbAwareAction() {
+open class  StartUnityAction : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
 

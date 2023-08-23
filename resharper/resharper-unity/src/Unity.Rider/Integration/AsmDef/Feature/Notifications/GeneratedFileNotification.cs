@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
             if (solutionLifecycleHost == null || notificationPanelHost == null)
                 return;
 
-            if (!solutionTracker.IsUnityGeneratedProject.Value)
+            if (!solutionTracker.IsUnityProject.Value)
                 return;
             
             solutionLifecycleHost.BeforeFullStartupFinished.AdviseOnce(lifetime, _ =>
@@ -63,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
                         IPath? path;
                         using (ReadLockCookie.Create())
                         {
-                            var location = asmDefCache.GetAsmDefLocationByAssemblyName(name);
+                            var location = asmDefCache.TryGetAsmDefLocationForProject(name).Item2;
                             path = location.IsEmpty ? null : location.TryMakeRelativeTo(solution.SolutionFilePath);
                         }
 
@@ -86,9 +86,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.AsmDef.Feature.Not
                                 }));
                         }
 
-                        notificationPanelHost.AddNotificationPanel(modelLifetime, textControl,
-                            new NotificationPanel(Strings.GeneratedFileNotification_GeneratedFileNotification_This_file_is_generated_by_Unity__Any_changes_made_will_be_lost_,
-                                "UnityGeneratedFile", links.ToArray()));
+                        // project is one of the default or it has asmdef
+                        // otherwise project is likely not a generated one, so we don't want a notification for it
+                        if (name.StartsWith("Assembly-CSharp") || path != null) 
+                        {
+                            notificationPanelHost.AddNotificationPanel(modelLifetime, textControl,
+                                new NotificationPanel(Strings.GeneratedFileNotification_GeneratedFileNotification_This_file_is_generated_by_Unity__Any_changes_made_will_be_lost_,
+                                    "UnityGeneratedFile", links.ToArray()));    
+                        }
                     });
                 });
             });

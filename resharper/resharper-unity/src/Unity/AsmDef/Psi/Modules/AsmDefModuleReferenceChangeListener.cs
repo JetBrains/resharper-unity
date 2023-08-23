@@ -107,8 +107,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                 var ownerProject = addedReference.OwnerModule;
                 if (!ownerProject.IsValid()) return; // https://youtrack.jetbrains.com/issue/DEXP-678810
                 var addedReferenceName = addedReference.Name;
-                var (_, ownerAsmDefLocation) = TryGetAsmDefLocationForProject(ownerProject.Name);
-                var (addedAsmDefName, addedAsmDefLocation) = TryGetAsmDefLocationForProject(addedReferenceName);
+                var (_, ownerAsmDefLocation) = myAsmDefCache.TryGetAsmDefLocationForProject(ownerProject.Name);
+                var (addedAsmDefName, addedAsmDefLocation) = myAsmDefCache.TryGetAsmDefLocationForProject(addedReferenceName);
 
                 switch (addedReference)
                 {
@@ -141,8 +141,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                 var ownerProject = removedReference.OwnerModule;
                 if (!ownerProject.IsValid()) return;
                 var removedReferenceName = removedReference.Name;
-                var (_, ownerAsmDefLocation) = TryGetAsmDefLocationForProject(ownerProject.Name);
-                var (removedAsmDefName, removedAsmDefLocation) = TryGetAsmDefLocationForProject(removedReferenceName);
+                var (_, ownerAsmDefLocation) = myAsmDefCache.TryGetAsmDefLocationForProject(ownerProject.Name);
+                var (removedAsmDefName, removedAsmDefLocation) = myAsmDefCache.TryGetAsmDefLocationForProject(removedReferenceName);
 
                 switch (removedReference)
                 {
@@ -567,18 +567,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                 useGuids = true;
 
             return results;
-        }
-
-        // Note that the returned location might be Empty if the given project doesn't have a corresponding .asmdef file
-        private (string, VirtualFileSystemPath) TryGetAsmDefLocationForProject(string projectName)
-        {
-            // Assembly name and project name are the same for asmdef projects, unless it's a .Player project. We want
-            // to return the actual name of the asmdef reference we'll be adding
-            var location = myAsmDefCache.GetAsmDefLocationByAssemblyName(projectName);
-            if (location.IsNotEmpty)
-                return (projectName, location);
-            projectName = ProjectExtensions.StripPlayerSuffix(projectName);
-            return (projectName, myAsmDefCache.GetAsmDefLocationByAssemblyName(projectName));
         }
 
         private class ReferenceChangeCollector : RecursiveProjectModelChangeDeltaVisitor

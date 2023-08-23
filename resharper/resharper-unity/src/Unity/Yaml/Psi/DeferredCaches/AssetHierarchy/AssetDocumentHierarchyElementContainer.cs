@@ -124,7 +124,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                         if (target == null)
                             continue;
 
-                        var name = map.GetMapEntryPlainScalarText(UnityYamlConstants.PropertyPathProperty);
+                        var name = map.GetMapEntryScalarText(UnityYamlConstants.PropertyPathProperty);
                         if (name == null)
                             continue;
 

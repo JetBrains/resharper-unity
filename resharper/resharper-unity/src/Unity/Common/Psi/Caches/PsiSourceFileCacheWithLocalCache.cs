@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.DataFlow;
@@ -11,11 +12,11 @@ using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches
 {
-    public abstract class PsiSourceFileCacheWithLocalCache<T> : SimpleICache<T> where T : class, IEquatable<T>
+    public abstract class PsiSourceFileCacheWithLocalCache<T> : SimpleICache<T> where T : class
     {
         private readonly GroupingEvent myCacheUpdatedGroupingEvent;
         
-        public ISimpleSignal CacheUpdated => myCacheUpdatedGroupingEvent.Outgoing;
+        [PublicAPI] public ISimpleSignal CacheUpdated => myCacheUpdatedGroupingEvent.Outgoing;
         
         protected PsiSourceFileCacheWithLocalCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager, IUnsafeMarshaller<T> valueMarshaller, string cacheChangedEvent) : base(lifetime, locks, persistentIndexManager, valueMarshaller)
         {

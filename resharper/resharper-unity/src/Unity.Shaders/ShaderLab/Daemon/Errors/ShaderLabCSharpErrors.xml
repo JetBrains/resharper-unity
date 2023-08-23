@@ -19,4 +19,13 @@
     <Range>Reference.GetDocumentRange()</Range>
     <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
   </Warning>
+
+  <Warning name="ShaderLabShaderReferenceMultipleCandidates" staticGroup="ShaderLabWarnings">
+    <Parameter type="IShaderReference" name="reference" />
+    <Message resourceName="ShaderNameMultipleCandidates" resourceType="Strings">
+      <Argument>Reference.GetName()</Argument>
+    </Message>
+    <Range>Reference.GetDocumentRange()</Range>
+    <Behavour attributeID="WARNING" overlapResolvePolicy="WARNING" />
+  </Warning>
 </Errors>

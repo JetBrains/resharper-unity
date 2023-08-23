@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
         Unity2019_3,
         Unity2019_4,
         Unity2020_1,
-        Unity2020_2,
+        Unity2022_3,
 
         // General rule: Keep the default version at the latest LTS Unity version
         // If you need a newer/specific version for a specific test, use [TestUnity(UnityVersion.Unity2020_1)], etc.
@@ -71,8 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
 
         public IEnumerable<PackageDependency> GetPackages(TargetFrameworkId? targetFrameworkId)
         {
-            // There isn't an official nuget for Unity, sadly, so add this feed to test/data/nuget.config
-            // <add key="unity-testlibs" value="https://myget.org/F/resharper-unity/api/v2/" />
+            // unlisted on nuget.org
             return from name in GetPackageNames()
                 select TestPackagesAttribute.ParsePackageDependency(name);
         }
@@ -129,7 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
                     case UnityVersion.Unity2019_3: return "UNITY_2019_3";
                     case UnityVersion.Unity2019_4: return "UNITY_2019_4";
                     case UnityVersion.Unity2020_1: return "UNITY_2020_1";
-                    case UnityVersion.Unity2020_2: return "UNITY_2020_2";
+                    case UnityVersion.Unity2022_3: return "UNITY_2022_3";
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -158,7 +157,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
                 case UnityVersion.Unity2019_3: return "2019.3.0";
                 case UnityVersion.Unity2019_4: return "2019.4.0";
                 case UnityVersion.Unity2020_1: return "2020.1.0";
-                case UnityVersion.Unity2020_2: return "2020.2.0";
+                case UnityVersion.Unity2022_3: return "2022.3.0";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(unityVersion), unityVersion, null);
             }

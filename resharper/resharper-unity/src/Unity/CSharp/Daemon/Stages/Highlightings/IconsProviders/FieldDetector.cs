@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCritical
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
@@ -31,30 +32,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
 
         public override bool AddDeclarationHighlighting(IDeclaration element, IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
-            if (!(element is IFieldDeclaration field))
+            if (element is not ICSharpDeclaration cSharpDeclaration)
                 return false;
 
-            var declaredElement = field.DeclaredElement;
-            if (declaredElement == null)
-                return false;
+            var declaredElement = cSharpDeclaration.DeclaredElement;
 
-            bool isSerializedField =
-                myUnityApi.IsSerialisedField(declaredElement) == SerializedFieldStatus.SerializedField;
-            if (isSerializedField)
+            var isSerializedField = false;
+            ITypeElement containingType = null;
+
+            switch (declaredElement)
             {
-                var displayText = Strings.FieldDetector_AddDeclarationHighlighting_Serializable;
-                var containingType = declaredElement.GetContainingType();
-                if (containingType.DerivesFromMonoBehaviour() || containingType.DerivesFromScriptableObject())
-                {
-                    AddMonoBehaviourHighlighting(consumer, field, displayText, Strings.FieldDetector_AddDeclarationHighlighting_This_field_is_initialized_from_Inspector, context);
-                    return true;
-                }
-
-                AddSerializableHighlighting(consumer, field, displayText, Strings.FieldDetector_AddDeclarationHighlighting_Tooltip, context);
-                return false;
+                case IField field when
+                    myUnityApi.IsSerialisedField(field) == SerializedFieldStatus.SerializedField:
+                    isSerializedField = true;
+                    containingType = field.ContainingType;
+                    break;
+                case IProperty property when myUnityApi.IsSerialisedAutoProperty(property, useSwea: true) == SerializedFieldStatus.SerializedField:
+                    isSerializedField = true;
+                    containingType = property.ContainingType;
+                    break;
             }
 
+            if (!isSerializedField) 
+                return false;
+            
+            var displayText = Strings.FieldDetector_AddDeclarationHighlighting_Serializable;
+            
+            if (containingType.DerivesFromMonoBehaviour() || containingType.DerivesFromScriptableObject())
+            {
+                AddMonoBehaviourHighlighting(consumer, cSharpDeclaration, displayText, Strings.FieldDetector_AddDeclarationHighlighting_This_field_is_initialized_from_Inspector, context);
+                return true;
+            }
+
+            AddSerializableHighlighting(consumer, cSharpDeclaration, displayText, Strings.FieldDetector_AddDeclarationHighlighting_Tooltip, context);
             return false;
+
         }
 
         protected virtual void AddMonoBehaviourHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,

@@ -53,13 +53,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Ser
                 if (scene == null)
                     continue;
 
-                var path = GetUnityScenePathRepresentation(scene.GetMapEntryPlainScalarText("path")
+                var path = GetUnityScenePathRepresentation(scene.GetMapEntryScalarText("path")
                     .NotNull("EditorBuildSettings.scenes[x].path"));
                 var simple = path.Split('/').Last();
                 var isEnabledNode = scene.GetMapEntryValue<IPlainScalarNode>("enabled")
                     .NotNull("EditorBuildSettings.scenes[x].enabled");
-                var isEnabled = isEnabledNode.GetPlainScalarText()
-                    .NotNull("isEnabledNode.GetPlainScalarText() != null")
+                var isEnabled = isEnabledNode.GetScalarText()
+                    .NotNull("isEnabledNode.GetScalarText() != null")
                     .Equals("1");
                 if (!isEnabled && (path.Equals(sceneName) || simple.Equals(sceneName)))
                 {

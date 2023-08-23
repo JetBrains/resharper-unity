@@ -23,7 +23,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         public const string SceneFileExtensionWithDot = ".unity";
         public const string ControllerFileExtensionWithDot = ".controller";
         public const string AnimFileExtensionWithDot = ".anim";
-        public const string InputActionsExtensionWithDot = ".inputactions";
+        public const string InputActionsExtensionWithDot = InputActions.ProjectModel.InputActionsProjectFileType.INPUTACTIONS_EXTENSION;
+        public const string UxmlExtensionWithDot = Uxml.ProjectModel.UxmlProjectFileType.UXML_EXTENSION;
         
         public const string ResourcesFolderName = "Resources";
         public const string EditorFolderName = "Editor";
@@ -101,6 +102,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         
         public static bool IsInputActions(this IPsiSourceFile sourceFile) =>
             SourceFileNameEndsWith(sourceFile, InputActionsExtensionWithDot);
+        
+        public static bool IsUxml(this IPath path) =>
+            SimplePathEndsWith(path, UxmlExtensionWithDot);
+        
+        public static bool IsUxml(this IPsiSourceFile sourceFile) =>
+            SourceFileNameEndsWith(sourceFile, UxmlExtensionWithDot);
 
         public static bool IsYamlDataFile(this IPath path)
         {

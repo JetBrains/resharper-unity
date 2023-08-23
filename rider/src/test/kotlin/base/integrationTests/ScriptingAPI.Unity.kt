@@ -35,7 +35,7 @@ import com.jetbrains.rider.plugins.unity.util.withDebugCodeOptimization
 import com.jetbrains.rider.plugins.unity.util.withProjectPath
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDirectory
-import com.jetbrains.rider.services.popups.nova.headless.NullPrintStream
+import com.jetbrains.rider.utils.NullPrintStream
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
@@ -65,7 +65,7 @@ val unityActionsTimeout: Duration = Duration.ofSeconds(30)
 
 //region UnityDll
 
-val unity2022_2_15f1_ref_asm by ZipFilePackagePreparer("Unity3d-2022.2.15f1-15-05-2023.zip")
+val unity2022_2_15f1_ref_asm by ZipFilePackagePreparer("Unity3d-2022.2.15f1-17-08-2023.zip")
 
 private fun downloadMsCorLib(): File {
     return downloadAndExtractArchiveArtifactIntoPersistentCache(

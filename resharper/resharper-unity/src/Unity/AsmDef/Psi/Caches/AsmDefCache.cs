@@ -86,6 +86,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
             return GetSourceFileForAssembly(assemblyName)?.GetLocation()
                    ?? VirtualFileSystemPath.GetEmptyPathFor(mySolution.GetInteractionContext());
         }
+        
+        // Note that the returned location might be Empty if the given project doesn't have a corresponding .asmdef file
+        public (string, VirtualFileSystemPath) TryGetAsmDefLocationForProject(string projectName)
+        {
+            // Assembly name and project name are the same for asmdef projects, unless it's a .Player project. We want
+            // to return the actual name of the asmdef reference we'll be adding
+            var location = GetAsmDefLocationByAssemblyName(projectName);
+            if (location.IsNotEmpty)
+                return (projectName, location);
+            projectName = Core.ProjectModel.ProjectExtensions.StripPlayerSuffix(projectName);
+            return (projectName, GetAsmDefLocationByAssemblyName(projectName));
+        }
 
         public IEnumerable<AsmDefVersionDefine> GetVersionDefines(string assemblyName)
         {
