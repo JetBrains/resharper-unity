@@ -3,6 +3,7 @@ using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Psi;
@@ -57,7 +58,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Run
                     var model = backendUnityHost.BackendUnityModel.Value;
                     if (model == null)
                     {
-                        var notification = new NotificationModel(Strings.UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_No_connection_to_Unity, Strings.UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_Make_sure_Unity_is_running_,
+                        var notification = new NotificationModel(solution.GetRdProjectId(),
+                            Strings.UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_No_connection_to_Unity,
+                            Strings.UnityStaticMethodRunMarkerGutterMark_GetRunMethodItems_Make_sure_Unity_is_running_,
                             true, RdNotificationEntryType.WARN, new List<NotificationHyperlink>());
                         notificationsModel.Notification(notification);
                         return;
