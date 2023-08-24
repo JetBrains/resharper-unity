@@ -116,14 +116,18 @@ namespace JetBrains.Rider.Unity.Editor
             Thread.Sleep(1000);
 
             if (lifetime.IsAlive)
-              EditorApplication.delayCall += () =>
+            {
+              ourLogger.Verbose("Before MainThreadDispatcher.Instance.Queue(() =>");
+              MainThreadDispatcher.Instance.Queue(() =>
               {
+                ourLogger.Verbose("Inside MainThreadDispatcher.Instance.Queue(() =>");
                 if (lifetime.IsAlive)
                 {
                   ourLogger.Verbose("Recreating protocol, project lifetime is alive");
                   Initialise(lifetime, initTime, logger);
                 }
-              };
+              });
+            }
           }).Start();
         }
         else
