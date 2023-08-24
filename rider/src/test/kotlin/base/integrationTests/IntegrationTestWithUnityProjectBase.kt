@@ -35,8 +35,8 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithSolution
         solutionDirectoryName: String,
         filter: ((File) -> Boolean)? = null
     ): File {
-
-        val workDirectory = File(tempTestDirectory, solutionDirectoryName)
+        val solutionName: String = File(solutionDirectoryName).name
+        val workDirectory = File(tempTestDirectory, solutionName)
         val sourceDirectory = File(solutionSourceRootDirectory, solutionDirectoryName)
         // Copy solution from sources
         FileUtil.copyDir(sourceDirectory, workDirectory, filter)
