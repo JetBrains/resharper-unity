@@ -1,16 +1,16 @@
 before change
-Block 93 BlockCodeVisionListRenderer
+Block 93 BlockCodeVisionInlayRenderer
 Top
     Visible
         Text RdTextRange(startOffset=93, endOffset=111) 6 asset usages
         Text RdTextRange(startOffset=93, endOffset=111) 1 usage
     Hidden
-Block 169 BlockCodeVisionListRenderer
+Block 169 BlockCodeVisionInlayRenderer
 Top
     Visible
         Text RdTextRange(startOffset=169, endOffset=174) Event function
     Hidden
-Block 314 BlockCodeVisionListRenderer
+Block 314 BlockCodeVisionInlayRenderer
 Top
     Visible
         Text RdTextRange(startOffset=314, endOffset=320) Event function
