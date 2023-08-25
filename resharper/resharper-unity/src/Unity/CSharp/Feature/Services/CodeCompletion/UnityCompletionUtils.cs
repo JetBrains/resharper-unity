@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using JetBrains.ReSharper.Feature.Services.CSharp.CodeCompletion.Infrastructure;
-using JetBrains.ReSharper.Features.WinForms.Designer.Protocol.Model;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util.Literals;
 using JetBrains.ReSharper.Psi.Tree;
@@ -10,10 +9,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 {
     internal static class UnityCompletionUtils
     {
-        internal static bool IsSpecificArgumentInSpecificMethod(CSharpCodeCompletionContext context, out ICSharpLiteralExpression? stringLiteral,
+        internal static bool IsSpecificArgumentInSpecificMethod(CSharpCodeCompletionContext context, out ICSharpLiteralExpression? stringLiteral, out string? typeParamName,
             Func<IInvocationExpression, bool> methodChecker, Func<IArgumentList, ICSharpArgument, bool> argumentChecker)
         {
             stringLiteral = null;
+            typeParamName = null;
             var nodeInFile = context.NodeInFile as ITokenNode;
             if (nodeInFile == null)
                 return false;
@@ -40,6 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             {
                 if (methodChecker(invocationExpression))
                 {
+                    typeParamName = ExpressionReferenceUtils.GetInvocationTypeArgumentName(invocationExpression);
                     return true;
                 }
             }

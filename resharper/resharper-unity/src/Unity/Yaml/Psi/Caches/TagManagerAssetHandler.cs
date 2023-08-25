@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             {
                 foreach (var s in tagsArray.EntriesEnumerable)
                 {
-                    var text = s.Value.GetPlainScalarText();
+                    var text = s.Value.GetUnicodeText();
                     if (!text.IsNullOrEmpty())
                         cacheItem.Tags.Add(text);
                 }
@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             {
                 foreach (var s in layersArray.EntriesEnumerable)
                 {
-                    var text = s.Value.GetPlainScalarText();
+                    var text = s.Value.GetUnicodeText();
                     if (!text.IsNullOrEmpty())
                         cacheItem.Layers.Add(text);
                 }
@@ -76,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                     if (propertyName != null &&
                         (propertyName.StartsWith("Builtin Layer") || propertyName.StartsWith("User Layer")))
                     {
-                        var text = entry.Content?.Value?.GetPlainScalarText();
+                        var text = entry.Content?.Value?.GetUnicodeText();
                         if (!text.IsNullOrEmpty())
                             cacheItem.Layers.Add(text);
                     }

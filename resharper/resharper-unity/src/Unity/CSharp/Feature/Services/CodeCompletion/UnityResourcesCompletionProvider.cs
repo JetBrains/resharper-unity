@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
         protected override bool AddLookupItems(CSharpCodeCompletionContext context, IItemsCollector collector)
         {
-            if (!UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out _,
+            if (!UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out _, out _,
                     ExpressionReferenceUtils.IsResourcesLoadMethod,
                     UnityCompletionUtils.IsCorrespondingArgument("path")))
                 return false;

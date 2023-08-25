@@ -1446,6 +1446,9 @@ a plugin to be installed to a project.</value>
     <data name="UsingnewToInstantiateAClassDerivedFromScriptableObjectMeansThatUnityWillNotCallAnyEventFunctionsCreateANewInstanceUsingGameObjectAddComponentT" xml:space="preserve">
         <value>Using 'new' to instantiate a class derived from 'ScriptableObject' means that Unity will not call any event functions. Create a new instance using 'GameObject.AddComponent&lt;T&gt;()'.</value>
     </data>
+    <data name="UxmlUnity_Text" xml:space="preserve">
+        <value>Uxml (Unity)</value>
+    </data>
     <data name="WritingToAStaticFieldIsNotSupported" xml:space="preserve">
         <value>Writing to a static field is not supported</value>
     </data>

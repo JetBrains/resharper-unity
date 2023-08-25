@@ -79,7 +79,7 @@ class UnityExplorerTest : BaseTestWithSolutionBase() {
     }
 
     @Test
-    @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6, platform = arrayOf(PlatformType.MAC_OS_ALL, PlatformType.LINUX_ALL))
+    @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
     fun test_RIDER_92886() { // infinite loading caused by a "..\\" folder
         val params = OpenSolutionParams()
         withSolution("AnimImplicitUsageTest", params, preprocessTempDirectory = {

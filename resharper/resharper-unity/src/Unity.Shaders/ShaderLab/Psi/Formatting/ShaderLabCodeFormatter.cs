@@ -1,6 +1,7 @@
 using JetBrains.Application.Progress;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.Cpp.Language;
@@ -87,7 +88,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
               using (new SuspendInjectRegenerationCookie())
               {
                   FormatterImplHelper.RunFormatterForGeneratedLanguages(file, formatTask.FirstElement, lastNode, profile,
-                      it => true, PsiLanguageCategories.All, parameters.ChangeProgressIndicator(fmtProgress));
+                      _ => true, PsiLanguageCategories.All, parameters.ChangeProgressIndicator(fmtProgress));
               }
           }
       }
@@ -117,5 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
     public override void FormatDeletedNodes(ITreeNode parent, ITreeNode prevNode, ITreeNode nextNode)
     {
     }
+
+    public override bool CanBeMultilineToken(ITreeNode node) => base.CanBeMultilineToken(node) || node.GetTokenType() is { IsStringLiteral: true } || node.Parent is ICgContent;
   }
 }

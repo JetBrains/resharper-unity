@@ -44,7 +44,9 @@ class TagsCompletionTest : BaseTestWithSolution() {
         "\"Untagged\"",
         "\"EditorOnly\"",
         "\"MainCamera\"",
-        "\"GameController\"")
+        "\"GameController\"",
+        "\"ABC\"",
+        "\"Würzburg\"")
 
     @Test
     fun testTag_PrimitiveCompletion() {

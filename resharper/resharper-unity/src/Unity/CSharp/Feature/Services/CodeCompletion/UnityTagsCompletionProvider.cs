@@ -52,14 +52,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 return true;
 
             // tag completion, CompareTag("...")
-            if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out _,
+            if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out _, out _,
                     ExpressionReferenceUtils.IsCompareTagMethod,
                     UnityCompletionUtils.IsCorrespondingArgument("tag")))
                 
                 return true;
 
             // tag completion, GameObject.FindWithTag("...")
-            if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out _, 
+            if (UnityCompletionUtils.IsSpecificArgumentInSpecificMethod(context, out _, out _,
                     ExpressionReferenceUtils.IsFindObjectByTagMethod,
                     UnityCompletionUtils.IsCorrespondingArgument("tag")))
                 return true;
