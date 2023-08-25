@@ -18,6 +18,7 @@ import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.prepareProjectView
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
+import io.qameta.allure.Issue
 import org.testng.annotations.Test
 import java.time.Duration
 
@@ -79,8 +80,9 @@ class UnityExplorerTest : BaseTestWithSolutionBase() {
     }
 
     @Test
-    @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
-    fun test_RIDER_92886() { // infinite loading caused by a "..\\" folder
+    @Issue("RIDER-92886")
+    @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6, platform = [PlatformType.MAC_OS_ALL, PlatformType.LINUX_ALL])
+    fun test_project_loading_with_special_folder() { // infinite loading caused by a "..\\" folder
         val params = OpenSolutionParams()
         withSolution("AnimImplicitUsageTest", params, preprocessTempDirectory = {
             prepareAssemblies(activeSolutionDirectory)
