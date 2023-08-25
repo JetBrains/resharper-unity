@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System.Collections.Immutable;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Core.Types;
 

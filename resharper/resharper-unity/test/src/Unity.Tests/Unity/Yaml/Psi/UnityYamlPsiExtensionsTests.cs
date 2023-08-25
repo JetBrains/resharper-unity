@@ -1,4 +1,4 @@
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
+﻿using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
