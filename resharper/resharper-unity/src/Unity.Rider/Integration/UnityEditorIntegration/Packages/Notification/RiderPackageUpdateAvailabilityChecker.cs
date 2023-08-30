@@ -5,6 +5,7 @@ using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.DataFlow;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
@@ -31,10 +32,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly UserNotifications myUserNotifications;
         private readonly SequentialLifetimes mySequentialLifetimes;
-        private readonly JetHashSet<Version> myNotificationShown;
+        private readonly JetHashSet<JetSemanticVersion> myNotificationShown;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
         private string packageId = PackageCompatibilityValidator.RiderPackageId;
-        private Version leastRiderPackageVersion = new Version(3, 0, 16);
+        private JetSemanticVersion leastRiderPackageVersion = new(3, 0, 16);
 
         public RiderPackageUpdateAvailabilityChecker(
             Lifetime lifetime,
@@ -59,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             myBackendUnityHost = backendUnityHost;
             myUserNotifications = userNotifications;
             mySequentialLifetimes = new SequentialLifetimes(lifetime);
-            myNotificationShown = new JetHashSet<Version>();
+            myNotificationShown = new JetHashSet<JetSemanticVersion>();
             myBoundSettingsStore = applicationWideContextBoundSettingStore.BoundSettingsStore;
             unitySolutionTracker.IsUnityProject.WhenTrue(lifetime, lt =>
             {
@@ -75,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             {
                 model.RiderPackagePotentialUpdateVersion.Advise(l, result =>
                 {
-                    if (!string.IsNullOrEmpty(result) && Version.TryParse(result, out var resultVersion))
+                    if (!string.IsNullOrEmpty(result) && JetSemanticVersion.TryParse(result, out var resultVersion))
                     {
                         ShowNotificationIfNeeded(l, resultVersion);
                     }
@@ -83,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             });
         }
 
-        private void BindToInstallationSettingChange(Lifetime lifetime, Version version)
+        private void BindToInstallationSettingChange(Lifetime lifetime, JetSemanticVersion version)
         {
             var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) =>
                 s.AllowRiderUpdateNotifications);
@@ -95,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                 });
         }
 
-        private void ShowNotificationIfNeeded(Lifetime lifetime, Version packageVersion)
+        private void ShowNotificationIfNeeded(Lifetime lifetime, JetSemanticVersion packageVersion)
         {
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowRiderUpdateNotifications))
                 return;
@@ -127,29 +128,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                                     Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Make_sure_JetBrains_Rider_package_is_installed_in_Unity_Package_Manager_);
                             });
                     }
-                    else if (package.Source == PackageSource.Registry &&
-                             new Version(package.PackageDetails.Version) < packageVersion)
+                    else
                     {
-                        myNotificationShown.Add(packageVersion);
-                        myLogger.Info($"{packageId} {package.PackageDetails.Version} is older then expected.");
+                        var packageStringCurrentVersion = package.PackageDetails.Version;
+                        var isCurrentVersionParsed = JetSemanticVersion.TryParse(packageStringCurrentVersion, out var currentPackageVersion);
+                    
+                        Assertion.Assert(isCurrentVersionParsed, "JetSemanticVersion.TryParse returned false for package version {0}, package Id: {1}", packageStringCurrentVersion, package.Id);
+                        
+                        if (package.Source == PackageSource.Registry && currentPackageVersion < packageVersion)
+                        {
+                            myNotificationShown.Add(packageVersion);
+                            myLogger.Info($"{packageId} {packageStringCurrentVersion} is older then expected.");
 
-                        myShellLocks.ExecuteOrQueueEx(notificationLifetime.Lifetime,
-                            "RiderPackageUpdateAvailabilityChecker.ShowNotificationIfNeeded",
-                            () => myUserNotifications.CreateNotification(notificationLifetime.Lifetime,
-                                NotificationSeverity.INFO,
-                                Resources.Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Update_available___JetBrains_Rider_package_,
-                                string.Format(Resources.Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__Version__in_Unity_Package_Manager_, packageVersion),
-                                additionalCommands: new[]
-                                {
-                                    new UserNotificationCommand(Resources.Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Do_not_show_for_this_solution, () =>
+                            myShellLocks.ExecuteOrQueueEx(notificationLifetime.Lifetime,
+                                "RiderPackageUpdateAvailabilityChecker.ShowNotificationIfNeeded",
+                                () => myUserNotifications.CreateNotification(notificationLifetime.Lifetime,
+                                    NotificationSeverity.INFO,
+                                    Resources.Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Update_available___JetBrains_Rider_package_,
+                                    string.Format(Resources.Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__Version__in_Unity_Package_Manager_, packageVersion),
+                                    additionalCommands: new[]
                                     {
-                                        mySettingsStore.BindToContextTransient(
-                                                ContextRange.ManuallyRestrictWritesToOneContext(
-                                                    mySolution.ToDataContext()))
-                                            .SetValue((UnitySettings key) => key.AllowRiderUpdateNotifications, false);
-                                        notificationLifetime.Terminate();
-                                    })
-                                }));
+                                        new UserNotificationCommand(Resources.Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Do_not_show_for_this_solution, () =>
+                                        {
+                                            mySettingsStore.BindToContextTransient(
+                                                    ContextRange.ManuallyRestrictWritesToOneContext(
+                                                        mySolution.ToDataContext()))
+                                                .SetValue((UnitySettings key) => key.AllowRiderUpdateNotifications, false);
+                                            notificationLifetime.Terminate();
+                                        })
+                                    }));
+                        }
                     }
                 });
             });

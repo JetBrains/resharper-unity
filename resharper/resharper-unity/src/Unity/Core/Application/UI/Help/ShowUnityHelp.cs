@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.Application.StdApplicationUI;
@@ -19,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
         private readonly SolutionsManager mySolutionsManager;
         private readonly ILogger myLogger;
         private readonly UnityDocumentation myUnityDocumentation;
+        private static readonly Regex ourGenericTypeSuffixRegex = new Regex(@"`\d+");
 
         public ShowUnityHelp(OpensUri uriOpener, SolutionsManager solutionsManager, ILogger logger, UnityDocumentation unityDocumentation)
         {
@@ -61,9 +63,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Help
             if (keyword == null)
                 return null;
 
-            if (IsUnityKeyword(keyword))
-                return StripPrefix(keyword);
-            return keyword;
+            var formatDocumentationKeyword = IsUnityKeyword(keyword) ? StripPrefix(keyword) : keyword;
+            return StripGenericSuffix(formatDocumentationKeyword);
+        }
+
+        private static string StripGenericSuffix(string formatDocumentationKeyword)
+        {
+            return ourGenericTypeSuffixRegex.Replace(formatDocumentationKeyword, string.Empty);
         }
 
         [NotNull]
