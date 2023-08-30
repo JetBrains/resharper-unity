@@ -83,6 +83,12 @@ class UssReferenceProvider : PsiReferenceProvider() {
                 prefixReferences.add(UssFilePrefixReference(element, TextRange.create(startOffset, startOffset + 8)))
                 startOffset += 8
             }
+            // https://github.com/Unity-Technologies/UnityCsReference/blob/b88328cf5ba7e720c9a84ac2a52e2dd237260077/ModuleOverrides/com.unity.ui/Editor/GameObjects/PanelSettingsCreator/PanelSettingsCreator.cs#L34
+            else if (elementText.startsWith("unity-theme://default", startOffset)){
+                prefixReferences.add(UssFilePrefixReference(element, TextRange.create(startOffset, startOffset + 12)))
+                prefixReferences.add(UssFilePrefixReference(element, TextRange.create(startOffset + 13, startOffset + 13)))
+                prefixReferences.add(UssFilePrefixReference(element, TextRange.create(startOffset + 14, startOffset + 21)))
+            }
 
             val resultRange = TextRange.create(startOffset, endOffset)
             val resultText = resultRange.substring(elementText)
