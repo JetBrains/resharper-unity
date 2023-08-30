@@ -497,7 +497,8 @@
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-<!--  "rotate", "scale" already works -->
+<!--  "rotate" https://developer.mozilla.org/en-US/docs/Web/CSS/angle -->
+<!-- "scale" already works -->
   <property id="text-shadow" declared-in="3.0" url="https://www.w3.org/TR/css-text-decor-3/#propdef-text-shadow" applies="all elements" initial="none" inherited="yes" percentage="n/a" media="visual">
     <description><![CDATA[<p>This property accepts a comma-separated list of shadow effects to be applied to the text of the element. Values are interpreted as for
  <see cref="P:box-shadow" /> [CSS-BACKGROUNDS-3]. (But note that spread values and the inset keyword are not allowed.) Each layer shadows the element’s text and all its text decorations (composited together). If the color of the shadow is not specified, it defaults to currentColor, i.e. the shadow’s color is taken from the element’s

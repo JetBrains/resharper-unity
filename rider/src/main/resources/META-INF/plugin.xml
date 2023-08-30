@@ -149,6 +149,9 @@
     <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileBreadcrumbsProvider" />
     <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.codeInsight.schema.UxmlSchemaProvider" />
 
+    <!-- USS -->
+    <fileType name="USS" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.css.uss.UssFileType" language="USS" extensions="uss;tss"/>
+
     <!-- JSON support -->
     <fileType name="JSON" extensions="inputactions"/>
 
