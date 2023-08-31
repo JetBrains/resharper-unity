@@ -1,5 +1,4 @@
 #nullable enable
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Threading;
@@ -20,16 +19,11 @@ using JetBrains.Util.PersistentMap;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport
 {
     [SolutionComponent]
-    public class ShaderContextDataPresentationCache : PsiSourceFileCacheWithLocalCache<List<ShaderContextDataPresentationCache.ShaderProgramInfo>>, IBuildMergeParticipant<IPsiSourceFile>
+    public class ShaderContextDataPresentationCache : SimplePsiSourceFileCacheWithLocalCache<List<ShaderContextDataPresentationCache.ShaderProgramInfo>, ShaderContextDataPresentationCache.ShaderFileInfo>, IBuildMergeParticipant<IPsiSourceFile>
     {
-        private readonly ISolution mySolution;
-
-        private readonly ConcurrentDictionary<IPsiSourceFile, ShaderFileInfo> myFileInfos = new();
-        
-        public ShaderContextDataPresentationCache(Lifetime lifetime, IShellLocks shellLocks, ISolution solution, IPersistentIndexManager persistentIndexManager) : 
+        public ShaderContextDataPresentationCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager) : 
             base(lifetime, shellLocks, persistentIndexManager, UnsafeMarshallers.GetCollectionMarshaller(Read, Write, c => new List<ShaderProgramInfo>(c)), "Unity::Shaders::ShaderContextDataPresentationCacheUpdated")
         {
-            mySolution = solution;
         }
 
         private static ShaderProgramInfo Read(UnsafeReader reader) => new(new TextRange(reader.ReadInt(), reader.ReadInt()), reader.ReadInt(), reader.ReadInt());
@@ -56,27 +50,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
                 return new ShaderProgramInfo(range.TextRange, (int)range.StartOffset.ToDocumentCoords().Line, (int)range.EndOffset.ToDocumentCoords().Line);
             }).ToList();
         }
-        
-        protected override bool AddToLocalCache(IPsiSourceFile sourceFile, List<ShaderProgramInfo> cacheItem)
+
+        protected override ShaderFileInfo BuildLocal(IPsiSourceFile sourceFile, List<ShaderProgramInfo> cacheItem)
         {
             var result = new Dictionary<TextRange, (int, int)>();
             foreach (var info in cacheItem) 
                 result.Add(info.TextRange, (info.LineStart, info.LineEnd));
-
-            myFileInfos[sourceFile] = new ShaderFileInfo(result);
-            return true;
+            return new ShaderFileInfo(result);
         }
-
-        protected override bool RemoveFromLocalCache(IPsiSourceFile sourceFile, List<ShaderProgramInfo> oldPart) => myFileInfos.TryRemove(sourceFile, out _);
 
         public (int startLine, int endLine)? GetRangeForShaderProgram(IPsiSourceFile sourceFile, TextRange textRange) 
-            => TryGetFileInfo(sourceFile, out var fileInfo) && fileInfo.Mapping.TryGetValue(textRange, out var range) ? range : null;
-
-        private bool TryGetFileInfo(IPsiSourceFile sourceFile, out ShaderFileInfo fileInfo)
-        {
-            mySolution.Locks.AssertReadAccessAllowed();
-            return myFileInfos.TryGetValue(sourceFile, out fileInfo);
-        }
+            => TryGetLocalCacheValue(sourceFile, out var fileInfo) && fileInfo.Mapping.TryGetValue(textRange, out var range) ? range : null;
         
         public readonly struct ShaderProgramInfo
         {
@@ -92,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             }
         }
 
-        private readonly struct ShaderFileInfo
+        public readonly struct ShaderFileInfo
         {
             public readonly Dictionary<TextRange, (int StartLine, int EndLine)> Mapping;
 

@@ -296,11 +296,6 @@
     <action id="InstallEditorPluginAction"
             class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction" />
 
-    <action class="com.jetbrains.rider.plugins.unity.actions.FindUnityUsagesAction" id="RdFindUnityUsagesAction">
-      <add-to-group group-id="FindMenuGroup" anchor="after" relative-to-action="FindUsages"/>
-      <add-to-group group-id="EditorPopupMenu1.FindRefactor" anchor="after" relative-to-action="FindUsages"/>
-    </action>
-
     <group id="RiderInternal.Unity" popup="true" internal="true">
       <add-to-group group-id="RiderInternal" anchor="last" />
 
