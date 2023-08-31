@@ -35,7 +35,7 @@
       <length/>
     </group>
   </named-value>
-  <named-value id="dimension" declared-in="0">
+  <named-value id="length-percentage" declared-in="0">
     <!-- 2017.3-2019.2 <length> -->
     <!-- Note that the code will technically allow reading keywords here ( auto | none | unset ). They can be read, but
          they are not correct -->
@@ -45,7 +45,7 @@
       <inline id="global-keywords" inline="yes"/>
     </group>
   </named-value>
-  <named-value id="dimension-auto" declared-in="0">
+  <named-value id="length-percentage-auto" declared-in="0">
     <!-- 2017.3-2018.4 <length>
          2019.1-2019.2 <length> | auto -->
     <group type="or">
@@ -55,7 +55,7 @@
       <inline id="global-keywords" inline="yes" />
     </group>
   </named-value>
-  <named-value id="dimension-none" declared-in="0">
+  <named-value id="length-percentage-none" declared-in="0">
     <!-- 2017.3-2018.4 <length>
          2019.1-2019.2 <length> | none -->
     <group type="or">
@@ -77,6 +77,7 @@
     <group type="or">
       <uri/>
       <invoke id="resource"/>
+      <invoke id="url"/>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </named-value>
@@ -84,6 +85,7 @@
     <group type="or">
       <uri/>
       <invoke id="resource"/>
+      <invoke id="url"/>
       <name value="none"/>
       <inline id="global-keywords" inline="yes"/>
     </group>
@@ -130,10 +132,10 @@
     <inline id="color" inline="yes" />
   </property>
   <property id="border-bottom-left-radius" declared-in="0" initial="0"> <!-- 2017.3-2019.3 -->
-    <inline id="dimension" inline="yes" />
+    <inline id="length-percentage" inline="yes" />
   </property>
   <property id="border-bottom-right-radius" declared-in="0" initial="0"> <!-- 2017.3-2019.3 -->
-    <inline id="dimension" inline="yes" />
+    <inline id="length-percentage" inline="yes" />
   </property>
   <property id="border-bottom-width" declared-in="0" initial="0"> <!-- 2017.2-2019.3 -->
     <group type="or">
@@ -158,7 +160,7 @@
     <!-- 2017.1-2018.4 <length>{1} -->
     <!-- 2019.1-2019.3 <length>{1,4} -->
     <group type="or" max="4">
-      <inline id="length" inline="yes"/>
+      <inline id="length-percentage" inline="yes"/>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
@@ -175,10 +177,10 @@
     <inline id="color" inline="yes"/>
   </property>
   <property id="border-top-left-radius" declared-in="0" initial="0"> <!-- 2017.3-2019.3 -->
-    <inline id="dimension" inline="yes"/>
+    <inline id="length-percentage" inline="yes"/>
   </property>
   <property id="border-top-right-radius" declared-in="0" initial="0"> <!-- 2017.3-2019.3 -->
-    <inline id="dimension" inline="yes"/>
+    <inline id="length-percentage" inline="yes"/>
   </property>
   <property id="border-top-width" declared-in="0" initial="0"> <!-- 2017.2-2019.3 -->
     <group type="or">
@@ -195,7 +197,7 @@
     </group>
   </property>
   <property id="bottom" declared-in="0" initial="auto"> <!-- 2018.3-2019.3 -->
-    <inline id="dimension-auto" inline="yes"/>
+    <inline id="length-percentage-auto" inline="yes"/>
   </property>
   <property id="color" declared-in="0" initial="#000000"> <!-- 2018.3-2019.3 -->
     <inline id="color" inline="yes"/>
@@ -206,6 +208,7 @@
       <group type="and">
         <group type="or">
           <invoke id="resource"/>
+          <invoke id="url"/>
           <uri/>
         </group>
         <group type="and">
@@ -257,13 +260,13 @@
           <number/> <!-- flex-grow -->
           <number min="0"/> <!-- flex-shrink? -->
         </group>
-        <inline id="dimension-auto" inline="yes"/> <!-- flex-basis -->
+        <inline id="length-percentage-auto" inline="yes"/> <!-- flex-basis -->
       </group>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
   <property id="flex-basis" declared-in="0" initial="auto"> <!-- 2018.1-2019.3 -->
-    <inline id="dimension-auto" inline="yes"/>
+    <inline id="length-percentage-auto" inline="yes"/>
   </property>
   <property id="flex-direction" declared-in="0" initial="column"> <!-- 2017.1-2019.3 -->
     <group type="or">
@@ -295,10 +298,10 @@
     </group>
   </property>
   <property id="font-size" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
-    <inline id="dimension" inline="yes"/>
+    <inline id="length-percentage" inline="yes"/>
   </property>
   <property id="height" declared-in="0" initial="auto"> <!-- 2017.1-2019.3 -->
-    <inline id="dimension-auto"/>
+    <inline id="length-percentage-auto"/>
   </property>
   <property id="justify-content" declared-in="0" initial="flex-start"> <!-- 2017.1-2019.3 -->
     <group type="or">
@@ -307,38 +310,39 @@
       <name value="center"/>
       <name value="space-between"/>
       <name value="space-around"/>
+      <name value="space-evenly"/>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
   <property id="left" declared-in="0" initial="auto"> <!-- 2018.3-2019.3 -->
-    <inline id="dimension-auto" inline="yes"/>
+    <inline id="length-percentage-auto" inline="yes"/>
   </property>
   <property id="margin" declared-in="0"> <!-- 2019.1-2019.3 -->
-    <inline id="dimension-auto" max="4"/>
+    <inline id="length-percentage-auto" max="4"/>
   </property>
   <property id="margin-bottom" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
-    <inline id="dimension-auto"/>
+    <inline id="length-percentage-auto"/>
   </property>
   <property id="margin-left" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
-    <inline id="dimension-auto"/>
+    <inline id="length-percentage-auto"/>
   </property>
   <property id="margin-right" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
-    <inline id="dimension-auto"/>
+    <inline id="length-percentage-auto"/>
   </property>
   <property id="margin-top" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
-    <inline id="dimension-auto"/>
+    <inline id="length-percentage-auto"/>
   </property>
   <property id="max-height" declared-in="0" initial="none"> <!-- 2017.1-2019.3 -->
-    <inline id="dimension-none"/>
+    <inline id="length-percentage-none"/>
   </property>
   <property id="max-width" declared-in="0" initial="none"> <!-- 2017.1-2019.3 -->
-    <inline id="dimension-none"/>
+    <inline id="length-percentage-none"/>
   </property>
   <property id="min-height" declared-in="0" initial="auto"> <!-- 2017.1-2019.3 -->
-    <inline id="dimension-auto"/>
+    <inline id="length-percentage-auto"/>
   </property>
   <property id="min-width" declared-in="0" initial="auto"> <!-- 2017.1-2019.3 -->
-    <inline id="dimension-auto"/>
+    <inline id="length-percentage-auto"/>
   </property>
   <property id="opacity" declared-in="0" initial="1"> <!-- 2017.1-2019.3 -->
     <!-- Technically the code will read <length> here, but that is not correct -->
@@ -355,27 +359,20 @@
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="-unity-overflow-clip-box" declared-in="0" initial="padding-box"> <!-- 2019.3 -->
-    <group type="or">
-      <name value="padding-box"/>
-      <name value="content-box"/>
-      <inline id="global-keywords" inline="yes"/>
-    </group>
-  </property>
   <property id="padding" declared-in="0"> <!-- 2019.1-2019.3 -->
-    <inline id="dimension" inline="yes" max="4"/>
+    <inline id="length-percentage" inline="yes" max="4"/>
   </property>
   <property id="padding-bottom" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
-    <inline id="dimension" inline="yes"/>
+    <inline id="length-percentage" inline="yes"/>
   </property>
   <property id="padding-left" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
-    <inline id="dimension" inline="yes"/>
+    <inline id="length-percentage" inline="yes"/>
   </property>
   <property id="padding-right" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
-    <inline id="dimension" inline="yes"/>
+    <inline id="length-percentage" inline="yes"/>
   </property>
   <property id="padding-top" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
-    <inline id="dimension" inline="yes"/>
+    <inline id="length-percentage" inline="yes"/>
   </property>
   <property id="position" declared-in="0" initial="relative"> <!-- 2018.3-2019.3 -->
     <group type="or">
@@ -385,10 +382,17 @@
     </group>
   </property>
   <property id="right" declared-in="0" initial="auto"> <!-- 2018.3-2019.3 -->
-    <inline id="dimension-auto" inline="yes"/>
+    <inline id="length-percentage-auto" inline="yes"/>
+  </property>
+  <property id="text-overflow" declared-in="0" initial="clip">
+    <group type="or">
+      <name value="clip"/>
+      <name value="ellipsis"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
   </property>
   <property id="top" declared-in="0" initial="auto"> <!-- 2018.3-2019.3 -->
-    <inline id="dimension-auto" inline="yes"/>
+    <inline id="length-percentage-auto" inline="yes"/>
   </property>
   <property id="-unity-background-image-tint-color" declared-in="0" initial="#ffffff"> <!-- 2019.1-2019.3 -->
     <inline id="color" inline="yes"/>
@@ -411,6 +415,13 @@
       <name value="italic"/>
       <name value="bold"/>
       <name value="bold-and-italic"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="-unity-overflow-clip-box" declared-in="0" initial="padding-box"> <!-- 2019.3 -->
+    <group type="or">
+      <name value="padding-box"/>
+      <name value="content-box"/>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
@@ -452,6 +463,14 @@
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
+  <property id="-unity-text-overflow-position" declared-in="0" initial="end">
+    <group type="or">
+      <name value="start"/>
+      <name value="middle"/>
+      <name value="end"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
   <property id="visibility" declared-in="0" initial="visible"> <!-- 2018.2-2019.3 -->
     <group type="or">
       <name value="visible"/>
@@ -467,10 +486,33 @@
     </group>
   </property>
   <property id="width" declared-in="0" initial="auto"> <!-- 2017.1-2019.3 -->
-    <inline id="dimension-auto" inline="yes"/>
+    <inline id="length-percentage-auto" inline="yes"/>
   </property>
 
   <!-- 2021.2 -->
+<!--  <property id="all" declared-in="0">--> <!--already works -->
+  <property id="letter-spacing" declared-in="0">
+    <group type="or">
+      <inline id="length"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+<!--  "rotate", "scale" already works -->
+  <property id="text-shadow" declared-in="3.0" url="https://www.w3.org/TR/css-text-decor-3/#propdef-text-shadow" applies="all elements" initial="none" inherited="yes" percentage="n/a" media="visual">
+    <description><![CDATA[<p>This property accepts a comma-separated list of shadow effects to be applied to the text of the element. Values are interpreted as for
+ <see cref="P:box-shadow" /> [CSS-BACKGROUNDS-3]. (But note that spread values and the inset keyword are not allowed.) Each layer shadows the element’s text and all its text decorations (composited together). If the color of the shadow is not specified, it defaults to currentColor, i.e. the shadow’s color is taken from the element’s
+ <see cref="P:color" /> property. </p>]]></description>
+    <group type="or">
+      <name value="none"/>
+      <group type="and" comma-separated="yes">
+        <inline id="color" min="0"/>
+        <length min="2" max="3"/>
+      </group>
+      <inline id="wide-keywords" inline="yes"/>
+    </group>
+  </property>
+<!--  transform-origin: already works -->
+
   <named-value id="timing-function" declared-in="0">
     <group type="any">
       <!--  https://github.com/hybloid/UnityCsReference/blob/4d031e55aeeb51d36bd94c7f20182978d77807e4/ModuleOverrides/com.unity.ui/Core/Style/Generated/StylePropertyCache.cs#L121   -->
@@ -518,6 +560,133 @@
     </group>
   </property>
 
+<!--  translate works-->
+  <property id="-unity-font-definition" declared-in="0">
+    <inline id="asset" inline="yes"/>
+  </property>
+  <property id="-unity-paragraph-spacing" declared-in="0">
+    <group type="or">
+      <inline id="length"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="-unity-text-outline" declared-in="0">
+    <group type="or">
+      <inline id="length"/>
+      <inline id="color" inline="yes" />
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="-unity-text-outline-color" declared-in="0">
+    <inline id="color" inline="yes" />
+  </property>
+  <property id="-unity-text-outline-width" declared-in="0">
+    <group type="or">
+      <inline id="length"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="word-spacing" declared-in="0">
+    <group type="or">
+      <inline id="length"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="background-position" declared-in="0">
+
+<!--    [ [ left | center | right | top | bottom | <length-percentage> ] | [ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ] | [ center | [ left | right ] <length-percentage>? ] && [ center | [ top | bottom ] <length-percentage>? ] ]-->
+    <group type="or">
+      <group type="or">
+        <name value="left" tooltip="Horizontal alignment is to the left."/>
+        <name value="center" tooltip="Horizontal alignment is centered."/>
+        <name value="right" tooltip="Horizontal alignment is to the right."/>
+        <name value="top" tooltip="Vertical alignment is at the top."/>
+        <name value="bottom" tooltip="Vertical alignment is at the bottom."/>
+        <inline id="length-percentage"/>
+      </group>
+      <group type="or">
+        <name value="left" tooltip="Horizontal alignment is to the left."/>
+        <name value="center" tooltip="Horizontal alignment is centered."/>
+        <name value="right" tooltip="Horizontal alignment is to the right."/>
+        <inline id="length-percentage"/>
+      </group>
+      <group type="or">
+        <name value="top" tooltip="Vertical alignment is at the top."/>
+        <name value="center" tooltip="Horizontal alignment is centered."/>
+        <name value="bottom" tooltip="Vertical alignment is at the bottom."/>
+        <inline id="length-percentage"/>
+      </group>
+
+      <group type="and">
+        <name value="center" tooltip="Horizontal alignment is centered."/>
+        <group type="and">
+          <group type="or">
+            <name value="left" tooltip="Horizontal alignment is to the left."/>
+            <name value="right" tooltip="Horizontal alignment is to the right."/>
+          </group>
+          <inline id="length-percentage"/>
+        </group>
+        <name value="center" tooltip="Vertical alignment is centered."/>
+        <group type="and">
+          <group type="or">
+            <name value="top" tooltip="Vertical alignment is at the top."/>
+            <name value="bottom" tooltip="Vertical alignment is at the bottom."/>
+          </group>
+          <inline id="length-percentage"/>
+        </group>
+      </group>
+    </group>
+  </property>
+
+  <property id="background-position-x" declared-in="0">
+    <group type="or">
+      <name value="center" tooltip="Horizontal alignment is centered."/>
+      <group type="and">
+        <group type="or">
+          <name value="left" tooltip="Horizontal alignment is to the left."/>
+          <name value="right" tooltip="Horizontal alignment is to the right."/>
+        </group>
+        <inline id="length-percentage"/>
+      </group>
+    </group>
+  </property>
+  <property id="background-position-y" declared-in="0">
+    <group type="or">
+      <name value="center" tooltip="Vertical alignment is centered."/>
+      <group type="and">
+        <group type="or">
+          <name value="top" tooltip="Vertical alignment is at the top."/>
+          <name value="bottom" tooltip="Vertical alignment is at the bottom."/>
+        </group>
+        <inline id="length-percentage"/>
+      </group>
+    </group>
+  </property>
+  <property id="background-repeat" declared-in="0">
+    <group type="or">
+      <name value="repeat-x"/>
+      <name value="repeat-y"/>
+      <group type="or" max="2">
+        <name value="repeat"/>
+        <name value="space"/>
+        <name value="round"/>
+        <name value="no-repeat"/>
+      </group>
+    </group>
+  </property>
+  <property id="background-size" declared-in="0">
+    <group type="or">
+      <inline id="length-percentage-auto"/>
+      <name value="cover"/>
+      <name value="contain"/>
+    </group>
+  </property>
+  <property id="-unity-slice-scale" declared-in="0">
+    <group type="or">
+      <inline id="length"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
   <!-- Functions -->
   <function id="rgb" declared-in="0">
     <group>
