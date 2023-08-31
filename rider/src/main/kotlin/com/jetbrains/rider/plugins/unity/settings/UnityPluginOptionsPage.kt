@@ -7,4 +7,8 @@ class UnityPluginOptionsPage : SimpleOptionsPage(UnityBundle.message("configurab
     override fun getId(): String {
         return "preferences.build.unityPlugin"
     }
+
+    override fun getHelpTopic(): String {
+        return "Settings_Unity_Engine"
+    }
 }
