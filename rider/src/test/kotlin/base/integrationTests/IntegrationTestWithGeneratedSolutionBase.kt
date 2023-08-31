@@ -29,7 +29,7 @@ abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSol
     private lateinit var unityProcessHandle: ProcessHandle
 
     @BeforeMethod
-    fun startUnityProcessAndWait() {
+    open fun startUnityProcessAndWait() {
         installPlugin()
         val unityTestEnvironment = testMethod.unityEnvironment
         unityProcessHandle = when {
@@ -49,13 +49,13 @@ abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSol
     }
 
     @BeforeMethod(dependsOnMethods = ["startUnityProcessAndWait"])
-    fun waitForUnityRunConfigurations() {
+    open fun waitForUnityRunConfigurations() {
         refreshUnityModel()
         waitForUnityRunConfigurations(project)
     }
 
     @BeforeMethod(dependsOnMethods = ["waitForUnityRunConfigurations"])
-    fun buildSolutionAfterUnityStarts() {
+    open fun buildSolutionAfterUnityStarts() {
         buildSolutionWithReSharperBuild(project, ignoreReferencesResolve = true)
     }
 
