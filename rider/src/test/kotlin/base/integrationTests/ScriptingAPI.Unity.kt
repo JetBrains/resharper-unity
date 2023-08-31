@@ -190,12 +190,16 @@ private fun startUnity(args: MutableList<String>,
                        withCoverage: Boolean,
                        resetEditorPrefs: Boolean,
                        useRiderTestPath: Boolean,
-                       batchMode: Boolean): ProcessHandle {
+                       batchMode: Boolean,
+                       generateSolution: Boolean = false): ProcessHandle {
     args.withDebugCodeOptimization().addAll(arrayOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests"))
     if (batchMode) {
         args.add("-batchMode")
     }
-
+    if (generateSolution) {
+        args.add("-quit")
+        args.add("-executeMethod Packages.Rider.Editor.RiderScriptEditor.SyncSolution")
+    }
     args.add("-executeMethod")
     if (resetEditorPrefs) {
         args.add("Editor.IntegrationTestHelper.ResetAndStart")
@@ -278,9 +282,10 @@ fun BaseTestWithSolutionBase.startUnity(executable: String,
                                         withCoverage: Boolean,
                                         resetEditorPrefs: Boolean,
                                         useRiderTestPath: Boolean,
-                                        batchMode: Boolean): ProcessHandle {
+                                        batchMode: Boolean,
+                                        generateSolution: Boolean = false): ProcessHandle {
     val args = mutableListOf(executable).withProjectPath(projectPath)
-    return startUnity(args, testMethod.logDirectory.resolve("UnityEditor.log"), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
+    return startUnity(args, testMethod.logDirectory.resolve("UnityEditor.log"), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode, generateSolution)
 }
 
 fun BaseTestWithSolution.startUnity(withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean) =
