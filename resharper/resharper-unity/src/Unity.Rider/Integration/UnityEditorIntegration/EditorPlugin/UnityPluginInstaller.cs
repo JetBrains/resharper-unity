@@ -23,6 +23,7 @@ using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.Application.I18n;
+using JetBrains.ReSharper.Feature.Services.Protocol;
 using JetBrains.Threading;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration.EditorPlugin
@@ -264,7 +265,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
 
                 myLogger.Info(userTitle);
 
-                var notification = new NotificationModel(userTitle, userMessage, true, RdNotificationEntryType.INFO, new List<NotificationHyperlink>());
+                var notification = new NotificationModel(mySolution.GetRdProjectId(), userTitle, userMessage,
+                    true, RdNotificationEntryType.INFO, new List<NotificationHyperlink>());
 
                 myShellLocks.ExecuteOrQueueEx(myLifetime, "UnityPluginInstaller.Notify", () => myNotifications.Notification(notification));
             }

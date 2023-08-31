@@ -35,7 +35,7 @@ import com.jetbrains.rider.plugins.unity.util.withDebugCodeOptimization
 import com.jetbrains.rider.plugins.unity.util.withProjectPath
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDirectory
-import com.jetbrains.rider.services.popups.nova.headless.NullPrintStream
+import com.jetbrains.rider.utils.NullPrintStream
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
@@ -65,7 +65,7 @@ val unityActionsTimeout: Duration = Duration.ofSeconds(30)
 
 //region UnityDll
 
-val unity2022_2_15f1_ref_asm by ZipFilePackagePreparer("Unity3d-2022.2.15f1-15-05-2023.zip")
+val unity2022_2_15f1_ref_asm by ZipFilePackagePreparer("Unity3d-2022.2.15f1-17-08-2023.zip")
 
 private fun downloadMsCorLib(): File {
     return downloadAndExtractArchiveArtifactIntoPersistentCache(
@@ -190,12 +190,16 @@ private fun startUnity(args: MutableList<String>,
                        withCoverage: Boolean,
                        resetEditorPrefs: Boolean,
                        useRiderTestPath: Boolean,
-                       batchMode: Boolean): ProcessHandle {
+                       batchMode: Boolean,
+                       generateSolution: Boolean = false): ProcessHandle {
     args.withDebugCodeOptimization().addAll(arrayOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests"))
     if (batchMode) {
         args.add("-batchMode")
     }
-
+    if (generateSolution) {
+        args.add("-quit")
+        args.add("-executeMethod Packages.Rider.Editor.RiderScriptEditor.SyncSolution")
+    }
     args.add("-executeMethod")
     if (resetEditorPrefs) {
         args.add("Editor.IntegrationTestHelper.ResetAndStart")
@@ -278,9 +282,10 @@ fun BaseTestWithSolutionBase.startUnity(executable: String,
                                         withCoverage: Boolean,
                                         resetEditorPrefs: Boolean,
                                         useRiderTestPath: Boolean,
-                                        batchMode: Boolean): ProcessHandle {
+                                        batchMode: Boolean,
+                                        generateSolution: Boolean = false): ProcessHandle {
     val args = mutableListOf(executable).withProjectPath(projectPath)
-    return startUnity(args, testMethod.logDirectory.resolve("UnityEditor.log"), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
+    return startUnity(args, testMethod.logDirectory.resolve("UnityEditor.log"), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode, generateSolution)
 }
 
 fun BaseTestWithSolution.startUnity(withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean) =

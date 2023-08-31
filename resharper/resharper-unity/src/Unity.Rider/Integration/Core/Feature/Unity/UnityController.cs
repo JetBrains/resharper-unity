@@ -113,7 +113,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Unity
             return myThreading.Tasks.StartNew(lifetime, Scheduling.MainDispatcher, () => unityModel.StopProfiling.Sync(data, ourUnityStartProfilingTimeouts));
         }
 
-        public bool IsUnitySolution() => myUnitySolutionTracker.IsUnityGeneratedProject.Maybe.ValueOrDefault;
+        public bool IsUnitySolution() => myUnitySolutionTracker.IsUnityProject.Maybe.ValueOrDefault;
 
         private VirtualFileSystemPath EditorInstanceJsonPath => mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
 

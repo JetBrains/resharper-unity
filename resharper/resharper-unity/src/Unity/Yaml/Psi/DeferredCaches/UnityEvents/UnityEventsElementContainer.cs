@@ -116,7 +116,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             {
                 if (ourMethodNameSearcher.Find(entry.Content.GetTextAsBuffer()) >= 0)
                 {
-                    var name = entry.Key.GetPlainScalarText();
+                    var name = entry.Key.GetScalarText();
                     if (name == null)
                         continue;
                     
@@ -155,7 +155,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 {
                     var entryContent = blockMappingEntry.Content;
                     if (ourMethodNameSearcher.Find(entryContent.GetTextAsBuffer()) >= 0)
-                        BuildRootMappingNode(currentAssetSourceFile, assetDocument, entryContent.Value, $"{name}.{blockMappingEntry.Key.GetPlainScalarText()}",
+                        BuildRootMappingNode(currentAssetSourceFile, assetDocument, entryContent.Value, $"{name}.{blockMappingEntry.Key.GetScalarText()}",
                             ref result, location, scriptReference);
                 }
             }
@@ -164,7 +164,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             if (mCalls == null)
                 return;
 
-            var eventTypeName = rootMap.GetMapEntryPlainScalarText("m_TypeName");
+            var eventTypeName = rootMap.GetMapEntryScalarText("m_TypeName");
             var calls = GetCalls(currentAssetSourceFile, assetDocument, mCalls, name, eventTypeName);
 
             result.Add(new UnityEventData(name, location, scriptReference.Value, calls.ToArray()));
@@ -187,16 +187,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     continue;
 
                 var methodNameNode = methodDescription.GetMapEntryValue<INode>("m_MethodName");
-                var methodName = methodNameNode?.GetPlainScalarText();
+                var methodName = methodNameNode?.GetScalarText();
                 if (methodName == null)
                     continue;
 
                 var methodNameRange = methodNameNode.GetTreeTextRange();
 
                 var arguments = methodDescription.GetMapEntryValue<IBlockMappingNode>("m_Arguments");
-                var modeText = methodDescription.GetMapEntryPlainScalarText("m_Mode");
+                var modeText = methodDescription.GetMapEntryScalarText("m_Mode");
                 var argMode = GetEventHandlerArgumentMode(modeText);
-                var argumentTypeName = arguments.GetMapEntryPlainScalarText("m_ObjectArgumentAssemblyTypeName");
+                var argumentTypeName = arguments.GetMapEntryScalarText("m_ObjectArgumentAssemblyTypeName");
 
                 var type = argumentTypeName?.Split(',').FirstOrDefault();
                 if (argMode == EventHandlerArgumentMode.EventDefined)
@@ -429,12 +429,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             return result;
         }
 
-        public int GetUsageCountForEvent(IField field, out bool isEstimated)
+        public int GetUsageCountForEvent(ITypeOwner typeOwner, out bool isEstimated)
         {
             myShellLocks.AssertReadAccessAllowed();
 
             isEstimated = false;
-            var containingType = field?.GetContainingType();
+            var containingType = typeOwner?.GetContainingType();
             if (containingType == null)
                 return 0;
 
@@ -443,17 +443,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 return 0;
 
             var result = 0;
-            foreach (var name in AssetUtils.GetAllNamesFor(field))
+            foreach (var name in AssetUtils.GetAllNamesFor(typeOwner))
             {
                 result += myUnityEventUsageCount.GetCount((name, guid.Value));
             }
 
-            if (myUnityEventsWithModifications.Contains(field.ShortName))
+            if (myUnityEventsWithModifications.Contains(typeOwner.ShortName))
                 isEstimated = true;
 
             if (!isEstimated)
                 isEstimated = AssetUtils.HasPossibleDerivedTypesWithMember(guid.Value, containingType,
-                    AssetUtils.GetAllNamesFor(field), myUnityEventNameHashToScriptGuids);
+                    AssetUtils.GetAllNamesFor(typeOwner), myUnityEventNameHashToScriptGuids);
 
             return result;
         }

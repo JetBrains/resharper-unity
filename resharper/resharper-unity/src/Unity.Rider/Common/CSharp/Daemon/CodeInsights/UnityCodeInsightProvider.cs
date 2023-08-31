@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
 
         public override ICollection<CodeVisionRelativeOrdering> RelativeOrderings { get; }
 
-        public UnityCodeInsightProvider(IFrontendBackendHost frontendBackendHost, UnitySolutionTracker solutionTracker,
+        public UnityCodeInsightProvider(IFrontendBackendHost frontendBackendHost,
                                         BulbMenuComponent bulbMenu, UnitySolutionTracker tracker)
             : base(frontendBackendHost, bulbMenu)
         {

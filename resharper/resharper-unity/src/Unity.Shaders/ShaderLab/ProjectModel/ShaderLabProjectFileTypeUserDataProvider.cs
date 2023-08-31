@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel
         public void AddUserData(ReadonlyUserDataPerSubjectBuilder<ProjectFileType> builder)
         {
             if (ShaderLabProjectFileType.Instance is {} projectFileType)
-                builder.Add(projectFileType, UnityIndexedExternalProjectFileTypeFilter.ExternalModuleIndexingModeKey, ExternalModuleIndexingMode.Always);
+                builder.Add(projectFileType, UnityExternalProjectFileTypes.ExternalModuleFileFlagsKey, ExternalModuleFileFlags.IndexAlways | ExternalModuleFileFlags.TreatAsNonGenerated);
         }
     }
 }

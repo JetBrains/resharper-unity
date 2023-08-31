@@ -27,6 +27,7 @@
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ProtocolInstanceWatcher"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.explorer.MetaTrackerInitializer"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspaceModelUpdaterInitializer"/>
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetProvider"/>
 
     <rider.externalDirectoryProvider implementation="com.jetbrains.rider.plugins.unity.workspace.UnityExternalDirectoryProvider" />
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService"/>
@@ -98,7 +99,7 @@
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabIconProvider" />
     <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rider.completion.ProtocolCompletionContributor" />
     <codeInsight.parameterInfo language="ShaderLab" implementationClass="com.jetbrains.rdclient.parameterInfo.FrontendParameterInfoHandler"/>
-    <lang.documentationProvider language="ShaderLab" implementationClass="com.jetbrains.rdclient.quickDoc.FrontendDocumentationProvider"/>
+    <lang.documentationProvider language="ShaderLab" implementationClass="com.jetbrains.rider.quickDoc.FrontendDocumentationProvider"/>
     <backend.typedHandler language="ShaderLab" implementationClass="com.jetbrains.rider.cpp.fileType.CppTypedHandler"/>
     <langCodeStyleSettingsProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.settings.ShaderLabStyleSettingsProvider"/>
     <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.breadcrumbs.ShaderLabBreadcrumbsInfoProvider"/>
@@ -183,13 +184,6 @@
     <rd.platform.traceScenarioHolder implementation="com.jetbrains.rider.plugins.unity.logs.UnityLogTraceScenarios"/>
     <feedbackDescriptionProvider implementation="com.jetbrains.rider.plugins.unity.UnityFeedbackDescriptionProvider" />
 
-    <!-- TODO: Fix up ordering once Rider's own status bar widgets have been migrated to StatusBarWidgetFactory
-         Modern status bar widgets have an order defined in xml, the legacy style order is decided at runtime, so we
-         can't order relative to other Rider status bar widgets. Previously, we only had "after readOnlyWidget", with
-         no "before" -->
-    <!--suppress PluginXmlValidity -->
-    <statusBarWidgetFactory implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetFactory" order="before unityWidget" />
-
     <!-- File Layout -->
     <standardResourceProvider implementation="com.jetbrains.rider.plugins.unity.settings.fileLayout.AdditionalFileLayoutStandardResourceProvider"/>
     <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.settings.fileLayout.AdditionalFileLayoutSchemaProvider"/>
@@ -197,7 +191,6 @@
     <navbar implementation="com.jetbrains.rider.plugins.unity.ide.navigationToolbar.UnityNavBarModelExtension"/>
 
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.UnityUIManager"/>
-    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer"/>
 
     <solutionManagerExtensions implementation="com.jetbrains.rider.plugins.unity.workspace.UnitySolutionManagerExtensions"/>
 
@@ -211,6 +204,7 @@
 
     <rider.action.technical.support.info.provider implementation="com.jetbrains.rider.plugins.unity.actions.UnityVersionRiderTechnicalSupportInfoProvider" />
     <rider.unityDetector implementation="com.jetbrains.rider.plugins.unity.UnityDetectorImpl"/>
+    <rider.resolveContextWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetProvider" order="after projectAndFrameworkResolveContextWidget"/>
   </extensions>
 
   <applicationListeners>
@@ -245,9 +239,8 @@
             icon="UnityIcons.Actions.RefreshInUnity" />
 
     <group id="UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
-      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
-      <add-to-group group-id="RightToolbarSideGroup" relative-to-action="BuildSolutionAction" anchor="after" />
-
+      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionBar" anchor="after" />
+      <add-to-group group-id="RightToolbarSideGroup" relative-to-action="BuildSolutionBar" anchor="after" />
       <separator/>
       <action id="UnityToolbarLabel" class="com.jetbrains.rider.plugins.unity.actions.UnityToolbarLabel"/>
     </group>
@@ -302,11 +295,6 @@
 
     <action id="InstallEditorPluginAction"
             class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction" />
-
-    <action class="com.jetbrains.rider.plugins.unity.actions.FindUnityUsagesAction" id="RdFindUnityUsagesAction">
-      <add-to-group group-id="FindMenuGroup" anchor="after" relative-to-action="FindUsages"/>
-      <add-to-group group-id="EditorPopupMenu1.FindRefactor" anchor="after" relative-to-action="FindUsages"/>
-    </action>
 
     <group id="RiderInternal.Unity" popup="true" internal="true">
       <add-to-group group-id="RiderInternal" anchor="last" />

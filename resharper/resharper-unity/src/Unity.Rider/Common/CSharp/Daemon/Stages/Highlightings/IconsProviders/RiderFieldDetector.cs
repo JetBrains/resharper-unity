@@ -13,6 +13,7 @@ using JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Common.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Backend.Platform.Icons;
@@ -70,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.Stages.Hi
                 }
 
                 var isProcessing = myDeferredCacheController.IsProcessingFiles();
-                myFieldUsageProvider.AddInspectorHighlighting(consumer, element, element.DeclaredElement, text,
+                myFieldUsageProvider.AddInspectorHighlighting(consumer, element, element?.DeclaredElement as ITypeOwner, text,
                     tooltip, isProcessing ? Strings.RiderFieldDetector_AddMonoBehaviourHighlighting_Inspector_values_are_not_available_during_asset_indexing : text,
                     isProcessing ? myIconHost.Transform(CodeInsightsThemedIcons.InsightWait.Id) : myIconHost.Transform(InsightUnityIcons.InsightUnity.Id),
                     GetActions(element), RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myBackendUnityHost));

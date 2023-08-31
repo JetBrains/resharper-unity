@@ -38,7 +38,7 @@ namespace JetBrains.Rider.Unity.Editor
   {
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
     private static readonly IPluginSettings ourPluginSettings = new PluginSettings();
-    private static readonly RiderPathProvider ourRiderPathProvider = new RiderPathProvider(ourPluginSettings);
+    private static readonly RiderPathProvider ourRiderPathProvider = new RiderPathProvider();
     private static readonly long ourInitTime = DateTime.UtcNow.Ticks;
     private static bool ourInitialised;
 
@@ -78,7 +78,7 @@ namespace JetBrains.Rider.Unity.Editor
       UnityEventLogSender.Start(appDomainLifetime);
 
       // Old mechanism, when EditorPlugin was copied to Assets folder. Package was introduced with Unity 2019.2
-      AssetsBasedPlugin.Initialise(appDomainLifetime, ourRiderPathProvider, ourPluginSettings, ourLogger);
+      AssetsBasedPlugin.Initialise(appDomainLifetime, ourRiderPathProvider, ourLogger);
 
       // ReSharper disable once PossibleNullReferenceException
       var projectName = Path.GetFileName(Directory.GetParent(Application.dataPath).FullName);
@@ -88,7 +88,7 @@ namespace JetBrains.Rider.Unity.Editor
       PlayModeStateTracker.Initialise();
       UnityEditorProtocol.Initialise(appDomainLifetime, ourInitTime, ourLogger);
 
-      OpenAssetHandler = new OnOpenAssetHandler(appDomainLifetime, ourRiderPathProvider, ourPluginSettings, SlnFile);
+      OpenAssetHandler = new OnOpenAssetHandler(appDomainLifetime, ourRiderPathProvider, SlnFile);
 
       ReportInitialisationDone();
 
@@ -112,11 +112,6 @@ namespace JetBrains.Rider.Unity.Editor
       }
 
       return connected;
-    }
-
-    public static bool CallRider(string args)
-    {
-      return OpenAssetHandler.CallRider(args);
     }
 
     public static bool IsRiderDefaultEditor()

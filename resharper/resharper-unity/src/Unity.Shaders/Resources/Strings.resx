@@ -82,6 +82,12 @@
     <data name="ShaderLabAutopopupEnabledSettingsKey_s_In_keywords" xml:space="preserve">
         <value>In keywords</value>
     </data>
+    <data name="ShaderLabAutopopupEnabledSettingsKey_s_In_shader_references" xml:space="preserve">
+        <value>In shader references</value>
+    </data>
+    <data name="ShaderLabAutopopupEnabledSettingsKey_s_In_pass_references" xml:space="preserve">
+        <value>In pass references</value>
+    </data>
     <data name="ShaderLabAutopopupEnabledSettingsKey_s_ShaderLab" xml:space="preserve">
         <value>ShaderLab</value>
         <comment>Don't localize</comment>
@@ -142,5 +148,11 @@
     </data>
     <data name="String_RiderPresentableName" xml:space="preserve">
         <value>String</value>
+    </data>
+    <data name="ShaderNameNotRevoled" xml:space="preserve">
+        <value>Unresolved Shader name "{0}"</value>
+    </data>
+    <data name="ShaderNameMultipleCandidates" xml:space="preserve">
+        <value>Multiple Shaders with same name "{0}"</value>
     </data>
 </root>

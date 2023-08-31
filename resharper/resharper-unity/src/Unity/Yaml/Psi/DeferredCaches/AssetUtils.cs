@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JetBrains.Collections;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -212,7 +213,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                     var document = parser.ParseDocument();
                     
                     if (document.Body.BlockNode is not IFlowMappingNode flowMappingNode) continue;
-                    var localDocumentAnchor = flowMappingNode.GetMapEntryPlainScalarText("fileID");
+                    var localDocumentAnchor = flowMappingNode.GetMapEntryScalarText("fileID");
                     if (localDocumentAnchor != null && long.TryParse(localDocumentAnchor, out var result))
                         results.Add(result);
                     
@@ -234,12 +235,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return eol;
         }
 
-        public static string? GetGameObjectName(IBuffer buffer)
-        {
-            return GetPlainScalarValue(buffer, ourGameObjectNameSearcher);
-        }
+        public static string? GetGameObjectName(IBuffer buffer) => GetUnicodeText(buffer, ourGameObjectNameSearcher);
 
-        public static string? GetPlainScalarValue(IBuffer buffer, StringSearcher searcher)
+        public static string? GetUnicodeText(IBuffer buffer, StringSearcher searcher)
         {
             var start = searcher.Find(buffer, 0, buffer.Length);
             if (start < 0)
@@ -254,8 +252,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             var parser = new YamlParser(lexer.ToCachingLexer());
             var document = parser.ParseDocument();
 
-            return (document.Body.BlockNode as IBlockMappingNode)?.Entries.FirstOrDefault()?.Content.Value
-                .GetPlainScalarText();
+            return (document.Body.BlockNode as IBlockMappingNode)?.Entries.FirstOrDefault()?.Content.Value.GetUnicodeText();
         }
 
         public static IHierarchyReference? GetPrefabInstance(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
@@ -289,11 +286,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return yamlDocument.GetUnityObjectPropertyValue<IBlockMappingNode>(UnityYamlConstants.ModificationProperty);
         }
 
-        public static IEnumerable<string> GetAllNamesFor(IField field)
+        public static IEnumerable<string> GetAllNamesFor(ITypeOwner typeOwner)
         {
-            yield return field.ShortName;
+            string shortName;
+            IList<IAttributeInstance>? attributeInstances;
+            
+            switch (typeOwner)
+            {
+                case IField field:
+                    attributeInstances = field.GetAttributeInstances(KnownTypes.FormerlySerializedAsAttribute, false);
+                    shortName = field.ShortName;
+                    break;
+                case IProperty property:
+                    attributeInstances = property.GetAttributeInstances(KnownTypes.FormerlySerializedAsAttribute, false);
+                    shortName = $"{StandardMemberNames.BackingFieldPrefix}{property.ShortName}{StandardMemberNames.BackingFieldSuffix}";
+                    break;
+                default:
+                    attributeInstances = EmptyList<IAttributeInstance>.Instance;
+                    shortName = string.Empty;
+                    break;
+            }
+            
+            if(string.IsNullOrEmpty(shortName))
+                yield break;
 
-            foreach (var attribute in field.GetAttributeInstances(KnownTypes.FormerlySerializedAsAttribute, false))
+            yield return shortName;
+
+            foreach (var attribute in attributeInstances)
             {
                 var constantValue = attribute.PositionParameters().FirstOrDefault()?.ConstantValue;
                 if (constantValue == null) continue;

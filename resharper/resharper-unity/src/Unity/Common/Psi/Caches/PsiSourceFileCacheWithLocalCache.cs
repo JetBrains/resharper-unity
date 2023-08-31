@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.DataFlow;
@@ -11,11 +12,11 @@ using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches
 {
-    public abstract class PsiSourceFileCacheWithLocalCache<T> : SimpleICache<T> where T : class, IEquatable<T>
+    public abstract class PsiSourceFileCacheWithLocalCache<T> : SimpleICache<T> where T : class
     {
         private readonly GroupingEvent myCacheUpdatedGroupingEvent;
         
-        public ISimpleSignal CacheUpdated => myCacheUpdatedGroupingEvent.Outgoing;
+        [PublicAPI] public ISimpleSignal CacheUpdated => myCacheUpdatedGroupingEvent.Outgoing;
         
         protected PsiSourceFileCacheWithLocalCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager, IUnsafeMarshaller<T> valueMarshaller, string cacheChangedEvent) : base(lifetime, locks, persistentIndexManager, valueMarshaller)
         {
@@ -24,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches
         
         public sealed override void Drop(IPsiSourceFile sourceFile)
         {
-            var removed = Map.TryGetValue(sourceFile, out var oldPart) && RemoveFromLocalCache(sourceFile, oldPart);
+            var removed = RemoveFromLocalCache(sourceFile);
             base.Drop(sourceFile);
             if (removed)
                 myCacheUpdatedGroupingEvent.FireIncoming();
@@ -32,15 +33,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches
 
         public sealed override void Merge(IPsiSourceFile sourceFile, object? builtPart)
         {
-            var updated = false;
             var newPart = builtPart as T;
-            if (Map.TryGetValue(sourceFile, out var oldPart))
-            {
-                updated = RemoveFromLocalCache(sourceFile, oldPart);
-                if (newPart != null)
-                    updated |= AddToLocalCache(sourceFile, newPart);
-            } else if (newPart != null)
-                updated = AddToLocalCache(sourceFile, newPart);
+            var updated = RemoveFromLocalCache(sourceFile);
+            if (newPart != null)
+                updated |= AddToLocalCache(sourceFile, newPart);
+
             base.Merge(sourceFile, builtPart);
             if (updated)
                 myCacheUpdatedGroupingEvent.FireIncoming();
@@ -54,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches
             myCacheUpdatedGroupingEvent.FireIncoming();
         }
 
-        protected abstract bool RemoveFromLocalCache(IPsiSourceFile sourceFile, T oldPart);
+        protected abstract bool RemoveFromLocalCache(IPsiSourceFile sourceFile);
 
         protected abstract bool AddToLocalCache(IPsiSourceFile sourceFile, T newPart);
     }

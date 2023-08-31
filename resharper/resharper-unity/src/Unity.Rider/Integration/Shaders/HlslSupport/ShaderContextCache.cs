@@ -1,5 +1,4 @@
 using JetBrains.Application.I18n;
-using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers;
 using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
@@ -32,22 +31,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             myLogger = logger;
         }
 
-        public void SetContext(IPsiSourceFile psiSourceFile, CppFileLocation? root)
+        public void SetContext(IPsiSourceFile psiSourceFile, IRangeMarker? range)
         {
-            using (ReadLockCookie.Create())
-            {
-                if (root.HasValue)
-                {
-                    Assertion.Assert(root.Value.RootRange.IsValid, "root.RootRange.IsValid()");
-                    var range = myManager.CreateRangeMarker(new DocumentRange(root.Value.GetDocument(mySolution),
-                        root.Value.RootRange));
-                    myShaderContext.AddToCache(psiSourceFile.GetLocation(), range);
-                }
-                else
-                {
-                    myShaderContext.RemoveFromCache(psiSourceFile.GetLocation());
-                }
-            }
+            if (range != null)
+                myShaderContext.AddToCache(psiSourceFile.GetLocation(), range);
+            else
+                myShaderContext.RemoveFromCache(psiSourceFile.GetLocation());
 
             var solution = psiSourceFile.GetSolution();
             var psiFiles = solution.GetPsiServices().Files;
@@ -58,6 +47,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
 
         public CppFileLocation GetPreferredRootFile(CppFileLocation currentFile)
         {
+            if (currentFile.IsInjected())
+                return currentFile;
+            
             using (ReadLockCookie.Create())
             {
                 var sourceFile = currentFile.GetRandomSourceFile(mySolution);

@@ -6,6 +6,10 @@ Add folders
   References
   -Scenes
    SampleScene.unity
+  -UI
+   -Elements
+    ui_btn_menus.png
+   TitleScreen.png
   -Uxml
    Menu.uss
   NewBehaviourScript.cs
@@ -39,6 +43,10 @@ Show tilde folders
    Class1.cs, tooltip=This file is not imported into the asset database
   -Scenes
    SampleScene.unity
+  -UI
+   -Elements
+    ui_btn_menus.png
+   TitleScreen.png
   -Uxml
    Menu.uss
   NewBehaviourScript.cs
@@ -78,6 +86,12 @@ Show All Files
   -Scenes
    SampleScene.unity
    SampleScene.unity.meta, tooltip=This file is not imported into the asset database
+  -UI
+   -Elements
+    ui_btn_menus.png
+    ui_btn_menus.png.meta, tooltip=This file is not imported into the asset database
+   TitleScreen.png
+   TitleScreen.png.meta, tooltip=This file is not imported into the asset database
   -Uxml
    Menu.uss
    Menu.uss.meta, tooltip=This file is not imported into the asset database
@@ -118,6 +132,10 @@ Hide all
   References
   -Scenes
    SampleScene.unity
+  -UI
+   -Elements
+    ui_btn_menus.png
+   TitleScreen.png
   -Uxml
    Menu.uss
   Class1.cs
@@ -138,7 +156,6 @@ Project [Name:Assembly-CSharp, GUID:GUID]
           Child items:
             ProjectFileImpl(Path : Class1.cs)[COMPILE ]
         ProjectFileImpl(Path : Class1.cs)[COMPILE ]
-        ProjectFileImpl(Path : Class1.cs.meta)[CONTENT ]
         ProjectFileImpl(Path : NewBehaviourScript.cs)[COMPILE ]
         Folder [Name:NewFolder1~]
           Child items:
