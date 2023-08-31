@@ -7,7 +7,7 @@
        decides to disable CSS. We'll prompt to enable CSS if they open a *.uss file -->
   <extensions defaultExtensionNs="com.intellij">
     <!-- USS support -->
-    <fileType name="USS" language="USS" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.css.uss.UssFileType" extensions="uss" />
+    <fileType name="USS" language="USS" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.css.uss.UssFileType" extensions="uss;tss" />
     <lang.parserDefinition language="USS" implementationClass="com.jetbrains.rider.plugins.unity.css.uss.UssFileParserDefinition"/>
     <lang.syntaxHighlighter language="USS" implementationClass="com.jetbrains.rider.plugins.unity.css.uss.UssSyntaxHighlighter" />
     <lang.inspectionSuppressor language="USS" implementationClass="com.jetbrains.rider.plugins.unity.css.uss.codeInsight.css.inspections.UssInspectionSuppressor"/>
