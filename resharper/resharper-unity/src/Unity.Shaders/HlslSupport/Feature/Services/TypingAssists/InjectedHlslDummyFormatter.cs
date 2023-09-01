@@ -92,9 +92,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
 
         private class HlslDummyFormatterContext : CppDummyFormatterContext
         {
-            public HlslDummyFormatterContext(ISolution solution, ITextControl originalTextControl,
-                ITextControl textControl, CppLanguageDialect dialect)
-                : base(solution, originalTextControl, textControl, dialect)
+            public HlslDummyFormatterContext(ISolution solution, ITextControl textControl, CppLanguageDialect dialect)
+                : base(solution, textControl, dialect)
             {
             }
 
