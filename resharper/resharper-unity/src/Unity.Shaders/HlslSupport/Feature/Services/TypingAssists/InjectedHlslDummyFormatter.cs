@@ -105,11 +105,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
             }
         }
 
-        public override CppDummyFormatterContext CreateContext(ITextControl textControl,
-            ITextControl originalTextControl)
+        public override CppDummyFormatterContext CreateContext(ITextControl textControl)
         {
             var dialect = myCompilationPropertiesProvider.ShaderLabHlslDialect;
-            return new HlslDummyFormatterContext(mySolution, originalTextControl, textControl, dialect);
+            return new HlslDummyFormatterContext(mySolution, textControl, dialect);
         }
     }
 }
