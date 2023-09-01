@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
 {
@@ -34,15 +35,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
             var packageManager = solution.GetComponent<PackageManager>();
             var packageData = packageManager.GetOwningPackage(asmDefLocation);
 
-            var linkPart = compiledElement.GetSearchableText()!.Replace("+", ".");
-            
-            var version = new Version(packageData.PackageDetails.Version);
+            var linkPart = compiledElement.GetSearchableText()!.Replace("+", ".").Replace("`", "-");
+
+            if (!JetSemanticVersion.TryParse(packageData.PackageDetails.Version, out var version))
+                return null;
 
             var urlHost = "docs.unity3d.com";
-            if (!packageData.Id.StartsWith("com.unity.") && packageData.PackageDetails.DocumentationUrl != null && Uri.TryCreate(packageData.PackageDetails.DocumentationUrl, UriKind.Absolute, out var result)) 
+            if (!packageData.Id.StartsWith("com.unity.") 
+                && packageData.PackageDetails.DocumentationUrl != null 
+                && Uri.TryCreate(packageData.PackageDetails.DocumentationUrl, UriKind.Absolute, out var result)) 
                 urlHost = result.Host;
             
-            return new Uri($"https://{urlHost}/Packages/{packageData.Id}@{version.ToString(2)}/api/{linkPart}.html");
+            return new Uri($"https://{urlHost}/Packages/{packageData.Id}@{version.Major}.{version.Minor}/api/{linkPart}.html");
         }
 
         private static bool IsPublic(ICompiledElement element)
@@ -72,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
                 !Uri.TryCreate(packageData.PackageDetails.DocumentationUrl, UriKind.Absolute, out _)))
                 return false;
             
-            if (!Version.TryParse(packageData.PackageDetails.Version, out _)) return false;
+            if (!JetSemanticVersion.TryParse(packageData.PackageDetails.Version, out _)) return false;
 
             if (element.GetSearchableText() == null) return false;
 
