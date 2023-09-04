@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Components;
 using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Model2.Assemblies.Impl;
+using JetBrains.ReSharper.Feature.Services.ExternalSources;
 using JetBrains.ReSharper.Feature.Services.ExternalSources.Core;
 using JetBrains.ReSharper.Feature.Services.ExternalSources.Pdb;
 using JetBrains.ReSharper.Feature.Services.ExternalSources.Pdb.Cache;
@@ -15,6 +17,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.ExternalSources
 {
     [SolutionComponent]
+    [ZoneMarker(typeof(ExternalSourcesZone))]
     public class UnityPdbServiceImpl : PdbServiceImpl
     {
         private readonly UnitySolutionTracker mySolutionTracker;
