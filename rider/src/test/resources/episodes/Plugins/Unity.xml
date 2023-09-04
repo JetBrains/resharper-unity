@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite name="Rider Tests Unity Integration">
+  <test name="Main Tests Unity Integration">
+    <packages>
+      <package name="com.jetbrains.rider.unity.test.cases.*">
+        <exclude name="com.jetbrains.rider.unity.test.cases.integrationTests"/>
+      </package>
+    </packages>
+  </test>
+</suite>
+
