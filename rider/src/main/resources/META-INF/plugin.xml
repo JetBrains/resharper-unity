@@ -163,6 +163,7 @@
 
     <!-- Project Model -->
     <solutionExplorerCustomization implementation="com.jetbrains.rider.plugins.unity.explorer.UnitySolutionExplorerCustomization" />
+    <rider.documentBehaviour implementation="com.jetbrains.rider.plugins.unity.document.UnityRiderDocumentBehaviour" />
 
     <!-- Run configurations -->
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityEditorDebugConfigurationType" />
