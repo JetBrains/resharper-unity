@@ -1,6 +1,5 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
-import base.integrationTests.*
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties

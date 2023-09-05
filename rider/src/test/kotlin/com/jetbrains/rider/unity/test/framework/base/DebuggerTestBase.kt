@@ -1,6 +1,5 @@
 package com.jetbrains.rider.unity.test.framework.base
 
-import base.integrationTests.*
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.breakpoints.XBreakpointProperties
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
@@ -12,7 +11,6 @@ import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.api.*
-import com.jetbrains.rider.unity.test.framework.integrationTests.*
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
 import java.io.File
