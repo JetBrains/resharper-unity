@@ -49,9 +49,14 @@
      <Compile Include="Assets/BroadcastScript1.cs" />
   </ItemGroup>
    <ItemGroup>
-      <Reference Include="mscorlib">
-        <HintPath>mscorlib.dll</HintPath>
-      </Reference>
+
+    <Reference Include="mscorlib">
+      <HintPath>mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="netstandard">
+      <HintPath>netstandard.dll</HintPath>
+    </Reference>
+
       <Reference Include="UnityEngine">
         <HintPath>UnityEngine.dll</HintPath>
       </Reference>
