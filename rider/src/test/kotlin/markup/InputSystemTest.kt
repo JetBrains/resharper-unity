@@ -8,7 +8,9 @@ import com.jetbrains.rdclient.daemon.util.backendAttributeIdOrThrow
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
+import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.markupContributor
 import com.jetbrains.rider.test.scriptingApi.runSwea
@@ -19,6 +21,7 @@ import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
 
+@TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class InputSystemTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String {
         return "InputSystemTestData"
@@ -99,7 +102,6 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
-    //@Mute("RIDER-91507")
     fun usedCodeTest() {
         // PlayerInput is attached to Cube
         // NewBehaviourScript is attached Cube
@@ -107,7 +109,6 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
-    //@Mute("RIDER-91507")
     fun usedCodeTestWithPrefab1() {
         // Cube1 is a prefab
         // PlayerInput is attached to the Cube1 prefab
@@ -116,7 +117,6 @@ class InputSystemTest : BaseTestWithSolution() {
     }
 
     @Test
-    //@Mute("RIDER-91507")
     fun usedCodeTestWithPrefab2() {
         // Cube2 is a prefab, but everything is attached on the scene:
         // PlayerInput is attached to Cube2 on the scene
