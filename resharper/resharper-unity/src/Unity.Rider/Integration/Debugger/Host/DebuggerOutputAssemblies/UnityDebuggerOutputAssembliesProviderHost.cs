@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Debugger.Common.OutputAssemblies;
 using JetBrains.Application.Infra;
-using JetBrains.Debugger.Host.DebuggerOutputAssemblies;
+using JetBrains.Debugger.Host.Core.DebuggerOutputAssemblies;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Utils;
