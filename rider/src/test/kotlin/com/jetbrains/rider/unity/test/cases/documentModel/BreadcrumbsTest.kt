@@ -1,4 +1,4 @@
-package integrationTests
+package com.jetbrains.rider.unity.test.cases.documentModel
 
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.scriptingApi.checkCrumbs
