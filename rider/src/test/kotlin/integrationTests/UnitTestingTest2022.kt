@@ -11,9 +11,9 @@ import com.jetbrains.rider.test.scriptingApi.withUtFacade
 import org.testng.annotations.Test
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class UnitTestingTest2020 : IntegrationTestWithUnityProjectBase() {
+class UnitTestingTest2022 : IntegrationTestWithUnityProjectBase() {
     override fun getSolutionDirectoryName() = "UnityDebugAndUnitTesting/Project"
-    override val unityMajorVersion = UnityVersion.V2020
+    override val unityMajorVersion = UnityVersion.V2022
     @Test
     fun checkRunAllTestsFromProject() {
         withUtFacade(project) {
