@@ -264,7 +264,7 @@ fun getRiderDevAppPath(): File {
         } else {
             RiderBackend.getRiderBackendDir()!!
         }
-        val riderDevAppPath = editorPluginDllsPath.resolve("rider-dev.app")
+        val riderDevAppPath = editorPluginDllsPath.resolve("rider-dev.app").apply { mkdirs() }
         val riderDevBatPath = riderDevAppPath.resolve("rider-dev.bat")
         riderDevBatPath.writeText(editorPluginDllsPath.resolve(assemblyName).canonicalPath)
         return if (SystemInfo.isMac) riderDevAppPath else riderDevBatPath
