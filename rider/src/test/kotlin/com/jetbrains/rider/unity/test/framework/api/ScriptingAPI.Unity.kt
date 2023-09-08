@@ -37,6 +37,7 @@ import com.jetbrains.rider.plugins.unity.util.withDebugCodeOptimization
 import com.jetbrains.rider.plugins.unity.util.withProjectPath
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDirectory
+import com.jetbrains.rider.test.RiderBackend
 import com.jetbrains.rider.utils.NullPrintStream
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
 import com.jetbrains.rider.test.base.BaseTestWithSolution
@@ -258,10 +259,15 @@ fun getUnityProcessHandle(project: Project): ProcessHandle {
 fun getRiderDevAppPath(): File {
     if (PluginManagerCore.isRunningFromSources()) {
         val assemblyName = "JetBrains.Rider.Unity.Editor.Plugin.Net46.dll"
-        val editorPluginDllsPath = FrontendBackendHost::class.java.classLoader.getResource("EditorPlugin")!!.toURI().toPath().toFile()
-        val riderDevBatPath = editorPluginDllsPath.resolve("rider-dev.bat")
-        riderDevBatPath.writeText(editorPluginDllsPath.resolve(assemblyName).canonicalPath)
-        return if (SystemInfo.isMac) editorPluginDllsPath else riderDevBatPath
+        val editorPluginDllsPath = if (TeamCityHelper.isUnderTeamCity) {
+            FrontendBackendHost::class.java.classLoader.getResource("EditorPlugin")!!.toURI().toPath().toFile()
+        } else {
+            RiderBackend.getRiderBackendDir()!!
+        }
+        val riderDevAppPath = editorPluginDllsPath.resolve("rider-dev.app")
+        val riderDevBatPath = riderDevAppPath.resolve("rider-dev.bat")
+        riderDevBatPath.writeText(riderDevAppPath.resolve(assemblyName).canonicalPath)
+        return if (SystemInfo.isMac) riderDevAppPath else riderDevBatPath
     } else {
         val relPath = when {
             SystemInfo.isWindows -> "net472/rider-dev.app/rider-dev.bat"
