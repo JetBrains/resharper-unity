@@ -258,7 +258,7 @@ fun getUnityProcessHandle(project: Project): ProcessHandle {
 
 fun getRiderDevAppPath(): File {
     if (PluginManagerCore.isRunningFromSources()) {
-        val assemblyName = "JetBrains.Rider.Unity.Editor.Plugin.Net46.dll"
+        val assemblyName = "JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll"
         val editorPluginDllsPath = if (TeamCityHelper.isUnderTeamCity) {
             FrontendBackendHost::class.java.classLoader.getResource("EditorPlugin")!!.toURI().toPath().toFile()
         } else {
