@@ -7,7 +7,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.jetbrains.rd.ide.model.RdDndOrderType
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rdclient.protocol.protocolHost
+import com.jetbrains.rider.protocol.protocolHost
 import com.jetbrains.rider.ideaInterop.vfs.VfsWriteOperationsHost
 import com.jetbrains.rider.model.RdProjectModelDumpFlags
 import com.jetbrains.rider.model.RdProjectModelDumpParams
