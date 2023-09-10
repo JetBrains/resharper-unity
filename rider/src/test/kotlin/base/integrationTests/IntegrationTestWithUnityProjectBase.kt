@@ -7,7 +7,6 @@ import com.jetbrains.rider.test.framework.frameworkLogger
 import com.jetbrains.rider.unity.test.framework.UnityVersion
 import com.jetbrains.rider.unity.test.framework.api.getUnityExecutableInstallationPath
 import com.jetbrains.rider.unity.test.framework.api.startUnity
-import org.junit.Assert
 import org.testng.annotations.BeforeMethod
 import java.io.File
 import java.time.Duration
@@ -41,12 +40,12 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
         timeoutMinutes: Duration = Duration.ofMinutes(5L)
     ) {
         try {
-            fun condition(): Boolean {
-                val slnFiles = File(slnDirPath).listFiles { _, name -> name.endsWith(".sln") }
-                return !unityProcessHandle.isAlive && slnFiles != null && slnFiles.isNotEmpty()
-            }
-            object : WaitFor(timeoutMinutes.toMillis().toInt(), 10000) { override fun condition() = condition() }
-            Assert.assertTrue("Sln/csproj structure has not been created by Unity in the batch mode", condition())
+            object : WaitFor(timeoutMinutes.toMillis().toInt(), 10000) {
+                override fun condition(): Boolean {
+                    val slnFiles = File(slnDirPath).listFiles { _, name -> name.endsWith(".sln") }
+                    return !unityProcessHandle.isAlive && slnFiles != null && slnFiles.isNotEmpty()
+                }
+            }.assertCompleted("Sln/csproj structure has not been created by Unity in the batch mode")
         } finally {
             frameworkLogger.info("Killing Unity process which did not generate csproj structure")
             unityProcessHandle.destroyForcibly()
