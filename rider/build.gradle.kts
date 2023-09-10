@@ -914,7 +914,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         from("../resharper/resharper-unity/src/Unity/annotations") {
             into("${pluginName}/dotnet/Extensions/com.intellij.resharper.unity/annotations")
         }
-        from("projectTemplates") { into("${pluginName}/projectTemplates") }
+        from("src/main/resources/projectTemplates") { into("${pluginName}/projectTemplates") }
     }
 
     withType<Test>().configureEach {
