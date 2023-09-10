@@ -41,8 +41,11 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
 
     init {
         application.assertIsDispatchThread()
-        val assets = project.solutionDirectory.toVirtualFile(false)?.findChild("Assets") ?: error("Virtual file not found for Assets directory")
-        sourceRootsTree.add(assets)
+        val assets = project.solutionDirectory.toVirtualFile(false)?.findChild("Assets")
+        if (assets != null) sourceRootsTree.add(assets)
+        else logger.warn("No `Assets` folder in the Unity project")
+        // Very tiny chance, that UnityWorkspacePackageUpdater gets created on event of removing the Assets folder
+        // RIDER-98395 Fix FileSystemExplorerActionsTest.testDeleteFolderInExplorer after adding Unity
     }
 
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {

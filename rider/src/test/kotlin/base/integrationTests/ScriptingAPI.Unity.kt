@@ -65,12 +65,7 @@ val unityActionsTimeout: Duration = Duration.ofSeconds(30)
 
 //region UnityDll
 
-val unity2022_2_15f1_ref_asm by ZipFilePackagePreparer("Unity3d-2022.2.15f1-17-08-2023.zip")
-
-private fun downloadMsCorLib(): File {
-    return downloadAndExtractArchiveArtifactIntoPersistentCache(
-        "https://packages.jetbrains.team/files/p/net/test-data/Unity_mscorlib_2018.4.tar.gz").combine("mscorlib.dll")
-}
+val unity2022_2_15f1_ref_asm by ZipFilePackagePreparer("Unity3d-2022.2.15f1-06-09-2023.zip")
 
 fun prepareAssemblies(project: Project, activeSolutionDirectory: File) {
     prepareAssemblies(activeSolutionDirectory)
@@ -78,10 +73,7 @@ fun prepareAssemblies(project: Project, activeSolutionDirectory: File) {
 }
 
 fun prepareAssemblies(activeSolutionDirectory: File) {
-    val dll = downloadMsCorLib()
-    dll.copyTo(activeSolutionDirectory.combine(dll.name))
-
-    //moving all UnityEngine* and UnityEditor* ref-asm dlls to test solution folder
+    //moving all UnityEngine* and UnityEditor*, netstandard and mscorlib ref-asm dlls to test solution folder
     for (file in unity2022_2_15f1_ref_asm.root.listFiles()!!) {
         val target = activeSolutionDirectory.combine(file.name)
         file.copyTo(target)
