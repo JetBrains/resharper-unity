@@ -53,7 +53,7 @@ abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSol
     @BeforeMethod(dependsOnMethods = ["startUnityProcessAndWait"])
     open fun waitForUnityRunConfigurations() {
         refreshUnityModel()
-        com.jetbrains.rider.unity.test.framework.api.waitForUnityRunConfigurations(project)
+        waitForUnityRunConfigurations(project)
     }
 
     @BeforeMethod(dependsOnMethods = ["waitForUnityRunConfigurations"])
