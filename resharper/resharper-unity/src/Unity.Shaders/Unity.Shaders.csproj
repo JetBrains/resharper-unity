@@ -106,7 +106,11 @@
     <PackageReference Include="NVelocity" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Update="Resources\Strings.resx">
+    <EmbeddedResource Include="Resources\Strings.resx" Condition="$(InternalBuild)">
+      <Generator>JetResourceGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Strings.resx" Condition="!$(InternalBuild)">
       <Generator>JetResourceGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>

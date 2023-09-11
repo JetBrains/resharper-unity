@@ -74,7 +74,11 @@
     <None Remove="api.xml" />
     <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatterns.xaml" />
     <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatternsWithRegions.xaml" />
-    <EmbeddedResource Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.resx">
+    <EmbeddedResource Include="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.resx" Condition="$(InternalBuild)">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdditionalFileLayoutResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.resx" Condition="!$(InternalBuild)">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>AdditionalFileLayoutResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
@@ -83,7 +87,11 @@
     </Compile>
     <None Remove="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
     <EmbeddedResource Include="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
-    <EmbeddedResource Update="Resources\Strings.resx">
+    <EmbeddedResource Include="Resources\Strings.resx" Condition="$(InternalBuild)">
+      <Generator>JetResourceGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Strings.resx" Condition="!$(InternalBuild)">
       <Generator>JetResourceGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
