@@ -73,10 +73,14 @@ class UssReferenceProvider : PsiReferenceProvider() {
             // trim "project:" or "project://" at the start
             // provide fake references to avoid unresolved ranges - (unresolved by CssReferenceProvider)
             val prefixReferences = mutableListOf<UssFilePrefixReference>()
-            if (elementText.startsWith("project:///", startOffset)) {
-                prefixReferences.add(UssFilePrefixReference(element, TextRange.create(startOffset, startOffset + 8)))
-                prefixReferences.add(UssFilePrefixReference(element, TextRange.create(startOffset + 9, startOffset + 9)))
-                prefixReferences.add(UssFilePrefixReference(element, TextRange.create(startOffset + 10, startOffset + 10)))
+            // fully ignore generated paths like
+            // project://database/Assets/UI%20Images/home.quit.png?fileID=2800000&guid=eb66e14c26629fd4fb9653b5317f6dee&type=3#home.quit
+            // todo: resolve to file by its guid, requires going to backend `MetaFileGuidCache`
+            if (elementText.startsWith("project://database/", startOffset)) {
+                prefixReferences.add(UssFilePrefixReference(element, range))
+            }
+            else if (elementText.startsWith("project:///", startOffset)) {
+                prefixReferences.add(UssFilePrefixReference(element, TextRange.create(startOffset, startOffset + 10)))
                 startOffset += 10
             }
             else if (elementText.startsWith("project:/", startOffset)) {
@@ -84,10 +88,8 @@ class UssReferenceProvider : PsiReferenceProvider() {
                 startOffset += 8
             }
             // https://github.com/Unity-Technologies/UnityCsReference/blob/b88328cf5ba7e720c9a84ac2a52e2dd237260077/ModuleOverrides/com.unity.ui/Editor/GameObjects/PanelSettingsCreator/PanelSettingsCreator.cs#L34
-            else if (elementText.startsWith("unity-theme://default", startOffset)){
-                prefixReferences.add(UssFilePrefixReference(element, TextRange.create(startOffset, startOffset + 12)))
-                prefixReferences.add(UssFilePrefixReference(element, TextRange.create(startOffset + 13, startOffset + 13)))
-                prefixReferences.add(UssFilePrefixReference(element, TextRange.create(startOffset + 14, startOffset + 21)))
+            else if (elementText.subSequence(startOffset, endOffset) == "unity-theme://default"){
+                prefixReferences.add(UssFilePrefixReference(element, range))
             }
 
             val resultRange = TextRange.create(startOffset, endOffset)

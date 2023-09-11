@@ -10,13 +10,11 @@
     <fileType name="USS" language="USS" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.css.uss.UssFileType" extensions="uss;tss" />
     <lang.parserDefinition language="USS" implementationClass="com.jetbrains.rider.plugins.unity.css.uss.UssFileParserDefinition"/>
     <lang.syntaxHighlighter language="USS" implementationClass="com.jetbrains.rider.plugins.unity.css.uss.UssSyntaxHighlighter" />
-    <lang.inspectionSuppressor language="USS" implementationClass="com.jetbrains.rider.plugins.unity.css.uss.codeInsight.css.inspections.UssInspectionSuppressor"/>
     <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.css.uss.UssFileBreadcrumbsProvider" />
     <css.elementDescriptorProvider implementation="com.jetbrains.rider.plugins.unity.css.uss.codeInsight.css.UssCssElementDescriptorProvider" order="first" />
     <css.cssIntentionFilter language="USS" implementationClass="com.jetbrains.rider.plugins.unity.css.uss.codeInsight.css.inspections.UssCssIntentionFilter"/>
     <!-- Override the CSS documentation for USS files -->
     <lang.documentationProvider language="CSS" implementationClass="com.jetbrains.rider.plugins.unity.css.uss.UssDocumentationProvider" order="first"/>
-    <applicationService serviceImplementation="com.jetbrains.rider.plugins.unity.css.uss.codeInsight.css.UssCssElementDescriptorFactory" />
 
     <psi.referenceContributor implementation="com.jetbrains.rider.plugins.unity.css.uss.impl.util.UssReferenceContributor"/>
   </extensions>
