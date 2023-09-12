@@ -50,12 +50,16 @@ fun attachToUnityProcess(project: Project, process: UnityProcess) {
         return
     }
 
-    // Try to find an existing run configuration for the project on the chosen player/process. Note that we might have
-    // a run config for the same player with a different project
+    // Try to find an existing run configuration for this player and this project. We use the special disambiguation string to identify the
+    // project. In most cases, it's the project name, but in some cases, the player doesn't have it, so the string is based on something
+    // else (e.g. the Android package name). This instance ID might not be serialised in older versions (pre-Rider 2023.2.2), but if we
+    // can't find a match, we'll just create a new run configuration. Since the run configurations are named after the player and not the
+    // player instance, we'll actually overwrite any existing configuration. (So in fact, we could just look for a run config with the name
+    // of the player, but this check means we also work with run configs that the user has renamed)
     val runManager = RunManager.getInstance(project)
     var configurationSettings = runManager.allSettings.firstOrNull {
         (it.configuration as? UnityPlayerDebugConfiguration)?.state?.playerId == process.id
-            && (it.configuration as? UnityPlayerDebugConfiguration)?.state?.projectName == process.projectName
+            && (it.configuration as? UnityPlayerDebugConfiguration)?.state?.playerInstanceId == process.playerInstanceId
     }
 
     if (configurationSettings == null) {
@@ -71,6 +75,7 @@ fun attachToUnityProcess(project: Project, process: UnityProcess) {
         configurationSettings = runManager.createConfiguration(displayName, configurationType.attachToPlayerFactory)
         (configurationSettings.configuration as UnityPlayerDebugConfiguration).apply {
             state.playerId = process.id
+            state.playerInstanceId = process.playerInstanceId
             state.host = process.host
             state.port = process.port
             state.projectName = process.projectName
