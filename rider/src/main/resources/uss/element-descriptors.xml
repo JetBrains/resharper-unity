@@ -572,7 +572,7 @@
     </group>
   </property>
   <property id="-unity-text-outline" declared-in="0">
-    <group type="or">
+    <group type="any">
       <inline id="length"/>
       <inline id="color" inline="yes" />
       <inline id="global-keywords" inline="yes"/>

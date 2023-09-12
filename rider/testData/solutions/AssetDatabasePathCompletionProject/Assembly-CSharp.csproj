@@ -198,9 +198,6 @@
      <Reference Include="UnityEditor.UnityConnectModule">
      <HintPath>UnityEditor.UnityConnectModule.dll</HintPath>
      </Reference>
-     <Reference Include="netstandard">
-     <HintPath>netstandard.dll</HintPath>
-     </Reference>
      <Reference Include="Microsoft.Win32.Primitives">
      <HintPath>Microsoft.Win32.Primitives.dll</HintPath>
      </Reference>
@@ -513,9 +510,14 @@
      <Reference Include="System.Runtime.InteropServices.WindowsRuntime">
      <HintPath>System.Runtime.InteropServices.WindowsRuntime.dll</HintPath>
      </Reference>
-     <Reference Include="mscorlib">
-     <HintPath>mscorlib.dll</HintPath>
-     </Reference>
+
+    <Reference Include="mscorlib">
+      <HintPath>mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="netstandard">
+      <HintPath>netstandard.dll</HintPath>
+    </Reference>
+
      <Reference Include="System.ComponentModel.Composition">
      <HintPath>System.ComponentModel.Composition.dll</HintPath>
      </Reference>

@@ -14,9 +14,9 @@ import org.testng.annotations.Test
 import java.io.File
 
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
-class DebuggerTest2020 : IntegrationTestWithUnityProjectBase() {
+class DebuggerTest2022 : IntegrationTestWithUnityProjectBase() {
     override fun getSolutionDirectoryName() = "UnityDebugAndUnitTesting/Project"
-    override val unityMajorVersion = UnityVersion.V2020
+    override val unityMajorVersion = UnityVersion.V2022
 
     override fun preprocessTempDirectory(tempDir: File) {
         super.preprocessTempDirectory(tempDir)
