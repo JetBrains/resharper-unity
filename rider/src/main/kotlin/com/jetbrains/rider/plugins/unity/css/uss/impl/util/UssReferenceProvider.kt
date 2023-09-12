@@ -1,14 +1,17 @@
 package com.jetbrains.rider.plugins.unity.css.uss.impl.util
 
 import com.intellij.lang.injection.InjectedLanguageManager
+import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
+import com.intellij.psi.css.CssDeclaration
 import com.intellij.psi.css.CssTerm
 import com.intellij.psi.css.CssUri
 import com.intellij.psi.css.impl.util.CssReferenceProvider
 import com.intellij.psi.filters.ElementFilter
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 import com.jetbrains.rider.plugins.unity.css.uss.UssLanguage
 import com.jetbrains.rider.plugins.unity.css.uss.codeInsight.css.references.UssFilePrefixReference
@@ -45,8 +48,10 @@ class UssReferenceProvider : PsiReferenceProvider() {
             if (isUriElement(element)) {
                 val referenceData = getFileReferenceData(element)
                 if (referenceData != null) {
+                    val isFont = isFont(element)
+                    val fileTypes = if (isFont) arrayOf<FileType>() else CssReferenceProvider.IMAGE_FILE_TYPES
                     val referenceSet = UssFileReferenceSet(
-                        element, referenceData.second, referenceData.third, *CssReferenceProvider.IMAGE_FILE_TYPES)
+                        element, referenceData.second, referenceData.third, isFont, *fileTypes)
                     val list = mutableListOf<PsiReference>(*referenceSet.allReferences)
                     list.addAll(referenceData.first)
                     return list.toTypedArray()
@@ -56,6 +61,10 @@ class UssReferenceProvider : PsiReferenceProvider() {
             return arrayOf()
         }
 
+        private fun isFont(element: PsiElement): Boolean {
+            val name = PsiTreeUtil.getParentOfType(element, CssDeclaration::class.java)?.name
+            return  name == "-unity-font" || name == "-unity-font-definition"
+        }
 
         private fun getFileReferenceData(element: PsiElement?): Triple<MutableList<UssFilePrefixReference>, String, TextRange>? {
             if (element == null || !element.isValid) {
