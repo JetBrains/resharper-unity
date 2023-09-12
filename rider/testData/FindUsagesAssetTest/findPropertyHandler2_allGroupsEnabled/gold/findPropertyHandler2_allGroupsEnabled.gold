@@ -1,5 +1,5 @@
 Search target
-    NewBehaviourScript.PropertyEventHandler2:int
+    NewBehaviourScript.PropertyEventHandler2 : int
 Found usages  (2 usages found)
     Assets  (2 usages found)
         Button (1).prefab  (1 usage found)

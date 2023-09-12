@@ -1,5 +1,5 @@
 Search target
-    NewBehaviourScript.IntHandler(int value):void
+    NewBehaviourScript.IntHandler(int value) : void
 Found usages  (2 usages found)
     Assets  (2 usages found)
         Button (1).prefab  (1 usage found)

@@ -1,5 +1,5 @@
 Search target
-    Script1.voidEvent:UnityEvent
+    Script1.voidEvent : UnityEvent
 Found usages  (2 usages found)
     Assets  (2 usages found)
         Ex1  (2 usages found)
