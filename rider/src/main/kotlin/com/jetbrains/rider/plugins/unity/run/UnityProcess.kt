@@ -25,6 +25,21 @@ sealed class UnityProcess(
 ) {
     val type = typeFromId(id)
 
+    /**
+     * A name used to distinguish different projects running on the same player/host
+     *
+     * The player ID is a combination of player type and host details or device ID. It is possible to have multiple instances of a player on
+     * a single host, such as multiple players running on a desktop or an Android device. Normally, we can distinguish between instances by
+     * looking at the project name, if available, but Android doesn't have the project name, only a package name. This string allows us to
+     * provide a different ID based on the current player type.
+     *
+     * Note that if there is no project name, this value can still be `null`.
+     */
+    open val playerInstanceId
+        get() = projectName
+
+    abstract fun dump(): String
+
     companion object {
         fun typeFromId(id: String): String = id.substringBefore('(')
     }
@@ -32,7 +47,11 @@ sealed class UnityProcess(
 
 /** Base class of Unity players which are also local processes, such as the Editor */
 sealed class UnityLocalProcess(id: String, name: String, val pid: Int, projectName: String?) :
-    UnityProcess(id, name, "127.0.0.1", convertPidToDebuggerPort(pid), true, projectName)
+    UnityProcess(id, name, "127.0.0.1", convertPidToDebuggerPort(pid), true, projectName) {
+
+    override fun dump() =
+        "$id ($displayName, $host:$port, debugging ${if (debuggingEnabled) "enabled" else "disabled"}, ${projectName ?: "no project name"})"
+}
 
 /**
  * A Unity editor instance
@@ -79,7 +98,11 @@ open class UnityLocalPlayer(
     port: Int,
     debuggingEnabled: Boolean,
     projectName: String?
-) : UnityProcess(playerId, playerId, host, port, debuggingEnabled, projectName)
+) : UnityProcess(playerId, playerId, host, port, debuggingEnabled, projectName) {
+
+    override fun dump() =
+        "$id ($displayName, $host:$port, debugging ${if (debuggingEnabled) "enabled" else "disabled"}, ${projectName ?: "no project name"})"
+}
 
 /**
  * A local Windows UWP player
@@ -107,7 +130,11 @@ class UnityLocalUwpPlayer(
  * This can include standalone players on other machines, mobile devices, consoles, etc.
  */
 class UnityRemotePlayer(playerId: String, host: String, port: Int, debuggingEnabled: Boolean, projectName: String?) :
-    UnityProcess(playerId, playerId, host, port, debuggingEnabled, projectName)
+    UnityProcess(playerId, playerId, host, port, debuggingEnabled, projectName) {
+
+    override fun dump() =
+        "$id ($displayName, $host:$port, debugging ${if (debuggingEnabled) "enabled" else "disabled"}, ${projectName ?: "no project name"})"
+}
 
 /**
  * User-created player process with hardcoded host and port
@@ -121,6 +148,8 @@ class UnityCustomPlayer(displayName: String, host: String, port: Int, override v
     companion object {
         const val TYPE = "CustomPlayer"
     }
+
+    override fun dump() = "$id ($displayName, $host:$port, $projectName)"
 }
 
 /**
@@ -135,6 +164,8 @@ class UnityIosUsbProcess(displayName: String, val deviceId: String, val deviceDi
     companion object {
         const val TYPE = "iPhoneUSBPlayer"
     }
+
+    override fun dump() = "$id ($displayName, $deviceId, $deviceDisplayName, $host:$port)"
 }
 
 /**
@@ -155,4 +186,10 @@ class UnityAndroidAdbProcess(
     companion object {
         const val TYPE = "AndroidADBPlayer"
     }
+
+    override val playerInstanceId
+        get() = packageName
+
+    override fun dump() =
+        "$id ($displayName, $deviceId, $deviceDisplayName, $host:$port, UID: $packageUid, ${packageName ?: "no package name"}"
 }
