@@ -1,5 +1,5 @@
 Search target
-    AnimEventHolderWithScriptMod.AnimEventWithScriptMod():void
+    AnimEventHolderWithScriptMod.AnimEventWithScriptMod() : void
 Found usages  (1 usage found)
     Other  (1 usage found)
         Assets  (1 usage found)

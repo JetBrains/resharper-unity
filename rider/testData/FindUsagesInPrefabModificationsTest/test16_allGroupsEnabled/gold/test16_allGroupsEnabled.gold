@@ -6,8 +6,8 @@ Found usages  (2 usages found)
             Ex2.unity  (1 usage found)
                 GameObject  (1 usage found)
                     Script2  (1 usage found)
-                        VoidHandler():void
+                        VoidHandler() : void
             GameObject.prefab  (1 usage found)
                 GameObject  (1 usage found)
                     Script2  (1 usage found)
-                        VoidHandler():void
+                        VoidHandler() : void
