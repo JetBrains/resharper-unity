@@ -7,31 +7,31 @@ Found usages  (10 usages found)
                 RootPrefab  (2 usages found)
                     InnerPrefab  (1 usage found)
                         Script3  (1 usage found)
-                            VoidHandler():void
+                            VoidHandler() : void
                     Script3  (1 usage found)
-                        VoidHandler():void
+                        VoidHandler() : void
                 Variants  (2 usages found)
                     VariantPart2  (1 usage found)
                         Script3  (1 usage found)
-                            VoidHandler():void
+                            VoidHandler() : void
                     Script3  (1 usage found)
-                        VoidHandler():void
+                        VoidHandler() : void
             NestedPrefab.prefab  (1 usage found)
                 NestedPrefab  (1 usage found)
                     VariantPart2  (1 usage found)
                         Script3  (1 usage found)
-                            VoidHandler():void
+                            VoidHandler() : void
             RootPrefab.prefab  (1 usage found)
                 RootPrefab  (1 usage found)
                     InnerPrefab  (1 usage found)
                         Script3  (1 usage found)
-                            VoidHandler():void
+                            VoidHandler() : void
             VariantPrefab.prefab  (4 usages found)
                 VariantPrefab  (4 usages found)
                     VariantPart2  (1 usage found)
                         Script3  (1 usage found)
-                            VoidHandler():void
+                            VoidHandler() : void
                     Script3  (3 usages found)
-                        VoidHandler():void
-                        VoidHandler2():void
-                        VoidHandler2():void
+                        VoidHandler() : void
+                        VoidHandler2() : void
+                        VoidHandler2() : void
