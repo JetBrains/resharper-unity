@@ -1,4 +1,4 @@
 Search target
-    NewBehaviourScript.TestUsages1(BaseEventData eventData):void
+    NewBehaviourScript.TestUsages1(BaseEventData eventData) : void
 Found usages  (1 usage found)
     m_MethodName: TestUsages1

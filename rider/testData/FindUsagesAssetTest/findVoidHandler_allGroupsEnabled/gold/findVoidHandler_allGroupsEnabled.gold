@@ -1,5 +1,5 @@
 Search target
-    NewBehaviourScript.VoidHandler():void
+    NewBehaviourScript.VoidHandler() : void
 Found usages  (4 usages found)
     Assets  (4 usages found)
         Button (1).prefab  (1 usage found)
