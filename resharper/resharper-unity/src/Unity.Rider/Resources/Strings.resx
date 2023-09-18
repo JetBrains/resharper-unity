@@ -46,6 +46,9 @@
     <data name="MakeSureRider_IsSetAsTheExternalEditor_Text" xml:space="preserve">
         <value>Make sure Rider {0} is set as the External Editor in Unity preferences.</value>
     </data>
+    <data name="OpenManifestJson_Text" xml:space="preserve">
+        <value>Open manifest.json</value>
+    </data>
     <data name="PerformanceCriticalLineMarker_RiderPresentableName" xml:space="preserve">
         <value>Performance critical line marker</value>
     </data>
