@@ -1,5 +1,5 @@
 Search target
-    Script4.voidEventNested:UnityEvent
+    Script4.voidEventNested : UnityEvent
 Found usages  (12 usages found)
     Assets  (12 usages found)
         Ex4  (12 usages found)
@@ -7,29 +7,29 @@ Found usages  (12 usages found)
                 VariantRoot  (4 usages found)
                     VariantBranchA  (1 usage found)
                         Script4  (1 usage found)
-                            VoidHandler4_b_5():void
+                            VoidHandler4_b_5() : void
                     VariantBranchB  (1 usage found)
                         Script4  (1 usage found)
-                            VoidHandler4_a_5():void
+                            VoidHandler4_a_5() : void
                     Script4  (2 usages found)
-                        VoidHandler4_a_3():void
-                        VoidHandler4_b_3():void
+                        VoidHandler4_a_3() : void
+                        VoidHandler4_b_3() : void
             VariantRoot Variant.prefab  (8 usages found)
                 VariantRoot Variant  (8 usages found)
                     VariantBranchA  (3 usages found)
                         VariantLeafA  (1 usage found)
                             Script4  (1 usage found)
-                                VoidHandler4_b_1():void
+                                VoidHandler4_b_1() : void
                         Script4  (2 usages found)
-                            VoidHandler4_b():void
-                            VoidHandler4_b_4():void
+                            VoidHandler4_b() : void
+                            VoidHandler4_b_4() : void
                     VariantBranchB  (3 usages found)
                         VariantLeafB  (1 usage found)
                             Script4  (1 usage found)
-                                VoidHandler4_a_1():void
+                                VoidHandler4_a_1() : void
                         Script4  (2 usages found)
-                            VoidHandler4_a():void
-                            VoidHandler4_a_4():void
+                            VoidHandler4_a() : void
+                            VoidHandler4_a_4() : void
                     Script4  (2 usages found)
-                        VoidHandler4_a_2():void
-                        VoidHandler4_b_2():void
+                        VoidHandler4_a_2() : void
+                        VoidHandler4_b_2() : void

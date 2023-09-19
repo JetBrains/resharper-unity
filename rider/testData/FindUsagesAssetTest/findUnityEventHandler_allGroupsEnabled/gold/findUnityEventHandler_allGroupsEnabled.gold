@@ -1,5 +1,5 @@
 Search target
-    NewBehaviourScript.UnityEventHandler(int value1, float value2):void
+    NewBehaviourScript.UnityEventHandler(int value1, float value2) : void
 Found usages  (2 usages found)
     Assets  (2 usages found)
         SampleScene.unity  (2 usages found)

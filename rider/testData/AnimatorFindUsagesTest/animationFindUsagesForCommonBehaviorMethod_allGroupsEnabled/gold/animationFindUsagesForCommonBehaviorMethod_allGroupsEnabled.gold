@@ -1,5 +1,5 @@
 Search target
-    TestScript1.Setup(int b):void
+    TestScript1.Setup(int b) : void
 Found usages  (2 usages found)
     <Assembly-CSharp>  (1 usage found)
         Assets  (1 usage found)

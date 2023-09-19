@@ -1,5 +1,5 @@
 Search target
-    DefaultNamespace.MethodsContainer4.VoidHandler4_a_4():void
+    DefaultNamespace.MethodsContainer4.VoidHandler4_a_4() : void
 Found usages  (2 usages found)
     <Assembly-CSharp>  (1 usage found)
         Assets  (1 usage found)

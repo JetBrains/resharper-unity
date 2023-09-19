@@ -1,5 +1,5 @@
 Search target
-    NewBehaviourScript.Test():void
+    NewBehaviourScript.Test() : void
 Found usages  (3 usages found)
     Assets  (3 usages found)
         Button (1).prefab  (1 usage found)
