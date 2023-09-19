@@ -8,6 +8,7 @@ import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileSystemItem
 import com.intellij.psi.css.StylesheetFile
+import com.intellij.psi.css.resolve.StylesheetFileReferenceSet
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReference
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReferenceSet
 import com.jetbrains.rider.plugins.unity.workspace.getPackages
@@ -23,7 +24,7 @@ class UssFileReferenceSet(element: PsiElement,
                        false,
                        suitableFileTypes) {
 
-    class UssFileTypeCompletionFilter(private val myElement: PsiElement, private val isFontReference: Boolean, private val fileTypes: Array<FileType>) : Condition<PsiFileSystemItem> {
+    class UssFileTypeCompletionFilter(private val myElement: PsiElement, private val fileTypes: Array<FileType>) : Condition<PsiFileSystemItem> {
         override fun value(item: PsiFileSystemItem?): Boolean {
             if (item == null) return false
 
@@ -44,8 +45,6 @@ class UssFileReferenceSet(element: PsiElement,
             }
 
             val virtualFile = item.getVirtualFile()
-            if (isFontReference)
-                return virtualFile.extension == "ttf"
 
             if (fileTypes.isEmpty()) {
                 return item is StylesheetFile
@@ -67,7 +66,8 @@ class UssFileReferenceSet(element: PsiElement,
     }
 
     override fun getReferenceCompletionFilter(): Condition<PsiFileSystemItem> {
-        return UssFileTypeCompletionFilter(element, isFontReference, suitableFileTypes)
+        if (isFontReference) return StylesheetFileReferenceSet.FONT_COMPLETION_FILTER
+        return UssFileTypeCompletionFilter(element, suitableFileTypes)
     }
 
     private var prevReferenceText: String? = null
