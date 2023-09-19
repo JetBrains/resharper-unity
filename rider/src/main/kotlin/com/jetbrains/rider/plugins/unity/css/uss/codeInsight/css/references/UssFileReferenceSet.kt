@@ -70,9 +70,14 @@ class UssFileReferenceSet(element: PsiElement,
         return UssFileTypeCompletionFilter(element, isFontReference, suitableFileTypes)
     }
 
+    private var prevReferenceText: String? = null
     override fun createFileReference(range: TextRange?, index: Int, text: String?): FileReference? {
 
-        if (index == 1){
+        if (index == 0){
+            prevReferenceText = text
+        }
+
+        if (index == 1 && prevReferenceText == "Packages") {
             val packageEntities = WorkspaceModel.getInstance(element.project).getPackages()
             val packageEntity = packageEntities.singleOrNull { it.packageId == text }
             return PackageFolderReference(this, range, index, text, packageEntity?.packageFolder,
