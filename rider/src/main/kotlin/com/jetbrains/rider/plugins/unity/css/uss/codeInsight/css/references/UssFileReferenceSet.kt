@@ -2,13 +2,14 @@ package com.jetbrains.rider.plugins.unity.css.uss.codeInsight.css.references
 
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.util.Condition
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.TextRange
 import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileSystemItem
 import com.intellij.psi.css.StylesheetFile
-import com.intellij.psi.css.resolve.StylesheetFileReferenceSet
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReference
+import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReferenceSet
 import com.jetbrains.rider.plugins.unity.workspace.getPackages
 import com.jetbrains.rider.projectDir
 
@@ -16,12 +17,11 @@ import com.jetbrains.rider.projectDir
 class UssFileReferenceSet(element: PsiElement,
                           referenceText: String,
                           textRange: TextRange,
-                          private val isFontReference:Boolean,
+                          private val isFontReference: Boolean,
                           vararg suitableFileTypes: FileType?)
-    : StylesheetFileReferenceSet(element, referenceText,
-                                 textRange,
-                                 !isFontReference, isFontReference,
-                                 *suitableFileTypes) {
+    : FileReferenceSet(referenceText, element, textRange.startOffset, null, SystemInfo.isFileSystemCaseSensitive,
+                       false,
+                       suitableFileTypes) {
 
     class UssFileTypeCompletionFilter(private val myElement: PsiElement, private val isFontReference: Boolean, private val fileTypes: Array<FileType>) : Condition<PsiFileSystemItem> {
         override fun value(item: PsiFileSystemItem?): Boolean {
