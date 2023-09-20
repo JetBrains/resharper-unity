@@ -18,13 +18,13 @@ import com.jetbrains.rider.projectDir
 class UssFileReferenceSet(element: PsiElement,
                           referenceText: String,
                           textRange: TextRange,
-                          private val isFontReference: Boolean,
+                          private val isFont: Boolean,
                           vararg suitableFileTypes: FileType?)
     : FileReferenceSet(referenceText, element, textRange.startOffset, null, SystemInfo.isFileSystemCaseSensitive,
                        false,
                        suitableFileTypes) {
 
-    class UssFileTypeCompletionFilter(private val myElement: PsiElement, private val fileTypes: Array<FileType>) : Condition<PsiFileSystemItem> {
+    class UssFileTypeCompletionFilter(private val myElement: PsiElement, private val isFont: Boolean, private val fileTypes: Array<FileType>) : Condition<PsiFileSystemItem> {
         override fun value(item: PsiFileSystemItem?): Boolean {
             if (item == null) return false
 
@@ -44,13 +44,14 @@ class UssFileReferenceSet(element: PsiElement,
                 return false
             }
 
-            val virtualFile = item.getVirtualFile()
+            if (isFont && StylesheetFileReferenceSet.FONT_COMPLETION_FILTER.value(item))
+                return true
 
             if (fileTypes.isEmpty()) {
                 return item is StylesheetFile
             }
 
-            return fileTypes.contains(virtualFile.fileType)
+            return fileTypes.contains(item.getVirtualFile().fileType)
         }
     }
 
@@ -66,8 +67,7 @@ class UssFileReferenceSet(element: PsiElement,
     }
 
     override fun getReferenceCompletionFilter(): Condition<PsiFileSystemItem> {
-        if (isFontReference) return StylesheetFileReferenceSet.FONT_COMPLETION_FILTER
-        return UssFileTypeCompletionFilter(element, suitableFileTypes)
+        return UssFileTypeCompletionFilter(element, isFont, suitableFileTypes)
     }
 
     private var prevReferenceText: String? = null

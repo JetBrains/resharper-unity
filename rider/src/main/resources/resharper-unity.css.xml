@@ -16,6 +16,6 @@
     <!-- Override the CSS documentation for USS files -->
     <lang.documentationProvider language="CSS" implementationClass="com.jetbrains.rider.plugins.unity.css.uss.UssDocumentationProvider" order="first"/>
 
-    <psi.referenceContributor implementation="com.jetbrains.rider.plugins.unity.css.uss.impl.util.UssReferenceContributor"/>
+    <css.cssFileReferenceProvider implementation="com.jetbrains.rider.plugins.unity.css.uss.impl.util.UssFileReferenceProvider"/>
   </extensions>
 </idea-plugin>
