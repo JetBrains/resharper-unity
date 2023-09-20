@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches
         
         public sealed override void Drop(IPsiSourceFile sourceFile)
         {
-            var removed = Map.TryGetValue(sourceFile, out var oldPart) && RemoveFromLocalCache(sourceFile, oldPart);
+            var removed = RemoveFromLocalCache(sourceFile);
             base.Drop(sourceFile);
             if (removed)
                 myCacheUpdatedGroupingEvent.FireIncoming();
@@ -33,15 +33,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches
 
         public sealed override void Merge(IPsiSourceFile sourceFile, object? builtPart)
         {
-            var updated = false;
             var newPart = builtPart as T;
-            if (Map.TryGetValue(sourceFile, out var oldPart))
-            {
-                updated = RemoveFromLocalCache(sourceFile, oldPart);
-                if (newPart != null)
-                    updated |= AddToLocalCache(sourceFile, newPart);
-            } else if (newPart != null)
-                updated = AddToLocalCache(sourceFile, newPart);
+            var updated = RemoveFromLocalCache(sourceFile);
+            if (newPart != null)
+                updated |= AddToLocalCache(sourceFile, newPart);
+
             base.Merge(sourceFile, builtPart);
             if (updated)
                 myCacheUpdatedGroupingEvent.FireIncoming();
@@ -55,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches
             myCacheUpdatedGroupingEvent.FireIncoming();
         }
 
-        protected abstract bool RemoveFromLocalCache(IPsiSourceFile sourceFile, T oldPart);
+        protected abstract bool RemoveFromLocalCache(IPsiSourceFile sourceFile);
 
         protected abstract bool AddToLocalCache(IPsiSourceFile sourceFile, T newPart);
     }

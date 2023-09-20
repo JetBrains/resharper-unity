@@ -45,12 +45,20 @@
      <Compile Include="Assets/Scripts/Mechanics/Test.cs" />
   </ItemGroup>
   <ItemGroup>
+
     <Reference Include="mscorlib">
       <HintPath>mscorlib.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>UnityEngine.dll</HintPath>
+    <Reference Include="netstandard">
+      <HintPath>netstandard.dll</HintPath>
     </Reference>
+
+      <Reference Include="UnityEngine">
+        <HintPath>UnityEngine.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.CoreModule">
+        <HintPath>UnityEngine.CoreModule.dll</HintPath>
+      </Reference>
   </ItemGroup>
 
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,5 +1,5 @@
 Search target
-    DefaultNamespace.MethodsContainer3.VoidHandler2():void
+    DefaultNamespace.MethodsContainer3.VoidHandler2() : void
 Found usages  (2 usages found)
     Assets  (2 usages found)
         Ex3  (2 usages found)

@@ -163,6 +163,7 @@
 
     <!-- Project Model -->
     <solutionExplorerCustomization implementation="com.jetbrains.rider.plugins.unity.explorer.UnitySolutionExplorerCustomization" />
+    <rider.documentBehaviour implementation="com.jetbrains.rider.plugins.unity.document.UnityRiderDocumentBehaviour" />
 
     <!-- Run configurations -->
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityEditorDebugConfigurationType" />
@@ -239,9 +240,8 @@
             icon="UnityIcons.Actions.RefreshInUnity" />
 
     <group id="UnityToolbarActions" class = "com.jetbrains.rider.plugins.unity.actions.UnityToolbarActionsGroup">
-      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
-      <add-to-group group-id="RightToolbarSideGroup" relative-to-action="BuildSolutionAction" anchor="after" />
-
+      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionBar" anchor="after" />
+      <add-to-group group-id="RightToolbarSideGroup" relative-to-action="BuildSolutionBar" anchor="after" />
       <separator/>
       <action id="UnityToolbarLabel" class="com.jetbrains.rider.plugins.unity.actions.UnityToolbarLabel"/>
     </group>
@@ -296,11 +296,6 @@
 
     <action id="InstallEditorPluginAction"
             class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction" />
-
-    <action class="com.jetbrains.rider.plugins.unity.actions.FindUnityUsagesAction" id="RdFindUnityUsagesAction">
-      <add-to-group group-id="FindMenuGroup" anchor="after" relative-to-action="FindUsages"/>
-      <add-to-group group-id="EditorPopupMenu1.FindRefactor" anchor="after" relative-to-action="FindUsages"/>
-    </action>
 
     <group id="RiderInternal.Unity" popup="true" internal="true">
       <add-to-group group-id="RiderInternal" anchor="last" />
