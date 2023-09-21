@@ -39,6 +39,8 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
 
     init {
         label.text = "..."
+        label.foreground = null
+
         isVisible = false
         add(label)
         label.addMouseListener(object : MouseAdapter() {
@@ -60,6 +62,14 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
 
     override val component: Component = this
     override fun update() = Unit
+
+    override fun updateUI() {
+        super.updateUI()
+
+        // inherit background and foreground from parent
+        foreground = null
+        background = null
+    }
 
     fun setData(data: ShaderContextDataBase?) {
         when (data) {
