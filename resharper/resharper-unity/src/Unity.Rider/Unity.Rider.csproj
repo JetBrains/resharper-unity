@@ -22,10 +22,16 @@
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="References">
+    <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="JetBrains.HabitatDetector" />
+    <PackageReference Include="JetBrains.Lifetimes" />
+    <PackageReference Include="JetBrains.ReSharper.TestRunner.Abstractions" />
+    <PackageReference Include="JetBrains.RdFramework" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" />
     <ProjectReference Include="..\Unity\Unity.csproj" />
     <ProjectReference Include="..\Unity.Shaders\Unity.Shaders.csproj" />
     <ProjectReference Include="..\..\..\resharper-json\src\Json.Rider\Json.Rider.csproj" />
