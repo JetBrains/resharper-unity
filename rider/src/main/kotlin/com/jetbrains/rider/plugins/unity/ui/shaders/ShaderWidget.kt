@@ -1,11 +1,13 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createLifetime
+import com.intellij.ui.awt.RelativePoint
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
@@ -25,6 +27,7 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.JLabel
 import javax.swing.JPanel
+import javax.swing.SwingConstants
 
 
 class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayout()), RiderResolveContextWidget, Disposable {
@@ -35,19 +38,23 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
 
     private val label = JLabel(UnityIcons.FileTypes.ShaderLab)
     private val widgetLifetime = this.createLifetime()
-    internal val currentContextData : IProperty<ShaderContextData?> = Property(null)
+    private val currentContextData : IProperty<ShaderContextData?> = Property(null)
 
     init {
-        label.text = "..."
-        label.foreground = null
+        label.apply {
+            icon = AllIcons.Actions.InlayDropTriangle
+            text = "..."
+            foreground = null
+            horizontalTextPosition = SwingConstants.LEFT
+
+            addMouseListener(object : MouseAdapter() {
+                override fun mouseReleased(e: MouseEvent?) {
+                    showPopup(this@apply)
+                }
+            })
+        }.also { add(it) }
 
         isVisible = false
-        add(label)
-        label.addMouseListener(object : MouseAdapter() {
-            override fun mouseReleased(e: MouseEvent?) {
-                showPopup(label)
-            }
-        })
 
         currentContextData.advise(project.lifetime) {
             if (it == null) {
@@ -98,7 +105,7 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
                 // to work around this we add onPerformed callback for every possible action
                 for (action in actions)
                     action.onPerformed = terminateLifetime
-                popup.showInCenterOf(label)
+                popup.show(RelativePoint(label, label.mousePosition))
             } catch (t: Throwable) {
                 lt.terminate(true)
                 throw t
