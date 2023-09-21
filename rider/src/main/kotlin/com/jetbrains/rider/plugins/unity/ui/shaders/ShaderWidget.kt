@@ -12,6 +12,7 @@ import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rdclient.document.getFirstDocumentId
+import com.jetbrains.rider.editors.resolveContextWidget.ResolveContextWidgetTheme
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.AutoShaderContextData
@@ -19,6 +20,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.SelectShaderConte
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextDataBase
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
+import com.jetbrains.rider.plugins.unity.ui.borders.IconBorder
 import icons.UnityIcons
 import org.jetbrains.annotations.Nls
 import java.awt.BorderLayout
@@ -27,7 +29,6 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.JLabel
 import javax.swing.JPanel
-import javax.swing.SwingConstants
 
 
 class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayout()), RiderResolveContextWidget, Disposable {
@@ -42,27 +43,39 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
 
     init {
         label.apply {
-            icon = AllIcons.Actions.InlayDropTriangle
             text = "..."
             foreground = null
-            horizontalTextPosition = SwingConstants.LEFT
+            border = IconBorder(AllIcons.Actions.InlayDropTriangle, label.iconTextGap)
+        }.also { add(it, BorderLayout.CENTER) }
 
-            addMouseListener(object : MouseAdapter() {
-                override fun mouseReleased(e: MouseEvent?) {
-                    showPopup(this@apply)
+        addMouseListener(object : MouseAdapter() {
+            override fun mouseReleased(e: MouseEvent?) {
+                showPopup(this@ShaderWidget)
+            }
+
+            override fun mouseEntered(e: MouseEvent?) {
+                ResolveContextWidgetTheme.getHoveredAttributes().let {
+                    background = it.backgroundColor
+                    foreground = it.foregroundColor
                 }
-            })
-        }.also { add(it) }
+            }
 
+            override fun mouseExited(e: MouseEvent?) {
+                background = null
+                foreground = null
+            }
+        })
+
+        border = ResolveContextWidgetTheme.WIDGET_BORDER
         isVisible = false
 
         currentContextData.advise(project.lifetime) {
             if (it == null) {
                 label.text = UnityUIBundle.message("auto")
-                label.toolTipText = UnityUIBundle.message("default.file.and.symbol.context")
+                toolTipText = UnityUIBundle.message("default.file.and.symbol.context")
             } else {
                 label.text = getContextPresentation(it)
-                label.toolTipText = UnityUIBundle.message("file.and.symbol.context.derived.from.include.at.context", getContextPresentation(it))
+                toolTipText = UnityUIBundle.message("file.and.symbol.context.derived.from.include.at.context", getContextPresentation(it))
             }
         }
     }
@@ -86,7 +99,7 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
         isVisible = data != null
     }
 
-    fun showPopup(label: JLabel) {
+    fun showPopup(origin: Component) {
         val lt = widgetLifetime.createNested()
         val id = editor.document.getFirstDocumentId(project) ?: return
         val host = FrontendBackendHost.getInstance(project)
@@ -105,7 +118,7 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
                 // to work around this we add onPerformed callback for every possible action
                 for (action in actions)
                     action.onPerformed = terminateLifetime
-                popup.show(RelativePoint(label, label.mousePosition))
+                popup.show(RelativePoint(origin, origin.mousePosition))
             } catch (t: Throwable) {
                 lt.terminate(true)
                 throw t
