@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Threading;
@@ -14,11 +16,8 @@ using JetBrains.ReSharper.Psi.Xml;
 using JetBrains.ReSharper.Psi.Xml.Impl.Tree;
 using JetBrains.ReSharper.Psi.Xml.Tree;
 using JetBrains.Util;
-using JetBrains.Util.Collections;
 
-#nullable enable
-
-namespace JetBrains.ReSharper.Plugins.Unity.Uxml.Psi.Caches
+namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Caches
 {
     [PsiComponent]
     public class UxmlCache : SimpleICache<List<UxmlCacheItem>>
@@ -26,7 +25,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Uxml.Psi.Caches
         private readonly ISolution mySolution;
         private readonly PackageManager myPackageManager;
         private readonly OneToListMap<IPsiSourceFile, UxmlCacheItem> myLocalCache = new();
-        private readonly CountingSet<string> myMethodNames = new();
 
         public UxmlCache(Lifetime lifetime,
             IShellLocks shellLocks,
@@ -86,22 +84,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Uxml.Psi.Caches
                     ProcessTagsRecursive(child, results, namespaces);    
                 }
             }
-            else if (treeNode is IXmlAttribute { AttributeName: "name" } xmlAttribute)
+            else if (treeNode is XmlTagHeaderNode xmlTagHeaderNode)
             {
-                var xmlIdentifier = xmlAttribute.Parent?.Children<XmlIdentifier>().FirstOrDefault();
-                if (xmlIdentifier != null && namespaces.TryGetValue(xmlIdentifier.XmlNamespace, out var ns))
+                var xmlIdentifier = xmlTagHeaderNode.Children<XmlIdentifier>().FirstOrDefault();
+                if (xmlIdentifier != null)
                 {
-                    var item = new UxmlCacheItem($"{ns}.{xmlIdentifier.XmlName}", xmlAttribute.Value!.UnquotedValue,
-                        xmlAttribute.Value.GetTreeStartOffset().Offset);
-                    results.Add(item);    
-                }
-                else if (xmlIdentifier?.XmlNamespace == string.Empty)
-                {
-                    var item = new UxmlCacheItem(xmlIdentifier.XmlName, xmlAttribute.Value!.UnquotedValue,
-                        xmlAttribute.Value.GetTreeStartOffset().Offset);
-                    results.Add(item);
+                    var attributes = xmlTagHeaderNode.Attributes.Where(a => a.AttributeName is "name" or "class").ToArray();
+                    if (attributes.Any())
+                    {
+                        var xmlNameAttribute = attributes.FirstOrDefault(a => a.AttributeName == "name");
+                        var xmlClassNameAttribute = attributes.FirstOrDefault(a => a.AttributeName == "class");
+
+                        var item = new UxmlCacheItem(
+                            namespaces.TryGetValue(xmlIdentifier.XmlNamespace, out var ns)
+                                ? $"{ns}.{xmlIdentifier.XmlName}"
+                                : xmlIdentifier.XmlName,
+                            GetElement(xmlNameAttribute),
+                            GetElement(xmlClassNameAttribute)
+                            );
+                        results.Add(item);
+                    }    
                 }
             }
+        }
+
+        private static UxmlElement? GetElement(IXmlAttribute? attribute)
+        {
+            return attribute != null ? new UxmlElement(attribute.Value!.UnquotedValue, attribute.Value.GetTreeStartOffset().Offset): null;
         }
 
         public override void Merge(IPsiSourceFile sourceFile, object? builtPart)
@@ -131,12 +140,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Uxml.Psi.Caches
 
         private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
         {
-            var items = myLocalCache[sourceFile];
-            foreach (var item in items)
-            {
-                myMethodNames.Remove(item.Name);
-            }
-            
             myLocalCache.RemoveKey(sourceFile);
         }
 
@@ -144,20 +147,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Uxml.Psi.Caches
         {
             if (items == null) return;
             myLocalCache.AddValueRange(sourceFile, items);
-            foreach (var item in items)
-            {
-                myMethodNames.Add(item.Name);
-            }
         }
 
-        public IEnumerable<string> GetPossibleNames(string controlTypeName)
+        public IEnumerable<string> GetNamesForTypeName(string controlTypeName)
         {
-            return myLocalCache.Values.Where(a => a.ControlTypeName == controlTypeName).Select(b=>b.Name).Distinct();
+            return myLocalCache.Values.Where(a => a.ControlTypeName == controlTypeName).Select(b=>b.NameElement.Name).Distinct();
         }
         
-        public IEnumerable<string> GetAllPossibleNames()
+        public IEnumerable<string> GetNames()
         {
-            return myMethodNames.GetItems().Distinct();
+            return myLocalCache.Values.Select(b=>b.NameElement.Name).Distinct();
         }
     }
 }

@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using JetBrains.Serialization;
 using JetBrains.Util.PersistentMap;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Uxml.Psi.Caches
+namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Caches
 {
     public class UxmlCacheItem
     {
@@ -13,35 +14,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Uxml.Psi.Caches
              new(ourUxmlCacheItemMarshaller, n => new List<UxmlCacheItem>(n), item => item != null);
 
 
-        public UxmlCacheItem(string controlTypeName, string name, int declarationOffset)
+        public UxmlCacheItem(string controlTypeName, [CanBeNull] UxmlElement nameElement, [CanBeNull] UxmlElement classNameElement)
         {
             ControlTypeName = controlTypeName;
-            Name = name;
-            DeclarationOffset = declarationOffset;
+            NameElement = nameElement;
+            ClassNameElement = classNameElement;
         }
 
         public string ControlTypeName { get; }
-        public string Name { get; }
-        public int DeclarationOffset { get; }
+        public UxmlElement NameElement { get; }
+        public UxmlElement ClassNameElement { get; }
 
         private static UxmlCacheItem Read(UnsafeReader reader)
         {
             var controlTypeName = reader.ReadString();
-            var name = reader.ReadString()!;
-            var declarationOffset = reader.ReadInt();
-            return new UxmlCacheItem(controlTypeName, name, declarationOffset);
+            var nameElement = UxmlElement.Read(reader);
+            var classNameElement = UxmlElement.Read(reader);
+            return new UxmlCacheItem(controlTypeName, nameElement, classNameElement);
         }
 
         private static void Write(UnsafeWriter writer, UxmlCacheItem value)
         {
             writer.Write(value.ControlTypeName);
-            writer.Write(value.Name);
-            writer.Write(value.DeclarationOffset);
+            UxmlElement.Write(writer, value.NameElement);
+            UxmlElement.Write(writer, value.ClassNameElement);
         }
         
         public override string ToString()
         {
-            return $"{ControlTypeName}:{Name}:{DeclarationOffset}";
+            return $"{ControlTypeName}:{NameElement}:{ClassNameElement}";
         }
     }
 }
