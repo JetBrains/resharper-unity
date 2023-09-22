@@ -46,12 +46,21 @@
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="JetBrains.Lifetimes" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.Memory" />
     <Reference Include="System" />
     <Reference Include="netstandard" />
+
+    <!-- CsLex task -->
+    <PackageReference Include="JetBrains.Build.Platform.DistributedCache" />
+    <!-- ParserGen task -->
+    <PackageReference Include="Antlr2.Runtime" />
+    <PackageReference Include="NVelocity" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="BuildScript\**" />
