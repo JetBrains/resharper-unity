@@ -20,7 +20,6 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import icons.UnityIcons
 import org.jetbrains.annotations.Nls
-import java.awt.Component
 
 
 class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(project, editor), RiderResolveContextWidget, Disposable {
@@ -58,10 +57,8 @@ class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(proj
         isVisible = data != null
     }
 
-    override fun showPopup(origin: Component) {
+    override fun showPopup(showAt: RelativePoint) {
         val id = editor.document.getFirstDocumentId(project) ?: return
-        val mousePosition = origin.mousePosition ?: return
-        val showAt = RelativePoint(origin, mousePosition)
         val host = FrontendBackendHost.getInstance(project)
         val lt = widgetLifetime.createNested()
         host.model.createSelectShaderContextInteraction.start(lt, id).result.advise(lt) {

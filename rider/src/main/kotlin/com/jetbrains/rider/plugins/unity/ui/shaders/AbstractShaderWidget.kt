@@ -4,6 +4,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
+import com.intellij.ui.awt.RelativePoint
 import com.jetbrains.rider.editors.resolveContextWidget.ResolveContextWidgetTheme
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
 import com.jetbrains.rider.plugins.unity.ui.borders.IconBorder
@@ -38,7 +39,7 @@ abstract class AbstractShaderWidget(val project: Project, val editor: Editor) : 
                 foreground = null
             }
             MouseEvent.MOUSE_RELEASED -> {
-                showPopup(this@AbstractShaderWidget)
+                mousePosition?.let { showPopup(RelativePoint(this, it)) }
             }
         }
     }
@@ -53,7 +54,7 @@ abstract class AbstractShaderWidget(val project: Project, val editor: Editor) : 
         background = null
     }
 
-    abstract fun showPopup(origin: Component)
+    abstract fun showPopup(showAt: RelativePoint)
 
     override fun dispose() {}
 }
