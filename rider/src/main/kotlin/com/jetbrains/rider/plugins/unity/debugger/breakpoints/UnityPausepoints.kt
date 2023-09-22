@@ -38,7 +38,7 @@ fun convertToPausepoint(project: Project, breakpoint: XLineBreakpoint<DotNetLine
             val unityPausepointType = XDebuggerUtil.getInstance().findBreakpointType(UnityPausepointBreakpointType::class.java)
             val newBreakpoint = breakpointManager.addLineBreakpoint(unityPausepointType, breakpoint.fileUrl, breakpoint.line, breakpoint.properties).apply {
                 this.suspendPolicy = SuspendPolicy.NONE
-                this.logExpression = UnityPausepointConstants.pauseEditorCommand
+                this.setLogExpression(UnityPausepointConstants.pauseEditorCommand)
 
                 // Copy over condition + dependent breakpoint details. Hit count is automatically copied from properties
                 this.conditionExpression = breakpoint.conditionExpression

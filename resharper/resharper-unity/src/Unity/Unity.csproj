@@ -100,14 +100,21 @@
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="References">
-    <PackageReference Include="JetBrains.HabitatDetector" />
     <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="JetBrains.HabitatDetector" />
+    <PackageReference Include="JetBrains.Lifetimes" />
+    <PackageReference Include="JetBrains.RdFramework" />
+    <PackageReference Include="JetBrains.Vestris.ResourceLib" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="System.Collections.Immutable" />
+    <PackageReference Include="System.Memory" />
     <Reference Include="System.Xaml" />
     <ProjectReference Include="..\..\..\resharper-json\src\Json\Json.csproj" />
     <ProjectReference Include="..\..\..\resharper-yaml\src\Yaml\Yaml.csproj" />

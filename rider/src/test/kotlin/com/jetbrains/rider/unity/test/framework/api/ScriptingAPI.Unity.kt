@@ -588,7 +588,7 @@ fun BaseTestWithSolutionBase.toggleUnityPausepoint(project: Project,
     waitAndPump(unityDefaultTimeout, { breakpointManager.getBreakpoints(unityPausepointType).size == oldPausepointsCount + 1 })
     { "Pausepoint isn't created" }
     val pausepoint = breakpointManager.getBreakpoints(unityPausepointType).first()
-    pausepoint.condition = condition
+    pausepoint.setCondition(condition)
     frameworkLogger.info("Set pausepoint condition: '$condition'")
 
     return pausepoint
