@@ -9,14 +9,15 @@ import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidge
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileType
 
 
-class ShaderVariantsWidget(project: Project, editor: Editor) :
-    AbstractShaderWidget(project, editor), RiderResolveContextWidget, Disposable {
+class ShaderVariantsWidget(project: Project, editor: Editor) : AbstractShaderWidget(project, editor), RiderResolveContextWidget, Disposable {
     init {
         label.icon = ShaderLabFileType.icon
     }
 
     override fun showPopup(showAt: RelativePoint) {
-        val popup = JBPopupFactory.getInstance().createComponentPopupBuilder(ShaderVariantsSelector(), null)
+        val shaderVariantsSelector = ShaderVariantsSelector()
+        val popup = JBPopupFactory.getInstance().createComponentPopupBuilder(shaderVariantsSelector, shaderVariantsSelector.variants)
+            .setRequestFocus(true)
             .createPopup()
         popup.show(showAt)
     }
