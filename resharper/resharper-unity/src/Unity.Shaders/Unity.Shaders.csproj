@@ -82,6 +82,8 @@
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="References">
+    <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="JetBrains.Lifetimes" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -89,11 +91,19 @@
     <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="System.Collections.Immutable" />
+    <PackageReference Include="System.Memory" />
     <ProjectReference Include="..\Unity\Unity.csproj" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="mscorlib" />
+
+    <!-- CsLex task -->
+    <PackageReference Include="JetBrains.Build.Platform.DistributedCache" />
+    <!-- ParserGen task -->
+    <PackageReference Include="Antlr2.Runtime" />
+    <PackageReference Include="NVelocity" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\Strings.resx">

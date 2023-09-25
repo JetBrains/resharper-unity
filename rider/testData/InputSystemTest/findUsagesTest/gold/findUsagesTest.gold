@@ -1,5 +1,5 @@
 Search target
-    NewBehaviourScript.OnJump1():void
+    NewBehaviourScript.OnJump1() : void
 Found usages  (1 usage found)
     Other  (1 usage found)
         Assets  (1 usage found)

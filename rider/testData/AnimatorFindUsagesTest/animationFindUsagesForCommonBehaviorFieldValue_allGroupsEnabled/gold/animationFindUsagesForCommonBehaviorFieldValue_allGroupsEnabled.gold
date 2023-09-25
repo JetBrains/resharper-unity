@@ -1,5 +1,5 @@
 Search target
-    AnimationController.X:int
+    AnimationController.X : int
 Found usages  (2 usages found)
     <Assembly-CSharp>  (1 usage found)
         Assets  (1 usage found)

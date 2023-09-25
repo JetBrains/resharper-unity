@@ -29,6 +29,8 @@
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="References">
+    <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="JetBrains.Lifetimes" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -37,6 +39,12 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="mscorlib" />
+
+    <!-- CsLex task -->
+    <PackageReference Include="JetBrains.Build.Platform.DistributedCache" />
+    <!-- ParserGen task -->
+    <PackageReference Include="Antlr2.Runtime" />
+    <PackageReference Include="NVelocity" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="!$(InternalBuild)" />
   <Import Project="ManagedProject.Generated.Targets" Condition="$(InternalBuild)" />

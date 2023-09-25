@@ -927,9 +927,9 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         if (project.hasProperty("integrationTests")) {
             val testsType = project.property("integrationTests").toString()
             if (testsType == "include") {
-                include("integrationTests/**")
+                include("com/jetbrains/rider/unity/test/cases/integrationTests/**")
             } else if (testsType == "exclude") {
-                exclude("integrationTests/**")
+                exclude("com/jetbrains/rider/unity/test/cases/integrationTests/**")
             }
         }
         testLogging {

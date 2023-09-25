@@ -1,15 +1,18 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createLifetime
+import com.intellij.ui.awt.RelativePoint
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rdclient.document.getFirstDocumentId
+import com.jetbrains.rider.editors.resolveContextWidget.ResolveContextWidgetTheme
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.AutoShaderContextData
@@ -17,6 +20,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.SelectShaderConte
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextDataBase
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
+import com.jetbrains.rider.plugins.unity.ui.borders.IconBorder
 import icons.UnityIcons
 import org.jetbrains.annotations.Nls
 import java.awt.BorderLayout
@@ -35,31 +39,57 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
 
     private val label = JLabel(UnityIcons.FileTypes.ShaderLab)
     private val widgetLifetime = this.createLifetime()
-    internal val currentContextData : IProperty<ShaderContextData?> = Property(null)
+    private val currentContextData : IProperty<ShaderContextData?> = Property(null)
 
     init {
-        label.text = "..."
-        isVisible = false
-        add(label)
-        label.addMouseListener(object : MouseAdapter() {
+        label.apply {
+            text = "..."
+            foreground = null
+            border = IconBorder(AllIcons.Actions.InlayDropTriangle, label.iconTextGap)
+        }.also { add(it, BorderLayout.CENTER) }
+
+        addMouseListener(object : MouseAdapter() {
             override fun mouseReleased(e: MouseEvent?) {
-                showPopup(label)
+                showPopup(this@ShaderWidget)
+            }
+
+            override fun mouseEntered(e: MouseEvent?) {
+                ResolveContextWidgetTheme.getHoveredAttributes().let {
+                    background = it.backgroundColor
+                    foreground = it.foregroundColor
+                }
+            }
+
+            override fun mouseExited(e: MouseEvent?) {
+                background = null
+                foreground = null
             }
         })
+
+        border = ResolveContextWidgetTheme.WIDGET_BORDER
+        isVisible = false
 
         currentContextData.advise(project.lifetime) {
             if (it == null) {
                 label.text = UnityUIBundle.message("auto")
-                label.toolTipText = UnityUIBundle.message("default.file.and.symbol.context")
+                toolTipText = UnityUIBundle.message("default.file.and.symbol.context")
             } else {
                 label.text = getContextPresentation(it)
-                label.toolTipText = UnityUIBundle.message("file.and.symbol.context.derived.from.include.at.context", getContextPresentation(it))
+                toolTipText = UnityUIBundle.message("file.and.symbol.context.derived.from.include.at.context", getContextPresentation(it))
             }
         }
     }
 
     override val component: Component = this
     override fun update() = Unit
+
+    override fun updateUI() {
+        super.updateUI()
+
+        // inherit background and foreground from parent
+        foreground = null
+        background = null
+    }
 
     fun setData(data: ShaderContextDataBase?) {
         when (data) {
@@ -69,7 +99,7 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
         isVisible = data != null
     }
 
-    fun showPopup(label: JLabel) {
+    fun showPopup(origin: Component) {
         val lt = widgetLifetime.createNested()
         val id = editor.document.getFirstDocumentId(project) ?: return
         val host = FrontendBackendHost.getInstance(project)
@@ -88,7 +118,7 @@ class ShaderWidget(val project: Project, val editor: Editor) : JPanel(BorderLayo
                 // to work around this we add onPerformed callback for every possible action
                 for (action in actions)
                     action.onPerformed = terminateLifetime
-                popup.showInCenterOf(label)
+                popup.show(RelativePoint(origin, origin.mousePosition))
             } catch (t: Throwable) {
                 lt.terminate(true)
                 throw t

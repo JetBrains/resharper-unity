@@ -8,16 +8,19 @@ using JetBrains.Application.UI.Actions;
 using JetBrains.Application.UI.ActionsRevised.Menu;
 using JetBrains.Application.UI.ActionSystem.ActionsRevised.Menu;
 using JetBrains.Collections;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Features.ReSpeller;
 using JetBrains.ReSharper.Features.ReSpeller.SpellEngine;
+using JetBrains.ReSharper.Features.ReSpeller.SpellEngine.SpellBackend;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
+using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Internal
 {
@@ -86,10 +89,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Internal
                 from word in pair.Value
                 select word).ToJetHashSet(StringComparer.InvariantCultureIgnoreCase);
 
-            var spellService = solution.GetComponent<ISpellService>();
+            var spellService = solution.GetComponent<ISpellServiceBackendDispatcher>().SpellService;
 
+            var wordsCheckResult = SpellServiceExtensions.RunAsyncWithTimeout(() =>
+                spellService.CheckWordsAsync(Lifetime.Eternal, allWords.Concat(abbreviationsWithOriginalWord.Keys).AsList())
+            );
+            if (wordsCheckResult == null)
+            {
+                var logger = Logger.GetLogger<DumpSpellCheckWordListsAction>();
+                logger.Error("Failed to check words");
+                return;
+            }
             var unknownWords = (from word in allWords
-                where !spellService.CheckWordSpelling(word)
+                where !wordsCheckResult.TryGetValue(word)
                 select word).ToJetHashSet(StringComparer.InvariantCultureIgnoreCase);
 
             // Add abbreviations separately. If added to the dictionary, we don't get typo warnings, but we can get
@@ -98,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Internal
             // TODO: Ideally, we should disable AbbreviationsSettingsProvider, or we'll ignore our own abbreviations
             // Merge files by hand
             var unknownAbbreviations = (from word in abbreviationsWithOriginalWord.Keys
-                where (word.Length > 1 && word.Length < 4) || !spellService.CheckWordSpelling(word)
+                where (word.Length > 1 && word.Length < 4) || !wordsCheckResult.TryGetValue(word)
                 select word).ToJetHashSet();
 
             Dumper.DumpToNotepad(w =>
