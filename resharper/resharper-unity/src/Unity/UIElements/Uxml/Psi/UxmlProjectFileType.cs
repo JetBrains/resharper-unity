@@ -2,7 +2,7 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
 
-namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.ProjectModel
+namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi
 {
     [ProjectFileTypeDefinition(Name)]
     public class UxmlProjectFileType : XmlProjectFileType
