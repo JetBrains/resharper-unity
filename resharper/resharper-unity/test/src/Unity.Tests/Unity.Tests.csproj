@@ -36,6 +36,7 @@
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit.Console" />
     <PackageReference Include="Lib.Harmony" />
+    <ProjectReference Include="..\..\..\..\..\..\..\Psi.Features\test\Cases\Psi\_Core\Test.Psi.csproj" />
     <ProjectReference Include="..\..\..\src\Unity\Unity.csproj" />
     <ProjectReference Include="..\..\..\src\Unity.Shaders\Unity.Shaders.csproj" />
     <Reference Include="System" />
