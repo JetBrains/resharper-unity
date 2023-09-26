@@ -1,8 +1,8 @@
 using JetBrains.Build;
-using JetBrains.ReSharper.Plugins.Unity.Rider.BuildScript;
+using JetBrains.Debugger.Worker.Plugins.Unity.BuildScript;
 using JetBrains.Rider.Backend.Install;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Install
+namespace JetBrains.Debugger.Worker.Plugins.Unity.Install
 {
   public static class AdvertiseRiderBundledPlugin
   {
@@ -12,11 +12,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Install
       return new[]
       {
         new RiderBundledProductArtifact(
-          UnityInRiderProduct.ProductTechnicalName,
-          UnityInRiderProduct.ThisSubplatformName,
-          UnityInRiderProduct.DotFilesFolder,
+          DebuggerProduct.ProductTechnicalName,
+          DebuggerProduct.SubplatformName,
+          DebuggerProduct.PluginFolder,
           allowCommonPluginFiles: false)
-        
       };
     }
   }
