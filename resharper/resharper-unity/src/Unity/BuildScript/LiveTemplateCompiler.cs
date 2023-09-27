@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
@@ -49,7 +48,7 @@ public static class LiveTemplateCompiler
 
     private static Task RunCompiler(LiveTemplateItem liveTemplateItem, FileSystemPath compilerExec, FileSystemPath dotnetHost, ILogger logger)
     {
-        var inputFiles = SearchFiles(liveTemplateItem.ProjectDir, RelativePath.Parse(liveTemplateItem.Include).PathWithCurrentPlatformSeparators());
+        var inputFiles = SearchFiles(liveTemplateItem.ProjectDir, liveTemplateItem.Include);
         
         var startInfo = new InvokeChildProcess.StartInfo(dotnetHost)
         {
@@ -120,7 +119,7 @@ public static class LiveTemplateCompiler
     
     private static IEnumerable<FileSystemPath> SearchFiles(FileSystemPath root, string pattern)
     {
-        var parts = pattern.Split(new[] { Path.DirectorySeparatorChar }, StringSplitOptions.None);
+        var parts = pattern.Split(new[] { "\\", "/" }, StringSplitOptions.None);
 
         return SearchRecursive(root, parts, 0);
     }
