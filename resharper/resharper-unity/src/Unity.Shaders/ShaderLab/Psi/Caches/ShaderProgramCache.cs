@@ -2,11 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Common.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
@@ -27,6 +29,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
     [PsiComponent]
     public class ShaderProgramCache : SimplePsiSourceFileCacheWithLocalCache<ShaderProgramCache.Item, ImmutableArray<CppFileLocation>>
     {
+        private const string SHADER_VARIANT_SKIPPER = "_";
+        
+        private static readonly HashSet<StringSlice> ourShaderVariantDirectives = new() { "shader_feature", "shader_feature_local", "multi_compile", "multi_compile_local", "dynamic_branch", "dynamic_branch_local" };
+        
         private readonly Dictionary<CppFileLocation, ShaderProgramInfo> myProgramInfos = new();
         
         public ShaderProgramCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager) : base(lifetime, locks, persistentIndexManager, Item.Marshaller, "Unity::Shaders::ShaderProgramCacheUpdated")
@@ -69,7 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                 myProgramInfos.Remove(item);
         }
 
-        public bool TryGetShaderProgramInfo(CppFileLocation location, out ShaderProgramInfo shaderProgramInfo)
+        public bool TryGetShaderProgramInfo(CppFileLocation location, [MaybeNullWhen(false)] out ShaderProgramInfo shaderProgramInfo)
         {
             Locks.AssertReadAccessAllowed();
             return myProgramInfos.TryGetValue(location, out shaderProgramInfo);
@@ -81,6 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             var lexer = CppLexer.Create(buffer);
             lexer.Start();
 
+            var shaderVariants = new LocalHashSet<string>();
             var definedMacroses = new Dictionary<string, string>();
             var shaderTarget = HlslConstants.SHADER_TARGET_25;
             while (lexer.TokenType != null)
@@ -90,23 +97,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                 {
                     lexer.Advance();
                     var context = lexer.GetTokenText().TrimStart();
-                    var (pragmaType, firstValue) = GetPragmaAndValue(context);
+
+                    var slicer = StringSplitter.ByWhitespace(context);
+                    slicer.TryGetNextSlice(out var pragmaType);
+                    slicer.TryGetNextSlice(out var firstValue);
                     if (pragmaType.Equals("surface"))
                         isSurface = true;
 
-                    // based on https://docs.unity3d.com/Manual/SL-ShaderPrograms.html
-                    // We do not have any solution how we could handle multi_compile direcitves. It is complex task because
-                    // a lot of different files could be produces from multi_compile combination
-                    // Right now, we will consider first combination.
-                    if (!firstValue.IsEmpty() && (pragmaType.Equals("multi_compile") || pragmaType.Equals("multi_compile_local") ||
-                                                  pragmaType.Equals("shader_feature_local") || pragmaType.Equals("shader_feature")))
+                    if (!firstValue.IsEmpty)
                     {
-                        definedMacroses[firstValue] = "1";
+                        // based on https://docs.unity3d.com/Manual/SL-ShaderPrograms.html
+                        // We do not have any solution how we could handle multi_compile direcitves. It is complex task because
+                        // a lot of different files could be produces from multi_compile combination
+                        // Right now, we will consider first combination.
+                        if (pragmaType.Equals("multi_compile") || pragmaType.Equals("multi_compile_local") ||
+                            pragmaType.Equals("shader_feature_local") || pragmaType.Equals("shader_feature"))
+                        {
+                            definedMacroses[firstValue.ToString()] = "1";
+                        }
+
+                        if (ourShaderVariantDirectives.Contains(pragmaType))
+                        {
+                            if (!firstValue.Equals(SHADER_VARIANT_SKIPPER))
+                                shaderVariants.Add(firstValue.ToString());
+                            while (slicer.TryGetNextSlice(out var slice))
+                            {
+                                if (!slice.Equals(SHADER_VARIANT_SKIPPER))
+                                    shaderVariants.Add(slice.ToString());
+                            }
+                        }
                     }
 
                     if (pragmaType.Equals("target"))
                     {
-                        var versionFromTarget = int.TryParse(firstValue.Replace(".", ""), out var result) ? result : HlslConstants.SHADER_TARGET_35;
+                        var versionFromTarget = int.TryParse(firstValue.ToString().Replace(".", ""), out var result) ? result : HlslConstants.SHADER_TARGET_35;
                         shaderTarget = Math.Max(shaderTarget, versionFromTarget);
                     }
 
@@ -132,7 +156,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             }
 
             definedMacroses["SHADER_TARGET"] = shaderTarget.ToString();
-            return new ShaderProgramInfo(definedMacroses, shaderTarget, isSurface);
+            return new ShaderProgramInfo(definedMacroses, shaderTarget, isSurface, !shaderVariants.IsEmpty() ? shaderVariants.ToArray() : null);
         }
         
         private (string, string) GetPragmaAndValue(string context)
