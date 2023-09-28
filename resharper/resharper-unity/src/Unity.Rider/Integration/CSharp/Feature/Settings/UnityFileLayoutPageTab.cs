@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Set
                                 OptionsSettingsSmartContext optionsSettingsSmartContext)
         {
             var fileLayoutSettings = new AdditionalFileLayoutSettingsHelper(lifetime, optionsSettingsSmartContext);
-            var textControl = BeControls.GetLanguageTextControl(fileLayoutSettings.Text, lifetime, false, myFileLayoutLanguage, DummyFileName, true);
+            var textControl = BeControls.GetLanguageTextControl(null, fileLayoutSettings.Text, lifetime, false, myFileLayoutLanguage, DummyFileName, true);
             var toolbar = BeControls.GetToolbar(textControl);
 
             var emptyPatternItem = BeControls.GetButton(Strings.UnityFileLayoutPageTab_Create_Empty, lifetime, () => fileLayoutSettings.LoadDefaultPattern(DefaultPatternKind.Empty));
