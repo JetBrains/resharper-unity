@@ -1,17 +1,14 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Injections;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
-using JetBrains.ReSharper.Psi.Cpp.Parsing;
-using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
@@ -24,15 +21,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
         private readonly ISolution mySolution;
         private readonly CppExternalModule myCppExternalModule;
         private readonly CgIncludeDirectoryProvider myCgIncludeDirectoryProvider;
+        private readonly ShaderProgramCache myShaderProgramCache; 
 
         public InjectedHlslFileLocationTracker(Lifetime lifetime, ISolution solution,
-            IPersistentIndexManager persistentIndexManager, CppExternalModule cppExternalModule, CgIncludeDirectoryProvider cgIncludeDirectoryProvider)
+            IPersistentIndexManager persistentIndexManager, CppExternalModule cppExternalModule, CgIncludeDirectoryProvider cgIncludeDirectoryProvider, ShaderProgramCache shaderProgramCache)
             : base(
                 lifetime, solution, persistentIndexManager, InjectedHlslLocationInfo.Read, InjectedHlslLocationInfo.Write)
         {
             mySolution = solution;
             myCppExternalModule = cppExternalModule;
             myCgIncludeDirectoryProvider = cgIncludeDirectoryProvider;
+            myShaderProgramCache = shaderProgramCache;
         }
 
         protected override CppFileLocation GetCppFileLocation(InjectedHlslLocationInfo t)
@@ -76,7 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
                 .Select(d => d.ToCppFileLocation());
         }
 
-        public (IEnumerable<CppFileLocation> includeLocations, Dictionary<string, string> defines) GetProgramInfo(CppFileLocation cppFileLocation)
+        public (IEnumerable<CppFileLocation> includeLocations, IReadOnlyDictionary<string, string> defines) GetProgramInfo(CppFileLocation cppFileLocation)
         {
             // PSI is not commited here
             // TODO: cpp global cache should calculate cache only when PSI for file with cpp injects is committed.
@@ -87,72 +86,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
 
             var buffer = sourceFile.Document.Buffer;
             var type = GetShaderProgramType(buffer, range.StartOffset);
+            if (!myShaderProgramCache.TryGetShaderProgramInfo(cppFileLocation, out var shaderProgramInfo)) 
+                Assertion.Fail($"Shader program info is missing for {cppFileLocation}");
 
-
-            var defines = GetDefinedMacroses(ProjectedBuffer.Create(buffer, range), out var isSurface);
-            var includes = GetIncludes(sourceFile, type, isSurface);
-
-            return (includes, defines);
-        }
-
-        private Dictionary<string, string> GetDefinedMacroses(IBuffer buffer,out bool isSurface)
-        {
-            isSurface = false;
-            var lexer = CppLexer.Create(buffer);
-            lexer.Start();
-
-            var definedMacroses = new Dictionary<string, string>();
-            var shaderTarget = HlslConstants.SHADER_TARGET_25;
-            while (lexer.TokenType != null)
-            {
-                var tokenType = lexer.TokenType;
-                if (tokenType is CppDirectiveTokenNodeType)
-                {
-                    lexer.Advance();
-                    var context = lexer.GetTokenText().TrimStart();
-                    var (pragmaType, firstValue) = GetPragmaAndValue(context);
-                    if (pragmaType.Equals("surface"))
-                        isSurface = true;
-
-                    // based on https://docs.unity3d.com/Manual/SL-ShaderPrograms.html
-                    // We do not have any solution how we could handle multi_compile direcitves. It is complex task because
-                    // a lot of different files could be produces from multi_compile combination
-                    // Right now, we will consider first combination.
-                    if (!firstValue.IsEmpty() && (pragmaType.Equals("multi_compile") || pragmaType.Equals("multi_compile_local") ||
-                                                  pragmaType.Equals("shader_feature_local") || pragmaType.Equals("shader_feature")))
-                    {
-                        definedMacroses[firstValue] = "1";
-                    }
-
-                    if (pragmaType.Equals("target"))
-                    {
-                        var versionFromTarget = int.TryParse(firstValue.Replace(".", ""), out var result) ? result : HlslConstants.SHADER_TARGET_35;
-                        shaderTarget = Math.Max(shaderTarget, versionFromTarget);
-                    }
-
-                    if (pragmaType.Equals("geometry"))
-                        shaderTarget = Math.Max(shaderTarget, HlslConstants.SHADER_TARGET_40);
-
-                    if (pragmaType.Equals("hull") || pragmaType.Equals("domain"))
-                        shaderTarget = Math.Max(shaderTarget, HlslConstants.SHADER_TARGET_46);
-
-                    // https://en.wikibooks.org/wiki/GLSL_Programming/Unity/Cookies
-                    if (pragmaType.Equals("multi_compile_lightpass"))
-                    {
-                        // multi_compile_lightpass == multi_compile DIRECTIONAL, DIRECTIONAL_COOKIE, POINT, POINT_NOATT, POINT_COOKIE, SPOT
-                        definedMacroses["DIRECTIONAL"] = "1";
-                    }
-
-                    // TODO: handle built-in https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html
-                    // multi_compile_fwdbase, multi_compile_fwdadd, multi_compile_fwdadd_fullshadows, multi_compile_fog
-                    // could not find information about that directives
-
-                }
-                lexer.Advance();
-            }
-
-            definedMacroses["SHADER_TARGET"] = shaderTarget.ToString();
-            return definedMacroses;
+            var includes = GetIncludes(sourceFile, type, shaderProgramInfo.IsSurface);
+            return (includes, shaderProgramInfo.DefinedMacros);
         }
 
         private void AddImplicitCgIncludes(List<CppFileLocation> includeList, bool isSurface)
@@ -222,26 +160,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
                 AddImplicitCgIncludes(includeList, isSurface);
 
             return includeList;
-        }
-
-        private (string, string) GetPragmaAndValue(string context)
-        {
-            int i = 0;
-            string GetIdentifier()
-            {
-                var sb = new StringBuilder();
-                while (i < context.Length && char.IsWhiteSpace(context[i]))
-                    i++;
-                while (i < context.Length && !char.IsWhiteSpace(context[i]))
-                {
-                    sb.Append(context[i]);
-                    i++;
-                }
-
-                return sb.ToString();
-            }
-
-            return (GetIdentifier(), GetIdentifier());
         }
 
         private InjectedHlslProgramType GetShaderProgramType(IBuffer buffer, int locationStartOffset)
