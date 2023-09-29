@@ -4,7 +4,7 @@ using JetBrains.ReSharper.PsiTests.Xaml;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Tests.Unity.Uxml
+namespace JetBrains.ReSharper.Plugins.Tests.Unity.Uxml.Psi.References
 {
     [TestUnity]
     [TestFileExtension(UxmlProjectFileType.UXML_EXTENSION)]

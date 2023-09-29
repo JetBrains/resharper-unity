@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree
     [Language(typeof(UxmlLanguage))]
     public class UxmlElementTypes : XmlElementTypes
     {
-        private const int BASE_INDEX = 2000;
+        private const int BASE_INDEX = 1500;
 
         public UxmlElementTypes(XmlTokenTypes xmlTokenTypes) : base(xmlTokenTypes)
         {
