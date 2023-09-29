@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi
         public override PsiLanguageType GetPsiLanguageType(ProjectFileType languageType)
         {
             this.AssertProjectFileType(languageType);
-            return XmlLanguage.Instance;
+            return UxmlLanguage.Instance!;
         }
     }
 }

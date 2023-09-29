@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Caches
         
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return base.IsApplicable(sf) && sf.IsUxml() && sf.IsLanguageSupported<XmlLanguage>() 
+            return base.IsApplicable(sf) && sf.IsUxml() && sf.IsLanguageSupported<UxmlLanguage>() 
                    && (mySolution.SolutionDirectory.Combine("Assets").IsPrefixOf(sf.GetLocation()) || myPackageManager.IsLocalPackageCacheFile(sf.GetLocation()));
         }
 
@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Caches
             if (!IsApplicable(sourceFile))
                 return null;
 
-            if (sourceFile.GetDominantPsiFile<XmlLanguage>() is not IXmlFile file) return null;
+            if (sourceFile.GetDominantPsiFile<UxmlLanguage>() is not IXmlFile file) return null;
             var results = new List<UxmlCacheItem>();
 
             var namespaces = ParseXmlNs();

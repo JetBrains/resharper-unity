@@ -8,7 +8,6 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Xml;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 {
@@ -33,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
             if (!myUnitySolutionTracker.IsUnityProject.HasTrueValue())
                 return null;
 
-            if (sourceFile.IsUxml() && sourceFile.IsLanguageSupported<XmlLanguage>() )
+            if (sourceFile.IsUxml() && sourceFile.IsLanguageSupported<UxmlLanguage>() )
                 return new UxmlReferenceFactory();
 
             return null;
