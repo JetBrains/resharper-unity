@@ -11,17 +11,26 @@ import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
 import com.jetbrains.rider.diagnostics.LogTraceScenarios
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.allure.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.test.waitForDaemon
+import io.qameta.allure.Description
+import io.qameta.allure.Epic
+import io.qameta.allure.Feature
+import io.qameta.allure.Severity
+import io.qameta.allure.SeverityLevel
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.time.Duration
 
+@Epic(Subsystem.UNITY_COMPLETION)
+@Feature("Unity DOTS Autocompletion")
+@Severity(SeverityLevel.NORMAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_7)
 class UnityDotsAutocompletionTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String = "UnityDotsAutocompletionTestData"
@@ -46,6 +55,7 @@ class UnityDotsAutocompletionTest : BaseTestWithSolution() {
             *LogTraceScenarios.Roslyn.categories.toTypedArray())
 
     @Test
+    @Description("DOTS Source GenCompletion")
     fun test_DotsSourceGenCompletion() {
         waitForRoslynReady()
         buildSolutionWithReSharperBuild()

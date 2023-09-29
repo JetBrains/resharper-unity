@@ -11,6 +11,7 @@ import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.OpenSolutionParams
+import com.jetbrains.rider.test.allure.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
 import com.jetbrains.rider.test.enums.PlatformType
@@ -18,15 +19,20 @@ import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.prepareProjectView
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
-import io.qameta.allure.Issue
+import io.qameta.allure.*
 import org.testng.annotations.Test
 import java.time.Duration
 
+@Epic(Subsystem.UNITY_PLUGIN)
+@Feature("Unity Explorer")
+@Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class UnityExplorerTest : BaseTestWithSolutionBase() {
 
-    @Test //RIDER-70098 Rider adds Unity meta files in a non-Unity project
+    @Test
+    @Issue("RIDER-70098 Rider adds Unity meta files in a non-Unity project")
     @TestEnvironment(allowMultipleBackends = true)
+    @Description("Add a new item with multiple backends")
     fun testMultipleBackendsAddNewItem() {
         val params = OpenSolutionParams()
         params.waitForCaches = true
@@ -48,6 +54,7 @@ class UnityExplorerTest : BaseTestWithSolutionBase() {
     }
 
     @Test
+    @Description("Add a new folder and script to the project")
     fun testUnityExplorer01() {
         val params = OpenSolutionParams()
         withSolution("SimpleUnityProject", params) { project ->
@@ -82,6 +89,7 @@ class UnityExplorerTest : BaseTestWithSolutionBase() {
     @Test
     @Issue("RIDER-92886")
     @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6, platform = [PlatformType.MAC_OS_ALL, PlatformType.LINUX_ALL])
+    @Description("Test project loading with a special folder")
     fun test_project_loading_with_special_folder() { // infinite loading caused by a "..\\" folder
         val params = OpenSolutionParams()
         withSolution("AnimImplicitUsageTest", params, preprocessTempDirectory = {
