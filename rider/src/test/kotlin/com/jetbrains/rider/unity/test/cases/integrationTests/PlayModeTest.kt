@@ -15,7 +15,7 @@ import io.qameta.allure.SeverityLevel
 import org.testng.annotations.Test
 
 @Epic(Subsystem.UNITY_PLUGIN)
-@Feature("PLayMode Actions for Unity")
+@Feature("PlayMode Action for Unity")
 @Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class PlayModeTest : IntegrationTestWithGeneratedSolutionBase() {
