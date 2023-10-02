@@ -9,6 +9,7 @@ import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.allure.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
@@ -17,12 +18,20 @@ import com.jetbrains.rider.test.scriptingApi.assertLookupContains
 import com.jetbrains.rider.test.scriptingApi.assertLookupNotContains
 import com.jetbrains.rider.test.scriptingApi.typeWithLatency
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
+import io.qameta.allure.Description
+import io.qameta.allure.Epic
+import io.qameta.allure.Feature
+import io.qameta.allure.Severity
+import io.qameta.allure.SeverityLevel
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
 
+@Epic(Subsystem.UNITY_COMPLETION)
+@Feature("Unity Resources Autocompletion")
+@Severity(SeverityLevel.NORMAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String = "ResourcesAutocompletionTestData"
@@ -46,6 +55,7 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
             "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages")
 
     @Test
+    @Description("Unity Resources Completion for Load")
     fun test_UnityResourcesLoadCompletion() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadCompletion.cs") {
@@ -68,6 +78,7 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
     }
 
     @Test
+    @Description("Unity Resources Completion for LoadAll")
     fun test_UnityResourcesLoadAllCompletion() {
         waitForUnityPackagesCache() {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadAllCompletion.cs") {
@@ -90,6 +101,7 @@ class UnityResourcesAutocompletionTest : BaseTestWithSolution() {
     }
 
     @Test
+    @Description("Unity Resources Completion for LoadAsync")
     fun test_UnityResourcesLoadAsyncCompletion() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "UnityResourcesLoadAsyncCompletion.cs") {

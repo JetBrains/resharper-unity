@@ -7,17 +7,26 @@ import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.allure.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.CodeLensTestBase
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
+import io.qameta.allure.Description
+import io.qameta.allure.Epic
+import io.qameta.allure.Feature
+import io.qameta.allure.Severity
+import io.qameta.allure.SeverityLevel
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
 
+@Epic(Subsystem.UNITY_PLUGIN)
+@Feature("Unity code vision")
+@Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
@@ -40,16 +49,19 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     @Test(dataProvider = "assetSettings")
     @TestEnvironment(solution = "FindUsages_05_2018")
+    @Description("Unity base code vision test")
     fun baseTest(caseName: String, showProperties: String) = doUnityTest(showProperties,
             "Assets/NewBehaviourScript.cs") { false }
 
     @Test(dataProvider = "assetSettings")
     @TestEnvironment(solution = "RiderSample")
+    @Description("Unity property code vision test")
     fun propertyCodeVision(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") { false }
 
     @Test(dataProvider = "assetSettings")
     @TestEnvironment(solution = "RiderSample")
+    @Description("Unity property code vision test with typing")
     fun propertyCodeVisionWithTyping(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") {
         typeFromOffset("1", 577)
@@ -59,16 +71,19 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     @Test(dataProvider = "assetSettings")
     @TestEnvironment(solution = "FindUsages_05_2018")
+    @Description("Unity base code vision  test with yaml off")
     fun baseTestYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/NewBehaviourScript.cs") { false }
 
     @Test(dataProvider = "assetSettings")
     @TestEnvironment(solution = "RiderSample")
+    @Description("Unity property code vision test with yaml off")
     fun propertyCodeVisionYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") { false }
 
     @Test(dataProvider = "assetSettings")
     @TestEnvironment(solution = "RiderSample")
+    @Description("Unity property code vision test with yaml off and typing")
     fun propertyCodeVisionWithTypingYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/SampleScript.cs") {
         typeFromOffset("1", 577)
@@ -77,6 +92,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     @Test(dataProvider = "assetSettings")
     @TestEnvironment(solution = "RiderSample")
+    @Description("Unity property scriptable object code vision test")
     fun propertyCodeVisionScriptableObject(caseName: String, showProperties: String) = doUnityTest(showProperties,
         "Assets/TestScriptableObject.cs") {
         true
@@ -86,6 +102,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
     // Tests for fixing current behaviour only
     @Test(dataProvider = "assetSettings")
     @TestEnvironment(solution = "PrefabModificationTestSolution")
+    @Description("Unity prefab modification code vision test")
     fun prefabModifications01(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script1.cs") {
         true
@@ -93,6 +110,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     @Test(dataProvider = "assetSettings")
     @TestEnvironment(solution = "PrefabModificationTestSolution")
+    @Description("Unity prefab modification code vision test")
     fun prefabModifications02(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script2.cs") {
         true
@@ -100,6 +118,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     @Test(dataProvider = "assetSettings")
     @TestEnvironment(solution = "PrefabModificationTestSolution")
+    @Description("Unity prefab modification code vision test")
     fun prefabModifications03(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script3.cs") {
         true
@@ -107,6 +126,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     @Test(dataProvider = "assetSettings")
     @TestEnvironment(solution = "PrefabModificationTestSolution")
+    @Description("Unity prefab modification code vision test")
     fun prefabModifications04(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script4.cs") {
         true
@@ -114,6 +134,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
 
     @Test(dataProvider = "assetSettings")
     @TestEnvironment(solution = "PrefabModificationTestSolution")
+    @Description("Unity prefab modification code vision test")
     fun prefabModifications05(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script5.cs") {
         true
