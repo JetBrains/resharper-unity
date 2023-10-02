@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <PackageLock Include="JetBrains.Lifetimes" Version="2023.3.0" />
     <PackageLock Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" IsDevelopmentDependency="True" />
     <PackageLock Include="VSSDK.Text" Version="10.0.4" />
     <PackageLock Include="VSSDK.CoreUtility" Version="10.0.4" />

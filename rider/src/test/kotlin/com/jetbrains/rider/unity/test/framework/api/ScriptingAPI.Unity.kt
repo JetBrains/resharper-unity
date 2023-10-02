@@ -20,6 +20,7 @@ import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.waitAndPump
+import com.jetbrains.rider.RiderEnvironment
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
@@ -257,28 +258,14 @@ fun getUnityProcessHandle(project: Project): ProcessHandle {
 }
 
 fun getRiderDevAppPath(): File {
-    if (PluginManagerCore.isRunningFromSources()) {
-        val assemblyName = "JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll"
-        val editorPluginDllsPath = if (TeamCityHelper.isUnderTeamCity) {
-            FrontendBackendHost::class.java.classLoader.getResource("EditorPlugin")!!.toURI().toPath().toFile()
-        } else {
-            RiderBackend.getRiderBackendDir()!!
-        }
-        val riderDevAppPath = editorPluginDllsPath.resolve("rider-dev.app").apply { mkdirs() }
-        val riderDevBatPath = riderDevAppPath.resolve("rider-dev.bat")
-        riderDevBatPath.writeText(editorPluginDllsPath.resolve(assemblyName).canonicalPath)
-        return if (SystemInfo.isMac) riderDevAppPath else riderDevBatPath
-    } else {
-        val relPath = when {
-            SystemInfo.isWindows -> "net472/rider-dev.app/rider-dev.bat"
-            SystemInfo.isMac -> "net472/rider-dev.app"
-            SystemInfo.isUnix -> "net472/rider-dev.app/rider-dev.bat"
-            else -> throw Exception("Not implemented")
-        }
-        val cwd = File(System.getProperty("user.dir"))
-        return cwd.parentFile.resolve("unity/build/EditorPlugin.SinceUnity.2019.2/bin").listFiles()!!
-            .single { a -> (a.name == "Debug" || a.name == "Release") && a.isDirectory }.resolve(relPath)
-    }
+    val editorPluginFolderPath = RiderEnvironment.getBundledPluginFile("EditorPlugin", "com.intellij.resharper.unity")
+    val assemblyName = "JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll"
+
+    val riderDevAppPath = editorPluginFolderPath.resolve("rider-dev.app").apply { mkdirs() }
+    val riderDevBatPath = riderDevAppPath.resolve("rider-dev.bat")
+    riderDevBatPath.writeText(editorPluginFolderPath.resolve(assemblyName).canonicalPath)
+
+    return if (SystemInfo.isMac) riderDevAppPath else riderDevBatPath
 }
 
 fun BaseTestWithSolutionBase.startUnity(project: Project,
@@ -588,7 +575,7 @@ fun BaseTestWithSolutionBase.toggleUnityPausepoint(project: Project,
     waitAndPump(unityDefaultTimeout, { breakpointManager.getBreakpoints(unityPausepointType).size == oldPausepointsCount + 1 })
     { "Pausepoint isn't created" }
     val pausepoint = breakpointManager.getBreakpoints(unityPausepointType).first()
-    pausepoint.condition = condition
+    pausepoint.setCondition(condition)
     frameworkLogger.info("Set pausepoint condition: '$condition'")
 
     return pausepoint

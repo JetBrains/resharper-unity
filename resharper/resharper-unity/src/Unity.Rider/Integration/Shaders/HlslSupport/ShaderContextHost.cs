@@ -271,7 +271,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             var roots = new List<(IPsiSourceFile SourceFile, IRangeMarker RangeMarker)>();
             await myPsiFiles.CommitWithRetryBackgroundRead(lt, () =>
             {
-                var possibleRoots = myCppGlobalSymbolCache.IncludesGraphCache.CollectPossibleRootsForFile(new CppFileLocation(sourceFile)).ToList();
+                var possibleRoots = myCppGlobalSymbolCache.IncludesGraphCache.CollectPossibleRootsForFile(new CppFileLocation(sourceFile)).OrderBy(x => x.Name).ThenBy(x => x.RootRange.StartOffset).ToList();
                 foreach (var root in possibleRoots)
                 {
                     if (root.IsInjected())
