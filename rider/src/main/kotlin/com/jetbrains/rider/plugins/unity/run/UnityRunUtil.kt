@@ -27,7 +27,7 @@ import java.nio.file.Paths
  * virtual players, this will be the display name entered by the user, or the instance ID if not available.
  * @param instanceId    The instance ID of a virtual player, `null` otherwise. E.g. `mppmca3577a6`
  */
-data class UnityLocalProcessExtraDetails(val projectName: String?, @NlsSafe val instanceName: String?, val instanceId: String?)
+data class UnityLocalProcessExtraDetails(@NlsSafe val projectName: String?, @NlsSafe val instanceName: String?, @NlsSafe val instanceId: String?)
 
 fun ProcessInfo.toUnityProcess(extraDetails: UnityLocalProcessExtraDetails?): UnityLocalProcess {
     return when {

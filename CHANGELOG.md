@@ -43,6 +43,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * Rider: Fix generating online documentation search URL for generic types ([RIDER-97168](https://youtrack.jetbrains.com/issue/RIDER-97168))
 * Rider: Fix adding non-`.cs` files to `.Player` projects to prevent shader files unexpectedly appearing in multiple projects ([RIDER-97069](https://youtrack.jetbrains.com/issue/RIDER-97069))
 * Rider: Fix context help for Unity settings page ([RIDER-98359](https://youtrack.jetbrains.com/issue/RIDER-98359))
+* Rider: Add missing Unity process details (project name, role, etc.) in Rider's attach to local process dialog ([RIDER-99743](https://youtrack.jetbrains.com/issue/RIDER-99743))
 
 
 
