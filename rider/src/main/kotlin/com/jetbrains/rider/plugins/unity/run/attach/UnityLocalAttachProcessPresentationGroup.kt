@@ -17,7 +17,7 @@ object UnityLocalAttachProcessPresentationGroup : XAttachProcessPresentationGrou
         val displayNames = userData.getUserData(UnityLocalAttachProcessDebuggerProvider.PROCESS_INFO_KEY)?.get(process.pid)
         @NlsSafe
         val projectName = if (displayNames?.projectName != null) " (${displayNames.projectName})" else ""
-        val roleName = if (displayNames?.roleName != null) " ${displayNames.roleName}" else ""
+        val roleName = if (displayNames?.instanceName != null) " ${displayNames.instanceName}" else ""
         return process.executableDisplayName + roleName + projectName
     }
 

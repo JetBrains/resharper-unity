@@ -15,23 +15,29 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 * Add completion for semantics in HLSL code ([RIDER-69716](https://youtrack.jetbrains.com/issue/RIDER-69716))
 * Add completion of UI elements used in UXML files for `Q` and `Query` methods
-* Resolve `project:` references in USS files
+* Add completion for `-unity-font` and `-unity-font-definition`
+* Resolve `project:` and `unity-theme:` references in USS files
+* Resolve references to packages in USS files
 * Add support for `.tss` UI elements theme files
 * Support percentage values in various USS properties ([RIDER-88190](https://youtrack.jetbrains.com/issue/RIDER-88190))
 * Support reading encoded Unicode characters from YAML asset files ([RIDER-91181](https://youtrack.jetbrains.com/issue/RIDER-91181))
+* Rider: Add support for multiplayer mode virtual players in "Attach to Unity" Process dialog ([RIDER-99681](https://youtrack.jetbrains.com/issue/RIDER-99681))
 * Rider: Add `Unity_s.debug` as a Unity editor executable that can be debugged on Linux ([RIDER-97262](https://youtrack.jetbrains.com/issue/RIDER-97262))
 
 ### Changed
 
 * Add missing USS properties ([RIDER-88190](https://youtrack.jetbrains.com/issue/RIDER-88190), [RIDER-96828](https://youtrack.jetbrains.com/issue/RIDER-96828))
 * Rider: Update Unity editor plugin to find Rider when installed with JetBrains Toolbox 2.0
-* Rider: Rework shader context widget
+* Rider: Move shader context widget from status bar to editor breadcrumb bar ([RIDER-97381](https://youtrack.jetbrains.com/issue/RIDER-97381))
 * Rider: Prefer opening files in main project context when player projects are generated
 * Rider: Do not show editor notification if opening a non-generated project file
+* Rider: Add "Open manifest.json" command link to Rider package update notification
 
 ### Fixed
 
 * Fix exception while indexing ShaderLab files ([DEXP-738113](https://youtrack.jetbrains.com/issue/DEXP-738113))
+* Fix exception trying to delete line marker ([RIDER-96228](https://youtrack.jetbrains.com/issue/RIDER-96228))
+* Rider: Fix USS files not recognising two values for `background-style` property ([RIDER-99513](https://youtrack.jetbrains.com/issue/RIDER-99513))
 * Rider: Fix generating online documentation URL for packages with a pre-release semantic version ([RIDER-97543](https://youtrack.jetbrains.com/issue/RIDER-97543))
 * Rider: Fix generating online documentation URL for generic types ([RIDER-97543](https://youtrack.jetbrains.com/issue/RIDER-97543))
 * Rider: Fix generating online documentation search URL for generic types ([RIDER-97168](https://youtrack.jetbrains.com/issue/RIDER-97168))
