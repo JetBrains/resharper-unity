@@ -677,7 +677,7 @@
   </property>
   <property id="background-size" declared-in="0">
     <group type="or">
-      <inline id="length-percentage-auto"/>
+      <inline id="length-percentage-auto" max="2"/>
       <name value="cover"/>
       <name value="contain"/>
     </group>

@@ -15,12 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Install
           UnityInRiderProduct.ProductTechnicalName,
           UnityInRiderProduct.ThisSubplatformName,
           UnityInRiderProduct.DotFilesFolder,
-          allowCommonPluginFiles: false),
-        new RiderBundledProductArtifact(
-          UnityInRiderProduct.Debugger.ProductTechnicalName,
-          UnityInRiderProduct.Debugger.DebuggerSubplatformName,
-          UnityInRiderProduct.Debugger.DebuggerFolder,
           allowCommonPluginFiles: false)
+        
       };
     }
   }

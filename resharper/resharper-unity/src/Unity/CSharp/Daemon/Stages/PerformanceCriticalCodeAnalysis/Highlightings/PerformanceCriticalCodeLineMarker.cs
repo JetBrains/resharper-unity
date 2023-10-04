@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public DocumentRange CalculateRange() => myRange;
         public string ToolTip => Strings.UnityPerformanceCriticalCodeLineMarker_Performance_critical_context;
         public string ErrorStripeToolTip => Tooltip;
-        public string RendererId => null;
+        public string RendererId => "DefaultLineMarkerRendererProvider";
         public int Thickness => 1;
         public LineMarkerPosition Position =>  LineMarkerPosition.RIGHT;
         public ExecutableItem LeftClick() => null;

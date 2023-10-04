@@ -4,6 +4,7 @@ import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
 import com.intellij.testFramework.TestModeFlags
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
+import com.jetbrains.rider.test.allure.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
@@ -11,11 +12,19 @@ import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.assertLookupContains
 import com.jetbrains.rider.test.scriptingApi.typeWithLatency
 import com.jetbrains.rider.test.scriptingApi.withOpenedEditor
+import io.qameta.allure.Description
+import io.qameta.allure.Epic
+import io.qameta.allure.Feature
+import io.qameta.allure.Severity
+import io.qameta.allure.SeverityLevel
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File
 
+@Epic(Subsystem.UNITY_COMPLETION)
+@Feature("Unity Tags Autocompletion")
+@Severity(SeverityLevel.NORMAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class TagsCompletionTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String = "ProjectSettingsTestData"
@@ -49,6 +58,7 @@ class TagsCompletionTest : BaseTestWithSolution() {
         "\"Würzburg\"")
 
     @Test
+    @Description("Check completion for basic tags (Finish, PLayer, Respawn, EditorOnly and etc.)")
     fun testTag_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "TagCompletionTest1.cs") {
             typeWithLatency("\"")

@@ -1,8 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <PackageLock Include="JetBrains.Lifetimes" Version="2023.3.0" />
     <PackageLock Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <PackageLock Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" IsDevelopmentDependency="True" />
+    <PackageLock Include="NUnit" Version="3.13.2" />
     <PackageLock Include="NUnit.Console" Version="3.12.0" />
     <PackageLock Include="Lib.Harmony" Version="2.0.0.8" />
   </ItemGroup>
