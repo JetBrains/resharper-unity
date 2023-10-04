@@ -5,7 +5,6 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Xaml.Impl.Tree;
-using JetBrains.ReSharper.Psi.Xaml.Impl.Tree.References;
 using JetBrains.ReSharper.Psi.Xaml.Tree;
 using JetBrains.ReSharper.Psi.Xml.Tree;
 using JetBrains.Util;
@@ -26,10 +25,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree
             var token = (IXmlValueToken) Value;
             var references = new List<IReference>();
 
-            IXamlNamespaceReference qualifier = null;
+            IUxmlNamespaceReference qualifier = null;
             foreach (var range in ranges)
             {
-                IXamlNamespaceReference reference;
+                IUxmlNamespaceReference reference;
                 if (qualifier == null)
                     reference = new UxmlRootNamespaceReference(this, token, range);
                 else

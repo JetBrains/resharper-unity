@@ -45,7 +45,7 @@ XmlFile
     XmlWhitespaceToken(307,1)(type:NEW_LINE, text:\n)
     XmlWhitespaceToken(308,4)(type:SPACE, text:    )
     XmlTag
-      XmlTagHeaderNode
+      UxmlTagHeader
         XmlTagStartToken(312,1)(type:TAG_START, text:<)
         XmlIdentifier(313,16)(type:IDENTIFIER, text:ui:VisualElement)
         XmlWhitespaceToken(329,1)(type:SPACE, text: )

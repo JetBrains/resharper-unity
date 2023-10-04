@@ -1,22 +1,18 @@
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
+using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
-using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Xaml.Impl.Tree.References;
-using JetBrains.ReSharper.Psi.Xaml.Impl.Util;
-using JetBrains.ReSharper.Psi.Xaml.Tree;
 using JetBrains.ReSharper.Psi.Xml.Impl.Util;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Resolve
 {
   internal class NamespaceReferenceUtil
   {
     [NotNull, Pure]
-    public static ISymbolTable GetSymbolTable([NotNull] IXamlNamespaceReference reference)
+    public static ISymbolTable GetSymbolTable([NotNull] IUxmlNamespaceReference reference)
     {
       var aliasAttribute = reference.GetTreeNode();
 
@@ -32,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Resolve
       return symbolTable;
     }
 
-    public static IReference BindTo([NotNull] IXamlNamespaceReference reference, [NotNull] INamespace @namespace)
+    public static IReference BindTo([NotNull] IUxmlNamespaceReference reference, [NotNull] INamespace @namespace)
     {
       var start = TreeOffset.Zero;
       for (var r = reference; r != null;)
@@ -44,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Resolve
           break;
         }
 
-        r = (IXamlNamespaceReference)qualifiableReference.GetQualifier();
+        r = (IUxmlNamespaceReference)qualifiableReference.GetQualifier();
       }
 
       var oldRange = new TreeTextRange(start, reference.RangeWithin.EndOffset);
@@ -54,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Resolve
         reference.Token, oldRange, @namespace.QualifiedName, namespaceAlias);
 
       var end = start + @namespace.QualifiedName.Length - 1;
-      foreach (var newReference in namespaceAlias.GetReferences<IXamlNamespaceReference>())
+      foreach (var newReference in namespaceAlias.GetReferences<IUxmlNamespaceReference>())
       {
         var range = newReference.RangeWithin;
         if (range.Contains(end) ||

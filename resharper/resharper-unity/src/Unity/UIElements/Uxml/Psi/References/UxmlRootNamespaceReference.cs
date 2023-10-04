@@ -14,7 +14,7 @@ using JetBrains.ReSharper.Psi.Xml.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 {
-  internal class UxmlRootNamespaceReference : XmlReferenceWithTokenBase<NamespaceAliasAttribute>, IXamlNamespaceReference
+  internal class UxmlRootNamespaceReference : XmlReferenceWithTokenBase<NamespaceAliasAttribute>, IUxmlNamespaceReference
   {
     public UxmlRootNamespaceReference(
       [NotNull] NamespaceAliasAttribute owner, IXmlToken token, TreeTextRange rangeWithin)

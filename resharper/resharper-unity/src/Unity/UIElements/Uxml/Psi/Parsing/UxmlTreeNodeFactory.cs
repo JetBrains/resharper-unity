@@ -3,7 +3,6 @@ using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Xaml.Impl;
-using JetBrains.ReSharper.Psi.Xml;
 using JetBrains.ReSharper.Psi.Xml.Parsing;
 using JetBrains.ReSharper.Psi.Xml.Tree;
 
@@ -30,5 +29,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Parsing
 
             return base.CreateAttribute(nameIdentifier, attributeContainer, parentTag, context);
         }
+
+        public override IXmlTagHeader CreateTagHeader(IXmlTagContainer parentTag, IXmlElementFactoryContext context)
+        {
+            if (parentTag is IXmlFile) return base.CreateTagHeader(parentTag, context);
+            
+            return (IXmlTagHeader)myElementType.UXML_TAG.Create();
+        }
+
+        // public override IXmlTag CreateTag(IXmlTagHeader header, IXmlTag parentTag, IXmlElementFactoryContext context)
+        // {
+        //     if (parentTag.Parent is IXmlFile) return base.CreateTag(header, parentTag, context);
+        //     
+        //     return (IXmlTag)myElementType.UXML_TAG.Create();
+        // }
     }
 }

@@ -2,7 +2,6 @@ using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
-using JetBrains.ReSharper.Psi.Xaml.Impl.Tree;
 using JetBrains.ReSharper.Psi.Xml.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree
@@ -14,11 +13,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree
 
         public UxmlElementTypes(XmlTokenTypes xmlTokenTypes) : base(xmlTokenTypes)
         {
-            NAMESPACE_ALIAS = new NAMESPACE_ALIAS_TYPE(this, BASE_INDEX + 17);
+            UXML_TAG = new UXML_TAG_TYPE(this, BASE_INDEX + 1);
+            NAMESPACE_ALIAS = new NAMESPACE_ALIAS_TYPE(this, BASE_INDEX + 2);
         }
 
+        public XmlCompositeNodeType UXML_TAG { get; }
         public XmlCompositeNodeType NAMESPACE_ALIAS { get; }
-
 
         public abstract class UxmlCompositeNodeType : XmlCompositeNodeType
         {
@@ -28,6 +28,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree
             }
 
             public UxmlTokenTypes UxmlTokenTypes => (UxmlTokenTypes)XmlTokenTypes;
+        }
+        
+        
+        private class UXML_TAG_TYPE : UxmlCompositeNodeType
+        {
+            public UXML_TAG_TYPE(XmlElementTypes types, int index)
+                : base("UXML_TAG", types, index) { }
+            public override CompositeElement Create() { return new UxmlTagHeader(this); }
         }
 
         private class NAMESPACE_ALIAS_TYPE : UxmlCompositeNodeType
