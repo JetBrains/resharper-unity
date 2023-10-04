@@ -6,7 +6,6 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Xaml.Impl.Tree;
 using JetBrains.ReSharper.Psi.Xaml.Impl.Tree.References;
-using JetBrains.ReSharper.Psi.Xaml.Impl.Util;
 using JetBrains.ReSharper.Psi.Xaml.Tree;
 using JetBrains.ReSharper.Psi.Xml.Tree;
 using JetBrains.Util;
@@ -51,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree
 
             // Unity namespace references: 'UnityEngine.UIElements'
             var namespaceName = unquotedValue;
-            var startOffset = 0;
+            var startOffset = 1; // opening quote
             foreach (var part in namespaceName.Split('.'))
             {
                 var range = TreeTextRange.FromLength(new TreeOffset(startOffset), part.Length);

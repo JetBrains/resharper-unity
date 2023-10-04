@@ -16,7 +16,7 @@ using JetBrains.ReSharper.Psi.Xml.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 {
-  internal class UxmlNamespaceReference : XmlQualifiableReferenceWithToken, IXamlReferenceWithToken, IXamlNamespaceReference
+  internal class UxmlNamespaceReference : XmlQualifiableReferenceWithToken, IXamlNamespaceReference
   {
     public UxmlNamespaceReference(
       [NotNull] ITreeNode owner, [CanBeNull] IXamlNamespaceReference qualifier,
@@ -67,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
       if (resolveResult.Info.ResolveErrorType == ResolveErrorType.NOT_RESOLVED && GetTreeNode().IsWinUINode())
         return ResolveResultWithInfo.Ignore;
 
-      return NamespaceReferenceUtil.CheckModuleResolve(resolveResult, namespaceAlias);
+      return resolveResult;
     }
 
     public QualifierKind GetKind() { return QualifierKind.NAMESPACE; }

@@ -8,13 +8,13 @@ using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Xaml.Impl.Tree;
 using JetBrains.ReSharper.Psi.Xaml.Impl.Tree.References;
-using JetBrains.ReSharper.Psi.Xaml.Impl.Util;
 using JetBrains.ReSharper.Psi.Xml.Impl.Resolve;
+using JetBrains.ReSharper.Psi.Xml.Impl.Tree.References;
 using JetBrains.ReSharper.Psi.Xml.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 {
-  internal class UxmlRootNamespaceReference : XamlReferenceWithTokenBase<NamespaceAliasAttribute>, IXamlNamespaceReference
+  internal class UxmlRootNamespaceReference : XmlReferenceWithTokenBase<NamespaceAliasAttribute>, IXamlNamespaceReference
   {
     public UxmlRootNamespaceReference(
       [NotNull] NamespaceAliasAttribute owner, IXmlToken token, TreeTextRange rangeWithin)
@@ -25,25 +25,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
        return NamespaceReferenceUtil.GetSymbolTable(this);
     }
 
-    public override ResolveResultWithInfo ResolveWithoutCache()
-    {
-      var resolveResult = base.ResolveWithoutCache();
-
-      if (resolveResult.Info.ResolveErrorType != ResolveErrorType.OK && myOwner.DeclaredElement.IsUrnAlias)
-        return ResolveResultWithInfo.Ignore;
-
-      if (resolveResult.Info.ResolveErrorType == ResolveErrorType.NOT_RESOLVED && GetTreeNode().IsWinUINode())
-        return ResolveResultWithInfo.Ignore;
-
-      return NamespaceReferenceUtil.CheckModuleResolve(resolveResult, myOwner);
-    }
-
     public QualifierKind GetKind() { return QualifierKind.NAMESPACE; }
 
-    public bool Resolved
-    {
-      get { return Resolve().DeclaredElement != null; }
-    }
+    public bool Resolved => Resolve().DeclaredElement != null;
 
     public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
     {
