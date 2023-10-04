@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Xml;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi
@@ -12,16 +13,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi
         [CanBeNull, UsedImplicitly] 
         public new static UxmlLanguage Instance { get; private set; }
 
-        private UxmlLanguage() : this(Name)
-        {
-        }
+        private UxmlLanguage() : this(Name) { }
 
-        protected UxmlLanguage([NotNull] string name) : base(name)
-        {
-        }
+        protected UxmlLanguage([NotNull] string name) : base(name) { }
 
-        protected UxmlLanguage([NotNull] string name, [NotNull] string presentableName) : base(name, presentableName)
-        {
-        }
+        protected UxmlLanguage([NotNull] string name, [NotNull] string presentableName) : base(name, presentableName) { }
+        
+        public override PsiLanguageCategories SupportedCategories => PsiLanguageCategories.Primary;
     }
 }

@@ -1,73 +1,106 @@
 using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Resolve;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Asxx.Tree;
-using JetBrains.ReSharper.Psi.Asxx.Util;
-using JetBrains.ReSharper.Psi.Impl.Shared.References;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Filters;
+using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Web.Impl.WebConfig.Tree.References;
-using JetBrains.ReSharper.Psi.Web.Tree;
-using JetBrains.ReSharper.Psi.Web.WebConfig.Util;
+using JetBrains.ReSharper.Psi.Xaml.Impl.Resolve;
+using JetBrains.ReSharper.Psi.Xaml.Impl.Tree.References;
+using JetBrains.ReSharper.Psi.Xaml.Impl.Util;
+using JetBrains.ReSharper.Psi.Xaml.Tree;
+using JetBrains.ReSharper.Psi.Xml.Impl.Resolve;
+using JetBrains.ReSharper.Psi.Xml.Impl.Tree.References;
+using JetBrains.ReSharper.Psi.Xml.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 {
-    public interface IUxmlTreeNode : IWebTreeNode
+  internal class UxmlNamespaceReference : XmlQualifiableReferenceWithToken, IXamlReferenceWithToken, IXamlNamespaceReference
+  {
+    public UxmlNamespaceReference(
+      [NotNull] ITreeNode owner, [CanBeNull] IXamlNamespaceReference qualifier,
+      [CanBeNull] IXmlToken token, TreeTextRange rangeWithin)
+      : base(owner, qualifier, token, rangeWithin)
     {
     }
     
-    public interface IUxmlToken : IAsxxTreeNode, ITokenNode
-    {
-        string GetUnquotedText();
     
-        TreeTextRange GetUnquotedRangeWithin();
-        TreeOffset GetUnquotedTreeStartOffset();
-        TreeTextRange GetUnquotedTreeTextRange();
-    }
-    
-    public class UxmlNamespaceReference: QualifiableReferenceWithinElement<IUxmlTreeNode,IUxmlToken>, IWebNamespaceReference
+    public override ITypeElement GetQualifierTypeElement()
     {
-        public UxmlNamespaceReference(IUxmlTreeNode owner, IQualifier qualifier, IUxmlToken token) : base(owner, qualifier, token)
-        {
-        }
-
-        public UxmlNamespaceReference(IUxmlTreeNode owner, [CanBeNull] IQualifier qualifier, IUxmlToken token, TreeTextRange rangeWithin) : base(owner, qualifier, token, rangeWithin)
-        {
-        }
-
-        public override Staticness GetStaticness() { return Staticness.OnlyStatic; }
-
-        public override ITypeElement GetQualifierTypeElement() { return null; }
-        public bool Resolved { get { return Resolve().DeclaredElement != null; } }
-        
-        public QualifierKind GetKind() { return QualifierKind.NAMESPACE; }
-        
-        public ISymbolTable GetSymbolTable( SymbolTableMode mode )
-        {
-            return AspNamespaceReferenceUtil.GetSymbolTable( this,mode);
-        }
-
-        protected override IReference BindToInternal( IDeclaredElement declaredElement,ISubstitution substitution )
-        {
-            var newNamespace = declaredElement as INamespace;
-            if( newNamespace == null )
-                return this;
-
-            var start = RangeWithin.StartOffset;
-            for( IWebNamespaceReference r = this; r != null; r = r.GetQualifier() as IWebNamespaceReference )
-                start = r.RangeWithin.StartOffset;
-
-            var oldRange = new TreeTextRange( start,RangeWithin.EndOffset);
-            AsxxReferenceWithTokenUtil.SetText(Token,oldRange,newNamespace.QualifiedName,GetElement() );
-
-            var end = start + new TreeOffset(newNamespace.QualifiedName.Length - 1);
-            foreach (var newReference in GetElement().GetReferences())
-            {
-                var newNamespaceReference = newReference as UxmlNamespaceReference;
-                if( newNamespaceReference != null && newNamespaceReference.RangeWithin.Contains(end) )
-                    return newNamespaceReference;
-            }
-
-            return this;
-        }
+      // var qualifier = GetQualifier();
+      //
+      // var reference = qualifier as IReference;
+      // if (reference == null)
+      // {
+      //   var expression = qualifier as QualifierExpression;
+      //   if (expression != null)
+      //     reference = expression.PropertyReference;
+      // }
+      //
+      // return XamlResolveUtil.GetQualifierTypeElement(reference);
+      return null;
     }
+
+    protected override bool AllowedNotResolved
+    {
+      get
+      {
+        return XamlResolveUtil.IsReferenceInXmlData(this)
+               || MarkupCompatibilityUtil.IsIgnorableReference(this);
+      }
+    }
+
+    public ISymbolTable GetSymbolTable(SymbolTableMode mode)
+    {
+      return NamespaceReferenceUtil.GetSymbolTable(this);
+    }
+
+    public override ResolveResultWithInfo Resolve(ISymbolTable symbolTable, IAccessContext context)
+    {
+      var resolveResult = base.Resolve(symbolTable, context);
+      var namespaceAlias = myOwner as INamespaceAlias;
+
+      if (resolveResult.Info.ResolveErrorType != ResolveErrorType.OK && namespaceAlias?.DeclaredElement.IsUrnAlias == true)
+        return ResolveResultWithInfo.Ignore;
+
+      if (resolveResult.Info.ResolveErrorType == ResolveErrorType.NOT_RESOLVED && GetTreeNode().IsWinUINode())
+        return ResolveResultWithInfo.Ignore;
+
+      return NamespaceReferenceUtil.CheckModuleResolve(resolveResult, namespaceAlias);
+    }
+
+    public QualifierKind GetKind() { return QualifierKind.NAMESPACE; }
+
+    public bool Resolved => Resolve().DeclaredElement != null;
+
+    public override Staticness GetStaticness() { return Staticness.OnlyStatic; }
+
+    protected override IReference BindToInternal(IDeclaredElement declaredElement, ISubstitution substitution)
+    {
+      return NamespaceReferenceUtil.BindTo(this, (INamespace) declaredElement);
+    }
+
+    public IXamlNamespaceReference BindModuleTo(IPsiModule module)
+    {
+      // not sure if it should be invoked
+      return this;
+    }
+
+    protected override ISymbolFilter[] GetSmartSymbolFilters()
+    {
+      return new ISymbolFilter[] { XmlResolveFilters.IsNamespace };
+    }
+
+    protected override ISymbolFilter[] GetCompletionFilters()
+    {
+      var language = ReferenceUtil.GetProjectLanguage(myOwner);
+      return new ISymbolFilter[]
+      {
+        new ValidNamesFilter(language),
+        XmlResolveFilters.IsNamespace,
+        new NoEmptyNamespaceFilter(this, true)
+      };
+    }
+  }
 }

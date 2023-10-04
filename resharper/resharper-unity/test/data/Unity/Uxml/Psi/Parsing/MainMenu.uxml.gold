@@ -5,12 +5,12 @@ XmlFile
       XmlTagStartToken(0,1)(type:TAG_START, text:<)
       XmlIdentifier(1,7)(type:IDENTIFIER, text:ui:UXML)
       XmlWhitespaceToken(8,1)(type:SPACE, text: )
-      NamespaceAliasAttribute
+      UxmlNamespaceAliasAttribute
         XmlIdentifier(9,8)(type:IDENTIFIER, text:xmlns:ui)
         XmlEqToken(17,1)(type:EQ, text:=)
         XmlValueToken(18,24)(type:STRING, text:"UnityEngine.UIElements")
       XmlWhitespaceToken(42,1)(type:SPACE, text: )
-      NamespaceAliasAttribute
+      UxmlNamespaceAliasAttribute
         XmlIdentifier(43,9)(type:IDENTIFIER, text:xmlns:uie)
         XmlEqToken(52,1)(type:EQ, text:=)
         XmlValueToken(53,24)(type:STRING, text:"UnityEditor.UIElements")

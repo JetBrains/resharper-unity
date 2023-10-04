@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
+using JetBrains.ReSharper.Psi.Impl.Shared.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -39,5 +40,46 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
         }
 
         public DataFlow.ISignal<IReferenceProviderFactory> Changed { get; }
+    }
+    
+    internal class UxmlReferenceFactory : IReferenceFactory
+    {
+        public ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
+        {
+            var compositeElement = element as CompositeElementWithReferences;
+            if (compositeElement == null) return ReferenceCollection.Empty;
+
+            
+            var customReferences = compositeElement.CreateCustomReferences();
+            if (customReferences.Count == 0) return ReferenceCollection.Empty;
+
+            if (customReferences.Count == oldReferences.Count)
+            {
+                for (var index = 0; index < oldReferences.Count; index++)
+                {
+                    var oldReference = oldReferences[index];
+                    var newReference = customReferences[index];
+
+                    if (!oldReference.IsValid()
+                        || oldReference.GetType() != newReference.GetType()
+                        || oldReference.GetTreeNode() != newReference.GetTreeNode()
+                        || oldReference.GetTreeTextRange() != newReference.GetTreeTextRange())
+                    {
+                        return customReferences;
+                    }
+                }
+
+                return oldReferences;
+            }
+
+            return customReferences;
+        }
+
+        public bool HasReference(ITreeNode element, IReferenceNameContainer names)
+        {
+            if (element is not CompositeElementWithReferences compositeElement) return false;
+
+            return compositeElement.GetReferences().Count > 0;
+        }
     }
 }

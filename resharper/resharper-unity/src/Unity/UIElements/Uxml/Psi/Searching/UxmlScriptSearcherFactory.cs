@@ -21,5 +21,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Searching
     {
       return languageType.Is<UxmlLanguage>();
     }
+
+    public override IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements,
+      ReferenceSearcherParameters referenceSearcherParameters)
+    {
+      return new UxmlDomainSpecificSearcher(this, elements, referenceSearcherParameters);
+    }
   }
 }

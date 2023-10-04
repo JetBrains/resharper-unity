@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree
 
             public override CompositeElement Create()
             {
-                return new NamespaceAliasAttribute(this);
+                return new UxmlNamespaceAliasAttribute(this);
             }
         }
     }

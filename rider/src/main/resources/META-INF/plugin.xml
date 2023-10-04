@@ -148,6 +148,7 @@
     <lang.parserDefinition language="UXML" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileParserDefinition"/>
     <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileBreadcrumbsProvider" />
     <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.codeInsight.schema.UxmlSchemaProvider" />
+    <completion.contributor language="UXML" implementationClass="com.jetbrains.rider.completion.ProtocolCompletionContributor" />
 
     <!-- JSON support -->
     <fileType name="JSON" extensions="inputactions"/>
