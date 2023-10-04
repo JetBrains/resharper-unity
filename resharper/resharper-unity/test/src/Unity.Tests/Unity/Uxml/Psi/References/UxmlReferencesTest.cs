@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi;
 using JetBrains.ReSharper.Psi.Resolve;
+using JetBrains.ReSharper.Psi.Xaml.Impl.Tree.References;
 using JetBrains.ReSharper.PsiTests.Xaml;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util;
@@ -18,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.Uxml.Psi.References
             VirtualTestDataPath.Combine("Solutions/UIElementsDemo/")
                 .GetChildFiles("*", PathSearchFlags.RecurseIntoSubdirectories).ToArray();
         
-        protected override bool AcceptReference(IReference reference) => true;
+        protected override bool AcceptReference(IReference reference) => reference is IXamlNamespaceReference;
 
         [Test] public void MainMenuTemplate()
         {
