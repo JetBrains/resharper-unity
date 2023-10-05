@@ -77,7 +77,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
             registerKeyboardAction(okAction, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_FOCUSED)
 
-            TreeSpeedSearch(this, true) {
+            TreeSpeedSearch.installOn(this, true) {
                 path -> path.lastPathComponent?.toString()
             }.apply { comparator = SpeedSearchComparator(false) }
 
@@ -314,7 +314,8 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             // game on the same network.
             return when (process) {
                 is UnityEditor -> 10
-                is UnityEditorHelper -> 20          // This is handled as a child node of UnityEditor
+                is UnityEditorHelper -> 20          // A child node of UnityEditor
+                is UnityVirtualPlayer -> 25
                 is UnityIosUsbProcess, is UnityAndroidAdbProcess -> 30  // These are put into their own group
                 is UnityLocalPlayer -> 40
                 is UnityCustomPlayer -> 45
@@ -348,11 +349,12 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             setDeselected(component)
 
             val focused = tree.hasFocus()
-            if (unityProcess is UnityEditorHelper && unityProcess.roleName.isNotEmpty()) {
-                append(itemComponent, unityProcess.roleName, attributes, selected, focused, true)
-            } else {
-                append(itemComponent, unityProcess.displayName, attributes, selected, focused, true)
+            val displayName = when {
+                unityProcess is UnityEditorHelper && unityProcess.roleName.isNotEmpty() -> unityProcess.roleName
+                unityProcess is UnityVirtualPlayer && unityProcess.playerName.isNotEmpty() -> unityProcess.playerName
+                else -> unityProcess.displayName
             }
+            append(itemComponent, displayName, attributes, selected, focused, true)
             if (node.debuggerAttached) {
                 append(itemComponent, UnityBundle.message("appended.debugger.attached"), SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES, selected, focused)
             }
