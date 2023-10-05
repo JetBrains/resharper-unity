@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             var definedMacros = reader.ReadDictionary<string, string, Dictionary<string, string>>(UnsafeReader.StringDelegate!, UnsafeReader.StringDelegate!, count => new Dictionary<string, string>(count))!;
             var shaderTarget = reader.ReadInt32();
             var isSurface = reader.ReadBoolean();
-            var shaderVariants = (string[]?)reader.ReadArray(UnsafeReader.StringDelegate);
+            var shaderVariants = (string[]?)reader.ReadArray(UnsafeReader.StringDelegate)!;
             return new ShaderProgramInfo(definedMacros, shaderTarget, isSurface, shaderVariants);
         }
 
