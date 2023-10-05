@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Diagnostics;
@@ -21,17 +22,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
         private readonly ISolution mySolution;
         private readonly CppExternalModule myCppExternalModule;
         private readonly CgIncludeDirectoryProvider myCgIncludeDirectoryProvider;
-        private readonly ShaderProgramCache myShaderProgramCache; 
 
         public InjectedHlslFileLocationTracker(Lifetime lifetime, ISolution solution,
-            IPersistentIndexManager persistentIndexManager, CppExternalModule cppExternalModule, CgIncludeDirectoryProvider cgIncludeDirectoryProvider, ShaderProgramCache shaderProgramCache)
-            : base(
-                lifetime, solution, persistentIndexManager, InjectedHlslLocationInfo.Read, InjectedHlslLocationInfo.Write)
+            IPersistentIndexManager persistentIndexManager, CppExternalModule cppExternalModule, CgIncludeDirectoryProvider cgIncludeDirectoryProvider)
+            : base(lifetime, solution, persistentIndexManager, InjectedHlslLocationInfo.Read, InjectedHlslLocationInfo.Write)
         {
             mySolution = solution;
             myCppExternalModule = cppExternalModule;
             myCgIncludeDirectoryProvider = cgIncludeDirectoryProvider;
-            myShaderProgramCache = shaderProgramCache;
         }
 
         protected override CppFileLocation GetCppFileLocation(InjectedHlslLocationInfo t)
@@ -75,24 +73,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
                 .Select(d => d.ToCppFileLocation());
         }
 
-        public (IEnumerable<CppFileLocation> includeLocations, IReadOnlyDictionary<string, string> defines) GetProgramInfo(CppFileLocation cppFileLocation)
-        {
-            // PSI is not commited here
-            // TODO: cpp global cache should calculate cache only when PSI for file with cpp injects is committed.
-
-            var sourceFile = cppFileLocation.GetRandomSourceFile(mySolution);
-            var range = cppFileLocation.RootRange;
-            Assertion.Assert(range.IsValid, "range.IsValid");
-
-            var buffer = sourceFile.Document.Buffer;
-            var type = GetShaderProgramType(buffer, range.StartOffset);
-            if (!myShaderProgramCache.TryGetShaderProgramInfo(cppFileLocation, out var shaderProgramInfo)) 
-                Assertion.Fail($"Shader program info is missing for {cppFileLocation}");
-
-            var includes = GetIncludes(sourceFile, type, shaderProgramInfo.IsSurface);
-            return (includes, shaderProgramInfo.DefinedMacros);
-        }
-
         private void AddImplicitCgIncludes(List<CppFileLocation> includeList, bool isSurface)
         {
             var cgIncludeFolder = myCgIncludeDirectoryProvider.GetCgIncludeFolderPath();
@@ -110,10 +90,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
                     includeList.Add(new CppFileLocation(myCppExternalModule, variables));
                 }
 
-                var unityCG = cgIncludeFolder.Combine("UnityCG.cginc");
-                if (unityCG.ExistsFile)
+                var unityCg = cgIncludeFolder.Combine("UnityCG.cginc");
+                if (unityCg.ExistsFile)
                 {
-                    includeList.Add(new CppFileLocation(myCppExternalModule, unityCG));
+                    includeList.Add(new CppFileLocation(myCppExternalModule, unityCg));
                 }
 
                 // from surface shader generated code
@@ -140,12 +120,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
             }
         }
 
+        public IEnumerable<CppFileLocation> GetIncludes(CppFileLocation cppFileLocation, ShaderProgramInfo shaderProgramInfo)
+        {
+            // PSI is not commited here
+            // TODO: cpp global cache should calculate cache only when PSI for file with cpp injects is committed.
+
+            var sourceFile = cppFileLocation.GetRandomSourceFile(mySolution);
+            var range = cppFileLocation.RootRange;
+            Assertion.Assert(range.IsValid);
+            var buffer = sourceFile.Document.Buffer;
+            var type = GetShaderProgramType(buffer, range.StartOffset);
+            return GetIncludes(sourceFile, type, shaderProgramInfo.IsSurface);
+        }
+
         private IEnumerable<CppFileLocation> GetIncludes(IPsiSourceFile sourceFile, InjectedHlslProgramType type, bool isSurface)
         {
             var includeType = GetIncludeProgramType(type);
 
-            var includeList = new List<CppFileLocation>();
-            includeList.Add(new CppFileLocation(myCppExternalModule, mySolution.SolutionDirectory.Combine(Utils.ShaderConfigFile)));
+            var includeList = new List<CppFileLocation>
+            {
+                new(myCppExternalModule, mySolution.SolutionDirectory.Combine(Utils.ShaderConfigFile))
+            };
 
             if (includeType != InjectedHlslProgramType.Uknown)
             {
@@ -164,7 +159,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
 
         private InjectedHlslProgramType GetShaderProgramType(IBuffer buffer, int locationStartOffset)
         {
-            Assertion.Assert(locationStartOffset < buffer.Length, "locationStartOffset < buffer.Length");
+            Assertion.Assert(locationStartOffset < buffer.Length);
             if (locationStartOffset >= buffer.Length)
                 return InjectedHlslProgramType.Uknown;
 

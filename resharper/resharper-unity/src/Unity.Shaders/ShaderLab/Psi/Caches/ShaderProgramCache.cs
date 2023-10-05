@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -27,7 +26,7 @@ using JetBrains.Util.PersistentMap;
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
 {
     [PsiComponent]
-    public class ShaderProgramCache : SimplePsiSourceFileCacheWithLocalCache<ShaderProgramCache.Item, ImmutableArray<CppFileLocation>>
+    public class ShaderProgramCache : SimplePsiSourceFileCacheWithLocalCache<ShaderProgramCache.Item, ImmutableArray<CppFileLocation>>, IBuildMergeParticipant<IPsiSourceFile>
     {
         private const string SHADER_VARIANT_SKIPPER = "_";
         
@@ -40,7 +39,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
         }
         
         protected override bool IsApplicable(IPsiSourceFile sourceFile) => base.IsApplicable(sourceFile) && sourceFile.LanguageType.Is<ShaderLabProjectFileType>();
-        
+
+        public object? Build(IPsiSourceFile sourceFile) => Build(sourceFile, false);
+
         public override object? Build(IPsiSourceFile sourceFile, bool isStartup)
         {
             if (sourceFile.GetPrimaryPsiFile() is not ShaderLabFile shaderLabFile) return null;
@@ -157,26 +158,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
 
             definedMacroses["SHADER_TARGET"] = shaderTarget.ToString();
             return new ShaderProgramInfo(definedMacroses, shaderTarget, isSurface, !shaderVariants.IsEmpty() ? shaderVariants.ToArray() : null);
-        }
-        
-        private (string, string) GetPragmaAndValue(string context)
-        {
-            int i = 0;
-            string GetIdentifier()
-            {
-                var sb = new StringBuilder();
-                while (i < context.Length && char.IsWhiteSpace(context[i]))
-                    i++;
-                while (i < context.Length && !char.IsWhiteSpace(context[i]))
-                {
-                    sb.Append(context[i]);
-                    i++;
-                }
-
-                return sb.ToString();
-            }
-
-            return (GetIdentifier(), GetIdentifier());
         }
 
         #region Cache item
