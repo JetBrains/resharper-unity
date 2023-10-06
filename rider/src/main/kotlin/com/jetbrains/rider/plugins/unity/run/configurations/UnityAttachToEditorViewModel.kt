@@ -9,17 +9,17 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.ViewableList
+import com.jetbrains.rider.plugins.unity.run.UnityLocalProcess
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
+import com.jetbrains.rider.plugins.unity.run.toUnityProcess
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.projectView.solutionDirectory
 
 class UnityAttachToEditorViewModel(val lifetime: Lifetime, private val project: Project) {
 
-    data class EditorProcessInfo(val name: String, val pid: Int?, val projectName: String?)
-
     val editorInstanceJsonStatus: IProperty<EditorInstanceJsonStatus?> = Property(null)
-    val editorProcesses: ViewableList<EditorProcessInfo> = ViewableList()
+    val editorProcesses: ViewableList<UnityLocalProcess> = ViewableList()
     val pid: IProperty<Int?> = Property(null)
     private val editorInstanceJson = EditorInstanceJson.getInstance(project)
 
@@ -49,11 +49,11 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, private val project: 
         }
     }
 
-    private fun getEditorProcessInfos(processList: Array<ProcessInfo>): List<EditorProcessInfo> {
+    private fun getEditorProcessInfos(processList: Array<ProcessInfo>): List<UnityLocalProcess> {
         val unityProcesses = processList.filter { UnityRunUtil.isUnityEditorProcess(it) }
         val unityProcessInfoMap = UnityRunUtil.getAllUnityProcessInfo(unityProcesses, project)
         return unityProcesses.map {
-            EditorProcessInfo(it.executableName, it.pid, unityProcessInfoMap[it.pid]?.projectName)
+            it.toUnityProcess(unityProcessInfoMap[it.pid])
         }
     }
 }

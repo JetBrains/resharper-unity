@@ -7,6 +7,8 @@ import com.intellij.ui.PanelWithButtons
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.table.JBTable
 import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rider.plugins.unity.run.UnityEditorHelper
+import com.jetbrains.rider.plugins.unity.run.UnityVirtualPlayer
 import java.awt.Dimension
 import javax.swing.JButton
 import javax.swing.JComponent
@@ -56,18 +58,23 @@ class ProcessesPanel : PanelWithButtons() {
             override fun getValueAt(rowIndex: Int, columnIndex: Int): Any? {
                 return when (columnIndex) {
                     0 -> vm.editorProcesses[rowIndex].pid
-                    1 -> vm.editorProcesses[rowIndex].name
-                    2 -> vm.editorProcesses[rowIndex].projectName
+                    1 -> with(vm.editorProcesses[rowIndex]) {
+                        when (this) {
+                            is UnityVirtualPlayer -> "${this.displayName} (${this.playerName})"
+                            is UnityEditorHelper -> "${this.displayName} (${this.roleName})"
+                            else -> this.displayName
+                        }
+                    }
+                    2 -> vm.editorProcesses[rowIndex].projectName ?: ""
                     else -> null
                 }
             }
         }
 
-        table = JBTable(dataModel)
-        with(table!!) {
+        table = JBTable(dataModel).apply {
             setEnableAntialiasing(true)
             emptyText.text = UnityBundle.message("no.unity.editor.instances.found")
-            preferredScrollableViewportSize = Dimension(150, rowHeight * 6)
+            preferredScrollableViewportSize = Dimension(150, rowHeight * 15)
 
             val fontMetrics = tableHeader.getFontMetrics(tableHeader.font)
             var headerWidth = fontMetrics.stringWidth(columns[0])
@@ -75,7 +82,7 @@ class ProcessesPanel : PanelWithButtons() {
             getColumn(columns[0]).maxWidth = headerWidth + 20
 
             headerWidth = fontMetrics.stringWidth(columns[1])
-            getColumn(columns[1]).preferredWidth = headerWidth + 50
+            getColumn(columns[1]).preferredWidth = headerWidth + 150    // "Process" + width for e.g. "Unity (mppmca237878)"
             getColumn(columns[1]).maxWidth = headerWidth + 200
             getColumn(columns[2]).preferredWidth = fontMetrics.stringWidth(columns[2])
 
