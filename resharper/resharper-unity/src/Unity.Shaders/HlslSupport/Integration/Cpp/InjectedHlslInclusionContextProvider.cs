@@ -70,10 +70,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
         {
             var injectedHlslCache = solution.GetComponent<InjectedHlslFileLocationTracker>();
             var shaderProgramCache = solution.GetComponent<ShaderProgramCache>();
-            if (!shaderProgramCache.TryGetShaderProgramInfo(cppFileLocation, out var shaderProgramInfo)) 
+            
+            // PSI is not committed here
+            // TODO: cpp global cache should calculate cache only when PSI for file with cpp injects is committed.
+
+            var sourceFile = cppFileLocation.GetRandomSourceFile(solution);
+            var range = cppFileLocation.RootRange;
+            Assertion.Assert(range.IsValid);
+            
+            var buffer = sourceFile.Document.Buffer;
+
+            ShaderProgramInfo? shaderProgramInfo;
+            if (!shaderProgramCache.UpToDate(sourceFile))
+                shaderProgramInfo = shaderProgramCache.ReadProgramInfo(new CppDocumentBuffer(buffer, range));
+            else if (!shaderProgramCache.TryGetShaderProgramInfo(cppFileLocation, out shaderProgramInfo)) 
                 Assertion.Fail($"Shader program info is missing for {cppFileLocation}");
             
-            var includes = injectedHlslCache.GetIncludes(cppFileLocation, shaderProgramInfo);
+            var includes = injectedHlslCache.GetIncludes(sourceFile, buffer, range.StartOffset, shaderProgramInfo);
             return (includes, shaderProgramInfo.DefinedMacros);
         }
     }

@@ -5,11 +5,9 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
-using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Common.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl;
 using JetBrains.ReSharper.Psi;
@@ -38,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
         {
         }
         
-        protected override bool IsApplicable(IPsiSourceFile sourceFile) => base.IsApplicable(sourceFile) && sourceFile.LanguageType.Is<ShaderLabProjectFileType>();
+        protected override bool IsApplicable(IPsiSourceFile sourceFile) => sourceFile.PrimaryPsiLanguage.Is<ShaderLabLanguage>();
 
         public object? Build(IPsiSourceFile sourceFile) => Build(sourceFile, false);
 
@@ -52,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             {
                 var content = cgContent.Content;
                 var textRange = TextRange.FromLength(content.GetTreeStartOffset().Offset, content.GetTextLength());
-                var programInfo = GetProgramInfo(new CppDocumentBuffer(buffer, textRange));
+                var programInfo = ReadProgramInfo(new CppDocumentBuffer(buffer, textRange));
                 entries.Add(new Item.Entry(textRange, programInfo));
             }
             return new Item(entries.ToArray());
@@ -82,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             return myProgramInfos.TryGetValue(location, out shaderProgramInfo);
         }
 
-        private ShaderProgramInfo GetProgramInfo(CppDocumentBuffer buffer)
+        public ShaderProgramInfo ReadProgramInfo(CppDocumentBuffer buffer)
         {
             var isSurface = false;
             var lexer = CppLexer.Create(buffer);

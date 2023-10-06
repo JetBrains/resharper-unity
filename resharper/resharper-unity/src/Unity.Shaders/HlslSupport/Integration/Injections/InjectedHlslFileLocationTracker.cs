@@ -37,10 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
             return t.ToCppFileLocation();
         }
 
-        protected override bool IsApplicable(IPsiSourceFile sf)
-        {
-            return sf.PrimaryPsiLanguage.Is<ShaderLabLanguage>();
-        }
+        protected override bool IsApplicable(IPsiSourceFile sf) => sf.PrimaryPsiLanguage.Is<ShaderLabLanguage>();
 
         protected override HashSet<InjectedHlslLocationInfo> BuildData(IPsiSourceFile sourceFile)
         {
@@ -120,16 +117,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
             }
         }
 
-        public IEnumerable<CppFileLocation> GetIncludes(CppFileLocation cppFileLocation, ShaderProgramInfo shaderProgramInfo)
+        public IEnumerable<CppFileLocation> GetIncludes(IPsiSourceFile sourceFile, IBuffer buffer, int startOffset, ShaderProgramInfo shaderProgramInfo)
         {
-            // PSI is not commited here
-            // TODO: cpp global cache should calculate cache only when PSI for file with cpp injects is committed.
-
-            var sourceFile = cppFileLocation.GetRandomSourceFile(mySolution);
-            var range = cppFileLocation.RootRange;
-            Assertion.Assert(range.IsValid);
-            var buffer = sourceFile.Document.Buffer;
-            var type = GetShaderProgramType(buffer, range.StartOffset);
+            var type = GetShaderProgramType(buffer, startOffset);
             return GetIncludes(sourceFile, type, shaderProgramInfo.IsSurface);
         }
 
