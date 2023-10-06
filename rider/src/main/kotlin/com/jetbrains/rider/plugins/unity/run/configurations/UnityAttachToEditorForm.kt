@@ -10,21 +10,22 @@ import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import javax.swing.JPanel
 
-class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel){
-    protected var rootPanel: JPanel? = null
-    protected lateinit var commentRow: Row
-    protected lateinit var usingProcessRow: Row
-    protected lateinit var editorInstanceJsonInfoRow: Row
-    protected var processIdInfo = AtomicProperty("")
-    protected var editorInstanceJsonError = AtomicProperty("")
+class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel) {
+    private var rootPanel: JPanel? = null
+    private lateinit var commentRow: Row
+    private lateinit var usingProcessRow: Row
+    private lateinit var editorInstanceJsonInfoRow: Row
+    private var processIdInfo = AtomicProperty("")
+    private var editorInstanceJsonError = AtomicProperty("")
+
     val panel: JPanel
-        get() = (rootPanel)!!
+        get() = rootPanel!!
+
     init {
         val processesList = ProcessesPanel()
         processesList.init(viewModel)
 
         rootPanel = panel {
-
             editorInstanceJsonInfoRow = row {
                 label(UnityBundle.message("editorinstance.error")).bindText(editorInstanceJsonError)
             }
@@ -64,9 +65,7 @@ class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel){
         }
 
         viewModel.pid.advise(viewModel.lifetime) {
-
             val value = it?.toString()
-
             if (value == null)
                 processIdInfo.set("")
             else

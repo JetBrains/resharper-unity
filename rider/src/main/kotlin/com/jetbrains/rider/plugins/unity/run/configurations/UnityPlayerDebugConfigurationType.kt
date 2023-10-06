@@ -92,6 +92,7 @@ class UnityPlayerDebugConfigurationOptions: RunConfigurationOptions() {
 
     /** The local process (Editor/editor helper) process ID */
     var pid by property(0)
+
     var roleName by string("")
 
     /** The iOS or Android ADB device ID */
@@ -112,6 +113,15 @@ class UnityPlayerDebugConfigurationOptions: RunConfigurationOptions() {
 
     /** The project name, if available */
     var projectName by string()
+
+    /**
+     * The virtual player ID, e.g. `mppmca3577a6`
+     *
+     * This allows matching a virtual player even if the descriptive player name has changed
+     */
+    var virtualPlayerId by string()
+
+    var virtualPlayerName by string()
 }
 
 // TODO: Implement getIcon to provide a different icon per player type (default is the factory icon)?
@@ -143,6 +153,7 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
             UnityCustomPlayer.TYPE -> getCustomPlayerStateAsync(environment)
             UnityEditor.TYPE -> getEditorStateAsync(environment)
             UnityEditorHelper.TYPE -> getEditorHelperStateAsync(environment)
+            UnityVirtualPlayer.TYPE -> getVirtualPlayerStateAsync(environment)
             else -> getRemotePlayerStateAsync(environment)
         }
     }
@@ -272,6 +283,20 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
                 // a small but unlikely chance that this will return a helper for the wrong project
                 it.roleName == state.roleName && it.projectName == state.projectName
             }
+    }
+        }
+
+    private fun getVirtualPlayerStateAsync(environment: ExecutionEnvironment): Promise<RunProfileState> {
+        // Refresh the port from the process list
+        return getLocalProcessStateAsync(environment, "debugging.cannot.find.virtual.player") { processes ->
+            processes.filterIsInstance<UnityVirtualPlayer>().firstOrNull {
+                // Exact match. Previously running instance
+                it.pid == state.pid && it.projectName == state.projectName && it.playerName == state.virtualPlayerName
+            }
+            ?: processes.filterIsInstance<UnityVirtualPlayer>().firstOrNull {
+                // Try to find an editor instance that is hosting the target virtual player
+                it.virtualPlayerId == state.virtualPlayerId && it.projectName == state.projectName
+            }
         }
     }
 
@@ -385,6 +410,9 @@ private class UnityPlayerSettingsEditor : SettingsEditor<UnityPlayerDebugConfigu
         row(UnityBundle.message("run.configuration.player.label.address")) { address = label("").component }
         // Only available in 2019.3 and above. Not applicable to iOS or Android ADB
         row(UnityBundle.message("run.configuration.player.label.project")) { projectName = label("").component }.visibleIf(HasNonEmptyText(projectName))
+        row(UnityBundle.message("run.configuration.player.label.role")) { roleName = label("").component }.visibleIf(HasNonEmptyText(roleName))
+        row(UnityBundle.message("run.configuration.player.label.virtualPlayerName")) { virtualPlayerName = label("").component }.visibleIf(HasNonEmptyText(virtualPlayerName))
+        row(UnityBundle.message("run.configuration.player.label.virtualPlayerId")) { virtualPlayerId = label("").component }.visibleIf(HasNonEmptyText(virtualPlayerId))
         // if Android/iOS
         row(UnityBundle.message("run.configuration.player.label.deviceId")) { deviceId = label("").component }.visibleIf(HasNonEmptyText(deviceId))
         // Device name?
@@ -398,6 +426,9 @@ private class UnityPlayerSettingsEditor : SettingsEditor<UnityPlayerDebugConfigu
     private lateinit var id: JLabel
     private lateinit var address: JLabel
     private lateinit var projectName: JLabel
+    private lateinit var roleName: JLabel
+    private lateinit var virtualPlayerId: JLabel
+    private lateinit var virtualPlayerName: JLabel
     private lateinit var deviceId: JLabel
     private lateinit var deviceName: JLabel
     private lateinit var packageName: JLabel
@@ -407,6 +438,9 @@ private class UnityPlayerSettingsEditor : SettingsEditor<UnityPlayerDebugConfigu
         id.text = state.playerId
         address.text = "${state.host}:${state.port}"
         projectName.text = state.projectName
+        roleName.text = state.roleName
+        virtualPlayerId.text = state.virtualPlayerId
+        virtualPlayerName.text = state.virtualPlayerName
         deviceId.text = state.deviceId
         deviceName.text = state.deviceName
         packageName.text = state.packageName + if (!state.androidPackageUid.isNullOrEmpty()) " (${state.androidPackageUid})" else ""
