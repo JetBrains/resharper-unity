@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.css.uss.codeInsight.css
 
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.psi.css.impl.descriptor.value.CssGroupValue
 import com.intellij.psi.css.impl.descriptor.value.CssNameValue
@@ -12,7 +13,7 @@ import java.lang.ref.Reference
 import java.lang.ref.SoftReference
 import com.intellij.reference.SoftReference.dereference
 
-
+@Service(Service.Level.APP)
 class UssCssElementDescriptorFactory {
     companion object {
         fun getInstance(): UssCssElementDescriptorFactory = service()

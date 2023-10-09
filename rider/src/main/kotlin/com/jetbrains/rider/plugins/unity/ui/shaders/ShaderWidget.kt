@@ -7,8 +7,8 @@ import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createLifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.intellij.ui.awt.RelativePoint
-import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rdclient.document.getFirstDocumentId

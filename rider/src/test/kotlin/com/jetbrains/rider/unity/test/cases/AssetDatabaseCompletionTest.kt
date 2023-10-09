@@ -10,17 +10,26 @@ import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.test.allure.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
+import io.qameta.allure.Description
+import io.qameta.allure.Epic
+import io.qameta.allure.Feature
+import io.qameta.allure.Severity
+import io.qameta.allure.SeverityLevel
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
 
+@Epic(Subsystem.UNITY_COMPLETION)
+@Feature("Unity Asset Database Autocompletion")
+@Severity(SeverityLevel.NORMAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class AssetDatabaseCompletionTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String = "AssetDatabasePathCompletionProject"
@@ -44,6 +53,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution() {
             "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages")
 
     @Test
+    @Description("Test empty path for asset database")
     fun test_EmptyPath() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "EmptyPathTest.cs") {
@@ -57,6 +67,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution() {
     }
 
     @Test
+    @Description("Test not full path for asset database")
     fun test_NotFullAssetsPathTest() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "NotFullAssetsPathTest.cs") {
@@ -69,6 +80,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution() {
     }
 
     @Test
+    @Description("Test Assets folder path for asset database")
     fun test_AssetsFolderTest() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "AssetsFolderTest.cs") {
@@ -84,6 +96,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution() {
     }
 
     @Test
+    @Description("Test Assets folder path for asset database with caret inside")
     fun test_AssetsFolderCaretInside() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "AssetsFolderTest.cs") {
@@ -96,6 +109,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution() {
     }
 
     @Test
+    @Description("Test Assets internal folder path for asset database")
     fun test_AssetsInternalFolderTest() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "AssetsInternalFolderTest.cs") {
@@ -108,6 +122,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution() {
     }
 
     @Test
+    @Description("Test Package folder path for asset database")
     fun test_PackagesFolderTest() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "PackagesFolderTest.cs") {
@@ -124,6 +139,7 @@ class AssetDatabaseCompletionTest : BaseTestWithSolution() {
     }
 
     @Test
+    @Description("Test Package internal folder path for asset database")
     fun test_PackagesInternalFolderTest() {
         waitForUnityPackagesCache {
             withOpenedEditor(File("Assets").resolve("EscapeFromRider.cs").path, "PackagesInternalFolderTest.cs") {

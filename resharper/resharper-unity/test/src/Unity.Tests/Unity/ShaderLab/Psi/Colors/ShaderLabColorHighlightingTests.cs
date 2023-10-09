@@ -1,5 +1,4 @@
-﻿using JetBrains.ReSharper.Daemon.VisualElements;
-using JetBrains.ReSharper.Feature.Services.ColorHints;
+﻿using JetBrains.ReSharper.Feature.Services.ColorHints;
 using JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.TestFramework;

@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
 
         public static IClrTypeName? GetDotsCLRBaseTypeName(this ITypeElement? typeElement)
         {
-            IClrTypeName clrBaseTypeName = null;
+            IClrTypeName? clrBaseTypeName = null;
             foreach (var baseClrTypeName in ourDotsTypes)
             {
                 if (!typeElement.DerivesFrom(baseClrTypeName)) continue;

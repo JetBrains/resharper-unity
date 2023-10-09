@@ -5,16 +5,21 @@ import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToLineBreakpoint
+import com.jetbrains.rider.test.allure.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.UnityVersion
 import com.jetbrains.rider.unity.test.framework.api.attachDebuggerToUnityEditorAndPlay
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
+import io.qameta.allure.*
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
 import java.io.File
 
+@Epic(Subsystem.UNITY_DEBUG)
+@Feature("Debug Unity2022")
+@Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class DebuggerTest2022 : IntegrationTestWithUnityProjectBase() {
     override fun getSolutionDirectoryName() = "UnityDebugAndUnitTesting/Project"
@@ -31,6 +36,7 @@ class DebuggerTest2022 : IntegrationTestWithUnityProjectBase() {
     }
 
     @Test
+    @Description("Check breakpoints with Unity2022")
     fun checkBreakpoint() {
         attachDebuggerToUnityEditorAndPlay(
             {
