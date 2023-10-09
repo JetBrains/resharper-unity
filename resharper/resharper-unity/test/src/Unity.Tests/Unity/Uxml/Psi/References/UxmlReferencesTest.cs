@@ -1,20 +1,20 @@
 ﻿using System.Linq;
-using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi;
 using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.ReSharper.PsiTests.Xaml;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util;
 using NUnit.Framework;
 using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References;
 using JetBrains.ReSharper.Psi.Xaml.Tree;
+using JetBrains.TestFramework.Projects;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.Uxml.Psi.References
 {
-    [TestUnity]
-    [TestFileExtension(UxmlProjectFileType.UXML_EXTENSION)]
-    public class UxmlReferencesTest : XamlReferenceTestWithLibraries
+    [TestUnity(UnityVersion.Unity2022_3), ReuseSolutionScope("UnityUIElementsCompletionTest")]
+    public class UxmlReferencesTest : ReferenceTestBase
     {
         protected override string RelativeTestDataPath => @"UnityUIElementsCompletionTest";
+        
+        protected override string SolutionFileName => SolutionItemsBasePath.Combine("Solutions/UIElementsDemo/UIElementsDemo.sln").FullPath;
         
         private VirtualFileSystemPath[] Files =>
             VirtualTestDataPath.Combine("Solutions/UIElementsDemo/")
@@ -30,12 +30,13 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.Uxml.Psi.References
         }
     }
     
-    [TestUnity]
-    [TestFileExtension(UxmlProjectFileType.UXML_EXTENSION)]
-    public class UxmlReferencesTest2 : XamlReferenceTestWithLibraries
+    [TestUnity(UnityVersion.Unity2022_3), ReuseSolutionScope("UnityUIElementsCompletionTest")]
+    public class UxmlReferencesTest2 : ReferenceTestBase
     {
         protected override string RelativeTestDataPath => @"UnityUIElementsCompletionTest";
         
+        protected override string SolutionFileName => SolutionItemsBasePath.Combine("Solutions/UIElementsDemo/UIElementsDemo.sln").FullPath;
+
         private VirtualFileSystemPath[] Files =>
             VirtualTestDataPath.Combine("Solutions/UIElementsDemo/")
                 .GetChildFiles("*", PathSearchFlags.RecurseIntoSubdirectories).ToArray();
