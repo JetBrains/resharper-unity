@@ -50,14 +50,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
             var name = nameToken.XmlName;
             var symbolCache = xmlTagHeaderNode.GetPsiServices().Symbols;
             
-            IQualifier? qualifier = null;
-            var references = new LocalList<IReference>();
-
+            var references = new LocalList<IReference?>();
+            XamlNamespaceAliasReference? xmlNamespaceRef = null;
             if (!nameToken.XmlNamespace.IsNullOrEmpty())
             {
-                var xmlNamespaceRef = new XamlNamespaceAliasReference(element, nameToken, nameToken.XmlNamespaceRange);
+                xmlNamespaceRef = new XamlNamespaceAliasReference(element, nameToken, nameToken.XmlNamespaceRange);
                 references.Add(xmlNamespaceRef);
             }
+            IQualifier? qualifier = xmlNamespaceRef; 
             
             var startIndex = nameToken.XmlNameRange.StartOffset.Offset;
             var nextDotIndex = name.IndexOf('.');

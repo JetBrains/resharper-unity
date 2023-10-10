@@ -52,8 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree
             var startOffset = 1; // opening quote
             foreach (var part in namespaceName.Split('.'))
             {
-                var range = TreeTextRange.FromLength(new TreeOffset(startOffset), part.Length);
-                ranges.Add(range);
+                ranges.Add(TreeTextRange.FromLength(new TreeOffset(startOffset), part.Length));
                 startOffset += part.Length + 1;
             }
 
