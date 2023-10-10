@@ -62,10 +62,14 @@ abstract class IntegrationTestWithGeneratedSolutionBase : IntegrationTestWithSol
     }
 
     @AfterMethod(alwaysRun = true)
-    fun killUnityAndCheckSwea() {
+    fun killUnity() {
         if (::unityProcessHandle.isInitialized) {
-            killUnity(project, unityProcessHandle)
+            killUnity(unityProcessHandle)
         }
+    }
+
+    @AfterMethod
+    fun checkSwea() {
         checkSweaInSolution()
     }
 
