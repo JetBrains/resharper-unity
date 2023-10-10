@@ -1,21 +1,66 @@
+using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
-using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
+using JetBrains.ReSharper.Psi.Impl.Resolve;
 using JetBrains.ReSharper.Psi.Impl.Shared.References;
-using JetBrains.ReSharper.Psi.Impl.Shared.Util;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Xaml.Impl.Resolve;
-using JetBrains.ReSharper.Psi.Xaml.Impl.Tree.References;
-using JetBrains.ReSharper.Psi.Xaml.Impl.Util;
 using JetBrains.ReSharper.Psi.Xaml.Tree;
+using JetBrains.ReSharper.Psi.Xml.Impl.Tree;
 using JetBrains.ReSharper.Psi.Xml.Tree;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 {
+    internal class UxmlNsAliasReference : ReferenceWithinElementBase<IXmlTagHeader, ITokenNode>, ICompletableReference, IQualifier
+    {
+        public UxmlNsAliasReference(IXmlTagHeader owner, ITokenNode token, TreeTextRange rangeWithin) : base(owner, token, rangeWithin)
+        {
+        }
+
+        public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
+        {
+            var psiServices = myOwner.GetPsiServices();
+            var symbolTable = EmptySymbolTable.INSTANCE;
+            var xmlTag = XmlTagNavigator.GetByTagHeader(myOwner);
+            while (xmlTag != null)
+            {
+                var table = new SymbolTable(psiServices);
+                foreach (var nsAlias in xmlTag.GetAttributes().OfType<UxmlNamespaceAliasAttribute>())
+                {
+                    table.AddSymbol(nsAlias);
+                }
+                xmlTag = XmlTagNavigator.GetByTag(xmlTag);
+                if(table != EmptySymbolTable.INSTANCE)
+                    symbolTable = symbolTable.Merge(table);
+            }
+
+            return symbolTable;
+        }
+
+        protected override IReference BindToInternal(IDeclaredElement element, ISubstitution substitution)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public ISymbolTable GetSymbolTable(SymbolTableMode mode)
+        {
+            var namespaceAliasAttribute = Resolve().DeclaredElement as UxmlNamespaceAliasAttribute;
+            if (namespaceAliasAttribute == null)
+                return EmptySymbolTable.INSTANCE;
+            var references = namespaceAliasAttribute.GetReferences<IUxmlNamespaceReference>();
+            return NamespaceReferenceUtil.GetSymbolTable(references.Last());
+        }
+
+        public QualifierKind GetKind() => QualifierKind.NAMESPACE;
+
+        public bool Resolved => Resolve().DeclaredElement != null;
+    }
+    
     internal class UxmlTypeOrNamespaceReference :
         QualifiableReferenceWithinElement<IXmlTagHeader, ITokenNode>,
         IReferenceQualifier, ICompletableReference, ITypeOrNamespaceReference

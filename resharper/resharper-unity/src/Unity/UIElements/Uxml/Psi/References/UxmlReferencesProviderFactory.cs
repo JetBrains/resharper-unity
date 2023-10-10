@@ -51,10 +51,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
             var symbolCache = xmlTagHeaderNode.GetPsiServices().Symbols;
             
             var references = new LocalList<IReference?>();
-            XamlNamespaceAliasReference? xmlNamespaceRef = null;
+            UxmlNsAliasReference? xmlNamespaceRef = null;
             if (!nameToken.XmlNamespace.IsNullOrEmpty())
             {
-                xmlNamespaceRef = new XamlNamespaceAliasReference(element, nameToken, nameToken.XmlNamespaceRange);
+                xmlNamespaceRef = new UxmlNsAliasReference(xmlTagHeaderNode, nameToken, nameToken.XmlNamespaceRange);
                 references.Add(xmlNamespaceRef);
             }
             IQualifier? qualifier = xmlNamespaceRef; 
