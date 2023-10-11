@@ -7,7 +7,6 @@ using JetBrains.DocumentManagers;
 using JetBrains.DocumentModel;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Cpp.Caches;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Psi;
@@ -52,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             mySolution.Locks.ExecuteOrQueueWithWriteLockWhenAvailableEx(myLifetime, $"Updating shader context for {psiSourceFile}", () =>
             {
                 if (psiSourceFile.IsValid())
-                    myChangeManager.OnProviderChanged(this, new CppChange(new CppSourceFile(psiSourceFile)), SimpleTaskExecutor.Instance);
+                    myChangeManager.OnProviderChanged(this, new CppChange(new CppFileLocation(psiSourceFile)), SimpleTaskExecutor.Instance);
             }).NoAwait();
         }
 
