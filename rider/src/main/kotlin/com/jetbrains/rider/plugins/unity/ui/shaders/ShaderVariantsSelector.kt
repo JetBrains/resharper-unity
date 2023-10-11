@@ -36,7 +36,7 @@ class ShaderVariantsSelector(model: FrontendBackendModel) : JBPanel<ShaderVarian
 
     private fun initVariants(variants: Iterable<RdShaderVariant>) {
         val selectedVariants = shaderVariantSet.selectedVariants
-        for (variant in variants) {
+        for (variant in variants.sortedBy { it.name }) {
             val selected = selectedVariants.contains(variant.name)
             addShaderVariant(ShaderVariant(variant.name, selected))
         }

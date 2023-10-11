@@ -244,4 +244,10 @@
     <data name="ComponentUsageGroupingRule_ComponentUsageGroupingRule_UnityComponent" xml:space="preserve">
         <value>Unity Component</value>
     </data>
+    <data name="ShaderVariantsSettings_t_Shader_variants_settings" xml:space="preserve">
+        <value>Shader variants settings</value>
+    </data>
+    <data name="ShaderVariantsSettings_e_SelectedVariants_t_Selected_variants" xml:space="preserve">
+        <value>Selected variants</value>
+    </data>
 </root>
