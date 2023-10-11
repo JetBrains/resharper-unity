@@ -4,15 +4,15 @@ using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
-using JetBrains.ReSharper.Psi.Impl.Resolve;
 using JetBrains.ReSharper.Psi.Impl.Shared.References;
+using JetBrains.ReSharper.Psi.Impl.Shared.Util;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Xaml.Impl.Resolve;
-using JetBrains.ReSharper.Psi.Xaml.Tree;
 using JetBrains.ReSharper.Psi.Xml.Impl.Tree;
 using JetBrains.ReSharper.Psi.Xml.Tree;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 {
@@ -49,8 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 
         public ISymbolTable GetSymbolTable(SymbolTableMode mode)
         {
-            var namespaceAliasAttribute = Resolve().DeclaredElement as UxmlNamespaceAliasAttribute;
-            if (namespaceAliasAttribute == null)
+            if (Resolve().DeclaredElement is not UxmlNamespaceAliasAttribute namespaceAliasAttribute)
                 return EmptySymbolTable.INSTANCE;
             var references = namespaceAliasAttribute.GetReferences<IUxmlNamespaceReference>();
             return NamespaceReferenceUtil.GetSymbolTable(references.Last());
@@ -66,7 +65,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
         IReferenceQualifier, ICompletableReference, ITypeOrNamespaceReference
     {
         private readonly ISymbolCache mySymbolCache;
-        private readonly bool myIsFinalPart;
         private readonly ExpectedVisualElementTypeFilter myExpectedObjectTypeFilter;
 
         public UxmlTypeOrNamespaceReference(IXmlTagHeader owner, [CanBeNull] IQualifier qualifier,
@@ -75,7 +73,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
             : base(owner, qualifier, token, rangeWithin)
         {
             mySymbolCache = symbolCache;
-            myIsFinalPart = isFinalPart;
             myExpectedObjectTypeFilter = new ExpectedVisualElementTypeFilter(mustBeClass: isFinalPart);
         }
 
@@ -86,32 +83,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 
         protected override IReference BindToInternal(IDeclaredElement declaredElement, ISubstitution substitution)
         {
+            throw new System.NotImplementedException();
+            
             // Fix up name
-            // if (declaredElement.ShortName != GetName())
-            // {
-            //     var newReference = ReferenceWithinElementUtil<ITokenNode>.SetText(this, declaredElement.ShortName,
-            //         (node, buffer) =>
-            //         {
-            //             // The new name is substituted into the existing text, which includes quotes
-            //             var unquotedStringValue = buffer.GetText(TextRange.FromLength(1, buffer.Length - 2));
-            //             return CSharpElementFactory.GetInstance(node)
-            //                 .CreateStringLiteralExpression(unquotedStringValue)
-            //                 .Literal;
-            //         });
-            //     return newReference.BindTo(declaredElement);
-            // }
+            if (declaredElement.ShortName != GetName())
+            {
+                var newReference = ReferenceWithinElementUtil<ITokenNode>.SetText(this, declaredElement.ShortName,
+                    (node, buffer) =>
+                    {
+                        // The new name is substituted into the existing text, which includes quotes
+                        var unquotedStringValue = buffer.GetText(TextRange.FromLength(1, buffer.Length - 2));
+                        return CSharpElementFactory.GetInstance(node)
+                            .CreateStringLiteralExpression(unquotedStringValue)
+                            .Literal;
+                    });
+                return newReference.BindTo(declaredElement);
+            }
 
             return this;
         }
 
+        public override IReference BindTo(IDeclaredElement element, ISubstitution substitution)
+        {
+            return base.BindTo(element, substitution);
+        }
+
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
         {
-            if (myQualifier is IXamlNamespaceAliasReference xamlNamespaceAliasReference)
-            { 
-                return XamlResolveUtil.GetNamespaceAliasSymbolTable(xamlNamespaceAliasReference);
-                return xamlNamespaceAliasReference.GetSymbolTable(SymbolTableMode.FULL);
-            }
-            
             if (myQualifier == null) // Use the global namespace if there's no qualifier
             {
                 var module = myOwner.GetPsiModule();

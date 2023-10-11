@@ -1,20 +1,36 @@
 ﻿<ui:UXML xmlns:ui="|UnityEngine|(0).|UIElements|(1)" xmlns:uie="|UnityEditor|(2).|UIElements|(3)" xmlns:custom="|MyNamespace|(4)" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <MyNamespace.MyElement2 name="MyElement21" />
-    <Style src="project://database/Assets/UI/styles.uss?fileID=7433441132597879392&amp;guid=fa044cd23359809dcbf2261377826474&amp;type=3#styles" />
-    <ui:VisualElement name="Background" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); align-items: center; justify-content: center;">
-        <ui:VisualElement name="VisualElement" style="flex-grow: initial; background-color: rgba(255, 255, 255, 0); border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; width: 253px; height: 209px; align-items: center; justify-content: center;">
-            <ui:Button id="btn" text="StartGame" display-tooltip-when-elided="true" name="start-game-button" tooltip="1" class="button-style" />
-            <custom:MyElement2 name="MyElement2" />
-            <uie:ToolbarButton text="New Achiev" display-tooltip-when-elided="true" name="ToolbarButton-button" />
-            <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" name="message" />
-            <MyElement tooltip="sss" />
+    <|MyNamespace|(5).|MyElement2|(6) name="MyElement21" />
+    <|Style|(7) src="project://database/Assets/UI/styles.uss?fileID=7433441132597879392&amp;guid=fa044cd23359809dcbf2261377826474&amp;type=3#styles" />
+    <|ui|(8):|VisualElement|(9) name="Background" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); align-items: center; justify-content: center;">
+        <|ui|(10):|VisualElement|(11) name="VisualElement" style="flex-grow: initial; background-color: rgba(255, 255, 255, 0); border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; width: 253px; height: 209px; align-items: center; justify-content: center;">
+            <|ui|(12):|Button|(13) id="btn" text="StartGame" display-tooltip-when-elided="true" name="start-game-button" tooltip="1" class="button-style" />
+            <|custom|(14):|MyElement2|(15) name="MyElement2" />
+            <|uie|(16):|ToolbarButton|(17) text="New Achiev" display-tooltip-when-elided="true" name="ToolbarButton-button" />
+            <|ui|(18):|Label|(19) tabindex="-1" text="Label" display-tooltip-when-elided="true" name="message" />
+            <|MyElement|(20) tooltip="sss" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
 
 ------------------------------------------------
-0: result=OK declaredElem=UnityEngine
-1: result=OK declaredElem=UnityEngine.UIElements
-2: result=OK declaredElem=UnityEditor
-3: result=OK declaredElem=UnityEditor.UIElements
-4: result=OK declaredElem=MyNamespace
+0: result=OK declaredElem=UnityEngine [UxmlRootNamespaceReference]
+1: result=OK declaredElem=UnityEngine.UIElements [UxmlNamespaceReference]
+2: result=OK declaredElem=UnityEditor [UxmlRootNamespaceReference]
+3: result=OK declaredElem=UnityEditor.UIElements [UxmlNamespaceReference]
+4: result=OK declaredElem=MyNamespace [UxmlRootNamespaceReference]
+5: result=OK declaredElem=MyNamespace [UxmlTypeOrNamespaceReference]
+6: result=OK declaredElem=MyNamespace.MyElement2 [UxmlTypeOrNamespaceReference]
+7: result=NOT_RESOLVED declaredElem=null [UxmlTypeOrNamespaceReference]
+8: result=OK declaredElem=ui [UxmlNsAliasReference]
+9: result=OK declaredElem=UnityEngine.UIElements.VisualElement [UxmlTypeOrNamespaceReference]
+10: result=OK declaredElem=ui [UxmlNsAliasReference]
+11: result=OK declaredElem=UnityEngine.UIElements.VisualElement [UxmlTypeOrNamespaceReference]
+12: result=OK declaredElem=ui [UxmlNsAliasReference]
+13: result=OK declaredElem=UnityEngine.UIElements.Button [UxmlTypeOrNamespaceReference]
+14: result=OK declaredElem=custom [UxmlNsAliasReference]
+15: result=OK declaredElem=MyNamespace.MyElement2 [UxmlTypeOrNamespaceReference]
+16: result=OK declaredElem=uie [UxmlNsAliasReference]
+17: result=OK declaredElem=UnityEditor.UIElements.ToolbarButton [UxmlTypeOrNamespaceReference]
+18: result=OK declaredElem=ui [UxmlNsAliasReference]
+19: result=OK declaredElem=UnityEngine.UIElements.Label [UxmlTypeOrNamespaceReference]
+20: result=OK declaredElem=MyElement [UxmlTypeOrNamespaceReference]
