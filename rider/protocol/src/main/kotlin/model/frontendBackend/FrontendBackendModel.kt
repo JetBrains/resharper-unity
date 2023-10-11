@@ -62,6 +62,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
     }
 
     private val shaderInternScope = internScope()
+
+    // Shader Contexts
     private val shaderContextDataBase = basestruct {}
     private val autoShaderContextData = structdef extends shaderContextDataBase {}
     private val shaderContextData = structdef extends shaderContextDataBase {
@@ -71,6 +73,14 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         field("start", int)
         field("end", int)
         field("startLine", int)
+    }
+
+    // Shader Variants
+    private val rdShaderVariant = structdef {
+        field("name", string.interned(shaderInternScope).attrs(KnownAttrs.NlsSafe))
+    }
+    private val rdShaderVariantSet = classdef {
+        set("selectedVariants", string.interned(shaderInternScope))
     }
 
     init {
@@ -118,6 +128,10 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
             field("items", immutableList(shaderContextData))
             source("selectItem", int) // -1 for no auto-context
         })
+
+        // Shader variants
+        map("shaderVariants", string, rdShaderVariant).readonly
+        property("defaultShaderVariantSet", rdShaderVariantSet).readonly
 
         // Actions called from the frontend to the backend (and/or indirectly, Unity)
         // (These should probably be calls, rather than signal/source/sink, as they are RPC, and not events)
