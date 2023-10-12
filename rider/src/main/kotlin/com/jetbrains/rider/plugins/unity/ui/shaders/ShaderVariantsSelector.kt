@@ -1,16 +1,35 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.popup.JBPopup
+import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.CheckBoxList
 import com.intellij.ui.ListSpeedSearch
+import com.intellij.ui.awt.RelativePoint
 import com.intellij.ui.components.JBPanel
 import com.jetbrains.rd.util.reactive.valueOrThrow
+import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderVariant
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderVariantSet
 
 class ShaderVariantsSelector(model: FrontendBackendModel) : JBPanel<ShaderVariantsSelector>() {
+    companion object {
+        private fun createPopup(project: Project): JBPopup {
+            val model = FrontendBackendHost.getInstance(project).model
+            val shaderVariantsSelector = ShaderVariantsSelector(model)
+            return JBPopupFactory.getInstance().createComponentPopupBuilder(shaderVariantsSelector, shaderVariantsSelector.variants)
+                .setRequestFocus(true)
+                .createPopup()
+        }
+
+        fun show(project: Project, showAt: RelativePoint) {
+            createPopup(project).show(showAt)
+        }
+    }
+    
     internal val variants = CheckBoxList<ShaderVariant>().also { add(it) }
     private var shaderVariantSet: RdShaderVariantSet = model.defaultShaderVariantSet.valueOrThrow
 
