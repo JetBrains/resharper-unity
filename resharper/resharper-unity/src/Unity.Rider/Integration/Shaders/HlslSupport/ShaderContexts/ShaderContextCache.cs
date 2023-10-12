@@ -8,6 +8,7 @@ using JetBrains.DocumentManagers;
 using JetBrains.DocumentModel;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Cpp.Caches;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Psi;
@@ -100,8 +101,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             public bool InvalidateProperties => false;
             public IReadOnlyCollection<(IProject Project, CppProjectChangeFlags ChangeFlags)> GetProjectChanges(ISolution solution) => EmptyList<(IProject Project, CppProjectChangeFlags ChangeFlags)>.Instance;
 
-            public IReadOnlyCollection<VirtualFileSystemPath> ChangedFiles => EmptyList<VirtualFileSystemPath>.Instance;
-            public IReadOnlyCollection<(IPsiSourceFile SourceFile, CppFileLocation Location)> ChangedLocations => FixedList.Of((mySourceFile, new CppFileLocation(mySourceFile)));
+            public IReadOnlyCollection<CppSourceFile> ChangedFiles => FixedList.Of(new CppSourceFile(mySourceFile));
         }
     }
 }
