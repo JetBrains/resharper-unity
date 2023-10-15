@@ -60,6 +60,7 @@
     public static string ImmutablePackageNotification_ImmutablePackageNotification_This_file_is_part_of_the_Unity_Package_Cache__Any_changes_made_will_be_lost_ => ResourceManager.GetString("ImmutablePackageNotification_ImmutablePackageNotification_This_file_is_part_of_the_Unity_Package_Cache__Any_changes_made_will_be_lost_");
     public static string LoadSceneFixBulbAction_Text_Add___SceneName___to_build_settings => ResourceManager.GetString("LoadSceneFixBulbAction_Text_Add___SceneName___to_build_settings");
     public static string MakeSureRider_IsSetAsTheExternalEditor_Text => ResourceManager.GetString("MakeSureRider_IsSetAsTheExternalEditor_Text");
+    public static string OpenManifestJson_Text => ResourceManager.GetString("OpenManifestJson_Text");
     public static string PerformanceCriticalLineMarker_RiderPresentableName => ResourceManager.GetString("PerformanceCriticalLineMarker_RiderPresentableName");
     public static string PleaseSwitchToTheUnityEditorToReload_Text => ResourceManager.GetString("PleaseSwitchToTheUnityEditorToReload_Text");
     public static string PleaseSwitchToUnityEditorToLoadThePlugin_Text => ResourceManager.GetString("PleaseSwitchToUnityEditorToLoadThePlugin_Text");

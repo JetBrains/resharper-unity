@@ -1,7 +1,7 @@
 package com.jetbrains.rider.plugins.unity.toolWindow
 
+import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.diagnostic.Logger
-import com.jetbrains.rd.platform.client.ProtocolProjectSession
 import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -15,7 +15,7 @@ class UnityToolWindowManager : LifetimedService() {
     }
 
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
-        override fun extensionCreated(lifetime: Lifetime, session: ProtocolProjectSession, model: FrontendBackendModel) {
+        override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
             model.unityEditorConnected.whenTrue(lifetime) {
                 myLogger.info("new session")
                 val context = UnityToolWindowFactory.getInstance(session.project).getOrCreateContext()

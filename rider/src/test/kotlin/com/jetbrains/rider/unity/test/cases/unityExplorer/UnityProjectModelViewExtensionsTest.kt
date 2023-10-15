@@ -1,6 +1,7 @@
 package com.jetbrains.rider.unity.test.cases.unityExplorer
 
 import com.jetbrains.rider.projectView.solutionDirectory
+import com.jetbrains.rider.test.allure.Subsystem
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.ProjectModelBaseTest
 import com.jetbrains.rider.test.env.enums.SdkVersion
@@ -8,10 +9,14 @@ import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.callUndo
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
 import com.jetbrains.rider.unity.test.framework.api.*
+import io.qameta.allure.*
 import org.testng.Assert
 import org.testng.annotations.Test
 import java.io.File
 
+@Epic(Subsystem.UNITY_PLUGIN)
+@Feature("Unity Project Model View Extensions")
+@Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(sdkVersion = SdkVersion.DOT_NET_6)
 class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     override fun getSolutionDirectoryName() = "UnityProjectModelViewExtensionsTest"
@@ -21,6 +26,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     // todo: add test with solution, where one of the asmdef-s doesn't target Editor, this would cause only .Player project without normal one
 
     @Test
+    @Description("Add a new script to the project")
     fun testAddNewItem() {
         testProjectModel(testGoldFile, project, false) {
             //dump("Init", project, activeSolutionDirectory) {}
@@ -37,6 +43,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     }
 
     @Test
+    @Description("Rename an script in the project")
     fun testRenameFile() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename file", project, activeSolutionDirectory) {
@@ -56,6 +63,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
 
     @Test
     @TestEnvironment
+    @Description("Rename a folder in the project")
     fun testRenameFolder() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename folder", project, activeSolutionDirectory) {
@@ -74,6 +82,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
 
     @Test
     @TestEnvironment
+    @Description("Rename a folder in the project")
     fun testRenameFolder2() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename folder", project, activeSolutionDirectory) {
@@ -87,6 +96,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
 
     @Test
     @TestEnvironment
+    @Description("Rename a folder in the project")
     fun testRenameFolder3() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename folder", project, activeSolutionDirectory) {
@@ -99,6 +109,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     }
 
     @Test
+    @Description("Delete a script in the project")
     fun testDeleteFile() {
         val metaFile = project.solutionDirectory.resolve("Assets/AsmdefResponse/NewBehaviourScript.cs.meta")
         Assert.assertTrue(metaFile.exists(), "We expect meta file exists.")
@@ -114,7 +125,9 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
 
     }
 
-    @Test // RIDER-41182, RIDER-91321
+    @Test
+    @Issue("RIDER-41182, RIDER-91321")
+    @Description("Move a script in the project")
     fun testMoveFile() {
         val originFile = project.solutionDirectory.resolve("Assets").resolve("Class1.cs")
         val originMetaFile = File(originFile.absolutePath + ".meta")
@@ -145,7 +158,9 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         Assert.assertEquals(metaFileContent, originMetaFile.readText())
     }
 
-    @Test // RIDER-63575
+    @Test
+    @Issue("RIDER-63575")
+    @Description("Move a script in the project")
     fun testMoveFile2() {
         val originFile = project.solutionDirectory.resolve("Assets/AsmdefResponse/SS/rrr.cs")
         val originMetaFile = File(originFile.absolutePath + ".meta")

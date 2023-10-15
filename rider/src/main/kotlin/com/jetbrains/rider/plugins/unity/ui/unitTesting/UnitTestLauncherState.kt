@@ -1,8 +1,8 @@
 package com.jetbrains.rider.plugins.unity.ui.unitTesting
 
+import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
-import com.jetbrains.rd.platform.client.ProtocolProjectSession
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -30,7 +30,7 @@ class UnitTestLauncherState : PersistentStateComponent<Element> {
     val currentTestLauncherProperty: Property<UnitTestLaunchPreference?> = Property(null) // null means undef
 
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
-        override fun extensionCreated(lifetime: Lifetime, session: ProtocolProjectSession, model: FrontendBackendModel) {
+        override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
             getInstance(session.project).currentTestLauncherProperty.flowInto(lifetime, model.unitTestPreference)
             model.unitTestPreference.flowInto(lifetime, getInstance(session.project).currentTestLauncherProperty)
 

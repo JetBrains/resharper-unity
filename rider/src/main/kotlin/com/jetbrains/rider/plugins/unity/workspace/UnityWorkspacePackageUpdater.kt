@@ -2,6 +2,7 @@
 
 package com.jetbrains.rider.plugins.unity.workspace
 
+import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -14,7 +15,6 @@ import com.intellij.platform.backend.workspace.toVirtualFileUrl
 import com.intellij.workspaceModel.ide.getInstance
 import com.intellij.platform.workspace.storage.MutableEntityStorage
 import com.intellij.platform.workspace.storage.url.VirtualFileUrlManager
-import com.jetbrains.rd.platform.client.ProtocolProjectSession
 import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -49,7 +49,7 @@ class UnityWorkspacePackageUpdater(private val project: Project) : LifetimedServ
     }
 
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
-        override fun extensionCreated(lifetime: Lifetime, session: ProtocolProjectSession, model: FrontendBackendModel) {
+        override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
             // Subscribe to package changes. If we subscribe after the backend has loaded the initial list of packages,
             // this map will already be populated, and we'll be called for each item. If we subscribe before the list
             // is loaded, updateWorkspaceModel will cache the changes until the packagesUpdating flag is reset. At this

@@ -2,17 +2,17 @@ package com.jetbrains.rider.unity.test.framework.api
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createNestedDisposable
+import com.intellij.openapi.rd.util.lifetime
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
+import com.intellij.util.WaitFor
 import com.intellij.util.text.VersionComparatorUtil
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.jetbrains.rd.framework.protocolOrThrow
-import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isNotAlive
@@ -20,8 +20,8 @@ import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.waitAndPump
+import com.jetbrains.rider.RiderEnvironment
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
-import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToPausepoint
@@ -37,24 +37,23 @@ import com.jetbrains.rider.plugins.unity.util.withDebugCodeOptimization
 import com.jetbrains.rider.plugins.unity.util.withProjectPath
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDirectory
-import com.jetbrains.rider.test.RiderBackend
-import com.jetbrains.rider.utils.NullPrintStream
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
 import com.jetbrains.rider.test.env.packages.ZipFilePackagePreparer
 import com.jetbrains.rider.test.framework.TeamCityHelper
 import com.jetbrains.rider.test.framework.combine
-import com.jetbrains.rider.test.framework.downloadAndExtractArchiveArtifactIntoPersistentCache
 import com.jetbrains.rider.test.framework.frameworkLogger
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.UnityVersion
+import com.jetbrains.rider.utils.NullPrintStream
 import java.io.File
 import java.io.PrintStream
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.Duration
-import kotlin.io.path.*
+import kotlin.io.path.Path
+import kotlin.io.path.notExists
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -257,28 +256,14 @@ fun getUnityProcessHandle(project: Project): ProcessHandle {
 }
 
 fun getRiderDevAppPath(): File {
-    if (PluginManagerCore.isRunningFromSources()) {
-        val assemblyName = "JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll"
-        val editorPluginDllsPath = if (TeamCityHelper.isUnderTeamCity) {
-            FrontendBackendHost::class.java.classLoader.getResource("EditorPlugin")!!.toURI().toPath().toFile()
-        } else {
-            RiderBackend.getRiderBackendDir()!!
-        }
-        val riderDevAppPath = editorPluginDllsPath.resolve("rider-dev.app").apply { mkdirs() }
-        val riderDevBatPath = riderDevAppPath.resolve("rider-dev.bat")
-        riderDevBatPath.writeText(editorPluginDllsPath.resolve(assemblyName).canonicalPath)
-        return if (SystemInfo.isMac) riderDevAppPath else riderDevBatPath
-    } else {
-        val relPath = when {
-            SystemInfo.isWindows -> "net472/rider-dev.app/rider-dev.bat"
-            SystemInfo.isMac -> "net472/rider-dev.app"
-            SystemInfo.isUnix -> "net472/rider-dev.app/rider-dev.bat"
-            else -> throw Exception("Not implemented")
-        }
-        val cwd = File(System.getProperty("user.dir"))
-        return cwd.parentFile.resolve("unity/build/EditorPlugin.SinceUnity.2019.2/bin").listFiles()!!
-            .single { a -> (a.name == "Debug" || a.name == "Release") && a.isDirectory }.resolve(relPath)
-    }
+    val editorPluginFolderPath = RiderEnvironment.getBundledPluginFile("EditorPlugin", "com.intellij.resharper.unity")
+    val assemblyName = "JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll"
+
+    val riderDevAppPath = editorPluginFolderPath.resolve("rider-dev.app").apply { mkdirs() }
+    val riderDevBatPath = riderDevAppPath.resolve("rider-dev.bat")
+    riderDevBatPath.writeText(editorPluginFolderPath.resolve(assemblyName).canonicalPath)
+
+    return if (SystemInfo.isMac) riderDevAppPath else riderDevBatPath
 }
 
 fun BaseTestWithSolutionBase.startUnity(project: Project,
@@ -302,18 +287,24 @@ fun BaseTestWithSolutionBase.startUnity(executable: String,
 fun BaseTestWithSolution.startUnity(withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean) =
     startUnity(project, withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
 
-fun killUnity(project: Project, processHandle: ProcessHandle) {
+fun killUnity(processHandle: ProcessHandle) {
     frameworkLogger.info("Trying to kill unity process")
     if (!processHandle.isAlive) {
         frameworkLogger.info("Unity process isn't alive")
         return
     }
     processHandle.destroy()
-    waitAndPump(project.lifetime, { !processHandle.isAlive }, unityDefaultTimeout) { "Process should have existed." }
+
+    object : WaitFor(unityDefaultTimeout.toMillis().toInt(), 10000) {
+        override fun condition(): Boolean {
+            return !processHandle.isAlive
+        }
+    }.assertCompleted("Unity process was not killed")
+
     frameworkLogger.info("Unity process killed")
 }
 
-fun killUnity(project: Project) = killUnity(project, getUnityProcessHandle(project))
+fun killUnity(project: Project) = killUnity(getUnityProcessHandle(project))
 
 fun BaseTestWithSolution.withUnityProcess(
     withCoverage: Boolean = false,
@@ -327,7 +318,7 @@ fun BaseTestWithSolution.withUnityProcess(
         processHandle.block()
     }
     finally {
-        killUnity(project, processHandle)
+        killUnity(processHandle)
     }
 }
 

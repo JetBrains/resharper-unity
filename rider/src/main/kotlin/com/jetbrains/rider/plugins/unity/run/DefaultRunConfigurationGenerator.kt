@@ -3,8 +3,8 @@ package com.jetbrains.rider.plugins.unity.run
 import com.intellij.execution.RunManager
 import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.execution.configurations.UnknownConfigurationType
+import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.diagnostic.Logger
-import com.jetbrains.rd.platform.client.ProtocolProjectSession
 import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -37,7 +37,7 @@ class DefaultRunConfigurationGenerator : LifetimedService() {
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
         private val logger = Logger.getInstance(DefaultRunConfigurationGenerator::class.java)
 
-        override fun extensionCreated(lifetime: Lifetime, session: ProtocolProjectSession, model: FrontendBackendModel) {
+        override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
             model.hasUnityReference.whenTrue(lifetime) { lt ->
                 val runManager = RunManager.getInstance(session.project)
                 // Clean up the renamed "attach and play" configuration from 2018.2 EAP1-3

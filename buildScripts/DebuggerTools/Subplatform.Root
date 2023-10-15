@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SubplatformInfo xmlns="urn:schemas-jetbrains-com:build-subplatform-info" CompanyNameHuman="JetBrains">
+  <SubplatformInfo.SubplatformReferences>
+    <SubplatformReference Name="Rider\Rider.Backend" />
+  </SubplatformInfo.SubplatformReferences>
+</SubplatformInfo>

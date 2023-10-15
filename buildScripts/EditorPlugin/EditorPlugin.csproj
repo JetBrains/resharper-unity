@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="Current" Sdk="JetBrains.Toolset.MainSolution.Sdk/20200625.1.1.2">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <ProjectGuid>{7B2D7183-8B19-4AA4-863C-1F8FA0A1FA74}</ProjectGuid>
+    <AssemblyName>JetBrains.ReSharper.Plugins.Unity.EditorPlugin</AssemblyName>
+    <OutputType>Library</OutputType>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Unity.EditorPlugin</RootNamespace>
+    <Title>JetBrains .NET Public Platform Core Utilities</Title>
+  </PropertyGroup>
+  <ItemGroup Label="PackageReference">
+    <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="JetBrains.FormatRipper" />
+    <PackageReference Include="JetBrains.Lifetimes" />
+    <PackageReference Include="System.Buffers" />
+    <PackageReference Include="System.Collections.Immutable" />
+    <PackageReference Include="System.Text.Encoding.CodePages" />
+    <PackageReference Include="System.Memory" />
+    <PackageReference Include="System.Numerics.Vectors" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" />
+    <PackageReference Include="System.Threading.Channels" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Platform\Core\Shell\BuildInterfaces\BuildInterfaces.csproj" Project="{abcbff38-8466-41ad-9e31-93a9e56ffd18}" Name="BuildInterfaces" />
+    <ProjectReference Include="..\..\..\..\Platform\Core\Shell\Core\Core.csproj" Project="{8e1f05d1-11b6-4230-8c11-d1cf4585560e}" Name="Core" />
+    <ProjectReference Include="..\..\..\..\Platform\Core\Shell\Shell\Shell.csproj" Project="{6cbfb1e9-b475-4f53-a4d3-edd8edc06c33}" Name="Shell" />
+    <ProjectReference Include="..\..\..\..\Platform\Core\Shell\ComponentModel\ComponentModel.csproj" Project="{1913DEF0-EE6E-4297-89D1-F503AEBF191F}" Name="ComponentModel" />
+    <ProjectReference Include="..\..\..\..\Rider\Rider.Backend\Rider.Backend\Rider.Backend.csproj" />
+  </ItemGroup>
+  <Import Project="ManagedProject.Generated.Targets" />
+</Project>

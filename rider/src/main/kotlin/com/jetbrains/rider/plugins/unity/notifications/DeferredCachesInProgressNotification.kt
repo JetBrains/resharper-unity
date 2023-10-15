@@ -1,10 +1,10 @@
 package com.jetbrains.rider.plugins.unity.notifications
 
+import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.ui.MessageType
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.openapi.wm.ex.StatusBarEx
 import com.intellij.util.ui.UIUtil
-import com.jetbrains.rd.platform.client.ProtocolProjectSession
 import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.protocol.SolutionExtListener
@@ -16,7 +16,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendMo
 
 class DeferredCachesInProgressNotification : LifetimedService() {
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
-        override fun extensionCreated(lifetime: Lifetime, session: ProtocolProjectSession, model: FrontendBackendModel) {
+        override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
             model.showDeferredCachesProgressNotification.adviseNotNull(session.project.lifetime) {
                 UIUtil.invokeLaterIfNeeded {
                     val ideFrame = WindowManager.getInstance().getIdeFrame(session.project)
