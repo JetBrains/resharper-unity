@@ -99,5 +99,6 @@
     public static string ShaderSettings_t_Shader_settings => ResourceManager.GetString("ShaderSettings_t_Shader_settings");
     public static string ShaderVariantsSettings_t_Shader_variants_settings => ResourceManager.GetString("ShaderVariantsSettings_t_Shader_variants_settings");
     public static string ShaderVariantsSettings_e_SelectedVariants_t_Selected_variants => ResourceManager.GetString("ShaderVariantsSettings_e_SelectedVariants_t_Selected_variants");
+    public static string ShaderVariant_RiderPresentableName => ResourceManager.GetString("ShaderVariant_RiderPresentableName");
   }
 }

@@ -1,0 +1,9 @@
+#ifdef |FOO|(0)
+void foo() { }
+#endif
+
+#ifdef BAR
+void bar() { }
+#endif
+---------------------------------------------------------
+(0): ReSharper ShaderLab Shader Variant: 
