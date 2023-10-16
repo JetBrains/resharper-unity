@@ -1,6 +1,5 @@
 #nullable enable
 
-using System.Collections.Generic;
 using JetBrains.Application.changes;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
@@ -17,7 +16,6 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Threading;
 using JetBrains.Util;
 using JetBrains.Util.Caches;
-using JetBrains.Util.DataStructures.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderContexts
 {
@@ -54,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             mySolution.Locks.ExecuteOrQueueWithWriteLockWhenAvailableEx(myLifetime, $"Updating shader context for {psiSourceFile}", () =>
             {
                 if (psiSourceFile.IsValid())
-                    myChangeManager.OnProviderChanged(this, new ShaderContextChange(psiSourceFile), SimpleTaskExecutor.Instance);
+                    myChangeManager.OnProviderChanged(this, new CppChange(new CppSourceFile(psiSourceFile)), SimpleTaskExecutor.Instance);
             }).NoAwait();
         }
 
@@ -91,17 +89,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
         }
 
         public object? Execute(IChangeMap changeMap) => null;
-        
-        private class ShaderContextChange : ICppChange
-        {
-            private readonly IPsiSourceFile mySourceFile;
-
-            public ShaderContextChange(IPsiSourceFile sourceFile) => mySourceFile = sourceFile;
-
-            public bool InvalidateProperties => false;
-            public IReadOnlyCollection<(IProject Project, CppProjectChangeFlags ChangeFlags)> GetProjectChanges(ISolution solution) => EmptyList<(IProject Project, CppProjectChangeFlags ChangeFlags)>.Instance;
-
-            public IReadOnlyCollection<CppSourceFile> ChangedFiles => FixedList.Of(new CppSourceFile(mySourceFile));
-        }
     }
 }
