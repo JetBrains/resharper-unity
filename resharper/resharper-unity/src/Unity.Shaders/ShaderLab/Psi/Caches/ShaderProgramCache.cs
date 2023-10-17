@@ -5,7 +5,6 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
-using JetBrains.ReSharper.Plugins.Unity.Common.Backports;
 using JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Common.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport;

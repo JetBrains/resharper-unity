@@ -478,7 +478,6 @@
     public static string UnityOptionsPage_AddTextBasedAssetsSection_Text_based_assets => ResourceManager.GetString("UnityOptionsPage_AddTextBasedAssetsSection_Text_based_assets");
     public static string UnityPerformanceCriticalCodeLineMarker_Performance_critical_context => ResourceManager.GetString("UnityPerformanceCriticalCodeLineMarker_Performance_critical_context");
     public static string UnityProjects_Text => ResourceManager.GetString("UnityProjects_Text");
-    public static string UnityProjectSettings_t_Unity_project_settings => ResourceManager.GetString("UnityProjectSettings_t_Unity_project_settings");
     public static string UnityRuntimeFolder_Text => ResourceManager.GetString("UnityRuntimeFolder_Text");
     public static string UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property => ResourceManager.GetString("UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property");
     public static string UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property => ResourceManager.GetString("UnitySettings_Refactoring_Ask_For_Adding_Formally_Serialized_As_Attribute_While_renaming_serialized_property");

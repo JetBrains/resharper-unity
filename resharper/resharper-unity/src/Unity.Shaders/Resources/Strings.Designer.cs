@@ -96,5 +96,8 @@
     public static string String_RiderPresentableName => ResourceManager.GetString("String_RiderPresentableName");
     public static string ShaderNameNotRevoled => ResourceManager.GetString("ShaderNameNotRevoled");
     public static string ShaderNameMultipleCandidates => ResourceManager.GetString("ShaderNameMultipleCandidates");
+    public static string ShaderSettings_t_Shader_settings => ResourceManager.GetString("ShaderSettings_t_Shader_settings");
+    public static string ShaderVariantsSettings_t_Shader_variants_settings => ResourceManager.GetString("ShaderVariantsSettings_t_Shader_variants_settings");
+    public static string ShaderVariantsSettings_e_SelectedVariants_t_Selected_variants => ResourceManager.GetString("ShaderVariantsSettings_e_SelectedVariants_t_Selected_variants");
   }
 }

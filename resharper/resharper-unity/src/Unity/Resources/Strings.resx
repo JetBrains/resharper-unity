@@ -1323,9 +1323,6 @@ a plugin to be installed to a project.</value>
     <data name="UnityProjects_Text" xml:space="preserve">
         <value>Unity projects</value>
     </data>
-    <data name="UnityProjectSettings_t_Unity_project_settings" xml:space="preserve">
-        <value>Unity project settings</value>
-    </data>
     <data name="UnityRuntimeFolder_Text" xml:space="preserve">
         <value>Unity runtime folder</value>
     </data>

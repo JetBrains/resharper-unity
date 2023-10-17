@@ -124,7 +124,5 @@
     public static string AnimationEventGroupingRule_AnimationEventGroupingRule_AnimationEvent => ResourceManager.GetString("AnimationEventGroupingRule_AnimationEventGroupingRule_AnimationEvent");
     public static string GameObjectUsageGroupingRule_GameObjectUsageGroupingRule_UnityGameObject => ResourceManager.GetString("GameObjectUsageGroupingRule_GameObjectUsageGroupingRule_UnityGameObject");
     public static string ComponentUsageGroupingRule_ComponentUsageGroupingRule_UnityComponent => ResourceManager.GetString("ComponentUsageGroupingRule_ComponentUsageGroupingRule_UnityComponent");
-    public static string ShaderVariantsSettings_t_Shader_variants_settings => ResourceManager.GetString("ShaderVariantsSettings_t_Shader_variants_settings");
-    public static string ShaderVariantsSettings_e_SelectedVariants_t_Selected_variants => ResourceManager.GetString("ShaderVariantsSettings_e_SelectedVariants_t_Selected_variants");
   }
 }
