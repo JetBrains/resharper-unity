@@ -112,9 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
         {
             if (myQualifier == null) // Use the global namespace if there's no qualifier
             {
-                var module = myOwner.GetPsiModule();
-                var globalNamespace = mySymbolCache.GetSymbolScope(module, true, CaseSensitive).GlobalNamespace;
-                var symbolTable = ResolveUtil.GetSymbolTableByNamespace(globalNamespace, module, true);
+                var symbolTable = GetGlobalNamespaceSymbolTable();
                 return useReferenceName ? symbolTable.Filter(new ExactNameFilter(GetName())) : symbolTable;
             }
 
@@ -123,16 +121,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 
         public QualifierKind GetKind() => Resolve().DeclaredElement is INamespace ? QualifierKind.NAMESPACE : QualifierKind.NONE;
 
-        // public override ISymbolTable GetCompletionSymbolTable()
-        // {
-        //     // this.GetReferenceSymbolTable for an unqualified reference will try to resolve a type based on short
-        //     // name. This is no good for completion. Use the default base behaviour, to show namespaces and types
-        //     // based on the qualifier
-        //     var symbolTable = myQualifier == null
-        //         ? GetGlobalNamespaceSymbolTable()
-        //         : base.GetReferenceSymbolTable(false);
-        //     return symbolTable.Filter(GetCompletionFilters());
-        // }
+        public override ISymbolTable GetCompletionSymbolTable()
+        {
+            // this.GetReferenceSymbolTable for an unqualified reference will try to resolve a type based on short
+            // name. This is no good for completion. Use the default base behaviour, to show namespaces and types
+            // based on the qualifier
+            var symbolTable = myQualifier == null
+                ? GetGlobalNamespaceSymbolTable()
+                : base.GetReferenceSymbolTable(false);
+            return symbolTable.Filter(GetCompletionFilters());
+        }
+        
+        private ISymbolTable GetGlobalNamespaceSymbolTable()
+        {
+            var module = myOwner.GetPsiModule();
+            var globalNamespace = mySymbolCache.GetSymbolScope(module, true, CaseSensitive).GlobalNamespace;
+            return ResolveUtil.GetSymbolTableByNamespace(globalNamespace, module, true);
+        }
 
         // I(Reference)Qualifier.GetSymbolTable - returns the symbol table of items available from the resolved
         // reference, when being used as a qualifier. Not used to resolve this reference, but can be used to resolve

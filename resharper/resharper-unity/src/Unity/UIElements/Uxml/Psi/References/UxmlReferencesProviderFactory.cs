@@ -7,8 +7,6 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Xaml.Impl;
-using JetBrains.ReSharper.Psi.Xaml.Impl.Tree.References;
 using JetBrains.ReSharper.Psi.Xml.Impl.Tree;
 using JetBrains.Util;
 
@@ -83,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 
         public bool HasReference(ITreeNode element, IReferenceNameContainer names)
         {
-            return element is XmlAttribute { XmlNamespace: XamlKeywords.XMLNS_ATTRIBUTE };
+            return element is XmlTagHeaderNode xmlIdentifier && names.HasAnyNameIn(xmlIdentifier.Name.XmlName);
         }
     }
 }
