@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <PackageLock Include="Autofac" Version="4.8.1" />
-    <PackageLock Include="JetBrains.Annotations" Version="2023.3.0-dev-dm-001" />
+    <PackageLock Include="JetBrains.Annotations" Version="2023.3.0-dev-dm-002" />
     <PackageLock Include="JetBrains.HabitatDetector" Version="1.0.2" />
     <PackageLock Include="JetBrains.Lifetimes" Version="2023.3.0" />
     <PackageLock Include="JetBrains.RdFramework" Version="2023.3.0" />
