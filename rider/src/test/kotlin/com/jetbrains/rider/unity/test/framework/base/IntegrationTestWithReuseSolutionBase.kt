@@ -70,7 +70,7 @@ abstract class IntegrationTestWithReuseSolutionBase : BaseTestWithSolutionBase()
         }
 
         if (myUnityProcessHandle != null) {
-            killUnity(project, unityProcessHandle)
+            killUnity(unityProcessHandle)
             checkSweaInSolution(project)
         }
 
@@ -88,7 +88,7 @@ abstract class IntegrationTestWithReuseSolutionBase : BaseTestWithSolutionBase()
     fun killUnity() {
         try {
             stopPlaying()
-            killUnity(project, unityProcessHandle)
+            killUnity(unityProcessHandle)
             checkSweaInSolution(project)
         } finally {
             myUnityProcessHandle = null

@@ -1,9 +1,9 @@
 package com.jetbrains.rider.plugins.unity.util
 
+import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
-import com.jetbrains.rd.platform.client.ProtocolProjectSession
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.plugins.unity.model.UnityApplicationData
@@ -114,7 +114,7 @@ class UnityInstallationFinder {
     fun requiresRiderPackage() = requiresRiderPackage
 
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
-        override fun extensionCreated(lifetime: Lifetime, session: ProtocolProjectSession, model: FrontendBackendModel) {
+        override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
             model.unityApplicationData.advise(lifetime) {
                 getInstance(session.project).unityApplicationData = it
             }
