@@ -33,7 +33,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
     {
         public static int ToHex(this Color32 c)
         {
-            return (c.r << 16) | (c.g << 8) | (c.b);
+            return (c.a << 24) | (c.r << 16) | (c.g << 8) | c.b;
         }
 
         public static string GetPixelsInString(Texture2D texture2D)
