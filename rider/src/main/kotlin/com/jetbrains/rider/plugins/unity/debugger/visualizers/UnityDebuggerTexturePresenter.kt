@@ -167,7 +167,7 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
         }
 
         val bufferedImage = ImageUtil.createImage(dummyGraphicsConfiguration,
-                                                  textureInfo.Width, textureInfo.Height, BufferedImage.TYPE_INT_RGB)
+                                                  textureInfo.Width, textureInfo.Height, BufferedImage.TYPE_INT_ARGB_PRE)
 
         for (y in 0 until textureInfo.Height) {
             for (x in 0 until textureInfo.Width) {
