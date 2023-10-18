@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
@@ -22,26 +23,45 @@ public class ShaderVariantsHost
 {
     private readonly ISolution mySolution;
     private readonly ShaderProgramCache myShaderProgramCache;
-    private readonly IContextBoundSettingsStore myBoundSettingsStore;
+    private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
     public ShaderVariantsHost(Lifetime lifetime, ISolution solution, ShaderProgramCache shaderProgramCache, ISettingsStore settingsStore, [UsedImplicitly] SolutionSettingsReadyForSolutionInstanceComponent _, FrontendBackendHost? frontendBackendHost = null)
     {
         mySolution = solution;
         myShaderProgramCache = shaderProgramCache;
 
-        myBoundSettingsStore = settingsStore.BindToContextTransient(ContextRange.Smart(mySolution.ToDataContext()));
-        var selectedVariants = myBoundSettingsStore.EnumIndexedValues(static (ShaderVariantsSettings s) => s.SelectedVariants);
-        
-        var defaultSet = new RdShaderVariantSet();
-        defaultSet.SelectedVariants.UnionWith(selectedVariants);
+        myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(mySolution.ToDataContext()));
         
         frontendBackendHost?.Do(model =>
         {
+            var defaultSet = new RdShaderVariantSet();
+            var settingsEntry = myBoundSettingsStore.Schema.GetIndexedEntry(static (ShaderVariantsSettings s) => s.SelectedVariants);
+            defaultSet.SelectedVariants.UnionWith(EnumSelectedVariants(settingsEntry));
+            
+            myBoundSettingsStore.AdviseChange(lifetime, settingsEntry, () => SyncSelectedVariants(defaultSet, EnumSelectedVariants(settingsEntry)));
+            
             model.DefaultShaderVariantSet.Value = defaultSet;
             myShaderProgramCache.CacheUpdated.Advise(lifetime, _ => SyncShaderVariants(model));
             
             model.DefaultShaderVariantSet.Value.SelectedVariants.Change.Advise(lifetime, OnSelectedVariantsChanged);
         });
+    }
+
+    private IEnumerable<string> EnumSelectedVariants(SettingsIndexedEntry settingsEntry) => myBoundSettingsStore.EnumIndexedValues(settingsEntry, null).Values.Cast<string>();
+
+    private void SyncSelectedVariants(RdShaderVariantSet shaderVariantSet, IEnumerable<string> newVariants)
+    {
+        var unprocessed = shaderVariantSet.SelectedVariants.ToHashSet();
+        foreach (var shaderVariant in newVariants)
+        {
+            if (!unprocessed.Remove(shaderVariant))
+                shaderVariantSet.SelectedVariants.Add(shaderVariant);
+        }
+
+        foreach (var removed in unprocessed)
+        {
+            shaderVariantSet.SelectedVariants.Remove(removed);
+        }
     }
 
     private void OnSelectedVariantsChanged(SetEvent<string> evt)
