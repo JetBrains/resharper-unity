@@ -13,11 +13,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree
 
         public UxmlElementTypes(XmlTokenTypes xmlTokenTypes) : base(xmlTokenTypes)
         {
-            // UXML_TAG = new UXML_TAG_TYPE(this, BASE_INDEX + 1);
             NAMESPACE_ALIAS = new NAMESPACE_ALIAS_TYPE(this, BASE_INDEX + 2);
         }
-
-        // public XmlCompositeNodeType UXML_TAG { get; }
+        
         public XmlCompositeNodeType NAMESPACE_ALIAS { get; }
 
         public abstract class UxmlCompositeNodeType : XmlCompositeNodeType
