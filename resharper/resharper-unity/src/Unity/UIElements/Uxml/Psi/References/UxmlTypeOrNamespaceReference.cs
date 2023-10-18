@@ -4,15 +4,14 @@ using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
-using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Impl.Shared.References;
-using JetBrains.ReSharper.Psi.Impl.Shared.Util;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Xml.Impl.Tree;
+using JetBrains.ReSharper.Psi.Xml.Impl.Util;
 using JetBrains.ReSharper.Psi.Xml.Tree;
-using JetBrains.Util;
+using JetBrains.ReSharper.Psi.Xml.Tree.References;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 {
@@ -61,19 +60,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
     }
     
     internal class UxmlTypeOrNamespaceReference :
-        QualifiableReferenceWithinElement<IXmlTagHeader, ITokenNode>,
-        IReferenceQualifier, ICompletableReference, ITypeOrNamespaceReference
+        QualifiableReferenceWithinElement<IXmlTagHeader, IXmlToken>,
+        IReferenceQualifier, ICompletableReference, ITypeOrNamespaceReference, IReferenceWithToken
     {
         private readonly ISymbolCache mySymbolCache;
-        private readonly ExpectedVisualElementTypeFilter myExpectedObjectTypeFilter;
+        private readonly ExpectedVisualElementTypeFilter myTypeFilter;
 
         public UxmlTypeOrNamespaceReference(IXmlTagHeader owner, [CanBeNull] IQualifier qualifier,
-                                                   ITokenNode token, TreeTextRange rangeWithin, ISymbolCache symbolCache,
+            IXmlToken token, TreeTextRange rangeWithin, ISymbolCache symbolCache,
                                                    bool isFinalPart)
             : base(owner, qualifier, token, rangeWithin)
         {
             mySymbolCache = symbolCache;
-            myExpectedObjectTypeFilter = new ExpectedVisualElementTypeFilter(mustBeClass: isFinalPart);
+            myTypeFilter = new ExpectedVisualElementTypeFilter(mustBeClass: isFinalPart);
         }
 
         public override Staticness GetStaticness() => Staticness.Any;
@@ -83,26 +82,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 
         protected override IReference BindToInternal(IDeclaredElement declaredElement, ISubstitution substitution)
         {
-            throw new System.NotImplementedException();
+            if (string.IsNullOrEmpty(declaredElement.ShortName)) return this;
+            if (declaredElement.ShortName == GetName()) return this;
             
             // Fix up name
-            if (declaredElement.ShortName != GetName())
-            {
-                var newReference = ReferenceWithinElementUtil<ITokenNode>.SetText(this, declaredElement.ShortName,
-                    (node, buffer) =>
-                    {
-                        // The new name is substituted into the existing text, which includes quotes
-                        var unquotedStringValue = buffer.GetText(TextRange.FromLength(1, buffer.Length - 2));
-                        return CSharpElementFactory.GetInstance(node)
-                            .CreateStringLiteralExpression(unquotedStringValue)
-                            .Literal;
-                    });
-                return newReference.BindTo(declaredElement);
-            }
-
-            return this;
+            var newReference = ReferenceWithTokenUtil.SetText(this, declaredElement.ShortName);
+            return newReference.BindTo(declaredElement);
         }
-
+        
         public override IReference BindTo(IDeclaredElement element, ISubstitution substitution)
         {
             return base.BindTo(element, substitution);
@@ -148,7 +135,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
         // qualifier, it gets a symbol table based on current scope
         public ISymbolTable GetSymbolTable(SymbolTableMode mode, IReference reference, bool useReferenceName)
         {
-            if(!(Resolve().DeclaredElement is INamespace @namespace))
+            if(Resolve().DeclaredElement is not INamespace @namespace)
                 return EmptySymbolTable.INSTANCE;
 
             var module = myOwner.GetPsiModule();
@@ -167,7 +154,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
             {
                 new DeclaredElementTypeFilter(ResolveErrorType.TYPE_EXPECTED, CLRDeclaredElementType.NAMESPACE,
                     CLRDeclaredElementType.CLASS),
-                myExpectedObjectTypeFilter
+                myTypeFilter
             };
         }
 

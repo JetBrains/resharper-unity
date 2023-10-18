@@ -17,8 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 
         public override bool Accepts(IDeclaredElement declaredElement, ISubstitution substitution)
         {
-            var typeElement = declaredElement as ITypeElement;
-            if (typeElement == null)
+            if (declaredElement is not ITypeElement typeElement)
                 return !myMustBeClass;
 
             return typeElement.DerivesFrom(KnownTypes.VisualElement);
