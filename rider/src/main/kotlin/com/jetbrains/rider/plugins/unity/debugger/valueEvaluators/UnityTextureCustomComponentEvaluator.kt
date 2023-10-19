@@ -52,8 +52,9 @@ class UnityTextureCustomComponentEvaluator : RiderCustomComponentEvaluator("") {
 
     override fun isApplicable(node: XValueNode, properties: ObjectPropertiesProxy): Boolean =
         properties.instanceType.definitionTypeFullName == "UnityEngine.Texture2D"
+        || properties.instanceType.definitionTypeFullName == "UnityEngine.RenderTexture"
 
-    override fun initialize(node: XValueNode,
+        override fun initialize(node: XValueNode,
                             shouldIgnorePropertiesComputation: () -> Boolean,
                             valuePresenterList: List<RiderDebuggerValuePresenter>,
                             properties: ObjectPropertiesProxy,

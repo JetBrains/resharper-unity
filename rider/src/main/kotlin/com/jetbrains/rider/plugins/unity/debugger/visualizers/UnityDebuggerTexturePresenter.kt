@@ -53,6 +53,7 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
 
     override fun isApplicable(node: XValueNode, properties: ObjectPropertiesProxy, place: XValuePlace, session: XDebugSession): Boolean {
         return properties.instanceType.definitionTypeFullName == "UnityEngine.Texture2D"
+               || properties.instanceType.definitionTypeFullName == "UnityEngine.RenderTexture"
     }
 
     override fun getPriority(): Int {
@@ -147,6 +148,8 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
             verticalAlignment = SwingConstants.TOP
             horizontalAlignment = SwingConstants.LEFT
         })
+        parentPanel.revalidate()
+        parentPanel.repaint()
         printlnError(errorMessage)
     }
 
