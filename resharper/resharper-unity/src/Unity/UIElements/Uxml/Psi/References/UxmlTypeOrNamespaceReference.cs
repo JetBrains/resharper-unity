@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Impl.Shared.References;
+using JetBrains.ReSharper.Psi.Impl.Shared.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Xml.Impl.Tree;
@@ -71,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
     
     internal class UxmlTypeOrNamespaceReference :
         QualifiableReferenceWithinElement<IXmlTagHeader, IXmlToken>,
-        IReferenceQualifier, ICompletableReference, ITypeOrNamespaceReference, IReferenceWithToken
+        IReferenceQualifier, ICompletableReference, IReferenceWithToken
     {
         private readonly ISymbolCache mySymbolCache;
         private readonly ExpectedVisualElementTypeFilter myTypeFilter;
@@ -104,10 +105,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
             // Fix up qualification (e.g. move namespace)
             if (declaredElement is ITypeElement newType && !newType.Equals(Resolve().DeclaredElement))
             {
-                if (GetQualifier() is UxmlNsAliasReference uxmlNsAliasReference)
+                var qualifier = GetQualifier();
+                if (qualifier is UxmlNsAliasReference uxmlNsAliasReference)
                 {
                     uxmlNsAliasReference.BindTo(declaredElement);
-                    return this;
+                }
+
+                // Fix up the whole unquoted type name with namespace
+                else if (qualifier is UxmlTypeOrNamespaceReference)
+                {
+                    if (Token is not XmlIdentifier token) return this;
+                    ReferenceWithTokenUtil.SetText(token, token.XmlNameRange, newType.GetClrName().FullName);
+                    ((CompositeElementWithReferences)token.Parent)?.ResetReferences();
                 }
             }
 
