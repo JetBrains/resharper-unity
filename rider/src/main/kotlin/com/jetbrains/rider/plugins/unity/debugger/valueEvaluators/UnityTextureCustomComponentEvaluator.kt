@@ -14,6 +14,7 @@ import com.jetbrains.rider.debugger.evaluators.SELECTED_VIEW_KEY_PREFIX
 import com.jetbrains.rider.debugger.getSimplePresentation
 import com.jetbrains.rider.debugger.visualizers.RiderDebuggerValuePresenter
 import com.jetbrains.rider.model.debuggerWorker.ObjectPropertiesProxy
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import java.awt.CardLayout
 import java.awt.event.MouseEvent
 import javax.swing.JComponent
@@ -69,8 +70,8 @@ class UnityTextureCustomComponentEvaluator : RiderCustomComponentEvaluator("") {
 
     override fun show(event: MouseEvent, project: Project, editor: Editor?) {
         val panel = FrameWrapper(project = project,
-                                 dimensionKey = "texturedebugger",
-                                 title = "Texture Preview",
+                                 dimensionKey = "texture-debugger",
+                                 title = UnityBundle.message("debugging.texture.preview.title"),
                                  isDialog = true,
                                  component = JPanel(CardLayout()))
 
