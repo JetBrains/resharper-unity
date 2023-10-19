@@ -47,7 +47,8 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                            val OriginalWidth: Int,
                            val OriginalHeight: Int,
                            val GraphicsTextureFormat: String,
-                           val TextureFormat: String
+                           val TextureName: String,
+                           val HasAlphaChannel: Boolean
     )
 
     override fun isApplicable(node: XValueNode, properties: ObjectPropertiesProxy, place: XValuePlace, session: XDebugSession): Boolean {
@@ -166,8 +167,10 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
             override fun getBounds() = Rectangle(0, 0, textureInfo.Width, textureInfo.Height)
         }
 
+        val textureFormat = if (textureInfo.HasAlphaChannel) BufferedImage.TYPE_INT_ARGB_PRE else BufferedImage.TYPE_INT_RGB
+
         val bufferedImage = ImageUtil.createImage(dummyGraphicsConfiguration,
-                                                  textureInfo.Width, textureInfo.Height, BufferedImage.TYPE_INT_ARGB_PRE)
+                                                  textureInfo.Width, textureInfo.Height, textureFormat)
 
         for (y in 0 until textureInfo.Height) {
             for (x in 0 until textureInfo.Width) {
@@ -176,7 +179,7 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
             }
         }
 
-        return ImageEditorManagerImpl.createImageEditorUI(bufferedImage, "  ${textureInfo.TextureFormat}  ${textureInfo.GraphicsTextureFormat}")
+        return ImageEditorManagerImpl.createImageEditorUI(bufferedImage, "  ${textureInfo.TextureName}  ${textureInfo.GraphicsTextureFormat}")
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
