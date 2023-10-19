@@ -75,6 +75,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
         private static byte[] GetRawBytes(UnityEngine.Texture texture, Size size)
         {
             var targetTexture = CreateTargetTexture(size);
+            //the name set to detect leaks  
+            targetTexture.name = "[Rider Debugger] temporary Texture2D";
             CopyTexture(texture, targetTexture);
             var rawTextureData = targetTexture.GetRawTextureData();
             Object.DestroyImmediate(targetTexture);
@@ -89,6 +91,9 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
                 0,
                 RenderTextureFormat.ARGB32
             );
+
+            //the name set to detect RT leaks  
+            renderTexture.name = "[Rider Debugger] temporary RenderTexture";
 
             var currentRenderTexture = RenderTexture.active;
 
