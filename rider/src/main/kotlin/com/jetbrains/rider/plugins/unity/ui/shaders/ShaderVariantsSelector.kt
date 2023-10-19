@@ -25,11 +25,9 @@ class ShaderVariantsSelector(model: FrontendBackendModel) : JBPanel<ShaderVarian
 
     private fun onCheckBoxSelectionChanged(index: Int, value: Boolean) {
         variants.getItemAt(index)?.let { item ->
-            shaderVariantSet.selectedVariants.apply {
-                if (value)
-                    add(item.name)
-                else
-                    remove(item.name)
+            shaderVariantSet.apply {
+                val signal = if (value) selectVariant else deselectVariant
+                signal.fire(item.name)
             }
         }
     }

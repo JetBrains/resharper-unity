@@ -1,11 +1,10 @@
 #nullable enable
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
-using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
@@ -34,21 +33,27 @@ public class ShaderVariantsHost
         
         frontendBackendHost?.Do(model =>
         {
+            var defaultSelectedVariantsEntry = myBoundSettingsStore.Schema.GetIndexedEntry(static (ShaderVariantsSettings s) => s.SelectedVariants);
             var defaultSet = new RdShaderVariantSet();
-            var settingsEntry = myBoundSettingsStore.Schema.GetIndexedEntry(static (ShaderVariantsSettings s) => s.SelectedVariants);
-            defaultSet.SelectedVariants.UnionWith(EnumSelectedVariants(settingsEntry));
+            defaultSet.SelectedVariants.UnionWith(EnumSelectedVariants(defaultSelectedVariantsEntry));
             
-            myBoundSettingsStore.AdviseChange(lifetime, settingsEntry, () => SyncSelectedVariants(defaultSet, EnumSelectedVariants(settingsEntry)));
+            myBoundSettingsStore.AdviseAsyncChanged(lifetime, (lt, args) =>
+            {
+                if (!args.ChangedEntries.Contains(defaultSelectedVariantsEntry))
+                    return Task.CompletedTask;
+                return lt.StartMainRead(() => SyncSelectedVariants(defaultSet, EnumSelectedVariants(defaultSelectedVariantsEntry)));
+            });
             
             model.DefaultShaderVariantSet.Value = defaultSet;
             myShaderProgramCache.CacheUpdated.Advise(lifetime, _ => SyncShaderVariants(model));
             
-            model.DefaultShaderVariantSet.Value.SelectedVariants.Change.Advise(lifetime, OnSelectedVariantsChanged);
+            model.DefaultShaderVariantSet.Value.SelectVariant.Advise(lifetime, variant => SetVariantSelected(variant, true));
+            model.DefaultShaderVariantSet.Value.DeselectVariant.Advise(lifetime, variant => SetVariantSelected(variant, false));
         });
     }
 
-    private IEnumerable<string> EnumSelectedVariants(SettingsIndexedEntry settingsEntry) => myBoundSettingsStore.EnumIndexedValues(settingsEntry, null).Values.Cast<string>();
-
+    private IEnumerable<string> EnumSelectedVariants(SettingsIndexedEntry entry) => myBoundSettingsStore.EnumIndexedValues(entry, null).Values.Cast<string>();
+    
     private void SyncSelectedVariants(RdShaderVariantSet shaderVariantSet, IEnumerable<string> newVariants)
     {
         var unprocessed = shaderVariantSet.SelectedVariants.ToHashSet();
@@ -64,18 +69,16 @@ public class ShaderVariantsHost
         }
     }
 
-    private void OnSelectedVariantsChanged(SetEvent<string> evt)
+    private void SetVariantSelected(string variant, bool selected)
     {
-        switch (evt.Kind)
+        switch (selected)
         {
-            case AddRemove.Add:
-                myBoundSettingsStore.SetIndexedValue(static (ShaderVariantsSettings s) => s.SelectedVariants, evt.Value, evt.Value);
+            case true:
+                myBoundSettingsStore.SetIndexedValue(static (ShaderVariantsSettings s) => s.SelectedVariants, variant, variant);
                 break;
-            case AddRemove.Remove:
-                myBoundSettingsStore.RemoveIndexedValue(static (ShaderVariantsSettings s) => s.SelectedVariants, evt.Value);
+            case false:
+                myBoundSettingsStore.RemoveIndexedValue(static (ShaderVariantsSettings s) => s.SelectedVariants, variant);
                 break;
-            default:
-                throw new ArgumentOutOfRangeException();
         }
     }
 

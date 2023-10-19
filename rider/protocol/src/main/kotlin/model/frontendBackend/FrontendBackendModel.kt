@@ -80,7 +80,9 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         field("name", string.interned(shaderInternScope).attrs(KnownAttrs.NlsSafe))
     }
     private val rdShaderVariantSet = classdef {
-        set("selectedVariants", string.interned(shaderInternScope))
+        set("selectedVariants", string.interned(shaderInternScope)).readonly
+        source("selectVariant", string)
+        source("deselectVariant", string)
     }
 
     init {
