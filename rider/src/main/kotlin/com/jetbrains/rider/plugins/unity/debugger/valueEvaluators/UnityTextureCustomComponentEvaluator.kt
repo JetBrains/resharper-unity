@@ -72,8 +72,8 @@ class UnityTextureCustomComponentEvaluator : RiderCustomComponentEvaluator("") {
                                  dimensionKey = "texturedebugger",
                                  title = "Texture Preview",
                                  isDialog = true,
-                                 component = JPanel(CardLayout()),
-                                 coroutineScope = lifetime.coroutineScope)
+                                 component = JPanel(CardLayout()))
+
         lifetime.onTermination { panel.close() }
 
         val callback = EvaluationCallback(panel.component!!, this, project)
