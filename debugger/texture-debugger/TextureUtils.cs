@@ -41,29 +41,29 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
         }
 
         // ReSharper disable once UnusedMember.Global
-        public static string GetPixelsInString(Texture2D texture2D) //Called by debugger evaluator
+        public static string GetPixelsInString(UnityEngine.Texture texture) //Called by debugger evaluator
         {
-            return GetPixelsInString(texture2D, new Size(texture2D.width, texture2D.height));
+            return GetPixelsInString(texture, new Size(texture.width, texture.height));
         }
 
-        public static string GetPixelsInString(Texture2D texture2D, Size size)
+        public static string GetPixelsInString(UnityEngine.Texture texture, Size size)
         {
-            size = GetTextureConvertedSize(texture2D, size);
-            var color32 = GetPixels(texture2D, size);
-            return JsonUtility.ToJson(color32, true);
+            size = GetTextureConvertedSize(texture, size);
+            var texturePixelsInfo = GetPixels(texture, size);
+            return JsonUtility.ToJson(texturePixelsInfo, true);
         }
 
-        private static TexturePixelsInfo GetPixels(UnityEngine.Texture texture2d, Size size)
+        private static TexturePixelsInfo GetPixels(UnityEngine.Texture texture, Size size)
         {
             var targetTexture = CreateTargetTexture(size);
 
             try
             {
-                CopyTexture(texture2d, targetTexture);
+                CopyTexture(texture, targetTexture);
                 var pixels = targetTexture.GetPixels32();
                 var texturePixelsInfo = new TexturePixelsInfo(new Size(targetTexture.width, targetTexture.height)
                     , pixels
-                    , texture2d);
+                    , texture);
                 return texturePixelsInfo;
             }
             finally
@@ -72,20 +72,20 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
             }
         }
 
-        private static byte[] GetRawBytes(UnityEngine.Texture texture2d, Size size)
+        private static byte[] GetRawBytes(UnityEngine.Texture texture, Size size)
         {
             var targetTexture = CreateTargetTexture(size);
-            CopyTexture(texture2d, targetTexture);
+            CopyTexture(texture, targetTexture);
             var rawTextureData = targetTexture.GetRawTextureData();
             Object.DestroyImmediate(targetTexture);
             return rawTextureData;
         }
 
-        private static void CopyTexture(UnityEngine.Texture texture, Texture2D targetTexture)
+        private static void CopyTexture(UnityEngine.Texture texture, Texture2D targetTexture2d)
         {
             var renderTexture = RenderTexture.GetTemporary(
-                targetTexture.width,
-                targetTexture.height,
+                targetTexture2d.width,
+                targetTexture2d.height,
                 0,
                 RenderTextureFormat.ARGB32
             );
@@ -96,8 +96,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
                 Graphics.Blit(texture, renderTexture);
 
                 // Copy the pixels from the RenderTexture to the new Texture
-                targetTexture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
-                targetTexture.Apply();
+                targetTexture2d.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+                targetTexture2d.Apply();
             }
             finally
             {
@@ -112,10 +112,10 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
             return texture2D;
         }
 
-        private static Size GetTextureConvertedSize(UnityEngine.Texture texture2d, Size size)
+        private static Size GetTextureConvertedSize(UnityEngine.Texture texture, Size size)
         {
-            var texture2dWidth = texture2d.width;
-            var texture2dHeight = texture2d.height;
+            var texture2dWidth = texture.width;
+            var texture2dHeight = texture.height;
 
             var divider = 1;
             while (texture2dWidth / divider > size.Width && texture2dHeight / divider > size.Height)
