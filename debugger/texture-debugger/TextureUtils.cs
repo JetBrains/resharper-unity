@@ -90,8 +90,12 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
                 RenderTextureFormat.ARGB32
             );
 
+            var currentRenderTexture = RenderTexture.active;
+
             try
             {
+                RenderTexture.active = renderTexture;
+
                 // Blit the pixels on texture to the RenderTexture
                 Graphics.Blit(texture, renderTexture);
 
@@ -101,6 +105,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
             }
             finally
             {
+                RenderTexture.active = currentRenderTexture;
                 // Release the temporary RenderTexture
                 RenderTexture.ReleaseTemporary(renderTexture);
             }
