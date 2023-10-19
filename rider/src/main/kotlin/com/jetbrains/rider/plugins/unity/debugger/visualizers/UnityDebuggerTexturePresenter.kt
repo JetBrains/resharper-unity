@@ -95,7 +95,7 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                 showErrorMessage(
                     jbLoadingPanel,
                     parentPanel,
-                    UnityBundle.message("debugging.cannot.load.texturedll.label", it)
+                    UnityBundle.message("debugging.cannot.load.texture.dll.label", it)
                 )
             })
 
@@ -119,10 +119,12 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
     private fun showTexture(it: ValuePropertiesModelBase,
                             jbLoadingPanel: JBLoadingPanel,
                             parentPanel: JBPanel<JBPanel<*>>) {
-        val textureInfo = parseTextureEvaluationResult(it)
+
+        val json = it.value[0].value
+        val textureInfo = Gson().fromJson(json, TextureInfo::class.java)
 
         if (textureInfo == null)
-            showErrorMessage(jbLoadingPanel, parentPanel, UnityBundle.message("debugging.cannot.parse.texture.info"))
+            showErrorMessage(jbLoadingPanel, parentPanel, UnityBundle.message("debugging.cannot.parse.texture.info", json))
         else {
             val texturePanel = createPanelWithImage(textureInfo)
             jbLoadingPanel.stopLoading()
@@ -134,11 +136,6 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
         }
         parentPanel.revalidate()
         parentPanel.repaint()
-    }
-
-    private fun parseTextureEvaluationResult(it: ValuePropertiesModelBase): TextureInfo? {
-        val json = it.value[0].value
-        return Gson().fromJson(json, TextureInfo::class.java)
     }
 
     private fun showErrorMessage(jbLoadingPanel: JBLoadingPanel,
