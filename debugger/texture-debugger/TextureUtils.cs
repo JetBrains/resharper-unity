@@ -128,7 +128,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
             var texture2dHeight = texture.height;
 
             var divider = 1;
-            while (texture2dWidth / divider > size.Width && texture2dHeight / divider > size.Height)
+            while (texture2dWidth / divider > size.Width || texture2dHeight / divider > size.Height)
                 divider *= 2;
 
             var targetTextureWidth = texture2dWidth / divider;
