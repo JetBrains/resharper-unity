@@ -1,11 +1,14 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using Graphics = UnityEngine.Graphics;
 using Object = UnityEngine.Object;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
 {
+    [SuppressMessage("ReSharper", "NotAccessedField.Global")] //used by frontend
     public class TexturePixelsInfo
     {
         public int Width;
@@ -14,18 +17,19 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
         public int OriginalWidth;
         public int OriginalHeight;
         public string GraphicsTextureFormat;
-        public string TextureFormat;
+        public string TextureName;
+        public bool HasAlphaChannel;
 
-
-        public TexturePixelsInfo(Size size, Color32[] pixels, Texture2D texture2D)
+        public TexturePixelsInfo(Size size, Color32[] pixels, UnityEngine.Texture texture)
         {
             Pixels = pixels.Select(c => c.ToHex()).ToArray();
             Width = size.Width;
             Height = size.Height;
-            TextureFormat = texture2D.format.ToString();
-            GraphicsTextureFormat = texture2D.graphicsFormat.ToString();
-            OriginalWidth = texture2D.width;
-            OriginalHeight = texture2D.height;
+            TextureName = texture.name;
+            GraphicsTextureFormat = texture.graphicsFormat.ToString();
+            OriginalWidth = texture.width;
+            OriginalHeight = texture.height;
+            HasAlphaChannel = GraphicsFormatUtility.HasAlphaChannel(texture.graphicsFormat);
         }
     }
 
@@ -36,7 +40,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
             return (c.a << 24) | (c.r << 16) | (c.g << 8) | c.b;
         }
 
-        public static string GetPixelsInString(Texture2D texture2D)
+        // ReSharper disable once UnusedMember.Global
+        public static string GetPixelsInString(Texture2D texture2D) //Called by debugger evaluator
         {
             return GetPixelsInString(texture2D, new Size(texture2D.width, texture2D.height));
         }
@@ -48,7 +53,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
             return JsonUtility.ToJson(color32, true);
         }
 
-        private static TexturePixelsInfo GetPixels(Texture2D texture2d, Size size)
+        private static TexturePixelsInfo GetPixels(UnityEngine.Texture texture2d, Size size)
         {
             var targetTexture = CreateTargetTexture(size);
 
@@ -67,7 +72,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
             }
         }
 
-        private static byte[] GetRawBytes(Texture2D texture2d, Size size)
+        private static byte[] GetRawBytes(UnityEngine.Texture texture2d, Size size)
         {
             var targetTexture = CreateTargetTexture(size);
             CopyTexture(texture2d, targetTexture);
@@ -76,7 +81,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
             return rawTextureData;
         }
 
-        private static void CopyTexture(UnityEngine.Texture texture2d, Texture2D targetTexture)
+        private static void CopyTexture(UnityEngine.Texture texture, Texture2D targetTexture)
         {
             var renderTexture = RenderTexture.GetTemporary(
                 targetTexture.width,
@@ -88,34 +93,17 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
             try
             {
                 // Blit the pixels on texture to the RenderTexture
-                Graphics.Blit(texture2d, renderTexture);
+                Graphics.Blit(texture, renderTexture);
 
-                // Backup the currently set RenderTexture
-                // var previous = RenderTexture.active;
-
-                try
-                {
-                    // Set the current RenderTexture to the temporary one we created
-                    // RenderTexture.active = renderTexture;
-
-                    // Create a new readable Texture2D to copy the pixels to it
-
-                    // Copy the pixels from the RenderTexture to the new Texture
-                    targetTexture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
-                    targetTexture.Apply();
-                }
-                finally
-                {
-                    // Reset the active RenderTexture
-                    // RenderTexture.active = previous;                    
-                }
+                // Copy the pixels from the RenderTexture to the new Texture
+                targetTexture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+                targetTexture.Apply();
             }
             finally
             {
                 // Release the temporary RenderTexture
-                RenderTexture.ReleaseTemporary(renderTexture);               
+                RenderTexture.ReleaseTemporary(renderTexture);
             }
-
         }
 
         private static Texture2D CreateTargetTexture(Size size)
