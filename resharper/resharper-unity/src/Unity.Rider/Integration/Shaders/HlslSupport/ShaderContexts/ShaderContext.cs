@@ -6,7 +6,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Rider.Model;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderContexts
 {
     public class ShaderContext : IDisposable
     {

@@ -5,9 +5,9 @@ using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
@@ -16,7 +16,7 @@ using JetBrains.Serialization;
 using JetBrains.Util;
 using JetBrains.Util.PersistentMap;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderContexts
 {
     [SolutionComponent]
     public class ShaderContextDataPresentationCache : SimplePsiSourceFileCacheWithLocalCache<List<ShaderContextDataPresentationCache.ShaderProgramInfo>, ShaderContextDataPresentationCache.ShaderFileInfo>, IBuildMergeParticipant<IPsiSourceFile>

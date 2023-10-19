@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity
 
 import com.intellij.ide.impl.ProjectUtil
+import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
@@ -8,7 +9,6 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.BitUtil
 import com.jetbrains.rd.framework.impl.RdTask
-import com.jetbrains.rd.platform.client.ProtocolProjectSession
 import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -40,7 +40,7 @@ class FrontendBackendHost(project: Project) : LifetimedService() {
             }
         }
 
-        override fun extensionCreated(lifetime: Lifetime, session: ProtocolProjectSession, model: FrontendBackendModel) {
+        override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
             model.activateRider.advise(lifetime) {
                 activateRider(session.project)
             }

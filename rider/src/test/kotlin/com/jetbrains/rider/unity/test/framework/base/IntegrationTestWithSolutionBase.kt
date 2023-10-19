@@ -1,6 +1,7 @@
 package com.jetbrains.rider.unity.test.framework.base
 
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
+import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
@@ -29,7 +30,9 @@ abstract class IntegrationTestWithSolutionBase : BaseTestWithSolution(), Integra
 
     @AfterMethod(alwaysRun = true)
     fun terminateLifetimeDefinition() {
-        lifetimeDefinition.terminate()
+        if(::lifetimeDefinition.isInitialized && lifetimeDefinition.isAlive) {
+            lifetimeDefinition.terminate()
+        }
     }
 
     @BeforeMethod

@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.Changes;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
@@ -21,17 +20,15 @@ using JetBrains.ReSharper.Psi.Cpp;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Resources.Shell;
-using JetBrains.Rider.Backend.Env;
 using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.TextControl;
 using JetBrains.Threading;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderContexts
 {
     [SolutionComponent]
-    [ZoneMarker(typeof(IRiderFeatureZone))]
     public class ShaderContextHost
     {
         private readonly AutoShaderContextData myAutoContext = new();
@@ -67,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             frontendBackendHost?.Do(model =>
             {
                 myShaderContextDataPresentationCache.CacheUpdated.Advise(lifetime, _ => SyncTrackedRoots());
-                textControlHost.ViewHostTextControls(lifetime, (textControlLifetime, textControlId, textControl) => OnTextControlAdded(textControlLifetime, model, textControlId, textControl));
+                textControlHost.ViewHostTextControls(lifetime, OnTextControlAdded);
 
                 model.CreateSelectShaderContextInteraction.SetAsync((lt, id) =>
                 {
@@ -83,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
             });
         }
 
-        private void OnTextControlAdded(Lifetime textControlLifetime, FrontendBackendModel model, TextControlId textControlId, ITextControl textControl)
+        private void OnTextControlAdded(Lifetime textControlLifetime, TextControlId textControlId, ITextControl textControl)
         {
             // State modifications only allowed from main thread  
             mySolution.Locks.AssertMainThread();
@@ -182,7 +179,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
         private async Task QueryCurrentContextDataAsync(ShaderContext context)
         {
             var lifetime = context.ShaderDataLifetimes.Next();
-            var (rootFile, rootRangeMarker, contextData) = await lifetime.StartBackgroundRead(() =>
+            var (rootFile, rootRangeMarker, contextData) = await lifetime.StartBackgroundRead<(IPsiSourceFile?, IRangeMarker?, ShaderContextDataBase)>(() =>
             {
                 var targetLocation = new CppFileLocation(context.SourceFile);
                 if (!TryGetCurrentRoot(targetLocation, out var rootLocation))
@@ -190,7 +187,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
                 var rootFile = rootLocation.GetRandomSourceFile(mySolution);
                 var rootRange = rootLocation.RootRange;
                 var rootRangeMarker = myDocumentManager.CreateRangeMarker(new DocumentRange(rootFile.Document, rootRange));
-                return (rootFile, rangeMarker: rootRangeMarker, (ShaderContextDataBase?)GetContextDataFor(rootFile, rootRange) ?? myAutoContext);
+                return (rootFile, rootRangeMarker, (ShaderContextDataBase?)GetContextDataFor(rootFile, rootRange) ?? myAutoContext);
             });
 
             await lifetime.StartMainRead(() => UpdateContextData(context, rootFile, rootRangeMarker, contextData));
