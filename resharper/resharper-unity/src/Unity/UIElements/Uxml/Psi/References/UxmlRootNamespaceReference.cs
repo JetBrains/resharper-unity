@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 
     public ISymbolTable GetSymbolTable(SymbolTableMode mode)
     {
-       return NamespaceReferenceUtil.GetSymbolTable(this);
+       return UxmlNamespaceReferenceUtil.GetSymbolTable(this);
     }
 
     public QualifierKind GetKind() { return QualifierKind.NAMESPACE; }
@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 
     protected override IReference BindToInternal(IDeclaredElement element, ISubstitution substitution)
     {
-      return NamespaceReferenceUtil.BindTo(this, (INamespace) element);
+      return UxmlNamespaceReferenceUtil.BindTo(this, (INamespace) element);
     }
 
     public IXamlNamespaceReference BindModuleTo(IPsiModule module)
@@ -93,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 
     public ISymbolTable GetSymbolTable(SymbolTableMode mode)
     {
-      return NamespaceReferenceUtil.GetSymbolTable(this);
+      return UxmlNamespaceReferenceUtil.GetSymbolTable(this);
     }
 
     public QualifierKind GetKind() { return QualifierKind.NAMESPACE; }
@@ -104,7 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 
     protected override IReference BindToInternal(IDeclaredElement declaredElement, ISubstitution substitution)
     {
-      return NamespaceReferenceUtil.BindTo(this, (INamespace) declaredElement);
+      return UxmlNamespaceReferenceUtil.BindTo(this, (INamespace) declaredElement);
     }
 
     public IXamlNamespaceReference BindModuleTo(IPsiModule module)

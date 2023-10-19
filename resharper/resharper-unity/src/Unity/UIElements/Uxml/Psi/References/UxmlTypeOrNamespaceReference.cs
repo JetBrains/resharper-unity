@@ -15,9 +15,9 @@ using JetBrains.ReSharper.Psi.Xml.Tree.References;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 {
-    internal class UxmlNsAliasReference : ReferenceWithinElementBase<IXmlTagHeader, ITokenNode>, ICompletableReference, IQualifier
+    internal class UxmlNsAliasReference : ReferenceWithinElementBase<IXmlTagHeader, IXmlToken>, ICompletableReference, IQualifier, IReferenceWithToken
     {
-        public UxmlNsAliasReference(IXmlTagHeader owner, ITokenNode token, TreeTextRange rangeWithin) : base(owner, token, rangeWithin)
+        public UxmlNsAliasReference(IXmlTagHeader owner, IXmlToken token, TreeTextRange rangeWithin) : base(owner, token, rangeWithin)
         {
         }
 
@@ -41,9 +41,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
             return symbolTable;
         }
 
-        protected override IReference BindToInternal(IDeclaredElement element, ISubstitution substitution)
+        protected override IReference BindToInternal(IDeclaredElement declaredElement, ISubstitution substitution)
         {
-            throw new System.NotImplementedException();
+            if (declaredElement is ITypeElement newType)
+            {
+                var target = Resolve().DeclaredElement;
+                if (target is UxmlNamespaceAliasAttribute { Value: XmlValueToken xmlValueToken } attribute)
+                {
+                    ReferenceWithTokenUtil.SetText(xmlValueToken, xmlValueToken.UnquotedValueRange, newType.GetContainingNamespace().QualifiedName);
+                    attribute.ResetReferences();
+                }
+            }
+
+            return this;
         }
 
         public ISymbolTable GetSymbolTable(SymbolTableMode mode)
@@ -51,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
             if (Resolve().DeclaredElement is not UxmlNamespaceAliasAttribute namespaceAliasAttribute)
                 return EmptySymbolTable.INSTANCE;
             var references = namespaceAliasAttribute.GetReferences<IUxmlNamespaceReference>();
-            return NamespaceReferenceUtil.GetSymbolTable(references.Last());
+            return UxmlNamespaceReferenceUtil.GetSymbolTable(references.Last());
         }
 
         public QualifierKind GetKind() => QualifierKind.NAMESPACE;
@@ -83,16 +93,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
         protected override IReference BindToInternal(IDeclaredElement declaredElement, ISubstitution substitution)
         {
             if (string.IsNullOrEmpty(declaredElement.ShortName)) return this;
-            if (declaredElement.ShortName == GetName()) return this;
             
             // Fix up name
-            var newReference = ReferenceWithTokenUtil.SetText(this, declaredElement.ShortName);
-            return newReference.BindTo(declaredElement);
-        }
-        
-        public override IReference BindTo(IDeclaredElement element, ISubstitution substitution)
-        {
-            return base.BindTo(element, substitution);
+            if (declaredElement.ShortName != GetName())
+            {
+                var newReference = ReferenceWithTokenUtil.SetText(this, declaredElement.ShortName);
+                return newReference.BindTo(declaredElement);
+            }
+
+            // Fix up qualification (e.g. move namespace)
+            if (declaredElement is ITypeElement newType && !newType.Equals(Resolve().DeclaredElement))
+            {
+                if (GetQualifier() is UxmlNsAliasReference uxmlNsAliasReference)
+                {
+                    uxmlNsAliasReference.BindTo(declaredElement);
+                    return this;
+                }
+            }
+
+            return this;
         }
 
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)

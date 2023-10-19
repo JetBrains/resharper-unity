@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Psi.Xml.Impl.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Resolve
 {
-  internal class NamespaceReferenceUtil
+  internal class UxmlNamespaceReferenceUtil
   {
     [NotNull, Pure]
     public static ISymbolTable GetSymbolTable([NotNull] IUxmlNamespaceReference reference)
