@@ -14,7 +14,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Searching
     {
         private readonly ReferenceSearcherParameters myReferenceSearcherParameters;
         private readonly OneToSetMap<IDeclaredElement, string> myElementNames = new();
-        private readonly OneToSetMap<IDeclaredElement, string> myElementWordsInText = new();
         
         public UxmlDomainSpecificSearcher(UxmlScriptSearcherFactory searcher, IEnumerable<IDeclaredElement> elements, ReferenceSearcherParameters referenceSearcherParameters)
         {
@@ -22,11 +21,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Searching
             foreach (var element in elements)
             {
                 myElementNames.Add(element, element.ShortName);
-
-                if (string.IsNullOrEmpty(element.ShortName))
-                    myElementWordsInText.AddRange(element, EmptyList<string>.InstanceList);
-
-                myElementWordsInText.AddRange(element, searcher.GetAllPossibleWordsInFile(element));
             }
         }
         
@@ -39,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Searching
         {
             foreach (var pair in myElementNames)
             {
-                var findExecution = new ReferenceSearchSourceFileProcessor<TResult>(element, myReferenceSearcherParameters, consumer, new DeclaredElementsSet(pair.Key), myElementWordsInText[pair.Key], pair.Value).Run();
+                var findExecution = new ReferenceSearchSourceFileProcessor<TResult>(element, myReferenceSearcherParameters, consumer, new DeclaredElementsSet(pair.Key), null, pair.Value).Run();
                 if (findExecution == FindExecution.Stop)
                     return true;
             }

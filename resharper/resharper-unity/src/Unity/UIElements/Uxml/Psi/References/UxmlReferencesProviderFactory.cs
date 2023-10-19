@@ -1,7 +1,5 @@
 #nullable enable
 
-using System;
-using System.Linq;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
@@ -83,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 
         public bool HasReference(ITreeNode element, IReferenceNameContainer names)
         {
-            return element is XmlTagHeaderNode xmlIdentifier && names.AsEnumerable().Any(name => xmlIdentifier.Name.XmlName.EndsWith(name, StringComparison.Ordinal));
+            return element is XmlTagHeaderNode xmlIdentifier && names.HasAnyNameIn(xmlIdentifier.Name.XmlName);
         }
     }
 }
