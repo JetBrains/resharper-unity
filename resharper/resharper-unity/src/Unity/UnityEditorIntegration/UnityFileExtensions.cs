@@ -1,6 +1,6 @@
 using System;
 using JetBrains.Annotations;
-// using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         public const string AnimFileExtensionWithDot = ".anim";
         
         public const string InputActionsExtensionWithDot = InputActions.ProjectModel.InputActionsProjectFileType.INPUTACTIONS_EXTENSION;
-        public const string UxmlExtensionWithDot = ".uxml"; //UxmlProjectFileType.UXML_EXTENSION;
+        public const string UxmlExtensionWithDot = UxmlProjectFileType.UXML_EXTENSION;
         
         public const string ResourcesFolderName = "Resources";
         public const string EditorFolderName = "Editor";
