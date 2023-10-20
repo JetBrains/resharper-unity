@@ -124,7 +124,6 @@
     <PackageReference Include="System.Collections.Immutable" />
     <PackageReference Include="System.Memory" />
     <Reference Include="System.Xaml" />
-    <ProjectReference Include="..\..\..\..\..\..\Psi.Features\Web\Core\Psi\Psi.Web.csproj" />
     <ProjectReference Include="..\..\..\resharper-json\src\Json\Json.csproj" />
     <ProjectReference Include="..\..\..\resharper-yaml\src\Yaml\Yaml.csproj" />
     <Reference Include="System" />
