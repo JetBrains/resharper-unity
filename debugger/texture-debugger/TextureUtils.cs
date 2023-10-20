@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using Graphics = UnityEngine.Graphics;
@@ -22,7 +21,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
 
         public TexturePixelsInfo(Size size, Color32[] pixels, UnityEngine.Texture texture)
         {
-            Pixels = pixels.Select(c => c.ToHex()).ToArray();
+            Pixels = GetPixelsInts(pixels);
             Width = size.Width;
             Height = size.Height;
             TextureName = texture.name;
@@ -30,6 +29,17 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
             OriginalWidth = texture.width;
             OriginalHeight = texture.height;
             HasAlphaChannel = GraphicsFormatUtility.HasAlphaChannel(texture.graphicsFormat);
+        }
+
+        private static int[] GetPixelsInts(Color32[] pixels)
+        {
+            var result = new int[pixels.Length];
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                result[i] = pixels[i].ToHex();
+            }
+
+            return result;
         }
     }
 
@@ -74,13 +84,21 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
 
         private static byte[] GetRawBytes(UnityEngine.Texture texture, Size size)
         {
-            var targetTexture = CreateTargetTexture(size);
-            //the name is set to detect Texture2D leaks  
-            targetTexture.name = "[Rider Debugger] temporary Texture2D";
-            CopyTexture(texture, targetTexture);
-            var rawTextureData = targetTexture.GetRawTextureData();
-            Object.DestroyImmediate(targetTexture);
-            return rawTextureData;
+            Texture2D targetTexture = null;
+            try
+            {
+                targetTexture = CreateTargetTexture(size);
+                //the name is set to detect Texture2D leaks  
+                targetTexture.name = "[Rider Debugger] temporary Texture2D";
+                CopyTexture(texture, targetTexture);
+                var rawTextureData = targetTexture.GetRawTextureData();
+                
+                return rawTextureData;
+            }
+            finally
+            {
+                Object.DestroyImmediate(targetTexture);
+            }
         }
 
         private static void CopyTexture(UnityEngine.Texture texture, Texture2D targetTexture2d)
