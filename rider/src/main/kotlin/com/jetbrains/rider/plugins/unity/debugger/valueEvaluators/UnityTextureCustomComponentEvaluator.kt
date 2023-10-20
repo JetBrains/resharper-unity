@@ -7,6 +7,7 @@ import com.intellij.xdebugger.frame.XValueNode
 import com.jetbrains.rider.debugger.evaluators.RiderCustomComponentEvaluator
 import com.jetbrains.rider.debugger.getSimplePresentation
 import com.jetbrains.rider.model.debuggerWorker.ObjectPropertiesProxy
+import com.jetbrains.rider.model.debuggerWorker.ValueFlags
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import java.awt.CardLayout
 import java.awt.event.MouseEvent
@@ -20,8 +21,9 @@ class UnityTextureCustomComponentEvaluator : RiderCustomComponentEvaluator("Unit
     }
 
     override fun isApplicable(node: XValueNode, properties: ObjectPropertiesProxy): Boolean =
-        properties.instanceType.definitionTypeFullName == "UnityEngine.Texture2D"
-        || properties.instanceType.definitionTypeFullName == "UnityEngine.RenderTexture"
+        !properties.valueFlags.contains(ValueFlags.IsNull)
+        && (properties.instanceType.definitionTypeFullName == "UnityEngine.Texture2D"
+            || properties.instanceType.definitionTypeFullName == "UnityEngine.RenderTexture")
 
     override fun show(event: MouseEvent, project: Project, editor: Editor?) {
         val panel = FrameWrapper(project = project,

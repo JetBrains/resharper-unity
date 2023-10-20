@@ -28,6 +28,7 @@ import com.jetbrains.rider.debugger.visualizers.RiderDebuggerValuePresenter
 import com.jetbrains.rider.model.debuggerWorker.ComputeObjectPropertiesArg
 import com.jetbrains.rider.model.debuggerWorker.FailedObjectProperties
 import com.jetbrains.rider.model.debuggerWorker.ObjectPropertiesProxy
+import com.jetbrains.rider.model.debuggerWorker.ValueFlags
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.intellij.images.editor.impl.ImageEditorManagerImpl
@@ -51,10 +52,11 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                            val HasAlphaChannel: Boolean
     )
 
-    override fun isApplicable(node: XValueNode, properties: ObjectPropertiesProxy, place: XValuePlace, session: XDebugSession): Boolean {
-        return properties.instanceType.definitionTypeFullName == "UnityEngine.Texture2D"
-               || properties.instanceType.definitionTypeFullName == "UnityEngine.RenderTexture"
-    }
+    override fun isApplicable(node: XValueNode, properties: ObjectPropertiesProxy, place: XValuePlace, session: XDebugSession): Boolean =
+        !properties.valueFlags.contains(ValueFlags.IsNull)
+        && (properties.instanceType.definitionTypeFullName == "UnityEngine.Texture2D"
+            || properties.instanceType.definitionTypeFullName == "UnityEngine.RenderTexture")
+
 
     override fun getPriority(): Int {
         return 0
