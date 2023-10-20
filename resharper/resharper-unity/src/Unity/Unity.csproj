@@ -11,7 +11,7 @@
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
     <NoWarn Condition="$(InternalBuild)">8002</NoWarn>
-    <LangVersion>10</LangVersion>
+    <LangVersion>11</LangVersion>
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
   <!-- ********** -->
