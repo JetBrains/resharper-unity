@@ -27,8 +27,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
     public class ShaderProgramCache : SimplePsiSourceFileCacheWithLocalCache<ShaderProgramCache.Item, ImmutableArray<CppFileLocation>>, IBuildMergeParticipant<IPsiSourceFile>
     {
         private const string SHADER_VARIANT_SKIPPER = "_";
-        
-        private static readonly HashSet<StringSlice> ourShaderVariantDirectives = new() { "shader_feature", "shader_feature_local", "multi_compile", "multi_compile_local", "dynamic_branch", "dynamic_branch_local" };
+
+        private static readonly HashSet<StringSlice> ourShaderFeatureDirectiveAllowingDisableAllKeywords = new() { "shader_feature", "shader_feature_local" };
+        private static readonly HashSet<StringSlice> ourShaderFeatureDirectives = new() { "shader_feature", "shader_feature_local", "multi_compile", "multi_compile_local", "dynamic_branch", "dynamic_branch_local" };
         
         private readonly Dictionary<CppFileLocation, ShaderProgramInfo> myProgramInfos = new();
         private readonly OneToSetMap<string, CppFileLocation> myShaderVariants = new(); 
@@ -78,19 +79,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
         private void AddProgramInfo(CppFileLocation location, ShaderProgramInfo programInfo)
         {
             myProgramInfos.Add(location, programInfo);
-            if (programInfo.ShaderVariants is { } shaderVariants)
-            {
-                foreach (var shaderVariant in shaderVariants)
-                    myShaderVariants.Add(shaderVariant, location);
-            }
+            var shaderFeatures = programInfo.ShaderFeatures;
+            if (shaderFeatures.IsEmpty) return;
+            
+            foreach (var shaderFeature in shaderFeatures)
+            foreach (var entry in shaderFeature.Entries)
+                myShaderVariants.Add(entry.Keyword, location);
         }
 
         private void RemoveProgramInfo(CppFileLocation location)
         {
-            if (myProgramInfos.Remove(location, out var programInfo) && programInfo.ShaderVariants is {} shaderVariants)
+            if (myProgramInfos.Remove(location, out var programInfo) && programInfo.ShaderFeatures is {IsEmpty: false} shaderFeatures)
             {
-                foreach (var shaderVariant in shaderVariants) 
-                    myShaderVariants.Remove(shaderVariant, location);
+                foreach (var shaderFeature in shaderFeatures)
+                foreach (var entry in shaderFeature.Entries)
+                    myShaderVariants.Remove(entry.Keyword, location);
             }
         }
 
@@ -120,9 +123,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             var lexer = CppLexer.Create(buffer);
             lexer.Start();
 
-            var shaderVariants = new LocalHashSet<string>();
             var definedMacroses = new Dictionary<string, string>();
             var shaderTarget = HlslConstants.SHADER_TARGET_25;
+            var shaderFeatures = ImmutableArray.CreateBuilder<ShaderFeature>();
             while (lexer.TokenType != null)
             {
                 var tokenType = lexer.TokenType;
@@ -149,16 +152,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                             definedMacroses[firstValue.ToString()] = "1";
                         }
 
-                        if (ourShaderVariantDirectives.Contains(pragmaType))
-                        {
-                            if (!firstValue.Equals(SHADER_VARIANT_SKIPPER))
-                                shaderVariants.Add(firstValue.ToString());
-                            while (slicer.TryGetNextSlice(out var slice))
-                            {
-                                if (!slice.Equals(SHADER_VARIANT_SKIPPER))
-                                    shaderVariants.Add(slice.ToString());
-                            }
-                        }
+                        if (TryReadShaderFeature(buffer.Range.StartOffset, slicer, pragmaType, firstValue, out var shaderFeature))
+                            shaderFeatures.Add(shaderFeature);
                     }
 
                     if (pragmaType.Equals("target"))
@@ -189,7 +184,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             }
 
             definedMacroses["SHADER_TARGET"] = shaderTarget.ToString();
-            return new ShaderProgramInfo(definedMacroses, shaderTarget, isSurface, !shaderVariants.IsEmpty() ? shaderVariants.ToArray() : null);
+            return new ShaderProgramInfo(definedMacroses, shaderTarget, isSurface, shaderFeatures.MoveOrCopyToImmutableArray());
+        }
+
+        private static bool TryReadShaderFeature(int baseOffset, StringSplitter<CharPredicates.IsWhitespacePredicate> slicer, StringSlice pragmaType, StringSlice keyword, out ShaderFeature shaderFeature)
+        {
+            if (ourShaderFeatureDirectives.Contains(pragmaType))
+            {
+                var allowDisableAllKeywords = false;
+                var entries = ImmutableArray.CreateBuilder<ShaderFeature.Entry>();
+                do
+                {
+                    if (!keyword.Equals(SHADER_VARIANT_SKIPPER))
+                    {
+                        var endOffset = baseOffset + slicer.Position;
+                        entries.Add(new ShaderFeature.Entry(keyword.ToString(), new TextRange(endOffset - keyword.Length, endOffset)));
+                    }
+                    else
+                        allowDisableAllKeywords = true;
+                } while (slicer.TryGetNextSlice(out keyword));
+
+                if (entries.Count > 0)
+                {
+                    if (!allowDisableAllKeywords)
+                        allowDisableAllKeywords = entries.Count == 1 && ourShaderFeatureDirectiveAllowingDisableAllKeywords.Contains(pragmaType);
+                    shaderFeature = new ShaderFeature(entries.MoveOrCopyToImmutableArray(), allowDisableAllKeywords);
+                    return true;
+                }
+            }
+
+            shaderFeature = default;
+            return false;
         }
 
         #region Cache item

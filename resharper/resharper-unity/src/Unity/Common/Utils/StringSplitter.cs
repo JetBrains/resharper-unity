@@ -1,5 +1,4 @@
 #nullable enable
-using System.Collections.Generic;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Common.Utils
@@ -14,6 +13,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Common.Utils
         private readonly StringSlice myInput;
         private TSeparatorPredicate mySeparatorPredicate;
         private int myPosition;
+
+        public int Position => myPosition;
         
         public StringSplitter(StringSlice input, TSeparatorPredicate separatorPredicate)
         {

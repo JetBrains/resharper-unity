@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using JetBrains.Serialization;
 using JetBrains.Util.PersistentMap;
 
@@ -12,14 +13,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
         public Dictionary<string, string> DefinedMacros { get; }
         public int ShaderTarget { get; }
         public bool IsSurface { get; }
-        public string[]? ShaderVariants { get; }
+        public ImmutableArray<ShaderFeature> ShaderFeatures { get; }
 
-        public ShaderProgramInfo(Dictionary<string, string> definedMacros, int shaderTarget, bool isSurface, string[]? shaderVariants)
+        public ShaderProgramInfo(Dictionary<string, string> definedMacros, int shaderTarget, bool isSurface, ImmutableArray<ShaderFeature> shaderFeatures)
         {
             DefinedMacros = definedMacros;
             ShaderTarget = shaderTarget;
             IsSurface = isSurface;
-            ShaderVariants = shaderVariants;
+            ShaderFeatures = shaderFeatures;
         }
 
         private static ShaderProgramInfo Read(UnsafeReader reader)
@@ -27,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             var definedMacros = reader.ReadDictionary<string, string, Dictionary<string, string>>(UnsafeReader.StringDelegate!, UnsafeReader.StringDelegate!, count => new Dictionary<string, string>(count))!;
             var shaderTarget = reader.ReadInt32();
             var isSurface = reader.ReadBoolean();
-            var shaderVariants = (string[]?)reader.ReadArray(UnsafeReader.StringDelegate)!;
+            var shaderVariants = reader.ReadImmutableArray(ShaderFeature.ReadDelegate);
             return new ShaderProgramInfo(definedMacros, shaderTarget, isSurface, shaderVariants);
         }
 
@@ -36,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             writer.Write(UnsafeWriter.StringDelegate, UnsafeWriter.StringDelegate, item.DefinedMacros);
             writer.WriteInt32(item.ShaderTarget);
             writer.WriteBoolean(item.IsSurface);
-            writer.WriteCollection(UnsafeWriter.StringDelegate, item.ShaderVariants);
+            writer.Write(ShaderFeature.WriteDelegate, item.ShaderFeatures);
         }
     }
 }
