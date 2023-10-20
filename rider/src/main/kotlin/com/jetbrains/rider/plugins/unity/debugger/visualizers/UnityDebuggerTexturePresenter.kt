@@ -203,7 +203,7 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                                 ellipsizedLength = null,
                                 nameAliases = emptyList(),
                                 extraInfo = null,
-                                allowDisabledMethodsInvoke = null)
+                                allowDisabledMethodsInvoke = true)
                         ).result.adviseOnce(lifetime) {
                             when (it) {
                                 is RdTaskResult.Success -> {
