@@ -15,6 +15,7 @@ import com.intellij.xdebugger.evaluation.XDebuggerEvaluator
 import com.intellij.xdebugger.frame.XValue
 import com.intellij.xdebugger.frame.XValueNode
 import com.intellij.xdebugger.frame.XValuePlace
+import com.intellij.xdebugger.impl.evaluate.quick.XValueHint
 import com.intellij.xdebugger.impl.ui.tree.nodes.XValueNodeImpl
 import com.jetbrains.rd.framework.RdTaskResult
 import com.jetbrains.rd.ide.model.ValuePropertiesModelBase
@@ -57,7 +58,6 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
 
     override fun isApplicable(node: XValueNode, properties: ObjectPropertiesProxy, place: XValuePlace, session: XDebugSession): Boolean =
         !properties.valueFlags.contains(ValueFlags.IsNull)
-        && node is XValueNodeImpl
         && (properties.instanceType.definitionTypeFullName == "UnityEngine.Texture2D"
             || properties.instanceType.definitionTypeFullName == "UnityEngine.RenderTexture")
 
@@ -97,16 +97,16 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
         val evaluationRequest = "System.Reflection.Assembly.LoadFile(@\"${bundledFile.absolutePath}\")"
         val project = session.project
         evaluate(project, evaluationRequest, lifetime,
-            successfullyEvaluated = { evaluateTextureAndShow(node, project, jbLoadingPanel, parentPanel, lifetime) },
-            evaluationFailed = {
-                showErrorMessage(
-                    jbLoadingPanel,
-                    parentPanel,
-                    UnityBundle.message("debugging.cannot.load.texture.dll.label", it)
-                )
-            })
+                 successfullyEvaluated = { evaluateTextureAndShow(node, project, jbLoadingPanel, parentPanel, lifetime) },
+                 evaluationFailed = {
+                     showErrorMessage(
+                         jbLoadingPanel,
+                         parentPanel,
+                         UnityBundle.message("debugging.cannot.load.texture.dll.label", it)
+                     )
+                 })
 
-        val name = (node as XValueNodeImpl).rawValue!!
+        val name = UnityBundle.message("debugging.texture.preview.title")
         return listOf(RiderDebuggerPresenterTab(name, name, parentPanel, null))
     }
 
@@ -115,24 +115,38 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                                        jbLoadingPanel: JBLoadingPanel,
                                        parentPanel: JBPanel<JBPanel<*>>,
                                        lifetime: Lifetime) {
-        when(node){
+        when (node) {
             is XValueNodeImpl -> node.calculateEvaluationExpression()
                 .onSuccess { expr ->
-                    val nodeName = expr.expression
-                    val evaluationRequest = "JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture.UnityTextureAdapter.GetPixelsInString($nodeName as UnityEngine.Texture2D)"
-                    evaluate(project, evaluationRequest, lifetime,
-                             successfullyEvaluated = { showTexture(it, jbLoadingPanel, parentPanel) },
-                             evaluationFailed = {
-                                 showErrorMessage(jbLoadingPanel, parentPanel,
-                                                  UnityBundle.message("debugging.cannot.get.texture.debug.information", it))
-                             })
+                    continueTextureEvaluation(expr.expression, project, lifetime, jbLoadingPanel, parentPanel)
                 }
-                .onError{
+                .onError {
                     showErrorMessage(jbLoadingPanel, parentPanel,
                                      UnityBundle.message("debugging.cannot.get.texture.debug.information", it))
                 }
-
+            is XValueHint.ConfigurableHintXValueNodeImp -> node.xValue.calculateEvaluationExpression()
+                .onSuccess { expr ->
+                    continueTextureEvaluation(expr.expression, project, lifetime, jbLoadingPanel, parentPanel)
+                }
+                .onError {
+                    showErrorMessage(jbLoadingPanel, parentPanel,
+                                     UnityBundle.message("debugging.cannot.get.texture.debug.information", it))
+                }
         }
+    }
+
+    private fun continueTextureEvaluation(nodeName: String,
+                                          project: Project,
+                                          lifetime: Lifetime,
+                                          jbLoadingPanel: JBLoadingPanel,
+                                          parentPanel: JBPanel<JBPanel<*>>) {
+        val evaluationRequest = "JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture.UnityTextureAdapter.GetPixelsInString($nodeName as UnityEngine.Texture2D)"
+        evaluate(project, evaluationRequest, lifetime,
+                 successfullyEvaluated = { showTexture(it, jbLoadingPanel, parentPanel) },
+                 evaluationFailed = {
+                     showErrorMessage(jbLoadingPanel, parentPanel,
+                                      UnityBundle.message("debugging.cannot.get.texture.debug.information", it))
+                 })
     }
 
     private fun showTexture(it: ValuePropertiesModelBase,
@@ -209,34 +223,34 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
         val evaluator = XDebuggerManager.getInstance(project).currentSession!!.currentStackFrame!!.evaluator!!
 
         evaluator.evaluate(evaluationRequest,
-            object : XDebuggerEvaluator.XEvaluationCallback {
-                override fun errorOccurred(errorMessage: String) = evaluationFailed(errorMessage)
-                override fun evaluated(evaluationResult: XValue) {
-                    if (evaluationResult is DotNetValue) {
-                        evaluationResult.objectProxy.computeObjectProperties.start(
-                            lifetime,
-                            ComputeObjectPropertiesArg(allowInvoke = true,
-                                allowCrossThread = true,
-                                ellipsizeStrings = false,
-                                ellipsizedLength = null,
-                                nameAliases = emptyList(),
-                                extraInfo = null,
-                                allowDisabledMethodsInvoke = true)
-                        ).result.adviseOnce(lifetime) {
-                            when (it) {
-                                is RdTaskResult.Success -> {
-                                    val value = it.value
-                                    if (value is FailedObjectProperties)
-                                        evaluationFailed(value.value.joinToString("\n"))
-                                    else
-                                        successfullyEvaluated(value)
-                                }
-                                is RdTaskResult.Cancelled -> evaluationFailed("Cancelled $it")
-                                is RdTaskResult.Fault -> evaluationFailed("Fault $it")
-                            }
-                        }
-                    }
-                }
-            }, null)
+                           object : XDebuggerEvaluator.XEvaluationCallback {
+                               override fun errorOccurred(errorMessage: String) = evaluationFailed(errorMessage)
+                               override fun evaluated(evaluationResult: XValue) {
+                                   if (evaluationResult is DotNetValue) {
+                                       evaluationResult.objectProxy.computeObjectProperties.start(
+                                           lifetime,
+                                           ComputeObjectPropertiesArg(allowInvoke = true,
+                                                                      allowCrossThread = true,
+                                                                      ellipsizeStrings = false,
+                                                                      ellipsizedLength = null,
+                                                                      nameAliases = emptyList(),
+                                                                      extraInfo = null,
+                                                                      allowDisabledMethodsInvoke = true)
+                                       ).result.adviseOnce(lifetime) {
+                                           when (it) {
+                                               is RdTaskResult.Success -> {
+                                                   val value = it.value
+                                                   if (value is FailedObjectProperties)
+                                                       evaluationFailed(value.value.joinToString("\n"))
+                                                   else
+                                                       successfullyEvaluated(value)
+                                               }
+                                               is RdTaskResult.Cancelled -> evaluationFailed("Cancelled $it")
+                                               is RdTaskResult.Fault -> evaluationFailed("Fault $it")
+                                           }
+                                       }
+                                   }
+                               }
+                           }, null)
     }
 }
