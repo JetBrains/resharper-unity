@@ -15,8 +15,8 @@ import com.intellij.xdebugger.evaluation.XDebuggerEvaluator
 import com.intellij.xdebugger.frame.XValue
 import com.intellij.xdebugger.frame.XValueNode
 import com.intellij.xdebugger.frame.XValuePlace
-import com.intellij.xdebugger.impl.evaluate.quick.XValueHint
 import com.intellij.xdebugger.impl.ui.tree.nodes.XValueNodeImpl
+import com.intellij.xdebugger.impl.ui.tree.nodes.XValueNodePresentationConfigurator.ConfigurableXValueNodeImpl
 import com.jetbrains.rd.framework.RdTaskResult
 import com.jetbrains.rd.ide.model.ValuePropertiesModelBase
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -124,14 +124,26 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                     showErrorMessage(jbLoadingPanel, parentPanel,
                                      UnityBundle.message("debugging.cannot.get.texture.debug.information", it))
                 }
-            is XValueHint.ConfigurableHintXValueNodeImp -> node.xValue.calculateEvaluationExpression()
-                .onSuccess { expr ->
-                    continueTextureEvaluation(expr.expression, project, lifetime, jbLoadingPanel, parentPanel)
-                }
-                .onError {
+            is ConfigurableXValueNodeImpl -> {
+                //TODO temporary solution until https://jetbrains.team/p/ij/reviews/117382 is merged
+                val declaredField = node.javaClass.getDeclaredField("val\$result")
+                declaredField.isAccessible = true
+                val xValue = declaredField.get(node)
+
+                if(xValue is XValue)
+                    xValue.calculateEvaluationExpression()
+                    .onSuccess { expr ->
+                        continueTextureEvaluation(expr.expression, project, lifetime, jbLoadingPanel, parentPanel)
+                    }
+                    .onError {
+                        showErrorMessage(jbLoadingPanel, parentPanel,
+                                         UnityBundle.message("debugging.cannot.get.texture.debug.information", it))
+                    }
+                else
                     showErrorMessage(jbLoadingPanel, parentPanel,
-                                     UnityBundle.message("debugging.cannot.get.texture.debug.information", it))
-                }
+                                     UnityBundle.message("debugging.cannot.get.texture.debug.information", declaredField.toString()))
+            }
+
         }
     }
 
