@@ -38,5 +38,6 @@ val TestMethod.unityEnvironment: UnityTestEnvironmentInstance?
 
 enum class UnityVersion(val version: String) {
     V2020("2020"),
-    V2022("2022")
+    V2022("2022"),
+    V2023("2023")
 }
