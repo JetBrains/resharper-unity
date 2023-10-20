@@ -84,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             definedSymbols.Add(CppPPDefineSymbolUtil.ParsePredefinedMacro("SHADER_API_D3D11"));
             definedSymbols.Add(CppPPDefineSymbolUtil.CreatePredefinedSymbol("UNITY_VERSION", GetHlslUnityVersion().ToString()));
             foreach (var provider in myCustomDefinesProviders)
-                definedSymbols.AddRange(provider.ProvideCustomDefines(dialect).Select(x => CppPPDefineSymbolUtil.CreatePredefinedSymbol(x, "")));
+                definedSymbols.AddRange(provider.ProvideCustomDefines(dialect).Select(x => CppPPDefineSymbolUtil.CreatePredefinedSymbol(x, "1")));
         }
 
         private void DefineSurfaceShaderSymbols(List<CppPPDefineSymbol> definedSymbols)
