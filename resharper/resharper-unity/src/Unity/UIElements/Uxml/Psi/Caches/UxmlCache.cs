@@ -83,33 +83,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Caches
                     ProcessTagsRecursive(child, results, namespaces);    
                 }
             }
-            else if (treeNode is XmlTagHeaderNode xmlTagHeaderNode)
+            else if (treeNode is IXmlAttribute { AttributeName: "name" } xmlAttribute)
             {
-                var xmlIdentifier = xmlTagHeaderNode.Children<XmlIdentifier>().FirstOrDefault();
-                if (xmlIdentifier != null)
+                var xmlIdentifier = xmlAttribute.Parent?.Children<XmlIdentifier>().FirstOrDefault();
+                if (xmlIdentifier != null && namespaces.TryGetValue(xmlIdentifier.XmlNamespace, out var ns))
                 {
-                    var attributes = xmlTagHeaderNode.Attributes.Where(a => a.AttributeName is "name" or "class").ToArray();
-                    if (attributes.Any())
-                    {
-                        var xmlNameAttribute = attributes.FirstOrDefault(a => a.AttributeName == "name");
-                        var xmlClassNameAttribute = attributes.FirstOrDefault(a => a.AttributeName == "class");
-
-                        var item = new UxmlCacheItem(
-                            namespaces.TryGetValue(xmlIdentifier.XmlNamespace, out var ns)
-                                ? $"{ns}.{xmlIdentifier.XmlName}"
-                                : xmlIdentifier.XmlName,
-                            GetElement(xmlNameAttribute),
-                            GetElement(xmlClassNameAttribute)
-                            );
-                        results.Add(item);
-                    }    
+                    var item = new UxmlCacheItem($"{ns}.{xmlIdentifier.XmlName}", xmlAttribute.Value!.UnquotedValue,
+                        xmlAttribute.Value.GetTreeStartOffset().Offset);
+                    results.Add(item);    
+                }
+                else if (xmlIdentifier?.XmlNamespace == string.Empty)
+                {
+                    var item = new UxmlCacheItem(xmlIdentifier.XmlName, xmlAttribute.Value!.UnquotedValue,
+                        xmlAttribute.Value.GetTreeStartOffset().Offset);
+                    results.Add(item);
                 }
             }
-        }
-
-        private static UxmlElement? GetElement(IXmlAttribute? attribute)
-        {
-            return attribute != null ? new UxmlElement(attribute.Value!.UnquotedValue, attribute.Value.GetTreeStartOffset().Offset): null;
         }
 
         public override void Merge(IPsiSourceFile sourceFile, object? builtPart)
@@ -150,12 +139,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Caches
 
         public IEnumerable<string> GetNamesForTypeName(string controlTypeName)
         {
-            return myLocalCache.Values.Where(a => a.ControlTypeName == controlTypeName).Select(b=>b.NameElement.Name).Distinct();
+            return myLocalCache.Values.Where(a => a.ControlTypeName == controlTypeName).Select(b=>b.Name).Distinct();
         }
         
         public IEnumerable<string> GetNames()
         {
-            return myLocalCache.Values.Select(b=>b.NameElement.Name).Distinct();
+            return myLocalCache.Values.Select(b=>b.Name).Distinct();
         }
     }
 }

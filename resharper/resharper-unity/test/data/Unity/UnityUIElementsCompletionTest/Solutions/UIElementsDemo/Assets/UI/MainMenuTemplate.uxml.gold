@@ -1,14 +1,16 @@
 ﻿<ui:UXML xmlns:ui="|UnityEngine|(0).|UIElements|(1)" xmlns:uie="|UnityEditor|(2).|UIElements|(3)" xmlns:custom="|MyNamespace|(4)" xmlns:fs="|First|(5).|Second|(6)" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <|MyNamespace|(7).|MyElement2|(8) name="MyElement21" />
+    <|MyNamespace|(7).|MyElement2|(8) />
     <|Style|(9) src="project://database/Assets/UI/styles.uss?fileID=7433441132597879392&amp;guid=fa044cd23359809dcbf2261377826474&amp;type=3#styles" />
     <|ui|(10):|VisualElement|(11) name="Background" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); align-items: center; justify-content: center;">
         <|ui|(12):|VisualElement|(13) name="VisualElement" style="flex-grow: initial; background-color: rgba(255, 255, 255, 0); border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; width: 253px; height: 209px; align-items: center; justify-content: center;">
             <|ui|(14):|Button|(15) id="btn" text="StartGame" display-tooltip-when-elided="true" name="start-game-button" tooltip="1" class="button-style" />
-            <|custom|(16):|MyElement2|(17) name="MyElement2" />
-            <|uie|(18):|ToolbarButton|(19) text="New Achiev" display-tooltip-when-elided="true" name="ToolbarButton-button" />
-            <|ui|(20):|Label|(21) tabindex="-1" text="Label" display-tooltip-when-elided="true" name="message" />
-            <|MyElement|(22) tooltip="sss" />
-            <|fs|(23):|MyFirstElement|(24)/>
+            <|MyElement|(16) name="MyElement" />
+            <|custom|(17):|MyElement2|(18) name="MyElement2" />
+            <|ui|(19):|Button|(20) text="Show message" display-tooltip-when-elided="true" name="show-message-button" class="button-style" />
+            <|uie|(21):|ToolbarButton|(22) text="New Achiev" display-tooltip-when-elided="true" name="ToolbarButton-button" />
+            <|ui|(23):|Label|(24) tabindex="-1" text="Label" display-tooltip-when-elided="true" name="message" />
+            <|MyElement|(25) tooltip="sss" />
+            <|fs|(26):|MyFirstElement|(27)/>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
@@ -30,12 +32,15 @@
 13: result=OK declaredElem=UnityEngine.UIElements.VisualElement [UxmlTypeOrNamespaceReference]
 14: result=OK declaredElem=ui [UxmlNsAliasReference]
 15: result=OK declaredElem=UnityEngine.UIElements.Button [UxmlTypeOrNamespaceReference]
-16: result=OK declaredElem=custom [UxmlNsAliasReference]
-17: result=OK declaredElem=MyNamespace.MyElement2 [UxmlTypeOrNamespaceReference]
-18: result=OK declaredElem=uie [UxmlNsAliasReference]
-19: result=OK declaredElem=UnityEditor.UIElements.ToolbarButton [UxmlTypeOrNamespaceReference]
-20: result=OK declaredElem=ui [UxmlNsAliasReference]
-21: result=OK declaredElem=UnityEngine.UIElements.Label [UxmlTypeOrNamespaceReference]
-22: result=OK declaredElem=MyElement [UxmlTypeOrNamespaceReference]
-23: result=OK declaredElem=fs [UxmlNsAliasReference]
-24: result=OK declaredElem=First.Second.MyFirstElement [UxmlTypeOrNamespaceReference]
+16: result=OK declaredElem=MyElement [UxmlTypeOrNamespaceReference]
+17: result=OK declaredElem=custom [UxmlNsAliasReference]
+18: result=OK declaredElem=MyNamespace.MyElement2 [UxmlTypeOrNamespaceReference]
+19: result=OK declaredElem=ui [UxmlNsAliasReference]
+20: result=OK declaredElem=UnityEngine.UIElements.Button [UxmlTypeOrNamespaceReference]
+21: result=OK declaredElem=uie [UxmlNsAliasReference]
+22: result=OK declaredElem=UnityEditor.UIElements.ToolbarButton [UxmlTypeOrNamespaceReference]
+23: result=OK declaredElem=ui [UxmlNsAliasReference]
+24: result=OK declaredElem=UnityEngine.UIElements.Label [UxmlTypeOrNamespaceReference]
+25: result=OK declaredElem=MyElement [UxmlTypeOrNamespaceReference]
+26: result=OK declaredElem=fs [UxmlNsAliasReference]
+27: result=OK declaredElem=First.Second.MyFirstElement [UxmlTypeOrNamespaceReference]
