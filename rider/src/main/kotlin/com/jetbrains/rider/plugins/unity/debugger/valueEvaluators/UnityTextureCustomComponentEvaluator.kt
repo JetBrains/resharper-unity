@@ -4,6 +4,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.FrameWrapper
 import com.intellij.xdebugger.frame.XValueNode
+import com.intellij.xdebugger.impl.ui.tree.nodes.XValueNodeImpl
 import com.jetbrains.rider.debugger.evaluators.RiderCustomComponentEvaluator
 import com.jetbrains.rider.debugger.getSimplePresentation
 import com.jetbrains.rider.model.debuggerWorker.ObjectPropertiesProxy
@@ -22,6 +23,7 @@ class UnityTextureCustomComponentEvaluator : RiderCustomComponentEvaluator("Unit
 
     override fun isApplicable(node: XValueNode, properties: ObjectPropertiesProxy): Boolean =
         !properties.valueFlags.contains(ValueFlags.IsNull)
+        && node is XValueNodeImpl
         && (properties.instanceType.definitionTypeFullName == "UnityEngine.Texture2D"
             || properties.instanceType.definitionTypeFullName == "UnityEngine.RenderTexture")
 

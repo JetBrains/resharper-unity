@@ -32,7 +32,10 @@ import com.jetbrains.rider.model.debuggerWorker.ValueFlags
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.intellij.images.editor.impl.ImageEditorManagerImpl
-import java.awt.*
+import java.awt.BorderLayout
+import java.awt.GraphicsConfiguration
+import java.awt.GraphicsEnvironment
+import java.awt.Rectangle
 import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
 import java.awt.image.ColorModel
@@ -54,6 +57,7 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
 
     override fun isApplicable(node: XValueNode, properties: ObjectPropertiesProxy, place: XValuePlace, session: XDebugSession): Boolean =
         !properties.valueFlags.contains(ValueFlags.IsNull)
+        && node is XValueNodeImpl
         && (properties.instanceType.definitionTypeFullName == "UnityEngine.Texture2D"
             || properties.instanceType.definitionTypeFullName == "UnityEngine.RenderTexture")
 
@@ -111,12 +115,24 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                                        jbLoadingPanel: JBLoadingPanel,
                                        parentPanel: JBPanel<JBPanel<*>>,
                                        lifetime: Lifetime) {
-        val nodeName = (node as XValueNodeImpl).name!!
-        val evaluationRequest = "JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture.UnityTextureAdapter.GetPixelsInString($nodeName as UnityEngine.Texture2D)"
-        evaluate(project, evaluationRequest, lifetime,
-            successfullyEvaluated = { showTexture(it, jbLoadingPanel, parentPanel) },
-            evaluationFailed = { showErrorMessage(jbLoadingPanel, parentPanel,
-                                                  UnityBundle.message("debugging.cannot.get.texture.debug.information", it)) })
+        when(node){
+            is XValueNodeImpl -> node.calculateEvaluationExpression()
+                .onSuccess { expr ->
+                    val nodeName = expr.expression
+                    val evaluationRequest = "JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture.UnityTextureAdapter.GetPixelsInString($nodeName as UnityEngine.Texture2D)"
+                    evaluate(project, evaluationRequest, lifetime,
+                             successfullyEvaluated = { showTexture(it, jbLoadingPanel, parentPanel) },
+                             evaluationFailed = {
+                                 showErrorMessage(jbLoadingPanel, parentPanel,
+                                                  UnityBundle.message("debugging.cannot.get.texture.debug.information", it))
+                             })
+                }
+                .onError{
+                    showErrorMessage(jbLoadingPanel, parentPanel,
+                                     UnityBundle.message("debugging.cannot.get.texture.debug.information", it))
+                }
+
+        }
     }
 
     private fun showTexture(it: ValuePropertiesModelBase,
