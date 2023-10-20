@@ -11,6 +11,7 @@ import com.jetbrains.rider.cpp.fileType.HlslHeaderFileType
 import com.jetbrains.rider.cpp.fileType.HlslSourceFileType
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidgetProvider
+import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileType
 
@@ -19,14 +20,18 @@ class ShaderVariantsService : RiderResolveContextWidgetProvider {
                                project: Project,
                                textControlId: TextControlId,
                                editorModel: TextControlModel,
-                               editor: Editor): RiderResolveContextWidget? = runIf(isValidContext(project, editor)) { ShaderVariantsWidget(project, editor) }
+                               editor: Editor): RiderResolveContextWidget? =
+        runIf(isValidContext(project, editor)) {
+            ShaderVariantsWidget(FrontendBackendHost.getInstance(project).model, project, editor)
+        }
 
     override fun revalidateWidget(widget: RiderResolveContextWidget,
                                   disposable: Disposable,
                                   project: Project,
                                   textControlId: TextControlId,
                                   editorModel: TextControlModel,
-                                  editor: Editor): RiderResolveContextWidget? = widget.takeIf { isValidContext(project, editor) }
+                                  editor: Editor): RiderResolveContextWidget? =
+        widget.takeIf { isValidContext(project, editor) }
 
     private fun isValidContext(project: Project, editor: Editor) =
         Registry.`is`("rider.unity.ui.shaderVariants.enabled")
