@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Xml.Impl.Util;
+using JetBrains.ReSharper.Psi.Xml.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Resolve
 {
@@ -47,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Resolve
       var namespaceAlias = reference.GetTreeNode();
 
       ReferenceWithTokenUtil.SetText(
-        reference.Token, oldRange, @namespace.QualifiedName, namespaceAlias);
+        (IXmlToken)reference.Token, oldRange, @namespace.QualifiedName, namespaceAlias);
 
       var end = start + @namespace.QualifiedName.Length - 1;
       foreach (var newReference in namespaceAlias.GetReferences<IUxmlNamespaceReference>())

@@ -1,14 +1,13 @@
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Filters;
 using JetBrains.ReSharper.Psi.Impl.Resolve;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.ReSharper.Psi.Xaml.Impl.Tree;
-using JetBrains.ReSharper.Psi.Xaml.Impl.Tree.References;
-using JetBrains.ReSharper.Psi.Xaml.Impl.Util;
 using JetBrains.ReSharper.Psi.Xml.Impl.Resolve;
 using JetBrains.ReSharper.Psi.Xml.Impl.Tree.References;
 using JetBrains.ReSharper.Psi.Xml.Tree;
@@ -16,10 +15,10 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 {
-  internal class UxmlRootNamespaceReference : XmlReferenceWithTokenBase<NamespaceAliasAttribute>, IUxmlNamespaceReference
+  internal class UxmlRootNamespaceReference : XmlReferenceWithTokenBase<UxmlNamespaceAliasAttribute>, IUxmlNamespaceReference
   {
     public UxmlRootNamespaceReference(
-      [NotNull] NamespaceAliasAttribute owner, IXmlToken token, TreeTextRange rangeWithin)
+      [NotNull] UxmlNamespaceAliasAttribute owner, IXmlToken token, TreeTextRange rangeWithin)
       : base(owner, token, rangeWithin) {  }
 
     public ISymbolTable GetSymbolTable(SymbolTableMode mode)
@@ -55,12 +54,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
     protected override IReference BindToInternal(IDeclaredElement element, ISubstitution substitution)
     {
       return UxmlNamespaceReferenceUtil.BindTo(this, (INamespace) element);
-    }
-
-    public IXamlNamespaceReference BindModuleTo(IPsiModule module)
-    {
-      // not sure if it should be invoked
-      return this;
     }
 
     protected override ISymbolFilter[] GetSmartSymbolFilters(out bool applyAllFilters)
@@ -107,12 +100,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
       return UxmlNamespaceReferenceUtil.BindTo(this, (INamespace) declaredElement);
     }
 
-    public IXamlNamespaceReference BindModuleTo(IPsiModule module)
-    {
-      // not sure if it should be invoked
-      return this;
-    }
-
     protected override ISymbolFilter[] GetSmartSymbolFilters()
     {
       return new ISymbolFilter[] { XmlResolveFilters.IsNamespace };
@@ -120,7 +107,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References
 
     protected override ISymbolFilter[] GetCompletionFilters()
     {
-      var language = ReferenceUtil.GetProjectLanguage(myOwner);
+      var language = CSharpLanguage.Instance;
       return new ISymbolFilter[]
       {
         new ValidNamesFilter(language),

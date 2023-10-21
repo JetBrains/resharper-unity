@@ -7,8 +7,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi
     [ProjectFileType(typeof(UxmlProjectFileType))]
     public class UxmlProjectFileLanguageService : XmlProjectFileLanguageService
     {
-        public UxmlProjectFileLanguageService(UxmlProjectFileType xamlProjectFileType)
-            : base(xamlProjectFileType)
+        public UxmlProjectFileLanguageService(UxmlProjectFileType projectFileType)
+            : base(projectFileType)
         {
         }
 
