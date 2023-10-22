@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin.SinceUnity.201
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin.SinceUnity.2019.2", "..\unity\EditorPlugin\EditorPlugin.SinceUnity.2019.2.csproj", "{117CAF5D-7FC0-4626-98E0-E81572964E56}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "texture-debugger", "..\debugger\texture-debugger\texture-debugger.csproj", "{DF886D30-1FE9-4296-9202-BCE567BFF2E5}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\debugger\usbmuxd\usbmuxd.projitems*{4e49cd68-6ba2-4765-80ac-d82537a0996b}*SharedItemsImports = 5
@@ -144,6 +146,10 @@ Global
 		{117CAF5D-7FC0-4626-98E0-E81572964E56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{117CAF5D-7FC0-4626-98E0-E81572964E56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{117CAF5D-7FC0-4626-98E0-E81572964E56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF886D30-1FE9-4296-9202-BCE567BFF2E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF886D30-1FE9-4296-9202-BCE567BFF2E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF886D30-1FE9-4296-9202-BCE567BFF2E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF886D30-1FE9-4296-9202-BCE567BFF2E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -170,6 +176,7 @@ Global
 		{CA4516C7-2795-4F5D-B13C-EC5E46F19C68} = {27FAB5DF-2272-44E7-9BCE-41508F24C07B}
 		{27D56D2A-B11F-4BAA-B26B-1A73A055B398} = {27FAB5DF-2272-44E7-9BCE-41508F24C07B}
 		{117CAF5D-7FC0-4626-98E0-E81572964E56} = {27FAB5DF-2272-44E7-9BCE-41508F24C07B}
+		{DF886D30-1FE9-4296-9202-BCE567BFF2E5} = {D61F53F1-F209-4313-9FF2-B1DBD286BE11}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F132919A-F861-4C4F-923A-C956B82D9EE6}
