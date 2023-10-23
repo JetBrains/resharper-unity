@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Application.Threading;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Common.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl;
 using JetBrains.ReSharper.Psi;
@@ -119,11 +121,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
 
         public ShaderProgramInfo ReadProgramInfo(CppDocumentBuffer buffer)
         {
+            var injectedProgramType = GetShaderProgramType(buffer);
+            
             var isSurface = false;
             var lexer = CppLexer.Create(buffer);
             lexer.Start();
 
-            var definedMacroses = new Dictionary<string, string>();
+            var definedMacros = new Dictionary<string, string>();
             var shaderTarget = HlslConstants.SHADER_TARGET_25;
             var shaderFeatures = ImmutableArray.CreateBuilder<ShaderFeature>();
             while (lexer.TokenType != null)
@@ -149,7 +153,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                         if (pragmaType.Equals("multi_compile") || pragmaType.Equals("multi_compile_local") ||
                             pragmaType.Equals("shader_feature_local") || pragmaType.Equals("shader_feature"))
                         {
-                            definedMacroses[firstValue.ToString()] = "1";
+                            definedMacros[firstValue.ToString()] = "1";
                         }
 
                         if (TryReadShaderFeature(buffer.Range.StartOffset, slicer, pragmaType, firstValue, out var shaderFeature))
@@ -172,7 +176,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                     if (pragmaType.Equals("multi_compile_lightpass"))
                     {
                         // multi_compile_lightpass == multi_compile DIRECTIONAL, DIRECTIONAL_COOKIE, POINT, POINT_NOATT, POINT_COOKIE, SPOT
-                        definedMacroses["DIRECTIONAL"] = "1";
+                        definedMacros["DIRECTIONAL"] = "1";
                     }
 
                     // TODO: handle built-in https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html
@@ -183,8 +187,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                 lexer.Advance();
             }
 
-            definedMacroses["SHADER_TARGET"] = shaderTarget.ToString();
-            return new ShaderProgramInfo(definedMacroses, shaderTarget, isSurface, shaderFeatures.MoveOrCopyToImmutableArray());
+            definedMacros["SHADER_TARGET"] = shaderTarget.ToString();
+            return new ShaderProgramInfo(injectedProgramType, isSurface ? ShaderType.Surface : ShaderType.VertFrag, shaderTarget, shaderFeatures.MoveOrCopyToImmutableArray(), definedMacros);
         }
 
         private static bool TryReadShaderFeature(int baseOffset, StringSplitter<CharPredicates.IsWhitespacePredicate> slicer, StringSlice pragmaType, StringSlice keyword, out ShaderFeature shaderFeature)
@@ -215,6 +219,50 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
 
             shaderFeature = default;
             return false;
+        }
+        
+        private InjectedHlslProgramType GetShaderProgramType(CppDocumentBuffer documentBuffer)
+        {
+            var locationStartOffset = documentBuffer.Range.StartOffset;
+            var buffer = documentBuffer.Buffer; 
+            Assertion.Assert(locationStartOffset < buffer.Length);
+            if (locationStartOffset >= buffer.Length)
+                return InjectedHlslProgramType.Unknown;
+
+            int curPos = locationStartOffset - 1;
+            while (curPos > 0)
+            {
+                if (buffer[curPos].IsLetterFast())
+                    break;
+                curPos--;
+            }
+
+            var endPos = curPos;
+            while (curPos > 0)
+            {
+                if (!buffer[curPos].IsLetterFast())
+                {
+                    curPos++;
+                    break;
+                }
+
+                curPos--;
+            }
+
+            var text = buffer.GetText(new TextRange(curPos, endPos + 1)); // +1, because open interval [a, b)
+            switch (text)
+            {
+                case "CGPROGRAM":
+                    return InjectedHlslProgramType.CGProgram;
+                case "CGINCLUDE":
+                    return InjectedHlslProgramType.CGInclude;
+                case "HLSLPROGRAM":
+                    return InjectedHlslProgramType.HLSLProgram;
+                case "HLSLINCLUDE":
+                    return InjectedHlslProgramType.HLSLInclude;
+                default:
+                    return InjectedHlslProgramType.Unknown;
+            }
         }
 
         #region Cache item

@@ -68,25 +68,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
         
         private static (IEnumerable<CppFileLocation> includeLocations, IReadOnlyDictionary<string, string> defines) GetProgramInfo(ISolution solution, CppFileLocation cppFileLocation)
         {
-            var injectedHlslCache = solution.GetComponent<InjectedHlslFileLocationTracker>();
-            var shaderProgramCache = solution.GetComponent<ShaderProgramCache>();
-            
-            // PSI is not committed here
-            // TODO: cpp global cache should calculate cache only when PSI for file with cpp injects is committed.
-
             var sourceFile = cppFileLocation.GetRandomSourceFile(solution);
             var range = cppFileLocation.RootRange;
             Assertion.Assert(range.IsValid);
             
-            var buffer = sourceFile.Document.Buffer;
-
+            // PSI is not committed here
+            // TODO: cpp global cache should calculate cache only when PSI for file with cpp injects is committed.
+            var shaderProgramCache = solution.GetComponent<ShaderProgramCache>();
             ShaderProgramInfo? shaderProgramInfo;
             if (!shaderProgramCache.UpToDate(sourceFile))
-                shaderProgramInfo = shaderProgramCache.ReadProgramInfo(new CppDocumentBuffer(buffer, range));
+                shaderProgramInfo = shaderProgramCache.ReadProgramInfo(new CppDocumentBuffer(sourceFile.Document.Buffer, range));
             else if (!shaderProgramCache.TryGetShaderProgramInfo(cppFileLocation, out shaderProgramInfo)) 
                 Assertion.Fail($"Shader program info is missing for {cppFileLocation}");
             
-            var includes = injectedHlslCache.GetIncludes(sourceFile, buffer, range.StartOffset, shaderProgramInfo);
+            var injectedHlslCache = solution.GetComponent<InjectedHlslFileLocationTracker>();
+            var includes = injectedHlslCache.GetIncludes(sourceFile, shaderProgramInfo);
             return (includes, shaderProgramInfo.DefinedMacros);
         }
     }
