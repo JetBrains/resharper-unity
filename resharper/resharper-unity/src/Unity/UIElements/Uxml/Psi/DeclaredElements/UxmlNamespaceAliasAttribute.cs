@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Xml;
+using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.DeclaredElements;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Xaml.Impl.DeclaredElements;
 
 // ReSharper disable CheckNamespace
 namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree
@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree
 
         public DeclaredElementType GetElementType()
         {
-            return XamlDeclaredElementType.NamespaceAlias;
+            return UxmlDeclaredElementType.NamespaceAlias;
         }
 
         public XmlNode GetXMLDescriptionSummary(bool inherit)
