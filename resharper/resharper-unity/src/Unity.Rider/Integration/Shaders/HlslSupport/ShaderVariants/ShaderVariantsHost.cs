@@ -8,6 +8,7 @@ using JetBrains.Application.changes;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
+using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
@@ -17,9 +18,10 @@ using JetBrains.ReSharper.Plugins.Unity.Common.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Settings;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
+using JetBrains.ReSharper.Psi.Cpp;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
+using JetBrains.ReSharper.Psi.Cpp.Symbols;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
@@ -27,7 +29,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderVariants;
 
 [SolutionComponent]
-public class ShaderVariantsHost : IUnityHlslCustomDefinesProvider, ICppChangeProvider
+public class ShaderVariantsHost : ICppChangeProvider, IUnityHlslCustomMacrosProvider
 {
     private readonly ISolution mySolution;
     private readonly ShaderProgramCache myShaderProgramCache;
@@ -122,13 +124,40 @@ public class ShaderVariantsHost : IUnityHlslCustomDefinesProvider, ICppChangePro
         }
     }
 
-    public IEnumerable<string> ProvideCustomDefines(UnityHlslDialectBase dialect)
+    public IEnumerable<CppPPDefineSymbol> ProvideCustomMacros(CppFileLocation location, ShaderProgramInfo shaderProgramInfo)
     {
-        return dialect switch
+        var selectedVariants = myCurrentVariantSet.SelectedVariants;
+        foreach (var shaderFeature in shaderProgramInfo.ShaderFeatures)
         {
-            UnityComputeHlslDialect => EmptyList<string>.Enumerable,
-            _ => myCurrentVariantSet.SelectedVariants
-        };
+            if (TryGetSelectedEntry(shaderFeature, selectedVariants, out var entry))
+            {
+                // TODO: can't use real location, because symbol not registered in symbol table. Have to support symbols from shader features in C++ engine.  
+                var symbolLocation = new CppSymbolLocation(CppFileLocation.EMPTY, new CppComplexOffset(entry.TextRange.StartOffset));
+                yield return new CppPPDefineSymbol(entry.Keyword, null, false, "1", symbolLocation, TriBool.False, false);
+            }
+        }
+
+        static bool TryGetSelectedEntry(ShaderFeature shaderFeature, IViewableSet<string> selectedVariants, out ShaderFeature.Entry entry)
+        {
+            var entries = shaderFeature.Entries;
+            foreach (var candidate in entries)
+            {
+                if (selectedVariants.Contains(candidate.Keyword))
+                {
+                    entry = candidate;
+                    return true;
+                }
+            }
+
+            if (shaderFeature is { AllowAllDisabled: false, Entries.Length: > 0 })
+            {
+                entry = shaderFeature.Entries[0];
+                return true;
+            }
+
+            entry = default;
+            return false;
+        }
     }
 
     public object? Execute(IChangeMap changeMap) => null;

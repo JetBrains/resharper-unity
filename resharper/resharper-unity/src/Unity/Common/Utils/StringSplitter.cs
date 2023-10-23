@@ -1,4 +1,5 @@
 #nullable enable
+using System.Runtime.CompilerServices;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Common.Utils
@@ -14,8 +15,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Common.Utils
         private TSeparatorPredicate mySeparatorPredicate;
         private int myPosition;
 
-        public int Position => myPosition;
-        
         public StringSplitter(StringSlice input, TSeparatorPredicate separatorPredicate)
         {
             myInput = input;
@@ -23,11 +22,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Common.Utils
             myPosition = 0;
         }
 
-        public bool TryGetNextSlice(out StringSlice nextSlice)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool TryGetNextSlice(out StringSlice nextSlice) => TryGetNextSlice(out nextSlice, out _);        
+
+        public bool TryGetNextSlice(out StringSlice nextSlice, out int startPosition)
         {
+            startPosition = -1;
             if (myPosition < myInput.Length)
             {
-                var startPosition = -1;
                 do
                 {
                     var isSeparator = mySeparatorPredicate.Invoke(myInput[myPosition]);

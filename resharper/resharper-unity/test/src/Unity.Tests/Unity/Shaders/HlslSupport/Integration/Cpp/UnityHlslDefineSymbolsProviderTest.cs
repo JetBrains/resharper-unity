@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.ReSharper.Plugins.Tests.UnityTestComponents;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Psi.Cpp.Symbols;
 using JetBrains.Util;
@@ -35,8 +34,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.Shaders.HlslSupport.Integratio
         private List<CppPPDefineSymbol> GetSymbolDefines(IUnityVersion unityVersion)
         {
             var defineSymbols = new List<CppPPDefineSymbol>();
-            var provider = new UnityHlslCppCompilationPropertiesProvider(unityVersion, new CgIncludeDirectoryProviderStub(unityVersion), EmptyList<IUnityHlslCustomDefinesProvider>.Instance);
-            provider.DefineSymbols(defineSymbols, new UnityShaderLabHlslDialect());
+            var provider = new UnityHlslCppCompilationPropertiesProvider(unityVersion, new CgIncludeDirectoryProviderStub(unityVersion), EmptyList<IUnityHlslCustomMacrosProvider>.Instance);
+            provider.DefineSymbols(defineSymbols);
             return defineSymbols;
         }
     }

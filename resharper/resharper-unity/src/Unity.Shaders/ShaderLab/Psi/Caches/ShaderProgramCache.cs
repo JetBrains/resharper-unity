@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
     [PsiComponent]
     public class ShaderProgramCache : SimplePsiSourceFileCacheWithLocalCache<ShaderProgramCache.Item, ImmutableArray<CppFileLocation>>, IBuildMergeParticipant<IPsiSourceFile>
     {
-        private const string SHADER_VARIANT_SKIPPER = "_";
+        private const string SHADER_VARIANT_NONE = "_";
 
         private static readonly HashSet<StringSlice> ourShaderFeatureDirectiveAllowingDisableAllKeywords = new() { "shader_feature", "shader_feature_local" };
         private static readonly HashSet<StringSlice> ourShaderFeatureDirectives = new() { "shader_feature", "shader_feature_local", "multi_compile", "multi_compile_local", "dynamic_branch", "dynamic_branch_local" };
@@ -135,7 +135,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             return shaderProgramInfo;
         }
 
-        public ShaderProgramInfo ReadProgramInfo(CppDocumentBuffer buffer)
+        private ShaderProgramInfo ReadProgramInfo(CppDocumentBuffer buffer)
         {
             var injectedProgramType = GetShaderProgramType(buffer);
             
@@ -152,33 +152,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                 if (tokenType is CppDirectiveTokenNodeType)
                 {
                     lexer.Advance();
-                    var context = lexer.GetTokenText().TrimStart();
+                    var context = lexer.GetTokenText();
 
+                    var contextStartOffset = lexer.TokenStart;
                     var slicer = StringSplitter.ByWhitespace(context);
                     slicer.TryGetNextSlice(out var pragmaType);
-                    slicer.TryGetNextSlice(out var firstValue);
                     if (pragmaType.Equals("surface"))
                         isSurface = true;
 
-                    if (!firstValue.IsEmpty)
-                    {
-                        // based on https://docs.unity3d.com/Manual/SL-ShaderPrograms.html
-                        // We do not have any solution how we could handle multi_compile directives. It is complex task because
-                        // a lot of different files could be produces from multi_compile combination
-                        // Right now, we will consider first combination.
-                        if (pragmaType.Equals("multi_compile") || pragmaType.Equals("multi_compile_local") ||
-                            pragmaType.Equals("shader_feature_local") || pragmaType.Equals("shader_feature"))
-                        {
-                            definedMacros[firstValue.ToString()] = "1";
-                        }
+                    if (TryReadShaderFeature(contextStartOffset, slicer, pragmaType, out var shaderFeature)) 
+                        shaderFeatures.Add(shaderFeature);
 
-                        if (TryReadShaderFeature(buffer.Range.StartOffset, slicer, pragmaType, firstValue, out var shaderFeature))
-                            shaderFeatures.Add(shaderFeature);
-                    }
-
-                    if (pragmaType.Equals("target"))
+                    if (pragmaType.Equals("target") && slicer.TryGetNextSlice(out var versionString))
                     {
-                        var versionFromTarget = int.TryParse(firstValue.ToString().Replace(".", ""), out var result) ? result : HlslConstants.SHADER_TARGET_35;
+                        var versionFromTarget = int.TryParse(versionString.ToString().Replace(".", ""), out var result) ? result : HlslConstants.SHADER_TARGET_35;
                         shaderTarget = Math.Max(shaderTarget, versionFromTarget);
                     }
 
@@ -207,22 +194,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             return new ShaderProgramInfo(injectedProgramType, isSurface ? ShaderType.Surface : ShaderType.VertFrag, shaderTarget, shaderFeatures.MoveOrCopyToImmutableArray(), definedMacros);
         }
 
-        private static bool TryReadShaderFeature(int baseOffset, StringSplitter<CharPredicates.IsWhitespacePredicate> slicer, StringSlice pragmaType, StringSlice keyword, out ShaderFeature shaderFeature)
+        private static bool TryReadShaderFeature(int baseOffset, StringSplitter<CharPredicates.IsWhitespacePredicate> slicer, StringSlice pragmaType, out ShaderFeature shaderFeature)
         {
             if (ourShaderFeatureDirectives.Contains(pragmaType))
             {
                 var allowDisableAllKeywords = false;
                 var entries = ImmutableArray.CreateBuilder<ShaderFeature.Entry>();
-                do
+                while (slicer.TryGetNextSlice(out var keyword, out var keywordOffset))
                 {
-                    if (!keyword.Equals(SHADER_VARIANT_SKIPPER))
-                    {
-                        var endOffset = baseOffset + slicer.Position;
-                        entries.Add(new ShaderFeature.Entry(keyword.ToString(), new TextRange(endOffset - keyword.Length, endOffset)));
-                    }
+                    if (!keyword.Equals(SHADER_VARIANT_NONE))
+                        entries.Add(new ShaderFeature.Entry(keyword.ToString(), TextRange.FromLength(baseOffset + keywordOffset, keyword.Length)));
                     else
                         allowDisableAllKeywords = true;
-                } while (slicer.TryGetNextSlice(out keyword));
+                }
 
                 if (entries.Count > 0)
                 {

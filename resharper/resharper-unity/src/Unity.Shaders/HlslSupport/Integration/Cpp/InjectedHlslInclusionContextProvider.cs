@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
          
             // create compilation properties
             var compilationPropertiesProvider = cache.Solution.GetComponent<UnityHlslCppCompilationPropertiesProvider>();
-            var compilationProperties = compilationPropertiesProvider.GetShaderLabHlslCompilationProperties(cache.Solution, shaderProgramInfo);
+            var compilationProperties = compilationPropertiesProvider.GetShaderLabHlslCompilationProperties(cache.Solution, rootFile, shaderProgramInfo);
             
             // create inclusion context
             var languageDialect = CppProjectConfigurationUtil.GetLanguageDialect(compilationProperties);
