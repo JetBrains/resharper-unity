@@ -1,6 +1,5 @@
 #nullable enable
 
-using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Features.Intellisense.CodeCompletion.Xml;
 using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi;

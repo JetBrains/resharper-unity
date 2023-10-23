@@ -1,7 +1,4 @@
-﻿using JetBrains.Annotations;
-using JetBrains.Diagnostics;
-using JetBrains.ReSharper.Feature.Services.CodeCompletion;
-using JetBrains.ReSharper.Feature.Services.CodeCompletion.Impl;
+﻿using JetBrains.ReSharper.Feature.Services.CodeCompletion.Impl;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References;
