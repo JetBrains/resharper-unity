@@ -2,7 +2,6 @@ using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
-using JetBrains.ReSharper.Psi.Xaml.Impl;
 using JetBrains.ReSharper.Psi.Xml.Parsing;
 using JetBrains.ReSharper.Psi.Xml.Tree;
 
@@ -23,8 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Parsing
             IXmlElementFactoryContext context)
         {
             // namespace alias
-            if (nameIdentifier.XmlNamespace == XamlKeywords.XMLNS_ATTRIBUTE ||
-                nameIdentifier.GetText() == XamlKeywords.XMLNS_ATTRIBUTE)
+            if (nameIdentifier.XmlNamespace == "xmlns" || nameIdentifier.GetText() == "xmlns")
                 return (IXmlAttribute)myElementType.NAMESPACE_ALIAS.Create();
 
             return base.CreateAttribute(nameIdentifier, attributeContainer, parentTag, context);
