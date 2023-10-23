@@ -2,11 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Collections;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Symbols;
@@ -42,7 +45,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
                 switch (filePath.ExtensionWithDot)
                 {
                     case ShaderLabProjectFileType.SHADERLAB_EXTENSION:
-                        return GetShaderLabHlslCompilationProperties(solution);
+                    {
+                        var sourceFile = projectFile?.ToSourceFile() ?? rootFile.GetRandomSourceFile(solution);
+                        var shaderProgramInfo = solution.GetComponent<ShaderProgramCache>().GetOrReadUpToDateProgramInfo(sourceFile, rootFile);
+                        return GetShaderLabHlslCompilationProperties(solution, shaderProgramInfo);
+                    }
                     case CppProjectFileType.COMPUTE_EXTENSION:
                         return GetHlslCompilationProperties(solution, ComputeHlslDialect);
                     case var _ when PsiSourceFileUtil.IsHlslFile(filePath):
@@ -53,10 +60,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             return null;
         }
 
-        public CppCompilationProperties GetShaderLabHlslCompilationProperties(ISolution solution)
+        public CppCompilationProperties GetShaderLabHlslCompilationProperties(ISolution solution, ShaderProgramInfo shaderProgramInfo)
         {
             var properties = GetHlslCompilationProperties(solution, ShaderLabHlslDialect);
-            DefineSurfaceShaderSymbols(properties.PredefinedMacros);
+            if (shaderProgramInfo.ShaderType == ShaderType.Surface)
+                DefineSurfaceShaderSymbols(properties.PredefinedMacros);
+            foreach (var (name, value) in shaderProgramInfo.DefinedMacros) 
+                properties.PredefinedMacros.Add(CppPPDefineSymbolUtil.ParsePredefinedMacro($"{name}={value}"));
             return properties;
         }
 
