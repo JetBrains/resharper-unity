@@ -4,9 +4,7 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util;
 using NUnit.Framework;
-using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.References;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Xaml.Tree;
 using JetBrains.TestFramework.Projects;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.Uxml.Psi.References
