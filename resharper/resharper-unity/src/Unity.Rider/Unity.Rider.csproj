@@ -10,7 +10,7 @@
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Rider</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Rider</RootNamespace>
-    <LangVersion>9</LangVersion>
+    <LangVersion>11</LangVersion>
     <OutputPath Condition="'$(ReSharperUnityCommonOutputPath)'!=''">$(ReSharperUnityCommonOutputPath)</OutputPath>
   </PropertyGroup>
   <!-- ********** -->
