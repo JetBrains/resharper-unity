@@ -155,4 +155,13 @@
     <data name="ShaderNameMultipleCandidates" xml:space="preserve">
         <value>Multiple Shaders with same name '{0}'</value>
     </data>
+    <data name="ShaderSettings_t_Shader_settings" xml:space="preserve">
+        <value>Shader settings</value>
+    </data>
+    <data name="ShaderVariantsSettings_t_Shader_variants_settings" xml:space="preserve">
+        <value>Shader variants settings</value>
+    </data>
+    <data name="ShaderVariantsSettings_e_SelectedVariants_t_Selected_variants" xml:space="preserve">
+        <value>Selected variants</value>
+    </data>
 </root>
