@@ -26,10 +26,7 @@ import com.jetbrains.rider.RiderEnvironment
 import com.jetbrains.rider.debugger.DotNetValue
 import com.jetbrains.rider.debugger.visualizers.RiderDebuggerPresenterTab
 import com.jetbrains.rider.debugger.visualizers.RiderDebuggerValuePresenter
-import com.jetbrains.rider.model.debuggerWorker.ComputeObjectPropertiesArg
-import com.jetbrains.rider.model.debuggerWorker.FailedObjectProperties
-import com.jetbrains.rider.model.debuggerWorker.ObjectPropertiesProxy
-import com.jetbrains.rider.model.debuggerWorker.ValueFlags
+import com.jetbrains.rider.model.debuggerWorker.*
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.intellij.images.editor.impl.ImageEditorManagerImpl
@@ -77,7 +74,7 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
 
 
     override fun createTabs(node: XValueNode,
-                            properties: ObjectPropertiesProxy,
+                            properties: ObjectPropertiesBase,
                             stringPresentation: String?,
                             place: XValuePlace,
                             session: XDebugSession,

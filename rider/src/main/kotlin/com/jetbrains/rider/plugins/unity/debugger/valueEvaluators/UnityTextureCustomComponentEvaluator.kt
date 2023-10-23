@@ -6,6 +6,7 @@ import com.intellij.openapi.ui.FrameWrapper
 import com.intellij.xdebugger.frame.XValueNode
 import com.jetbrains.rider.debugger.evaluators.RiderCustomComponentEvaluator
 import com.jetbrains.rider.debugger.getSimplePresentation
+import com.jetbrains.rider.model.debuggerWorker.ObjectPropertiesBase
 import com.jetbrains.rider.model.debuggerWorker.ObjectPropertiesProxy
 import com.jetbrains.rider.model.debuggerWorker.ValueFlags
 import com.jetbrains.rider.plugins.unity.UnityBundle
@@ -20,10 +21,14 @@ class UnityTextureCustomComponentEvaluator : RiderCustomComponentEvaluator("Unit
         callback.evaluated(properties.value.getSimplePresentation())
     }
 
-    override fun isApplicable(node: XValueNode, properties: ObjectPropertiesProxy): Boolean =
-        !properties.valueFlags.contains(ValueFlags.IsNull)
-        && (properties.instanceType.definitionTypeFullName == "UnityEngine.Texture2D"
-            || properties.instanceType.definitionTypeFullName == "UnityEngine.RenderTexture")
+    override fun isApplicable(node: XValueNode, properties: ObjectPropertiesBase): Boolean {
+        if (properties is ObjectPropertiesProxy)
+            return !properties.valueFlags.contains(ValueFlags.IsNull)
+                   && (properties.instanceType.definitionTypeFullName == "UnityEngine.Texture2D"
+                       || properties.instanceType.definitionTypeFullName == "UnityEngine.RenderTexture")
+
+        return false
+    }
 
     override fun show(event: MouseEvent, project: Project, editor: Editor?) {
         val panel = FrameWrapper(project = project,
