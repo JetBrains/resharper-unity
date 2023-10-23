@@ -24,6 +24,7 @@ import com.jetbrains.rd.util.printlnError
 import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rider.RiderEnvironment
 import com.jetbrains.rider.debugger.DotNetValue
+import com.jetbrains.rider.debugger.IDotNetValue
 import com.jetbrains.rider.debugger.visualizers.RiderDebuggerPresenterTab
 import com.jetbrains.rider.debugger.visualizers.RiderDebuggerValuePresenter
 import com.jetbrains.rider.model.debuggerWorker.*
@@ -73,7 +74,8 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
     }
 
 
-    override fun createTabs(node: XValueNode,
+    override fun createTabs(value: IDotNetValue,
+                            node: XValueNode,
                             properties: ObjectPropertiesBase,
                             stringPresentation: String?,
                             place: XValuePlace,
@@ -107,11 +109,13 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
         return listOf(RiderDebuggerPresenterTab(name, name, parentPanel, null))
     }
 
-    private fun evaluateTextureAndShow(node: XValueNode,
-                                       project: Project,
-                                       jbLoadingPanel: JBLoadingPanel,
-                                       parentPanel: JBPanel<JBPanel<*>>,
-                                       lifetime: Lifetime) {
+    private fun evaluateTextureAndShow(
+        node: XValueNode,
+        project: Project,
+        jbLoadingPanel: JBLoadingPanel,
+        parentPanel: JBPanel<JBPanel<*>>,
+        lifetime: Lifetime,
+        value: IDotNetValue) {
         when (node) {
             is XValueNodeImpl -> node.calculateEvaluationExpression()
                 .onSuccess { expr ->
@@ -122,13 +126,8 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                                      UnityBundle.message("debugging.cannot.get.texture.debug.information", it))
                 }
             is ConfigurableXValueNodeImpl -> {
-                //TODO temporary solution until https://jetbrains.team/p/ij/reviews/117382 is merged
-                val declaredField = node.javaClass.getDeclaredField("val\$result")
-                declaredField.isAccessible = true
-                val xValue = declaredField.get(node)
-
-                if(xValue is XValue)
-                    xValue.calculateEvaluationExpression()
+                if(value is XValue)
+                    value.calculateEvaluationExpression()
                     .onSuccess { expr ->
                         continueTextureEvaluation(expr.expression, project, lifetime, jbLoadingPanel, parentPanel)
                     }
@@ -138,9 +137,8 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                     }
                 else
                     showErrorMessage(jbLoadingPanel, parentPanel,
-                                     UnityBundle.message("debugging.cannot.get.texture.debug.information", declaredField.toString()))
+                                     UnityBundle.message("debugging.cannot.get.texture.debug.information", value.toString()))
             }
-
         }
     }
 
