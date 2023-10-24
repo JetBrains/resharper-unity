@@ -333,6 +333,10 @@
     <action id="ShowAllInUnityExplorer" class="com.jetbrains.rider.plugins.unity.explorer.UnityShowAllFilesAction">
       <add-to-group group-id="ProjectViewTabToolbar" anchor="first"/>
     </action>
+
+    <action id="AddPauseBreakpoint" class="com.jetbrains.rider.plugins.unity.debugger.actions.handlers.AddPauseBreakpoint">
+      <add-to-group group-id="XDebugger.Hover.Breakpoint.Context.Menu"/>
+    </action>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
