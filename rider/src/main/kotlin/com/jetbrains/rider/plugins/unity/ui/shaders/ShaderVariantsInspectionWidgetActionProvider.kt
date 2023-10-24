@@ -8,6 +8,6 @@ import com.intellij.util.runIf
 
 class ShaderVariantsInspectionWidgetActionProvider : InspectionWidgetActionProvider {
     override fun createAction(editor: Editor): AnAction? = runIf(ShaderVariantsUtils.isValidContext(editor)) {
-        ActionManager.getInstance().getAction("ShaderVariantsSelector")
+        ActionManager.getInstance().getAction("ShaderVariantWidgetAction")
     }
 }

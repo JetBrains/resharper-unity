@@ -28,13 +28,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
     [PsiComponent]
     public class ShaderProgramCache : SimplePsiSourceFileCacheWithLocalCache<ShaderProgramCache.Item, ImmutableArray<CppFileLocation>>, IBuildMergeParticipant<IPsiSourceFile>
     {
-        private const string SHADER_VARIANT_NONE = "_";
+        private const string SHADER_KEYWORD_NONE = "_";
 
         private static readonly HashSet<StringSlice> ourShaderFeatureDirectiveAllowingDisableAllKeywords = new() { "shader_feature", "shader_feature_local" };
         private static readonly HashSet<StringSlice> ourShaderFeatureDirectives = new() { "shader_feature", "shader_feature_local", "multi_compile", "multi_compile_local", "dynamic_branch", "dynamic_branch_local" };
         
         private readonly Dictionary<CppFileLocation, ShaderProgramInfo> myProgramInfos = new();
-        private readonly OneToSetMap<string, CppFileLocation> myShaderVariants = new(); 
+        private readonly OneToSetMap<string, CppFileLocation> myShaderKeywords = new(); 
         
         public ShaderProgramCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager) : base(lifetime, locks, persistentIndexManager, Item.Marshaller, "Unity::Shaders::ShaderProgramCacheUpdated")
         {
@@ -86,7 +86,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             
             foreach (var shaderFeature in shaderFeatures)
             foreach (var entry in shaderFeature.Entries)
-                myShaderVariants.Add(entry.Keyword, location);
+                myShaderKeywords.Add(entry.Keyword, location);
         }
 
         private void RemoveProgramInfo(CppFileLocation location)
@@ -95,7 +95,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             {
                 foreach (var shaderFeature in shaderFeatures)
                 foreach (var entry in shaderFeature.Entries)
-                    myShaderVariants.Remove(entry.Keyword, location);
+                    myShaderKeywords.Remove(entry.Keyword, location);
             }
         }
 
@@ -105,17 +105,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             return myProgramInfos.TryGetValue(location, out shaderProgramInfo);
         }
 
-        public void ForEachVariant(Action<string> action)
+        public void ForEachKeyword(Action<string> action)
         {
             Locks.AssertReadAccessAllowed();
-            foreach (var shaderVariant in myShaderVariants.Keys) 
-                action(shaderVariant);
+            foreach (var shaderKeyword in myShaderKeywords.Keys) 
+                action(shaderKeyword);
         }
 
-        public void ForEachLocation<TAction>(string variant, ref TAction action) where TAction : IValueAction<CppFileLocation>
+        public void ForEachLocation<TAction>(string keyword, ref TAction action) where TAction : IValueAction<CppFileLocation>
         {
             Locks.AssertReadAccessAllowed();
-            foreach (var location in myShaderVariants.GetReadOnlyValues(variant)) 
+            foreach (var location in myShaderKeywords.GetReadOnlyValues(keyword)) 
                 action.Invoke(location);
         }
 
@@ -200,7 +200,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                 var entries = ImmutableArray.CreateBuilder<ShaderFeature.Entry>();
                 while (slicer.TryGetNextSlice(out var keyword, out var keywordOffset))
                 {
-                    if (!keyword.Equals(SHADER_VARIANT_NONE))
+                    if (!keyword.Equals(SHADER_KEYWORD_NONE))
                         entries.Add(new ShaderFeature.Entry(keyword.ToString(), TextRange.FromLength(baseOffset + keywordOffset, keyword.Length)));
                     else
                         allowDisableAllKeywords = true;

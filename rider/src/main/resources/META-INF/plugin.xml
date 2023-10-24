@@ -339,8 +339,8 @@
       <add-to-group group-id="XDebugger.Hover.Breakpoint.Context.Menu"/>
     </action>
     
-    <action id="ShaderVariantsSelector"
-            class="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsSelectorAction"/>
+    <action id="ShaderVariantWidgetAction"
+            class="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantInspectionAction"/>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">

@@ -8,10 +8,10 @@ import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidge
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileType
 
 
-class ShaderVariantsWidget(project: Project, editor: Editor) : AbstractShaderWidget(project, editor), RiderResolveContextWidget, Disposable {
+class ShaderVariantWidget(project: Project, editor: Editor) : AbstractShaderWidget(project, editor), RiderResolveContextWidget, Disposable {
     init {
         label.icon = ShaderLabFileType.icon
     }
 
-    override fun showPopup(showAt: RelativePoint) = ShaderVariantsSelector.show(project, showAt)
+    override fun showPopup(showAt: RelativePoint) = ShaderVariantPopup.show(project, showAt)
 }

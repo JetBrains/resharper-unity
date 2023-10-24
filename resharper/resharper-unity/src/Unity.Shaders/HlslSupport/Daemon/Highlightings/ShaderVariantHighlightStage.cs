@@ -16,7 +16,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlightings;
 
-[DaemonStage(StagesBefore = new[] { typeof(GlobalFileStructureCollectorStage), typeof(CppIdentifierHighlightingStage) }, HighlightingTypes = new[] { typeof(ShaderVariantHighlight) })]
+[DaemonStage(StagesBefore = new[] { typeof(GlobalFileStructureCollectorStage), typeof(CppIdentifierHighlightingStage) }, HighlightingTypes = new[] { typeof(ShaderKeywordHighlight) })]
 public class ShaderVariantHighlightStage : CppDaemonStageBase
 {
     public ShaderVariantHighlightStage(ElementProblemAnalyzerRegistrar elementProblemAnalyzerRegistrar) : base(elementProblemAnalyzerRegistrar)
@@ -50,7 +50,7 @@ public class ShaderVariantHighlightStage : CppDaemonStageBase
                         break;
                     if (child is MacroReference macroReference && IsShaderVariantReference(macroReference))
                     {
-                        var highlighting = new ShaderVariantHighlight(macroReference);
+                        var highlighting = new ShaderKeywordHighlight(macroReference);
                         consumer.ConsumeHighlighting(new HighlightingInfo(highlighting.CalculateRange(), highlighting));
                     }
                 }

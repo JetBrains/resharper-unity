@@ -6,12 +6,12 @@ using JetBrains.ReSharper.Psi.Cpp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlightings;
 
-[StaticSeverityHighlighting(Severity.INFO, typeof(ShaderVariantsHighlightingId), OverlapResolve = OverlapResolveKind.NONE, AttributeId = ShaderLabHighlightingAttributeIds.SHADER_VARIANT)]
-public class ShaderVariantHighlight : IHighlighting
+[StaticSeverityHighlighting(Severity.INFO, typeof(ShaderKeywordsHighlightingId), OverlapResolve = OverlapResolveKind.NONE, AttributeId = ShaderLabHighlightingAttributeIds.SHADER_KEYWORD)]
+public class ShaderKeywordHighlight : IHighlighting
 {
     private readonly MacroReference myShaderVariantReference;
 
-    public ShaderVariantHighlight(MacroReference shaderVariantReference)
+    public ShaderKeywordHighlight(MacroReference shaderVariantReference)
     {
         myShaderVariantReference = shaderVariantReference;
     }
@@ -22,8 +22,8 @@ public class ShaderVariantHighlight : IHighlighting
 
     public DocumentRange CalculateRange() => myShaderVariantReference.GetHighlightingRange();
     
-    [RegisterStaticHighlightingsGroup("Shader Variants Highlighting", IsVisible: true)]
-    public static class ShaderVariantsHighlightingId
+    [RegisterStaticHighlightingsGroup("Shader Keywords Highlighting", IsVisible: true)]
+    public static class ShaderKeywordsHighlightingId
     {
     }
 }

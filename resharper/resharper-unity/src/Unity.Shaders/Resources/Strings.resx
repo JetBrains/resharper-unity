@@ -161,10 +161,10 @@
     <data name="ShaderVariantsSettings_t_Shader_variants_settings" xml:space="preserve">
         <value>Shader variants settings</value>
     </data>
-    <data name="ShaderVariantsSettings_e_SelectedVariants_t_Selected_variants" xml:space="preserve">
-        <value>Selected variants</value>
+    <data name="ShaderVariantsSettings_e_EnabledKeywords_t_Enabled_keywords" xml:space="preserve">
+        <value>Enabled keywords</value>
     </data>
-    <data name="ShaderVariant_RiderPresentableName" xml:space="preserve">
-        <value>Shader Variant</value>
+    <data name="ShaderKeyword_RiderPresentableName" xml:space="preserve">
+        <value>Shader Keyword</value>
     </data>
 </root>

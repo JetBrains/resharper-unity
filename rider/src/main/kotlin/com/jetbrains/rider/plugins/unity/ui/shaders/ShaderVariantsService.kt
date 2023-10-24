@@ -16,7 +16,7 @@ class ShaderVariantsService : RiderResolveContextWidgetProvider {
                                editorModel: TextControlModel,
                                editor: Editor
     ): RiderResolveContextWidget? = runIf(ShaderVariantsUtils.isValidContext(editor)) {
-        ShaderVariantsWidget(project, editor)
+        ShaderVariantWidget(project, editor)
     }
 
     override fun revalidateWidget(widget: RiderResolveContextWidget,
