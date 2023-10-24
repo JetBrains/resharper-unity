@@ -1,0 +1,64 @@
+Language: PsiLanguageType:UXML
+XmlFile
+  XmlTag
+    XmlTagHeaderNode
+      XmlTagStartToken(0,1)(type:TAG_START, text:<)
+      XmlIdentifier(1,7)(type:IDENTIFIER, text:ui:UXML)
+      XmlWhitespaceToken(8,1)(type:SPACE, text: )
+      UxmlNamespaceAliasAttribute
+        XmlIdentifier(9,8)(type:IDENTIFIER, text:xmlns:ui)
+        XmlEqToken(17,1)(type:EQ, text:=)
+        XmlValueToken(18,24)(type:STRING, text:"UnityEngine.UIElements")
+      XmlWhitespaceToken(42,1)(type:SPACE, text: )
+      UxmlNamespaceAliasAttribute
+        XmlIdentifier(43,9)(type:IDENTIFIER, text:xmlns:uie)
+        XmlEqToken(52,1)(type:EQ, text:=)
+        XmlValueToken(53,24)(type:STRING, text:"UnityEditor.UIElements")
+      XmlWhitespaceToken(77,1)(type:NEW_LINE, text:\n)
+      XmlWhitespaceToken(78,9)(type:SPACE, text:         )
+      XmlAttribute
+        XmlIdentifier(87,3)(type:IDENTIFIER, text:xsi)
+        XmlEqToken(90,1)(type:EQ, text:=)
+        XmlValueToken(91,43)(type:STRING, text:"http://www.w3.org/2001/XMLSchema-instance")
+      XmlWhitespaceToken(134,1)(type:SPACE, text: )
+      XmlAttribute
+        XmlIdentifier(135,6)(type:IDENTIFIER, text:engine)
+        XmlEqToken(141,1)(type:EQ, text:=)
+        XmlValueToken(142,24)(type:STRING, text:"UnityEngine.UIElements")
+      XmlWhitespaceToken(166,1)(type:SPACE, text: )
+      XmlAttribute
+        XmlIdentifier(167,6)(type:IDENTIFIER, text:editor)
+        XmlEqToken(173,1)(type:EQ, text:=)
+        XmlValueToken(174,24)(type:STRING, text:"UnityEditor.UIElements")
+      XmlWhitespaceToken(198,1)(type:NEW_LINE, text:\n)
+      XmlWhitespaceToken(199,9)(type:SPACE, text:         )
+      XmlAttribute
+        XmlIdentifier(208,25)(type:IDENTIFIER, text:noNamespaceSchemaLocation)
+        XmlEqToken(233,1)(type:EQ, text:=)
+        XmlValueToken(234,42)(type:STRING, text:"../../../UIElementsSchema/UIElements.xsd")
+      XmlWhitespaceToken(276,1)(type:SPACE, text: )
+      XmlAttribute
+        XmlIdentifier(277,21)(type:IDENTIFIER, text:editor-extension-mode)
+        XmlEqToken(298,1)(type:EQ, text:=)
+        XmlValueToken(299,7)(type:STRING, text:"False")
+      XmlTagEndToken(306,1)(type:TAG_END, text:>)
+    XmlWhitespaceToken(307,1)(type:NEW_LINE, text:\n)
+    XmlWhitespaceToken(308,4)(type:SPACE, text:    )
+    XmlTag
+      XmlTagHeaderNode
+        XmlTagStartToken(312,1)(type:TAG_START, text:<)
+        XmlIdentifier(313,16)(type:IDENTIFIER, text:ui:VisualElement)
+        XmlWhitespaceToken(329,1)(type:SPACE, text: )
+        XmlAttribute
+          XmlIdentifier(330,4)(type:IDENTIFIER, text:name)
+          XmlEqToken(334,1)(type:EQ, text:=)
+          XmlValueToken(335,6)(type:STRING, text:"kjsd")
+        XmlWhitespaceToken(341,1)(type:SPACE, text: )
+        XmlTagEnd1Token(342,2)(type:TAG_END1, text:/>)
+    XmlWhitespaceToken(344,1)(type:NEW_LINE, text:\n)
+    XmlTagFooterNode
+      XmlTagStart1Token(345,2)(type:TAG_START1, text:</)
+      XmlIdentifier(347,7)(type:IDENTIFIER, text:ui:UXML)
+      XmlTagEndToken(354,1)(type:TAG_END, text:>)
+  XmlWhitespaceToken(355,1)(type:NEW_LINE, text:\n)
+

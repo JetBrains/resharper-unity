@@ -31,6 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
         private static readonly HashSet<StringSlice> ourShaderVariantDirectives = new() { "shader_feature", "shader_feature_local", "multi_compile", "multi_compile_local", "dynamic_branch", "dynamic_branch_local" };
         
         private readonly Dictionary<CppFileLocation, ShaderProgramInfo> myProgramInfos = new();
+        private readonly OneToSetMap<string, CppFileLocation> myShaderVariants = new(); 
         
         public ShaderProgramCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager) : base(lifetime, locks, persistentIndexManager, Item.Marshaller, "Unity::Shaders::ShaderProgramCacheUpdated")
         {
@@ -63,21 +64,54 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             {
                 var location = new CppFileLocation(sourceFile, entry.Range);
                 builder.Add(location);
-                myProgramInfos.Add(location, entry.ProgramInfo);
+                AddProgramInfo(location, entry.ProgramInfo);
             }
             return builder.MoveToImmutable();
         }
 
         protected override void OnLocalRemoved(IPsiSourceFile sourceFile, ImmutableArray<CppFileLocation> removed)
         {
-            foreach (var item in removed)
-                myProgramInfos.Remove(item);
+            foreach (var location in removed)
+                RemoveProgramInfo(location);
+        }
+
+        private void AddProgramInfo(CppFileLocation location, ShaderProgramInfo programInfo)
+        {
+            myProgramInfos.Add(location, programInfo);
+            if (programInfo.ShaderVariants is { } shaderVariants)
+            {
+                foreach (var shaderVariant in shaderVariants)
+                    myShaderVariants.Add(shaderVariant, location);
+            }
+        }
+
+        private void RemoveProgramInfo(CppFileLocation location)
+        {
+            if (myProgramInfos.Remove(location, out var programInfo) && programInfo.ShaderVariants is {} shaderVariants)
+            {
+                foreach (var shaderVariant in shaderVariants) 
+                    myShaderVariants.Remove(shaderVariant, location);
+            }
         }
 
         public bool TryGetShaderProgramInfo(CppFileLocation location, [MaybeNullWhen(false)] out ShaderProgramInfo shaderProgramInfo)
         {
             Locks.AssertReadAccessAllowed();
             return myProgramInfos.TryGetValue(location, out shaderProgramInfo);
+        }
+
+        public void ForEachVariant(Action<string> action)
+        {
+            Locks.AssertReadAccessAllowed();
+            foreach (var shaderVariant in myShaderVariants.Keys) 
+                action(shaderVariant);
+        }
+
+        public void ForEachLocation<TAction>(string variant, ref TAction action) where TAction : IValueAction<CppFileLocation>
+        {
+            Locks.AssertReadAccessAllowed();
+            foreach (var location in myShaderVariants.GetReadOnlyValues(variant)) 
+                action.Invoke(location);
         }
 
         public ShaderProgramInfo ReadProgramInfo(CppDocumentBuffer buffer)
@@ -106,7 +140,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                     if (!firstValue.IsEmpty)
                     {
                         // based on https://docs.unity3d.com/Manual/SL-ShaderPrograms.html
-                        // We do not have any solution how we could handle multi_compile direcitves. It is complex task because
+                        // We do not have any solution how we could handle multi_compile directives. It is complex task because
                         // a lot of different files could be produces from multi_compile combination
                         // Right now, we will consider first combination.
                         if (pragmaType.Equals("multi_compile") || pragmaType.Equals("multi_compile_local") ||

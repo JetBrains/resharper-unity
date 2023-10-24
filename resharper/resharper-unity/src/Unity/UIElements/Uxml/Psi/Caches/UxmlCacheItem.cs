@@ -2,15 +2,15 @@ using System.Collections.Generic;
 using JetBrains.Serialization;
 using JetBrains.Util.PersistentMap;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Uxml.Psi.Caches
+namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Caches
 {
     public class UxmlCacheItem
     {
-         private static readonly IUnsafeMarshaller<UxmlCacheItem> ourUxmlCacheItemMarshaller =
+        private static readonly IUnsafeMarshaller<UxmlCacheItem> ourUxmlCacheItemMarshaller =
             new UniversalMarshaller<UxmlCacheItem>(Read, Write);
          
-         public static readonly UnsafeFilteredCollectionMarshaller<UxmlCacheItem, List<UxmlCacheItem>> Marshaller =
-             new(ourUxmlCacheItemMarshaller, n => new List<UxmlCacheItem>(n), item => item != null);
+        public static readonly UnsafeFilteredCollectionMarshaller<UxmlCacheItem, List<UxmlCacheItem>> Marshaller =
+            new(ourUxmlCacheItemMarshaller, n => new List<UxmlCacheItem>(n), item => item != null);
 
 
         public UxmlCacheItem(string controlTypeName, string name, int declarationOffset)
