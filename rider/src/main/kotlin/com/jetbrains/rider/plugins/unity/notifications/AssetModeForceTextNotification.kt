@@ -4,9 +4,9 @@ import com.intellij.ide.BrowserUtil
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import com.jetbrains.rd.platform.client.ProtocolProjectSession
 import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.protocol.SolutionExtListener
@@ -24,7 +24,7 @@ class AssetModeForceTextNotification(private val project: Project): LifetimedSer
     }
 
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
-        override fun extensionCreated(lifetime: Lifetime, session: ProtocolProjectSession, model: FrontendBackendModel) {
+        override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
             model.notifyAssetModeForceText.adviseNotNullOnce(session.project.lifetime) {
                 getInstance(session.project).showNotificationIfNeeded()
             }

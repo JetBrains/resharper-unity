@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
@@ -9,7 +8,7 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.Match;
 using JetBrains.ReSharper.Feature.Services.CSharp.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Feature.Services.Lookup;
 using JetBrains.ReSharper.Features.Intellisense.CodeCompletion.CSharp.Rules;
-using JetBrains.ReSharper.Plugins.Unity.Uxml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Resources;
@@ -34,11 +33,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                     UnityCompletionUtils.IsCorrespondingArgument("name", 0)))
                 return false;
 
-
             var uxmlCache = context.NodeInFile.GetSolution().GetComponent<UxmlCache>();
 
             var ranges = context.CompletionRanges;
-            var completionItems = typeParamName == null ? uxmlCache.GetAllPossibleNames() : uxmlCache.GetPossibleNames(typeParamName);
+            var completionItems = typeParamName == null ? uxmlCache.GetNames() : uxmlCache.GetNamesForTypeName(typeParamName);
             
             if (argumentLiteral != null)
             {
