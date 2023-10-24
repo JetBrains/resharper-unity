@@ -35,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
             var packageManager = solution.GetComponent<PackageManager>();
             var packageData = packageManager.GetOwningPackage(asmDefLocation);
 
-            var linkPart = compiledElement.GetSearchableText()!.Replace("+", ".").Replace("`", "-");
+            var linkPart = GetSearchableText(compiledElement)!.Replace("+", ".").Replace("`", "-");
 
             if (!JetSemanticVersion.TryParse(packageData.PackageDetails.Version, out var version))
                 return null;
@@ -47,6 +47,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
                 urlHost = result.Host;
             
             return new Uri($"https://{urlHost}/Packages/{packageData.Id}@{version.Major}.{version.Minor}/api/{linkPart}.html");
+        }
+        
+        public static string GetSearchableText(ICompiledElement compiledElement)
+        {
+            // RIDER-100677 Broken links in Unity documentation
+            
+            if (compiledElement is ITypeMember typeMemberElement)
+            {
+                var containingType = typeMemberElement.ContainingType;
+                if (containingType != null)
+                { 
+                    return containingType.GetClrName().FullName;
+                }
+            }
+
+            return compiledElement.GetSearchableText();
         }
 
         private static bool IsPublic(ICompiledElement element)
