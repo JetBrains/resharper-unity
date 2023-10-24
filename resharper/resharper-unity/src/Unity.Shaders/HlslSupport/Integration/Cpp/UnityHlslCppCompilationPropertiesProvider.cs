@@ -1,5 +1,4 @@
 #nullable enable
-using System;
 using System.Collections.Generic;
 using JetBrains.Collections;
 using JetBrains.ProjectModel;
@@ -22,16 +21,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
         private readonly IUnityVersion myUnityVersion;
         private readonly CgIncludeDirectoryProvider myCgIncludeDirectoryProvider;
         private readonly IReadOnlyList<IUnityHlslCustomMacrosProvider> myCustomDefinesProviders;
+        private readonly ShaderProgramCache myShaderProgramCache;
 
         public UnityHlslDialect HlslDialect { get; } = new();
         public UnityShaderLabHlslDialect ShaderLabHlslDialect { get; } = new();
         public UnityComputeHlslDialect ComputeHlslDialect { get; } = new();
 
-        public UnityHlslCppCompilationPropertiesProvider(IUnityVersion unityVersion, CgIncludeDirectoryProvider cgIncludeDirectoryProvider, IReadOnlyList<IUnityHlslCustomMacrosProvider> customDefinesProviders)
+        public UnityHlslCppCompilationPropertiesProvider(IUnityVersion unityVersion, CgIncludeDirectoryProvider cgIncludeDirectoryProvider, IReadOnlyList<IUnityHlslCustomMacrosProvider> customDefinesProviders, ShaderProgramCache shaderProgramCache)
         {
             myUnityVersion = unityVersion;
             myCgIncludeDirectoryProvider = cgIncludeDirectoryProvider;
             myCustomDefinesProviders = customDefinesProviders;
+            myShaderProgramCache = shaderProgramCache;
         }
 
         public CppCompilationProperties? GetCompilationProperties(IProject project, IProjectFile? projectFile, CppFileLocation rootFile,
@@ -46,22 +47,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
                     case ShaderLabProjectFileType.SHADERLAB_EXTENSION:
                     {
                         var sourceFile = projectFile?.ToSourceFile() ?? rootFile.GetRandomSourceFile(solution);
-                        var shaderProgramInfo = solution.GetComponent<ShaderProgramCache>().GetOrReadUpToDateProgramInfo(sourceFile, rootFile);
-                        return GetShaderLabHlslCompilationProperties(solution, rootFile, shaderProgramInfo);
+                        if (myShaderProgramCache.TryGetOrReadUpToDateProgramInfo(sourceFile, rootFile, out var shaderProgramInfo))
+                            return GetShaderLabHlslCompilationProperties(solution, project, rootFile, shaderProgramInfo);
+                        break;
                     }
                     case CppProjectFileType.COMPUTE_EXTENSION:
-                        return GetHlslCompilationProperties(solution, ComputeHlslDialect);
+                        return GetHlslCompilationProperties(solution, project, ComputeHlslDialect);
                     case var _ when PsiSourceFileUtil.IsHlslFile(filePath):
-                        return GetHlslCompilationProperties(solution, HlslDialect);
+                        return GetHlslCompilationProperties(solution, project, HlslDialect);
                 }
             }
 
             return null;
         }
 
-        public CppCompilationProperties GetShaderLabHlslCompilationProperties(ISolution solution, CppFileLocation location, ShaderProgramInfo shaderProgramInfo)
+        public CppCompilationProperties GetShaderLabHlslCompilationProperties(ISolution solution, IProject? project, CppFileLocation location, ShaderProgramInfo shaderProgramInfo)
         {
-            var properties = GetHlslCompilationProperties(solution, ShaderLabHlslDialect);
+            var properties = GetHlslCompilationProperties(solution, project, ShaderLabHlslDialect);
             if (shaderProgramInfo.ShaderType == ShaderType.Surface)
                 DefineSurfaceShaderSymbols(properties.PredefinedMacros);
             foreach (var (name, value) in shaderProgramInfo.DefinedMacros) 
@@ -71,7 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             return properties;
         }
 
-        private CppCompilationProperties GetHlslCompilationProperties(ISolution solution, UnityHlslDialectBase dialect)
+        private CppCompilationProperties GetHlslCompilationProperties(ISolution solution, IProject? project, UnityHlslDialectBase dialect)
         {
             var properties = new CppCompilationProperties
             {
@@ -84,16 +86,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
 
             var solutionDirectory = solution.SolutionDirectory;
             properties.ForcedIncludes.Add(solutionDirectory.Combine(Utils.ShaderConfigFile).FullPath);
-            DefineCommonSymbols(properties.PredefinedMacros);
+            DefineCommonSymbols(project, properties.PredefinedMacros);
             
             properties.HeaderSearchPaths.IncludePaths.Add(solutionDirectory);
             return properties;
         }
 
-        private void DefineCommonSymbols(List<CppPPDefineSymbol> definedSymbols)
+        private void DefineCommonSymbols(IProject? project, List<CppPPDefineSymbol> definedSymbols)
         {
             definedSymbols.Add(CppPPDefineSymbolUtil.ParsePredefinedMacro("SHADER_API_D3D11"));
-            definedSymbols.Add(CppPPDefineSymbolUtil.CreatePredefinedSymbol("UNITY_VERSION", GetHlslUnityVersion().ToString()));
+            definedSymbols.Add(CppPPDefineSymbolUtil.CreatePredefinedSymbol("UNITY_VERSION", GetHlslUnityVersion(project).ToString()));
         }
 
         private void DefineSurfaceShaderSymbols(List<CppPPDefineSymbol> definedSymbols)
@@ -103,16 +105,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             definedSymbols.Add(CppPPDefineSymbolUtil.ParsePredefinedMacro("WorldNormalVector(data,normal)=normal"));
         }
 
-        public void DefineSymbols(List<CppPPDefineSymbol> definedSymbols)
+        public void DefineSymbols(IProject? project, List<CppPPDefineSymbol> definedSymbols)
         {
-            DefineCommonSymbols(definedSymbols);
+            DefineCommonSymbols(project, definedSymbols);
             DefineSurfaceShaderSymbols(definedSymbols);
         }
 
-        private int GetHlslUnityVersion()
+        private int GetHlslUnityVersion(IProject? project)
         {
-            var version = myUnityVersion.ActualVersionForSolution.Maybe.ValueOrDefault;
-            return version != null ? version.Major * 1_00 + version.Minor * 10 + Math.Min(version.Build, 9) : 0;
+            var version = myUnityVersion.GetActualVersion(project);
+            return version.Major * 100 + version.Minor * 10 + version.Build.Clamp(0, 9);
         }
     }
 }

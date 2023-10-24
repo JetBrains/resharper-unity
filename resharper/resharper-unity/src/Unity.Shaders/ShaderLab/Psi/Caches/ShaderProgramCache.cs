@@ -119,20 +119,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                 action.Invoke(location);
         }
 
-        public ShaderProgramInfo GetOrReadUpToDateProgramInfo(IPsiSourceFile sourceFile, CppFileLocation cppFileLocation)
+        public bool TryGetOrReadUpToDateProgramInfo(IPsiSourceFile sourceFile, CppFileLocation cppFileLocation, [MaybeNullWhen(false)] out ShaderProgramInfo shaderProgramInfo)
         {
             var range = cppFileLocation.RootRange;
             Assertion.Assert(range.IsValid);
             
             // PSI is not committed here
             // TODO: cpp global cache should calculate cache only when PSI for file with cpp injects is committed.
-            ShaderProgramInfo? shaderProgramInfo;
             if (!UpToDate(sourceFile))
                 shaderProgramInfo = ReadProgramInfo(new CppDocumentBuffer(sourceFile.Document.Buffer, range));
-            else if (!TryGetShaderProgramInfo(cppFileLocation, out shaderProgramInfo)) 
-                Assertion.Fail($"Shader program info is missing for {cppFileLocation}");
-
-            return shaderProgramInfo;
+            else if (!TryGetShaderProgramInfo(cppFileLocation, out shaderProgramInfo))
+                return false;
+            return true;
         }
 
         private ShaderProgramInfo ReadProgramInfo(CppDocumentBuffer buffer)

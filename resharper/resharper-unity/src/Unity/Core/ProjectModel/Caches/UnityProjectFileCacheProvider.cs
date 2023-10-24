@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches
     public class UnityProjectFileCacheProvider : IProjectFileDataProvider<UnityProjectDataCache>
     {
         private static readonly char[] ourSymbolSeparator = { ';', ',' };
-        private static readonly Regex ourVersionRegex = new Regex(@"UNITY_(?<major>\d+)_(?<minor>\d+)");
+        private static readonly Regex ourVersionRegex = new Regex(@"UNITY_(?<major>\d+)_(?<minor>\d+)(_(?<build>\d+))?");
 
         private readonly ISolution mySolution;
         private readonly IProjectFileDataCache myCache;
@@ -139,12 +139,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.Caches
                 {
                     var major = int.Parse(match.Groups["major"].Value);
                     var minor = int.Parse(match.Groups["minor"].Value);
-
-                    // TODO: Perhaps we should also capture maintenance version
-                    // If we do, we need to update API range checks, because those are only major/minor, and the actual
-                    // version (e.g. 2018.1.1) would be larger than the API version (2018.1)
-
-                    var newVersion = new Version(major, minor);
+                    var newVersion = int.TryParse(match.Groups["build"].Value, out var build) ? new Version(major, minor, build) : new Version(major, minor);
                     if (newVersion > unityVersion)
                         unityVersion = newVersion;
                 }

@@ -1,4 +1,5 @@
 #nullable enable
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
@@ -38,11 +39,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             var randomProjectFile = sourceFile.ToProjectFile() ?? rootFile.GetRandomProjectFile(solution);
             
             // retrieve shader program info
-            var shaderProgramInfo = solution.GetComponent<ShaderProgramCache>().GetOrReadUpToDateProgramInfo(sourceFile, rootFile);
+            if (!solution.GetComponent<ShaderProgramCache>().TryGetOrReadUpToDateProgramInfo(sourceFile, rootFile, out var shaderProgramInfo))
+                Assertion.Fail($"Shader program info is missing for {rootFile}");
          
             // create compilation properties
             var compilationPropertiesProvider = cache.Solution.GetComponent<UnityHlslCppCompilationPropertiesProvider>();
-            var compilationProperties = compilationPropertiesProvider.GetShaderLabHlslCompilationProperties(cache.Solution, rootFile, shaderProgramInfo);
+            var compilationProperties = compilationPropertiesProvider.GetShaderLabHlslCompilationProperties(solution, sourceFile.GetProject(), rootFile, shaderProgramInfo);
             
             // create inclusion context
             var languageDialect = CppProjectConfigurationUtil.GetLanguageDialect(compilationProperties);
