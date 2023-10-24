@@ -23,6 +23,7 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.printlnError
 import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rider.RiderEnvironment
+import com.jetbrains.rider.debugger.DotNetDebugProcess
 import com.jetbrains.rider.debugger.DotNetValue
 import com.jetbrains.rider.debugger.IDotNetValue
 import com.jetbrains.rider.debugger.visualizers.RiderDebuggerPresenterTab
@@ -55,7 +56,8 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
     )
 
     override fun isApplicable(node: XValueNode, properties: ObjectPropertiesProxy, place: XValuePlace, session: XDebugSession): Boolean =
-        !properties.valueFlags.contains(ValueFlags.IsNull)
+        (session.debugProcess as? DotNetDebugProcess)?.isIl2Cpp == false
+        && !properties.valueFlags.contains(ValueFlags.IsNull)
         && (properties.instanceType.definitionTypeFullName == "UnityEngine.Texture2D"
             || properties.instanceType.definitionTypeFullName == "UnityEngine.RenderTexture")
 
@@ -96,7 +98,7 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
         val evaluationRequest = "System.Reflection.Assembly.LoadFile(@\"${bundledFile.absolutePath}\")"
         val project = session.project
         evaluate(project, evaluationRequest, lifetime,
-                 successfullyEvaluated = { evaluateTextureAndShow(node, project, jbLoadingPanel, parentPanel, lifetime) },
+                 successfullyEvaluated = { evaluateTextureAndShow(node, project, jbLoadingPanel, parentPanel, lifetime, value) },
                  evaluationFailed = {
                      showErrorMessage(
                          jbLoadingPanel,

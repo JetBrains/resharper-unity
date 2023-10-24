@@ -3,7 +3,9 @@ package com.jetbrains.rider.plugins.unity.debugger.valueEvaluators
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.FrameWrapper
+import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.frame.XValueNode
+import com.jetbrains.rider.debugger.DotNetDebugProcess
 import com.jetbrains.rider.debugger.evaluators.RiderCustomComponentEvaluator
 import com.jetbrains.rider.debugger.getSimplePresentation
 import com.jetbrains.rider.model.debuggerWorker.ObjectPropertiesBase
@@ -21,9 +23,10 @@ class UnityTextureCustomComponentEvaluator : RiderCustomComponentEvaluator("Unit
         callback.evaluated(properties.value.getSimplePresentation())
     }
 
-    override fun isApplicable(node: XValueNode, properties: ObjectPropertiesBase): Boolean {
+    override fun isApplicable(node: XValueNode, properties: ObjectPropertiesBase, session: XDebugSession): Boolean {
         if (properties is ObjectPropertiesProxy)
-            return !properties.valueFlags.contains(ValueFlags.IsNull)
+            return (session.debugProcess as? DotNetDebugProcess)?.isIl2Cpp == false
+                   && !properties.valueFlags.contains(ValueFlags.IsNull)
                    && (properties.instanceType.definitionTypeFullName == "UnityEngine.Texture2D"
                        || properties.instanceType.definitionTypeFullName == "UnityEngine.RenderTexture")
 
