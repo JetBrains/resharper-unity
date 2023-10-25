@@ -19,7 +19,6 @@ using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Serialization;
 using JetBrains.Util;
-using JetBrains.Util.Collections;
 using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
@@ -32,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
         private static readonly HashSet<StringSlice> ourShaderVariantDirectives = new() { "shader_feature", "shader_feature_local", "multi_compile", "multi_compile_local", "dynamic_branch", "dynamic_branch_local" };
         
         private readonly Dictionary<CppFileLocation, ShaderProgramInfo> myProgramInfos = new();
-        private readonly CountingSet<string> myShaderVariants = new(); 
+        private readonly OneToSetMap<string, CppFileLocation> myShaderVariants = new(); 
         
         public ShaderProgramCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager) : base(lifetime, locks, persistentIndexManager, Item.Marshaller, "Unity::Shaders::ShaderProgramCacheUpdated")
         {
@@ -82,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             if (programInfo.ShaderVariants is { } shaderVariants)
             {
                 foreach (var shaderVariant in shaderVariants)
-                    myShaderVariants.Add(shaderVariant);
+                    myShaderVariants.Add(shaderVariant, location);
             }
         }
 
@@ -91,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             if (myProgramInfos.Remove(location, out var programInfo) && programInfo.ShaderVariants is {} shaderVariants)
             {
                 foreach (var shaderVariant in shaderVariants) 
-                    myShaderVariants.Remove(shaderVariant);
+                    myShaderVariants.Remove(shaderVariant, location);
             }
         }
 
@@ -104,9 +103,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
         public void ForEachVariant(Action<string> action)
         {
             Locks.AssertReadAccessAllowed();
-            foreach (var shaderVariant in myShaderVariants.GetItems()) 
+            foreach (var shaderVariant in myShaderVariants.Keys) 
                 action(shaderVariant);
-        } 
+        }
+
+        public void ForEachLocation<TAction>(string variant, ref TAction action) where TAction : IValueAction<CppFileLocation>
+        {
+            Locks.AssertReadAccessAllowed();
+            foreach (var location in myShaderVariants.GetReadOnlyValues(variant)) 
+                action.Invoke(location);
+        }
 
         public ShaderProgramInfo ReadProgramInfo(CppDocumentBuffer buffer)
         {

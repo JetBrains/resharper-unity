@@ -68,6 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static readonly IClrTypeName UnityEvent = new ClrTypeName("UnityEngine.Events.UnityEventBase");
         public static readonly IClrTypeName SphericalHarmonicsL2 = new ClrTypeName("UnityEngine.Rendering.SphericalHarmonicsL2");
         public static readonly IClrTypeName LazyLoadReference = new ClrTypeName("UnityEngine.LazyLoadReference`1");
+        public static readonly IClrTypeName VisualElement = new ClrTypeName("UnityEngine.UIElements.VisualElement");
 
         // UnityEngine.Networking
         public static readonly IClrTypeName NetworkBehaviour = new ClrTypeName("UnityEngine.Networking.NetworkBehaviour");
