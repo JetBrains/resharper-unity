@@ -345,8 +345,8 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- IDEA default schemes -->
-    <additionalTextAttributes file="colorSchemes/default_additional.xml" scheme="Default" />
-    <additionalTextAttributes file="colorSchemes/darcula_additional.xml" scheme="Darcula" />
+    <additionalTextAttributes file="colorSchemes/UnityDefault.xml" scheme="Default" />
+    <additionalTextAttributes file="colorSchemes/UnityDarcula.xml" scheme="Darcula" />
 
     <notificationGroup id="Unity log open" displayType="BALLOON" bundle="messages.UnityBundle"
                        key="notification.group.unity.log.open" />

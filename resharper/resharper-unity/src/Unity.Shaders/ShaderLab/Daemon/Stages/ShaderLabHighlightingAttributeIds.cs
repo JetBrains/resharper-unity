@@ -1,6 +1,9 @@
-﻿using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
+﻿using System.Drawing;
+using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
+using JetBrains.ReSharper.Feature.Services.Daemon.Attributes.Idea;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
+using JetBrains.ReSharper.Psi.Cpp.Daemon;
 using JetBrains.TextControl.DocumentMarkup;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
@@ -53,13 +56,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         RiderPresentableNameResourceName = nameof(Strings.CommentsBlockComment_RiderPresentableName),
         FallbackAttributeId = DefaultLanguageAttributeIds.BLOCK_COMMENT,
         Layer = HighlighterLayer.SYNTAX)]
-    [RegisterHighlighter(SHADER_KEYWORD,
+    [RegisterHighlighter(ACTIVE_SHADER_KEYWORD,
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
         RiderPresentableNameResourceType = typeof(Strings),
-        RiderPresentableNameResourceName = nameof(Strings.ShaderKeyword_RiderPresentableName),
-        FallbackAttributeId = DefaultLanguageAttributeIds.IDENTIFIER,
-        Layer = HighlighterLayer.ADDITIONAL_SYNTAX
+        RiderPresentableNameResourceName = nameof(Strings.ActiveShaderKeyword_RiderPresentableName),
+        FallbackAttributeId = CppHighlightingAttributeIds.CPP_MACRO_NAME_ATTRIBUTE,
+        Layer = HighlighterLayer.ADDITIONAL_SYNTAX + 1
+    )]
+    [RegisterHighlighter(INACTIVE_SHADER_KEYWORD,
+        GroupId = GROUP_ID,
+        EffectType = EffectType.TEXT,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.InactiveShaderKeyword_RiderPresentableName),
+        FallbackAttributeId = IdeaHighlightingAttributeIds.NOT_USED_ELEMENT_ATTRIBUTES,
+        ForegroundColor = "LightGray", 
+        DarkForegroundColor = "DarkGray",
+        Layer = HighlighterLayer.ADDITIONAL_SYNTAX + 1
+    )]
+    [RegisterHighlighter(SUPPRESSED_SHADER_KEYWORD,
+        GroupId = GROUP_ID,
+        EffectType = EffectType.TEXT,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.SuppressedShaderKeyword_RiderPresentableName),
+        FontStyle = FontStyle.Strikeout,
+        Layer = HighlighterLayer.ADDITIONAL_SYNTAX + 1
     )]
     public static class ShaderLabHighlightingAttributeIds
     {
@@ -73,7 +94,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         public const string STRING = "ReSharper ShaderLab String";
         public const string LINE_COMMENT = "ReSharper ShaderLab Line Comment";
         public const string BLOCK_COMMENT = "ReSharper ShaderLab Block Comment";
-        public const string SHADER_KEYWORD = "ReSharper ShaderLab Shader Keyword";
+        public const string ACTIVE_SHADER_KEYWORD = "ReSharper ShaderLab Active Shader Keyword";
+        public const string SUPPRESSED_SHADER_KEYWORD = "ReSharper ShaderLab Suppressed Shader Keyword";
+        public const string INACTIVE_SHADER_KEYWORD = "ReSharper ShaderLab Inactive Shader Keyword";
 
         public const string DEMO_TEXT =
 @"<ReSharper.ShaderLab_BLOCK_COMMENT>/* Sample shader */</ReSharper.ShaderLab_BLOCK_COMMENT>
