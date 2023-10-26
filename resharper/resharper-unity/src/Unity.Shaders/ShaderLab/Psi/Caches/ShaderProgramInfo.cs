@@ -1,8 +1,10 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
 using JetBrains.Serialization;
+using JetBrains.Util;
 using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
@@ -16,6 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
         public int ShaderTarget { get; }
         public ImmutableArray<ShaderFeature> ShaderFeatures { get; }
         public Dictionary<string, string> DefinedMacros { get; }
+        private readonly OneToListMap<string, ShaderFeature> myKeywordToFeatures; 
         
         public ShaderProgramInfo(InjectedHlslProgramType injectedProgramType, ShaderType shaderType, int shaderTarget, ImmutableArray<ShaderFeature> shaderFeatures, Dictionary<string, string> definedMacros)
         {
@@ -24,7 +27,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             ShaderType = shaderType;
             ShaderFeatures = shaderFeatures;
             DefinedMacros = definedMacros;
+
+            var keywordToFeatures = new OneToListMap<string, ShaderFeature>();
+            foreach (var shaderFeature in shaderFeatures)
+            foreach (var entry in shaderFeature.Entries)
+                keywordToFeatures.Add(entry.Keyword, shaderFeature);
+            myKeywordToFeatures = keywordToFeatures;
         }
+        
+        public ICollection<string> Keywords => myKeywordToFeatures.Keys;
+        public OneToListMap<string, ShaderFeature>.ValueCollection GetShaderFeatures(string keyword) => myKeywordToFeatures[keyword];
+        public bool HasKeyword(string keyword) => myKeywordToFeatures.ContainsKey(keyword);
 
         private static ShaderProgramInfo Read(UnsafeReader reader)
         {

@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using JetBrains.Application;
 using JetBrains.Application.Settings;
@@ -45,12 +44,12 @@ public class ShaderVariantHighlightStage : CppDaemonStageBase
 
     private class Process : CppDaemonStageProcessBase
     {
-        private readonly HashSet<string> myKeywordToFeature;
         private readonly ISet<string> myEnabledKeywords;
+        private readonly ShaderProgramInfo myShaderProgramInfo;
 
         public Process(IDaemonProcess process, IContextBoundSettingsStore settingsStore, CppFile file, ShaderProgramInfo shaderProgramInfo, ISet<string> enabledKeywords) : base(process, settingsStore, file)
         {
-            myKeywordToFeature = shaderProgramInfo.ShaderFeatures.SelectMany(x => x.Entries.Select(e => e.Keyword)).ToHashSet();
+            myShaderProgramInfo = shaderProgramInfo;
             myEnabledKeywords = enabledKeywords;
         }
 
@@ -68,8 +67,8 @@ public class ShaderVariantHighlightStage : CppDaemonStageBase
                 IHighlighting highlighting;
                 if (child is MacroReference macroReference && IsShaderKeywordReference(macroReference))
                     highlighting = new ActiveShaderKeywordHighlight(macroReference);
-                else if (child.NodeType == CppTokenNodeTypes.IDENTIFIER && child.GetText() is var identifier && IsShaderKeyword(identifier))
-                    highlighting = myEnabledKeywords.Contains(identifier) ? new SuppressedShaderKeywordHighlight((CppIdentifierTokenNode)child) : new InactiveShaderKeywordHighlight((CppIdentifierTokenNode)child);
+                else if (child.NodeType == CppTokenNodeTypes.IDENTIFIER && TryCreateIdentifierHighlighting((CppIdentifierTokenNode)child) is {} identifierHighlighting)
+                    highlighting = identifierHighlighting;
                 else
                     continue;
                 consumer.ConsumeHighlighting(new HighlightingInfo(highlighting.CalculateRange(), highlighting));
@@ -83,7 +82,33 @@ public class ShaderVariantHighlightStage : CppDaemonStageBase
                    && IsShaderKeyword(symbol.Name);
         }
 
-        private bool IsShaderKeyword(string name) => myKeywordToFeature.Contains(name);
+        private bool IsShaderKeyword(string name) => myShaderProgramInfo.HasKeyword(name);
+
+        private IHighlighting? TryCreateIdentifierHighlighting(CppIdentifierTokenNode identifierNode)
+        {
+            var keyword = identifierNode.Name;
+            if (myShaderProgramInfo.GetShaderFeatures(keyword) is not { Count: > 0 } features)
+                return null;
+        
+            if (myEnabledKeywords.Contains(keyword))
+            {
+                var suppressors = new List<string>();
+                foreach (var feature in features)
+                {
+                    foreach (var entry in feature.Entries)
+                    {
+                        if (entry.Keyword == keyword)
+                            break;
+                        if (myEnabledKeywords.Contains(entry.Keyword))
+                            suppressors.Add(entry.Keyword);
+                    }
+                }
+                
+                if (suppressors.Count > 0)
+                    return new SuppressedShaderKeywordHighlight(identifierNode, suppressors);
+            }
+            return new InactiveShaderKeywordHighlight(identifierNode);
+        }
 
         public override void Execute(Action<DaemonStageResult> committer)
         {
