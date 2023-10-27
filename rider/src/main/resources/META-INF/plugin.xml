@@ -145,7 +145,7 @@
 
     <!-- UXML support -->
     <fileType name="UXML" language="UXML" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileType" extensions="uxml" />
-    <lang.altEnter language="UXML" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperBulbMenuModelFactory" />
+    <lang.altEnter language="UXML" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterMenuModelFactory" />
     <lang.parserDefinition language="UXML" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileParserDefinition"/>
     <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileBreadcrumbsProvider" />
     <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.codeInsight.schema.UxmlSchemaProvider" />
