@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.ex.CustomComponentAction
 import com.intellij.openapi.actionSystem.impl.ActionButtonWithText
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.ui.awt.RelativePoint
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import icons.UnityIcons
 import java.awt.Point
 import java.awt.event.MouseEvent
@@ -41,13 +42,21 @@ class ShaderVariantInspectionAction : DumbAwareAction(UnityIcons.FileTypes.Shade
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         val component = e.inputEvent?.component ?: return
-        ShaderVariantPopup.show(project, RelativePoint(component, (e.inputEvent as? MouseEvent)?.point ?: Point(0, 0)))
+        val showAt = RelativePoint(component, (e.inputEvent as? MouseEvent)?.point ?: Point(0, 0))
+        ShaderVariantPopup.show(project, showAt)
     }
 
     override fun update(e: AnActionEvent) {
-        val editor = e.getData(CommonDataKeys.EDITOR)?.also {
-            e.presentation.text = ShaderVariantPresence.get(it)?.let { shaderVariant ->
-                "Active: ${shaderVariant.activeKeywords.size} Suppressed: ${shaderVariant.suppressedKeywords.size}"
+        val editor = e.getData(CommonDataKeys.EDITOR)?.also { editor ->
+            e.presentation.text = ShaderVariantPresence.get(editor)?.let { shaderVariant ->
+                val activeCount = shaderVariant.getActiveCountForEnabledOnly()
+                val suppressedCount = shaderVariant.suppressedKeywords.size
+                when {
+                    activeCount > 0 && suppressedCount > 0 -> UnityBundle.message("widgets.shaderVariants.activeAndSuppressedKeywords", activeCount, suppressedCount)
+                    activeCount > 0 -> UnityBundle.message("widgets.shaderVariants.activeKeywords", activeCount)
+                    suppressedCount > 0 -> UnityBundle.message("widgets.shaderVariants.suppressedKeywords", suppressedCount)
+                    else -> null
+                }
             } ?: ""
         }
         e.presentation.isEnabledAndVisible = editor != null

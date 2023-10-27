@@ -2,18 +2,22 @@ package com.jetbrains.rider.plugins.unity.ui.shaders
 
 import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.MarkupModelEx
 import com.intellij.openapi.editor.ex.RangeHighlighterEx
 import com.intellij.openapi.editor.ex.util.EditorUtil
 import com.intellij.openapi.editor.impl.DocumentMarkupModel
 import com.intellij.openapi.editor.impl.event.MarkupModelListener
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.createLifetime
 import com.intellij.openapi.util.Key
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.jetbrains.rd.util.collections.CountingSet
+import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rdclient.daemon.util.text
 
-class ShaderVariantPresence(markupModel: MarkupModelEx) : Disposable {
+class ShaderVariantPresence(project: Project?, markupModel: MarkupModelEx) : Disposable {
     companion object {
         private const val SUPPRESSED_KEYWORD_EXTERNAL_NAME = "ReSharper.ReSharper.ShaderLab_SUPPRESSED_SHADER_KEYWORD"
         private const val ACTIVE_KEYWORD_EXTERNAL_NAME = "ReSharper.ReSharper.ShaderLab_ACTIVE_SHADER_KEYWORD"
@@ -21,8 +25,9 @@ class ShaderVariantPresence(markupModel: MarkupModelEx) : Disposable {
         private val SHADER_VARIANT_PRESENCE_KEY = Key.create<ShaderVariantPresence>("rider.ShaderLab.SHADER_VARIANT_PRESENCE")
 
         fun ensure(editor: Editor) = editor.getUserData(SHADER_VARIANT_PRESENCE_KEY) ?: run {
-            val markupModel = DocumentMarkupModel.forDocument(editor.document, editor.project, true) as MarkupModelEx
-            ShaderVariantPresence(markupModel).also {
+            val project = editor.project
+            val markupModel = DocumentMarkupModel.forDocument(editor.document, project, true) as MarkupModelEx
+            ShaderVariantPresence(project, markupModel).also {
                 EditorUtil.disposeWithEditor(editor, it)
                 editor.putUserData(SHADER_VARIANT_PRESENCE_KEY, it)
             }
@@ -32,6 +37,7 @@ class ShaderVariantPresence(markupModel: MarkupModelEx) : Disposable {
     }
 
     private val myListeners = mutableListOf<ChangeListener>()
+    private val myEnabledKeywords: Set<String>
 
     val activeKeywords = CountingSet<String>()
     val suppressedKeywords = CountingSet<String>()
@@ -54,6 +60,26 @@ class ShaderVariantPresence(markupModel: MarkupModelEx) : Disposable {
                 }
             }
         })
+        myEnabledKeywords = project?.service<ShaderVariantsHost>()?.enabledShaderKeywords?.also {
+            it.advise(this.createLifetime()) { evt ->
+                when (evt.kind) {
+                    AddRemove.Add -> onKeywordEnabled(evt.value)
+                    AddRemove.Remove -> onKeywordDisabled(evt.value)
+                }
+            }
+        } ?: emptySet()
+    }
+
+    fun getActiveCountForEnabledOnly() = activeKeywords.keys.count { myEnabledKeywords.contains(it) }
+
+    private fun onKeywordEnabled(keyword: String) {
+        if (activeKeywords.contains(keyword))
+            fireChange()
+    }
+
+    private fun onKeywordDisabled(keyword: String) {
+        if (activeKeywords.contains(keyword))
+            fireChange()
     }
 
     private fun addSuppressedKeywordHighlighter(highlighter: RangeHighlighterEx) {
