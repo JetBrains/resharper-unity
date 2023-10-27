@@ -56,7 +56,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         RiderPresentableNameResourceName = nameof(Strings.CommentsBlockComment_RiderPresentableName),
         FallbackAttributeId = DefaultLanguageAttributeIds.BLOCK_COMMENT,
         Layer = HighlighterLayer.SYNTAX)]
-    [RegisterHighlighter(ACTIVE_SHADER_KEYWORD,
+    [RegisterHighlighter(IMPLICITLY_ENABLED_SHADER_KEYWORD,
+        GroupId = GROUP_ID,
+        EffectType = EffectType.TEXT,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.ActiveShaderKeyword_RiderPresentableName),
+        FallbackAttributeId = ENABLED_SHADER_KEYWORD,
+        Layer = HighlighterLayer.ADDITIONAL_SYNTAX + 1
+    )]
+    [RegisterHighlighter(ENABLED_SHADER_KEYWORD,
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
         RiderPresentableNameResourceType = typeof(Strings),
@@ -64,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         FallbackAttributeId = CppHighlightingAttributeIds.CPP_MACRO_NAME_ATTRIBUTE,
         Layer = HighlighterLayer.ADDITIONAL_SYNTAX + 1
     )]
-    [RegisterHighlighter(INACTIVE_SHADER_KEYWORD,
+    [RegisterHighlighter(DISABLED_SHADER_KEYWORD,
         GroupId = GROUP_ID,
         EffectType = EffectType.TEXT,
         RiderPresentableNameResourceType = typeof(Strings),
@@ -94,9 +102,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         public const string STRING = "ReSharper ShaderLab String";
         public const string LINE_COMMENT = "ReSharper ShaderLab Line Comment";
         public const string BLOCK_COMMENT = "ReSharper ShaderLab Block Comment";
-        public const string ACTIVE_SHADER_KEYWORD = "ReSharper ShaderLab Active Shader Keyword";
+        public const string IMPLICITLY_ENABLED_SHADER_KEYWORD = "ReSharper ShaderLab Implicitly Enabled Shader Keyword";
+        public const string ENABLED_SHADER_KEYWORD = "ReSharper ShaderLab Enabled Shader Keyword";
         public const string SUPPRESSED_SHADER_KEYWORD = "ReSharper ShaderLab Suppressed Shader Keyword";
-        public const string INACTIVE_SHADER_KEYWORD = "ReSharper ShaderLab Inactive Shader Keyword";
+        public const string DISABLED_SHADER_KEYWORD = "ReSharper ShaderLab Disabled Shader Keyword";
 
         public const string DEMO_TEXT =
 @"<ReSharper.ShaderLab_BLOCK_COMMENT>/* Sample shader */</ReSharper.ShaderLab_BLOCK_COMMENT>

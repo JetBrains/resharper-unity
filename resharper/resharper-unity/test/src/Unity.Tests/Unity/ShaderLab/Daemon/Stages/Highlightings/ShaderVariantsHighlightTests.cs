@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Stages.Highlightings
 {
-    [RequireHlslSupport, TestUnity, HighlightOnly(typeof(ActiveShaderKeywordHighlight))]
+    [RequireHlslSupport, TestUnity, HighlightOnly(typeof(ImplicitlyEnabledShaderKeywordHighlight), typeof(EnabledShaderKeywordHighlight), typeof(DisabledShaderKeywordHighlight), typeof(SuppressedShaderKeywordHighlight))]
     public class ShaderVariantsHighlightTests : HighlightingTestBase
     {
         protected override PsiLanguageType? CompilerIdsLanguage => CppLanguage.Instance;

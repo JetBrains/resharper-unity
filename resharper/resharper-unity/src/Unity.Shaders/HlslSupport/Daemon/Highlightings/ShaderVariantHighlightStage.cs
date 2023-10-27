@@ -21,7 +21,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlightings;
 
 [DaemonStage(StagesBefore = new[] { typeof(GlobalFileStructureCollectorStage), typeof(CppIdentifierHighlightingStage) }, 
-    HighlightingTypes = new[] { typeof(ActiveShaderKeywordHighlight), typeof(InactiveShaderKeywordHighlight), typeof(SuppressedShaderKeywordHighlight) })]
+    HighlightingTypes = new[] { typeof(ImplicitlyEnabledShaderKeywordHighlight), typeof(EnabledShaderKeywordHighlight), typeof(DisabledShaderKeywordHighlight), typeof(SuppressedShaderKeywordHighlight) })]
 public class ShaderVariantHighlightStage : CppDaemonStageBase
 {
     private readonly ShaderProgramCache myShaderProgramCache;
@@ -65,25 +65,29 @@ public class ShaderVariantHighlightStage : CppDaemonStageBase
             {
                 if (child.NodeType == CppTokenNodeTypes.END_OF_DIRECTIVE_CONTENT)
                     break;
-                IHighlighting highlighting;
-                if (child is MacroReference macroReference && IsShaderKeywordReference(macroReference))
-                    highlighting = new ActiveShaderKeywordHighlight(macroReference);
-                else if (child.NodeType == CppTokenNodeTypes.IDENTIFIER && TryCreateIdentifierHighlighting((CppIdentifierTokenNode)child) is {} identifierHighlighting)
-                    highlighting = identifierHighlighting;
+                IHighlighting? highlighting;
+                if (child.NodeType == CppCompositeNodeTypes.MACRO_REF)
+                    highlighting = TryCreateMacroReferenceHighlighting((MacroReference)child);
+                else if (child.NodeType == CppTokenNodeTypes.IDENTIFIER)
+                    highlighting = TryCreateIdentifierHighlighting((CppIdentifierTokenNode)child);
                 else
                     continue;
-                consumer.ConsumeHighlighting(new HighlightingInfo(highlighting.CalculateRange(), highlighting));
+                if (highlighting != null)
+                    consumer.ConsumeHighlighting(new HighlightingInfo(highlighting.CalculateRange(), highlighting));
             }
         }
 
-        private bool IsShaderKeywordReference(MacroReference macroReference)
+        private IHighlighting? TryCreateMacroReferenceHighlighting(MacroReference macroReference)
         {
-            return macroReference.GetReferencedSymbol() is { Substitution: "1", HasParameters: false } symbol 
-                   && !symbol.Location.ContainingFile.IsValid()
-                   && IsShaderKeyword(symbol.Name);
-        }
+            if (macroReference.GetReferencedSymbol() is { Substitution: "1", HasParameters: false } symbol
+                && !symbol.Location.ContainingFile.IsValid()
+                && myShaderProgramInfo.HasKeyword(symbol.Name))
+            {
+                return myEnabledKeywords.Contains(symbol.Name) ? new EnabledShaderKeywordHighlight(macroReference) : new ImplicitlyEnabledShaderKeywordHighlight(macroReference);
+            }
 
-        private bool IsShaderKeyword(string name) => myShaderProgramInfo.HasKeyword(name);
+            return null;
+        }
 
         private IHighlighting? TryCreateIdentifierHighlighting(CppIdentifierTokenNode identifierNode)
         {
@@ -108,7 +112,7 @@ public class ShaderVariantHighlightStage : CppDaemonStageBase
                 if (suppressors.Count > 0)
                     return new SuppressedShaderKeywordHighlight(identifierNode, suppressors);
             }
-            return new InactiveShaderKeywordHighlight(identifierNode);
+            return new DisabledShaderKeywordHighlight(identifierNode);
         }
 
         public override void Execute(Action<DaemonStageResult> committer)

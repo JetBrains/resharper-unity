@@ -6,12 +6,12 @@ using JetBrains.ReSharper.Psi.Cpp.Parsing;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlightings;
 
-[StaticSeverityHighlighting(Severity.INFO, typeof(ShaderKeywordsHighlightingId), OverlapResolve = OverlapResolveKind.NONE, AttributeId = ShaderLabHighlightingAttributeIds.INACTIVE_SHADER_KEYWORD)]
-public class InactiveShaderKeywordHighlight : IHighlighting
+[StaticSeverityHighlighting(Severity.INFO, typeof(ShaderKeywordsHighlightingId), OverlapResolve = OverlapResolveKind.NONE, AttributeId = ShaderLabHighlightingAttributeIds.DISABLED_SHADER_KEYWORD)]
+public class DisabledShaderKeywordHighlight : IHighlighting
 {
     private readonly CppIdentifierTokenNode myIdentifier;
 
-    public InactiveShaderKeywordHighlight(CppIdentifierTokenNode identifier)
+    public DisabledShaderKeywordHighlight(CppIdentifierTokenNode identifier)
     {
         myIdentifier = identifier;
     }

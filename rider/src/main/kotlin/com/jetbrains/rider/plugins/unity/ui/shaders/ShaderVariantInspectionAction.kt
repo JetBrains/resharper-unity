@@ -49,11 +49,11 @@ class ShaderVariantInspectionAction : DumbAwareAction(UnityIcons.FileTypes.Shade
     override fun update(e: AnActionEvent) {
         val editor = e.getData(CommonDataKeys.EDITOR)?.also { editor ->
             e.presentation.text = ShaderVariantPresence.get(editor)?.let { shaderVariant ->
-                val activeCount = shaderVariant.getActiveCountForEnabledOnly()
+                val enabledCount = shaderVariant.enabledKeywords.size
                 val suppressedCount = shaderVariant.suppressedKeywords.size
                 when {
-                    activeCount > 0 && suppressedCount > 0 -> UnityBundle.message("widgets.shaderVariants.activeAndSuppressedKeywords", activeCount, suppressedCount)
-                    activeCount > 0 -> UnityBundle.message("widgets.shaderVariants.activeKeywords", activeCount)
+                    enabledCount > 0 && suppressedCount > 0 -> UnityBundle.message("widgets.shaderVariants.enabledAndSuppressedKeywords", enabledCount, suppressedCount)
+                    enabledCount > 0 -> UnityBundle.message("widgets.shaderVariants.enabledKeywords", enabledCount)
                     suppressedCount > 0 -> UnityBundle.message("widgets.shaderVariants.suppressedKeywords", suppressedCount)
                     else -> null
                 }
