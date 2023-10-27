@@ -1,6 +1,5 @@
 package com.jetbrains.rider.unity.test.cases
 
-import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
 import com.intellij.testFramework.TestModeFlags
@@ -12,17 +11,15 @@ import com.jetbrains.rider.diagnostics.LogTraceScenarios
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.allure.Subsystem
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.test.waitForDaemon
-import io.qameta.allure.Description
-import io.qameta.allure.Epic
-import io.qameta.allure.Feature
-import io.qameta.allure.Severity
-import io.qameta.allure.SeverityLevel
+import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
+import io.qameta.allure.*
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -54,6 +51,7 @@ class UnityDotsAutocompletionTest : BaseTestWithSolution() {
             "JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages",
             *LogTraceScenarios.Roslyn.categories.toTypedArray())
 
+    @Mute("RIDER-95438")
     @Test
     @Description("DOTS Source GenCompletion")
     fun test_DotsSourceGenCompletion() {
