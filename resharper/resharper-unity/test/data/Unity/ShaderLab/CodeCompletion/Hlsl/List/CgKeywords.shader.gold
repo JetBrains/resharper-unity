@@ -1,4 +1,4 @@
-﻿# 337 ITEMS #
+﻿# 336 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -44,9 +44,12 @@ unsigned
 vector
 void
 volatile
+CANDIDATE_TYPE
+COMMITTED_STATUS
 DWORD
 FLOAT
 MATRIX
+RAY_FLAG
 VECTOR
 bool1
 bool1x1
@@ -280,15 +283,11 @@ uint4x4
 AppendStructuredBuffer
 Buffer
 ByteAddressBuffer
-CANDIDATE_TYPE
-COMMITTED_STATUS
 ConsumeStructuredBuffer
 InputPatch
 LineStream
 OutputPatch
 PointStream
-RAYTRACING_PIPELINE_FLAG
-RAY_FLAG
 RWBuffer
 RWByteAddressBuffer
 RWStructuredBuffer
@@ -338,7 +337,7 @@ fixed4x3
 fixed4x4
 tile_static
 # AUTOMATIC #
-# 337 ITEMS #
+# 336 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -384,9 +383,12 @@ unsigned
 vector
 void
 volatile
+CANDIDATE_TYPE
+COMMITTED_STATUS
 DWORD
 FLOAT
 MATRIX
+RAY_FLAG
 VECTOR
 bool1
 bool1x1
@@ -620,15 +622,11 @@ uint4x4
 AppendStructuredBuffer
 Buffer
 ByteAddressBuffer
-CANDIDATE_TYPE
-COMMITTED_STATUS
 ConsumeStructuredBuffer
 InputPatch
 LineStream
 OutputPatch
 PointStream
-RAYTRACING_PIPELINE_FLAG
-RAY_FLAG
 RWBuffer
 RWByteAddressBuffer
 RWStructuredBuffer
