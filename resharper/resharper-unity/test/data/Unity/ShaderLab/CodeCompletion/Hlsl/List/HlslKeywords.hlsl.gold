@@ -1,4 +1,4 @@
-﻿# 312 ITEMS #
+﻿# 313 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -297,6 +297,7 @@ RWTexture2D
 RWTexture2DArray
 RWTexture3D
 RayDesc
+RayQuery
 RaytracingAccelerationStructure
 StructuredBuffer
 Texture1D
@@ -313,7 +314,7 @@ SHADER_API_D3D11
 UNITY_VERSION
 tile_static
 # AUTOMATIC #
-# 312 ITEMS #
+# 313 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -612,6 +613,7 @@ RWTexture2D
 RWTexture2DArray
 RWTexture3D
 RayDesc
+RayQuery
 RaytracingAccelerationStructure
 StructuredBuffer
 Texture1D

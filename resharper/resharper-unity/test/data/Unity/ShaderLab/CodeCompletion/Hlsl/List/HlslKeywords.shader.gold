@@ -1,4 +1,4 @@
-﻿# 315 ITEMS #
+﻿# 316 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -297,6 +297,7 @@ RWTexture2D
 RWTexture2DArray
 RWTexture3D
 RayDesc
+RayQuery
 RaytracingAccelerationStructure
 StructuredBuffer
 Texture1D
@@ -316,7 +317,7 @@ WorldNormalVector
 WorldReflectionVector
 tile_static
 # AUTOMATIC #
-# 315 ITEMS #
+# 316 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -615,6 +616,7 @@ RWTexture2D
 RWTexture2DArray
 RWTexture3D
 RayDesc
+RayQuery
 RaytracingAccelerationStructure
 StructuredBuffer
 Texture1D
