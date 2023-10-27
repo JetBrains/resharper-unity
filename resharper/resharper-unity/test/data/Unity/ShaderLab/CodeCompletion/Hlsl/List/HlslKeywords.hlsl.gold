@@ -1,10 +1,11 @@
-﻿# 307 ITEMS #
+﻿# 313 ITEMS #
 
 + SamplerComparisonState
 SamplerState
 bool
 cbuffer
 centroid
+class
 column_major
 const
 double
@@ -33,7 +34,9 @@ static
 string
 struct
 tbuffer
+template
 typedef
+typename
 uniform
 union
 unorm
@@ -277,11 +280,14 @@ uint4x4
 AppendStructuredBuffer
 Buffer
 ByteAddressBuffer
+CANDIDATE_TYPE
+COMMITTED_STATUS
 ConsumeStructuredBuffer
 InputPatch
 LineStream
 OutputPatch
 PointStream
+RAYTRACING_PIPELINE_FLAG
 RAY_FLAG
 RWBuffer
 RWByteAddressBuffer
@@ -308,13 +314,14 @@ SHADER_API_D3D11
 UNITY_VERSION
 tile_static
 # AUTOMATIC #
-# 307 ITEMS #
+# 313 ITEMS #
 
 + SamplerComparisonState
 SamplerState
 bool
 cbuffer
 centroid
+class
 column_major
 const
 double
@@ -343,7 +350,9 @@ static
 string
 struct
 tbuffer
+template
 typedef
+typename
 uniform
 union
 unorm
@@ -587,11 +596,14 @@ uint4x4
 AppendStructuredBuffer
 Buffer
 ByteAddressBuffer
+CANDIDATE_TYPE
+COMMITTED_STATUS
 ConsumeStructuredBuffer
 InputPatch
 LineStream
 OutputPatch
 PointStream
+RAYTRACING_PIPELINE_FLAG
 RAY_FLAG
 RWBuffer
 RWByteAddressBuffer
