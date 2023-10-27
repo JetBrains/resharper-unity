@@ -36,7 +36,8 @@ public class ShaderVariantHighlightStage : CppDaemonStageBase
     protected override IDaemonStageProcess? CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings, DaemonProcessKind processKind, CppFile file) =>
         processKind switch
         {
-            DaemonProcessKind.VISIBLE_DOCUMENT when file.InclusionContext.RootContext.BaseFile is var rootFile && myShaderProgramCache.TryGetShaderProgramInfo(rootFile, out var shaderProgramInfo) => new Process(process, settings, file, shaderProgramInfo, myEnabledShaderKeywordsProvider?.GetEnabledKeywords(rootFile) ?? EmptySet<string>.InstanceSet),
+            DaemonProcessKind.VISIBLE_DOCUMENT when file.InclusionContext.RootContext.BaseFile is var rootFile && myShaderProgramCache.TryGetShaderProgramInfo(rootFile, out var shaderProgramInfo) 
+                => new Process(process, settings, file, shaderProgramInfo, myEnabledShaderKeywordsProvider?.GetEnabledKeywords(rootFile) ?? EmptySet<string>.InstanceSet),
             _ => null
         };
 
