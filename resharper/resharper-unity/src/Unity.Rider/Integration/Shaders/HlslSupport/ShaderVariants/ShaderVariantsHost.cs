@@ -12,6 +12,8 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ProjectModel.Settings.Storages;
+using JetBrains.Rd.Tasks;
+using JetBrains.RdBackend.Common.Features.Documents;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Common.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
@@ -35,7 +37,16 @@ public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProv
 
     private readonly RdShaderVariant myCurrentVariant; 
 
-    public ShaderVariantsHost(Lifetime lifetime, ISolution solution, ShaderProgramCache shaderProgramCache, ISettingsStore settingsStore, [UsedImplicitly] SolutionSettingsReadyForSolutionInstanceComponent _, ChangeManager changeManager, FrontendBackendHost? frontendBackendHost = null)
+    public ShaderVariantsHost(Lifetime lifetime,
+        ISolution solution,
+        ShaderProgramCache shaderProgramCache,
+        IPreferredRootFileProvider rootFileProvider,
+        ISettingsStore settingsStore,
+        [UsedImplicitly] SolutionSettingsReadyForSolutionInstanceComponent _,
+        ChangeManager changeManager,
+        ILogger logger,
+        IDocumentHost documentHost,
+        FrontendBackendHost? frontendBackendHost = null)
     {
         mySolution = solution;
         myShaderProgramCache = shaderProgramCache;
@@ -62,6 +73,22 @@ public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProv
             defaultShaderVariant.DisableKeyword.Advise(lifetime, keyword => SetKeywordEnabled(keyword, false));
 
             model.DefaultShaderVariant.Value = defaultShaderVariant;
+            model.CreateShaderVariantInteraction.SetAsync(async (lt, documentId) =>
+            {
+                logger.Verbose("Start shader variant interaction");
+                var keywords = await lt.StartBackgroundRead(() =>
+                {
+                    var document = documentHost.TryGetDocument(documentId);
+                    if (document == null)
+                        return new List<string>();
+                    var location = new CppFileLocation(document.Location);
+                    var rootLocation = rootFileProvider.GetPreferredRootFile(location);
+                    if (!rootLocation.IsValid() || !myShaderProgramCache.TryGetShaderProgramInfo(rootLocation, out var shaderProgramInfo))
+                        return new List<string>();
+                    return shaderProgramInfo.Keywords.ToList();
+                });
+                return new ShaderVariantInteraction(keywords);
+            });
         });
     }
 

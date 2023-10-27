@@ -40,10 +40,11 @@ class ShaderVariantInspectionAction : DumbAwareAction(UnityIcons.FileTypes.Shade
     }
 
     override fun actionPerformed(e: AnActionEvent) {
+        val editor = e.getData(CommonDataKeys.EDITOR) ?: return
         val project = e.project ?: return
         val component = e.inputEvent?.component ?: return
         val showAt = RelativePoint(component, (e.inputEvent as? MouseEvent)?.point ?: Point(0, 0))
-        ShaderVariantPopup.show(project, showAt)
+        ShaderVariantPopup.show(project, editor, showAt)
     }
 
     override fun update(e: AnActionEvent) {

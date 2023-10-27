@@ -133,6 +133,9 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         // Shader variants
         map("shaderKeywords", string, rdShaderKeyword).readonly
         property("defaultShaderVariant", rdShaderVariant).readonly
+        call("createShaderVariantInteraction", RdDocumentId, classdef("shaderVariantInteraction") {
+            field("availableKeywords", immutableList(string))
+        })
 
         // Actions called from the frontend to the backend (and/or indirectly, Unity)
         // (These should probably be calls, rather than signal/source/sink, as they are RPC, and not events)
