@@ -4,6 +4,6 @@ Found usages  (2 usages found)
     Assets  (2 usages found)
         AttackIn.anim  (2 usages found)
             AttackIn at 0:08  (1 usage found)
-                T.set : int
+                 T.set : int
             AttackIn at 0:09  (1 usage found)
-                T.set : int
+                 T.set : int
