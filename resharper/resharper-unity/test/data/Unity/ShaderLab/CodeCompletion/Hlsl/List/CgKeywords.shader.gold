@@ -1,4 +1,4 @@
-﻿# 333 ITEMS #
+﻿# 331 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -305,10 +305,8 @@ TextureCube
 TextureCubeArray
 TriangleStream
 HLSL_SUPPORT_INCLUDED
-HLSL_VERSION
 INTERNAL_DATA
 SHADER_API_D3D11
-SHADER_TARGET
 UNITY_VERSION
 WorldNormalVector
 WorldReflectionVector
@@ -334,7 +332,7 @@ fixed4x3
 fixed4x4
 tile_static
 # AUTOMATIC #
-# 333 ITEMS #
+# 331 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -641,10 +639,8 @@ TextureCube
 TextureCubeArray
 TriangleStream
 HLSL_SUPPORT_INCLUDED
-HLSL_VERSION
 INTERNAL_DATA
 SHADER_API_D3D11
-SHADER_TARGET
 UNITY_VERSION
 WorldNormalVector
 WorldReflectionVector

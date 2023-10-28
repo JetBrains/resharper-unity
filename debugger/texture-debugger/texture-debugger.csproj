@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <InternalBuild Condition="Exists('ManagedProject.Generated.Targets')">True</InternalBuild>
+    <InternalBuild Condition="$(InternalBuild) == ''">False</InternalBuild>
+  </PropertyGroup>
+  <Import Project="Sdk.props" Sdk="JetBrains.NET.Sdk" Version="0.0.4" Condition="$(InternalBuild)" />
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" Condition="$(ImportGuard-DirectoryBuildProps) == ''" />
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture</AssemblyName>
+    <RootNamespace>JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture</RootNamespace>
+    <LangVersion>9</LangVersion>
+    <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Unity.Libs.Ref.2019.2.0f1" Version="2021.11.29" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="mscorlib" />
+  </ItemGroup>
+  <Import Project="ManagedProject.Generated.Targets" Condition="$(InternalBuild)" />
+  <Import Project="Sdk.targets" Sdk="JetBrains.NET.Sdk" Version="0.0.4" Condition="$(InternalBuild)" />
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" Condition="!$(InternalBuild)" />
+</Project>
