@@ -1,6 +1,14 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
+namespace First.Second 
+{
+    class MyFirstElement : VisualElement
+    {
+        
+    }
+}
+
 class MyElement : VisualElement
 {
     public new class UxmlFactory : UxmlFactory<MyElement, UxmlTraits> { }

@@ -5,9 +5,9 @@ Found usages  (2 usages found)
         Button (1).prefab  (1 usage found)
             Button (1)  (1 usage found)
                 MonoBehaviour  (1 usage found)
-                    m_MethodName: set_PropertyEventHandler2
+                     m_MethodName: set_PropertyEventHandler2
         SampleScene.unity  (1 usage found)
             Canvas  (1 usage found)
                 Button2  (1 usage found)
                     MonoBehaviour  (1 usage found)
-                        m_MethodName: set_PropertyEventHandler2
+                         m_MethodName: set_PropertyEventHandler2

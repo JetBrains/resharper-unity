@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Threading;
@@ -10,15 +12,11 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Xml;
 using JetBrains.ReSharper.Psi.Xml.Impl.Tree;
 using JetBrains.ReSharper.Psi.Xml.Tree;
 using JetBrains.Util;
-using JetBrains.Util.Collections;
 
-#nullable enable
-
-namespace JetBrains.ReSharper.Plugins.Unity.Uxml.Psi.Caches
+namespace JetBrains.ReSharper.Plugins.Unity.UIElements.Uxml.Psi.Caches
 {
     [PsiComponent]
     public class UxmlCache : SimpleICache<List<UxmlCacheItem>>
@@ -26,7 +24,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Uxml.Psi.Caches
         private readonly ISolution mySolution;
         private readonly PackageManager myPackageManager;
         private readonly OneToListMap<IPsiSourceFile, UxmlCacheItem> myLocalCache = new();
-        private readonly CountingSet<string> myMethodNames = new();
 
         public UxmlCache(Lifetime lifetime,
             IShellLocks shellLocks,
@@ -41,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Uxml.Psi.Caches
         
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return base.IsApplicable(sf) && sf.IsUxml() && sf.IsLanguageSupported<XmlLanguage>() 
+            return base.IsApplicable(sf) && sf.IsUxml() && sf.IsLanguageSupported<UxmlLanguage>() 
                    && (mySolution.SolutionDirectory.Combine("Assets").IsPrefixOf(sf.GetLocation()) || myPackageManager.IsLocalPackageCacheFile(sf.GetLocation()));
         }
 
@@ -50,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Uxml.Psi.Caches
             if (!IsApplicable(sourceFile))
                 return null;
 
-            if (sourceFile.GetDominantPsiFile<XmlLanguage>() is not IXmlFile file) return null;
+            if (sourceFile.GetDominantPsiFile<UxmlLanguage>() is not IXmlFile file) return null;
             var results = new List<UxmlCacheItem>();
 
             var namespaces = ParseXmlNs();
@@ -131,12 +128,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Uxml.Psi.Caches
 
         private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
         {
-            var items = myLocalCache[sourceFile];
-            foreach (var item in items)
-            {
-                myMethodNames.Remove(item.Name);
-            }
-            
             myLocalCache.RemoveKey(sourceFile);
         }
 
@@ -144,20 +135,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Uxml.Psi.Caches
         {
             if (items == null) return;
             myLocalCache.AddValueRange(sourceFile, items);
-            foreach (var item in items)
-            {
-                myMethodNames.Add(item.Name);
-            }
         }
 
-        public IEnumerable<string> GetPossibleNames(string controlTypeName)
+        public IEnumerable<string> GetNamesForTypeName(string controlTypeName)
         {
             return myLocalCache.Values.Where(a => a.ControlTypeName == controlTypeName).Select(b=>b.Name).Distinct();
         }
         
-        public IEnumerable<string> GetAllPossibleNames()
+        public IEnumerable<string> GetNames()
         {
-            return myMethodNames.GetItems().Distinct();
+            return myLocalCache.Values.Select(b=>b.Name).Distinct();
         }
     }
 }

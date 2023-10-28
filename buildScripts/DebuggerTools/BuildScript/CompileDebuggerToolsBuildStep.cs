@@ -47,15 +47,19 @@ public class CompileDebuggerToolsBuildStep
         
             logger.Info("Finished DebuggerTools compilation without errors");
 
-            var outputFolder = homeDirArtifact.ProductHomeDir / "Plugins" / "ReSharperUnity" / "resharper" / "build" / "ios-list-usb-devices" / "bin" / "Release" / "net7.0";
+            var iosOutputFolder = homeDirArtifact.ProductHomeDir / "Plugins" / "ReSharperUnity" / "resharper" / "build" / "ios-list-usb-devices" / "bin" / "Release" / "net7.0";
+            var textureUtilsOutputFolder = homeDirArtifact.ProductHomeDir / "Plugins" / "ReSharperUnity" / "resharper" / "build" / "texture-debugger" / "bin" / "Release" / "net472";
         
             // TODO sign artifacts
             
             return new SubplatformFileForPackaging[]
             {
-                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "JetBrains.Rider.Unity.ListIosUsbDevices.dll")),
-                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "JetBrains.Rider.Unity.ListIosUsbDevices.pdb")),
-                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "JetBrains.Rider.Unity.ListIosUsbDevices.runtimeconfig.json")),
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(iosOutputFolder / "JetBrains.Rider.Unity.ListIosUsbDevices.dll")),
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(iosOutputFolder / "JetBrains.Rider.Unity.ListIosUsbDevices.pdb")),
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(iosOutputFolder / "JetBrains.Rider.Unity.ListIosUsbDevices.runtimeconfig.json")),
+
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(textureUtilsOutputFolder / "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.dll")),
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(textureUtilsOutputFolder / "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.pdb")),
             };
         }
 
