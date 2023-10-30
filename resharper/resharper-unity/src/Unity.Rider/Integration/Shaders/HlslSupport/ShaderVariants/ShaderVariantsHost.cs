@@ -17,6 +17,7 @@ using JetBrains.RdBackend.Common.Features.Documents;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Common.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
@@ -172,7 +173,19 @@ public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProv
             if (!myOutdatedLocations.IsEmpty)
             {
                 using (WriteLockCookie.Create())
+                {
                     myHost.myChangeManager.OnProviderChanged(myHost, new CppChange(myOutdatedLocations.ReadOnlyCollection()), SimpleTaskExecutor.Instance);
+                    FixMeInvalidateInjectedFiles();
+                }
+            }
+        }
+
+        private void FixMeInvalidateInjectedFiles()
+        {
+            foreach (var location in myOutdatedLocations)
+            {
+                if (location.IsInjected())
+                    InjectedHlslUtils.InvalidatePsiForInjectedLocation(myHost.mySolution, location);
             }
         }
     }
