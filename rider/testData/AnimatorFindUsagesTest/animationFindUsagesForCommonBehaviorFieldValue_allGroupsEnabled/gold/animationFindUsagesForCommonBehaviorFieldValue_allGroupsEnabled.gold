@@ -9,4 +9,4 @@ Found usages  (2 usages found)
                         [289, Assets/AnimationController.cs] (14: 9)  X = 0;
     Assets  (1 usage found)
         Anime.controller  (1 usage found)
-            X = "777"
+             X = "777"
