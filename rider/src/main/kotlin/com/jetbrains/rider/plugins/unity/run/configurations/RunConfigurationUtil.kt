@@ -66,7 +66,8 @@ fun attachToUnityProcess(project: Project, process: UnityProcess) {
         // Make sure "Unity" and "AssetImportWorker0" have a bit more context in the run config
         val displayName = when (process) {
             is UnityEditor -> process.displayName + " (${process.projectName ?: "Unknown Project"})"
-            is UnityEditorHelper -> process.displayName + " (${process.projectName ?: "Unknown Project"})"
+            is UnityEditorHelper -> process.displayName + " (${process.roleName})"
+            is UnityVirtualPlayer -> process.playerName
             else -> process.displayName
         }
 
@@ -96,6 +97,10 @@ fun attachToUnityProcess(project: Project, process: UnityProcess) {
                 is UnityEditorHelper -> {
                     state.pid = process.pid
                     state.roleName = process.roleName
+                }
+                is UnityVirtualPlayer -> {
+                    state.virtualPlayerId = process.virtualPlayerId
+                    state.virtualPlayerName = process.playerName
                 }
                 else -> {}
             }

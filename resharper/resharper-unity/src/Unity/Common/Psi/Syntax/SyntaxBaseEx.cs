@@ -46,11 +46,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Common.Psi.Syntax
         
         public struct PrevTokensUntilTerminalTokenEnumerator
         {
-            private readonly ITokenNodeType myTerminalTokenType;
+            private readonly ITokenNodeType? myTerminalTokenType;
             
             private ITokenNode myCurrent;
 
-            public PrevTokensUntilTerminalTokenEnumerator(ITokenNode originToken, ITokenNodeType terminalTokenType)
+            public PrevTokensUntilTerminalTokenEnumerator(ITokenNode originToken, ITokenNodeType? terminalTokenType)
             {
                 myCurrent = originToken;
                 myTerminalTokenType = terminalTokenType;

@@ -82,6 +82,22 @@ class UnityEditorHelper(executableName: String, @NlsSafe val roleName: String, p
 }
 
 /**
+ * A virtual player, when the editor is in multiplayer play mode
+ *
+ * Each virtual player is a new instance of the editor, with a new sparse copy of the project living inside `Library/VP/{id}`. The `Assets`
+ * and `Packages` folders are symlinked to the actual directories, and each player has its own instance of `Library` (complete with files
+ * such as `Library/EditorInstance.json`). Each player has an ID such as `mppmca3577a6`, but a display name can be set in the main editor.
+ * The details about the players are stored in the main project's `Library/VP/PlayerData.json`, including display names, identifiers, and
+ * tags. We don't read this file as we can get all the information we need from the command line of the virtual player's editor.
+ */
+class UnityVirtualPlayer(executableName: String, @NlsSafe val playerName: String, val virtualPlayerId: String, pid: Int, projectName: String?) :
+    UnityLocalProcess("$TYPE($virtualPlayerId)", executableName, pid, projectName) {
+    companion object {
+        const val TYPE = "VirtualPlayer"
+    }
+}
+
+/**
  * Represents a player that is local to the current desktop, such as OSX or Windows player
  *
  * Players are discovered via UDP multicast messages, which are used to derive the debugger host and port.

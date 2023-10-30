@@ -17,6 +17,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 using JetBrains.ReSharper.Plugins.Unity.Resources;
+using JetBrains.Rider.Model.Unity.FrontendBackend;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration.Packages.Notification
 {
@@ -31,6 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
         private readonly ISettingsStore mySettingsStore;
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly UserNotifications myUserNotifications;
+        private readonly FrontendBackendHost myFrontendBackendHost;
         private readonly SequentialLifetimes mySequentialLifetimes;
         private readonly JetHashSet<JetSemanticVersion> myNotificationShown;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
@@ -48,7 +50,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             IApplicationWideContextBoundSettingStore applicationWideContextBoundSettingStore,
             ISettingsStore settingsStore,
             BackendUnityHost backendUnityHost, 
-            UserNotifications userNotifications
+            UserNotifications userNotifications,
+            FrontendBackendHost frontendBackendHost
         )
         {
             myLogger = logger;
@@ -59,6 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             mySettingsStore = settingsStore;
             myBackendUnityHost = backendUnityHost;
             myUserNotifications = userNotifications;
+            myFrontendBackendHost = frontendBackendHost;
             mySequentialLifetimes = new SequentialLifetimes(lifetime);
             myNotificationShown = new JetHashSet<JetSemanticVersion>();
             myBoundSettingsStore = applicationWideContextBoundSettingStore.BoundSettingsStore;
@@ -148,6 +152,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                                     string.Format(Resources.Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Check_for_JetBrains_Rider_package__Version__in_Unity_Package_Manager_, packageVersion),
                                     additionalCommands: new[]
                                     {
+                                        new UserNotificationCommand(Resources.Strings.OpenManifestJson_Text, () =>
+                                        {
+                                            var model = myFrontendBackendHost.Model;
+                                            var file = mySolution.SolutionDirectory.Combine("Packages").Combine("manifest.json");
+                                            if (model != null && file.ExistsFile)
+                                            { 
+                                                model.OpenFileLineCol.Start(notificationLifetime.Lifetime, new RdOpenFileArgs(file.FullPath, 1, 0));
+                                                notificationLifetime.Terminate();
+                                            };
+                                        }),
                                         new UserNotificationCommand(Resources.Strings.RiderPackageUpdateAvailabilityChecker_ShowNotificationIfNeeded_Do_not_show_for_this_solution, () =>
                                         {
                                             mySettingsStore.BindToContextTransient(

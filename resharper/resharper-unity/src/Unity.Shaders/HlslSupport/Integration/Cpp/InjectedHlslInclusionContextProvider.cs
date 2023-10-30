@@ -1,8 +1,11 @@
 #nullable enable
+using System.Collections.Generic;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
@@ -43,8 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
                 cacheVersion, options.AllowPendingActions, options.CollectPPUsages, lifetime, symbolScope);
             var directory = randomProjectFile.Location.Directory;
 
-            var shaderCache = cache.Solution.GetComponent<InjectedHlslFileLocationTracker>();
-            var (includes, defines) = shaderCache.GetProgramInfo(rootFile);
+            var (includes, defines) = GetProgramInfo(cache.Solution, rootFile);
             foreach (var define in defines)
             {
                 inclusionContext.ProcessDefine(CppPPDefineSymbolUtil.ParsePredefinedMacro($"{define.Key}={define.Value}"));
@@ -62,6 +64,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             }
             inclusionContext.PopInclude(false);
             return CppInclusionContextResult.Ok(inclusionContext);
+        }
+        
+        private static (IEnumerable<CppFileLocation> includeLocations, IReadOnlyDictionary<string, string> defines) GetProgramInfo(ISolution solution, CppFileLocation cppFileLocation)
+        {
+            var injectedHlslCache = solution.GetComponent<InjectedHlslFileLocationTracker>();
+            var shaderProgramCache = solution.GetComponent<ShaderProgramCache>();
+            
+            // PSI is not committed here
+            // TODO: cpp global cache should calculate cache only when PSI for file with cpp injects is committed.
+
+            var sourceFile = cppFileLocation.GetRandomSourceFile(solution);
+            var range = cppFileLocation.RootRange;
+            Assertion.Assert(range.IsValid);
+            
+            var buffer = sourceFile.Document.Buffer;
+
+            ShaderProgramInfo? shaderProgramInfo;
+            if (!shaderProgramCache.UpToDate(sourceFile))
+                shaderProgramInfo = shaderProgramCache.ReadProgramInfo(new CppDocumentBuffer(buffer, range));
+            else if (!shaderProgramCache.TryGetShaderProgramInfo(cppFileLocation, out shaderProgramInfo)) 
+                Assertion.Fail($"Shader program info is missing for {cppFileLocation}");
+            
+            var includes = injectedHlslCache.GetIncludes(sourceFile, buffer, range.StartOffset, shaderProgramInfo);
+            return (includes, shaderProgramInfo.DefinedMacros);
         }
     }
 }

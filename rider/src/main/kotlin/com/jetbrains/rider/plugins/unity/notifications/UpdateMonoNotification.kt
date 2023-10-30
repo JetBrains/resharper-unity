@@ -1,6 +1,6 @@
 package com.jetbrains.rider.plugins.unity.notifications
 
-import com.jetbrains.rd.platform.client.ProtocolProjectSession
+import com.intellij.openapi.client.ClientProjectSession
 import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.protocol.SolutionExtListener
@@ -10,7 +10,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendMo
 
 class UpdateMonoNotification : LifetimedService() {
     class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
-        override fun extensionCreated(lifetime: Lifetime, session: ProtocolProjectSession, model: FrontendBackendModel) {
+        override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
             model.showInstallMonoDialog.adviseOnce(session.project.lifetime) {
                 val dialog = com.jetbrains.rider.environmentSetup.EnvironmentSetupDialog(session.project, "mono")
                 dialog.showAndGet()

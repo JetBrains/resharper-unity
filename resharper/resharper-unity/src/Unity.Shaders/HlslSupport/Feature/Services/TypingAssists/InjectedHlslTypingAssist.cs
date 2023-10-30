@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
     {
         myCachingLexerService = cachingLexerService;
         myDummyFormatter = dummyFormatter;
-      var braceHandler = new InjectedHlslBraceHandler(this, dummyFormatter, false, productConfigurations.IsInternalMode());
+      var braceHandler = new InjectedHlslBraceHandler(this, dummyFormatter);
       var quoteHandler = new CppQuoteHandler<ShaderLabLanguage>(this);
       var deleteHandler = new CppDeleteHandler<ShaderLabLanguage>(this, dummyFormatter, braceHandler);
 

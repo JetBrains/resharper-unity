@@ -6,30 +6,30 @@ Found usages  (9 usages found)
             Ex5.unity  (4 usages found)
                 GameObject  (2 usages found)
                     Script5  (2 usages found)
-                        Transform = Right (Transform)
-                        Transform = Root Variant (Transform)
+                         Transform = Right (Transform)
+                         Transform = Root Variant (Transform)
                 Root  (2 usages found)
                     Left  (1 usage found)
                         Script5  (1 usage found)
-                            Transform = Right (Transform)
+                             Transform = Right (Transform)
                     Right  (1 usage found)
                         Script5  (1 usage found)
-                            Transform = Left (Transform)
+                             Transform = Left (Transform)
             GameObject.prefab  (2 usages found)
                 GameObject  (2 usages found)
                     Script5  (2 usages found)
-                        Transform = None
-                        Transform = None
+                         Transform = None
+                         Transform = None
             Left.prefab  (1 usage found)
                 Left  (1 usage found)
                     Script5  (1 usage found)
-                        Transform = None
+                         Transform = None
             Right.prefab  (1 usage found)
                 Right  (1 usage found)
                     Script5  (1 usage found)
-                        Transform = None
+                         Transform = None
             Root Variant.prefab  (1 usage found)
                 Root Variant  (1 usage found)
                     Left  (1 usage found)
                         Script5  (1 usage found)
-                            Transform = Right (Transform)
+                             Transform = Right (Transform)

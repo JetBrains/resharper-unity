@@ -32,11 +32,14 @@
     </Compile>
   </ItemGroup>
   <ItemGroup Label="References">
+    <PackageReference Include="JetBrains.Lifetimes" />
+    <PackageReference Include="JetBrains.NuGet.Packaging" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit.Console" />
     <PackageReference Include="Lib.Harmony" />
     <ProjectReference Include="..\..\..\src\Unity\Unity.csproj" />

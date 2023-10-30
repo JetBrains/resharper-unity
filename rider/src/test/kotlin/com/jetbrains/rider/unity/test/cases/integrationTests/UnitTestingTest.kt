@@ -1,13 +1,22 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
+import com.jetbrains.rider.test.allure.Subsystem
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithGeneratedSolutionBase
 import com.jetbrains.rider.unity.test.framework.api.preferStandaloneNUnitLauncherInTests
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.*
+import io.qameta.allure.Description
+import io.qameta.allure.Epic
+import io.qameta.allure.Feature
+import io.qameta.allure.Severity
+import io.qameta.allure.SeverityLevel
 import org.testng.annotations.Test
 import java.io.File
 
+@Epic(Subsystem.UNITY_UNIT_TESTING)
+@Feature("Unit Testing in Unity solution without started Unity")
+@Severity(SeverityLevel.CRITICAL)
 @TestEnvironment(platform = [PlatformType.WINDOWS_ALL, PlatformType.MAC_OS_ALL])
 class UnitTestingTest : IntegrationTestWithGeneratedSolutionBase() {
     override fun getSolutionDirectoryName() = "SimpleUnityUnitTestingProject"
@@ -23,18 +32,22 @@ class UnitTestingTest : IntegrationTestWithGeneratedSolutionBase() {
     }
 
     @Test
+    @Description("Check run all tests from solution")
     fun checkRunAllTestsFromSolution() = testWithAllTestsInSolution(5)
 
     @Test(description = "RIDER-46658", enabled = false)
+    @Description("Check test fixture and value source")
     fun checkTestFixtureAndValueSourceTests() = testWithAllTestsInSolution(14, 16)
 
     @Test(description = "RIDER-49891", enabled = false)
+    @Description("Check Standalone NUnit launcher")
     fun checkStandaloneNUnitLauncher() {
         preferStandaloneNUnitLauncherInTests()
         testWithAllTestsInSolution(5)
     }
 
     @Test
+    @Description("Check run all tests from project")
     fun checkRunAllTestsFromProject() {
         withUtFacade(project) {
             // workaround the situation, when at first assenblies are not compiled, so discovery returns nothing

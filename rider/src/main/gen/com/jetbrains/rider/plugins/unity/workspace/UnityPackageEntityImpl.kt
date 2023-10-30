@@ -9,6 +9,7 @@ import com.intellij.platform.workspace.storage.*
 import com.intellij.platform.workspace.storage.EntityInformation
 import com.intellij.platform.workspace.storage.EntitySource
 import com.intellij.platform.workspace.storage.EntityStorage
+import com.intellij.platform.workspace.storage.EntityType
 import com.intellij.platform.workspace.storage.GeneratedCodeApiVersion
 import com.intellij.platform.workspace.storage.GeneratedCodeImplVersion
 import com.intellij.platform.workspace.storage.MutableEntityStorage
@@ -17,25 +18,24 @@ import com.intellij.platform.workspace.storage.annotations.Child
 import com.intellij.platform.workspace.storage.impl.ConnectionId
 import com.intellij.platform.workspace.storage.impl.EntityLink
 import com.intellij.platform.workspace.storage.impl.ModifiableWorkspaceEntityBase
-import com.intellij.platform.workspace.storage.impl.UsedClassesCollector
 import com.intellij.platform.workspace.storage.impl.WorkspaceEntityBase
 import com.intellij.platform.workspace.storage.impl.WorkspaceEntityData
 import com.intellij.platform.workspace.storage.impl.extractOneToOneChild
 import com.intellij.platform.workspace.storage.impl.updateOneToOneChildOfParent
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityGitDetails
+import com.intellij.platform.workspace.storage.metadata.model.EntityMetadata
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackage
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.UnityPackageSource
 
 @GeneratedCodeApiVersion(2)
-@GeneratedCodeImplVersion(2)
-open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : UnityPackageEntity, WorkspaceEntityBase() {
+@GeneratedCodeImplVersion(3)
+open class UnityPackageEntityImpl(private val dataSource: UnityPackageEntityData) : UnityPackageEntity, WorkspaceEntityBase(dataSource) {
 
-  companion object {
+  private companion object {
     internal val CONTENTROOTENTITY_CONNECTION_ID: ConnectionId = ConnectionId.create(UnityPackageEntity::class.java,
                                                                                      ContentRootEntity::class.java,
                                                                                      ConnectionId.ConnectionType.ONE_TO_ONE, true)
 
-    val connections = listOf<ConnectionId>(
+    private val connections = listOf<ConnectionId>(
       CONTENTROOTENTITY_CONNECTION_ID,
     )
 
@@ -53,6 +53,7 @@ open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : Unit
   override fun connectionIdList(): List<ConnectionId> {
     return connections
   }
+
 
   class Builder(result: UnityPackageEntityData?) : ModifiableWorkspaceEntityBase<UnityPackageEntity, UnityPackageEntityData>(
     result), UnityPackageEntity.Builder {
@@ -82,7 +83,7 @@ open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : Unit
       checkInitialization() // TODO uncomment and check failed tests
     }
 
-    fun checkInitialization() {
+    private fun checkInitialization() {
       val _diff = diff
       if (!getEntityData().isEntitySourceInitialized()) {
         error("Field WorkspaceEntity#entitySource should be initialized")
@@ -165,7 +166,7 @@ open class UnityPackageEntityImpl(val dataSource: UnityPackageEntityData) : Unit
 class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
   lateinit var descriptor: UnityPackage
 
-  fun isDescriptorInitialized(): Boolean = ::descriptor.isInitialized
+  internal fun isDescriptorInitialized(): Boolean = ::descriptor.isInitialized
 
   override fun wrapAsModifiable(diff: MutableEntityStorage): WorkspaceEntity.Builder<UnityPackageEntity> {
     val modifiable = UnityPackageEntityImpl.Builder(null)
@@ -182,6 +183,10 @@ class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
       entity.id = createEntityId()
       entity
     }
+  }
+
+  override fun getMetadata(): EntityMetadata {
+    return MetadataStorageImpl.getMetadataByTypeFqn("com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity") as EntityMetadata
   }
 
   override fun getEntityInterface(): Class<out WorkspaceEntity> {
@@ -235,13 +240,5 @@ class UnityPackageEntityData : WorkspaceEntityData<UnityPackageEntity>() {
     var result = javaClass.hashCode()
     result = 31 * result + descriptor.hashCode()
     return result
-  }
-
-  override fun collectClassUsagesData(collector: UsedClassesCollector) {
-    collector.add(UnityPackage::class.java)
-    collector.add(UnityGitDetails::class.java)
-    collector.add(UnityPackageSource::class.java)
-    this.descriptor?.let { collector.addDataToInspect(it) }
-    collector.sameForAllEntities = true
   }
 }

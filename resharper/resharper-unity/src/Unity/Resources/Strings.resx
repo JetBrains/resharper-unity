@@ -149,7 +149,7 @@
         <value>Burst: Accessing managed method '{0}' from type '{1}' is not supported</value>
     </data>
     <data name="BurstAccessingManagedIndexerFromTypeIsNotSupportedMessage" xml:space="preserve">
-        <value>Burst: Managed type '{0}' doesn't support indexer operator</value>
+        <value>Burst: Managed type '{0}' doesn't support the indexer operator</value>
     </data>
     <data name="BurstBoxingIsNotSupportedMessage" xml:space="preserve">
         <value>Burst: Boxing '{0}' is not supported</value>
