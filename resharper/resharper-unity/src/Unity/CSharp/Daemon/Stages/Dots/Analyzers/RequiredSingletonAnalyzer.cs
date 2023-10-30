@@ -1,6 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
@@ -35,7 +35,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
             ProcessMethods(element.MethodDeclarations, currentElementVisitor);
 
             var otherDeclarationsVisitor = new VisitorDotsMethods();
-            var otherMethodDeclarations = DotsUtils.GetMethodsFromAllDeclarations(typeElement, declaration => declaration != element);
+            var otherMethodDeclarations =
+                DotsUtils.GetMethodsFromAllDeclarations(typeElement, declaration => declaration != element);
             ProcessMethods(otherMethodDeclarations, otherDeclarationsVisitor);
 
             currentElementVisitor.RequireForUpdateCalls.AddRange(otherDeclarationsVisitor.RequireForUpdateCalls);
@@ -51,7 +52,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
                 }
             }
 
-            void ProcessMethods(IEnumerable<IMethodDeclaration> treeNodeCollection, IRecursiveElementProcessor visitorDotsMethods)
+            void ProcessMethods(IEnumerable<IMethodDeclaration> treeNodeCollection,
+                IRecursiveElementProcessor visitorDotsMethods)
             {
                 foreach (var methodDeclaration in treeNodeCollection)
                 {
@@ -84,65 +86,70 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
                 if (element is not IInvocationExpression expression)
                     return;
 
-                if (TryGetTypeFromGetSingletonCall(expression, out var singletonType))
+                var hasGetTypeMethods = false;
+                foreach (var singletonType in TryGetTypeFromGetSingletonCall(expression))
                 {
                     GetSingletonCalls.Add(singletonType);
                     GetSingletonCallsExpressions.Add(singletonType, expression);
+                    hasGetTypeMethods = true;
                 }
-                else if (TryGetTypeFromRequireForUpdateCall(expression, out singletonType))
-                {
+
+                if (hasGetTypeMethods)
+                    return; //this expression already has GetSingleton method, so 'RequiredForUpdate()' - not
+
+                foreach (var singletonType in TryGetTypeFromRequireForUpdateCall(expression))
                     RequireForUpdateCalls.Add(singletonType);
-                }
             }
 
-            private static bool TryGetTypeFromGetSingletonCall(IInvocationExpression expression,
-                                                               [MaybeNullWhen(false)] out IType singletonType)
+            private static IEnumerable<IType> TryGetTypeFromGetSingletonCall(IInvocationExpression expression)
             {
-                singletonType = null;
                 var resolveResultWithInfo = expression.Reference.Resolve();
                 var method = resolveResultWithInfo.DeclaredElement as IMethod;
 
                 if (method == null)
-                    return false;
+                    return EmptyList<IType>.Instance;
 
                 if (method.ShortName != "GetSingleton" && method.ShortName != "GetSingletonEntity")
-                    return false;
+                    return EmptyList<IType>.Instance;
 
                 if (!method.ContainingType.IsClrName(KnownTypes.SystemAPI))
-                    return false;
+                    return EmptyList<IType>.Instance;
 
                 var methodTypeParameters = method.TypeParameters;
                 if (methodTypeParameters.Count != 1)
-                    return false;
+                    return EmptyList<IType>.Instance;
 
-                singletonType = resolveResultWithInfo.Substitution[methodTypeParameters[0]];
-                return true;
+                return new List<IType> { resolveResultWithInfo.Substitution[methodTypeParameters[0]] };
             }
 
-            private static bool TryGetTypeFromRequireForUpdateCall(IInvocationExpression expression,
-                                                                   [MaybeNullWhen(false)] out IType singletonType)
+            private static IEnumerable<IType> TryGetTypeFromRequireForUpdateCall(IInvocationExpression expression)
             {
-                singletonType = null;
                 var resolveResultWithInfo = expression.Reference.Resolve();
-                var method = resolveResultWithInfo.DeclaredElement as IMethod;
 
-                if (method == null)
-                    return false;
+                if (resolveResultWithInfo.DeclaredElement is not IMethod method)
+                    return EmptyList<IType>.Instance;
 
-                if (method.ShortName != "RequireForUpdate")
-                    return false;
+                if (method.ShortName == "RequireForUpdate" && method.ContainingType.IsClrName(KnownTypes.SystemState))
+                {
+                    var methodTypeParameters = method.TypeParameters;
+                    if (methodTypeParameters.Count != 1)
+                        return EmptyList<IType>.Instance;
 
-                if (!method.ContainingType.IsClrName(KnownTypes.SystemState))
-                    return false;
+                    return new List<IType> { resolveResultWithInfo.Substitution[methodTypeParameters[0]] };
+                }
 
-                var methodTypeParameters = method.TypeParameters;
-                if (methodTypeParameters.Count != 1)
-                    return false;
+                if (method.ShortName is "WithAll" or "WithAllRW" &&
+                    method.ContainingType.IsClrName(KnownTypes.SystemAPIQueryBuilder))
+                {
+                    var methodTypeParameters = method.TypeParameters;
+                    if (methodTypeParameters.Count < 1)
+                        return EmptyList<IType>.Instance;
 
-                singletonType = resolveResultWithInfo.Substitution[methodTypeParameters[0]];
-                return true;
+                    return methodTypeParameters.Select(p => resolveResultWithInfo.Substitution[p]);
+                }
+
+                return EmptyList<IType>.Instance;
             }
-
 
             public void ProcessAfterInterior(ITreeNode element)
             {
