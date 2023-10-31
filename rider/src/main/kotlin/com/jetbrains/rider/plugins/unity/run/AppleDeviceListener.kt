@@ -153,8 +153,10 @@ class AppleDeviceListener(project: Project,
         // files (including the 'Extensions' folder) live under 'dotnet'. ReSharper plugins ship in a 'DotFiles' folder,
         // but are installed into the main install folder. No-one actually uses 'DotFiles' now
         val helperExe = RiderEnvironment.getBundledFile("JetBrains.Rider.Unity.ListIosUsbDevices.dll", pluginClass = javaClass)
-        val commandLine = AssemblyExecutionContext(helperExe, RiderEnvironment.customExecutionOs, null,
-            iosSupportPath.toString(), "$refreshPeriod").fillCommandLine(GeneralCommandLine())
+        val commandLine = AssemblyExecutionContext.create(
+            helperExe,
+            iosSupportPath.toString(),
+            "$refreshPeriod").fillCommandLine(GeneralCommandLine())
         val processHandler = CapturingProcessHandler(commandLine)
         val rawDevices = mutableListOf<String>()
         processHandler.addProcessListener(object : ProcessAdapter() {
