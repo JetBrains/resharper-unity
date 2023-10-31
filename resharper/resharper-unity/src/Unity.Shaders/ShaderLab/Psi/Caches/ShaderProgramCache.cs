@@ -327,7 +327,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                     if (entries.Count > 0)
                     {
                         if (!allowDisableAllKeywords)
-                            allowDisableAllKeywords = entries.Count == 1 && pragmaInfo.AllowAllKeywordsDisabled;
+                            allowDisableAllKeywords = entries.Count == 1 && pragmaInfo.HasDisabledVariantForSingleKeyword;
                         shaderFeature = new ShaderFeature(entries.MoveOrCopyToImmutableArray(), allowDisableAllKeywords);
                         return true;
                     }   

@@ -11,15 +11,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlight
 public class SuppressedShaderKeywordHighlight : IHighlighting
 {
     private readonly CppIdentifierTokenNode myIdentifier;
-    private readonly string mySuppressors;
+    private readonly string? mySuppressors;
 
-    public SuppressedShaderKeywordHighlight(CppIdentifierTokenNode identifier, List<string> suppressors)
+    public SuppressedShaderKeywordHighlight(CppIdentifierTokenNode identifier, List<string>? suppressors)
     {
         myIdentifier = identifier;
-        mySuppressors = string.Join(", ", suppressors);
+        mySuppressors = suppressors != null ? string.Join(", ", suppressors) : null;
     }
     
-    public /*Localized*/ string ToolTip => $"Suppressed by: {mySuppressors}";
+    public /*Localized*/ string? ToolTip => mySuppressors != null ? $"Suppressed by: {mySuppressors}" : null;
     public /*Localized*/ string? ErrorStripeToolTip => null;
     public bool IsValid() => myIdentifier.IsValid();
 

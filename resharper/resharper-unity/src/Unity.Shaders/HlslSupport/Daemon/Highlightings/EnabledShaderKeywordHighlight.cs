@@ -2,23 +2,23 @@
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages;
-using JetBrains.ReSharper.Psi.Cpp.Tree;
+using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlightings;
 
 [StaticSeverityHighlighting(Severity.INFO, typeof(ShaderKeywordsHighlightingId), OverlapResolve = OverlapResolveKind.NONE, AttributeId = ShaderLabHighlightingAttributeIds.ENABLED_SHADER_KEYWORD)]
 public class EnabledShaderKeywordHighlight : IHighlighting
 {
-    private readonly MacroReference myShaderKeywordReference;
+    private readonly ITreeNode myShaderKeywordNode;
 
-    public EnabledShaderKeywordHighlight(MacroReference shaderKeywordReference)
+    public EnabledShaderKeywordHighlight(ITreeNode shaderKeywordNode)
     {
-        myShaderKeywordReference = shaderKeywordReference;
+        myShaderKeywordNode = shaderKeywordNode;
     }
     
     public /*Localized*/ string? ToolTip => null;
     public /*Localized*/ string? ErrorStripeToolTip => null;
-    public bool IsValid() => myShaderKeywordReference.IsValid();
+    public bool IsValid() => myShaderKeywordNode.IsValid();
 
-    public DocumentRange CalculateRange() => myShaderKeywordReference.GetHighlightingRange();
+    public DocumentRange CalculateRange() => myShaderKeywordNode.GetHighlightingRange();
 }

@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language
     {
         public static readonly ShaderLabPragmaCommand MultiCompile = new("multi_compile", PragmaCommandFlags.HasRequiredSpec, new ShaderLabPragmaInfo { DeclaresKeywords = true });
         public static readonly PragmaCommand MultiCompileLocal = MultiCompile.WithSuffix("_local");
-        public static readonly ShaderLabPragmaCommand ShaderFeature = new("shader_feature", PragmaCommandFlags.HasRequiredSpec, new ShaderLabPragmaInfo { DeclaresKeywords = true, AllowAllKeywordsDisabled = true });
+        public static readonly ShaderLabPragmaCommand ShaderFeature = new("shader_feature", PragmaCommandFlags.HasRequiredSpec, new ShaderLabPragmaInfo { DeclaresKeywords = true, HasDisabledVariantForSingleKeyword = true });
         public static readonly PragmaCommand ShaderFeatureLocal = ShaderFeature.WithSuffix("_local");
         public static readonly ShaderLabPragmaCommand DynamicBranch = new("dynamic_branch", PragmaCommandFlags.HasRequiredSpec, new ShaderLabPragmaInfo { DeclaresKeywords = true });
         public static readonly PragmaCommand DynamicBranchLocal = DynamicBranch.WithSuffix("_local");
