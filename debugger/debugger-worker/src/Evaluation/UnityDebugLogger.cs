@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Util;
 using Mono.Debugger.Soft;
@@ -10,8 +10,6 @@ using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.MetadataLite.Services;
 using Mono.Debugging.Soft;
-using Mono.Debugging.Soft.MetadataLite.SoftMetadataLite;
-using Mono.Debugging.Soft.Utils;
 using Mono.Debugging.TypeSystem;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
@@ -22,68 +20,67 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
         private const string UnityEngineDebugTypeName = "UnityEngine.Debug";
         private const string UnityEngineDebugLogMethodName = "Log";
 
-        protected ILogger Logger { get; }
 
         public UnityDebugLogger(IDebuggerSession session, IDebugSessionFrontend debugSessionFrontend, ILogger logger, IValueFactory<Value> factory)
         {
             mySession = session as SoftDebuggerSession;
             myIsUnityDebugSession =
                 mySession != null && debugSessionFrontend is RiderDebuggerSessionFrontend riderDebuggerSessionFrontend
-                                  && riderDebuggerSessionFrontend.SessionModel.StartInfo is UnityStartInfo
-                                  && !mySession.IsIl2Cpp;//Disabled for il2cpp builds
-            Logger = logger;
+                                  && riderDebuggerSessionFrontend.SessionModel.StartInfo is UnityStartInfo;
+                                  
+            myLogger = logger;
             myFactory = factory;
         }
 
         private readonly IValueFactory<Value> myFactory;
         private readonly SoftDebuggerSession? mySession;
         private readonly bool myIsUnityDebugSession;
+        private readonly ILogger myLogger;
+        private readonly Dictionary<ulong, IReifiedType<Value>> myReifiedTypesLocalCache = new();
 
-        private static readonly Func<IMetadataMethodLite, bool> ourDebugLogMethodSelector
+        private static readonly Func<IMetadataMethodLite, bool> ourDebugLogMethodFilter
             = ml => ml.Name == UnityEngineDebugLogMethodName && ml.Parameters.Length == 1 && ml.Parameters[0].Type.IsObject();
-        
+
         public bool Handle(BreakEvent be, IStackFrame activeFrame, string message)
         {
-            if (!myIsUnityDebugSession)
+            if (!myIsUnityDebugSession || mySession == null || mySession.IsIl2Cpp) //Disabled for il2cpp builds
                 return false;
-
-            var debugTypeNames = mySession.AppDomainsManager.ForceGetTypesForName(UnityEngineDebugTypeName, true, true)
-                .ToArray();
-            var debugType = debugTypeNames.FirstOrDefault();
+            
+            var debugType = mySession.TypeUniverse.GetTypeByAssemblyQualifiedName(activeFrame, UnityEngineDebugTypeName);
 
             if (debugType == null)
             {
-                Logger.Error($"Could not find {UnityEngineDebugTypeName} type in runtime.");
+                myLogger.Error($"Could not find {UnityEngineDebugTypeName} type in runtime.");
                 return false;
             }
 
-            // Somehow in case of UnityEngine it returns two same TypeMirrors with same ids and tokens
-            // if (debugTypeNames.Length != 1)
-            //     Logger.Error($"{UnityEngineDebugTypeName} types count == {debugTypeNames.Length}.");
-
-            var evalOptions = mySession.Options.EvaluationOptions.AllowFullInvokes(true);
+            var evalOptions = mySession.Options.EvaluationOptions.AllowFullInvokes();
 
             try
             {
-                var unityEngineDebugReifiedType =
-                    (IReifiedType<Value>)mySession.TypeUniverse.GetReifiedType(activeFrame.GetAppDomainId(),
-                        debugType.ToLite());
+                var appDomainId = activeFrame.GetAppDomainId();
+                if (!myReifiedTypesLocalCache.TryGetValue(appDomainId, out var unityEngineDebugReifiedType))
+                {
+                    unityEngineDebugReifiedType = (IReifiedType<Value>)mySession.TypeUniverse.GetReifiedType(appDomainId, debugType);
+                    myReifiedTypesLocalCache.Add(appDomainId, unityEngineDebugReifiedType);
+                }
+                
                 var valueDebugMessage = myFactory.CreateString(activeFrame, evalOptions, message);
 
-                var result = unityEngineDebugReifiedType.CallStaticMethod(activeFrame,
-                    evalOptions.WithOverridden(x => x.EvaluationTimeout = 10000),
-                    ourDebugLogMethodSelector,
+                var result = unityEngineDebugReifiedType.CallStaticMethod(activeFrame, 
+                    evalOptions,
+                    ourDebugLogMethodFilter,
                     valueDebugMessage);
                 
                 if (result == null)
                 {
-                    Logger.Error($"Failed to initialize {UnityEngineDebugTypeName}");
+                    myLogger.Error($"Failed to initialize {UnityEngineDebugTypeName}");
                     return false;
                 }
             }
             catch (Exception e)
             {
-                Logger.Error(e, $"Failed to create {UnityEngineDebugTypeName}");
+                myLogger.Error(e, $"Failed to create {UnityEngineDebugTypeName}");
             }
 
             return true;
