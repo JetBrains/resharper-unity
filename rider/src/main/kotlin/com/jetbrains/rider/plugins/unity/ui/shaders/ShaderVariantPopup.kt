@@ -15,10 +15,7 @@ import com.jetbrains.rd.util.reactive.valueOrThrow
 import com.jetbrains.rdclient.document.getFirstDocumentId
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.UnityBundle
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderKeyword
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderVariant
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderVariantInteraction
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.*
 
 class ShaderVariantPopup(private val interaction: ShaderVariantInteraction, model: FrontendBackendModel) : JBPanel<ShaderVariantPopup>() {
     companion object {
@@ -34,7 +31,7 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction, mode
             val model = FrontendBackendHost.getInstance(project).model
             val lifetime = LifetimeDefinition()
             EditorUtil.disposeWithEditor(editor) { lifetime.terminate() }
-            model.createShaderVariantInteraction.start(lifetime, id).result.advise(lifetime) {
+            model.createShaderVariantInteraction.start(lifetime, CreateShaderVariantInteractionArgs(id, editor.caretModel.offset)).result.advise(lifetime) {
                 createPopup(it.unwrap(), model).show(showAt)
             }
         }

@@ -133,7 +133,10 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         // Shader variants
         map("shaderKeywords", string, rdShaderKeyword).readonly
         property("defaultShaderVariant", rdShaderVariant).readonly
-        call("createShaderVariantInteraction", RdDocumentId, classdef("shaderVariantInteraction") {
+        call("createShaderVariantInteraction", structdef("createShaderVariantInteractionArgs") {
+            field("documentId", RdDocumentId)
+            field("offset", int)
+        }, classdef("shaderVariantInteraction") {
             field("availableKeywords", immutableList(string))
         })
 

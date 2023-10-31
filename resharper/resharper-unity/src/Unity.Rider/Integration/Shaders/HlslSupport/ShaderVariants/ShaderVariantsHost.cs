@@ -20,8 +20,12 @@ using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
+using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
@@ -35,13 +39,16 @@ public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProv
     private readonly ShaderProgramCache myShaderProgramCache;
     private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
     private readonly ChangeManager myChangeManager;
+    private readonly IDocumentHost myDocumentHost;
+    private readonly IPreferredRootFileProvider myPreferredPreferredRootFileProvider;
+    private readonly ILogger myLogger;
 
     private readonly RdShaderVariant myCurrentVariant; 
 
     public ShaderVariantsHost(Lifetime lifetime,
         ISolution solution,
         ShaderProgramCache shaderProgramCache,
-        IPreferredRootFileProvider rootFileProvider,
+        IPreferredRootFileProvider preferredRootFileProvider,
         ISettingsStore settingsStore,
         [UsedImplicitly] SolutionSettingsReadyForSolutionInstanceComponent _,
         ChangeManager changeManager,
@@ -52,6 +59,10 @@ public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProv
         mySolution = solution;
         myShaderProgramCache = shaderProgramCache;
         myChangeManager = changeManager;
+        myPreferredPreferredRootFileProvider = preferredRootFileProvider;
+        myDocumentHost = documentHost;
+        myLogger = logger;
+        
         myChangeManager.RegisterChangeProvider(lifetime, this);
 
         myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(mySolution.ToDataContext()));
@@ -74,23 +85,35 @@ public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProv
             defaultShaderVariant.DisableKeyword.Advise(lifetime, keyword => SetKeywordEnabled(keyword, false));
 
             model.DefaultShaderVariant.Value = defaultShaderVariant;
-            model.CreateShaderVariantInteraction.SetAsync(async (lt, documentId) =>
-            {
-                logger.Verbose("Start shader variant interaction");
-                var keywords = await lt.StartBackgroundRead(() =>
-                {
-                    var document = documentHost.TryGetDocument(documentId);
-                    if (document == null)
-                        return new List<string>();
-                    var location = new CppFileLocation(document.Location);
-                    var rootLocation = rootFileProvider.GetPreferredRootFile(location);
-                    if (!rootLocation.IsValid() || !myShaderProgramCache.TryGetShaderProgramInfo(rootLocation, out var shaderProgramInfo))
-                        return new List<string>();
-                    return shaderProgramInfo.Keywords.ToList();
-                });
-                return new ShaderVariantInteraction(keywords);
-            });
+            model.CreateShaderVariantInteraction.SetAsync(HandleCreateShaderVariantInteraction);
         });
+    }
+
+    private async Task<ShaderVariantInteraction> HandleCreateShaderVariantInteraction(Lifetime lifetime, CreateShaderVariantInteractionArgs args)
+    {
+        myLogger.Verbose("Start shader variant interaction");
+        var keywords = await lifetime.StartBackgroundRead(() =>
+        {
+            var document = myDocumentHost.TryGetDocument(args.DocumentId);
+            if (document == null)
+                return new List<string>();
+                    
+            CppFileLocation rootLocation;
+            if (document.Location.Name.EndsWith(ShaderLabProjectFileType.SHADERLAB_EXTENSION))
+            {
+                if (document.GetPsiSourceFile(mySolution) is { } sourceFile &&
+                    sourceFile.GetPrimaryPsiFile()?.FindTokenAt(new TreeOffset(args.Offset)) is { } token &&
+                    token.NodeType == ShaderLabTokenType.CG_CONTENT)
+                    rootLocation = new CppFileLocation(sourceFile, TextRange.FromLength(token.GetTreeStartOffset().Offset, token.GetTextLength()));
+            }
+            else
+                rootLocation = myPreferredPreferredRootFileProvider.GetPreferredRootFile(new CppFileLocation(document.Location));
+
+            if (!rootLocation.IsValid() || !myShaderProgramCache.TryGetShaderProgramInfo(rootLocation, out var shaderProgramInfo))
+                return new List<string>();
+            return shaderProgramInfo.Keywords.ToList();
+        });
+        return new ShaderVariantInteraction(keywords);
     }
 
     private IEnumerable<string> EnumEnabledKeywords(SettingsIndexedEntry entry) => myBoundSettingsStore.EnumIndexedValues(entry, null).Keys.Cast<string>();
