@@ -76,15 +76,14 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
     }
 
     // Shader Variants
-    private val rdShaderVariant = structdef {
+    private val rdShaderKeyword = structdef {
         field("name", string.interned(shaderInternScope).attrs(KnownAttrs.NlsSafe))
     }
-    private val rdShaderVariantSet = classdef {
-        set("selectedVariants", string.interned(shaderInternScope)).readonly
-        source("selectVariant", string)
-        source("deselectVariant", string)
+    private val rdShaderVariant = classdef {
+        set("enabledKeywords", string.interned(shaderInternScope)).readonly
+        source("enableKeyword", string)
+        source("disableKeyword", string)
     }
-
     init {
         setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.plugins.unity.model.frontendBackend")
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.FrontendBackend")
@@ -132,8 +131,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         })
 
         // Shader variants
-        map("shaderVariants", string, rdShaderVariant).readonly
-        property("defaultShaderVariantSet", rdShaderVariantSet).readonly
+        map("shaderKeywords", string, rdShaderKeyword).readonly
+        property("defaultShaderVariant", rdShaderVariant).readonly
 
         // Actions called from the frontend to the backend (and/or indirectly, Unity)
         // (These should probably be calls, rather than signal/source/sink, as they are RPC, and not events)

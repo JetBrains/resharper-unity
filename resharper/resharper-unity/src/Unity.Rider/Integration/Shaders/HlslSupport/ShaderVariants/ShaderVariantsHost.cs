@@ -15,9 +15,8 @@ using JetBrains.ProjectModel.Settings.Storages;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Common.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Settings;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Resources.Shell;
@@ -27,14 +26,14 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderVariants;
 
 [SolutionComponent]
-public class ShaderVariantsHost : IUnityHlslCustomDefinesProvider, ICppChangeProvider
+public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProvider
 {
     private readonly ISolution mySolution;
     private readonly ShaderProgramCache myShaderProgramCache;
     private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
     private readonly ChangeManager myChangeManager;
 
-    private readonly RdShaderVariantSet myCurrentVariantSet; 
+    private readonly RdShaderVariant myCurrentVariant; 
 
     public ShaderVariantsHost(Lifetime lifetime, ISolution solution, ShaderProgramCache shaderProgramCache, ISettingsStore settingsStore, [UsedImplicitly] SolutionSettingsReadyForSolutionInstanceComponent _, ChangeManager changeManager, FrontendBackendHost? frontendBackendHost = null)
     {
@@ -44,58 +43,59 @@ public class ShaderVariantsHost : IUnityHlslCustomDefinesProvider, ICppChangePro
         myChangeManager.RegisterChangeProvider(lifetime, this);
 
         myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(mySolution.ToDataContext()));
-        var defaultSelectedVariantsEntry = myBoundSettingsStore.Schema.GetIndexedEntry(static (ShaderVariantsSettings s) => s.SelectedVariants);
-        var defaultSet = new RdShaderVariantSet();
-        myCurrentVariantSet = defaultSet;
-        defaultSet.SelectedVariants.UnionWith(EnumSelectedVariants(defaultSelectedVariantsEntry));
+        var defaultEnabledKeywordsEntry = myBoundSettingsStore.Schema.GetIndexedEntry(static (ShaderVariantsSettings s) => s.EnabledKeywords);
+        var defaultShaderVariant = new RdShaderVariant();
+        myCurrentVariant = defaultShaderVariant;
+        defaultShaderVariant.EnabledKeywords.UnionWith(EnumEnabledKeywords(defaultEnabledKeywordsEntry));
         myBoundSettingsStore.AdviseAsyncChanged(lifetime, (lt, args) =>
         {
-            if (!args.ChangedEntries.Contains(defaultSelectedVariantsEntry))
+            if (!args.ChangedEntries.Contains(defaultEnabledKeywordsEntry))
                 return Task.CompletedTask;
-            return lt.StartMainRead(() => SyncSelectedVariants(defaultSet, EnumSelectedVariants(defaultSelectedVariantsEntry)));
+            return lt.StartMainRead(() => SyncEnabledKeywords(defaultShaderVariant, EnumEnabledKeywords(defaultEnabledKeywordsEntry)));
         });
         
         frontendBackendHost?.Do(model =>
         {
-            model.DefaultShaderVariantSet.Value = defaultSet;
             myShaderProgramCache.CacheUpdated.Advise(lifetime, _ => SyncShaderVariants(model));
             
-            model.DefaultShaderVariantSet.Value.SelectVariant.Advise(lifetime, variant => SetVariantSelected(variant, true));
-            model.DefaultShaderVariantSet.Value.DeselectVariant.Advise(lifetime, variant => SetVariantSelected(variant, false));
+            defaultShaderVariant.EnableKeyword.Advise(lifetime, keyword => SetKeywordEnabled(keyword, true));
+            defaultShaderVariant.DisableKeyword.Advise(lifetime, keyword => SetKeywordEnabled(keyword, false));
+
+            model.DefaultShaderVariant.Value = defaultShaderVariant;
         });
     }
 
-    private IEnumerable<string> EnumSelectedVariants(SettingsIndexedEntry entry) => myBoundSettingsStore.EnumIndexedValues(entry, null).Values.Cast<string>();
+    private IEnumerable<string> EnumEnabledKeywords(SettingsIndexedEntry entry) => myBoundSettingsStore.EnumIndexedValues(entry, null).Keys.Cast<string>();
     
-    private void SyncSelectedVariants(RdShaderVariantSet shaderVariantSet, IEnumerable<string> newVariants)
+    private void SyncEnabledKeywords(RdShaderVariant shaderVariant, IEnumerable<string> newKeywords)
     {
         using var changeTracker = new ChangeTracker(this);
-        var unprocessed = shaderVariantSet.SelectedVariants.ToHashSet();
-        foreach (var shaderVariant in newVariants)
+        var unprocessed = shaderVariant.EnabledKeywords.ToHashSet();
+        foreach (var keyword in newKeywords)
         {
-            if (!unprocessed.Remove(shaderVariant))
+            if (!unprocessed.Remove(keyword))
             {
-                shaderVariantSet.SelectedVariants.Add(shaderVariant);
-                changeTracker.MarkShaderVariantDirty(shaderVariant);
+                shaderVariant.EnabledKeywords.Add(keyword);
+                changeTracker.MarkShaderKeywordDirty(keyword);
             }
         }
 
         foreach (var removed in unprocessed)
         {
-            shaderVariantSet.SelectedVariants.Remove(removed);
-            changeTracker.MarkShaderVariantDirty(removed);
+            shaderVariant.EnabledKeywords.Remove(removed);
+            changeTracker.MarkShaderKeywordDirty(removed);
         }
     }
 
-    private void SetVariantSelected(string variant, bool selected)
+    private void SetKeywordEnabled(string keyword, bool enabled)
     {
-        switch (selected)
+        switch (enabled)
         {
             case true:
-                myBoundSettingsStore.SetIndexedValue(static (ShaderVariantsSettings s) => s.SelectedVariants, variant, variant);
+                myBoundSettingsStore.SetIndexedValue(static (ShaderVariantsSettings s) => s.EnabledKeywords, keyword, true);
                 break;
             case false:
-                myBoundSettingsStore.RemoveIndexedValue(static (ShaderVariantsSettings s) => s.SelectedVariants, variant);
+                myBoundSettingsStore.RemoveIndexedValue(static (ShaderVariantsSettings s) => s.EnabledKeywords, keyword);
                 break;
         }
     }
@@ -106,30 +106,23 @@ public class ShaderVariantsHost : IUnityHlslCustomDefinesProvider, ICppChangePro
         mySolution.Locks.AssertMainThread();
         
         using var readLockCookie = ReadLockCookie.Create();
-        var unprocessedKeys = model.ShaderVariants.Keys.ToSet();
-        myShaderProgramCache.ForEachVariant(variant =>
+        var unprocessedKeywords = model.ShaderKeywords.Keys.ToSet();
+        myShaderProgramCache.ForEachKeyword(keyword =>
         {
-            if (!unprocessedKeys.Remove(variant))
-                model.ShaderVariants[variant] = new(variant);
+            if (!unprocessedKeywords.Remove(keyword))
+                model.ShaderKeywords[keyword] = new(keyword);
         });
 
         using var changeTracker = new ChangeTracker(this); 
-        foreach (var removedKey in unprocessedKeys)
+        foreach (var removedKeyword in unprocessedKeywords)
         {
-            model.ShaderVariants.Remove(removedKey);
-            if (model.DefaultShaderVariantSet.Value.SelectedVariants.Remove(removedKey))
-                changeTracker.MarkShaderVariantDirty(removedKey);
+            model.ShaderKeywords.Remove(removedKeyword);
+            if (model.DefaultShaderVariant.Value.EnabledKeywords.Remove(removedKeyword))
+                changeTracker.MarkShaderKeywordDirty(removedKeyword);
         }
     }
 
-    public IEnumerable<string> ProvideCustomDefines(UnityHlslDialectBase dialect)
-    {
-        return dialect switch
-        {
-            UnityComputeHlslDialect => EmptyList<string>.Enumerable,
-            _ => myCurrentVariantSet.SelectedVariants
-        };
-    }
+    public ISet<string> GetEnabledKeywords(CppFileLocation location) => myCurrentVariant.EnabledKeywords;
 
     public object? Execute(IChangeMap changeMap) => null;
     
@@ -145,7 +138,7 @@ public class ShaderVariantsHost : IUnityHlslCustomDefinesProvider, ICppChangePro
 
         void IValueAction<CppFileLocation>.Invoke(CppFileLocation location) => myOutdatedLocations.Add(location);
 
-        public void MarkShaderVariantDirty(string shaderVariant) => myHost.myShaderProgramCache.ForEachLocation(shaderVariant, ref this);
+        public void MarkShaderKeywordDirty(string shaderKeyword) => myHost.myShaderProgramCache.ForEachLocation(shaderKeyword, ref this);
 
         public void Dispose()
         {

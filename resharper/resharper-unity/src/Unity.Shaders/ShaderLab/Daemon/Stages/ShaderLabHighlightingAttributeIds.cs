@@ -53,6 +53,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         RiderPresentableNameResourceName = nameof(Strings.CommentsBlockComment_RiderPresentableName),
         FallbackAttributeId = DefaultLanguageAttributeIds.BLOCK_COMMENT,
         Layer = HighlighterLayer.SYNTAX)]
+    [RegisterHighlighter(SHADER_KEYWORD,
+        GroupId = GROUP_ID,
+        EffectType = EffectType.TEXT,
+        RiderPresentableNameResourceType = typeof(Strings),
+        RiderPresentableNameResourceName = nameof(Strings.ShaderKeyword_RiderPresentableName),
+        FallbackAttributeId = DefaultLanguageAttributeIds.IDENTIFIER,
+        Layer = HighlighterLayer.ADDITIONAL_SYNTAX
+    )]
     public static class ShaderLabHighlightingAttributeIds
     {
         public const string GROUP_ID = "ReSharper ShaderLab Highlighters";
@@ -65,6 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages
         public const string STRING = "ReSharper ShaderLab String";
         public const string LINE_COMMENT = "ReSharper ShaderLab Line Comment";
         public const string BLOCK_COMMENT = "ReSharper ShaderLab Block Comment";
+        public const string SHADER_KEYWORD = "ReSharper ShaderLab Shader Keyword";
 
         public const string DEMO_TEXT =
 @"<ReSharper.ShaderLab_BLOCK_COMMENT>/* Sample shader */</ReSharper.ShaderLab_BLOCK_COMMENT>
