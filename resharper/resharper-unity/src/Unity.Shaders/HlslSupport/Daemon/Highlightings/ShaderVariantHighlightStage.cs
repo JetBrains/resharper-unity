@@ -6,6 +6,7 @@ using JetBrains.Application;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Cpp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
@@ -26,18 +27,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlight
 public class ShaderVariantHighlightStage : CppDaemonStageBase
 {
     private readonly ShaderProgramCache myShaderProgramCache;
+    private readonly UnitySolutionTracker myUnitySolutionTracker;
     private readonly IEnabledShaderKeywordsProvider? myEnabledShaderKeywordsProvider;
     
-    public ShaderVariantHighlightStage(ElementProblemAnalyzerRegistrar elementProblemAnalyzerRegistrar, ShaderProgramCache shaderProgramCache, [Optional] IEnabledShaderKeywordsProvider? enabledShaderKeywordsProvider) : base(elementProblemAnalyzerRegistrar)
+    public ShaderVariantHighlightStage(ElementProblemAnalyzerRegistrar elementProblemAnalyzerRegistrar, ShaderProgramCache shaderProgramCache, UnitySolutionTracker unitySolutionTracker, [Optional] IEnabledShaderKeywordsProvider? enabledShaderKeywordsProvider) : base(elementProblemAnalyzerRegistrar)
     {
         myShaderProgramCache = shaderProgramCache;
+        myUnitySolutionTracker = unitySolutionTracker;
         myEnabledShaderKeywordsProvider = enabledShaderKeywordsProvider;
     }
 
     protected override IDaemonStageProcess? CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings, DaemonProcessKind processKind, CppFile file) =>
         processKind switch
         {
-            DaemonProcessKind.VISIBLE_DOCUMENT when file.InclusionContext.RootContext is { BaseFile: var rootFile, LanguageDialect: var dialect } && myShaderProgramCache.TryGetShaderProgramInfo(rootFile, out var shaderProgramInfo) 
+            DaemonProcessKind.VISIBLE_DOCUMENT when myUnitySolutionTracker.IsUnityProjectOrHasUnityReference && 
+                                                    file.InclusionContext.RootContext is { BaseFile: var rootFile, LanguageDialect: var dialect } && 
+                                                    myShaderProgramCache.TryGetShaderProgramInfo(rootFile, out var shaderProgramInfo) 
                 => new ShaderKeywordsHighlightProcess(process, settings, file, shaderProgramInfo, myEnabledShaderKeywordsProvider?.GetEnabledKeywords(rootFile) ?? EmptySet<string>.InstanceSet, dialect.Pragmas),
             _ => null
         };
