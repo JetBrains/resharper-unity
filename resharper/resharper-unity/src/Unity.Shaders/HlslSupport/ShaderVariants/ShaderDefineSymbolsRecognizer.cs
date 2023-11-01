@@ -15,4 +15,6 @@ public static class ShaderDefineSymbolsRecognizer
     }
 
     public static IShaderDefineSymbolDescriptor? Recognize(string symbol) => ourDescriptors.TryGetValue(symbol, out var descriptor) ? descriptor : null;
+
+    public static Dictionary<string, IShaderDefineSymbolDescriptor>.KeyCollection KnownDefineSymbols => ourDescriptors.Keys;
 }
