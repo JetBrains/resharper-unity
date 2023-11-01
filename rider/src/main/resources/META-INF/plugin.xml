@@ -145,7 +145,7 @@
 
     <!-- UXML support -->
     <fileType name="UXML" language="UXML" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileType" extensions="uxml" />
-    <lang.altEnter language="UXML" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperBulbMenuModelFactory" />
+    <lang.altEnter language="UXML" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterMenuModelFactory" />
     <lang.parserDefinition language="UXML" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileParserDefinition"/>
     <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileBreadcrumbsProvider" />
     <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.codeInsight.schema.UxmlSchemaProvider" />
@@ -217,6 +217,7 @@
     <rider.resolveContextWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsService" order="after projectAndFrameworkResolveContextWidget"/>
 
     <registryKey key="rider.unity.ui.shaderVariants.enabled" description="Is Shader Variants selector feature enabled?" defaultValue="false" restartRequired="false"/>
+    <iw.actionProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsInspectionWidgetActionProvider" order="first" />
   </extensions>
 
   <applicationListeners>
@@ -337,6 +338,9 @@
     <action id="AddPauseBreakpoint" class="com.jetbrains.rider.plugins.unity.debugger.actions.handlers.AddPauseBreakpoint">
       <add-to-group group-id="XDebugger.Hover.Breakpoint.Context.Menu"/>
     </action>
+    
+    <action id="ShaderVariantWidgetAction"
+            class="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantInspectionAction"/>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">

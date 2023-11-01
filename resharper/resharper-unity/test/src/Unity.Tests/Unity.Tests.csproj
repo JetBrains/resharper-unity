@@ -36,6 +36,7 @@
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit.Console" />
     <PackageReference Include="Lib.Harmony" />
+    <PackageReference Include="System.Collections.Immutable" />
     <ProjectReference Include="..\..\..\src\Unity\Unity.csproj" />
     <ProjectReference Include="..\..\..\src\Unity.Shaders\Unity.Shaders.csproj" />
     <Reference Include="System" />

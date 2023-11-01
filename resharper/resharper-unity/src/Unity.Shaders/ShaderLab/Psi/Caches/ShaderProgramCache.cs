@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Application.Threading;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Common.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl;
 using JetBrains.ReSharper.Psi;
@@ -26,12 +28,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
     [PsiComponent]
     public class ShaderProgramCache : SimplePsiSourceFileCacheWithLocalCache<ShaderProgramCache.Item, ImmutableArray<CppFileLocation>>, IBuildMergeParticipant<IPsiSourceFile>
     {
-        private const string SHADER_VARIANT_SKIPPER = "_";
-        
-        private static readonly HashSet<StringSlice> ourShaderVariantDirectives = new() { "shader_feature", "shader_feature_local", "multi_compile", "multi_compile_local", "dynamic_branch", "dynamic_branch_local" };
+        private const string SHADER_KEYWORD_NONE = "_";
+
+        private static readonly HashSet<StringSlice> ourShaderFeatureDirectiveAllowingDisableAllKeywords = new() { "shader_feature", "shader_feature_local" };
+        private static readonly HashSet<StringSlice> ourShaderFeatureDirectives = new() { "shader_feature", "shader_feature_local", "multi_compile", "multi_compile_local", "dynamic_branch", "dynamic_branch_local" };
         
         private readonly Dictionary<CppFileLocation, ShaderProgramInfo> myProgramInfos = new();
-        private readonly OneToSetMap<string, CppFileLocation> myShaderVariants = new(); 
+        private readonly OneToSetMap<string, CppFileLocation> myShaderKeywords = new(); 
         
         public ShaderProgramCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager) : base(lifetime, locks, persistentIndexManager, Item.Marshaller, "Unity::Shaders::ShaderProgramCacheUpdated")
         {
@@ -78,19 +81,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
         private void AddProgramInfo(CppFileLocation location, ShaderProgramInfo programInfo)
         {
             myProgramInfos.Add(location, programInfo);
-            if (programInfo.ShaderVariants is { } shaderVariants)
-            {
-                foreach (var shaderVariant in shaderVariants)
-                    myShaderVariants.Add(shaderVariant, location);
-            }
+            var shaderFeatures = programInfo.ShaderFeatures;
+            if (shaderFeatures.IsEmpty) return;
+            
+            foreach (var shaderFeature in shaderFeatures)
+            foreach (var entry in shaderFeature.Entries)
+                myShaderKeywords.Add(entry.Keyword, location);
         }
 
         private void RemoveProgramInfo(CppFileLocation location)
         {
-            if (myProgramInfos.Remove(location, out var programInfo) && programInfo.ShaderVariants is {} shaderVariants)
+            if (myProgramInfos.Remove(location, out var programInfo) && programInfo.ShaderFeatures is {IsEmpty: false} shaderFeatures)
             {
-                foreach (var shaderVariant in shaderVariants) 
-                    myShaderVariants.Remove(shaderVariant, location);
+                foreach (var shaderFeature in shaderFeatures)
+                foreach (var entry in shaderFeature.Entries)
+                    myShaderKeywords.Remove(entry.Keyword, location);
             }
         }
 
@@ -100,70 +105,65 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             return myProgramInfos.TryGetValue(location, out shaderProgramInfo);
         }
 
-        public void ForEachVariant(Action<string> action)
+        public void ForEachKeyword(Action<string> action)
         {
             Locks.AssertReadAccessAllowed();
-            foreach (var shaderVariant in myShaderVariants.Keys) 
-                action(shaderVariant);
+            foreach (var shaderKeyword in myShaderKeywords.Keys) 
+                action(shaderKeyword);
         }
 
-        public void ForEachLocation<TAction>(string variant, ref TAction action) where TAction : IValueAction<CppFileLocation>
+        public void ForEachLocation<TAction>(string keyword, ref TAction action) where TAction : IValueAction<CppFileLocation>
         {
             Locks.AssertReadAccessAllowed();
-            foreach (var location in myShaderVariants.GetReadOnlyValues(variant)) 
+            foreach (var location in myShaderKeywords.GetReadOnlyValues(keyword)) 
                 action.Invoke(location);
         }
 
-        public ShaderProgramInfo ReadProgramInfo(CppDocumentBuffer buffer)
+        public bool TryGetOrReadUpToDateProgramInfo(IPsiSourceFile sourceFile, CppFileLocation cppFileLocation, [MaybeNullWhen(false)] out ShaderProgramInfo shaderProgramInfo)
         {
+            var range = cppFileLocation.RootRange;
+            Assertion.Assert(range.IsValid);
+            
+            // PSI is not committed here
+            // TODO: cpp global cache should calculate cache only when PSI for file with cpp injects is committed.
+            if (!UpToDate(sourceFile))
+                shaderProgramInfo = ReadProgramInfo(new CppDocumentBuffer(sourceFile.Document.Buffer, range));
+            else if (!TryGetShaderProgramInfo(cppFileLocation, out shaderProgramInfo))
+                return false;
+            return true;
+        }
+
+        private ShaderProgramInfo ReadProgramInfo(CppDocumentBuffer buffer)
+        {
+            var injectedProgramType = GetShaderProgramType(buffer);
+            
             var isSurface = false;
             var lexer = CppLexer.Create(buffer);
             lexer.Start();
 
-            var shaderVariants = new LocalHashSet<string>();
-            var definedMacroses = new Dictionary<string, string>();
+            var definedMacros = new Dictionary<string, string>();
             var shaderTarget = HlslConstants.SHADER_TARGET_25;
+            var shaderFeatures = ImmutableArray.CreateBuilder<ShaderFeature>();
             while (lexer.TokenType != null)
             {
                 var tokenType = lexer.TokenType;
                 if (tokenType is CppDirectiveTokenNodeType)
                 {
                     lexer.Advance();
-                    var context = lexer.GetTokenText().TrimStart();
+                    var context = lexer.GetTokenText();
 
+                    var contextStartOffset = lexer.TokenStart;
                     var slicer = StringSplitter.ByWhitespace(context);
                     slicer.TryGetNextSlice(out var pragmaType);
-                    slicer.TryGetNextSlice(out var firstValue);
                     if (pragmaType.Equals("surface"))
                         isSurface = true;
 
-                    if (!firstValue.IsEmpty)
-                    {
-                        // based on https://docs.unity3d.com/Manual/SL-ShaderPrograms.html
-                        // We do not have any solution how we could handle multi_compile directives. It is complex task because
-                        // a lot of different files could be produces from multi_compile combination
-                        // Right now, we will consider first combination.
-                        if (pragmaType.Equals("multi_compile") || pragmaType.Equals("multi_compile_local") ||
-                            pragmaType.Equals("shader_feature_local") || pragmaType.Equals("shader_feature"))
-                        {
-                            definedMacroses[firstValue.ToString()] = "1";
-                        }
+                    if (TryReadShaderFeature(contextStartOffset, slicer, pragmaType, out var shaderFeature)) 
+                        shaderFeatures.Add(shaderFeature);
 
-                        if (ourShaderVariantDirectives.Contains(pragmaType))
-                        {
-                            if (!firstValue.Equals(SHADER_VARIANT_SKIPPER))
-                                shaderVariants.Add(firstValue.ToString());
-                            while (slicer.TryGetNextSlice(out var slice))
-                            {
-                                if (!slice.Equals(SHADER_VARIANT_SKIPPER))
-                                    shaderVariants.Add(slice.ToString());
-                            }
-                        }
-                    }
-
-                    if (pragmaType.Equals("target"))
+                    if (pragmaType.Equals("target") && slicer.TryGetNextSlice(out var versionString))
                     {
-                        var versionFromTarget = int.TryParse(firstValue.ToString().Replace(".", ""), out var result) ? result : HlslConstants.SHADER_TARGET_35;
+                        var versionFromTarget = int.TryParse(versionString.ToString().Replace(".", ""), out var result) ? result : HlslConstants.SHADER_TARGET_35;
                         shaderTarget = Math.Max(shaderTarget, versionFromTarget);
                     }
 
@@ -177,7 +177,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                     if (pragmaType.Equals("multi_compile_lightpass"))
                     {
                         // multi_compile_lightpass == multi_compile DIRECTIONAL, DIRECTIONAL_COOKIE, POINT, POINT_NOATT, POINT_COOKIE, SPOT
-                        definedMacroses["DIRECTIONAL"] = "1";
+                        definedMacros["DIRECTIONAL"] = "1";
                     }
 
                     // TODO: handle built-in https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html
@@ -188,8 +188,79 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                 lexer.Advance();
             }
 
-            definedMacroses["SHADER_TARGET"] = shaderTarget.ToString();
-            return new ShaderProgramInfo(definedMacroses, shaderTarget, isSurface, !shaderVariants.IsEmpty() ? shaderVariants.ToArray() : null);
+            definedMacros["SHADER_TARGET"] = shaderTarget.ToString();
+            return new ShaderProgramInfo(injectedProgramType, isSurface ? ShaderType.Surface : ShaderType.VertFrag, shaderTarget, shaderFeatures.MoveOrCopyToImmutableArray(), definedMacros);
+        }
+
+        private static bool TryReadShaderFeature(int baseOffset, StringSplitter<CharPredicates.IsWhitespacePredicate> slicer, StringSlice pragmaType, out ShaderFeature shaderFeature)
+        {
+            if (ourShaderFeatureDirectives.Contains(pragmaType))
+            {
+                var allowDisableAllKeywords = false;
+                var entries = ImmutableArray.CreateBuilder<ShaderFeature.Entry>();
+                while (slicer.TryGetNextSlice(out var keyword, out var keywordOffset))
+                {
+                    if (!keyword.Equals(SHADER_KEYWORD_NONE))
+                        entries.Add(new ShaderFeature.Entry(keyword.ToString(), TextRange.FromLength(baseOffset + keywordOffset, keyword.Length)));
+                    else
+                        allowDisableAllKeywords = true;
+                }
+
+                if (entries.Count > 0)
+                {
+                    if (!allowDisableAllKeywords)
+                        allowDisableAllKeywords = entries.Count == 1 && ourShaderFeatureDirectiveAllowingDisableAllKeywords.Contains(pragmaType);
+                    shaderFeature = new ShaderFeature(entries.MoveOrCopyToImmutableArray(), allowDisableAllKeywords);
+                    return true;
+                }
+            }
+
+            shaderFeature = default;
+            return false;
+        }
+        
+        private InjectedHlslProgramType GetShaderProgramType(CppDocumentBuffer documentBuffer)
+        {
+            var locationStartOffset = documentBuffer.Range.StartOffset;
+            var buffer = documentBuffer.Buffer; 
+            Assertion.Assert(locationStartOffset < buffer.Length);
+            if (locationStartOffset >= buffer.Length)
+                return InjectedHlslProgramType.Unknown;
+
+            int curPos = locationStartOffset - 1;
+            while (curPos > 0)
+            {
+                if (buffer[curPos].IsLetterFast())
+                    break;
+                curPos--;
+            }
+
+            var endPos = curPos;
+            while (curPos > 0)
+            {
+                if (!buffer[curPos].IsLetterFast())
+                {
+                    curPos++;
+                    break;
+                }
+
+                curPos--;
+            }
+
+            var text = buffer.GetText(new TextRange(curPos, endPos + 1)); // +1, because open interval [a, b)
+            switch (text)
+            {
+                case "CGPROGRAM":
+                    return InjectedHlslProgramType.CGProgram;
+                case "CGINCLUDE":
+                    return InjectedHlslProgramType.CGInclude;
+                case "HLSLPROGRAM":
+                    return InjectedHlslProgramType.HLSLProgram;
+                case "HLSLINCLUDE":
+                    return InjectedHlslProgramType.HLSLInclude;
+                default:
+                    return InjectedHlslProgramType.Unknown;
+            }
         }
 
         #region Cache item
