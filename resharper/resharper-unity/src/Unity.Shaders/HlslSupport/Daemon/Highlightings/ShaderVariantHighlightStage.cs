@@ -180,19 +180,27 @@ file class ShaderKeywordsHighlightProcess : IDaemonStageProcess, IRecursiveEleme
     private void VisitMacroReference(MacroReference macroReference, IHighlightingConsumer consumer)
     {
         if (macroReference.GetReferencedSymbol() is { Substitution: "1", HasParameters: false } symbol
-            && !symbol.Location.ContainingFile.IsValid()
-            && myShaderProgramInfo.HasKeyword(symbol.Name))
+            && !symbol.Location.ContainingFile.IsValid())
         {
-            Consume(consumer, myEnabledKeywords.Contains(symbol.Name) ? new EnabledShaderKeywordHighlight(macroReference) : new ImplicitlyEnabledShaderKeywordHighlight(macroReference));
+            if (myShaderProgramInfo.HasKeyword(symbol.Name))
+                Consume(consumer, myEnabledKeywords.Contains(symbol.Name) ? new EnabledShaderKeywordHighlight(macroReference) : new ImplicitlyEnabledShaderKeywordHighlight(macroReference));
+            else if (ShaderDefineSymbolsRecognizer.Recognize(symbol.Name) is not null)
+                Consume(consumer, new EnabledShaderKeywordHighlight(macroReference));
         }
     }
 
     private void VisitIdentifier(CppIdentifierTokenNode identifierNode, IHighlightingConsumer consumer)
     {
-        var keyword = identifierNode.Name;
-        if (myShaderProgramInfo.GetShaderFeatures(keyword) is not { Count: > 0 } features)
-            return;
+        var symbol = identifierNode.Name;
+        if (myShaderProgramInfo.GetShaderFeatures(symbol) is { Count: > 0 } features)
+            ConsumeInactiveKeyword(identifierNode, features, consumer);
+        else if (ShaderDefineSymbolsRecognizer.Recognize(symbol) is not null)
+            Consume(consumer, new DisabledShaderKeywordHighlight(identifierNode));
+    }
 
+    private void ConsumeInactiveKeyword(CppIdentifierTokenNode identifierNode, OneToListMap<string, ShaderFeature>.ValueCollection features, IHighlightingConsumer consumer)
+    {
+        var keyword = identifierNode.Name;
         if (myEnabledKeywords.Contains(keyword))
         {
             var suppressors = new List<string>();

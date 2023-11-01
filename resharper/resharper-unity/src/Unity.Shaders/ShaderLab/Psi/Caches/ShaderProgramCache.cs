@@ -112,11 +112,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                 action(shaderKeyword);
         }
 
-        public void ForEachLocation<TAction>(string keyword, ref TAction action) where TAction : IValueAction<CppFileLocation>
+        public void ForEachKeywordLocation<TAction>(string keyword, ref TAction action) where TAction : IValueAction<CppFileLocation>
         {
             Locks.AssertReadAccessAllowed();
             foreach (var location in myShaderKeywords.GetReadOnlyValues(keyword)) 
                 action.Invoke(location);
+        }
+
+        public void CollectLocationsTo(ICollection<CppFileLocation> target)
+        {
+            Locks.AssertReadAccessAllowed(); 
+            foreach (var location in myProgramInfos.Keys) 
+                target.Add(location);
         }
 
         public bool TryGetOrReadUpToDateProgramInfo(IPsiSourceFile sourceFile, CppFileLocation cppFileLocation, [MaybeNullWhen(false)] out ShaderProgramInfo shaderProgramInfo)

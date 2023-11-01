@@ -35,6 +35,18 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         +"Git"
     }
 
+    private val RdShaderApi = enum {
+        +"D3D11"
+        +"GlCore"
+        +"GlEs"
+        +"GlEs3"
+        +"Metal"
+        +"Vulkan"
+        +"D3D11L9X"
+        +"Desktop"
+        +"Mobile"
+    }
+
     private val UnityPackage = structdef {
         field("id", string)
         field("version", string)
@@ -81,8 +93,10 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
     }
     private val rdShaderVariant = classdef {
         set("enabledKeywords", string.interned(shaderInternScope)).readonly
+        property("shaderApi", RdShaderApi).readonly
         source("enableKeyword", string)
         source("disableKeyword", string)
+        source("setShaderApi", RdShaderApi)
     }
     init {
         setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.plugins.unity.model.frontendBackend")

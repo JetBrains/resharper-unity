@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Plugins.Tests.UnityTestComponents;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Model;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Language;
 using NUnit.Framework;
@@ -14,6 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Stages.Highli
     [RequireHlslSupport, TestUnity, HighlightOnly(typeof(ImplicitlyEnabledShaderKeywordHighlight), typeof(EnabledShaderKeywordHighlight), typeof(DisabledShaderKeywordHighlight), typeof(SuppressedShaderKeywordHighlight))]
     public class ShaderVariantsHighlightTests : HighlightingTestBase
     {
+        private ShaderApi myShaderApi = ShaderApi.D3D11;
         private readonly List<string> myEnabledKeywords = new();
         
         protected override PsiLanguageType? CompilerIdsLanguage => CppLanguage.Instance;
@@ -23,6 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Stages.Highli
         {
             base.SetUp();
             myEnabledKeywords.Clear();
+            myShaderApi = ShaderApi.D3D11;
         }
 
         [Test]
@@ -42,14 +45,34 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Stages.Highli
             myEnabledKeywords.Add("C");
             DoTestSolution("EnabledKeywordsInShader.shader");
         }
+        
+        [Test]
+        public void TestShaderApiInShader()
+        {
+            DoTestSolution("ShaderApiInShader.shader");
+        }
+        
+        [Test]
+        public void TestShaderApiInShaderMetal()
+        {
+            myShaderApi = ShaderApi.Metal;
+            DoTestSolution("ShaderApiInShaderMetal.shader");
+        }
 
         protected override void DoTest(Lifetime lifetime, IProject project)
         {
             var enabledKeywords = project.GetComponent<TestEnabledShaderKeywordsProvider>().EnabledKeywords;
-            enabledKeywords.Clear();
+            project.GetComponent<TestShaderProgramInfoProvider>().ShaderApi = myShaderApi;
             enabledKeywords.UnionWith(myEnabledKeywords);
-            project.GetComponent<CppGlobalCacheImpl>().ResetCache();
-            base.DoTest(lifetime, project);
+            try
+            {
+                project.GetComponent<CppGlobalCacheImpl>().ResetCache();
+                base.DoTest(lifetime, project);
+            }
+            finally
+            {
+                enabledKeywords.Clear();
+            }
         }
     }
 }

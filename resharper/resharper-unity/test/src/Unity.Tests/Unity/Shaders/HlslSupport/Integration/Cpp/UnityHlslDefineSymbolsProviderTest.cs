@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp;
+using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Symbols;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util;
@@ -14,10 +17,10 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.Shaders.HlslSupport.Integratio
     {
         [Test, TestUnity(ProvideReferences = false)]
         public void TestDefineSymbols() =>
-            DoTestSolution((_, solution) =>
+            TestDefineSymbols(defineSymbols =>
             {
-                var symbols = GetSymbolDefines(solution).ToDictionary(x => x.Name, x => x);
-                Assert.That(symbols.Keys, Is.SupersetOf(new[] { "SHADER_API_D3D11", "INTERNAL_DATA", "WorldReflectionVector", "WorldNormalVector", "UNITY_VERSION" }));    
+                var symbolsMap = defineSymbols.ToDictionary(x => x.Name, x => x);
+                Assert.That(symbolsMap.Keys, Is.SupersetOf(new[] { "SHADER_API_D3D11", "UNITY_VERSION" }));    
             });
 
         [Test, TestUnity(UnityVersion.Unity56, ProvideReferences = false)]
@@ -28,20 +31,29 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.Shaders.HlslSupport.Integratio
         public void Test2021_3_8() => TestUnityVersion("202138");
         [Test, TestUnity(2021, 3, 21, ProvideReferences = false)]
         public void Test2021_3_21() => TestUnityVersion("202139");
-        
-        private void TestUnityVersion(string expectedHlslDefineSymbolValue) =>
+
+        private void TestDefineSymbols(Action<IEnumerable<CppPPDefineSymbol>> action) =>
             DoTestSolution(_ => CreateSolutionConfiguration(EmptyList<string>.Instance), (_, solution) =>
             {
-                var unityVersionDefine = GetSymbolDefines(solution).First(it => it.Name == "UNITY_VERSION");
-                Assert.That(unityVersionDefine.Substitution, Is.EqualTo(expectedHlslDefineSymbolValue));    
+                var defineSymbols = GetDefineSymbols(solution);
+                Assert.NotNull(defineSymbols);
+                action(defineSymbols!);
             });
 
-        private List<CppPPDefineSymbol> GetSymbolDefines(ISolution solution)
+        private void TestUnityVersion(string expectedHlslDefineSymbolValue) =>
+            TestDefineSymbols(symbols =>
+            {
+                var unityVersionDefine = symbols.First(it => it.Name == "UNITY_VERSION");
+                Assert.That(unityVersionDefine.Substitution, Is.EqualTo(expectedHlslDefineSymbolValue));
+            });
+
+        private IEnumerable<CppPPDefineSymbol>? GetDefineSymbols(ISolution solution)
         {
             var project = solution.GetProjectByName("TestProject");
-            var defineSymbols = new List<CppPPDefineSymbol>();
-            solution.GetComponent<UnityHlslCppCompilationPropertiesProvider>().DefineSymbols(project, defineSymbols);
-            return defineSymbols;
+            Assert.NotNull(project);
+            var symbolCache = solution.GetComponent<CppGlobalCacheImpl>().SymbolCache;
+            var compilationProperties = solution.GetComponent<UnityHlslCppCompilationPropertiesProvider>().GetCompilationProperties(project, null, new CppFileLocation(VirtualFileSystemPath.Parse("Dummy.hlsl", solution.GetInteractionContext())), symbolCache);
+            return compilationProperties?.PredefinedMacros;
         }
     }
 }

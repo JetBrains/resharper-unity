@@ -20,6 +20,7 @@ using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Model;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
@@ -33,7 +34,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderVariants;
 
 [SolutionComponent]
-public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProvider
+public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProvider, IShaderPlatformInfoProvider
 {
     private readonly ISolution mySolution;
     private readonly ShaderProgramCache myShaderProgramCache;
@@ -43,7 +44,10 @@ public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProv
     private readonly IPreferredRootFileProvider myPreferredPreferredRootFileProvider;
     private readonly ILogger myLogger;
 
-    private readonly RdShaderVariant myCurrentVariant; 
+    private readonly RdShaderVariant myCurrentVariant;
+    private readonly SettingsIndexedEntry myDefaultEnabledKeywordsEntry;
+    private readonly SettingsScalarEntry myDefaultShaderApiEntry;
+    private readonly RdShaderVariant myDefaultShaderVariant;
 
     public ShaderVariantsHost(Lifetime lifetime,
         ISolution solution,
@@ -66,27 +70,43 @@ public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProv
         myChangeManager.RegisterChangeProvider(lifetime, this);
 
         myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(mySolution.ToDataContext()));
-        var defaultEnabledKeywordsEntry = myBoundSettingsStore.Schema.GetIndexedEntry(static (ShaderVariantsSettings s) => s.EnabledKeywords);
-        var defaultShaderVariant = new RdShaderVariant();
-        myCurrentVariant = defaultShaderVariant;
-        defaultShaderVariant.EnabledKeywords.UnionWith(EnumEnabledKeywords(defaultEnabledKeywordsEntry));
-        myBoundSettingsStore.AdviseAsyncChanged(lifetime, (lt, args) =>
-        {
-            if (!args.ChangedEntries.Contains(defaultEnabledKeywordsEntry))
-                return Task.CompletedTask;
-            return lt.StartMainRead(() => SyncEnabledKeywords(defaultShaderVariant, EnumEnabledKeywords(defaultEnabledKeywordsEntry)));
-        });
+        myDefaultEnabledKeywordsEntry = myBoundSettingsStore.Schema.GetIndexedEntry(static (ShaderVariantsSettings s) => s.EnabledKeywords);
+        myDefaultShaderApiEntry = myBoundSettingsStore.Schema.GetScalarEntry(static (ShaderVariantsSettings s) => s.ShaderApi);
+        myDefaultShaderVariant = new RdShaderVariant();
+        myCurrentVariant = myDefaultShaderVariant;
+        myDefaultShaderVariant.EnabledKeywords.UnionWith(EnumEnabledKeywords(myDefaultEnabledKeywordsEntry));
+        SyncShaderApi(myDefaultShaderVariant, myDefaultShaderApiEntry);
+        myBoundSettingsStore.AdviseAsyncChanged(lifetime, OnBoundSettingsStoreChange);
         
         frontendBackendHost?.Do(model =>
         {
             myShaderProgramCache.CacheUpdated.Advise(lifetime, _ => SyncShaderVariants(model));
             
-            defaultShaderVariant.EnableKeyword.Advise(lifetime, keyword => SetKeywordEnabled(keyword, true));
-            defaultShaderVariant.DisableKeyword.Advise(lifetime, keyword => SetKeywordEnabled(keyword, false));
+            myDefaultShaderVariant.EnableKeyword.Advise(lifetime, keyword => SetKeywordEnabled(keyword, true));
+            myDefaultShaderVariant.DisableKeyword.Advise(lifetime, keyword => SetKeywordEnabled(keyword, false));
+            myDefaultShaderVariant.SetShaderApi.Advise(lifetime, SetShaderApi);
 
-            model.DefaultShaderVariant.Value = defaultShaderVariant;
+            model.DefaultShaderVariant.Value = myDefaultShaderVariant;
             model.CreateShaderVariantInteraction.SetAsync(HandleCreateShaderVariantInteraction);
         });
+    }
+
+    private Task OnBoundSettingsStoreChange(Lifetime lifetime, SettingsStoreChangeArgs args)
+    {
+        Action<ChangeTracker>? work = null;
+        if (args.ChangedEntries.Contains(myDefaultEnabledKeywordsEntry))
+            work += changeTracker => SyncEnabledKeywords(changeTracker, myDefaultShaderVariant, EnumEnabledKeywords(myDefaultEnabledKeywordsEntry));
+        if (args.ChangedEntries.Contains(myDefaultShaderApiEntry))
+            work += changeTracker =>
+            {
+                SyncShaderApi(myDefaultShaderVariant, myDefaultShaderApiEntry);
+                changeTracker.MarkAllDirty();
+            };
+        return work != null ? lifetime.StartMainRead(() =>
+        {
+            using var changeTracker = new ChangeTracker(this);
+            work.Invoke(changeTracker);
+        }) : Task.CompletedTask;
     }
 
     private async Task<ShaderVariantInteraction> HandleCreateShaderVariantInteraction(Lifetime lifetime, CreateShaderVariantInteractionArgs args)
@@ -118,9 +138,8 @@ public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProv
 
     private IEnumerable<string> EnumEnabledKeywords(SettingsIndexedEntry entry) => myBoundSettingsStore.EnumIndexedValues(entry, null).Keys.Cast<string>();
     
-    private void SyncEnabledKeywords(RdShaderVariant shaderVariant, IEnumerable<string> newKeywords)
+    private void SyncEnabledKeywords(ChangeTracker changeTracker, RdShaderVariant shaderVariant, IEnumerable<string> newKeywords)
     {
-        using var changeTracker = new ChangeTracker(this);
         var unprocessed = shaderVariant.EnabledKeywords.ToHashSet();
         foreach (var keyword in newKeywords)
         {
@@ -151,6 +170,11 @@ public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProv
         }
     }
 
+    private void SetShaderApi(RdShaderApi rdShaderApi) => myBoundSettingsStore.SetValue(static (ShaderVariantsSettings s) => s.ShaderApi, rdShaderApi.AsShaderApi());
+
+    private void SyncShaderApi(RdShaderVariant rdShaderVariant, SettingsScalarEntry shaderApiEntry) => 
+        rdShaderVariant.ShaderApi.Value = myBoundSettingsStore.GetValue(shaderApiEntry, null) is ShaderApi shaderApi ? shaderApi.AsRdShaderApi() : RdShaderApi.D3D11;
+
     private void SyncShaderVariants(FrontendBackendModel model)
     {
         // State modifications only allowed from main thread  
@@ -174,13 +198,15 @@ public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProv
     }
 
     public ISet<string> GetEnabledKeywords(CppFileLocation location) => myCurrentVariant.EnabledKeywords;
+    
+    public ShaderApi ShaderApi => myCurrentVariant.ShaderApi.Value.AsShaderApi();
 
     public object? Execute(IChangeMap changeMap) => null;
     
     private struct ChangeTracker : IDisposable, IValueAction<CppFileLocation>
     {
         private readonly ShaderVariantsHost myHost;
-        private FrugalLocalHashSet<CppFileLocation> myOutdatedLocations = new();
+        private readonly HashSet<CppFileLocation> myOutdatedLocations = new();
 
         public ChangeTracker(ShaderVariantsHost host)
         {
@@ -189,15 +215,17 @@ public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProv
 
         void IValueAction<CppFileLocation>.Invoke(CppFileLocation location) => myOutdatedLocations.Add(location);
 
-        public void MarkShaderKeywordDirty(string shaderKeyword) => myHost.myShaderProgramCache.ForEachLocation(shaderKeyword, ref this);
+        public void MarkShaderKeywordDirty(string shaderKeyword) => myHost.myShaderProgramCache.ForEachKeywordLocation(shaderKeyword, ref this);
+
+        public void MarkAllDirty() => myHost.myShaderProgramCache.CollectLocationsTo(myOutdatedLocations);
 
         public void Dispose()
         {
-            if (!myOutdatedLocations.IsEmpty)
+            if (!myOutdatedLocations.IsEmpty())
             {
                 using (WriteLockCookie.Create())
                 {
-                    myHost.myChangeManager.OnProviderChanged(myHost, new CppChange(myOutdatedLocations.ReadOnlyCollection()), SimpleTaskExecutor.Instance);
+                    myHost.myChangeManager.OnProviderChanged(myHost, new CppChange(myOutdatedLocations), SimpleTaskExecutor.Instance);
                     FixMeInvalidateInjectedFiles();
                 }
             }
