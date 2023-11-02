@@ -1,7 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Injections;
@@ -10,8 +9,6 @@ using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
-using JetBrains.Text;
-using JetBrains.Util;
 using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections
@@ -62,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
 
         private IEnumerable<CppFileLocation> GetIncludesLocation(IPsiSourceFile sourceFile, InjectedHlslProgramType type)
         {
-            if (type == InjectedHlslProgramType.Uknown)
+            if (type == InjectedHlslProgramType.Unknown)
                 return EnumerableCollection<CppFileLocation>.Empty;
 
             return Map[sourceFile]
@@ -117,10 +114,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
             }
         }
 
-        public IEnumerable<CppFileLocation> GetIncludes(IPsiSourceFile sourceFile, IBuffer buffer, int startOffset, ShaderProgramInfo shaderProgramInfo)
+        public IEnumerable<CppFileLocation> GetIncludes(IPsiSourceFile sourceFile, ShaderProgramInfo shaderProgramInfo)
         {
-            var type = GetShaderProgramType(buffer, startOffset);
-            return GetIncludes(sourceFile, type, shaderProgramInfo.IsSurface);
+            return GetIncludes(sourceFile, shaderProgramInfo.InjectedProgramType, shaderProgramInfo.ShaderType == ShaderType.Surface);
         }
 
         private IEnumerable<CppFileLocation> GetIncludes(IPsiSourceFile sourceFile, InjectedHlslProgramType type, bool isSurface)
@@ -132,7 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
                 new(myCppExternalModule, mySolution.SolutionDirectory.Combine(Utils.ShaderConfigFile))
             };
 
-            if (includeType != InjectedHlslProgramType.Uknown)
+            if (includeType != InjectedHlslProgramType.Unknown)
             {
                 var includes = GetIncludesLocation(sourceFile, includeType);
                 foreach (var include in includes)
@@ -147,49 +143,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
             return includeList;
         }
 
-        private InjectedHlslProgramType GetShaderProgramType(IBuffer buffer, int locationStartOffset)
-        {
-            Assertion.Assert(locationStartOffset < buffer.Length);
-            if (locationStartOffset >= buffer.Length)
-                return InjectedHlslProgramType.Uknown;
-
-            int curPos = locationStartOffset - 1;
-            while (curPos > 0)
-            {
-                if (buffer[curPos].IsLetterFast())
-                    break;
-                curPos--;
-            }
-
-            var endPos = curPos;
-            while (curPos > 0)
-            {
-                if (!buffer[curPos].IsLetterFast())
-                {
-                    curPos++;
-                    break;
-                }
-
-                curPos--;
-            }
-
-            var text = buffer.GetText(new TextRange(curPos, endPos + 1)); // +1, because open interval [a, b)
-
-            switch (text)
-            {
-                case "CGPROGRAM":
-                    return InjectedHlslProgramType.CGProgram;
-                case "CGINCLUDE":
-                    return InjectedHlslProgramType.CGInclude;
-                case "HLSLPROGRAM":
-                    return InjectedHlslProgramType.HLSLProgram;
-                case "HLSLINCLUDE":
-                    return InjectedHlslProgramType.HLSLInclude;
-                default:
-                    return InjectedHlslProgramType.Uknown;
-            }
-        }
-
         private InjectedHlslProgramType GetIncludeProgramType(InjectedHlslProgramType injectedHlslProgramType)
         {
             switch (injectedHlslProgramType)
@@ -199,7 +152,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
                 case InjectedHlslProgramType.HLSLProgram:
                     return InjectedHlslProgramType.HLSLInclude;
                 default:
-                    return InjectedHlslProgramType.Uknown;
+                    return InjectedHlslProgramType.Unknown;
             }
         }
     }

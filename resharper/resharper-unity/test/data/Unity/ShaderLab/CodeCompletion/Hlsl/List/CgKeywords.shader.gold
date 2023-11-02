@@ -1,10 +1,11 @@
-﻿# 331 ITEMS #
+﻿# 334 ITEMS #
 
 + SamplerComparisonState
 SamplerState
 bool
 cbuffer
 centroid
+class
 column_major
 const
 double
@@ -33,7 +34,9 @@ static
 string
 struct
 tbuffer
+template
 typedef
+typename
 uniform
 union
 unorm
@@ -41,9 +44,12 @@ unsigned
 vector
 void
 volatile
+CANDIDATE_TYPE
+COMMITTED_STATUS
 DWORD
 FLOAT
 MATRIX
+RAY_FLAG
 VECTOR
 bool1
 bool1x1
@@ -282,7 +288,6 @@ InputPatch
 LineStream
 OutputPatch
 PointStream
-RAY_FLAG
 RWBuffer
 RWByteAddressBuffer
 RWStructuredBuffer
@@ -292,6 +297,7 @@ RWTexture2D
 RWTexture2DArray
 RWTexture3D
 RayDesc
+RayQuery
 RaytracingAccelerationStructure
 StructuredBuffer
 Texture1D
@@ -305,11 +311,8 @@ TextureCube
 TextureCubeArray
 TriangleStream
 HLSL_SUPPORT_INCLUDED
-INTERNAL_DATA
 SHADER_API_D3D11
 UNITY_VERSION
-WorldNormalVector
-WorldReflectionVector
 fixed
 fixed1x1
 fixed1x2
@@ -332,13 +335,14 @@ fixed4x3
 fixed4x4
 tile_static
 # AUTOMATIC #
-# 331 ITEMS #
+# 334 ITEMS #
 
 + SamplerComparisonState
 SamplerState
 bool
 cbuffer
 centroid
+class
 column_major
 const
 double
@@ -367,7 +371,9 @@ static
 string
 struct
 tbuffer
+template
 typedef
+typename
 uniform
 union
 unorm
@@ -375,9 +381,12 @@ unsigned
 vector
 void
 volatile
+CANDIDATE_TYPE
+COMMITTED_STATUS
 DWORD
 FLOAT
 MATRIX
+RAY_FLAG
 VECTOR
 bool1
 bool1x1
@@ -616,7 +625,6 @@ InputPatch
 LineStream
 OutputPatch
 PointStream
-RAY_FLAG
 RWBuffer
 RWByteAddressBuffer
 RWStructuredBuffer
@@ -626,6 +634,7 @@ RWTexture2D
 RWTexture2DArray
 RWTexture3D
 RayDesc
+RayQuery
 RaytracingAccelerationStructure
 StructuredBuffer
 Texture1D
@@ -639,11 +648,8 @@ TextureCube
 TextureCubeArray
 TriangleStream
 HLSL_SUPPORT_INCLUDED
-INTERNAL_DATA
 SHADER_API_D3D11
 UNITY_VERSION
-WorldNormalVector
-WorldReflectionVector
 fixed
 fixed1x1
 fixed1x2

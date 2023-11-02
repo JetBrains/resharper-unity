@@ -40,14 +40,14 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Psi.Caches
                 var cache = project.GetComponent<ShaderProgramCache>();
                 var locationTracker = Solution.GetComponent<InjectedHlslFileLocationTracker>();
                 var fileLocations = locationTracker.GetActualFileLocations(sourceFile);
-                var variants = new SortedSet<string>();
+                var keywords = new SortedSet<string>();
                 foreach (var location in fileLocations)
                 {
-                    if (cache.TryGetShaderProgramInfo(location, out var programInfo) && programInfo.ShaderVariants is {} shaderVariants)
-                        variants.AddRange(shaderVariants);
+                    if (cache.TryGetShaderProgramInfo(location, out var programInfo) && programInfo.ShaderFeatures is { IsEmpty: false } shaderFeatures)
+                        keywords.AddRange(shaderFeatures.SelectMany(f => f.Entries).Select(e => e.Keyword));
                 }
-                foreach (var variant in variants)
-                    textWriter.WriteLine(variant);
+                foreach (var keyword in keywords)
+                    textWriter.WriteLine(keyword);
             });
         }
     }
