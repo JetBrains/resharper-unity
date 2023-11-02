@@ -48,7 +48,10 @@ class ShaderVariantInspectionAction : DumbAwareAction(UnityIcons.FileTypes.Shade
     }
 
     override fun update(e: AnActionEvent) {
-        val editor = e.getData(CommonDataKeys.EDITOR)?.also { editor ->
+        e.presentation.isEnabledAndVisible = run {
+            val project = e.project ?: return@run false
+            if (!ShaderVariantsUtils.isShaderVariantSupportEnabled(project)) return@run false
+            val editor = e.getData(CommonDataKeys.EDITOR) ?: return@run false
             e.presentation.text = ShaderVariantPresence.get(editor)?.let { shaderVariant ->
                 val enabledCount = shaderVariant.enabledKeywords.size
                 val suppressedCount = shaderVariant.suppressedKeywords.size
@@ -59,7 +62,7 @@ class ShaderVariantInspectionAction : DumbAwareAction(UnityIcons.FileTypes.Shade
                     else -> null
                 }
             } ?: ""
+            return@run true
         }
-        e.presentation.isEnabledAndVisible = editor != null
     }
 }

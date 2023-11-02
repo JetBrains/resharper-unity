@@ -28,6 +28,7 @@
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.explorer.MetaTrackerInitializer"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspaceModelUpdaterInitializer"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetProvider"/>
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsHost"/>
 
     <rider.externalDirectoryProvider implementation="com.jetbrains.rider.plugins.unity.workspace.UnityExternalDirectoryProvider" />
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService"/>
@@ -216,7 +217,6 @@
     <rider.resolveContextWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetProvider" order="after projectAndFrameworkResolveContextWidget"/>
     <rider.resolveContextWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsService" order="after projectAndFrameworkResolveContextWidget"/>
 
-    <registryKey key="rider.unity.ui.shaderVariants.enabled" description="Is Shader Variants selector feature enabled?" defaultValue="false" restartRequired="false"/>
     <iw.actionProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsInspectionWidgetActionProvider" order="first" />
   </extensions>
 

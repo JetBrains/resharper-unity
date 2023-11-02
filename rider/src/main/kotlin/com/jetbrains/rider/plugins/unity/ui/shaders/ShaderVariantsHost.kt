@@ -1,33 +1,47 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
-import com.intellij.openapi.components.Service
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
-import com.jetbrains.rd.platform.util.idea.LifetimedService
+import com.intellij.openapi.startup.ProjectActivity
+import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.SequentialLifetimes
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.ViewableSet
+import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidgetManager
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.withContext
 
-@Service(Service.Level.PROJECT)
-class ShaderVariantsHost(project: Project) : LifetimedService() {
-    private val frontendBackendHost = FrontendBackendHost.getInstance(project)
-
-    val enabledShaderKeywords: ViewableSet<String> = ViewableSet()
-    private val enabledKeywordsLifetimes: SequentialLifetimes = SequentialLifetimes(serviceLifetime)
-
-    init {
-      frontendBackendHost.model.defaultShaderVariant.advise(serviceLifetime) {
-          syncKeywords(it.enabledKeywords)
-          it.enabledKeywords.advise(enabledKeywordsLifetimes.next()) { event ->
-              when (event.kind) {
-                  AddRemove.Add -> enabledShaderKeywords.add(event.value)
-                  AddRemove.Remove -> enabledShaderKeywords.remove(event.value)
-              }
-          }
-      }
+class ShaderVariantsHost : ProjectActivity {
+    override suspend fun execute(project: Project) {
+        val lifetime = LifetimeDefinition()
+        try {
+            val frontendBackendHost = FrontendBackendHost.getInstance(project)
+            val enabledShaderKeywords: ViewableSet<String> = ViewableSet()
+            val enabledKeywordsLifetimes = SequentialLifetimes(lifetime)
+            val model = frontendBackendHost.model
+            withContext(Dispatchers.EDT) {
+                model.defaultShaderVariant.advise(lifetime) {
+                    syncKeywords(enabledShaderKeywords, it.enabledKeywords)
+                    it.enabledKeywords.advise(enabledKeywordsLifetimes.next()) { event ->
+                        when (event.kind) {
+                            AddRemove.Add -> enabledShaderKeywords.add(event.value)
+                            AddRemove.Remove -> enabledShaderKeywords.remove(event.value)
+                        }
+                    }
+                }
+                model.backendSettings.previewShaderVariantsSupport.advise(lifetime) {
+                    RiderResolveContextWidgetManager.invalidateWidgets(project)
+                }
+            }
+            awaitCancellation()
+        } finally {
+          lifetime.terminate()
+        }
     }
 
-    private fun syncKeywords(newEnabledKeywords: Collection<String>) {
+    private fun syncKeywords(enabledShaderKeywords: MutableSet<String>, newEnabledKeywords: Collection<String>) {
         if (enabledShaderKeywords.size > 0) {
             val unprocessed = HashSet(enabledShaderKeywords)
             for (item in newEnabledKeywords) {

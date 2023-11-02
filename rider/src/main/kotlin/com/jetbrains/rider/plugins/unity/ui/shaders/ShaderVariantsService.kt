@@ -15,7 +15,7 @@ class ShaderVariantsService : RiderResolveContextWidgetProvider {
                                textControlId: TextControlId,
                                editorModel: TextControlModel,
                                editor: Editor
-    ): RiderResolveContextWidget? = runIf(ShaderVariantsUtils.isValidContext(editor)) {
+    ): RiderResolveContextWidget? = runIf(ShaderVariantsUtils.isShaderVariantSupportEnabled(project) && ShaderVariantsUtils.isValidContext(editor)) {
         ShaderVariantWidget(project, editor)
     }
 
@@ -25,5 +25,5 @@ class ShaderVariantsService : RiderResolveContextWidgetProvider {
                                   textControlId: TextControlId,
                                   editorModel: TextControlModel,
                                   editor: Editor): RiderResolveContextWidget? =
-        widget.takeIf { ShaderVariantsUtils.isValidContext(editor) }
+        widget.takeIf { ShaderVariantsUtils.isShaderVariantSupportEnabled(project) && ShaderVariantsUtils.isValidContext(editor) }
 }

@@ -16,6 +16,7 @@ using JetBrains.Rd.Tasks;
 using JetBrains.RdBackend.Common.Features.Documents;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Common.Utils;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Settings;
@@ -46,8 +47,11 @@ public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProv
 
     private readonly RdShaderVariant myCurrentVariant;
     private readonly SettingsIndexedEntry myDefaultEnabledKeywordsEntry;
+    private readonly SettingsScalarEntry myFeaturePreviewEnabledEntry;
     private readonly SettingsScalarEntry myDefaultShaderApiEntry;
     private readonly RdShaderVariant myDefaultShaderVariant;
+    
+    private bool mySupportEnabled;
 
     public ShaderVariantsHost(Lifetime lifetime,
         ISolution solution,
@@ -76,6 +80,10 @@ public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProv
         myCurrentVariant = myDefaultShaderVariant;
         myDefaultShaderVariant.EnabledKeywords.UnionWith(EnumEnabledKeywords(myDefaultEnabledKeywordsEntry));
         SyncShaderApi(myDefaultShaderVariant, myDefaultShaderApiEntry);
+        
+        myFeaturePreviewEnabledEntry = myBoundSettingsStore.Schema.GetScalarEntry(static (UnitySettings s) => s.FeaturePreviewShaderVariantsSupport);
+        mySupportEnabled = myBoundSettingsStore.GetValue(myFeaturePreviewEnabledEntry, null) is true;
+        
         myBoundSettingsStore.AdviseAsyncChanged(lifetime, OnBoundSettingsStoreChange);
         
         frontendBackendHost?.Do(model =>
@@ -100,6 +108,12 @@ public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProv
             work += changeTracker =>
             {
                 SyncShaderApi(myDefaultShaderVariant, myDefaultShaderApiEntry);
+                changeTracker.MarkAllDirty();
+            };
+        if (args.ChangedEntries.Contains(myFeaturePreviewEnabledEntry))
+            work += changeTracker =>
+            {
+                mySupportEnabled = myBoundSettingsStore.GetValue(myFeaturePreviewEnabledEntry, null) is true;
                 changeTracker.MarkAllDirty();
             };
         return work != null ? lifetime.StartMainRead(() =>
@@ -197,9 +211,9 @@ public class ShaderVariantsHost : ICppChangeProvider, IEnabledShaderKeywordsProv
         }
     }
 
-    public ISet<string> GetEnabledKeywords(CppFileLocation location) => myCurrentVariant.EnabledKeywords;
+    public ISet<string> GetEnabledKeywords(CppFileLocation location) => mySupportEnabled ? myCurrentVariant.EnabledKeywords : EmptySet<string>.Instance;
     
-    public ShaderApi ShaderApi => myCurrentVariant.ShaderApi.Value.AsShaderApi();
+    public ShaderApi ShaderApi => mySupportEnabled ? myCurrentVariant.ShaderApi.Value.AsShaderApi() : ShaderApi.D3D11;
 
     public object? Execute(IChangeMap changeMap) => null;
     

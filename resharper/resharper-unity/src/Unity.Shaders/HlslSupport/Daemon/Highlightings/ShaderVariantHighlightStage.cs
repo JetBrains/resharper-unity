@@ -6,6 +6,7 @@ using JetBrains.Application;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Cpp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
@@ -40,7 +41,8 @@ public class ShaderVariantHighlightStage : CppDaemonStageBase
     protected override IDaemonStageProcess? CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings, DaemonProcessKind processKind, CppFile file) =>
         processKind switch
         {
-            DaemonProcessKind.VISIBLE_DOCUMENT when myUnitySolutionTracker.IsUnityProjectOrHasUnityReference && 
+            DaemonProcessKind.VISIBLE_DOCUMENT when settings.GetValue((UnitySettings s) => s.FeaturePreviewShaderVariantsSupport) && 
+                                                    myUnitySolutionTracker.IsUnityProjectOrHasUnityReference && 
                                                     file.InclusionContext.RootContext is { BaseFile: var rootFile, LanguageDialect: var dialect } && 
                                                     myShaderProgramCache.TryGetShaderProgramInfo(rootFile, out var shaderProgramInfo) 
                 => new ShaderKeywordsHighlightProcess(process, settings, file, shaderProgramInfo, myEnabledShaderKeywordsProvider?.GetEnabledKeywords(rootFile) ?? EmptySet<string>.InstanceSet, dialect.Pragmas),
