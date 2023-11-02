@@ -21,18 +21,15 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
         private const string UnityEngineDebugLogMethodName = "Log";
 
 
-        public UnityDebugLogger(SoftDebuggerSession session, IDebugSessionFrontend debugSessionFrontend, ILogger logger, IValueFactory<Value> factory)
+        public UnityDebugLogger(IUnityOptions unityOptions, ISessionCreationInfo creationInfo, ILogger logger, IValueFactory<Value> factory)
         {
-            mySession = session;
-            myIsUnityDebugSession = debugSessionFrontend is RiderDebuggerSessionFrontend riderDebuggerSessionFrontend
-                                    && riderDebuggerSessionFrontend.SessionModel.StartInfo is UnityStartInfo;
-                                  
+            myIsUnityDebugSession = unityOptions.ExtensionsEnabled && creationInfo.StartInfo is UnityStartInfo; 
+            
             myLogger = logger;
             myFactory = factory;
         }
 
         private readonly IValueFactory<Value> myFactory;
-        private readonly SoftDebuggerSession? mySession;
         private readonly bool myIsUnityDebugSession;
         private readonly ILogger myLogger;
         private readonly Dictionary<ulong, IReifiedType<Value>> myReifiedTypesLocalCache = new();
@@ -40,12 +37,12 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
         private static readonly Func<IMetadataMethodLite, bool> ourDebugLogMethodFilter
             = ml => ml.Name == UnityEngineDebugLogMethodName && ml.Parameters.Length == 1 && ml.Parameters[0].Type.IsObject();
 
-        public bool Handle(BreakEvent be, IStackFrame activeFrame, string message)
+        public bool DoHandle(BreakEvent be, IStackFrame activeFrame, IDebuggerSession session, string message)
         {
-            if (!myIsUnityDebugSession || mySession == null || mySession.IsIl2Cpp) //Disabled for il2cpp builds
+            if (!myIsUnityDebugSession || session.IsIl2Cpp) //Disabled for il2cpp builds
                 return false;
             
-            var debugType = mySession.TypeUniverse.GetTypeByAssemblyQualifiedName(activeFrame, UnityEngineDebugTypeName);
+            var debugType = session.TypeUniverse.GetTypeByAssemblyQualifiedName(activeFrame, UnityEngineDebugTypeName);
 
             if (debugType == null)
             {
@@ -53,14 +50,14 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                 return false;
             }
 
-            var evalOptions = mySession.Options.EvaluationOptions.AllowFullInvokes();
+            var evalOptions = session.Options.EvaluationOptions.AllowFullInvokes();
 
             try
             {
                 var appDomainId = activeFrame.GetAppDomainId();
                 if (!myReifiedTypesLocalCache.TryGetValue(appDomainId, out var unityEngineDebugReifiedType))
                 {
-                    unityEngineDebugReifiedType = (IReifiedType<Value>)mySession.TypeUniverse.GetReifiedType(appDomainId, debugType);
+                    unityEngineDebugReifiedType = (IReifiedType<Value>)session.TypeUniverse.GetReifiedType(appDomainId, debugType);
                     myReifiedTypesLocalCache.Add(appDomainId, unityEngineDebugReifiedType);
                 }
                 
