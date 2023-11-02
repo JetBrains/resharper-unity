@@ -21,12 +21,11 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
         private const string UnityEngineDebugLogMethodName = "Log";
 
 
-        public UnityDebugLogger(IDebuggerSession session, IDebugSessionFrontend debugSessionFrontend, ILogger logger, IValueFactory<Value> factory)
+        public UnityDebugLogger(SoftDebuggerSession session, IDebugSessionFrontend debugSessionFrontend, ILogger logger, IValueFactory<Value> factory)
         {
-            mySession = session as SoftDebuggerSession;
-            myIsUnityDebugSession =
-                mySession != null && debugSessionFrontend is RiderDebuggerSessionFrontend riderDebuggerSessionFrontend
-                                  && riderDebuggerSessionFrontend.SessionModel.StartInfo is UnityStartInfo;
+            mySession = session;
+            myIsUnityDebugSession = debugSessionFrontend is RiderDebuggerSessionFrontend riderDebuggerSessionFrontend
+                                    && riderDebuggerSessionFrontend.SessionModel.StartInfo is UnityStartInfo;
                                   
             myLogger = logger;
             myFactory = factory;
