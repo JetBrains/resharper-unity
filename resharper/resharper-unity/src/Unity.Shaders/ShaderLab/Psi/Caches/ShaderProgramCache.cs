@@ -112,6 +112,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                 action(shaderKeyword);
         }
 
+        public bool HasShaderKeyword(string keyword)
+        {
+            Locks.AssertReadAccessAllowed();
+            return myShaderKeywords.ContainsKey(keyword);
+        }
+
         public void ForEachKeywordLocation<TAction>(string keyword, ref TAction action) where TAction : IValueAction<CppFileLocation>
         {
             Locks.AssertReadAccessAllowed();

@@ -26,6 +26,6 @@ Shader "FooBar"
 (0): ReSharper ShaderLab Implicitly Enabled Shader Keyword: 
 (1): ReSharper ShaderLab Disabled Shader Keyword: 
 (2): ReSharper ShaderLab Disabled Shader Keyword: 
-(3): ReSharper ShaderLab Enabled Shader Keyword: 
+(3): ReSharper ShaderLab Implicitly Enabled Shader Keyword: 
 (4): ReSharper ShaderLab Disabled Shader Keyword: 
 (5): ReSharper ShaderLab Disabled Shader Keyword: 

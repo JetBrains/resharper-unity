@@ -29,7 +29,7 @@ public class ShaderVariantsManager : ICppChangeProvider
     private readonly ISolution mySolution;
     private readonly ShaderProgramCache myShaderProgramCache;
     private readonly ChangeManager myChangeManager;
-    
+
     private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
     private readonly SettingsIndexedEntry myDefaultEnabledKeywordsEntry;
     private readonly SettingsScalarEntry myFeaturePreviewEnabledEntry;
@@ -61,6 +61,17 @@ public class ShaderVariantsManager : ICppChangeProvider
         myBoundSettingsStore.AdviseAsyncChanged(lifetime, OnBoundSettingsStoreChange);
         myShaderProgramCache.CacheUpdated.Advise(lifetime, _ => SyncShaderKeywords(myEnabledKeywords));
     }
+
+    public void SetDefineSymbolEnabled(string symbol, bool enabled)
+    {
+        if (ShaderDefineSymbolsRecognizer.Recognize(symbol) is { } descriptor)
+        {
+            if (descriptor is ShaderApiDefineSymbolDescriptor shaderApiDescriptor) 
+                SetShaderApi(enabled ? shaderApiDescriptor.GetValue(symbol) : ShaderApiDefineSymbolDescriptor.DefaultValue);
+        }
+        else if (myShaderProgramCache.HasShaderKeyword(symbol))
+            SetKeywordEnabled(symbol, enabled);
+    }
     
     public void SetKeywordEnabled(string keyword, bool enabled)
     {
@@ -91,6 +102,8 @@ public class ShaderVariantsManager : ICppChangeProvider
     public int TotalKeywordsCount => myAllKeywords.Count;
 
     public int TotalEnabledKeywordsCount => myEnabledKeywords.Count;
+
+    public bool IsKeywordEnabled(string keyword) => myEnabledKeywords.Contains(keyword);
     
     object? IChangeProvider.Execute(IChangeMap changeMap) => null;
 
@@ -118,7 +131,7 @@ public class ShaderVariantsManager : ICppChangeProvider
         }) : Task.CompletedTask;
     }
     
-    private ShaderApi GetShaderApi(SettingsScalarEntry shaderApiEntry) => myBoundSettingsStore.GetValue(shaderApiEntry, null) is ShaderApi shaderApi ? shaderApi : ShaderApi.D3D11;
+    private ShaderApi GetShaderApi(SettingsScalarEntry shaderApiEntry) => myBoundSettingsStore.GetValue(shaderApiEntry, null) is ShaderApi shaderApi ? shaderApi : ShaderApiDefineSymbolDescriptor.DefaultValue;
     
     private void SyncShaderKeywords(ISet<string> enabledKeywords)
     {

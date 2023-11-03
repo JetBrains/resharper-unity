@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 public class ShaderApiDefineSymbolDescriptor : IShaderDefineSymbolDescriptor
 {
     public static readonly ShaderApiDefineSymbolDescriptor Instance = new();
-    
+
     public const string D3D11 = "SHADER_API_D3D11";
     public const string GlCore = "SHADER_API_GLCORE";
     public const string GlEs = "SHADER_API_GLES";
@@ -19,7 +19,11 @@ public class ShaderApiDefineSymbolDescriptor : IShaderDefineSymbolDescriptor
     public const string Desktop = "SHADER_API_DESKTOP";
     public const string Mobile = "SHADER_API_MOBILE";
 
-    public ImmutableArray<string> AllSymbols = ImmutableArray.Create<string>(D3D11, GlCore, GlEs, GlEs3, Metal, Vulkan, D3D11L9X, Desktop, Mobile);  
+    public ImmutableArray<string> AllSymbols = ImmutableArray.Create<string>(D3D11, GlCore, GlEs, GlEs3, Metal, Vulkan, D3D11L9X, Desktop, Mobile);
+
+    public const ShaderApi DefaultValue = ShaderApi.D3D11;
+
+    public bool IsDefaultSymbol(string defineSymbol) => defineSymbol == D3D11;
 
     public string GetDefineSymbol(ShaderApi shaderApi) =>
         shaderApi switch
@@ -34,5 +38,20 @@ public class ShaderApiDefineSymbolDescriptor : IShaderDefineSymbolDescriptor
             ShaderApi.Desktop => Desktop,
             ShaderApi.Mobile => Mobile,
             _ => throw new ArgumentOutOfRangeException(nameof(shaderApi), shaderApi, null)
+        };
+
+    public ShaderApi GetValue(string defineSymbol) =>
+        defineSymbol switch
+        {
+            D3D11 => ShaderApi.D3D11,
+            GlCore => ShaderApi.GlCore,
+            GlEs => ShaderApi.GlEs,
+            GlEs3 => ShaderApi.GlEs3,
+            Metal => ShaderApi.Metal,
+            Vulkan => ShaderApi.Vulkan,
+            D3D11L9X => ShaderApi.D3D11L9X,
+            Desktop => ShaderApi.Desktop,
+            Mobile => ShaderApi.Mobile,
+            _ => throw new ArgumentOutOfRangeException(nameof(defineSymbol), defineSymbol, null)
         };
 }

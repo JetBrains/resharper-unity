@@ -176,4 +176,13 @@
     <data name="SuppressedShaderKeyword_RiderPresentableName" xml:space="preserve">
         <value>Suppressed Shader Keyword</value>
     </data>
+    <data name="EnableShaderKeyword_Enable_shader_keyword" xml:space="preserve">
+        <value>Enable shader keyword</value>
+    </data>
+    <data name="DisableShaderKeyword_Disable_shader_keyword" xml:space="preserve">
+        <value>Disable shader keyword</value>
+    </data>
+    <data name="UnSuppressShaderKeyword_Disable_conflicting_shader_keyword" xml:space="preserve">
+        <value>Disable conflicting shader keywords: {0}</value>
+    </data>
 </root>
