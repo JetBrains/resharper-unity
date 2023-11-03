@@ -10,11 +10,13 @@ using JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Common.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
+using JetBrains.ReSharper.Psi.Cpp.Language;
 using JetBrains.ReSharper.Psi.Cpp.Parsing;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -28,16 +30,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
     [PsiComponent]
     public class ShaderProgramCache : SimplePsiSourceFileCacheWithLocalCache<ShaderProgramCache.Item, ImmutableArray<CppFileLocation>>, IBuildMergeParticipant<IPsiSourceFile>
     {
-        private const string SHADER_KEYWORD_NONE = "_";
-
-        private static readonly HashSet<StringSlice> ourShaderFeatureDirectiveAllowingDisableAllKeywords = new() { "shader_feature", "shader_feature_local" };
-        private static readonly HashSet<StringSlice> ourShaderFeatureDirectives = new() { "shader_feature", "shader_feature_local", "multi_compile", "multi_compile_local", "dynamic_branch", "dynamic_branch_local" };
-        
         private readonly Dictionary<CppFileLocation, ShaderProgramInfo> myProgramInfos = new();
-        private readonly OneToSetMap<string, CppFileLocation> myShaderKeywords = new(); 
+        private readonly OneToSetMap<string, CppFileLocation> myShaderKeywords = new();
+
+        private readonly UnityDialects myDialects;
         
-        public ShaderProgramCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager) : base(lifetime, locks, persistentIndexManager, Item.Marshaller, "Unity::Shaders::ShaderProgramCacheUpdated")
+        public ShaderProgramCache(Lifetime lifetime, IShellLocks locks, IPersistentIndexManager persistentIndexManager, UnityDialects dialects) : base(lifetime, locks, persistentIndexManager, Item.Marshaller, "Unity::Shaders::ShaderProgramCacheUpdated")
         {
+            myDialects = dialects;
         }
         
         protected override bool IsApplicable(IPsiSourceFile sourceFile) => sourceFile.PrimaryPsiLanguage.Is<ShaderLabLanguage>();
@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             {
                 var content = cgContent.Content;
                 var textRange = TextRange.FromLength(content.GetTreeStartOffset().Offset, content.GetTextLength());
-                var programInfo = ReadProgramInfo(new CppDocumentBuffer(buffer, textRange));
+                var programInfo = ReadProgramInfo(new CppDocumentBuffer(buffer, textRange), myDialects.ShaderLabHlslDialect);
                 entries.Add(new Item.Entry(textRange, programInfo));
             }
             return new Item(entries.ToArray());
@@ -127,96 +127,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             // PSI is not committed here
             // TODO: cpp global cache should calculate cache only when PSI for file with cpp injects is committed.
             if (!UpToDate(sourceFile))
-                shaderProgramInfo = ReadProgramInfo(new CppDocumentBuffer(sourceFile.Document.Buffer, range));
+                shaderProgramInfo = ReadProgramInfo(new CppDocumentBuffer(sourceFile.Document.Buffer, range), myDialects.ShaderLabHlslDialect);
             else if (!TryGetShaderProgramInfo(cppFileLocation, out shaderProgramInfo))
                 return false;
             return true;
         }
 
-        private ShaderProgramInfo ReadProgramInfo(CppDocumentBuffer buffer)
+        private ShaderProgramInfo ReadProgramInfo(CppDocumentBuffer buffer, UnityHlslDialectBase dialect)
         {
             var injectedProgramType = GetShaderProgramType(buffer);
             
-            var isSurface = false;
             var lexer = CppLexer.Create(buffer);
             lexer.Start();
 
-            var definedMacros = new Dictionary<string, string>();
-            var shaderTarget = HlslConstants.SHADER_TARGET_25;
-            var shaderFeatures = ImmutableArray.CreateBuilder<ShaderFeature>();
-            while (lexer.TokenType != null)
-            {
-                var tokenType = lexer.TokenType;
-                if (tokenType is CppDirectiveTokenNodeType)
-                {
-                    lexer.Advance();
-                    var context = lexer.GetTokenText();
-
-                    var contextStartOffset = lexer.TokenStart;
-                    var slicer = StringSplitter.ByWhitespace(context);
-                    slicer.TryGetNextSlice(out var pragmaType);
-                    if (pragmaType.Equals("surface"))
-                        isSurface = true;
-
-                    if (TryReadShaderFeature(contextStartOffset, slicer, pragmaType, out var shaderFeature)) 
-                        shaderFeatures.Add(shaderFeature);
-
-                    if (pragmaType.Equals("target") && slicer.TryGetNextSlice(out var versionString))
-                    {
-                        var versionFromTarget = int.TryParse(versionString.ToString().Replace(".", ""), out var result) ? result : HlslConstants.SHADER_TARGET_35;
-                        shaderTarget = Math.Max(shaderTarget, versionFromTarget);
-                    }
-
-                    if (pragmaType.Equals("geometry"))
-                        shaderTarget = Math.Max(shaderTarget, HlslConstants.SHADER_TARGET_40);
-
-                    if (pragmaType.Equals("hull") || pragmaType.Equals("domain"))
-                        shaderTarget = Math.Max(shaderTarget, HlslConstants.SHADER_TARGET_46);
-
-                    // https://en.wikibooks.org/wiki/GLSL_Programming/Unity/Cookies
-                    if (pragmaType.Equals("multi_compile_lightpass"))
-                    {
-                        // multi_compile_lightpass == multi_compile DIRECTIONAL, DIRECTIONAL_COOKIE, POINT, POINT_NOATT, POINT_COOKIE, SPOT
-                        definedMacros["DIRECTIONAL"] = "1";
-                    }
-
-                    // TODO: handle built-in https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html
-                    // multi_compile_fwdbase, multi_compile_fwdadd, multi_compile_fwdadd_fullshadows, multi_compile_fog
-                    // could not find information about that directives
-
-                }
-                lexer.Advance();
-            }
-
-            definedMacros["SHADER_TARGET"] = shaderTarget.ToString();
-            return new ShaderProgramInfo(injectedProgramType, isSurface ? ShaderType.Surface : ShaderType.VertFrag, shaderTarget, shaderFeatures.MoveOrCopyToImmutableArray(), definedMacros);
-        }
-
-        private static bool TryReadShaderFeature(int baseOffset, StringSplitter<CharPredicates.IsWhitespacePredicate> slicer, StringSlice pragmaType, out ShaderFeature shaderFeature)
-        {
-            if (ourShaderFeatureDirectives.Contains(pragmaType))
-            {
-                var allowDisableAllKeywords = false;
-                var entries = ImmutableArray.CreateBuilder<ShaderFeature.Entry>();
-                while (slicer.TryGetNextSlice(out var keyword, out var keywordOffset))
-                {
-                    if (!keyword.Equals(SHADER_KEYWORD_NONE))
-                        entries.Add(new ShaderFeature.Entry(keyword.ToString(), TextRange.FromLength(baseOffset + keywordOffset, keyword.Length)));
-                    else
-                        allowDisableAllKeywords = true;
-                }
-
-                if (entries.Count > 0)
-                {
-                    if (!allowDisableAllKeywords)
-                        allowDisableAllKeywords = entries.Count == 1 && ourShaderFeatureDirectiveAllowingDisableAllKeywords.Contains(pragmaType);
-                    shaderFeature = new ShaderFeature(entries.MoveOrCopyToImmutableArray(), allowDisableAllKeywords);
-                    return true;
-                }
-            }
-
-            shaderFeature = default;
-            return false;
+            var data = new ShaderProgramInfoData(lexer, dialect);
+            return new ShaderProgramInfo(injectedProgramType, data.IsSurface ? ShaderType.Surface : ShaderType.VertFrag, data.ShaderTarget, data.ShaderFeatures.MoveOrCopyToImmutableArray(), data.DefinedMacros);
         }
         
         private InjectedHlslProgramType GetShaderProgramType(CppDocumentBuffer documentBuffer)
@@ -303,6 +228,113 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                     Range = range;
                     ProgramInfo = programInfo;
                 }
+            }
+        }
+        #endregion
+
+        #region ShaderProgramInfo data
+        private struct ShaderProgramInfoData
+        {
+            private const string SHADER_KEYWORD_NONE = "_";
+            
+            private readonly IReadOnlyDictionary<string, PragmaCommand> myPragmas;
+            private StringSplitter<CharPredicates.IsWhitespacePredicate> myContentSplitter;
+            private int myPragmaContentStartOffset;
+            
+            public bool IsSurface = false;
+            public int ShaderTarget = HlslConstants.SHADER_TARGET_25;
+            public readonly ImmutableArray<ShaderFeature>.Builder ShaderFeatures = ImmutableArray.CreateBuilder<ShaderFeature>();
+            public readonly Dictionary<string, string> DefinedMacros = new();
+
+            public ShaderProgramInfoData(CppLexer lexer, UnityHlslDialectBase dialect)
+            {
+                myPragmas = dialect.Pragmas;
+                Read(lexer);
+                DefinedMacros["SHADER_TARGET"] = ShaderTarget.ToString();
+            }
+
+            private void Read(CppLexer lexer)
+            {
+                while (lexer.TokenType != null)
+                {
+                    var tokenType = lexer.TokenType;
+                    if (((CppTokenNodeType)tokenType).Kind() == CppTokenKind.PRAGMA_DIRECTIVE)
+                    {
+                        lexer.Advance();
+                        
+                        var pragmaContent = lexer.GetTokenText();
+                        myPragmaContentStartOffset = lexer.TokenStart;
+                        myContentSplitter = StringSplitter.ByWhitespace(pragmaContent);
+                        if (myContentSplitter.TryGetNextSliceAsString(out var pragmaType)) 
+                            ReadPragmaCommand(pragmaType);
+                    }
+                    lexer.Advance();
+                }
+            }
+
+            private void ReadPragmaCommand(string pragmaType)
+            {
+                switch (pragmaType)
+                {
+                    case "surface":
+                        IsSurface = true;
+                        break;
+                    case "target":
+                    {
+                        if (myContentSplitter.TryGetNextSliceAsString(out var versionString))
+                        {
+                            var versionFromTarget = int.TryParse(versionString.Replace(".", ""), out var result) ? result : HlslConstants.SHADER_TARGET_35;
+                            ShaderTarget = Math.Max(ShaderTarget, versionFromTarget);
+                        }
+                        break;
+                    }
+                    // https://en.wikibooks.org/wiki/GLSL_Programming/Unity/Cookies
+                    case "multi_compile_lightpass":
+                        // multi_compile_lightpass == multi_compile DIRECTIONAL, DIRECTIONAL_COOKIE, POINT, POINT_NOATT, POINT_COOKIE, SPOT
+                        DefinedMacros["DIRECTIONAL"] = "1";
+                        break;
+                    // TODO: handle built-in https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html
+                    // multi_compile_fwdbase, multi_compile_fwdadd, multi_compile_fwdadd_fullshadows, multi_compile_fog
+                    // could not find information about that directives
+                    default:
+                    {
+                        if (myPragmas.TryGetValue(pragmaType, out var pragmaCommand) && pragmaCommand is ShaderLabPragmaCommand { Info: var pragmaInfo })
+                        {
+                            if (TryReadShaderFeature(pragmaInfo, out var shaderFeature))
+                                ShaderFeatures.Add(shaderFeature);
+                            if (pragmaInfo.ImpliesShaderTarget > ShaderTarget)
+                                ShaderTarget = pragmaInfo.ImpliesShaderTarget;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            private bool TryReadShaderFeature(ShaderLabPragmaInfo pragmaInfo, out ShaderFeature shaderFeature)
+            {
+                if (pragmaInfo.DeclaresKeywords)
+                {
+                    var allowDisableAllKeywords = false;
+                    var entries = ImmutableArray.CreateBuilder<ShaderFeature.Entry>();
+                    while (myContentSplitter.TryGetNextSlice(out var keyword, out var keywordOffset))
+                    {
+                        if (!keyword.Equals(SHADER_KEYWORD_NONE))
+                            entries.Add(new ShaderFeature.Entry(keyword.ToString(), TextRange.FromLength(myPragmaContentStartOffset + keywordOffset, keyword.Length)));
+                        else
+                            allowDisableAllKeywords = true;
+                    }
+
+                    if (entries.Count > 0)
+                    {
+                        if (!allowDisableAllKeywords)
+                            allowDisableAllKeywords = entries.Count == 1 && pragmaInfo.HasDisabledVariantForSingleKeyword;
+                        shaderFeature = new ShaderFeature(entries.MoveOrCopyToImmutableArray(), allowDisableAllKeywords);
+                        return true;
+                    }   
+                }
+
+                shaderFeature = default;
+                return false;
             }
         }
         #endregion

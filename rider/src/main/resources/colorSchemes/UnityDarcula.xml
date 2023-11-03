@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-file for overriding ReSharper highlighter color for Default editor scheme
+file for overriding ReSharper highlighter color for Darcula editor scheme
 -->
 <list>
   <option name="ReSharper.UNITY_IMPLICITLY_USED_IDENTIFIER">
@@ -8,7 +8,7 @@ file for overriding ReSharper highlighter color for Default editor scheme
       <option name="FONT_TYPE" value="1" />
     </value>
   </option>
-  <option name="ReSharper.UNITY_PERFORMANCE_CAMERA_MAIN">
+    <option name="ReSharper.UNITY_PERFORMANCE_CAMERA_MAIN">
     <value>
       <option name="EFFECT_COLOR" value="ff8700" />
       <option name="EFFECT_TYPE" value="1" />
@@ -29,6 +29,17 @@ file for overriding ReSharper highlighter color for Default editor scheme
     <value>
       <option name="EFFECT_COLOR" value="ff8700" />
       <option name="EFFECT_TYPE" value="1" />
+    </value>
+  </option>
+  <option name="ReSharper.ReSharper.ShaderLab_DISABLED_SHADER_KEYWORD">
+    <value>
+      <option name="FOREGROUND" value="a9a9a9" />
+    </value>
+  </option>
+  <option name="ReSharper.ReSharper.ShaderLab_SUPPRESSED_SHADER_KEYWORD">
+    <value>
+      <option name="EFFECT_COLOR" value="bbbbbb" />
+      <option name="EFFECT_TYPE" value="3" />
     </value>
   </option>
 </list>

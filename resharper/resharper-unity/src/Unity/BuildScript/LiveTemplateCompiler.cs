@@ -27,7 +27,7 @@ public static class LiveTemplateCompiler
             .Where(x => unitySubsRoot.IsPrefixOf(x.Name.RelativePath))
             .SelectMany(x =>
                 x.ProjectFilesEx.Select(p => new SubplatformProjectWrapper(x, p, allAssembliesOnSources)));
-        
+
         var liveTemplateItems = unityProjects.SelectMany(ExtractLiveTemplateItems).ToList();
 
         var restoredCompilePackage = restoredRefs
@@ -49,7 +49,7 @@ public static class LiveTemplateCompiler
     private static Task RunCompiler(LiveTemplateItem liveTemplateItem, FileSystemPath compilerExec, FileSystemPath dotnetHost, ILogger logger)
     {
         var inputFiles = SearchFiles(liveTemplateItem.ProjectDir, liveTemplateItem.Include);
-        
+
         var startInfo = new InvokeChildProcess.StartInfo(dotnetHost)
         {
             Pipe = InvokeChildProcess.PipeStreams.IntoJetLogger(levelDefault: LoggingLevel.VERBOSE),
@@ -60,11 +60,9 @@ public static class LiveTemplateCompiler
                 .AppendSwitch(string.Join(" ", inputFiles
                     .Select(x => x.MakeRelativeTo(liveTemplateItem.ProjectDir))
                     .Select(x => x.PathWithCurrentPlatformSeparators().QuoteIfNeeded())))
-                .AppendSwitch("-o")
-                .AppendParameterWithQuoting(RelativePath.Parse(liveTemplateItem.OutputFile).PathWithCurrentPlatformSeparators())
-                .AppendSwitch("-r")
-                .AppendParameterWithQuoting(RelativePath.Parse(liveTemplateItem.ReadmeFile).PathWithCurrentPlatformSeparators())
-                
+                .AppendSwitchIfNotNull("-o", RelativePath.Parse(liveTemplateItem.OutputFile).PathWithCurrentPlatformSeparators())
+                .AppendSwitchIfNotNull("-r", RelativePath.Parse(liveTemplateItem.ReadmeFile).PathWithCurrentPlatformSeparators())
+                .AppendSwitchIfNotNull("-n", "unix")
         };
         logger.Verbose($"Starting \"\"{dotnetHost} {startInfo.Arguments.ToString()}\"\" in directory {liveTemplateItem.ProjectDir}");
         return Lifetime.UsingAsync
@@ -75,7 +73,7 @@ public static class LiveTemplateCompiler
                 throw new InvalidOperationException($"rstc.exe (LiveTemplateCompiler for Unity) exited with code {result}.");
         });
     }
-    
+
     private static IEnumerable<LiveTemplateItem> ExtractLiveTemplateItems(SubplatformProjectWrapper projectFile)
     {
         var csprojPath = projectFile.GetProjectFileAbsPath();
@@ -90,7 +88,7 @@ public static class LiveTemplateCompiler
         {
             throw new InvalidOperationException($"Can't load XML from project file {csprojPath.QuoteIfNeeded()}.", ex);
         }
-        
+
         var liveTemplateItems = xmldoc.SelectElements("/msb:Project/msb:ItemGroup/msb:LiveTemplate", nsman);
         return liveTemplateItems.Select(x =>
         {
@@ -109,14 +107,13 @@ public static class LiveTemplateCompiler
                 throw new InvalidOperationException(
                     $"LiveTemplate item in project file {csprojPath.QuoteIfNeeded()} doesn't have ReadmeFile element.");
 
-
             return new LiveTemplateItem(include, outputFile, readmeFile, projectFile.GetProjectFileAbsPath().Parent);
         });
     }
 
     private readonly record struct LiveTemplateItem(string Include, string OutputFile, string ReadmeFile,
         FileSystemPath ProjectDir);
-    
+
     private static IEnumerable<FileSystemPath> SearchFiles(FileSystemPath root, string pattern)
     {
         var parts = pattern.Split(new[] { "\\", "/" }, StringSplitOptions.None);

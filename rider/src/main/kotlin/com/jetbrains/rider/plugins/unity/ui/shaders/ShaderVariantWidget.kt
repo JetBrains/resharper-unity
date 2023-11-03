@@ -13,5 +13,5 @@ class ShaderVariantWidget(project: Project, editor: Editor) : AbstractShaderWidg
         label.icon = ShaderLabFileType.icon
     }
 
-    override fun showPopup(showAt: RelativePoint) = ShaderVariantPopup.show(project, showAt)
+    override fun showPopup(showAt: RelativePoint) = ShaderVariantPopup.show(project, editor, showAt)
 }

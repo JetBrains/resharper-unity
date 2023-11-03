@@ -1,4 +1,5 @@
 #nullable enable
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using JetBrains.Util;
 
@@ -24,6 +25,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Common.Utils
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryGetNextSlice(out StringSlice nextSlice) => TryGetNextSlice(out nextSlice, out _);        
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool TryGetNextSliceAsString([MaybeNullWhen(false)] out string next) => (next = TryGetNextSlice(out var nextSlice, out _) ? nextSlice.ToString() : null) != null;
 
         public bool TryGetNextSlice(out StringSlice nextSlice, out int startPosition)
         {
