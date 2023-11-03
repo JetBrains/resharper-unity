@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using JetBrains.Application.PersistentMap;
 using JetBrains.Application.Progress;
+using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Utils;
@@ -60,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             SolutionAnalysisConfiguration solutionAnalysisConfiguration,
             ShellCaches shellCaches,
             ISolutionCaches solutionCaches)
-            : base(NAME)
+            : base(NAME, false)
         {
             myProvider = provider;
             myPsiAssemblyFileLoader = psiAssemblyFileLoader;
@@ -69,6 +70,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.SerializeRef
             myIndex = new UnitySerializedReferenceInfoIndex(solutionAnalysisConfiguration, ourLogger);
             GetCaches(lifetime, shellCaches.Db, out myShellDataMap, out myShellTimestampMap);
             GetCaches(lifetime, solutionCaches.Db, out mySolutionDataMap, out mySolutionTimestampMap);
+            
+            Enabled.Value = unitySolutionTracker.IsUnityProject.HasTrueValue();
+            unitySolutionTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value |= b);
         }
 
         private const string PersistentId = "AssemblySerializeReferenceCache";
