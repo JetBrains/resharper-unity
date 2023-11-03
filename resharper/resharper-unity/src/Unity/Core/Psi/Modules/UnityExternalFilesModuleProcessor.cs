@@ -349,6 +349,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
                 if (packageData.PackageFolder == null || packageData.PackageFolder.IsEmpty)
                     return;
 
+                myLogger.Verbose($"PackageUpdates {packageData.PackageFolder} {args.Action}");
+
                 if (args.Action == AddRemove.Add)
                 {
                     using (myLocks.UsingReadLock())
@@ -718,51 +720,49 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules
 
         private void FlushChanges(PsiModuleChangeBuilder builder)
         {
+            myLocks.ReentrancyGuard.AssertGuarded();
+
             if (builder.IsEmpty)
                 return;
 
-            myLocks.ExecuteOrQueueEx(myLifetime, GetType().Name + ".FlushChanges",
-                () =>
+            var module = myModuleFactory.PsiModule;
+            Assertion.AssertNotNull(module);
+            myLocks.AssertMainThread();
+            using (myLocks.UsingWriteLock())
+            {
+                var psiModuleChange = builder.Result;
+
+                myLogger.Verbose("Flushing {0} PSI source file changes", psiModuleChange.FileChanges.Count);
+                if (myLogger.IsTraceEnabled())
                 {
-                    var module = myModuleFactory.PsiModule;
-                    Assertion.AssertNotNull(module);
-                    myLocks.AssertMainThread();
-                    using (myLocks.UsingWriteLock())
+                    myLogger.Verbose("{0} added, {1} removed, {2} modified, {3} invalidated",
+                        psiModuleChange.FileChanges.Count(c => c.Type == PsiModuleChange.ChangeType.Added),
+                        psiModuleChange.FileChanges.Count(c => c.Type == PsiModuleChange.ChangeType.Removed),
+                        psiModuleChange.FileChanges.Count(c => c.Type == PsiModuleChange.ChangeType.Modified),
+                        psiModuleChange.FileChanges.Count(c => c.Type == PsiModuleChange.ChangeType.Invalidated));
+                }
+
+                foreach (var fileChange in psiModuleChange.FileChanges)
+                {
+                    var location = fileChange.Item.GetLocation();
+                    if (location.IsEmpty)
+                        continue;
+
+                    switch (fileChange.Type)
                     {
-                        var psiModuleChange = builder.Result;
+                        case PsiModuleChange.ChangeType.Added:
+                            module.Add(location, fileChange.Item, null);
+                            break;
 
-                        myLogger.Verbose("Flushing {0} PSI source file changes", psiModuleChange.FileChanges.Count);
-                        if (myLogger.IsTraceEnabled())
-                        {
-                            myLogger.Trace("{0} added, {1} removed, {2} modified, {3} invalidated",
-                                psiModuleChange.FileChanges.Count(c => c.Type == PsiModuleChange.ChangeType.Added),
-                                psiModuleChange.FileChanges.Count(c => c.Type == PsiModuleChange.ChangeType.Removed),
-                                psiModuleChange.FileChanges.Count(c => c.Type == PsiModuleChange.ChangeType.Modified),
-                                psiModuleChange.FileChanges.Count(c => c.Type == PsiModuleChange.ChangeType.Invalidated));
-                        }
-
-                        foreach (var fileChange in psiModuleChange.FileChanges)
-                        {
-                            var location = fileChange.Item.GetLocation();
-                            if (location.IsEmpty)
-                                continue;
-
-                            switch (fileChange.Type)
-                            {
-                                case PsiModuleChange.ChangeType.Added:
-                                    module.Add(location, fileChange.Item, null);
-                                    break;
-
-                                case PsiModuleChange.ChangeType.Removed:
-                                    module.Remove(location);
-                                    break;
-                            }
-                        }
-
-                        myLogger.DoActivity("FlushChanges::OnProviderChanged", null, () =>
-                            myChangeManager.OnProviderChanged(this, psiModuleChange, SimpleTaskExecutor.Instance));
+                        case PsiModuleChange.ChangeType.Removed:
+                            module.Remove(location);
+                            break;
                     }
-                });
+                }
+
+                myLogger.DoActivity("FlushChanges::OnProviderChanged", null, () =>
+                    myChangeManager.OnProviderChanged(this, psiModuleChange, SimpleTaskExecutor.Instance));
+            }
         }
 
         public object? Execute(IChangeMap changeMap) => null;
