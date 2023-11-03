@@ -4,9 +4,6 @@ import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
-import com.jetbrains.rd.util.lifetime.SequentialLifetimes
-import com.jetbrains.rd.util.reactive.AddRemove
-import com.jetbrains.rd.util.reactive.ViewableSet
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidgetManager
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import kotlinx.coroutines.Dispatchers
@@ -18,19 +15,8 @@ class ShaderVariantsHost : ProjectActivity {
         val lifetime = LifetimeDefinition()
         try {
             val frontendBackendHost = FrontendBackendHost.getInstance(project)
-            val enabledShaderKeywords: ViewableSet<String> = ViewableSet()
-            val enabledKeywordsLifetimes = SequentialLifetimes(lifetime)
             val model = frontendBackendHost.model
             withContext(Dispatchers.EDT) {
-                model.defaultShaderVariant.advise(lifetime) {
-                    syncKeywords(enabledShaderKeywords, it.enabledKeywords)
-                    it.enabledKeywords.advise(enabledKeywordsLifetimes.next()) { event ->
-                        when (event.kind) {
-                            AddRemove.Add -> enabledShaderKeywords.add(event.value)
-                            AddRemove.Remove -> enabledShaderKeywords.remove(event.value)
-                        }
-                    }
-                }
                 model.backendSettings.previewShaderVariantsSupport.advise(lifetime) {
                     RiderResolveContextWidgetManager.invalidateWidgets(project)
                 }
@@ -38,21 +24,6 @@ class ShaderVariantsHost : ProjectActivity {
             awaitCancellation()
         } finally {
           lifetime.terminate()
-        }
-    }
-
-    private fun syncKeywords(enabledShaderKeywords: MutableSet<String>, newEnabledKeywords: Collection<String>) {
-        if (enabledShaderKeywords.size > 0) {
-            val unprocessed = HashSet(enabledShaderKeywords)
-            for (item in newEnabledKeywords) {
-                if (!unprocessed.remove(item))
-                    enabledShaderKeywords.add(item)
-            }
-            for (item in unprocessed)
-                enabledShaderKeywords.remove(item)
-        }
-        else {
-            enabledShaderKeywords.addAll(newEnabledKeywords)
         }
     }
 }

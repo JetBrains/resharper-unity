@@ -3,9 +3,9 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
-using JetBrains.ReSharper.Plugins.Tests.UnityTestComponents;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Model;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Language;
@@ -64,9 +64,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Stages.Highli
 
         protected override void DoTest(Lifetime lifetime, IProject project)
         {
-            var enabledKeywords = project.GetComponent<TestEnabledShaderKeywordsProvider>().EnabledKeywords;
-            project.GetComponent<TestShaderProgramInfoProvider>().ShaderApi = myShaderApi;
-            enabledKeywords.UnionWith(myEnabledKeywords);
+            var shaderVariantsManager = project.GetComponent<ShaderVariantsManager>();
+            foreach (var keyword in myEnabledKeywords) 
+                shaderVariantsManager.SetKeywordEnabled(keyword, true);
+            shaderVariantsManager.SetShaderApi(myShaderApi);
+
             try
             {
                 project.GetComponent<CppGlobalCacheImpl>().ResetCache();
@@ -74,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Stages.Highli
             }
             finally
             {
-                enabledKeywords.Clear();
+                shaderVariantsManager.ResetAllKeywords();
             }
         }
     }

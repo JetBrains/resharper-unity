@@ -90,14 +90,9 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
     // Shader Variants
     private val rdShaderKeyword = structdef {
         field("name", string.interned(shaderInternScope).attrs(KnownAttrs.NlsSafe))
+        field("enabled", bool)
     }
-    private val rdShaderVariant = classdef {
-        set("enabledKeywords", string.interned(shaderInternScope)).readonly
-        property("shaderApi", RdShaderApi).readonly
-        source("enableKeyword", string)
-        source("disableKeyword", string)
-        source("setShaderApi", RdShaderApi)
-    }
+
     init {
         setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.plugins.unity.model.frontendBackend")
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.FrontendBackend")
@@ -146,13 +141,17 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         })
 
         // Shader variants
-        map("shaderKeywords", string, rdShaderKeyword).readonly
-        property("defaultShaderVariant", rdShaderVariant).readonly
         call("createShaderVariantInteraction", structdef("createShaderVariantInteractionArgs") {
             field("documentId", RdDocumentId)
             field("offset", int)
         }, classdef("shaderVariantInteraction") {
-            field("availableKeywords", immutableList(string))
+            field("shaderKeywords", immutableList(rdShaderKeyword))
+            field("shaderApi", RdShaderApi)
+            field("totalKeywordsCount", int)
+            field("totalEnabledKeywordsCount", int)
+            source("enableKeyword", string)
+            source("disableKeyword", string)
+            source("setShaderApi", RdShaderApi)
         })
 
         // Actions called from the frontend to the backend (and/or indirectly, Unity)

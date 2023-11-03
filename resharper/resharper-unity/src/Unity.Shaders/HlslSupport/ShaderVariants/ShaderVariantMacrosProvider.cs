@@ -1,9 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.Model;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Symbols;
@@ -14,20 +12,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 [SolutionComponent]
 public class ShaderVariantMacrosProvider : IUnityHlslCustomMacrosProvider
 {
-    private readonly IEnabledShaderKeywordsProvider? myEnabledShaderKeywordsProvider;
-    private readonly IShaderPlatformInfoProvider? myShaderPlatformInfoProvider;
+    private readonly ShaderVariantsManager myShaderVariantsManager;
 
-    public ShaderVariantMacrosProvider([Optional] IEnabledShaderKeywordsProvider? enabledShaderKeywordsProvider, [Optional] IShaderPlatformInfoProvider? shaderPlatformInfoProvider)
+    public ShaderVariantMacrosProvider(ShaderVariantsManager shaderVariantsManager)
     {
-        myEnabledShaderKeywordsProvider = enabledShaderKeywordsProvider;
-        myShaderPlatformInfoProvider = shaderPlatformInfoProvider;
+        myShaderVariantsManager = shaderVariantsManager;
     }
 
     public IEnumerable<CppPPDefineSymbol> ProvideCustomMacros(CppFileLocation location, ShaderProgramInfo? shaderProgramInfo)
     {
         if (shaderProgramInfo != null)
         {
-            var enabledKeywords = myEnabledShaderKeywordsProvider?.GetEnabledKeywords(location) ?? EmptySet<string>.InstanceSet;
+            var enabledKeywords = myShaderVariantsManager.GetEnabledKeywords(location);
             foreach (var shaderFeature in shaderProgramInfo.ShaderFeatures)
             {
                 if (TryGetEnabledKeyword(shaderFeature, enabledKeywords, out var entry))
@@ -39,7 +35,7 @@ public class ShaderVariantMacrosProvider : IUnityHlslCustomMacrosProvider
             }
         }
 
-        var shaderApi = myShaderPlatformInfoProvider?.ShaderApi ?? ShaderApi.D3D11;
+        var shaderApi = myShaderVariantsManager.ShaderApi;
         var shaderApiSymbol = ShaderApiDefineSymbolDescriptor.Instance.GetDefineSymbol(shaderApi);
         yield return new CppPPDefineSymbol(shaderApiSymbol, null, false, "1", new CppSymbolLocation(CppFileLocation.EMPTY, CppComplexOffset.ZERO));
     }

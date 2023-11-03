@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using JetBrains.Application;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Cpp.Daemon;
@@ -29,13 +28,13 @@ public class ShaderVariantHighlightStage : CppDaemonStageBase
 {
     private readonly ShaderProgramCache myShaderProgramCache;
     private readonly UnitySolutionTracker myUnitySolutionTracker;
-    private readonly IEnabledShaderKeywordsProvider? myEnabledShaderKeywordsProvider;
+    private readonly ShaderVariantsManager myShaderVariantsManager;
     
-    public ShaderVariantHighlightStage(ElementProblemAnalyzerRegistrar elementProblemAnalyzerRegistrar, ShaderProgramCache shaderProgramCache, UnitySolutionTracker unitySolutionTracker, [Optional] IEnabledShaderKeywordsProvider? enabledShaderKeywordsProvider) : base(elementProblemAnalyzerRegistrar)
+    public ShaderVariantHighlightStage(ElementProblemAnalyzerRegistrar elementProblemAnalyzerRegistrar, ShaderProgramCache shaderProgramCache, UnitySolutionTracker unitySolutionTracker, ShaderVariantsManager shaderVariantsManager) : base(elementProblemAnalyzerRegistrar)
     {
         myShaderProgramCache = shaderProgramCache;
         myUnitySolutionTracker = unitySolutionTracker;
-        myEnabledShaderKeywordsProvider = enabledShaderKeywordsProvider;
+        myShaderVariantsManager = shaderVariantsManager;
     }
 
     protected override IDaemonStageProcess? CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings, DaemonProcessKind processKind, CppFile file) =>
@@ -45,7 +44,7 @@ public class ShaderVariantHighlightStage : CppDaemonStageBase
                                                     myUnitySolutionTracker.IsUnityProjectOrHasUnityReference && 
                                                     file.InclusionContext.RootContext is { BaseFile: var rootFile, LanguageDialect: var dialect } && 
                                                     myShaderProgramCache.TryGetShaderProgramInfo(rootFile, out var shaderProgramInfo) 
-                => new ShaderKeywordsHighlightProcess(process, settings, file, shaderProgramInfo, myEnabledShaderKeywordsProvider?.GetEnabledKeywords(rootFile) ?? EmptySet<string>.InstanceSet, dialect.Pragmas),
+                => new ShaderKeywordsHighlightProcess(process, settings, file, shaderProgramInfo, myShaderVariantsManager.GetEnabledKeywords(rootFile), dialect.Pragmas),
             _ => null
         };
 
