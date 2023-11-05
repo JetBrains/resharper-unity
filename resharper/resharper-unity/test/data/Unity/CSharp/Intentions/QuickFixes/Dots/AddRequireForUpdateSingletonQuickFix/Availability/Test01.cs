@@ -32,7 +32,7 @@ partial struct Foo : ISystem
     {
         var t = SystemAPI.GetSingleton<Tagilla>();//Must be marked with warning
 
-        var t = SystemAPI.GetSingleton<Loldilla>();//Must NOT be marked with warning RIDER-55779
+        var t2 = SystemAPI.GetSingleton<Loldilla>();//Must NOT be marked with warning RIDER-55779
     }
 
     public void OnCreate(ref SystemState state)

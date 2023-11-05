@@ -132,10 +132,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots.Analyzers
                 if (method.ShortName == "RequireForUpdate" && method.ContainingType.IsClrName(KnownTypes.SystemState))
                 {
                     var methodTypeParameters = method.TypeParameters;
-                    if (methodTypeParameters.Count != 1)
-                        return EmptyList<IType>.Instance;
+                    if (methodTypeParameters.Count == 1)
+                        return new List<IType> { resolveResultWithInfo.Substitution[methodTypeParameters[0]] };
+                    
+                    return EmptyList<IType>.Instance;
 
-                    return new List<IType> { resolveResultWithInfo.Substitution[methodTypeParameters[0]] };
                 }
 
                 if (method.ShortName is "WithAll" or "WithAllRW" &&

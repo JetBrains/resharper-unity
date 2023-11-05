@@ -14,8 +14,9 @@ namespace Unity.Entities
     public unsafe ref struct SystemState
     {
         public void RequireForUpdate<T>() {}
-
+        public void RequireForUpdate(EntityQuery query) {}
     }
+    
     public struct Entity {}
 
     public abstract class IBaker
