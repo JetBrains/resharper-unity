@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.debugger.visualizers
 
 import com.google.gson.Gson
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.util.NlsContexts
@@ -15,8 +16,6 @@ import com.intellij.xdebugger.evaluation.XDebuggerEvaluator
 import com.intellij.xdebugger.frame.XValue
 import com.intellij.xdebugger.frame.XValueNode
 import com.intellij.xdebugger.frame.XValuePlace
-import com.intellij.xdebugger.impl.ui.tree.nodes.XValueNodeImpl
-import com.intellij.xdebugger.impl.ui.tree.nodes.XValueNodePresentationConfigurator.ConfigurableXValueNodeImpl
 import com.jetbrains.rd.framework.RdTaskResult
 import com.jetbrains.rd.ide.model.ValuePropertiesModelBase
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -39,6 +38,7 @@ import java.awt.Rectangle
 import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
 import java.awt.image.ColorModel
+import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.JPanel
 import javax.swing.SwingConstants
 
@@ -54,6 +54,10 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                            val TextureName: String,
                            val HasAlphaChannel: Boolean
     )
+
+    companion object {
+        private val LOG = thisLogger()
+    }
 
     override fun isApplicable(node: XValueNode, properties: ObjectPropertiesProxy, place: XValuePlace, session: XDebugSession): Boolean =
         (session.debugProcess as? DotNetDebugProcess)?.isIl2Cpp == false
@@ -94,7 +98,7 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
             "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.dll",
             pluginClass = javaClass
         )
-
+        LOG.trace("Loading texture debug helper dll:\"${bundledFile.absolutePath}\"")
         val evaluationRequest = "System.Reflection.Assembly.LoadFile(@\"${bundledFile.absolutePath}\")"
         val project = session.project
         evaluate(project, evaluationRequest, lifetime,
@@ -118,8 +122,9 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
         parentPanel: JBPanel<JBPanel<*>>,
         lifetime: Lifetime,
         value: IDotNetValue) {
-        when (node) {
-            is XValueNodeImpl -> node.calculateEvaluationExpression()
+
+        if (value is XValue)
+            value.calculateEvaluationExpression()
                 .onSuccess { expr ->
                     continueTextureEvaluation(expr.expression, project, lifetime, jbLoadingPanel, parentPanel)
                 }
@@ -127,21 +132,9 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                     showErrorMessage(jbLoadingPanel, parentPanel,
                                      UnityBundle.message("debugging.cannot.get.texture.debug.information", it))
                 }
-            is ConfigurableXValueNodeImpl -> {
-                if(value is XValue)
-                    value.calculateEvaluationExpression()
-                    .onSuccess { expr ->
-                        continueTextureEvaluation(expr.expression, project, lifetime, jbLoadingPanel, parentPanel)
-                    }
-                    .onError {
-                        showErrorMessage(jbLoadingPanel, parentPanel,
-                                         UnityBundle.message("debugging.cannot.get.texture.debug.information", it))
-                    }
-                else
-                    showErrorMessage(jbLoadingPanel, parentPanel,
-                                     UnityBundle.message("debugging.cannot.get.texture.debug.information", value.toString()))
-            }
-        }
+        else
+            showErrorMessage(jbLoadingPanel, parentPanel,
+                             UnityBundle.message("debugging.cannot.get.texture.debug.information", value.toString()))
     }
 
     private fun continueTextureEvaluation(nodeName: String,
@@ -149,6 +142,9 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                                           lifetime: Lifetime,
                                           jbLoadingPanel: JBLoadingPanel,
                                           parentPanel: JBPanel<JBPanel<*>>) {
+
+        LOG.trace("Evaluating texture:\"${nodeName}\"")
+
         val evaluationRequest = "JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture.UnityTextureAdapter.GetPixelsInString($nodeName as UnityEngine.Texture2D)"
         evaluate(project, evaluationRequest, lifetime,
                  successfullyEvaluated = { showTexture(it, jbLoadingPanel, parentPanel) },
@@ -161,21 +157,30 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
     private fun showTexture(it: ValuePropertiesModelBase,
                             jbLoadingPanel: JBLoadingPanel,
                             parentPanel: JBPanel<JBPanel<*>>) {
+        try {
+            val json = it.value[0].value
 
-        val json = it.value[0].value
-        val textureInfo = Gson().fromJson(json, TextureInfo::class.java)
+            val textureInfo = Gson().fromJson(json, TextureInfo::class.java)
 
-        if (textureInfo == null)
-            showErrorMessage(jbLoadingPanel, parentPanel, UnityBundle.message("debugging.cannot.parse.texture.info", json))
-        else {
-            val texturePanel = createPanelWithImage(textureInfo)
-            jbLoadingPanel.stopLoading()
-            parentPanel.apply {
-                remove(jbLoadingPanel)
-                layout = VerticalLayout(5)
-                add(texturePanel)
+            if (textureInfo == null)
+                showErrorMessage(jbLoadingPanel, parentPanel, UnityBundle.message("debugging.cannot.parse.texture.info", json))
+            else {
+                LOG.trace("Preparing texture to show:\"${textureInfo}\"")
+
+                val texturePanel = createPanelWithImage(textureInfo)
+                jbLoadingPanel.stopLoading()
+                parentPanel.apply {
+                    remove(jbLoadingPanel)
+                    layout = VerticalLayout(5)
+                    add(texturePanel)
+                }
             }
         }
+        catch (e : Throwable)
+        {
+            showErrorMessage(jbLoadingPanel, parentPanel, UnityBundle.message("debugging.cannot.parse.texture.info", it))
+        }
+
         parentPanel.revalidate()
         parentPanel.repaint()
     }

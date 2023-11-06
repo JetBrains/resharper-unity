@@ -5,32 +5,37 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.FrameWrapper
 import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.frame.XValueNode
-import com.jetbrains.rider.debugger.DotNetDebugProcess
+import com.intellij.xdebugger.frame.XValuePlace
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.debugger.IDotNetValue
 import com.jetbrains.rider.debugger.evaluators.RiderCustomComponentEvaluator
 import com.jetbrains.rider.debugger.getSimplePresentation
+import com.jetbrains.rider.debugger.visualizers.RiderDebuggerValuePresenter
 import com.jetbrains.rider.model.debuggerWorker.ObjectPropertiesBase
-import com.jetbrains.rider.model.debuggerWorker.ObjectPropertiesProxy
-import com.jetbrains.rider.model.debuggerWorker.ValueFlags
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import java.awt.CardLayout
 import java.awt.event.MouseEvent
 import javax.swing.JPanel
 
 
-class UnityTextureCustomComponentEvaluator : RiderCustomComponentEvaluator("UnityTextureEvaluator") {
+class UnityTextureCustomComponentEvaluator(node: XValueNode,
+                                           properties: ObjectPropertiesBase,
+                                           session: XDebugSession,
+                                           place: XValuePlace,
+                                           presenters: List<RiderDebuggerValuePresenter>,
+                                           lifetime: Lifetime,
+                                           onPopupBeingClicked: () -> Unit,
+                                           shouldIgnorePropertiesComputation: () -> Boolean,
+                                           shouldUpdatePresentation: Boolean,
+                                           dotNetValue: IDotNetValue,
+                                           actionName: String) : RiderCustomComponentEvaluator(node, properties, session, place, presenters,
+                                                                                               lifetime, onPopupBeingClicked,
+                                                                                               shouldIgnorePropertiesComputation,
+                                                                                               shouldUpdatePresentation, dotNetValue,
+                                                                                               actionName) {
 
     override fun startEvaluation(callback: XFullValueEvaluationCallback) {
         callback.evaluated(properties.value.getSimplePresentation())
-    }
-
-    override fun isApplicable(node: XValueNode, properties: ObjectPropertiesBase, session: XDebugSession): Boolean {
-        if (properties is ObjectPropertiesProxy)
-            return (session.debugProcess as? DotNetDebugProcess)?.isIl2Cpp == false
-                   && !properties.valueFlags.contains(ValueFlags.IsNull)
-                   && (properties.instanceType.definitionTypeFullName == "UnityEngine.Texture2D"
-                       || properties.instanceType.definitionTypeFullName == "UnityEngine.RenderTexture")
-
-        return false
     }
 
     override fun show(event: MouseEvent, project: Project, editor: Editor?) {
