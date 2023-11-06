@@ -7,6 +7,7 @@ using JetBrains.Application.changes;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
+using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
@@ -35,8 +36,11 @@ public class ShaderVariantsManager : ICppChangeProvider
     private readonly SettingsScalarEntry myFeaturePreviewEnabledEntry;
     private readonly SettingsScalarEntry myDefaultShaderApiEntry;
     
-    private readonly HashSet<string> myEnabledKeywords = new();
-    private readonly HashSet<string> myAllKeywords = new(); 
+    private readonly ViewableSet<string> myEnabledKeywords = new();
+    private readonly HashSet<string> myAllKeywords = new();
+
+    private readonly ViewableProperty<int> myTotalKeywordsCount = new(0);
+    private readonly ViewableProperty<int> myTotalEnabledKeywordsCount = new(0);
     
     private ShaderApi myShaderApi;
     private bool mySupportEnabled;
@@ -61,6 +65,14 @@ public class ShaderVariantsManager : ICppChangeProvider
         myBoundSettingsStore.AdviseAsyncChanged(lifetime, OnBoundSettingsStoreChange);
         myShaderProgramCache.CacheUpdated.Advise(lifetime, _ => SyncShaderKeywords(myEnabledKeywords));
     }
+    
+    public ShaderApi ShaderApi => mySupportEnabled ? myShaderApi : ShaderApi.D3D11;
+
+    public IReadonlyProperty<int> TotalKeywordsCount => myTotalKeywordsCount;
+
+    public IReadonlyProperty<int> TotalEnabledKeywordsCount => myTotalEnabledKeywordsCount;
+
+    public IViewableSet<string> AllEnabledKeywords => myEnabledKeywords;
 
     public void SetDefineSymbolEnabled(string symbol, bool enabled)
     {
@@ -96,12 +108,6 @@ public class ShaderVariantsManager : ICppChangeProvider
     }
 
     public ISet<string> GetEnabledKeywords(CppFileLocation location) => mySupportEnabled ? myEnabledKeywords : EmptySet<string>.Instance;
-    
-    public ShaderApi ShaderApi => mySupportEnabled ? myShaderApi : ShaderApi.D3D11;
-
-    public int TotalKeywordsCount => myAllKeywords.Count;
-
-    public int TotalEnabledKeywordsCount => myEnabledKeywords.Count;
 
     public bool IsKeywordEnabled(string keyword) => myEnabledKeywords.Contains(keyword);
     
@@ -111,7 +117,11 @@ public class ShaderVariantsManager : ICppChangeProvider
     {
         Action<ChangeTracker>? work = null;
         if (args.ChangedEntries.Contains(myDefaultEnabledKeywordsEntry))
-            work += changeTracker => SyncEnabledKeywords(changeTracker, myEnabledKeywords, EnumEnabledKeywords(myDefaultEnabledKeywordsEntry));
+            work += changeTracker =>
+            {
+                SyncEnabledKeywords(changeTracker, myEnabledKeywords, EnumEnabledKeywords(myDefaultEnabledKeywordsEntry));
+                myTotalEnabledKeywordsCount.Value = myEnabledKeywords.Count;
+            };
         if (args.ChangedEntries.Contains(myDefaultShaderApiEntry))
             work += changeTracker =>
             {
@@ -153,6 +163,8 @@ public class ShaderVariantsManager : ICppChangeProvider
             if (enabledKeywords.Remove(removedKeyword))
                 changeTracker.MarkShaderKeywordDirty(removedKeyword);
         }
+
+        myTotalKeywordsCount.Value = myAllKeywords.Count;
     }
     
     private IEnumerable<string> EnumEnabledKeywords(SettingsIndexedEntry entry) => myBoundSettingsStore.EnumIndexedValues(entry, null).Keys.Cast<string>();

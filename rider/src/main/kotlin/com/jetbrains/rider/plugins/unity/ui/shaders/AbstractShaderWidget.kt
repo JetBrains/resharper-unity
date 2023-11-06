@@ -21,7 +21,7 @@ abstract class AbstractShaderWidget(val project: Project, val editor: Editor) : 
         enableEvents(MouseEvent.MOUSE_EVENT_MASK)
         label.apply {
             foreground = null
-            border = IconBorder(AllIcons.Actions.InlayDropTriangle, label.iconTextGap)
+            border = IconBorder(AllIcons.Actions.InlayDropTriangle, iconTextGap)
         }.also { add(it, BorderLayout.CENTER) }
         border = ResolveContextWidgetTheme.WIDGET_BORDER
     }

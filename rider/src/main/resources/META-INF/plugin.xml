@@ -220,6 +220,7 @@
   <applicationListeners>
     <listener class="com.jetbrains.rider.plugins.unity.SaveAllActionListener" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
     <listener class="com.jetbrains.rider.plugins.unity.explorer.MetaTrackerListener" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
+    <listener topic="com.jetbrains.rdclient.editors.FrontendTextControlHostListener" class="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsHost$TextControlListener" />
   </applicationListeners>
 
   <actions>

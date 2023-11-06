@@ -6,6 +6,8 @@ import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
 import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rider.model.nova.ide.SolutionModel.RdDocumentId
+import com.jetbrains.rider.model.nova.ide.SolutionModel.TextControlId
+import com.jetbrains.rider.model.nova.ide.SolutionModel.TextControlExtension
 import model.lib.Library
 
 // frontend <-> backend model, from point of view of frontend, meaning:
@@ -93,6 +95,14 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         field("enabled", bool)
     }
 
+    private val rdShaderVariantExtension = classdef extends TextControlExtension {
+        property("info", structdef("rdShaderVariantInfo") {
+            field("enabledCount", int)
+            field("suppressedCount", int)
+            field("availableCount", int)
+        })
+    }
+
     init {
         setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.plugins.unity.model.frontendBackend")
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.FrontendBackend")
@@ -141,6 +151,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         })
 
         // Shader variants
+        map("shaderVariantExtensions", TextControlId, rdShaderVariantExtension)
         call("createShaderVariantInteraction", structdef("createShaderVariantInteractionArgs") {
             field("documentId", RdDocumentId)
             field("offset", int)
