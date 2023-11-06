@@ -21,6 +21,7 @@ import com.jetbrains.rd.ide.model.ValuePropertiesModelBase
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.printlnError
 import com.jetbrains.rd.util.reactive.adviseOnce
+import com.jetbrains.rd.util.reactive.valueOrThrow
 import com.jetbrains.rider.RiderEnvironment
 import com.jetbrains.rider.debugger.DotNetDebugProcess
 import com.jetbrains.rider.debugger.DotNetValue
@@ -29,6 +30,8 @@ import com.jetbrains.rider.debugger.visualizers.RiderDebuggerPresenterTab
 import com.jetbrains.rider.debugger.visualizers.RiderDebuggerValuePresenter
 import com.jetbrains.rider.model.debuggerWorker.*
 import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.projectView.solution
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.intellij.images.editor.impl.ImageEditorManagerImpl
 import java.awt.BorderLayout
@@ -38,7 +41,6 @@ import java.awt.Rectangle
 import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
 import java.awt.image.ColorModel
-import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.JPanel
 import javax.swing.SwingConstants
 
@@ -101,7 +103,7 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
         LOG.trace("Loading texture debug helper dll:\"${bundledFile.absolutePath}\"")
         val evaluationRequest = "System.Reflection.Assembly.LoadFile(@\"${bundledFile.absolutePath}\")"
         val project = session.project
-        evaluate(project, evaluationRequest, lifetime,
+        evaluate(project, evaluationRequest, lifetime, null,
                  successfullyEvaluated = { evaluateTextureAndShow(node, project, jbLoadingPanel, parentPanel, lifetime, value) },
                  evaluationFailed = {
                      showErrorMessage(
@@ -144,9 +146,10 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                                           parentPanel: JBPanel<JBPanel<*>>) {
 
         LOG.trace("Evaluating texture:\"${nodeName}\"")
+        val timeoutForAdvanceUnityEvaluation = project.solution.frontendBackendModel.backendSettings.forcedTimeoutForAdvanceUnityEvaluation.valueOrThrow
 
         val evaluationRequest = "JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture.UnityTextureAdapter.GetPixelsInString($nodeName as UnityEngine.Texture2D)"
-        evaluate(project, evaluationRequest, lifetime,
+        evaluate(project, evaluationRequest, lifetime, timeoutForAdvanceUnityEvaluation,
                  successfullyEvaluated = { showTexture(it, jbLoadingPanel, parentPanel) },
                  evaluationFailed = {
                      showErrorMessage(jbLoadingPanel, parentPanel,
@@ -232,6 +235,7 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
     private fun evaluate(project: Project,
                          evaluationRequest: String,
                          lifetime: Lifetime,
+                         evaluationTimeoutMs: Int?,
                          successfullyEvaluated: (value: ValuePropertiesModelBase) -> Unit,
                          evaluationFailed: (errorMessage: String) -> Unit) {
         val evaluator = XDebuggerManager.getInstance(project).currentSession!!.currentStackFrame!!.evaluator!!
@@ -249,7 +253,8 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                                                                       ellipsizedLength = null,
                                                                       nameAliases = emptyList(),
                                                                       extraInfo = null,
-                                                                      allowDisabledMethodsInvoke = true)
+                                                                      allowDisabledMethodsInvoke = true,
+                                                                      forcedEvaluationTimeoutMs  = evaluationTimeoutMs)
                                        ).result.adviseOnce(lifetime) {
                                            when (it) {
                                                is RdTaskResult.Success -> {
