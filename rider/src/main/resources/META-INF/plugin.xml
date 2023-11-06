@@ -215,8 +215,6 @@
     <rider.debugger.value.evaluator implementation="com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.UnityTextureCustomComponentEvaluator"/>
     <rider.resolveContextWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetProvider" order="after projectAndFrameworkResolveContextWidget"/>
     <rider.resolveContextWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsService" order="after projectAndFrameworkResolveContextWidget"/>
-
-    <iw.actionProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsInspectionWidgetActionProvider" order="first" />
   </extensions>
 
   <applicationListeners>
