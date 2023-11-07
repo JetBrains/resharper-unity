@@ -261,7 +261,12 @@ fun getRiderDevAppPath(): File {
 
     val riderDevAppPath = editorPluginFolderPath.resolve("rider-dev.app").apply { mkdirs() }
     val riderDevBatPath = riderDevAppPath.resolve("rider-dev.bat")
-    riderDevBatPath.writeText(editorPluginFolderPath.resolve(assemblyName).canonicalPath)
+
+    val file = editorPluginFolderPath.resolve(assemblyName)
+    if (!file.exists())
+        throw IllegalStateException("editor plugin $file doesn't exist")
+
+    riderDevBatPath.writeText(file.canonicalPath)
 
     return if (SystemInfo.isMac) riderDevAppPath else riderDevBatPath
 }
