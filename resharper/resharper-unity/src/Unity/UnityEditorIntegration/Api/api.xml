@@ -190,10 +190,10 @@
     </message>
     <message name="OnPostprocessAllAssets" static="True" path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessAllAssets.html">
       <descriptions>
-        <description text="在完成任意数量的资源导入后（当资源进度条到达末尾时）调用此函数。" langCode="zh" />
+        <description text="在任意数量的资源导入完成后调用(当资源进度条到达末尾时)。" langCode="zh" />
         <description text="This is called after importing of any number of assets is complete (when the Assets progress bar has reached the end)." langCode="iv" />
-        <description text="任意の数のアセットのインポートが完了した後に呼び出されます（アセットの進捗バーが最後まで到達したとき）" langCode="ja" />
-        <description text="This is called after importing of any number of assets is complete (when the Assets progress bar has reached the end)." langCode="ko" />
+        <description text="これは任意の数のアセットがインポートされた後 (アセット進捗バーが終端に達したとき) に呼び出されます。" langCode="ja" />
+        <description text="이는 여러 애셋 가져오기가 완료된 후(애셋 진행률 표시줄이 끝에 도달할 때) 호출됩니다." langCode="ko" />
       </descriptions>
       <parameters>
         <parameter type="System.String" array="True" name="importedAssets" />
@@ -204,12 +204,53 @@
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnPostprocessAllAssets" static="True" minimumVersion="2021.2" path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessAllAssets.html">
+      <descriptions>
+        <description text="在完成任意数量的资源导入后（当资源进度条到达末尾时）调用此函数。" langCode="zh" />
+        <description text="This is called after importing of any number of assets is complete (when the Assets progress bar has reached the end)." langCode="iv" />
+        <description text="任意の数のアセットのインポートが完了した後に呼び出されます（アセットの進捗バーが最後まで到達したとき）" langCode="ja" />
+        <description text="This is called after importing of any number of assets is complete (when the Assets progress bar has reached the end)." langCode="ko" />
+      </descriptions>
       <parameters>
-        <parameter type="System.String" array="True" name="importedAssets" />
-        <parameter type="System.String" array="True" name="deletedAssets" />
-        <parameter type="System.String" array="True" name="movedAssets" />
-        <parameter type="System.String" array="True" name="movedFromAssetPaths" />
-        <parameter type="System.Boolean" array="False" name="didDomainReload" />
+        <parameter type="System.String" array="True" name="importedAssets">
+          <descriptions>
+            <description text="Array of paths to imported assets." langCode="zh" />
+            <description text="Array of paths to imported assets." langCode="iv" />
+            <description text="Array of paths to imported assets." langCode="ja" />
+            <description text="Array of paths to imported assets." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="System.String" array="True" name="deletedAssets">
+          <descriptions>
+            <description text="Array of paths to deleted assets." langCode="zh" />
+            <description text="Array of paths to deleted assets." langCode="iv" />
+            <description text="Array of paths to deleted assets." langCode="ja" />
+            <description text="Array of paths to deleted assets." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="System.String" array="True" name="movedAssets">
+          <descriptions>
+            <description text="Array of paths to moved assets." langCode="zh" />
+            <description text="Array of paths to moved assets." langCode="iv" />
+            <description text="Array of paths to moved assets." langCode="ja" />
+            <description text="Array of paths to moved assets." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="System.String" array="True" name="movedFromAssetPaths">
+          <descriptions>
+            <description text="Array of original paths for moved assets." langCode="zh" />
+            <description text="Array of original paths for moved assets." langCode="iv" />
+            <description text="Array of original paths for moved assets." langCode="ja" />
+            <description text="Array of original paths for moved assets." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="System.Boolean" array="False" name="didDomainReload">
+          <descriptions>
+            <description text="Boolean set to true if there has been a domain reload." langCode="zh" />
+            <description text="Boolean set to true if there has been a domain reload." langCode="iv" />
+            <description text="Boolean set to true if there has been a domain reload." langCode="ja" />
+            <description text="Boolean set to true if there has been a domain reload." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
@@ -321,10 +362,10 @@
     </message>
     <message name="OnPostprocessMaterial" static="False" minimumVersion="2017.3" path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessMaterial.html">
       <descriptions>
-        <description text="将此函数添加到一个子类中，以在材质资源完成导入时获取通知。" langCode="zh" />
-        <description text="Add this function to a subclass to get a notification when a Material asset has completed importing." langCode="iv" />
-        <description text="Add this function to a subclass to get a notification when a Material asset has completed importing." langCode="ja" />
-        <description text="Add this function to a subclass to get a notification when a Material asset has completed importing." langCode="ko" />
+        <description text="Add this function to a subclass to get a notification when a new Material is created during an import of a ModelImporter." langCode="zh" />
+        <description text="Add this function to a subclass to get a notification when a new Material is created during an import of a ModelImporter." langCode="iv" />
+        <description text="Add this function to a subclass to get a notification when a new Material is created during an import of a ModelImporter." langCode="ja" />
+        <description text="Add this function to a subclass to get a notification when a new Material is created during an import of a ModelImporter." langCode="ko" />
       </descriptions>
       <parameters>
         <parameter type="UnityEngine.Material" array="False" name="material" />
@@ -401,10 +442,10 @@
     </message>
     <message name="OnPostprocessTexture" static="False" path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessTexture.html">
       <descriptions>
-        <description text="将此函数添加到一个子类中，以在纹理刚完成导入之前获取通知。" langCode="zh" />
-        <description text="Add this function to a subclass to get a notification when a texture has completed importing just before." langCode="iv" />
-        <description text="Add this function to a subclass to get a notification when a texture has completed importing just before." langCode="ja" />
-        <description text="Add this function to a subclass to get a notification when a texture has completed importing just before." langCode="ko" />
+        <description text="Add this function to a subclass to get a notification when a texture2D has completed importing just before Unity compresses it." langCode="zh" />
+        <description text="Add this function to a subclass to get a notification when a texture2D has completed importing just before Unity compresses it." langCode="iv" />
+        <description text="Add this function to a subclass to get a notification when a texture2D has completed importing just before Unity compresses it." langCode="ja" />
+        <description text="Add this function to a subclass to get a notification when a texture2D has completed importing just before Unity compresses it." langCode="ko" />
       </descriptions>
       <parameters>
         <parameter type="UnityEngine.Texture2D" array="False" name="texture" />
@@ -412,12 +453,24 @@
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnPostprocessTexture2DArray" static="False" minimumVersion="2021.2" path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessTexture2DArray.html">
+      <descriptions>
+        <description text="Add this function to a subclass to get a notification when a texture2DArray has completed importing just before Unity compresses it." langCode="zh" />
+        <description text="Add this function to a subclass to get a notification when a texture2DArray has completed importing just before Unity compresses it." langCode="iv" />
+        <description text="Add this function to a subclass to get a notification when a texture2DArray has completed importing just before Unity compresses it." langCode="ja" />
+        <description text="Add this function to a subclass to get a notification when a texture2DArray has completed importing just before Unity compresses it." langCode="ko" />
+      </descriptions>
       <parameters>
         <parameter type="UnityEngine.Texture2DArray" array="False" name="texture" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnPostprocessTexture3D" static="False" minimumVersion="2021.2" path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessTexture3D.html">
+      <descriptions>
+        <description text="Add this function to a subclass to get a notification when a texture3D has completed importing just before Unity compresses it." langCode="zh" />
+        <description text="Add this function to a subclass to get a notification when a texture3D has completed importing just before Unity compresses it." langCode="iv" />
+        <description text="Add this function to a subclass to get a notification when a texture3D has completed importing just before Unity compresses it." langCode="ja" />
+        <description text="Add this function to a subclass to get a notification when a texture3D has completed importing just before Unity compresses it." langCode="ko" />
+      </descriptions>
       <parameters>
         <parameter type="UnityEngine.Texture3D" array="False" name="texture" />
       </parameters>
@@ -451,35 +504,89 @@
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnPreprocessCameraDescription" static="False" minimumVersion="2021.2" path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessCameraDescription.html">
+      <descriptions>
+        <description text="Add this function to a subclass to recieve a notification when a camera is imported from a Model Importer." langCode="zh" />
+        <description text="Add this function to a subclass to recieve a notification when a camera is imported from a Model Importer." langCode="iv" />
+        <description text="Add this function to a subclass to recieve a notification when a camera is imported from a Model Importer." langCode="ja" />
+        <description text="Add this function to a subclass to recieve a notification when a camera is imported from a Model Importer." langCode="ko" />
+      </descriptions>
       <parameters>
-        <parameter type="UnityEditor.AssetImporters.CameraDescription" array="False" name="description" />
-        <parameter type="UnityEngine.Camera" array="False" name="camera" />
-        <parameter type="UnityEngine.AnimationClip" array="True" name="clips" />
+        <parameter type="UnityEditor.AssetImporters.CameraDescription" array="False" name="description">
+          <descriptions>
+            <description text="A CameraDescription that describes the imported camera properties and animations." langCode="zh" />
+            <description text="A CameraDescription that describes the imported camera properties and animations." langCode="iv" />
+            <description text="A CameraDescription that describes the imported camera properties and animations." langCode="ja" />
+            <description text="A CameraDescription that describes the imported camera properties and animations." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEngine.Camera" array="False" name="camera">
+          <descriptions>
+            <description text="The camera generated by the Model Importer." langCode="zh" />
+            <description text="The camera generated by the Model Importer." langCode="iv" />
+            <description text="The camera generated by the Model Importer." langCode="ja" />
+            <description text="The camera generated by the Model Importer." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEngine.AnimationClip" array="True" name="animations">
+          <descriptions>
+            <description text="Model Importer 生成的动画剪辑。" langCode="zh" />
+            <description text="The animation clips generated by the Model Importer." langCode="iv" />
+            <description text="The animation clips generated by the Model Importer." langCode="ja" />
+            <description text="The animation clips generated by the Model Importer." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnPreprocessLightDescription" static="False" minimumVersion="2021.2" path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessLightDescription.html">
+      <descriptions>
+        <description text="Add this function to a subclass to recieve a notification when a light is imported from a Model Importer." langCode="zh" />
+        <description text="Add this function to a subclass to recieve a notification when a light is imported from a Model Importer." langCode="iv" />
+        <description text="Add this function to a subclass to recieve a notification when a light is imported from a Model Importer." langCode="ja" />
+        <description text="Add this function to a subclass to recieve a notification when a light is imported from a Model Importer." langCode="ko" />
+      </descriptions>
       <parameters>
-        <parameter type="UnityEditor.AssetImporters.LightDescription" array="False" name="description" />
-        <parameter type="UnityEngine.Light" array="False" name="light" />
-        <parameter type="UnityEngine.AnimationClip" array="True" name="clips" />
+        <parameter type="UnityEditor.AssetImporters.LightDescription" array="False" name="description">
+          <descriptions>
+            <description text="A LightDescription that describes the imported camera properties and animations." langCode="zh" />
+            <description text="A LightDescription that describes the imported camera properties and animations." langCode="iv" />
+            <description text="A LightDescription that describes the imported camera properties and animations." langCode="ja" />
+            <description text="A LightDescription that describes the imported camera properties and animations." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEngine.Light" array="False" name="light">
+          <descriptions>
+            <description text="The light generated by the Model Importer." langCode="zh" />
+            <description text="The light generated by the Model Importer." langCode="iv" />
+            <description text="The light generated by the Model Importer." langCode="ja" />
+            <description text="The light generated by the Model Importer." langCode="ko" />
+          </descriptions>
+        </parameter>
+        <parameter type="UnityEngine.AnimationClip" array="True" name="animations">
+          <descriptions>
+            <description text="Model Importer 生成的动画剪辑。" langCode="zh" />
+            <description text="The animation clips generated by the Model Importer." langCode="iv" />
+            <description text="The animation clips generated by the Model Importer." langCode="ja" />
+            <description text="The animation clips generated by the Model Importer." langCode="ko" />
+          </descriptions>
+        </parameter>
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnPreprocessMaterialDescription" static="False" minimumVersion="2019.3" path="Documentation/en/ScriptReference/AssetPostprocessor.OnPreprocessMaterialDescription.html">
       <descriptions>
-        <description text="将此函数添加到一个子类中，以在材质从 Model Importer 导入时接收通知。" langCode="zh" />
-        <description text="Add this function to a subclass to recieve a notification when a material is imported from a Model Importer." langCode="iv" />
-        <description text="Add this function to a subclass to recieve a notification when a material is imported from a Model Importer." langCode="ja" />
-        <description text="Add this function to a subclass to recieve a notification when a material is imported from a Model Importer." langCode="ko" />
+        <description text="Add this function to a subclass to recieve a notification when a new material is created during the import of a ModelImporter." langCode="zh" />
+        <description text="Add this function to a subclass to recieve a notification when a new material is created during the import of a ModelImporter." langCode="iv" />
+        <description text="Add this function to a subclass to recieve a notification when a new material is created during the import of a ModelImporter." langCode="ja" />
+        <description text="Add this function to a subclass to recieve a notification when a new material is created during the import of a ModelImporter." langCode="ko" />
       </descriptions>
       <parameters>
         <parameter type="UnityEditor.AssetImporters.MaterialDescription" array="False" name="description">
           <descriptions>
-            <description text="MaterialDescription structure describing the imported material properties and animations." langCode="iv" />
-            <description text="MaterialDescription 结构描述导入的材质属性和动画。" langCode="zh" />
-            <description text="MaterialDescription structure describing the imported material properties and animations." langCode="ja" />
-            <description text="MaterialDescription structure describing the imported material properties and animations." langCode="ko" />
+            <description text="A MaterialDescription that describes the imported camera properties and animations." langCode="iv" />
+            <description text="A MaterialDescription that describes the imported camera properties and animations." langCode="zh" />
+            <description text="A MaterialDescription that describes the imported camera properties and animations." langCode="ja" />
+            <description text="A MaterialDescription that describes the imported camera properties and animations." langCode="ko" />
           </descriptions>
         </parameter>
         <parameter type="UnityEngine.Material" array="False" name="material">
@@ -708,10 +815,10 @@
     </message>
     <message name="OnCollisionStay" static="False" path="Documentation/en/ScriptReference/Collider.OnCollisionStay.html">
       <descriptions>
-        <description text="对应正在接触刚体/碰撞体的每一个碰撞体/刚体，每帧调用一次 OnCollisionStay。" langCode="zh" />
-        <description text="OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider." langCode="iv" />
-        <description text="OnCollisionStay は rigidbody/collider が他の rigidbody/collider に触れている間毎フレーム 1 度だけ呼び出されます。" langCode="ja" />
-        <description text="OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider." langCode="ko" />
+        <description text="OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody." langCode="zh" />
+        <description text="OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody." langCode="iv" />
+        <description text="OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody." langCode="ja" />
+        <description text="OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody." langCode="ko" />
       </descriptions>
       <parameters>
         <parameter type="UnityEngine.Collision" array="False" name="other">
@@ -765,7 +872,7 @@
     </message>
     <message name="OnTriggerStay" static="False" path="Documentation/en/ScriptReference/Collider.OnTriggerStay.html">
       <descriptions>
-        <description text="对于正在接触该触发器的每个其他 Collider，“几乎”所有帧都调用 OnTriggerStay。此函数位于物理计时器上，因此它不必运行每个帧。" langCode="zh" />
+        <description text="对于正在接触该触发器的每个**其他** Collider，“几乎”所有帧都调用 OnTriggerStay。此函数位于物理计时器上，因此它不必运行每个帧。" langCode="zh" />
         <description text="OnTriggerStay is called almost all the frames for every Collider other that is touching the trigger. The function is on the physics timer so it won't necessarily run every frame." langCode="iv" />
         <description text="OnTriggerStay is called almost all the frames for every Collider other that is touching the trigger. The function is on the physics timer so it won't necessarily run every frame." langCode="ja" />
         <description text="OnTriggerStay is called almost all the frames for every Collider other that is touching the trigger. The function is on the physics timer so it won't necessarily run every frame." langCode="ko" />
@@ -902,10 +1009,10 @@
   <type kind="class" name="Editor" ns="UnityEditor" path="Documentation/en/ScriptReference/Editor.html">
     <message name="HasFrameBounds" static="False" minimumVersion="2020.2" path="Documentation/en/ScriptReference/Editor.HasFrameBounds.html">
       <descriptions>
-        <description text="Validates whether custom bounds can be calculated for this editor." langCode="zh" />
-        <description text="Validates whether custom bounds can be calculated for this editor." langCode="iv" />
-        <description text="Validates whether custom bounds can be calculated for this editor." langCode="ja" />
-        <description text="Validates whether custom bounds can be calculated for this editor." langCode="ko" />
+        <description text="Validates whether custom bounds can be calculated for this Editor." langCode="zh" />
+        <description text="Validates whether custom bounds can be calculated for this Editor." langCode="iv" />
+        <description text="Validates whether custom bounds can be calculated for this Editor." langCode="ja" />
+        <description text="Validates whether custom bounds can be calculated for this Editor." langCode="ko" />
       </descriptions>
       <returns type="System.Boolean" array="False" />
     </message>
@@ -986,6 +1093,24 @@
         <description text="CreateGUI is called when the EditorWindow's rootVisualElement is ready to be populated." langCode="iv" />
         <description text="CreateGUI is called when the EditorWindow's rootVisualElement is ready to be populated." langCode="ja" />
         <description text="CreateGUI is called when the EditorWindow's rootVisualElement is ready to be populated." langCode="ko" />
+      </descriptions>
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnBecameInvisible" static="False" minimumVersion="2021.3" path="ScriptReference/EditorWindow.OnBecameInvisible.html">
+      <descriptions>
+        <description text="Called after the window is removed from a container view, or is no longer visible within a tabbed collection of EditorWindow." langCode="zh" />
+        <description text="Called after the window is removed from a container view, or is no longer visible within a tabbed collection of EditorWindow." langCode="iv" />
+        <description text="Called after the window is removed from a container view, or is no longer visible within a tabbed collection of EditorWindow." langCode="ja" />
+        <description text="Called after the window is removed from a container view, or is no longer visible within a tabbed collection of EditorWindow." langCode="ko" />
+      </descriptions>
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnBecameVisible" static="False" minimumVersion="2021.3" path="ScriptReference/EditorWindow.OnBecameVisible.html">
+      <descriptions>
+        <description text="Called after the window is added to a container view." langCode="zh" />
+        <description text="Called after the window is added to a container view." langCode="iv" />
+        <description text="Called after the window is added to a container view." langCode="ja" />
+        <description text="Called after the window is added to a container view." langCode="ko" />
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
@@ -1106,7 +1231,7 @@
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnBeforeRemovedAsTab" static="False" minimumVersion="2020.3" maximumVersion="2020.3" undocumented="True">
+    <message name="OnBeforeRemovedAsTab" static="False" minimumVersion="2020.3" undocumented="True">
       <descriptions>
         <description text="Called before an editor window is removed as a tab" langCode="iv" />
         <description text="エディターウィンドウがタブとして除去されると呼び出されます" langCode="ja" />
@@ -1204,10 +1329,10 @@
   <type kind="class" name="MonoBehaviour" ns="UnityEngine" path="Documentation/en/ScriptReference/MonoBehaviour.html">
     <message name="Awake" static="False" path="Documentation/en/ScriptReference/MonoBehaviour.Awake.html">
       <descriptions>
-        <description text="Awake 在加载脚本实例时调用。" langCode="zh" />
-        <description text="Awake is called when the script instance is being loaded." langCode="iv" />
-        <description text="スクリプトのインスタンスがロードされたときに呼び出されます" langCode="ja" />
-        <description text="Awake is called when the script instance is being loaded." langCode="ko" />
+        <description text="Awake is called when an enabled script instance is being loaded." langCode="zh" />
+        <description text="Awake is called when an enabled script instance is being loaded." langCode="iv" />
+        <description text="Awake is called when an enabled script instance is being loaded." langCode="ja" />
+        <description text="Awake is called when an enabled script instance is being loaded." langCode="ko" />
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
@@ -1427,10 +1552,10 @@
     </message>
     <message name="OnCollisionStay" static="False" coroutine="True" path="Documentation/en/ScriptReference/MonoBehaviour.OnCollisionStay.html">
       <descriptions>
-        <description text="对应正在接触刚体/碰撞体的每一个碰撞体/刚体，每帧调用一次 :ref::OnCollisionStay。" langCode="zh" />
-        <description text="OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider." langCode="iv" />
-        <description text="OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider." langCode="ja" />
-        <description text="OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider." langCode="ko" />
+        <description text="OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody." langCode="zh" />
+        <description text="OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody." langCode="iv" />
+        <description text="OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody." langCode="ja" />
+        <description text="OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody." langCode="ko" />
       </descriptions>
       <parameters>
         <parameter type="UnityEngine.Collision" array="False" name="other" optional="True" justification="Removing collision parameter avoids unnecessary calculations">
@@ -1811,7 +1936,7 @@
         <description text="This function is called when a direct or indirect parent of the transform of the GameObject has changed." langCode="zh" />
         <description text="This function is called when a direct or indirect parent of the transform of the GameObject has changed." langCode="iv" />
         <description text="This function is called when a direct or indirect parent of the transform of the GameObject has changed." langCode="ja" />
-        <description text="This function is called when the parent property of the transform of the GameObject has changed." langCode="ko" />
+        <description text="This function is called when a direct or indirect parent of the transform of the GameObject has changed." langCode="ko" />
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
@@ -1934,7 +2059,7 @@
         <description text="Editor-only function that Unity calls when the script is loaded or a value changes in the Inspector." langCode="zh" />
         <description text="Editor-only function that Unity calls when the script is loaded or a value changes in the Inspector." langCode="iv" />
         <description text="Editor-only function that Unity calls when the script is loaded or a value changes in the Inspector." langCode="ja" />
-        <description text="This function is called when the script is loaded or a value is changed in the Inspector (Called in the editor only)." langCode="ko" />
+        <description text="Editor-only function that Unity calls when the script is loaded or a value changes in the Inspector." langCode="ko" />
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
@@ -2073,18 +2198,18 @@
   <type kind="class" name="Renderer" ns="UnityEngine" path="Documentation/en/ScriptReference/Renderer.html">
     <message name="OnBecameInvisible" static="False" path="Documentation/en/ScriptReference/Renderer.OnBecameInvisible.html">
       <descriptions>
-        <description text="OnBecameInvisible 在对象对任何摄像机都不可见时调用。" langCode="zh" />
+        <description text="OnBecameInvisible is called when the object is no longer visible by any camera." langCode="zh" />
         <description text="OnBecameInvisible is called when the object is no longer visible by any camera." langCode="iv" />
-        <description text="&quot;OnBecameInvisible&quot; は任意のカメラでオブジェクトが表示されなくなるときに呼び出されます。" langCode="ja" />
+        <description text="OnBecameInvisible is called when the object is no longer visible by any camera." langCode="ja" />
         <description text="OnBecameInvisible is called when the object is no longer visible by any camera." langCode="ko" />
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnBecameVisible" static="False" path="Documentation/en/ScriptReference/Renderer.OnBecameVisible.html">
       <descriptions>
-        <description text="OnBecameVisible 在对象变为对任意摄像机可见时调用。" langCode="zh" />
+        <description text="OnBecameVisible is called when the object became visible by any camera." langCode="zh" />
         <description text="OnBecameVisible is called when the object became visible by any camera." langCode="iv" />
-        <description text="&quot;OnBecameVisible&quot; は任意のカメラでオブジェクトが見えるようになったときに呼び出されます。" langCode="ja" />
+        <description text="OnBecameVisible is called when the object became visible by any camera." langCode="ja" />
         <description text="OnBecameVisible is called when the object became visible by any camera." langCode="ko" />
       </descriptions>
       <returns type="System.Void" array="False" />
@@ -2117,10 +2242,10 @@
     </message>
     <message name="OnCollisionStay" static="False" path="Documentation/en/ScriptReference/Rigidbody.OnCollisionStay.html">
       <descriptions>
-        <description text="对应正在接触刚体/碰撞体的每一个碰撞体/刚体，每帧调用一次 OnCollisionStay。" langCode="zh" />
-        <description text="OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider." langCode="iv" />
-        <description text="OnCollisionStay は rigidbody/collider が他の rigidbody/collider に触れている間毎フレーム 1 度だけ呼び出されます。" langCode="ja" />
-        <description text="OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider." langCode="ko" />
+        <description text="OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody." langCode="zh" />
+        <description text="OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody." langCode="iv" />
+        <description text="OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody." langCode="ja" />
+        <description text="OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody." langCode="ko" />
       </descriptions>
       <parameters>
         <parameter type="UnityEngine.Collision" array="False" name="collisionInfo" />
@@ -2170,7 +2295,7 @@
         <description text="Editor-only function that Unity calls when the script is loaded or a value changes in the Inspector." langCode="zh" />
         <description text="Editor-only function that Unity calls when the script is loaded or a value changes in the Inspector." langCode="iv" />
         <description text="Editor-only function that Unity calls when the script is loaded or a value changes in the Inspector." langCode="ja" />
-        <description text="This function is called when the script is loaded or a value is changed in the Inspector (Called in the editor only)." langCode="ko" />
+        <description text="Editor-only function that Unity calls when the script is loaded or a value changes in the Inspector." langCode="ko" />
       </descriptions>
       <returns type="System.Void" array="False" />
     </message>
