@@ -131,10 +131,10 @@
   <property id="border-bottom-color" declared-in="0" initial="clear"> <!-- 2019.3 -->
     <inline id="color" inline="yes" />
   </property>
-  <property id="border-bottom-left-radius" declared-in="0" initial="0"> <!-- 2017.3-2019.3 -->
+  <property id="border-bottom-left-radius" declared-in="0" initial="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#drawing-borders"> <!-- 2017.3-2019.3 -->
     <inline id="length-percentage" inline="yes" />
   </property>
-  <property id="border-bottom-right-radius" declared-in="0" initial="0"> <!-- 2017.3-2019.3 -->
+  <property id="border-bottom-right-radius" declared-in="0" initial="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#drawing-borders"> <!-- 2017.3-2019.3 -->
     <inline id="length-percentage" inline="yes" />
   </property>
   <property id="border-bottom-width" declared-in="0" initial="0"> <!-- 2017.2-2019.3 -->
@@ -156,7 +156,7 @@
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="border-radius" declared-in="0"> <!-- 2017.1-2019.3 -->
+  <property id="border-radius" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#drawing-borders"> <!-- 2017.1-2019.3 -->
     <!-- 2017.1-2018.4 <length>{1} -->
     <!-- 2019.1-2019.3 <length>{1,4} -->
     <group type="or" max="4">
@@ -202,7 +202,10 @@
   <property id="color" declared-in="0" initial="#000000"> <!-- 2018.3-2019.3 -->
     <inline id="color" inline="yes"/>
   </property>
-  <property id="cursor" declared-in="0" initial="default"> <!-- 2018.1-2019.3 -->
+  <property id="cursor" declared-in="0" initial="default" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#cursor"> <!-- 2018.1-2019.3 -->
+    <description><![CDATA[
+            The cursor property specifies the mouse cursor to be displayed when the mouse pointer is over an element.
+      ]]></description>
     <!-- [ <resource> | <url> ] [<number>? <number>?] | enum -->
     <group type="or">
       <group type="and">
@@ -240,7 +243,7 @@
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="display" declared-in="0" initial="flex"> <!-- 2019.1-2019.3 -->
+  <property id="display" declared-in="0" initial="flex" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#display"> <!-- 2019.1-2019.3 -->
     <group type="or">
       <name value="flex"/>
       <name value="none"/>
@@ -344,7 +347,7 @@
   <property id="min-width" declared-in="0" initial="auto"> <!-- 2017.1-2019.3 -->
     <inline id="length-percentage-auto"/>
   </property>
-  <property id="opacity" declared-in="0" initial="1"> <!-- 2017.1-2019.3 -->
+  <property id="opacity" declared-in="0" initial="1" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#opacity"> <!-- 2017.1-2019.3 -->
     <!-- Technically the code will read <length> here, but that is not correct -->
     <group type="or">
       <number/>
@@ -394,10 +397,10 @@
   <property id="top" declared-in="0" initial="auto"> <!-- 2018.3-2019.3 -->
     <inline id="length-percentage-auto" inline="yes"/>
   </property>
-  <property id="-unity-background-image-tint-color" declared-in="0" initial="#ffffff"> <!-- 2019.1-2019.3 -->
+  <property id="-unity-background-image-tint-color" declared-in="0" initial="#ffffff" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-background"> <!-- 2019.1-2019.3 -->
     <inline id="color" inline="yes"/>
   </property>
-  <property id="-unity-background-scale-mode" declared-in="0" initial="stretch-to-fill"> <!-- 2018.3-2019.3 -->
+  <property id="-unity-background-scale-mode" declared-in="0" initial="stretch-to-fill" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-background"> <!-- 2018.3-2019.3 -->
     <!-- 2018.3-2018.4 <integer> -->
     <group type="or">
       <name value="stretch-to-fill"/>
@@ -406,10 +409,10 @@
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="-unity-font" declared-in="0" initial="default"> <!-- 2018.3-2019.3 -->
+  <property id="-unity-font" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-font" initial="default"> <!-- 2018.3-2019.3 -->
     <inline id="asset" inline="yes"/>
   </property>
-  <property id="-unity-font-style" declared-in="0" initial="normal"> <!-- 2018.3-2019.3 -->
+  <property id="-unity-font-style" declared-in="0" initial="normal" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-font"> <!-- 2018.3-2019.3 -->
     <group type="or">
       <name value="normal"/>
       <name value="italic"/>
@@ -418,38 +421,38 @@
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="-unity-overflow-clip-box" declared-in="0" initial="padding-box"> <!-- 2019.3 -->
+  <property id="-unity-overflow-clip-box" declared-in="0" initial="padding-box" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-overflow-clip-box"> <!-- 2019.3 -->
     <group type="or">
       <name value="padding-box"/>
       <name value="content-box"/>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="-unity-slice-bottom" declared-in="0" initial="0"> <!-- 2018.3-2019.3 -->
+  <property id="-unity-slice-bottom" declared-in="0" initial="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-slice"> <!-- 2018.3-2019.3 -->
     <group type="or">
       <integer/>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="-unity-slice-left" declared-in="0" initial="0"> <!-- 2018.3-2019.3 -->
+  <property id="-unity-slice-left" declared-in="0" initial="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-slice"> <!-- 2018.3-2019.3 -->
     <group type="or">
       <integer/>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="-unity-slice-right" declared-in="0" initial="0"> <!-- 2018.3-2019.3 -->
+  <property id="-unity-slice-right" declared-in="0" initial="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-slice"> <!-- 2018.3-2019.3 -->
     <group type="or">
       <integer/>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="-unity-slice-top" declared-in="0" initial="0"> <!-- 2018.3-2019.3 -->
+  <property id="-unity-slice-top" declared-in="0" initial="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-slice"> <!-- 2018.3-2019.3 -->
     <group type="or">
       <integer/>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="-unity-text-align" declared-in="0" initial="upper-left"> <!-- 2018.3-2091.3 -->
+  <property id="-unity-text-align" declared-in="0" initial="upper-left" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-text"> <!-- 2018.3-2091.3 -->
     <group type="or">
       <name value="upper-left"/>
       <name value="middle-left"/>
@@ -463,7 +466,7 @@
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="-unity-text-overflow-position" declared-in="0" initial="end">
+  <property id="-unity-text-overflow-position" declared-in="0" initial="end" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-text">
     <group type="or">
       <name value="start"/>
       <name value="middle"/>
@@ -562,26 +565,26 @@
   </property>
 
 <!--  translate works-->
-  <property id="-unity-font-definition" declared-in="0">
+  <property id="-unity-font-definition" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-font">
     <inline id="asset" inline="yes"/>
   </property>
-  <property id="-unity-paragraph-spacing" declared-in="0">
+  <property id="-unity-paragraph-spacing" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-paragraph-spacing">
     <group type="or">
       <inline id="length"/>
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="-unity-text-outline" declared-in="0">
+  <property id="-unity-text-outline" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-text">
     <group type="any">
       <inline id="length"/>
       <inline id="color" inline="yes" />
       <inline id="global-keywords" inline="yes"/>
     </group>
   </property>
-  <property id="-unity-text-outline-color" declared-in="0">
+  <property id="-unity-text-outline-color" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-text">
     <inline id="color" inline="yes" />
   </property>
-  <property id="-unity-text-outline-width" declared-in="0">
+  <property id="-unity-text-outline-width" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-text">
     <group type="or">
       <inline id="length"/>
       <inline id="global-keywords" inline="yes"/>
@@ -682,7 +685,7 @@
       <name value="contain"/>
     </group>
   </property>
-  <property id="-unity-slice-scale" declared-in="0">
+  <property id="-unity-slice-scale" declared-in="0" url="https://docs.unity3d.com/Manual/UIE-USS-SupportedProperties.html#unity-slice">
     <group type="or">
       <inline id="length"/>
       <inline id="global-keywords" inline="yes"/>
