@@ -171,11 +171,12 @@ public class ShaderVariantsHost : IChangeProvider
                     keywords.Add(new RdShaderKeyword(keyword, enabledKeywords.Contains(keyword)));
             }
             
-            return new ShaderVariantInteraction(keywords ?? new List<RdShaderKeyword>(), myShaderVariantsManager.ShaderApi.AsRdShaderApi(), myShaderVariantsManager.TotalKeywordsCount.Value, myShaderVariantsManager.TotalEnabledKeywordsCount.Value);
+            return new ShaderVariantInteraction(keywords ?? new List<RdShaderKeyword>(), myShaderVariantsManager.ShaderApi.AsRdShaderApi(), myShaderVariantsManager.ShaderPlatform.AsRdShaderPlatform(), myShaderVariantsManager.TotalKeywordsCount.Value, myShaderVariantsManager.TotalEnabledKeywordsCount.Value);
         });
         interaction.EnableKeyword.Advise(lifetime, keyword => myShaderVariantsManager.SetKeywordEnabled(keyword, true));
         interaction.DisableKeyword.Advise(lifetime, keyword => myShaderVariantsManager.SetKeywordEnabled(keyword, false));
         interaction.SetShaderApi.Advise(lifetime, api => myShaderVariantsManager.SetShaderApi(api.AsShaderApi()));
+        interaction.SetShaderPlatform.Advise(lifetime, platform => myShaderVariantsManager.SetShaderPlatform(platform.AsShaderPlatform()));
         return interaction;
     }
 

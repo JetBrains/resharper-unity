@@ -45,6 +45,9 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         +"Metal"
         +"Vulkan"
         +"D3D11L9X"
+    }
+
+    private val RdShaderPlatform = enum {
         +"Desktop"
         +"Mobile"
     }
@@ -158,11 +161,13 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         }, classdef("shaderVariantInteraction") {
             field("shaderKeywords", immutableList(rdShaderKeyword))
             field("shaderApi", RdShaderApi)
+            field("shaderPlatform", RdShaderPlatform)
             field("totalKeywordsCount", int)
             field("totalEnabledKeywordsCount", int)
             source("enableKeyword", string)
             source("disableKeyword", string)
             source("setShaderApi", RdShaderApi)
+            source("setShaderPlatform", RdShaderPlatform)
         })
 
         // Actions called from the frontend to the backend (and/or indirectly, Unity)

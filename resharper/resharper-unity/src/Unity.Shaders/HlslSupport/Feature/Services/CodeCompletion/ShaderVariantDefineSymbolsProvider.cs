@@ -59,7 +59,7 @@ public class ShaderVariantDefineSymbolsProvider : ItemsProviderOfSpecificContext
         return true;
     }
 
-    private void AddLookupItem(CppCodeCompletionInsideDirectiveContext context, IItemsCollector collector, IconId icon, string defineSymbol, HashSet<string> existingDefineSymbols)
+    private void AddLookupItem(CppCodeCompletionInsideDirectiveContext context, IItemsCollector collector, IconId? icon, string defineSymbol, HashSet<string> existingDefineSymbols)
     {
         if (!existingDefineSymbols.Add(defineSymbol))
             return;
@@ -74,9 +74,9 @@ public class ShaderVariantDefineSymbolsProvider : ItemsProviderOfSpecificContext
 
     public class MyTextualInfo : TextualInfo
     {
-        public IconId Icon { get; }
+        public IconId? Icon { get; }
 
-        public MyTextualInfo(IconId icon, string defineSymbol) : base(defineSymbol, defineSymbol)
+        public MyTextualInfo(IconId? icon, string defineSymbol) : base(defineSymbol, defineSymbol)
         {
             Icon = icon;
             Placement.Relevance = (ulong)CppCompletionRanks.Define;

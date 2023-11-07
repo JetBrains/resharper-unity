@@ -100,6 +100,7 @@
     public static string ShaderVariantsSettings_t_Shader_variants_settings => ResourceManager.GetString("ShaderVariantsSettings_t_Shader_variants_settings");
     public static string ShaderVariantsSettings_e_EnabledKeywords_t_Enabled_keywords => ResourceManager.GetString("ShaderVariantsSettings_e_EnabledKeywords_t_Enabled_keywords");
     public static string ShaderVariantsSettings_e_ShaderApi_t_Shader_API => ResourceManager.GetString("ShaderVariantsSettings_e_ShaderApi_t_Shader_API");
+    public static string ShaderVariantsSettings_e_ShaderPlatform_t_Shader_Platform => ResourceManager.GetString("ShaderVariantsSettings_e_ShaderPlatform_t_Shader_Platform");
     public static string ActiveShaderKeyword_RiderPresentableName => ResourceManager.GetString("ActiveShaderKeyword_RiderPresentableName");
     public static string InactiveShaderKeyword_RiderPresentableName => ResourceManager.GetString("InactiveShaderKeyword_RiderPresentableName");
     public static string SuppressedShaderKeyword_RiderPresentableName => ResourceManager.GetString("SuppressedShaderKeyword_RiderPresentableName");

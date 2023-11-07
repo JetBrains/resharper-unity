@@ -16,10 +16,8 @@ public class ShaderApiDefineSymbolDescriptor : IShaderDefineSymbolDescriptor
     public const string Metal = "SHADER_API_METAL";
     public const string Vulkan = "SHADER_API_VULKAN";
     public const string D3D11L9X = "SHADER_API_D3D11_9X";
-    public const string Desktop = "SHADER_API_DESKTOP";
-    public const string Mobile = "SHADER_API_MOBILE";
 
-    public ImmutableArray<string> AllSymbols = ImmutableArray.Create<string>(D3D11, GlCore, GlEs, GlEs3, Metal, Vulkan, D3D11L9X, Desktop, Mobile);
+    public ImmutableArray<string> AllSymbols { get; } = ImmutableArray.Create<string>(D3D11, GlCore, GlEs, GlEs3, Metal, Vulkan, D3D11L9X);
 
     public const ShaderApi DefaultValue = ShaderApi.D3D11;
 
@@ -35,8 +33,6 @@ public class ShaderApiDefineSymbolDescriptor : IShaderDefineSymbolDescriptor
             ShaderApi.Metal => Metal,
             ShaderApi.Vulkan => Vulkan,
             ShaderApi.D3D11L9X => D3D11L9X,
-            ShaderApi.Desktop => Desktop,
-            ShaderApi.Mobile => Mobile,
             _ => throw new ArgumentOutOfRangeException(nameof(shaderApi), shaderApi, null)
         };
 
@@ -50,8 +46,6 @@ public class ShaderApiDefineSymbolDescriptor : IShaderDefineSymbolDescriptor
             Metal => ShaderApi.Metal,
             Vulkan => ShaderApi.Vulkan,
             D3D11L9X => ShaderApi.D3D11L9X,
-            Desktop => ShaderApi.Desktop,
-            Mobile => ShaderApi.Mobile,
             _ => throw new ArgumentOutOfRangeException(nameof(defineSymbol), defineSymbol, null)
         };
 }

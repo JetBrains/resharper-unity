@@ -167,6 +167,9 @@
     <data name="ShaderVariantsSettings_e_ShaderApi_t_Shader_API" xml:space="preserve">
         <value>Shader API</value>
     </data>
+    <data name="ShaderVariantsSettings_e_ShaderPlatform_t_Shader_Platform" xml:space="preserve">
+        <value>Shader Platform</value>
+    </data>
     <data name="ActiveShaderKeyword_RiderPresentableName" xml:space="preserve">
         <value>Active Shader Keyword</value>
     </data>

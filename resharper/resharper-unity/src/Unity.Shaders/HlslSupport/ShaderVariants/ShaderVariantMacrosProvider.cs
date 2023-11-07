@@ -38,6 +38,10 @@ public class ShaderVariantMacrosProvider : IUnityHlslCustomMacrosProvider
         var shaderApi = myShaderVariantsManager.ShaderApi;
         var shaderApiSymbol = ShaderApiDefineSymbolDescriptor.Instance.GetDefineSymbol(shaderApi);
         yield return new CppPPDefineSymbol(shaderApiSymbol, null, false, "1", new CppSymbolLocation(CppFileLocation.EMPTY, CppComplexOffset.ZERO));
+        
+        var shaderPlatform = myShaderVariantsManager.ShaderPlatform;
+        var shaderPlatformSymbol = ShaderPlatformDefineSymbolDescriptor.Instance.GetDefineSymbol(shaderPlatform);
+        yield return new CppPPDefineSymbol(shaderPlatformSymbol, null, false, "1", new CppSymbolLocation(CppFileLocation.EMPTY, CppComplexOffset.ZERO));
     }
     
     private static bool TryGetEnabledKeyword(ShaderFeature shaderFeature, ISet<string> enabledKeywords, out ShaderFeature.Entry entry)

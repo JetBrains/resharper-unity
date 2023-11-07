@@ -19,6 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Stages.Highli
     public class ShaderVariantsHighlightTests : HighlightingTestBase
     {
         private ShaderApi myShaderApi = ShaderApi.D3D11;
+        private ShaderPlatform myShaderPlatform = ShaderPlatform.Desktop;
         private readonly List<string> myEnabledKeywords = new();
         
         protected override PsiLanguageType? CompilerIdsLanguage => CppLanguage.Instance;
@@ -50,16 +51,23 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Stages.Highli
         }
         
         [Test]
-        public void TestShaderApiInShader()
-        {
-            DoTestSolution("ShaderApiInShader.shader");
-        }
-        
+        public void TestShaderApiInShader() => DoTestSolution("ShaderApiInShader.shader");
+
         [Test]
         public void TestShaderApiInShaderMetal()
         {
             myShaderApi = ShaderApi.Metal;
             DoTestSolution("ShaderApiInShaderMetal.shader");
+        }
+        
+        [Test]
+        public void TestShaderPlatformInShader() => DoTestSolution("ShaderPlatformInShader.shader");
+        
+        [Test]
+        public void TestShaderPlatformInShaderMobile()
+        {
+            myShaderPlatform = ShaderPlatform.Mobile;
+            DoTestSolution("ShaderPlatformInShaderMobile.shader");
         }
 
         protected override void DoTest(Lifetime lifetime, IProject project)
@@ -68,6 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Stages.Highli
             foreach (var keyword in myEnabledKeywords) 
                 shaderVariantsManager.SetKeywordEnabled(keyword, true);
             shaderVariantsManager.SetShaderApi(myShaderApi);
+            shaderVariantsManager.SetShaderPlatform(myShaderPlatform);
 
             try
             {
