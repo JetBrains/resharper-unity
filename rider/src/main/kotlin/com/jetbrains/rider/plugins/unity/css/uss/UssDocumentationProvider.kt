@@ -22,14 +22,6 @@ class UssDocumentationProvider : DocumentationProvider {
         return null
     }
 
-    override fun getUrlFor(element: PsiElement?, originalElement: PsiElement?): List<String>? {
-        if (element?.containingFile?.language is UssLanguage) {
-            // Returning an empty list overrides the default CSS documentation list, so we get the default docs
-            return emptyList()
-        }
-        return null
-    }
-
     private fun findDocumentationElement(element: PsiElement) =
         CssDocumentationProvider.findDocumentationElement(element)
 
