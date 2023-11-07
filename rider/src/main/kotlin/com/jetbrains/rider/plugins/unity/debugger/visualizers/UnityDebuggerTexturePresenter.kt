@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.debugger.visualizers
 
 import com.google.gson.Gson
+import com.intellij.internal.statistic.StructuredIdeActivity
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createNestedDisposable
@@ -19,6 +20,7 @@ import com.intellij.xdebugger.frame.XValuePlace
 import com.jetbrains.rd.framework.RdTaskResult
 import com.jetbrains.rd.ide.model.ValuePropertiesModelBase
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.lifetime.isNotAlive
 import com.jetbrains.rd.util.printlnError
 import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rd.util.reactive.valueOrThrow
@@ -38,13 +40,17 @@ import java.awt.BorderLayout
 import java.awt.GraphicsConfiguration
 import java.awt.GraphicsEnvironment
 import java.awt.Rectangle
+import java.awt.event.ActionEvent
+import java.awt.event.KeyEvent
+import java.awt.event.WindowEvent
 import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
 import java.awt.image.ColorModel
-import javax.swing.JPanel
-import javax.swing.SwingConstants
+import javax.swing.*
 
 class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
+
+    private var texturePresentationActivity: StructuredIdeActivity? = null
 
     @Suppress("PropertyName")
     data class TextureInfo(val Pixels: List<Int>,
@@ -89,6 +95,11 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                             place: XValuePlace,
                             session: XDebugSession,
                             lifetime: Lifetime): List<RiderDebuggerPresenterTab> {
+        texturePresentationActivity = TextureDebuggerCollector.texturePresentationRequestStarted(session.project)
+        lifetime.onTerminationIfAlive{
+            finishMasterActivity(ExecutionResult.Terminated)
+        }
+
         val parentPanel = JBPanel<JBPanel<*>>(BorderLayout())
         val jbLoadingPanel = JBLoadingPanel(BorderLayout(), lifetime.createNestedDisposable())
         parentPanel.add(jbLoadingPanel)
@@ -96,6 +107,7 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
         parentPanel.revalidate()
         parentPanel.repaint()
 
+        val loadDllActivity = TextureDebuggerCollector.loadDllStarted(session.project, texturePresentationActivity)
         val bundledFile = RiderEnvironment.getBundledFile(
             "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.dll",
             pluginClass = javaClass
@@ -104,13 +116,18 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
         val evaluationRequest = "System.Reflection.Assembly.LoadFile(@\"${bundledFile.absolutePath}\")"
         val project = session.project
         evaluate(project, evaluationRequest, lifetime, null,
-                 successfullyEvaluated = { evaluateTextureAndShow(node, project, jbLoadingPanel, parentPanel, lifetime, value) },
+                 successfullyEvaluated = {
+                     TextureDebuggerCollector.finishActivity(loadDllActivity, ExecutionResult.Succeed)
+                     if (lifetime.isNotAlive) return@evaluate
+                     evaluateTextureAndShow(project, jbLoadingPanel, parentPanel, lifetime, value)
+                 },
                  evaluationFailed = {
                      showErrorMessage(
                          jbLoadingPanel,
                          parentPanel,
                          UnityBundle.message("debugging.cannot.load.texture.dll.label", it)
                      )
+                     failChildActivity(loadDllActivity)
                  })
 
         val name = UnityBundle.message("debugging.texture.preview.title")
@@ -118,25 +135,35 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
     }
 
     private fun evaluateTextureAndShow(
-        node: XValueNode,
         project: Project,
         jbLoadingPanel: JBLoadingPanel,
         parentPanel: JBPanel<JBPanel<*>>,
         lifetime: Lifetime,
         value: IDotNetValue) {
 
+        val evaluationFullNameActivity = TextureDebuggerCollector.evaluateValueFullNameStarted(project, texturePresentationActivity)
+
         if (value is XValue)
             value.calculateEvaluationExpression()
                 .onSuccess { expr ->
-                    continueTextureEvaluation(expr.expression, project, lifetime, jbLoadingPanel, parentPanel)
+                    run {
+                        TextureDebuggerCollector.finishActivity(evaluationFullNameActivity, ExecutionResult.Succeed)
+                        if (lifetime.isNotAlive) return@onSuccess
+                        continueTextureEvaluation(expr.expression, project, lifetime, jbLoadingPanel, parentPanel)
+                    }
                 }
                 .onError {
+                    TextureDebuggerCollector.finishActivity(evaluationFullNameActivity, false)
                     showErrorMessage(jbLoadingPanel, parentPanel,
                                      UnityBundle.message("debugging.cannot.get.texture.debug.information", it))
+                    failChildActivity(evaluationFullNameActivity)
                 }
-        else
+        else {
+            TextureDebuggerCollector.finishActivity(evaluationFullNameActivity, false)
             showErrorMessage(jbLoadingPanel, parentPanel,
                              UnityBundle.message("debugging.cannot.get.texture.debug.information", value.toString()))
+            failChildActivity(evaluationFullNameActivity)
+        }
     }
 
     private fun continueTextureEvaluation(nodeName: String,
@@ -145,47 +172,79 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                                           jbLoadingPanel: JBLoadingPanel,
                                           parentPanel: JBPanel<JBPanel<*>>) {
 
+        val texturePixelsRequestActivity = TextureDebuggerCollector.requestTexturePixelsStarted(project, texturePresentationActivity)
         LOG.trace("Evaluating texture:\"${nodeName}\"")
         val timeoutForAdvanceUnityEvaluation = project.solution.frontendBackendModel.backendSettings.forcedTimeoutForAdvanceUnityEvaluation.valueOrThrow
 
         val evaluationRequest = "JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture.UnityTextureAdapter.GetPixelsInString($nodeName as UnityEngine.Texture2D)"
         evaluate(project, evaluationRequest, lifetime, timeoutForAdvanceUnityEvaluation,
-                 successfullyEvaluated = { showTexture(it, jbLoadingPanel, parentPanel) },
+                 successfullyEvaluated = {
+                     TextureDebuggerCollector.finishActivity(texturePixelsRequestActivity, ExecutionResult.Succeed)
+                     if (lifetime.isNotAlive) return@evaluate
+                     showTexture(it, jbLoadingPanel, parentPanel, project)
+                 },
                  evaluationFailed = {
                      showErrorMessage(jbLoadingPanel, parentPanel,
                                       UnityBundle.message("debugging.cannot.get.texture.debug.information", it))
+                     failChildActivity(texturePixelsRequestActivity)
                  })
     }
 
     private fun showTexture(it: ValuePropertiesModelBase,
                             jbLoadingPanel: JBLoadingPanel,
-                            parentPanel: JBPanel<JBPanel<*>>) {
+                            parentPanel: JBPanel<JBPanel<*>>,
+                            project: Project) {
+
         try {
             val json = it.value[0].value
 
             val textureInfo = Gson().fromJson(json, TextureInfo::class.java)
+            val prepareTextureToShowStarted =
+                TextureDebuggerCollector.prepareTextureToShowStarted(project, texturePresentationActivity, textureInfo.Width,
+                                                                     textureInfo.Height)
 
-            if (textureInfo == null)
+            if (textureInfo == null) {
                 showErrorMessage(jbLoadingPanel, parentPanel, UnityBundle.message("debugging.cannot.parse.texture.info", json))
+                failChildActivity(prepareTextureToShowStarted)
+            }
             else {
                 LOG.trace("Preparing texture to show:\"${textureInfo}\"")
 
                 val texturePanel = createPanelWithImage(textureInfo)
                 jbLoadingPanel.stopLoading()
+
+                texturePanel.background = parentPanel.background
                 parentPanel.apply {
                     remove(jbLoadingPanel)
                     layout = VerticalLayout(5)
                     add(texturePanel)
                 }
+
+                parentPanel.revalidate()
+                parentPanel.repaint()
+                TextureDebuggerCollector.finishActivity(prepareTextureToShowStarted, ExecutionResult.Succeed)
+                finishMasterActivity(ExecutionResult.Succeed)
             }
         }
-        catch (e : Throwable)
-        {
+        catch (e: Throwable) {
             showErrorMessage(jbLoadingPanel, parentPanel, UnityBundle.message("debugging.cannot.parse.texture.info", it))
+            finishMasterActivity(ExecutionResult.Failed)
         }
+    }
 
-        parentPanel.revalidate()
-        parentPanel.repaint()
+    private fun finishMasterActivity(isSucceed: ExecutionResult) {
+
+        if(texturePresentationActivity == null)
+            return
+
+        val activity = texturePresentationActivity!!
+        texturePresentationActivity = null;
+        TextureDebuggerCollector.finishActivity(activity, isSucceed)
+    }
+
+    private fun failChildActivity(childActivity: StructuredIdeActivity?) {
+        TextureDebuggerCollector.finishActivity(childActivity, ExecutionResult.Failed)
+        finishMasterActivity(ExecutionResult.Failed)
     }
 
     private fun showErrorMessage(jbLoadingPanel: JBLoadingPanel,
@@ -228,7 +287,8 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
             }
         }
 
-        return ImageEditorManagerImpl.createImageEditorUI(bufferedImage, "  ${textureInfo.TextureName}  ${textureInfo.GraphicsTextureFormat}")
+        return ImageEditorManagerImpl.createImageEditorUI(bufferedImage,
+                                                          "  ${textureInfo.TextureName}  ${textureInfo.GraphicsTextureFormat}")
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -254,7 +314,7 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                                                                       nameAliases = emptyList(),
                                                                       extraInfo = null,
                                                                       allowDisabledMethodsInvoke = true,
-                                                                      forcedEvaluationTimeoutMs  = evaluationTimeoutMs)
+                                                                      forcedEvaluationTimeoutMs = evaluationTimeoutMs)
                                        ).result.adviseOnce(lifetime) {
                                            when (it) {
                                                is RdTaskResult.Success -> {
