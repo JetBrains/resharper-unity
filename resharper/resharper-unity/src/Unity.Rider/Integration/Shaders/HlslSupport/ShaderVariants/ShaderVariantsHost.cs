@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JetBrains.Application.changes;
@@ -162,16 +163,18 @@ public class ShaderVariantsHost : IChangeProvider
         myLogger.Verbose("Start shader variant interaction");
         var interaction = await lifetime.StartBackgroundRead(() =>
         {
-            List<RdShaderKeyword>? keywords = null;
-            if (myDocumentHost.TryGetDocument(args.DocumentId) is { } document && TryGetRootLocation(new DocumentOffset(document, args.Offset), out var rootLocation) && myShaderProgramCache.TryGetShaderProgramInfo(rootLocation, out var shaderProgramInfo))
+            List<List<string>> shaderFeatures = new();
+            List<string> enabledKeywords = new();
+            if (myDocumentHost.TryGetDocument(args.DocumentId) is { } document && 
+                TryGetRootLocation(new DocumentOffset(document, args.Offset), out var rootLocation) && 
+                myShaderProgramCache.TryGetShaderProgramInfo(rootLocation, out var shaderProgramInfo))
             {
-                var enabledKeywords = myShaderVariantsManager.GetEnabledKeywords(rootLocation);
-                keywords = new List<RdShaderKeyword>();
-                foreach (var keyword in shaderProgramInfo.Keywords)
-                    keywords.Add(new RdShaderKeyword(keyword, enabledKeywords.Contains(keyword)));
+                enabledKeywords.AddRange(myShaderVariantsManager.GetEnabledKeywords(rootLocation));
+                foreach (var feature in shaderProgramInfo.ShaderFeatures)
+                    shaderFeatures.Add(feature.Entries.Select(e => e.Keyword).ToList());
             }
             
-            return new ShaderVariantInteraction(keywords ?? new List<RdShaderKeyword>(), myShaderVariantsManager.ShaderApi.AsRdShaderApi(), myShaderVariantsManager.ShaderPlatform.AsRdShaderPlatform(), myShaderVariantsManager.TotalKeywordsCount.Value, myShaderVariantsManager.TotalEnabledKeywordsCount.Value);
+            return new ShaderVariantInteraction(shaderFeatures, enabledKeywords, myShaderVariantsManager.ShaderApi.AsRdShaderApi(), myShaderVariantsManager.ShaderPlatform.AsRdShaderPlatform(), myShaderVariantsManager.TotalKeywordsCount.Value, myShaderVariantsManager.TotalEnabledKeywordsCount.Value);
         });
         interaction.EnableKeyword.Advise(lifetime, keyword => myShaderVariantsManager.SetKeywordEnabled(keyword, true));
         interaction.DisableKeyword.Advise(lifetime, keyword => myShaderVariantsManager.SetKeywordEnabled(keyword, false));

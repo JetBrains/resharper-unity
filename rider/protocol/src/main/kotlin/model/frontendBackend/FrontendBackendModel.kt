@@ -92,12 +92,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         field("startLine", int)
     }
 
-    // Shader Variants
-    private val rdShaderKeyword = structdef {
-        field("name", string.interned(shaderInternScope).attrs(KnownAttrs.NlsSafe))
-        field("enabled", bool)
-    }
-
     private val rdShaderVariantExtension = classdef extends TextControlExtension {
         property("info", structdef("rdShaderVariantInfo") {
             field("enabledCount", int)
@@ -159,7 +153,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
             field("documentId", RdDocumentId)
             field("offset", int)
         }, classdef("shaderVariantInteraction") {
-            field("shaderKeywords", immutableList(rdShaderKeyword))
+            field("shaderFeatures", immutableList(immutableList(string)))
+            field("enabledKeywords", immutableList(string))
             field("shaderApi", RdShaderApi)
             field("shaderPlatform", RdShaderPlatform)
             field("totalKeywordsCount", int)
