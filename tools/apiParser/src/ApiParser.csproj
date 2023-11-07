@@ -19,11 +19,7 @@
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup Label="Resources">
-    <EmbeddedResource Include="Resources\Strings.resx" Condition="$(InternalBuild)">
-      <Generator>JetResourceGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Strings.resx" Condition="!$(InternalBuild)">
+    <EmbeddedResource Update="Resources\Strings.resx">
       <Generator>JetResourceGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
