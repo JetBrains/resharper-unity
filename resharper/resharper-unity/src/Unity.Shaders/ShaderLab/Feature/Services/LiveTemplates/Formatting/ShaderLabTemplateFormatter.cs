@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.L
     [Language(typeof(ShaderLabLanguage))]
     public class ShaderLabTemplateFormatter : ITemplateFormatter
     {
-        public string EndMarker => "_end_";
+        public string EndMarker => "";
         public bool SupportsShorteningQualifiedReferences => false;
         public void BeforeFormatting(DocumentRange documentRange, ISolution solution)
         {

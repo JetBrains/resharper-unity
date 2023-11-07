@@ -20,14 +20,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
         {
             return new InjectedHlslLocationInfo(
                 UnsafeMarshallers.VirtualFileSystemPathCurrentSolutionCorrectCaseMarshaller.Unmarshal(reader),
-                new TextRange(reader.ReadInt(), reader.ReadInt()), reader.ReadEnum(InjectedHlslProgramType.Uknown));
+                new TextRange(reader.ReadInt32(), reader.ReadInt32()), reader.ReadEnum(InjectedHlslProgramType.Unknown));
         }
 
         public static void Write(UnsafeWriter writer, InjectedHlslLocationInfo value)
         {
             UnsafeMarshallers.VirtualFileSystemPathCurrentSolutionCorrectCaseMarshaller.Marshal(writer, value.FileSystemPath);
-            writer.Write(value.Range.StartOffset);
-            writer.Write(value.Range.EndOffset);
+            writer.WriteInt32(value.Range.StartOffset);
+            writer.WriteInt32(value.Range.EndOffset);
             writer.WriteEnum(value.ProgramType);
         }
 

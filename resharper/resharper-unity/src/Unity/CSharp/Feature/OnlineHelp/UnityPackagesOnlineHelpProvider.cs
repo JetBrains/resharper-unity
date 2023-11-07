@@ -85,7 +85,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
             if (packageData == null)
                 return false;
 
-            if (packageData.Source != PackageSource.Registry)
+            // example https://docs.unity3d.com/Packages/com.unity.ugui@1.0/api/index.html is BuiltIn
+            if (packageData.Source != PackageSource.Registry && packageData.Source != PackageSource.BuiltIn)
                 return false;
 
             if (!packageData.Id.StartsWith("com.unity.") && (packageData.PackageDetails.DocumentationUrl == null ||
@@ -99,9 +100,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
             return true;
         }
 
-        // same priority as MsdnOnlineHelpProvider,
-        // but this provider only applies to Unity registry packages and MSDN only applies to Microsoft/Mono
-        public override int Priority => 10; 
+        // more preferable then UnityCompiledElementOnlineHelpProvider
+        public override int Priority => 5; 
         public override bool ShouldValidate => false;
     }
 }

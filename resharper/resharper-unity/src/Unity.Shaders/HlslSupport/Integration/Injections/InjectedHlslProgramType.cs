@@ -6,6 +6,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
         CGProgram,
         HLSLInclude,
         HLSLProgram,
-        Uknown
+        Unknown
     }
 }
