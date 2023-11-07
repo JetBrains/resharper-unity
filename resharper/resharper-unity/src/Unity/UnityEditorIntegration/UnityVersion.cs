@@ -189,9 +189,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
                     if (unityVersion.Major == 0)
                     {
                         configuration.PropertiesCollection.TryGetValue("DefineConstants", out var defineConstantsProp);
-                        unityVersion =
-                            UnityProjectFileCacheProvider.GetVersionFromDefines(defineConstantsProp ?? string.Empty,
-                                unityVersion);
+                        unityVersion = UnityProjectFileCacheProvider.GetVersionFromDefines(defineConstantsProp ?? string.Empty, unityVersion);
                     }
                 }
             }

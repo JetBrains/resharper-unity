@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration.Packages
 {
@@ -43,30 +44,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                 message = $"Add {TestFrameworkMarketingName} in Unity Package Manager. {HelpLink}";
                 return true;
             }
-            
-            var riderPackageVersion = new Version(riderPackage.PackageDetails.Version);
-            var testFrameworkVersion = new Version(testFrameworkPackage.PackageDetails.Version);
-            if (IsOldPackage(out message, riderPackageVersion, RiderMarketingName, "1.1.1")) return true;
-            if (IsOldPackage(out message, testFrameworkVersion, TestFrameworkMarketingName, "1.1.1")) return true;
 
-            if (isCoverage)
+            if (JetSemanticVersion.TryParse(riderPackage.PackageDetails.Version, out var riderPackageVersion)
+                && JetSemanticVersion.TryParse(testFrameworkPackage.PackageDetails.Version, out var testFrameworkVersion))
             {
-                // https://youtrack.jetbrains.com/issue/RIDER-35880
-                if (riderPackageVersion < new Version("1.2.0") &&
-                    testFrameworkVersion >= new Version("1.1.5"))
+                if (IsOldPackage(out message, riderPackageVersion, RiderMarketingName, "1.1.1")) return true;
+                if (IsOldPackage(out message, testFrameworkVersion, TestFrameworkMarketingName, "1.1.1")) return true;
+
+                if (isCoverage)
                 {
-                    message = $"Update {RiderMarketingName} package to v.1.2.0 or later in Unity Package Manager. {HelpLink}";
-                    return true;
+                    // https://youtrack.jetbrains.com/issue/RIDER-35880
+                    if (riderPackageVersion < new JetSemanticVersion(1, 2, 0) &&
+                        testFrameworkVersion >= new JetSemanticVersion(1, 1, 5))
+                    {
+                        message = $"Update {RiderMarketingName} package to v.1.2.0 or later in Unity Package Manager. {HelpLink}";
+                        return true;
+                    }
                 }
+
             }
             
             return false;
         }
 
-        private static bool IsOldPackage(out string message, Version packageVersion, string packageMarketingName, string targetVersion)
+        private static bool IsOldPackage(out string message, JetSemanticVersion packageVersion, string packageMarketingName, string targetVersion)
         {
             message = string.Empty;
-            if (packageVersion != null && packageVersion < new Version(targetVersion))
+            if (packageVersion != null && packageVersion < JetSemanticVersion.Parse(targetVersion))
             {
                 message = $"Update {packageMarketingName} package to v.{targetVersion} or later in Unity Package Manager. {HelpLink}";
                 return true;

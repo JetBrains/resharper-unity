@@ -1,4 +1,4 @@
-﻿# 316 ITEMS #
+﻿# 313 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -310,14 +310,11 @@ Texture3D
 TextureCube
 TextureCubeArray
 TriangleStream
-INTERNAL_DATA
 SHADER_API_D3D11
 UNITY_VERSION
-WorldNormalVector
-WorldReflectionVector
 tile_static
 # AUTOMATIC #
-# 316 ITEMS #
+# 313 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -629,9 +626,6 @@ Texture3D
 TextureCube
 TextureCubeArray
 TriangleStream
-INTERNAL_DATA
 SHADER_API_D3D11
 UNITY_VERSION
-WorldNormalVector
-WorldReflectionVector
 tile_static

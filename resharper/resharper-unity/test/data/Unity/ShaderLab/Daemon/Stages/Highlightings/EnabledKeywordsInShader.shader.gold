@@ -1,0 +1,64 @@
+Shader "FooBar"
+{
+    SubShader
+    {
+        HLSLPROGRAM
+        #pragma shader_feature |FOO|(0) |BAR|(1) |BAZ|(2)
+        #pragma multi_compile |A|(3) |B|(4) |C|(5)
+        #pragma multi_compile |D|(6) |E|(7) |F|(8)
+        #pragma fragment frag
+
+        #include "ShaderVariants.hlsl"
+        
+        void frag()
+        {
+        #if |FOO|(9) || |BAR|(10) || |BAZ|(11) || |A|(12) || |B|(13) || |C|(14) || |D|(15) || |E|(16) || |F|(17)
+        #endif
+
+        #if defined(|FOO|(18)) || defined(|BAR|(19)) || defined(|BAZ|(20)) || defined(|A|(21)) || defined(|B|(22)) || defined(|C|(23)) || defined(|D|(24)) || defined(|E|(25)) || defined(|F|(26))
+        #endif
+
+        #ifdef |A|(27)
+        #endif
+        #ifdef |B|(28)
+        #endif
+        #ifndef |C|(29)
+        #endif
+        #ifdef |D|(30)
+        #endif
+        }
+        ENDHLSL
+    }
+}
+---------------------------------------------------------
+(0): ReSharper ShaderLab Enabled Shader Keyword: 
+(1): ReSharper ShaderLab Disabled Shader Keyword: 
+(2): ReSharper ShaderLab Disabled Shader Keyword: 
+(3): ReSharper ShaderLab Disabled Shader Keyword: 
+(4): ReSharper ShaderLab Enabled Shader Keyword: 
+(5): ReSharper ShaderLab Suppressed Shader Keyword: 
+(6): ReSharper ShaderLab Implicitly Enabled Shader Keyword: 
+(7): ReSharper ShaderLab Disabled Shader Keyword: 
+(8): ReSharper ShaderLab Disabled Shader Keyword: 
+(9): ReSharper ShaderLab Enabled Shader Keyword: 
+(10): ReSharper ShaderLab Disabled Shader Keyword: 
+(11): ReSharper ShaderLab Disabled Shader Keyword: 
+(12): ReSharper ShaderLab Disabled Shader Keyword: 
+(13): ReSharper ShaderLab Enabled Shader Keyword: 
+(14): ReSharper ShaderLab Suppressed Shader Keyword: (T) 'Suppressed by: B' (E) ''
+(15): ReSharper ShaderLab Implicitly Enabled Shader Keyword: 
+(16): ReSharper ShaderLab Disabled Shader Keyword: 
+(17): ReSharper ShaderLab Disabled Shader Keyword: 
+(18): ReSharper ShaderLab Enabled Shader Keyword: 
+(19): ReSharper ShaderLab Disabled Shader Keyword: 
+(20): ReSharper ShaderLab Disabled Shader Keyword: 
+(21): ReSharper ShaderLab Disabled Shader Keyword: 
+(22): ReSharper ShaderLab Enabled Shader Keyword: 
+(23): ReSharper ShaderLab Suppressed Shader Keyword: (T) 'Suppressed by: B' (E) ''
+(24): ReSharper ShaderLab Implicitly Enabled Shader Keyword: 
+(25): ReSharper ShaderLab Disabled Shader Keyword: 
+(26): ReSharper ShaderLab Disabled Shader Keyword: 
+(27): ReSharper ShaderLab Disabled Shader Keyword: 
+(28): ReSharper ShaderLab Enabled Shader Keyword: 
+(29): ReSharper ShaderLab Suppressed Shader Keyword: (T) 'Suppressed by: B' (E) ''
+(30): ReSharper ShaderLab Implicitly Enabled Shader Keyword: 

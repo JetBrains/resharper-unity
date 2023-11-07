@@ -136,10 +136,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
                     {
                         var packageStringCurrentVersion = package.PackageDetails.Version;
                         var isCurrentVersionParsed = JetSemanticVersion.TryParse(packageStringCurrentVersion, out var currentPackageVersion);
-                    
-                        Assertion.Assert(isCurrentVersionParsed, "JetSemanticVersion.TryParse returned false for package version {0}, package Id: {1}", packageStringCurrentVersion, package.Id);
+
+                        // for local or git packages version would not get parsed
+                        Assertion.Assert(!(package.Source == PackageSource.Registry && !isCurrentVersionParsed), "JetSemanticVersion.TryParse returned false for package version {0}, package Id: {1}", packageStringCurrentVersion, package.Id);
                         
-                        if (package.Source == PackageSource.Registry && currentPackageVersion < packageVersion)
+                        if (isCurrentVersionParsed && package.Source == PackageSource.Registry && currentPackageVersion < packageVersion)
                         {
                             myNotificationShown.Add(packageVersion);
                             myLogger.Info($"{packageId} {packageStringCurrentVersion} is older then expected.");

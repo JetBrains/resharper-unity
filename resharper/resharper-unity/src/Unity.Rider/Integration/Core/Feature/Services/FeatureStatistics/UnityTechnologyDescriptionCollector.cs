@@ -47,7 +47,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
                 new PeekUnityTechnologyDescription(),
                 new UniRxUnityTechnologyDescription(),
                 new UniTaskUnityTechnologyDescription(),
-                new UnityTestFrameworkDescription()
+                new UnityTestFrameworkDescription(),
+                new PythonScriptingUnityTechnologyDescription(),
+                new AddressablesUnityTechnologyDescription(),
+                new AndroidLogCatUnityTechnologyDescription(),
+                new CodeCoverageUnityTechnologyDescription(),
+                new UnityCollectionsUnityTechnologyDescription(),
+                new EditorCoroutinesUnityTechnologyDescription(),
+                new EntitiesGraphicsUnityTechnologyDescription(),
+                new LocalizationUnityTechnologyDescription(),
+                new MathematicsUnityTechnologyDescription(),
+                new TransportUnityTechnologyDescription(),
+                new UnityPhysicsUnityTechnologyDescription(),
+                new HavokUnityTechnologyDescription(),
+                new MlAgentsUnityTechnologyDescription(),
+                new MultiplayerToolsTechnologyDescription(),
+                new NetCodeUnityTechnologyDescription(),
+                new NetCodeGameObjectsUnityTechnologyDescription(),
+                new SerializationUnityTechnologyDescription(),
+                new LoggingUnityTechnologyDescription(),
+                new MemoryProfilerUnityTechnologyDescription(),
+                new ProfilerAnalyzerUnityTechnologyDescription(),
+                new ProfilingCoreUnityTechnologyDescription(),
+                new CollabUnityTechnologyDescription(),
+                new VisualScriptingUnityTechnologyDescription(),
             };
             
             myProjectsProcessed.Compose(lifetime, myPackagesProcessed, (a, b) => a && b).AdviseUntil(lifetime, v =>
@@ -79,7 +102,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
                 () =>
                 {
                     if (!solutionTracker.HasUnityReference.HasTrueValue())
+                    {
+                        myProjectsProcessed.Value = true;
+                        myPackagesProcessed.Value = true;
                         return;
+                    }
 
                     myPackageManager.IsInitialUpdateFinished.AdviseUntil(lifetime, v =>
                     {

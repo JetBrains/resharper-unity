@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
             {
 
                 var type = GetProgramType(lexer.TokenType);
-                if (type != InjectedHlslProgramType.Uknown)
+                if (type != InjectedHlslProgramType.Unknown)
                 {
                     lexer.Advance();
                     if (lexer.TokenType == null)
@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
             if (lexerTokenType == ShaderLabTokenType.HLSL_PROGRAM)
                 return InjectedHlslProgramType.HLSLProgram;
 
-            return InjectedHlslProgramType.Uknown;
+            return InjectedHlslProgramType.Unknown;
         }
     }
 }

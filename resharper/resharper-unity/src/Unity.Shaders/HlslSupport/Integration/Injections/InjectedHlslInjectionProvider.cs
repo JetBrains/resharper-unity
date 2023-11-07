@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+#nullable enable
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Injections;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
             return node is ICgContent;
         }
 
-        public override IInjectedNodeContext CreateInjectedNodeContext(IInjectedFileContext fileContext, ITreeNode originalNode)
+        public override IInjectedNodeContext? CreateInjectedNodeContext(IInjectedFileContext fileContext, ITreeNode originalNode)
         {
             var context = base.CreateInjectedNodeContext(fileContext, originalNode);
             if (originalNode.Parent is IIncludeBlock)
