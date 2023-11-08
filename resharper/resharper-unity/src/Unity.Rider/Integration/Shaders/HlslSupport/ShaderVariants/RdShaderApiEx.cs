@@ -16,8 +16,6 @@ public static class RdShaderApiEx
         RdShaderApi.Metal => ShaderApi.Metal,
         RdShaderApi.Vulkan => ShaderApi.Vulkan,
         RdShaderApi.D3D11L9X => ShaderApi.D3D11L9X,
-        RdShaderApi.Desktop => ShaderApi.Desktop,
-        RdShaderApi.Mobile => ShaderApi.Mobile,
         _ => throw new ArgumentOutOfRangeException(nameof(rdShaderApi), rdShaderApi, null)
     };
     
@@ -30,8 +28,6 @@ public static class RdShaderApiEx
         ShaderApi.Metal => RdShaderApi.Metal,
         ShaderApi.Vulkan => RdShaderApi.Vulkan,
         ShaderApi.D3D11L9X => RdShaderApi.D3D11L9X,
-        ShaderApi.Desktop => RdShaderApi.Desktop,
-        ShaderApi.Mobile => RdShaderApi.Mobile,
         _ => throw new ArgumentOutOfRangeException(nameof(shaderApi), shaderApi, null)
     };
 }

@@ -11,7 +11,10 @@ public class ShaderVariantsSettings
 {
     [SettingsEntry(ShaderApi.D3D11, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.ShaderVariantsSettings_e_ShaderApi_t_Shader_API))]
     public ShaderApi ShaderApi = ShaderApi.D3D11;
-    
+
+    [SettingsEntry(ShaderPlatform.Desktop, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.ShaderVariantsSettings_e_ShaderPlatform_t_Shader_Platform))]
+    public ShaderPlatform ShaderPlatform = ShaderPlatform.Desktop;
+
     [SettingsIndexedEntry(DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.ShaderVariantsSettings_e_EnabledKeywords_t_Enabled_keywords))]
     public IIndexedEntry<string, bool> EnabledKeywords = null!;
 }

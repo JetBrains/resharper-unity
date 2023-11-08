@@ -215,13 +215,12 @@
     <rider.debugger.value.evaluator implementation="com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.UnityTextureCustomComponentEvaluator"/>
     <rider.resolveContextWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetProvider" order="after projectAndFrameworkResolveContextWidget"/>
     <rider.resolveContextWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsService" order="after projectAndFrameworkResolveContextWidget"/>
-
-    <iw.actionProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsInspectionWidgetActionProvider" order="first" />
   </extensions>
 
   <applicationListeners>
     <listener class="com.jetbrains.rider.plugins.unity.SaveAllActionListener" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
     <listener class="com.jetbrains.rider.plugins.unity.explorer.MetaTrackerListener" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
+    <listener topic="com.jetbrains.rdclient.editors.FrontendTextControlHostListener" class="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsHost$TextControlListener" />
   </applicationListeners>
 
   <actions>

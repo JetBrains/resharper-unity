@@ -9,6 +9,4 @@ public enum ShaderApi
     Metal, //iOS/Mac Metal
     Vulkan, //Vulkan
     D3D11L9X, //Direct3D 11 "feature level 9.x" target for Universal Windows Platform
-    Desktop, //Windows, Mac and Linux desktop platforms, WebGL, Stadia
-    Mobile, //iOS and Android mobile platforms, tvOS
 }

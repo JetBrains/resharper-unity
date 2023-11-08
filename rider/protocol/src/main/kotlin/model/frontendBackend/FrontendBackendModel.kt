@@ -6,6 +6,8 @@ import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
 import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rider.model.nova.ide.SolutionModel.RdDocumentId
+import com.jetbrains.rider.model.nova.ide.SolutionModel.TextControlId
+import com.jetbrains.rider.model.nova.ide.SolutionModel.TextControlExtension
 import model.lib.Library
 
 // frontend <-> backend model, from point of view of frontend, meaning:
@@ -43,6 +45,9 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         +"Metal"
         +"Vulkan"
         +"D3D11L9X"
+    }
+
+    private val RdShaderPlatform = enum {
         +"Desktop"
         +"Mobile"
     }
@@ -87,10 +92,12 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         field("startLine", int)
     }
 
-    // Shader Variants
-    private val rdShaderKeyword = structdef {
-        field("name", string.interned(shaderInternScope).attrs(KnownAttrs.NlsSafe))
-        field("enabled", bool)
+    private val rdShaderVariantExtension = classdef extends TextControlExtension {
+        property("info", structdef("rdShaderVariantInfo") {
+            field("enabledCount", int)
+            field("suppressedCount", int)
+            field("availableCount", int)
+        })
     }
 
     init {
@@ -141,17 +148,21 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         })
 
         // Shader variants
+        map("shaderVariantExtensions", TextControlId, rdShaderVariantExtension)
         call("createShaderVariantInteraction", structdef("createShaderVariantInteractionArgs") {
             field("documentId", RdDocumentId)
             field("offset", int)
         }, classdef("shaderVariantInteraction") {
-            field("shaderKeywords", immutableList(rdShaderKeyword))
+            field("shaderFeatures", immutableList(immutableList(string)))
+            field("enabledKeywords", immutableList(string))
             field("shaderApi", RdShaderApi)
+            field("shaderPlatform", RdShaderPlatform)
             field("totalKeywordsCount", int)
             field("totalEnabledKeywordsCount", int)
             source("enableKeyword", string)
             source("disableKeyword", string)
             source("setShaderApi", RdShaderApi)
+            source("setShaderPlatform", RdShaderPlatform)
         })
 
         // Actions called from the frontend to the backend (and/or indirectly, Unity)

@@ -7,6 +7,7 @@ using JetBrains.Application.changes;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
+using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
@@ -34,11 +35,16 @@ public class ShaderVariantsManager : ICppChangeProvider
     private readonly SettingsIndexedEntry myDefaultEnabledKeywordsEntry;
     private readonly SettingsScalarEntry myFeaturePreviewEnabledEntry;
     private readonly SettingsScalarEntry myDefaultShaderApiEntry;
+    private readonly SettingsScalarEntry myShaderPlatformEntry;
     
-    private readonly HashSet<string> myEnabledKeywords = new();
-    private readonly HashSet<string> myAllKeywords = new(); 
+    private readonly ViewableSet<string> myEnabledKeywords = new();
+    private readonly HashSet<string> myAllKeywords = new();
+
+    private readonly ViewableProperty<int> myTotalKeywordsCount = new(0);
+    private readonly ViewableProperty<int> myTotalEnabledKeywordsCount = new(0);
     
     private ShaderApi myShaderApi;
+    private ShaderPlatform myShaderPlatform;
     private bool mySupportEnabled;
 
     public ShaderVariantsManager(Lifetime lifetime, ISolution solution, ISettingsStore settingsStore, ShaderProgramCache shaderProgramCache, ChangeManager changeManager)
@@ -52,8 +58,10 @@ public class ShaderVariantsManager : ICppChangeProvider
         myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
         myDefaultEnabledKeywordsEntry = myBoundSettingsStore.Schema.GetIndexedEntry(static (ShaderVariantsSettings s) => s.EnabledKeywords);
         myDefaultShaderApiEntry = myBoundSettingsStore.Schema.GetScalarEntry(static (ShaderVariantsSettings s) => s.ShaderApi);
+        myShaderPlatformEntry = myBoundSettingsStore.Schema.GetScalarEntry(static (ShaderVariantsSettings s) => s.ShaderPlatform);
         myEnabledKeywords.UnionWith(EnumEnabledKeywords(myDefaultEnabledKeywordsEntry));
         myShaderApi = GetShaderApi(myDefaultShaderApiEntry);
+        myShaderPlatform = GetShaderPlatform(myShaderPlatformEntry); 
         
         myFeaturePreviewEnabledEntry = myBoundSettingsStore.Schema.GetScalarEntry(static (UnitySettings s) => s.FeaturePreviewShaderVariantsSupport);
         mySupportEnabled = myBoundSettingsStore.GetValue(myFeaturePreviewEnabledEntry, null) is true;
@@ -61,6 +69,15 @@ public class ShaderVariantsManager : ICppChangeProvider
         myBoundSettingsStore.AdviseAsyncChanged(lifetime, OnBoundSettingsStoreChange);
         myShaderProgramCache.CacheUpdated.Advise(lifetime, _ => SyncShaderKeywords(myEnabledKeywords));
     }
+    
+    public ShaderApi ShaderApi => mySupportEnabled ? myShaderApi : ShaderApiDefineSymbolDescriptor.DefaultValue;
+    public ShaderPlatform ShaderPlatform => mySupportEnabled ? myShaderPlatform : ShaderPlatformDefineSymbolDescriptor.DefaultValue;
+
+    public IReadonlyProperty<int> TotalKeywordsCount => myTotalKeywordsCount;
+
+    public IReadonlyProperty<int> TotalEnabledKeywordsCount => myTotalEnabledKeywordsCount;
+
+    public IViewableSet<string> AllEnabledKeywords => myEnabledKeywords;
 
     public void SetDefineSymbolEnabled(string symbol, bool enabled)
     {
@@ -68,6 +85,8 @@ public class ShaderVariantsManager : ICppChangeProvider
         {
             if (descriptor is ShaderApiDefineSymbolDescriptor shaderApiDescriptor) 
                 SetShaderApi(enabled ? shaderApiDescriptor.GetValue(symbol) : ShaderApiDefineSymbolDescriptor.DefaultValue);
+            else if (descriptor is ShaderPlatformDefineSymbolDescriptor shaderPlatformDescriptor)
+                SetShaderPlatform(enabled ? shaderPlatformDescriptor.GetValue(symbol) : ShaderPlatformDefineSymbolDescriptor.DefaultValue);
         }
         else if (myShaderProgramCache.HasShaderKeyword(symbol))
             SetKeywordEnabled(symbol, enabled);
@@ -87,6 +106,8 @@ public class ShaderVariantsManager : ICppChangeProvider
     }
     
     public void SetShaderApi(ShaderApi shaderApi) => myBoundSettingsStore.SetValue(static (ShaderVariantsSettings s) => s.ShaderApi, shaderApi);
+    
+    public void SetShaderPlatform(ShaderPlatform shaderPlatform) => myBoundSettingsStore.SetValue(static (ShaderVariantsSettings s) => s.ShaderPlatform, shaderPlatform);
 
     public void ResetAllKeywords()
     {
@@ -96,12 +117,6 @@ public class ShaderVariantsManager : ICppChangeProvider
     }
 
     public ISet<string> GetEnabledKeywords(CppFileLocation location) => mySupportEnabled ? myEnabledKeywords : EmptySet<string>.Instance;
-    
-    public ShaderApi ShaderApi => mySupportEnabled ? myShaderApi : ShaderApi.D3D11;
-
-    public int TotalKeywordsCount => myAllKeywords.Count;
-
-    public int TotalEnabledKeywordsCount => myEnabledKeywords.Count;
 
     public bool IsKeywordEnabled(string keyword) => myEnabledKeywords.Contains(keyword);
     
@@ -111,11 +126,21 @@ public class ShaderVariantsManager : ICppChangeProvider
     {
         Action<ChangeTracker>? work = null;
         if (args.ChangedEntries.Contains(myDefaultEnabledKeywordsEntry))
-            work += changeTracker => SyncEnabledKeywords(changeTracker, myEnabledKeywords, EnumEnabledKeywords(myDefaultEnabledKeywordsEntry));
+            work += changeTracker =>
+            {
+                SyncEnabledKeywords(changeTracker, myEnabledKeywords, EnumEnabledKeywords(myDefaultEnabledKeywordsEntry));
+                myTotalEnabledKeywordsCount.Value = myEnabledKeywords.Count;
+            };
         if (args.ChangedEntries.Contains(myDefaultShaderApiEntry))
             work += changeTracker =>
             {
                 myShaderApi = GetShaderApi(myDefaultShaderApiEntry);
+                changeTracker.MarkAllDirty();
+            };
+        if (args.ChangedEntries.Contains(myShaderPlatformEntry))
+            work += changeTracker =>
+            {
+                myShaderPlatform = GetShaderPlatform(myShaderPlatformEntry);
                 changeTracker.MarkAllDirty();
             };
         if (args.ChangedEntries.Contains(myFeaturePreviewEnabledEntry))
@@ -132,6 +157,8 @@ public class ShaderVariantsManager : ICppChangeProvider
     }
     
     private ShaderApi GetShaderApi(SettingsScalarEntry shaderApiEntry) => myBoundSettingsStore.GetValue(shaderApiEntry, null) is ShaderApi shaderApi ? shaderApi : ShaderApiDefineSymbolDescriptor.DefaultValue;
+    
+    private ShaderPlatform GetShaderPlatform(SettingsScalarEntry shaderPlatformEntry) => myBoundSettingsStore.GetValue(shaderPlatformEntry, null) is ShaderPlatform shaderApi ? shaderApi : ShaderPlatformDefineSymbolDescriptor.DefaultValue;
     
     private void SyncShaderKeywords(ISet<string> enabledKeywords)
     {
@@ -153,6 +180,8 @@ public class ShaderVariantsManager : ICppChangeProvider
             if (enabledKeywords.Remove(removedKeyword))
                 changeTracker.MarkShaderKeywordDirty(removedKeyword);
         }
+
+        myTotalKeywordsCount.Value = myAllKeywords.Count;
     }
     
     private IEnumerable<string> EnumEnabledKeywords(SettingsIndexedEntry entry) => myBoundSettingsStore.EnumIndexedValues(entry, null).Keys.Cast<string>();

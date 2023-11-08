@@ -9,9 +9,11 @@ public static class ShaderDefineSymbolsRecognizer
 
     static ShaderDefineSymbolsRecognizer()
     {
-        var shaderApiDescriptor = ShaderApiDefineSymbolDescriptor.Instance;
-        foreach (var symbol in shaderApiDescriptor.AllSymbols)
-            ourDescriptors.Add(symbol, shaderApiDescriptor);
+        foreach (var descriptor in new IShaderDefineSymbolDescriptor[] { ShaderApiDefineSymbolDescriptor.Instance, ShaderPlatformDefineSymbolDescriptor.Instance })
+        {
+            foreach (var symbol in descriptor.AllSymbols)
+                ourDescriptors.Add(symbol, descriptor);    
+        }
     }
 
     public static IShaderDefineSymbolDescriptor? Recognize(string symbol) => ourDescriptors.TryGetValue(symbol, out var descriptor) ? descriptor : null;
