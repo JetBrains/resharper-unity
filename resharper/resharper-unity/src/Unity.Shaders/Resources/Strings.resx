@@ -164,6 +164,12 @@
     <data name="ShaderVariantsSettings_e_EnabledKeywords_t_Enabled_keywords" xml:space="preserve">
         <value>Enabled keywords</value>
     </data>
+    <data name="ShaderVariantsSettings_e_ShaderApi_t_Shader_API" xml:space="preserve">
+        <value>Shader API</value>
+    </data>
+    <data name="ShaderVariantsSettings_e_ShaderPlatform_t_Shader_Platform" xml:space="preserve">
+        <value>Shader Platform</value>
+    </data>
     <data name="ActiveShaderKeyword_RiderPresentableName" xml:space="preserve">
         <value>Active Shader Keyword</value>
     </data>
@@ -172,5 +178,14 @@
     </data>
     <data name="SuppressedShaderKeyword_RiderPresentableName" xml:space="preserve">
         <value>Suppressed Shader Keyword</value>
+    </data>
+    <data name="EnableShaderKeyword_Enable_shader_keyword" xml:space="preserve">
+        <value>Enable shader keyword</value>
+    </data>
+    <data name="DisableShaderKeyword_Disable_shader_keyword" xml:space="preserve">
+        <value>Disable shader keyword</value>
+    </data>
+    <data name="UnSuppressShaderKeyword_Disable_conflicting_shader_keyword" xml:space="preserve">
+        <value>Disable conflicting shader keywords: {0}</value>
     </data>
 </root>

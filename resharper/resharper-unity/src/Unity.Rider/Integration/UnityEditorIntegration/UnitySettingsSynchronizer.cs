@@ -37,6 +37,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegra
             BindSettingToProperty(lifetime, solution, host, boundStore,
                 (UnitySettings s) => s.IgnoreBreakOnUnhandledExceptionsForIl2Cpp,
                 (model, args) => model.BackendSettings.IgnoreBreakOnUnhandledExceptionsForIl2Cpp.Value = args.New);
+            BindSettingToProperty(lifetime, solution, host, boundStore,
+                (UnitySettings s) => s.FeaturePreviewShaderVariantsSupport,
+                (model, args) => model.BackendSettings.PreviewShaderVariantsSupport.Value = args.New);
         }
 
         private static void BindSettingToProperty<TKeyClass, TEntryMemberType>(
