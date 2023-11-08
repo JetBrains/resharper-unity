@@ -98,9 +98,9 @@ public class ||AllWrong|(34)|(35) : AssetPostprocessor
 (4): ReSharper Unity Implicitly Used Identifier: 
 (5): UnityCodeInsights: Script | Script | Unity script
 (6): ReSharper Unity Implicitly Used Identifier: 
-(7): UnityCodeInsights: Event function | Event function | OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
+(7): UnityCodeInsights: Event function | Event function | OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody.
 (8): ReSharper Unity Implicitly Used Identifier: 
-(9): UnityCodeInsights: Event function | Event function | OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
+(9): UnityCodeInsights: Event function | Event function | OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody.
 (10): ReSharper Unity Implicitly Used Identifier: 
 (11): UnityCodeInsights: Script | Script | Unity script
 (12): ReSharper Unity Implicitly Used Identifier: 
@@ -108,7 +108,7 @@ public class ||AllWrong|(34)|(35) : AssetPostprocessor
 (14): ReSharper Unity Implicitly Used Identifier: 
 (15): UnityCodeInsights: Event function | Event function | Update is called every frame, if the MonoBehaviour is enabled.
 (16): ReSharper Unity Implicitly Used Identifier: 
-(17): UnityCodeInsights: Event function | Event function | OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
+(17): UnityCodeInsights: Event function | Event function | OnCollisionStay is called once per frame for every Collider or Rigidbody that touches another Collider or Rigidbody.
 (18): ReSharper Unity Implicitly Used Identifier: 
 (19): UnityCodeInsights: Event function | Event function | Callback for setting up animation IK (inverse kinematics).
 (20): ReSharper Unity Implicitly Used Identifier: 

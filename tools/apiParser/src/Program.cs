@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using ApiParser.Resources;
 using JetBrains.Util;
+// ReSharper disable LocalizableElement
 
 namespace ApiParser
 {
