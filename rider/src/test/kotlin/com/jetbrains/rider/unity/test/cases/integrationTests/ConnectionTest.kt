@@ -4,16 +4,13 @@ import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.test.allure.Subsystem
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.unity.test.framework.api.*
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithSolutionBase
-import io.qameta.allure.Description
-import io.qameta.allure.Epic
-import io.qameta.allure.Feature
-import io.qameta.allure.Severity
-import io.qameta.allure.SeverityLevel
+import io.qameta.allure.*
 import org.testng.annotations.Test
 
 @Epic(Subsystem.UNITY_PLUGIN)
@@ -46,6 +43,7 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
     }
 
     @Test
+    @Mute("RIDER-100349", platforms = [PlatformType.WINDOWS_ALL])
     @Description("Check external Editor in Unity")
     fun checkExternalEditorWithExecutingMethod() = checkExternalEditor(false) {
         executeIntegrationTestMethod("DumpExternalEditor")
