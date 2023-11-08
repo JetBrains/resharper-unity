@@ -15,8 +15,10 @@ using JetBrains.ProjectModel.Settings.Storages;
 using JetBrains.Rd.Tasks;
 using JetBrains.RdBackend.Common.Features.Documents;
 using JetBrains.RdBackend.Common.Features.TextControls;
+using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderContexts;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
@@ -29,6 +31,7 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.TextControl;
+using JetBrains.Threading;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSupport.ShaderVariants;
@@ -36,12 +39,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Shaders.HlslSuppor
 [SolutionComponent]
 public class ShaderVariantsHost : IChangeProvider
 {
+    private readonly Lifetime myLifetime;
     private readonly ISolution mySolution;
     private readonly ShaderProgramCache myShaderProgramCache;
     private readonly IDocumentHost myDocumentHost;
     private readonly ITextControlHost myTextControlHost;
     private readonly ShaderVariantsManager myShaderVariantsManager;
+    private readonly IPsiModules myPsiModules;
+    private readonly ShaderContextCache myShaderContextCache;
     private readonly IPreferredRootFileProvider myPreferredPreferredRootFileProvider;
+    private readonly IPsiFiles myPsiFiles;
     private readonly ILogger myLogger;
     private readonly Dictionary<TextControlId, ShaderVariantRegistration> myActiveControls = new();
     private readonly Dictionary<TextControlId, LifetimeDefinition> myShaderVariantExtensionLifetimes = new();
@@ -51,6 +58,7 @@ public class ShaderVariantsHost : IChangeProvider
         ShaderProgramCache shaderProgramCache,
         IPreferredRootFileProvider preferredRootFileProvider,
         ISettingsStore settingsStore,
+        IPsiFiles psiFiles,
         [UsedImplicitly] SolutionSettingsReadyForSolutionInstanceComponent _,
         ChangeManager changeManager,
         ILogger logger,
@@ -61,12 +69,16 @@ public class ShaderVariantsHost : IChangeProvider
         ShaderContextCache shaderContextCache,
         FrontendBackendHost? frontendBackendHost = null)
     {
+        myLifetime = lifetime;
         mySolution = solution;
         myShaderProgramCache = shaderProgramCache;
         myPreferredPreferredRootFileProvider = preferredRootFileProvider;
+        myPsiFiles = psiFiles;
         myDocumentHost = documentHost;
         myTextControlHost = textControlHost;
         myShaderVariantsManager = shaderVariantsManager;
+        myPsiModules = psiModules;
+        myShaderContextCache = shaderContextCache;
         myLogger = logger;
 
         frontendBackendHost?.Do(model =>
@@ -78,9 +90,10 @@ public class ShaderVariantsHost : IChangeProvider
             myTextControlHost.ViewHostTextControls(lifetime, OnTextControlAdded);
             
             changeManager.RegisterChangeProvider(lifetime, this);
-            changeManager.AddDependency(lifetime, this, shaderVariantsManager);
-            changeManager.AddDependency(lifetime, this, psiModules);
-            changeManager.AddDependency(lifetime, this, shaderContextCache);
+            changeManager.AddDependency(lifetime, this, psiModules);         // aware of UnityShadersModule load event 
+            changeManager.AddDependency(lifetime, this, shaderContextCache); // aware of shader context changes 
+
+            myShaderProgramCache.CacheUpdated.Advise(lifetime, _ => RevalidateAllAsync());
         });
     }
 
@@ -125,8 +138,8 @@ public class ShaderVariantsHost : IChangeProvider
         if (myActiveControls.TryGetValue(textControlId, out var reg) && reg.TextControl != textControl)
         {
             reg.TextControl = textControl;
-            RevalidateShaderVariant(reg);
-            textControl.Caret.Position.Change.Advise(textControl.Lifetime, _ => RevalidateShaderVariant(reg));
+            RevalidateShaderVariantAsync(reg);
+            textControl.Caret.Position.Change.Advise(textControl.Lifetime, _ => RevalidateShaderVariantAsync(reg));
         }
     }
 
@@ -150,12 +163,13 @@ public class ShaderVariantsHost : IChangeProvider
     {
         // State modifications only allowed from main thread  
         mySolution.Locks.AssertMainThread();
-
-        var shaderProgramInfo = GetShaderProgramInfo(textControl.Caret.DocumentOffset());
-        var reg = new ShaderVariantRegistration(shaderVariantExtension, textControl, shaderProgramInfo);
-        UpdateShaderVariant(reg);
+        
+        var reg = new ShaderVariantRegistration(shaderVariantExtension, textControl, null);
+        shaderVariantExtension.Info.Value = new RdShaderVariantInfo(0, 0, 0);
         myActiveControls.Add(extensionLifetime, textControlId, reg);
-        textControl.Caret.Position.Change.Advise(textControl.Lifetime, _ => RevalidateShaderVariant(reg));
+        
+        RevalidateShaderVariantAsync(reg);
+        textControl.Caret.Position.Change.Advise(textControl.Lifetime, _ => RevalidateShaderVariantAsync(reg));
     }
 
     private async Task<ShaderVariantInteraction> HandleCreateShaderVariantInteraction(Lifetime lifetime, CreateShaderVariantInteractionArgs args)
@@ -209,11 +223,35 @@ public class ShaderVariantsHost : IChangeProvider
 
     public object? Execute(IChangeMap changeMap)
     {
-        foreach (var reg in myActiveControls.Values)
-            RevalidateShaderVariant(reg);
+        if (changeMap.GetChange<PsiModuleChange>(myPsiModules) is { } moduleChange && moduleChange.ModuleChanges.Any(x => x.Item is UnityShaderModule)) 
+            RevalidateAllAsync();
+        else if (changeMap.GetChange<CppChange>(myShaderContextCache) is { } cppChange)
+        {
+            foreach (var changedFile in cppChange.ChangedFiles)
+            {
+                if (changedFile.GetDocument(mySolution) is not {} document) continue;
+                foreach (var textControlId in myTextControlHost.GetTextControlIds(document))
+                {
+                    if (myActiveControls.TryGetValue(textControlId, out var reg))
+                        RevalidateShaderVariantAsync(reg);
+                }
+            }
+        }
 
         return null;
     }
+
+    private void RevalidateAllAsync()
+    {
+        myPsiFiles.StartMainReadOnCommit(myLifetime, () =>
+        {
+            foreach (var reg in myActiveControls.Values)
+                RevalidateShaderVariant(reg);
+        }).NoAwait();
+    }
+
+    private void RevalidateShaderVariantAsync(ShaderVariantRegistration shaderVariantRegistration) => 
+        myPsiFiles.StartMainReadOnCommit(shaderVariantRegistration.TextControl.Lifetime, () => RevalidateShaderVariant(shaderVariantRegistration)).NoAwait();
 
     private void RevalidateShaderVariant(ShaderVariantRegistration shaderVariantRegistration)
     {
