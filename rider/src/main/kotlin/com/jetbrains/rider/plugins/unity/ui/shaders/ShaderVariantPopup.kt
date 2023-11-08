@@ -11,6 +11,7 @@ import com.intellij.ui.CheckBoxList
 import com.intellij.ui.ListSpeedSearch
 import com.intellij.ui.awt.RelativePoint
 import com.intellij.ui.components.JBPanel
+import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.RadioButton
 import com.intellij.ui.components.panels.ListLayout
 import com.intellij.util.ui.JBUI
@@ -50,14 +51,22 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JB
         }
     }
 
-    private val shaderApiComponent = ComboBox<ShaderApiEntry>().also { add(it) }
-    private val shaderPlatformsGroup = JPanel(ListLayout.horizontal(8)).also { add(it) }
-    private val shaderKeywordsComponent = MyCheckboxList().also { add(it) }
+    private val shaderApiComponent = ComboBox<ShaderApiEntry>()
+    private val shaderPlatformsGroup = JPanel(ListLayout.horizontal(8))
+    private val shaderKeywordsComponent = MyCheckboxList()
     private val shaderKeywords = mutableMapOf<String, ShaderKeyword>()
     private val enabledKeywords = mutableSetOf<String>()
 
     init {
         border = JBUI.Borders.empty(8, 16)
+
+        add(shaderApiComponent)
+        add(shaderPlatformsGroup)
+        add(JBScrollPane().apply {
+            horizontalScrollBarPolicy = JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+            border = JBUI.Borders.empty()
+            viewport.add(shaderKeywordsComponent)
+        })
 
         initShaderApi()
         initPlatforms()
