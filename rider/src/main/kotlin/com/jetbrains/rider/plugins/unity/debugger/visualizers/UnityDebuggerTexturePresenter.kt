@@ -150,13 +150,11 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                     }
                 }
                 .onError {
-                    TextureDebuggerCollector.finishActivity(evaluationFullNameActivity, false)
                     showErrorMessage(jbLoadingPanel, parentPanel,
                                      UnityBundle.message("debugging.cannot.get.texture.debug.information", it))
                     failChildActivity(evaluationFullNameActivity)
                 }
         else {
-            TextureDebuggerCollector.finishActivity(evaluationFullNameActivity, false)
             showErrorMessage(jbLoadingPanel, parentPanel,
                              UnityBundle.message("debugging.cannot.get.texture.debug.information", value.toString()))
             failChildActivity(evaluationFullNameActivity)
@@ -192,13 +190,14 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
                             parentPanel: JBPanel<JBPanel<*>>,
                             project: Project) {
 
+        var prepareTextureToShowStarted: StructuredIdeActivity? = null
+
         try {
             val json = it.value[0].value
 
             val textureInfo = Gson().fromJson(json, TextureInfo::class.java)
-            val prepareTextureToShowStarted =
-                TextureDebuggerCollector.prepareTextureToShowStarted(project, texturePresentationActivity, textureInfo.Width,
-                                                                     textureInfo.Height)
+            prepareTextureToShowStarted = TextureDebuggerCollector.prepareTextureToShowStarted(project, texturePresentationActivity, textureInfo.Width,
+                                                                                               textureInfo.Height)
 
             if (textureInfo == null) {
                 showErrorMessage(jbLoadingPanel, parentPanel, UnityBundle.message("debugging.cannot.parse.texture.info", json))
@@ -225,18 +224,15 @@ class UnityDebuggerTexturePresenter : RiderDebuggerValuePresenter {
         }
         catch (e: Throwable) {
             showErrorMessage(jbLoadingPanel, parentPanel, UnityBundle.message("debugging.cannot.parse.texture.info", it))
-            finishMasterActivity(ExecutionResult.Failed)
+            failChildActivity(prepareTextureToShowStarted)
         }
     }
 
     private fun finishMasterActivity(isSucceed: ExecutionResult) {
-
-        if(texturePresentationActivity == null)
-            return
-
-        val activity = texturePresentationActivity!!
-        texturePresentationActivity = null;
-        TextureDebuggerCollector.finishActivity(activity, isSucceed)
+        val activity = texturePresentationActivity
+        texturePresentationActivity = null
+        if(activity != null)
+            TextureDebuggerCollector.finishActivity(activity, isSucceed)
     }
 
     private fun failChildActivity(childActivity: StructuredIdeActivity?) {

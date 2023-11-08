@@ -59,11 +59,10 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
             closeOnEsc()
         }
 
-        Disposer.register(panel) { lifetimeDefinition.terminate() }
-        lifetime.onTermination { panel.close() }
-
         val callback = EvaluationCallback(panel.component!!, this, project)
         this.startEvaluation(callback)
+        Disposer.register(panel) { lifetimeDefinition.terminate() }
         panel.show()
+        lifetime.onTerminationIfAlive  { panel.close() }
     }
 }

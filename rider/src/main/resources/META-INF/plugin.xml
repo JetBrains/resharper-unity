@@ -354,6 +354,7 @@
     <notificationGroup id="Unity commit failure" displayType="BALLOON" bundle="messages.UnityBundle"
                        key="notification.group.unity.unity.commit.failure"/>
     <iconMapper mappingFile="UnityIconMappings.json"/>
+    <statistics.counterUsagesCollector implementationClass="com.jetbrains.rider.plugins.unity.debugger.visualizers.TextureDebuggerCollector"/>
   </extensions>
 
   <extensions defaultExtensionNs="JavaScript">
