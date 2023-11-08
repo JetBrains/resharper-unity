@@ -30,7 +30,7 @@ class UnityTextureCustomComponentEvaluatorFactory : RiderCustomComponentEvaluato
                                                     session,
                                                     place,
                                                     presenters,
-                                                    lifetime,
+                                                    lifetime.createNested(),
                                                     onPopupBeingClicked,
                                                     shouldIgnorePropertiesComputation,
                                                     shouldUpdatePresentation,

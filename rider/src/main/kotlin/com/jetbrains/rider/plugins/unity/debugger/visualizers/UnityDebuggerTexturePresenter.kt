@@ -40,9 +40,6 @@ import java.awt.BorderLayout
 import java.awt.GraphicsConfiguration
 import java.awt.GraphicsEnvironment
 import java.awt.Rectangle
-import java.awt.event.ActionEvent
-import java.awt.event.KeyEvent
-import java.awt.event.WindowEvent
 import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
 import java.awt.image.ColorModel
