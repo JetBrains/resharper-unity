@@ -10,7 +10,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.platform.util.createNestedAsyncPromise
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.lifetime.isNotAlive
 import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel

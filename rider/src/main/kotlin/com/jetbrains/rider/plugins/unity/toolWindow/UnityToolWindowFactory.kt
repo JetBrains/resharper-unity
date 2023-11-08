@@ -8,7 +8,7 @@ import com.intellij.openapi.wm.impl.status.StatusBarUtil
 import com.intellij.ui.content.ContentManagerEvent
 import com.intellij.ui.content.ContentManagerListener
 import com.jetbrains.rd.platform.util.idea.LifetimedService
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelView

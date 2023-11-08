@@ -1,6 +1,6 @@
 package com.jetbrains.rider.unity.test.cases.integrationTests
 
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.test.allure.Subsystem

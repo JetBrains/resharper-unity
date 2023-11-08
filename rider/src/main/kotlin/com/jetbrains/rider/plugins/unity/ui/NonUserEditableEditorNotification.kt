@@ -7,7 +7,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotificationProvider
 import com.intellij.util.ui.UIUtil
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rider.plugins.unity.actions.ShowFileInUnityAction
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.isUnityProject

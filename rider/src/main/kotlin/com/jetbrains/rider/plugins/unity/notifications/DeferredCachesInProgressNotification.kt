@@ -6,7 +6,7 @@ import com.intellij.openapi.wm.WindowManager
 import com.intellij.openapi.wm.ex.StatusBarEx
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.platform.util.idea.LifetimedService
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.protocol.SolutionExtListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNull

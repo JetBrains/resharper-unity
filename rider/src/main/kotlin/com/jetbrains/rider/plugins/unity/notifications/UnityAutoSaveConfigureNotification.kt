@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity.notifications
 
 import com.intellij.ide.GeneralSettings
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.event.DocumentEvent
@@ -15,7 +16,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.LightColors
 import com.intellij.util.application
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.*
@@ -26,6 +27,8 @@ import com.jetbrains.rider.plugins.unity.model.ScriptCompilationDuringPlay
 import com.jetbrains.rider.plugins.unity.model.UnityEditorState
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class UnityAutoSaveConfigureNotification : ProjectActivity {
     private val propertiesComponent: PropertiesComponent = PropertiesComponent.getInstance()
@@ -83,7 +86,7 @@ class UnityAutoSaveConfigureNotification : ProjectActivity {
 
     override suspend fun execute(project: Project) {
         val lifetimeDefinition = project.lifetime.createNested()
-        application.invokeLater {
+        withContext(Dispatchers.EDT) {
             project.solution.isLoaded.whenTrue(project.lifetime) {
                 if (!propertiesComponent.getBoolean(settingName) && UnityProjectDiscoverer.getInstance(project).isUnityProject) {
 

@@ -12,7 +12,7 @@ import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.Transient
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.DotNetDebugRunner
 import com.jetbrains.rider.plugins.unity.UnityBundle

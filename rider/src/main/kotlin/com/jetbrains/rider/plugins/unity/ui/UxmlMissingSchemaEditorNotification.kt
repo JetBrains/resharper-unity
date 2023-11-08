@@ -13,7 +13,7 @@ import com.intellij.ui.HyperlinkLabel
 import com.intellij.util.io.isDirectory
 import com.intellij.util.text.VersionComparatorUtil
 import com.jetbrains.rd.framework.RdTaskResult
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService

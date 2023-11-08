@@ -3,7 +3,7 @@ package com.jetbrains.rider.unity.test.cases
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
 import com.intellij.testFramework.TestModeFlags
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.completion.RiderCodeCompletionExtraSettings

@@ -16,7 +16,7 @@ import com.intellij.openapi.vfs.newvfs.events.*
 import com.intellij.util.PathUtil
 import com.intellij.util.application
 import com.jetbrains.rd.platform.util.getLogger
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.addUnique
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
 import com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater

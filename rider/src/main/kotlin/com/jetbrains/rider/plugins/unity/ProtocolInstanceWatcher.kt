@@ -1,10 +1,11 @@
 package com.jetbrains.rider.plugins.unity
 
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.util.application
 import com.intellij.util.io.isDirectory
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rider.model.RdDelta
@@ -13,6 +14,8 @@ import com.jetbrains.rider.model.RdDeltaType
 import com.jetbrains.rider.model.fileSystemModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDirectory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.nio.file.ClosedWatchServiceException
 import java.nio.file.FileSystems
 import java.nio.file.StandardWatchEventKinds.ENTRY_CREATE
@@ -24,7 +27,7 @@ import kotlin.concurrent.thread
 
 class ProtocolInstanceWatcher : ProjectActivity {
     override suspend fun execute(project: Project) {
-        application.invokeLater {
+        withContext(Dispatchers.EDT) {
             project.solution.isLoaded.whenTrue(project.lifetime) {
                 if (project.isUnityProject()) {
                     thread(name = "ProtocolInstanceWatcher") {

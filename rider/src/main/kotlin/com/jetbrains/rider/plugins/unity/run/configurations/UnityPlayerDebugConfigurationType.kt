@@ -13,7 +13,7 @@ import com.intellij.openapi.rd.util.startUnderBackgroundProgressAsync
 import com.intellij.openapi.rd.util.toPromise
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.layout.ComponentPredicate
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rider.debugger.IRiderDebuggable
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.run.*

@@ -2,7 +2,7 @@ package com.jetbrains.rider.unity.test.cases
 import com.jetbrains.rider.unity.test.framework.SettingsHelper
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel

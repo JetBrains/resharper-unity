@@ -1,5 +1,5 @@
 import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.daemon.util.annotateDocumentWithHighlighterTags
 import com.jetbrains.rdclient.daemon.util.backendAttributeIdOrThrow
