@@ -33,6 +33,7 @@ import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.workspace.hasPackage
+import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionManager
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
@@ -70,12 +71,9 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
 
     override suspend fun execute(project: Project) {
         withContext(Dispatchers.EDT) {
-            if (project.isDisposed) return@withContext
+            if (project.isDisposed || project.isDefault) return@withContext
 
             project.solution.isLoaded.whenTrue(project.lifetime) {
-                if (!UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder)
-                    return@whenTrue
-
                 val model = project.solution.frontendBackendModel
                 val solutionDescription = project.solutionDescription
                 val title = UnityBundle.message("notification.title.advanced.unity.integration.unavailable")
@@ -85,6 +83,9 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                     "notification.content.make.sure.jetbrains.rider.editor.installed.in.unity.s.package.manager.rider.set.as.external.editor",
                     marketingVersion)
                 if (solutionDescription is RdExistingSolution) { // proper solution
+                    if (!UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder)
+                        return@whenTrue
+
                     it.launchNonUrgentBackground {
                         // Sometimes in Unity "External Script Editor" is set to "Open by file extension"
                         // We check that Library/EditorInstance.json is present, but protocol connection was not initialized
@@ -106,6 +107,12 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                     }
                 }
                 else if (solutionDescription is RdVirtualSolution) { // opened as folder
+                    val hasUnityFileStructure = UnityProjectDiscoverer.hasUnityFileStructure(project.projectDir)
+                    if (!(hasUnityFileStructure
+                          || UnityProjectDiscoverer.searchUpForFolderWithUnityFileStructure(project.projectDir).first))
+                        return@whenTrue
+
+
                     @Nls(capitalization = Nls.Capitalization.Sentence)
                     val adviceText = UnityBundle.message("advice.pleas.close.and.reopen.through.the.unity.editor.or.by.opening.a.sln.file")
 
@@ -122,8 +129,9 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                     // be sure that PackageManager is fully loaded at this time.
                     @NlsSafe
                     val contentWoSolution =
-                        if (UnityInstallationFinder.getInstance(project).requiresRiderPackage()
-                            && !WorkspaceModel.getInstance(project).hasPackage("com.unity.ide.rider")
+                        if (!hasUnityFileStructure || // means searchUpForFolderWithUnityFileStructure is true
+                            (UnityInstallationFinder.getInstance(project).requiresRiderPackage()
+                            && !WorkspaceModel.getInstance(project).hasPackage("com.unity.ide.rider"))
                         ) {
                             """$mainText       
             <ul style="margin-left:10px">
