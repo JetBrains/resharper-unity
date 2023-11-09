@@ -266,8 +266,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
         {
             // TODO: For ReSharper, this is unavailable if the user hasn't installed ReSharper C++
             AddHeader(Strings.UnityOptionsPage_AddShadersSection_Shaders);
-            AddBoolOption((UnitySettings s) => s.SuppressShaderErrorHighlighting,
-                Strings.UnityOptionsPage_AddShadersSection_Suppress_resolve_errors_of_unqualified_names);
+            AddBoolOption((UnitySettings s) => s.SuppressShaderErrorHighlighting, Strings.UnityOptionsPage_AddShadersSection_Suppress_resolve_errors_of_unqualified_names);
+            AddBoolOption((UnitySettings s) => s.FeaturePreviewShaderVariantsSupport, Strings.UnityOptionsPage_AddShadersSection_Preview_Shader_variants_support);
         }
 
         private void AddDebuggingSection()

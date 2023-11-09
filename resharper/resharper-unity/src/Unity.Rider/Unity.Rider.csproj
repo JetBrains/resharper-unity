@@ -22,6 +22,7 @@
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="References">
+    <PackageReference Include="System.Collections.Immutable" />
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="JetBrains.HabitatDetector" />
     <PackageReference Include="JetBrains.Lifetimes" />

@@ -1,11 +1,13 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using System.Collections.Immutable;
 using JetBrains.Application;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Cpp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches;
@@ -26,19 +28,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlight
 public class ShaderVariantHighlightStage : CppDaemonStageBase
 {
     private readonly ShaderProgramCache myShaderProgramCache;
-    private readonly IEnabledShaderKeywordsProvider? myEnabledShaderKeywordsProvider;
+    private readonly UnitySolutionTracker myUnitySolutionTracker;
+    private readonly ShaderVariantsManager myShaderVariantsManager;
     
-    public ShaderVariantHighlightStage(ElementProblemAnalyzerRegistrar elementProblemAnalyzerRegistrar, ShaderProgramCache shaderProgramCache, [Optional] IEnabledShaderKeywordsProvider? enabledShaderKeywordsProvider) : base(elementProblemAnalyzerRegistrar)
+    public ShaderVariantHighlightStage(ElementProblemAnalyzerRegistrar elementProblemAnalyzerRegistrar, ShaderProgramCache shaderProgramCache, UnitySolutionTracker unitySolutionTracker, ShaderVariantsManager shaderVariantsManager) : base(elementProblemAnalyzerRegistrar)
     {
         myShaderProgramCache = shaderProgramCache;
-        myEnabledShaderKeywordsProvider = enabledShaderKeywordsProvider;
+        myUnitySolutionTracker = unitySolutionTracker;
+        myShaderVariantsManager = shaderVariantsManager;
     }
 
     protected override IDaemonStageProcess? CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings, DaemonProcessKind processKind, CppFile file) =>
         processKind switch
         {
-            DaemonProcessKind.VISIBLE_DOCUMENT when file.InclusionContext.RootContext is { BaseFile: var rootFile, LanguageDialect: var dialect } && myShaderProgramCache.TryGetShaderProgramInfo(rootFile, out var shaderProgramInfo) 
-                => new ShaderKeywordsHighlightProcess(process, settings, file, shaderProgramInfo, myEnabledShaderKeywordsProvider?.GetEnabledKeywords(rootFile) ?? EmptySet<string>.InstanceSet, dialect.Pragmas),
+            DaemonProcessKind.VISIBLE_DOCUMENT when settings.GetValue((UnitySettings s) => s.FeaturePreviewShaderVariantsSupport) && 
+                                                    myUnitySolutionTracker.IsUnityProjectOrHasUnityReference && 
+                                                    file.InclusionContext.RootContext is { BaseFile: var rootFile, LanguageDialect: var dialect } && 
+                                                    myShaderProgramCache.TryGetShaderProgramInfo(rootFile, out var shaderProgramInfo) 
+                => new ShaderKeywordsHighlightProcess(process, settings, file, shaderProgramInfo, myShaderVariantsManager.GetEnabledKeywords(rootFile), dialect.Pragmas),
             _ => null
         };
 
@@ -160,11 +167,15 @@ file class ShaderKeywordsHighlightProcess : IDaemonStageProcess, IRecursiveEleme
                 ++index;
             }
 
+            var suppressors = ImmutableArray.CreateBuilder<string>();
             for (; index < items.Count; ++index)
             {
                 var item = items[index];
                 if (item.Enabled)
-                    highlighting = ReferenceEquals(item.Keyword, enabledKeyword) ? new EnabledShaderKeywordHighlight(item.Keyword) : new SuppressedShaderKeywordHighlight(item.Keyword, null);
+                {
+                    highlighting = ReferenceEquals(item.Keyword, enabledKeyword) ? new EnabledShaderKeywordHighlight(item.Keyword) : new SuppressedShaderKeywordHighlight(item.Keyword, suppressors.MoveOrCopyToImmutableArray());
+                    suppressors.Add(item.Keyword.Name);
+                }
                 else
                     highlighting = new DisabledShaderKeywordHighlight(item.Keyword);
                 consumer.ConsumeHighlighting(new HighlightingInfo(highlighting.CalculateRange(), highlighting));
@@ -175,22 +186,30 @@ file class ShaderKeywordsHighlightProcess : IDaemonStageProcess, IRecursiveEleme
     private void VisitMacroReference(MacroReference macroReference, IHighlightingConsumer consumer)
     {
         if (macroReference.GetReferencedSymbol() is { Substitution: "1", HasParameters: false } symbol
-            && !symbol.Location.ContainingFile.IsValid()
-            && myShaderProgramInfo.HasKeyword(symbol.Name))
+            && !symbol.Location.ContainingFile.IsValid())
         {
-            Consume(consumer, myEnabledKeywords.Contains(symbol.Name) ? new EnabledShaderKeywordHighlight(macroReference) : new ImplicitlyEnabledShaderKeywordHighlight(macroReference));
+            if (myShaderProgramInfo.HasKeyword(symbol.Name))
+                Consume(consumer, myEnabledKeywords.Contains(symbol.Name) ? new EnabledShaderKeywordHighlight(macroReference) : new ImplicitlyEnabledShaderKeywordHighlight(macroReference));
+            else if (ShaderDefineSymbolsRecognizer.Recognize(symbol.Name) is {} descriptor)
+                Consume(consumer, !descriptor.IsDefaultSymbol(symbol.Name) ? new EnabledShaderKeywordHighlight(macroReference) : new ImplicitlyEnabledShaderKeywordHighlight(macroReference));
         }
     }
 
     private void VisitIdentifier(CppIdentifierTokenNode identifierNode, IHighlightingConsumer consumer)
     {
-        var keyword = identifierNode.Name;
-        if (myShaderProgramInfo.GetShaderFeatures(keyword) is not { Count: > 0 } features)
-            return;
+        var symbol = identifierNode.Name;
+        if (myShaderProgramInfo.GetShaderFeatures(symbol) is { Count: > 0 } features)
+            ConsumeInactiveKeyword(identifierNode, features, consumer);
+        else if (ShaderDefineSymbolsRecognizer.Recognize(symbol) is not null)
+            Consume(consumer, new DisabledShaderKeywordHighlight(identifierNode));
+    }
 
+    private void ConsumeInactiveKeyword(CppIdentifierTokenNode identifierNode, OneToListMap<string, ShaderFeature>.ValueCollection features, IHighlightingConsumer consumer)
+    {
+        var keyword = identifierNode.Name;
         if (myEnabledKeywords.Contains(keyword))
         {
-            var suppressors = new List<string>();
+            var suppressors = ImmutableArray.CreateBuilder<string>();
             foreach (var feature in features)
             {
                 foreach (var entry in feature.Entries)
@@ -204,7 +223,7 @@ file class ShaderKeywordsHighlightProcess : IDaemonStageProcess, IRecursiveEleme
 
             if (suppressors.Count > 0)
             {
-                Consume(consumer, new SuppressedShaderKeywordHighlight(identifierNode, suppressors));
+                Consume(consumer, new SuppressedShaderKeywordHighlight(identifierNode, suppressors.MoveOrCopyToImmutableArray()));
                 return;
             }
         }
