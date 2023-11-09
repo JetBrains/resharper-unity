@@ -1,19 +1,26 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
+import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.util.EditorUtil
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.openapi.ui.JBPopupMenu
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.CheckBoxList
 import com.intellij.ui.ListSpeedSearch
+import com.intellij.ui.RelativeFont
 import com.intellij.ui.SeparatorComponent
 import com.intellij.ui.awt.RelativePoint
+import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.ui.components.panels.ListLayout
 import com.intellij.ui.components.panels.VerticalLayout
 import com.intellij.util.ui.JBDimension
@@ -23,6 +30,7 @@ import com.jetbrains.rdclient.document.getFirstDocumentId
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.common.ui.ToggleButtonModel
+import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileType
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.CreateShaderVariantInteractionArgs
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderApi
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderPlatform
@@ -32,15 +40,12 @@ import java.awt.Dimension
 import java.awt.Font
 import java.awt.event.ItemEvent
 import java.awt.font.TextAttribute
-import javax.swing.ButtonGroup
-import javax.swing.JCheckBox
-import javax.swing.JComponent
-import javax.swing.JPanel
+import javax.swing.*
 
-class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JBPanel<ShaderVariantPopup>(VerticalLayout(5)) {
+class ShaderVariantPopup(private val interaction: ShaderVariantInteraction, @Nls val contextName: String) : JBPanel<ShaderVariantPopup>(VerticalLayout(5)) {
     companion object {
-        private fun createPopup(interaction: ShaderVariantInteraction): JBPopup {
-            val shaderVariantPopup = ShaderVariantPopup(interaction)
+        private fun createPopup(interaction: ShaderVariantInteraction, @Nls contextName: String): JBPopup {
+            val shaderVariantPopup = ShaderVariantPopup(interaction, contextName)
             return JBPopupFactory.getInstance().createComponentPopupBuilder(shaderVariantPopup, shaderVariantPopup.shaderKeywordsComponent)
                 .setRequestFocus(true)
                 .createPopup()
@@ -51,8 +56,9 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JB
             val model = FrontendBackendHost.getInstance(project).model
             val lifetime = LifetimeDefinition()
             EditorUtil.disposeWithEditor(editor) { lifetime.terminate() }
-            model.createShaderVariantInteraction.start(lifetime, CreateShaderVariantInteractionArgs(id, editor.caretModel.offset)).result.advise(lifetime) {
-                createPopup(it.unwrap()).show(showAt)
+            model.createShaderVariantInteraction.start(lifetime, CreateShaderVariantInteractionArgs(id, editor.caretModel.offset)).result.advise(lifetime) { result ->
+                val contextName = editor.virtualFile?.takeIf { it.fileType !is ShaderLabFileType }?.name ?: UnityBundle.message("shaderVariant.popup.shaderProgram")
+                createPopup(result.unwrap(), contextName).show(showAt)
             }
         }
     }
@@ -62,31 +68,58 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JB
     private val shaderPlatformsGroup = ButtonGroup()
     private val shaderKeywordsComponent = MyCheckboxList()
     private val builtinDefineSymbolsComponent = CheckBoxList<String>()
+    private val otherEnabledKeywordsLabel = JBLabel()
+
     private val shaderKeywords = mutableMapOf<String, ShaderKeyword>()
     private val enabledKeywords = mutableSetOf<String>()
+    private var ownEnabledKeywordsCount = 0
+    private var noNotifyKeywordChange = false
 
     init {
+        initShaderApi()
+        initPlatforms()
+        initBuiltinDefineSymbols()
+        initKeywords()
+
         border = JBUI.Borders.empty(8, 16)
+
+        val boldFont = RelativeFont.BOLD.derive(font)
 
         add(shaderApiComponent)
         add(shaderPlatformsComponent)
         add(JBScrollPane().apply {
             horizontalScrollBarPolicy = JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
             maximumSize = JBDimension.size(Dimension(Int.MAX_VALUE, 500))
-            viewport.add(JPanel(ListLayout.vertical()).apply {
+            border = JBUI.Borders.empty()
+
+            viewport.add(JPanel(VerticalLayout(0)).apply {
+                border = JBUI.Borders.empty()
+
                 add(builtinDefineSymbolsComponent)
+                add(JBLabel(UnityBundle.message("shaderVariant.popup.keywords.label", contextName)).apply {
+                    isEnabled = false
+                    font = boldFont
+                })
                 add(SeparatorComponent())
                 add(shaderKeywordsComponent)
             })
         })
-
-        initShaderApi()
-        initPlatforms()
-        initBuiltinDefineSymbols()
-        initKeywords()
+        add(otherEnabledKeywordsLabel.apply {
+            isEnabled = false
+        })
+        add(LinkLabel<ActionGroup>(UnityBundle.message("shaderVariant.popup.reset.link.text"), AllIcons.Actions.InlayDropTriangle).apply {
+            horizontalTextPosition = SwingConstants.LEFT
+            setListener({ linkLabel, group ->
+                            val popup = ActionManager.getInstance().createActionPopupMenu("ShaderVariantWidget", group)
+                            JBPopupMenu.showBelow(linkLabel, popup.component)
+                        }, ResetActionGroup(this@ShaderVariantPopup))
+        })
     }
 
     private fun onCheckBoxSelectionChanged(index: Int, value: Boolean) {
+        if (noNotifyKeywordChange)
+            return
+
         shaderKeywordsComponent.getItemAt(index)?.let { item ->
             interaction.apply {
                 val signal = if (value) enableKeyword else disableKeyword
@@ -100,9 +133,51 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JB
         }
     }
 
+    private fun disableKeywordsForCurrentContext() {
+        val checkboxList = shaderKeywordsComponent
+        withNoNotifyKeywordChange {
+            val disabledKeywords = mutableListOf<String>()
+            for (shaderKeyword in shaderKeywords.values) {
+                if (shaderKeyword.state != ShaderKeywordState.DISABLED) {
+                    checkboxList.setItemSelected(shaderKeyword, false)
+                    enabledKeywords.remove(shaderKeyword.name)
+                    disabledKeywords.add(shaderKeyword.name)
+                }
+            }
+            interaction.disableKeywords.fire(disabledKeywords)
+            updateKeywords()
+        }
+    }
+
+    private fun disableKeywordsInAllContexts() {
+        val checkboxList = shaderKeywordsComponent
+        withNoNotifyKeywordChange {
+            for (shaderKeyword in shaderKeywords.values) {
+                if (shaderKeyword.state != ShaderKeywordState.DISABLED) {
+                    checkboxList.setItemSelected(shaderKeyword, false)
+                }
+            }
+            interaction.disableKeywords.fire(enabledKeywords.toList())
+            enabledKeywords.clear()
+            updateKeywords()
+        }
+    }
+
+    private inline fun <reified T> withNoNotifyKeywordChange(action: () -> T) {
+        noNotifyKeywordChange = true
+        try {
+            action()
+        }
+        finally {
+            noNotifyKeywordChange = false
+        }
+    }
+
     private fun initShaderApi() {
-        for (api in ShaderApiEntry.all.values)
+        for (api in ShaderApiEntry.all.values) {
             shaderApiComponent.addItem(api)
+        }
+
         shaderApiComponent.selectedItem = ShaderApiEntry.all[interaction.shaderApi]
         shaderApiComponent.addItemListener {
             if (it.stateChange == ItemEvent.SELECTED) {
@@ -170,10 +245,13 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JB
     }
 
     private fun updateKeywords() {
+        ownEnabledKeywordsCount = 0
         for (keyword in shaderKeywords.values) {
-            keyword.state = when {
-                enabledKeywords.contains(keyword.name) -> ShaderKeywordState.SUPPRESSED
-                else -> ShaderKeywordState.DISABLED
+            if (enabledKeywords.contains(keyword.name)) {
+                ++ownEnabledKeywordsCount
+                keyword.state = ShaderKeywordState.SUPPRESSED
+            } else {
+                keyword.state = ShaderKeywordState.DISABLED
             }
         }
 
@@ -185,6 +263,9 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JB
                 }
             }
         }
+
+        val otherKeywordsCount = enabledKeywords.size - ownEnabledKeywordsCount
+        otherEnabledKeywordsLabel.text = UnityBundle.message("shaderVariant.popup.active.in.other.contexts", otherKeywordsCount)
     }
 
     private fun addShaderKeyword(shaderKeyword: ShaderKeyword, enabled: Boolean) {
@@ -208,6 +289,36 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JB
                 rootComponent.font = strikethroughFont
             return rootComponent
         }
+    }
+
+    @Suppress("DialogTitleCapitalization")
+    private class ResetCurrentContextKeywords(private val shaderVariantPopup: ShaderVariantPopup) : DumbAwareAction() {
+        override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+
+        override fun update(e: AnActionEvent) {
+            e.presentation.isEnabled = shaderVariantPopup.ownEnabledKeywordsCount > 0
+            e.presentation.text = UnityBundle.message("shaderVariant.popup.reset.for.context.text", shaderVariantPopup.contextName, shaderVariantPopup.ownEnabledKeywordsCount)
+        }
+
+        override fun actionPerformed(e: AnActionEvent) = shaderVariantPopup.disableKeywordsForCurrentContext()
+    }
+
+    @Suppress("DialogTitleCapitalization")
+    private class ResetAllContextsKeywords(private val shaderVariantPopup: ShaderVariantPopup) : DumbAwareAction() {
+        override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+
+        override fun update(e: AnActionEvent) {
+            e.presentation.isEnabled = shaderVariantPopup.enabledKeywords.size > 0
+            e.presentation.text = UnityBundle.message("shaderVariant.popup.reset.in.all.contexts.text", shaderVariantPopup.enabledKeywords.size)
+        }
+
+        override fun actionPerformed(e: AnActionEvent) = shaderVariantPopup.disableKeywordsInAllContexts()
+    }
+
+    private class ResetActionGroup(shaderVariantPopup: ShaderVariantPopup) : ActionGroup() {
+        private val actions = arrayOf<AnAction>(ResetCurrentContextKeywords(shaderVariantPopup), ResetAllContextsKeywords(shaderVariantPopup))
+
+        override fun getChildren(e: AnActionEvent?): Array<AnAction> = actions
     }
 
     private data class ShaderApiEntry(val value: RdShaderApi, @Nls val name: String, @NlsSafe val defineSymbol: String) {
@@ -243,5 +354,5 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JB
         SUPPRESSED
     }
 
-    private data class ShaderKeyword(@NlsSafe val name: String, var state: ShaderKeywordState = ShaderKeywordState.DISABLED)
+    private class ShaderKeyword(@NlsSafe val name: String, var state: ShaderKeywordState = ShaderKeywordState.DISABLED)
 }

@@ -180,6 +180,7 @@ public class ShaderVariantsHost : IChangeProvider
         });
         interaction.EnableKeyword.Advise(lifetime, keyword => myShaderVariantsManager.SetKeywordEnabled(keyword, true));
         interaction.DisableKeyword.Advise(lifetime, keyword => myShaderVariantsManager.SetKeywordEnabled(keyword, false));
+        interaction.DisableKeywords.Advise(lifetime, keywords => myShaderVariantsManager.SetKeywordsEnabled(keywords, false));
         interaction.SetShaderApi.Advise(lifetime, api => myShaderVariantsManager.SetShaderApi(api.AsShaderApi()));
         interaction.SetShaderPlatform.Advise(lifetime, platform => myShaderVariantsManager.SetShaderPlatform(platform.AsShaderPlatform()));
         return interaction;
