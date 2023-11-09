@@ -1,4 +1,4 @@
-﻿# 313 ITEMS #
+﻿# 314 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -311,10 +311,11 @@ TextureCube
 TextureCubeArray
 TriangleStream
 SHADER_API_D3D11
+SHADER_API_DESKTOP
 UNITY_VERSION
 tile_static
 # AUTOMATIC #
-# 313 ITEMS #
+# 314 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -627,5 +628,6 @@ TextureCube
 TextureCubeArray
 TriangleStream
 SHADER_API_D3D11
+SHADER_API_DESKTOP
 UNITY_VERSION
 tile_static

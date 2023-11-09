@@ -1296,6 +1296,9 @@ a plugin to be installed to a project.</value>
     <data name="UnityOptionsPage_AddShadersSection_Suppress_resolve_errors_of_unqualified_names" xml:space="preserve">
         <value>Suppress resolve errors of unqualified names</value>
     </data>
+    <data name="UnityOptionsPage_AddShadersSection_Preview_Shader_variants_support" xml:space="preserve">
+        <value>[Preview] Shader variants support</value>
+    </data>
     <data name="UnityOptionsPage_AddTextBasedAssetsSection_Automatically_disable_asset_indexing_for_large_solutions" xml:space="preserve">
         <value>Automatically disable asset indexing for large solutions</value>
     </data>
@@ -1397,6 +1400,9 @@ a plugin to be installed to a project.</value>
     </data>
     <data name="UnitySettings_t_Suppress_resolve_errors_in_HLSL_" xml:space="preserve">
         <value>Suppress resolve errors in HLSL</value>
+    </data>
+    <data name="UnitySettings_t_Shader_variants_support_Preview" xml:space="preserve">
+        <value>Shader variants support (Preview)</value>
     </data>
     <data name="UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_" xml:space="preserve">
         <value>Suppress resolve errors in render-pipeline package in HLSL</value>

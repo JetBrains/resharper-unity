@@ -469,6 +469,7 @@
     public static string UnityOptionsPage_AddPerformanceAnalysisSubSection_Show_gutter_icons_for_frequently_called_methods => ResourceManager.GetString("UnityOptionsPage_AddPerformanceAnalysisSubSection_Show_gutter_icons_for_frequently_called_methods");
     public static string UnityOptionsPage_AddShadersSection_Shaders => ResourceManager.GetString("UnityOptionsPage_AddShadersSection_Shaders");
     public static string UnityOptionsPage_AddShadersSection_Suppress_resolve_errors_of_unqualified_names => ResourceManager.GetString("UnityOptionsPage_AddShadersSection_Suppress_resolve_errors_of_unqualified_names");
+    public static string UnityOptionsPage_AddShadersSection_Preview_Shader_variants_support => ResourceManager.GetString("UnityOptionsPage_AddShadersSection_Preview_Shader_variants_support");
     public static string UnityOptionsPage_AddTextBasedAssetsSection_Automatically_disable_asset_indexing_for_large_solutions => ResourceManager.GetString("UnityOptionsPage_AddTextBasedAssetsSection_Automatically_disable_asset_indexing_for_large_solutions");
     public static string UnityOptionsPage_AddTextBasedAssetsSection_Cache_prefab_data_to_improve_find_usage_performance => ResourceManager.GetString("UnityOptionsPage_AddTextBasedAssetsSection_Cache_prefab_data_to_improve_find_usage_performance");
     public static string UnityOptionsPage_AddTextBasedAssetsSection_Merge_parameters => ResourceManager.GetString("UnityOptionsPage_AddTextBasedAssetsSection_Merge_parameters");
@@ -503,6 +504,7 @@
     public static string UnitySettings_t_Should_yaml_heuristic_be_applied_ => ResourceManager.GetString("UnitySettings_t_Should_yaml_heuristic_be_applied_");
     public static string UnitySettings_t_Show_Inspector_properties_changes_in_editor => ResourceManager.GetString("UnitySettings_t_Show_Inspector_properties_changes_in_editor");
     public static string UnitySettings_t_Suppress_resolve_errors_in_HLSL_ => ResourceManager.GetString("UnitySettings_t_Suppress_resolve_errors_in_HLSL_");
+    public static string UnitySettings_t_Shader_variants_support_Preview => ResourceManager.GetString("UnitySettings_t_Shader_variants_support_Preview");
     public static string UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_ => ResourceManager.GetString("UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_");
     public static string UnitySettings_t_Unity_highlighter_scheme_for_editor_ => ResourceManager.GetString("UnitySettings_t_Unity_highlighter_scheme_for_editor_");
     public static string UnitySettings_t_Unity_plugin_settings => ResourceManager.GetString("UnitySettings_t_Unity_plugin_settings");
