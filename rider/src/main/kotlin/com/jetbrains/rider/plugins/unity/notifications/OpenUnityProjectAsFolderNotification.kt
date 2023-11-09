@@ -4,6 +4,7 @@ import com.intellij.ide.projectView.ProjectView
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationInfo
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.openapi.rd.util.launchBackground
@@ -13,12 +14,11 @@ import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.vfs.isFile
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
-import com.intellij.util.application
 import com.intellij.util.ui.EdtInvocationManager
 import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.ide.model.RdVirtualSolution
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rd.util.reactive.whenTrue
@@ -40,12 +40,14 @@ import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntityVisitor
 import com.jetbrains.rider.projectView.workspace.getSolutionEntity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.Nls
 
 class OpenUnityProjectAsFolderNotification : ProjectActivity {
 
     companion object {
-        private val notificationGroupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity project open")
+        private const val GROUP_ID = "Unity project open"
     }
 
     private fun hasUnloadedProjects(project: Project): Boolean {
@@ -67,14 +69,17 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
     }
 
     override suspend fun execute(project: Project) {
-        application.invokeLater {
-            val model = project.solution.frontendBackendModel
+        withContext(Dispatchers.EDT) {
+            if (project.isDisposed) return@withContext
+
             project.solution.isLoaded.whenTrue(project.lifetime) {
                 if (!UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder)
                     return@whenTrue
 
+                val model = project.solution.frontendBackendModel
                 val solutionDescription = project.solutionDescription
                 val title = UnityBundle.message("notification.title.advanced.unity.integration.unavailable")
+                val notificationGroupId = NotificationGroupManager.getInstance().getNotificationGroup(GROUP_ID)
                 val marketingVersion = ApplicationInfo.getInstance().fullVersion
                 var content = UnityBundle.message(
                     "notification.content.make.sure.jetbrains.rider.editor.installed.in.unity.s.package.manager.rider.set.as.external.editor",
