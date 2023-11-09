@@ -92,6 +92,7 @@ class OpenUnityProjectAsFolderNotification : ProjectActivity {
                                 content = UnityBundle.message(
                                     "notification.content.make.sure.rider.set.as.external.editor.in.unity.preferences", marketingVersion)
                             val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
+                            notification.setSuggestionType(true) // such a Notification would be removed from the NotificationToolWindow, fixes RIDER-98129 Notification "Advanced integration" behaviour
                             withUiContext { ->
                                 Notifications.Bus.notify(notification, project)
                                 model.unityEditorConnected.whenTrue(it) { notification.expire() }
