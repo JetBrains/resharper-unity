@@ -23,6 +23,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.CreateShaderVaria
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderApi
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderPlatform
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderVariantInteraction
+import org.jetbrains.annotations.Nls
 import java.awt.Font
 import java.awt.event.ItemEvent
 import java.awt.font.TextAttribute
@@ -175,28 +176,28 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JB
         }
     }
 
-    private data class ShaderApiEntry(val value: RdShaderApi, val name: String, val defineSymbol: String) {
+    private data class ShaderApiEntry(val value: RdShaderApi, @Nls val name: String, val defineSymbol: String) {
         companion object {
-            val all = mapOf(
-                Pair(RdShaderApi.D3D11, ShaderApiEntry(RdShaderApi.D3D11, "DirectX 11", "SHADER_API_D3D11")),
-                Pair(RdShaderApi.Vulkan, ShaderApiEntry(RdShaderApi.Vulkan, "Vulkan", "SHADER_API_VULKAN")),
-                Pair(RdShaderApi.Metal, ShaderApiEntry(RdShaderApi.Metal, "Metal (iOS, Mac)", "SHADER_API_METAL")),
-                Pair(RdShaderApi.GlCore, ShaderApiEntry(RdShaderApi.GlCore, "OpenGL Core (3/4)", "SHADER_API_GLCORE")),
-                Pair(RdShaderApi.GlEs, ShaderApiEntry(RdShaderApi.GlEs, "Open GL ES 2.0", "SHADER_API_GLES")),
-                Pair(RdShaderApi.GlEs3, ShaderApiEntry(RdShaderApi.GlEs3, "Open GL ES 3.0/3.1", "SHADER_API_GLES3")),
-                Pair(RdShaderApi.D3D11L9X, ShaderApiEntry(RdShaderApi.D3D11L9X, "DirectX 11 (feature level 9.x for UWP)", "SHADER_API_D3D11_9X")),
-            )
+            val all = sequenceOf(
+                ShaderApiEntry(RdShaderApi.D3D11, UnityBundle.message("shaderVariant.popup.shaderApi.entries.d3d11"), "SHADER_API_D3D11"),
+                ShaderApiEntry(RdShaderApi.Vulkan, UnityBundle.message("shaderVariant.popup.shaderApi.entries.vulkan"), "SHADER_API_VULKAN"),
+                ShaderApiEntry(RdShaderApi.Metal, UnityBundle.message("shaderVariant.popup.shaderApi.entries.metal"), "SHADER_API_METAL"),
+                ShaderApiEntry(RdShaderApi.GlCore, UnityBundle.message("shaderVariant.popup.shaderApi.entries.glcore"), "SHADER_API_GLCORE"),
+                ShaderApiEntry(RdShaderApi.GlEs, UnityBundle.message("shaderVariant.popup.shaderApi.entries.gles"), "SHADER_API_GLES"),
+                ShaderApiEntry(RdShaderApi.GlEs3, UnityBundle.message("shaderVariant.popup.shaderApi.entries.gles3"), "SHADER_API_GLES3"),
+                ShaderApiEntry(RdShaderApi.D3D11L9X, UnityBundle.message("shaderVariant.popup.shaderApi.entries.d3d11l9x"), "SHADER_API_D3D11_9X"),
+            ).map { it.value to it }.toMap()
         }
 
         override fun toString() = name
     }
 
-    private data class PlatformEntry(val value: RdShaderPlatform, val name: String, val defineSymbol: String) {
+    private data class PlatformEntry(val value: RdShaderPlatform, @Nls val name: String, val defineSymbol: String) {
         companion object {
-            val all = mapOf(
-                Pair(RdShaderPlatform.Desktop, PlatformEntry(RdShaderPlatform.Desktop, "Desktop", "SHADER_API_DESKTOP")),
-                Pair(RdShaderPlatform.Mobile, PlatformEntry(RdShaderPlatform.Mobile, "Mobile", "SHADER_API_MOBILE"))
-            )
+            val all = sequenceOf(
+                PlatformEntry(RdShaderPlatform.Desktop, UnityBundle.message("shaderVariant.popup.shaderPlatform.entries.desktop"), "SHADER_API_DESKTOP"),
+                PlatformEntry(RdShaderPlatform.Mobile, UnityBundle.message("shaderVariant.popup.shaderPlatform.entries.mobile"), "SHADER_API_MOBILE")
+            ).map { it.value to it }.toMap()
         }
 
         override fun toString() = name
