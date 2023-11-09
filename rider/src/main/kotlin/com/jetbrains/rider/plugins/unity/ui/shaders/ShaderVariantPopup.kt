@@ -9,16 +9,18 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.CheckBoxList
 import com.intellij.ui.ListSpeedSearch
+import com.intellij.ui.SeparatorComponent
 import com.intellij.ui.awt.RelativePoint
 import com.intellij.ui.components.JBPanel
+import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.components.RadioButton
 import com.intellij.ui.components.panels.ListLayout
 import com.intellij.util.ui.JBUI
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rdclient.document.getFirstDocumentId
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rider.plugins.unity.common.ui.ToggleButtonModel
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.CreateShaderVariantInteractionArgs
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderApi
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderPlatform
@@ -53,8 +55,10 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JB
     }
 
     private val shaderApiComponent = ComboBox<ShaderApiEntry>()
-    private val shaderPlatformsGroup = JPanel(ListLayout.horizontal(8))
+    private val shaderPlatformsComponent = JPanel(ListLayout.horizontal(8))
+    private val shaderPlatformsGroup = ButtonGroup()
     private val shaderKeywordsComponent = MyCheckboxList()
+    private val builtinDefineSymbolsComponent = CheckBoxList<String>()
     private val shaderKeywords = mutableMapOf<String, ShaderKeyword>()
     private val enabledKeywords = mutableSetOf<String>()
 
@@ -62,15 +66,19 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JB
         border = JBUI.Borders.empty(8, 16)
 
         add(shaderApiComponent)
-        add(shaderPlatformsGroup)
+        add(shaderPlatformsComponent)
         add(JBScrollPane().apply {
             horizontalScrollBarPolicy = JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
-            border = JBUI.Borders.empty()
-            viewport.add(shaderKeywordsComponent)
+            viewport.add(JPanel(ListLayout.vertical()).apply {
+                add(builtinDefineSymbolsComponent)
+                add(SeparatorComponent())
+                add(shaderKeywordsComponent)
+            })
         })
 
         initShaderApi()
         initPlatforms()
+        initBuiltinDefineSymbols()
         initKeywords()
     }
 
@@ -96,24 +104,44 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JB
             if (it.stateChange == ItemEvent.SELECTED) {
                 interaction.setShaderApi.fire((it.item as ShaderApiEntry).value)
             }
+            updateBuiltinDefineSymbols()
         }
     }
 
     private fun initPlatforms() {
-        val platformsGroup = ButtonGroup()
         for (entry in PlatformEntry.all.values) {
-            val radio = RadioButton(entry.name).apply {
-                this.model.group = platformsGroup
-                shaderPlatformsGroup.add(this)
+            val radio = JBRadioButton(entry.name).apply {
+                this.model = ToggleButtonModel(entry)
+                this.model.group = shaderPlatformsGroup
+                shaderPlatformsComponent.add(this)
             }
             radio.model.isSelected = entry.value == interaction.shaderPlatform
             radio.model.addItemListener {
                 if (it.stateChange == ItemEvent.SELECTED) {
-                    interaction.setShaderPlatform.fire(entry.value)
+                    val platformEntry = (it.item as ToggleButtonModel<*>).item as PlatformEntry
+                    interaction.setShaderPlatform.fire(platformEntry.value)
                 }
+                updateBuiltinDefineSymbols()
             }
         }
     }
+
+    private fun initBuiltinDefineSymbols()
+    {
+        builtinDefineSymbolsComponent.isEnabled = false
+        updateBuiltinDefineSymbols()
+    }
+
+    private fun updateBuiltinDefineSymbols()
+    {
+        builtinDefineSymbolsComponent.clear()
+
+        val shaderApiDefineSymbol = (shaderApiComponent.selectedItem as ShaderApiEntry).defineSymbol
+        val shaderPlatformDefineSymbol = ((shaderPlatformsGroup.selection as ToggleButtonModel<*>).item as PlatformEntry).defineSymbol
+        builtinDefineSymbolsComponent.addItem(shaderApiDefineSymbol, shaderApiDefineSymbol, true)
+        builtinDefineSymbolsComponent.addItem(shaderPlatformDefineSymbol, shaderPlatformDefineSymbol, true)
+    }
+
 
     private fun initKeywords() {
         shaderKeywordsComponent.emptyText.text = UnityBundle.message("widgets.shaderVariants.noShaderKeywords")
@@ -176,7 +204,7 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JB
         }
     }
 
-    private data class ShaderApiEntry(val value: RdShaderApi, @Nls val name: String, val defineSymbol: String) {
+    private data class ShaderApiEntry(val value: RdShaderApi, @Nls val name: String, @NlsSafe val defineSymbol: String) {
         companion object {
             val all = sequenceOf(
                 ShaderApiEntry(RdShaderApi.D3D11, UnityBundle.message("shaderVariant.popup.shaderApi.entries.d3d11"), "SHADER_API_D3D11"),
@@ -192,7 +220,7 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JB
         override fun toString() = name
     }
 
-    private data class PlatformEntry(val value: RdShaderPlatform, @Nls val name: String, val defineSymbol: String) {
+    private data class PlatformEntry(val value: RdShaderPlatform, @Nls val name: String, @NlsSafe val defineSymbol: String) {
         companion object {
             val all = sequenceOf(
                 PlatformEntry(RdShaderPlatform.Desktop, UnityBundle.message("shaderVariant.popup.shaderPlatform.entries.desktop"), "SHADER_API_DESKTOP"),
