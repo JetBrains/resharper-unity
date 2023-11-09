@@ -15,6 +15,8 @@ import com.intellij.ui.components.JBPanel
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.panels.ListLayout
+import com.intellij.ui.components.panels.VerticalLayout
+import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.JBUI
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rdclient.document.getFirstDocumentId
@@ -26,6 +28,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderApi
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderPlatform
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderVariantInteraction
 import org.jetbrains.annotations.Nls
+import java.awt.Dimension
 import java.awt.Font
 import java.awt.event.ItemEvent
 import java.awt.font.TextAttribute
@@ -34,7 +37,7 @@ import javax.swing.JCheckBox
 import javax.swing.JComponent
 import javax.swing.JPanel
 
-class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JBPanel<ShaderVariantPopup>(ListLayout.vertical(5)) {
+class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JBPanel<ShaderVariantPopup>(VerticalLayout(5)) {
     companion object {
         private fun createPopup(interaction: ShaderVariantInteraction): JBPopup {
             val shaderVariantPopup = ShaderVariantPopup(interaction)
@@ -69,6 +72,7 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JB
         add(shaderPlatformsComponent)
         add(JBScrollPane().apply {
             horizontalScrollBarPolicy = JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+            maximumSize = JBDimension.size(Dimension(Int.MAX_VALUE, 500))
             viewport.add(JPanel(ListLayout.vertical()).apply {
                 add(builtinDefineSymbolsComponent)
                 add(SeparatorComponent())
@@ -154,12 +158,14 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction) : JB
                 if (!shaderKeywords.containsKey(keyword)) {
                     val shaderKeyword = ShaderKeyword(keyword)
                     shaderKeywords[keyword] = shaderKeyword
-                    addShaderKeyword(shaderKeyword, enabledKeywords.contains(keyword))
                 }
             }
         }
 
         updateKeywords()
+        for (shaderKeyword in shaderKeywords.values.sortedBy { it.name })
+            addShaderKeyword(shaderKeyword, shaderKeyword.state != ShaderKeywordState.DISABLED)
+
         shaderKeywordsComponent.setCheckBoxListListener(::onCheckBoxSelectionChanged)
     }
 

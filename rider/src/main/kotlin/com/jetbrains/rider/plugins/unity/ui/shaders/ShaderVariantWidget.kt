@@ -12,6 +12,7 @@ import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidge
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileType
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderVariantExtension
+import java.awt.Point
 
 
 class ShaderVariantWidget(project: Project, editor: Editor, shaderVariant: RdShaderVariantExtension) : AbstractShaderWidget(project, editor), RiderResolveContextWidget, Disposable {
@@ -28,7 +29,7 @@ class ShaderVariantWidget(project: Project, editor: Editor, shaderVariant: RdSha
         }
     }
 
-    override fun showPopup(showAt: RelativePoint) = ShaderVariantPopup.show(project, editor, showAt)
+    override fun showPopup(pointOnComponent: Point) = ShaderVariantPopup.show(project, editor, RelativePoint.getNorthWestOf(this))
 
     override fun addNotify() {
         editor.textControlModel?.getExtensionSafe<RdShaderVariantExtension>()
