@@ -8,15 +8,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createLifetime
 import com.intellij.openapi.rd.util.lifetime
 import com.intellij.ui.awt.RelativePoint
+import com.jetbrains.rd.framework.RdTaskResult
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rdclient.document.getFirstDocumentId
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.AutoShaderContextData
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.SelectShaderContextDataInteraction
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextDataBase
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.*
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import icons.UnityIcons
 import org.jetbrains.annotations.Nls
@@ -62,6 +60,8 @@ class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(proj
         val id = editor.document.getFirstDocumentId(project) ?: return
         val host = FrontendBackendHost.getInstance(project)
         val lt = widgetLifetime.createNested()
+        val activity = ShaderVariantEventLogger.logShowShaderContextsPopupStarted(project)
+
         host.model.createSelectShaderContextInteraction.start(lt, id).result.advise(lt) {
             try {
                 val interaction = it.unwrap()
@@ -78,11 +78,23 @@ class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(proj
                 for (action in actions)
                     action.onPerformed = terminateLifetime
                 popup.show(RelativePoint(this, pointOnComponent))
+
+                val count = actions.count()
+                activity?.finished {
+                    listOf(ShaderVariantEventLogger.CONTEXT_COUNT with count)
+                }
+
+                activity?.finished()
             } catch (t: Throwable) {
                 lt.terminate(true)
+
+                activity?.finished {
+                    listOf(ShaderVariantEventLogger.CONTEXT_COUNT with -1)
+                }
                 throw t
             }
         }
+
     }
 
     private fun createActions(interaction: SelectShaderContextDataInteraction): List<AbstractShaderContextSwitchAction> {

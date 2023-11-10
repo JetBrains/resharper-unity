@@ -25,8 +25,10 @@ import com.intellij.ui.components.panels.ListLayout
 import com.intellij.ui.components.panels.VerticalLayout
 import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.JBUI
+import com.jetbrains.rd.framework.RdTaskResult
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rdclient.document.getFirstDocumentId
+import com.jetbrains.rider.model.Success
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.common.ui.ToggleButtonModel
@@ -42,10 +44,10 @@ import java.awt.event.ItemEvent
 import java.awt.font.TextAttribute
 import javax.swing.*
 
-class ShaderVariantPopup(private val interaction: ShaderVariantInteraction, @Nls val contextName: String) : JBPanel<ShaderVariantPopup>(VerticalLayout(5)) {
+class ShaderVariantPopup(private val project: Project, private val interaction: ShaderVariantInteraction, @Nls val contextName: String) : JBPanel<ShaderVariantPopup>(VerticalLayout(5)) {
     companion object {
-        private fun createPopup(interaction: ShaderVariantInteraction, @Nls contextName: String): JBPopup {
-            val shaderVariantPopup = ShaderVariantPopup(interaction, contextName)
+        private fun createPopup(project: Project, interaction: ShaderVariantInteraction, @Nls contextName: String): JBPopup {
+            val shaderVariantPopup = ShaderVariantPopup(project, interaction, contextName)
             return JBPopupFactory.getInstance().createComponentPopupBuilder(shaderVariantPopup, shaderVariantPopup.shaderKeywordsComponent)
                 .setRequestFocus(true)
                 .createPopup()
@@ -56,10 +58,27 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction, @Nls
             val model = FrontendBackendHost.getInstance(project).model
             val lifetime = LifetimeDefinition()
             EditorUtil.disposeWithEditor(editor) { lifetime.terminate() }
+
+            val activity = ShaderVariantEventLogger.logShowShaderVariantPopupStarted(project)
             model.createShaderVariantInteraction.start(lifetime, CreateShaderVariantInteractionArgs(id, editor.caretModel.offset)).result.advise(lifetime) { result ->
-                val contextName = editor.virtualFile?.takeIf { it.fileType !is ShaderLabFileType }?.name ?: UnityBundle.message("shaderVariant.popup.shaderProgram")
-                createPopup(result.unwrap(), contextName).show(showAt)
+                try {
+                    val contextName = editor.virtualFile?.takeIf { it.fileType !is ShaderLabFileType }?.name ?: UnityBundle.message(
+                        "shaderVariant.popup.shaderProgram")
+                    val interaction = result.unwrap()
+                    createPopup(project, interaction, contextName).show(showAt)
+
+                    activity?.finished {
+                        listOf(ShaderVariantEventLogger.DEFINE_COUNT with interaction.availableKeywords)
+                    }
+                } catch (e: Throwable) {
+                    activity?.finished {
+                        listOf(ShaderVariantEventLogger.DEFINE_COUNT with -1)
+                    }
+
+                    throw e
+                }
             }
+
         }
     }
 
@@ -116,6 +135,8 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction, @Nls
         })
     }
 
+    fun getOwnKeywordsCount() = ownEnabledKeywordsCount
+
     private fun onCheckBoxSelectionChanged(index: Int, value: Boolean) {
         if (noNotifyKeywordChange)
             return
@@ -131,6 +152,8 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction, @Nls
                 enabledKeywords.remove(item.name)
             updateKeywords()
         }
+
+        ShaderVariantEventLogger.logDefineChanged(project)
     }
 
     private fun disableKeywordsForCurrentContext() {
@@ -184,6 +207,10 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction, @Nls
                 interaction.setShaderApi.fire((it.item as ShaderApiEntry).value)
             }
             updateBuiltinDefineSymbols()
+
+            if (it.stateChange == ItemEvent.SELECTED) {
+                ShaderVariantEventLogger.logApiChanged(project, (it.item as ShaderApiEntry).value)
+            }
         }
     }
 
@@ -201,6 +228,11 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction, @Nls
                     interaction.setShaderPlatform.fire(platformEntry.value)
                 }
                 updateBuiltinDefineSymbols()
+
+                if (it.stateChange == ItemEvent.SELECTED) {
+                    val platformEntry = (it.item as ToggleButtonModel<*>).item as PlatformEntry
+                    ShaderVariantEventLogger.logPlatformChanged(project, platformEntry.value)
+                }
             }
         }
     }
@@ -300,7 +332,13 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction, @Nls
             e.presentation.text = UnityBundle.message("shaderVariant.popup.reset.for.context.text", shaderVariantPopup.contextName, shaderVariantPopup.ownEnabledKeywordsCount)
         }
 
-        override fun actionPerformed(e: AnActionEvent) = shaderVariantPopup.disableKeywordsForCurrentContext()
+        override fun actionPerformed(e: AnActionEvent) {
+            shaderVariantPopup.disableKeywordsForCurrentContext()
+
+            e.project?.let {
+                ShaderVariantEventLogger.logResetKeywords(it)
+            }
+        }
     }
 
     @Suppress("DialogTitleCapitalization")
@@ -312,7 +350,13 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction, @Nls
             e.presentation.text = UnityBundle.message("shaderVariant.popup.reset.in.all.contexts.text", shaderVariantPopup.enabledKeywords.size)
         }
 
-        override fun actionPerformed(e: AnActionEvent) = shaderVariantPopup.disableKeywordsInAllContexts()
+        override fun actionPerformed(e: AnActionEvent) {
+            shaderVariantPopup.disableKeywordsInAllContexts()
+
+            e.project?.let {
+                ShaderVariantEventLogger.logResetAllKeywords(it)
+            }
+        }
     }
 
     private class ResetActionGroup(shaderVariantPopup: ShaderVariantPopup) : ActionGroup() {
