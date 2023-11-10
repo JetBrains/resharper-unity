@@ -1,4 +1,4 @@
 Search target
-    even.evenTest12Static(BaseEventData eventData):void
+    even.evenTest12Static(BaseEventData eventData) : void
 Found usages  (1 usage found)
-    m_MethodName: evenTest12Static
+     m_MethodName: evenTest12Static

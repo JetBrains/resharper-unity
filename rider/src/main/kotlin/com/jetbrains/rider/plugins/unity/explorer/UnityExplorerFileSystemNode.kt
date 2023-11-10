@@ -165,11 +165,14 @@ open class UnityExplorerFileSystemNode(project: Project,
             .sortedWith(String.CASE_INSENSITIVE_ORDER)
             .distinct()
         if (projectNames.any()) {
-            var description = projectNames.take(3).joinToString(", ")
-            if (projectNames.count() > 3) {
+            val maxProjectsInDescription = 3
+            val maxProjectsInTooltip = 10
+            var description = projectNames.take(maxProjectsInDescription).joinToString(", ")
+            if (projectNames.count() > maxProjectsInDescription) {
                 description += ", …"
-                presentation.tooltip = UnityPluginExplorerBundle.message("tooltip.contains.files.from.multiple.projects") + "<br/>" + projectNames.take(10).joinToString("<br/>"
-                    + if (projectNames.count() > 10) "<br/>" + UnityPluginExplorerBundle.message("tooltip.and.count.others", projectNames.count() - 10) else "")
+                presentation.tooltip = UnityPluginExplorerBundle.message("tooltip.contains.files.from.multiple.projects") + "<br/>" +
+                                       projectNames.take(maxProjectsInTooltip).joinToString("<br/>") +
+                                       if (projectNames.count() > maxProjectsInTooltip) "<br/>" + UnityPluginExplorerBundle.message("tooltip.and.count.others", projectNames.count() - maxProjectsInTooltip) else ""
             }
             presentation.addText(" ($description)", SimpleTextAttributes.GRAYED_ATTRIBUTES)
         }

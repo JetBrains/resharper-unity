@@ -1,9 +1,9 @@
 Search target
-    BehaviourWithProperty.T.get:int
+    BehaviourWithProperty.T.get : int
 Found usages  (2 usages found)
     Assets  (2 usages found)
         AttackIn.anim  (2 usages found)
             AttackIn at 0:10  (1 usage found)
-                T.get:int
+                 T.get : int
             AttackIn at 0:11  (1 usage found)
-                T.get:int
+                 T.get : int

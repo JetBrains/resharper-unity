@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Application.BuildScript.Application.Zones;
+using System.Text;
 using JetBrains.Application.platforms;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Assemblies.Impl;
@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
         Unity2019_3,
         Unity2019_4,
         Unity2020_1,
-        Unity2020_2,
+        Unity2022_3,
 
         // General rule: Keep the default version at the latest LTS Unity version
         // If you need a newer/specific version for a specific test, use [TestUnity(UnityVersion.Unity2020_1)], etc.
@@ -50,18 +50,24 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
     public class TestUnityAttribute : TestAspectAttribute, ITestLibraryReferencesProvider, ITestPackagesProvider,
         ITestFlavoursProvider, ITestTargetFrameworkIdProvider, ITestFileExtensionProvider, ICustomProjectPropertyAttribute
     {
-        private readonly UnityVersion myVersion;
+        private static readonly Version ourDefaultVersion = ToVersion(UnityVersion.DefaultTestVersion);
+        private static readonly Version ourMinNetworkingVersion = new(5, 5);
+        private static readonly Version ourMaxNetworkingVersion = new(2018, 4, int.MaxValue);
+        
+        private readonly Version myVersion;
 
-        public TestUnityAttribute()
-            : this(UnityVersion.DefaultTestVersion)
-        {
-        }
+        public TestUnityAttribute() : this(ourDefaultVersion) { }
 
-        public TestUnityAttribute(UnityVersion version)
+        public TestUnityAttribute(UnityVersion version) : this(ToVersion(version)) { }
+        public TestUnityAttribute(int major, int minor) : this(new Version(major, minor)) { }
+        public TestUnityAttribute(int major, int minor, int build) : this(new Version(major, minor, build)) { }
+
+        private TestUnityAttribute(Version version)
         {
             myVersion = version;
         }
 
+        public bool ProvideReferences { get; set; } = true;
         public bool IncludeNetworking { get; set; }
 
         public TargetFrameworkId GetTargetFrameworkId()
@@ -71,8 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
 
         public IEnumerable<PackageDependency> GetPackages(TargetFrameworkId? targetFrameworkId)
         {
-            // There isn't an official nuget for Unity, sadly, so add this feed to test/data/nuget.config
-            // <add key="unity-testlibs" value="https://myget.org/F/resharper-unity/api/v2/" />
+            // unlisted on nuget.org
             return from name in GetPackageNames()
                 select TestPackagesAttribute.ParsePackageDependency(name);
         }
@@ -83,9 +88,9 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
             yield return $"JetBrains.Resharper.Unity.TestDataLibs/{version}";
             if (IncludeNetworking)
             {
-                if (myVersion == UnityVersion.Unity54)
+                if (myVersion < ourMinNetworkingVersion)
                     throw new InvalidOperationException("Network libs not available for Unity 5.4");
-                if ((int) myVersion > (int) UnityVersion.Unity2018_4)
+                if (myVersion > ourMaxNetworkingVersion)
                     throw new InvalidOperationException("Network libs no longer supported in Unity 2019.1+");
                 yield return $"JetBrains.Resharper.Unity.TestDataLibs.Networking/{version}";
             }
@@ -99,6 +104,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
         public IEnumerable<string> GetReferences(BaseTestNoShell test, TargetFrameworkId targetFrameworkId,
             FileSystemPath testDataPath, NuGetPackageCache nugetPackagesCache)
         {
+            if (!ProvideReferences)
+                return EmptyList<string>.Enumerable;
             var names = GetPackageNames().ToArray();
             var attribute = new TestPackagesAttribute(names);
             return attribute.GetReferences(test, targetFrameworkId, testDataPath, nugetPackagesCache);
@@ -111,57 +118,44 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
         {
             get
             {
-                switch (myVersion)
-                {
-                    case UnityVersion.Unity54: return "UNITY_5_4";
-                    case UnityVersion.Unity55: return "UNITY_5_5";
-                    case UnityVersion.Unity56: return "UNITY_5_6";
-                    case UnityVersion.Unity2017_1: return "UNITY_2017_1";
-                    case UnityVersion.Unity2017_2: return "UNITY_2017_2";
-                    case UnityVersion.Unity2017_3: return "UNITY_2017_3";
-                    case UnityVersion.Unity2017_4: return "UNITY_2017_4";
-                    case UnityVersion.Unity2018_1: return "UNITY_2018_1";
-                    case UnityVersion.Unity2018_2: return "UNITY_2018_2";
-                    case UnityVersion.Unity2018_3: return "UNITY_2018_3";
-                    case UnityVersion.Unity2018_4: return "UNITY_2018_4";
-                    case UnityVersion.Unity2019_1: return "UNITY_2019_1";
-                    case UnityVersion.Unity2019_2: return "UNITY_2019_2";
-                    case UnityVersion.Unity2019_3: return "UNITY_2019_3";
-                    case UnityVersion.Unity2019_4: return "UNITY_2019_4";
-                    case UnityVersion.Unity2020_1: return "UNITY_2020_1";
-                    case UnityVersion.Unity2020_2: return "UNITY_2020_2";
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                var sb = new StringBuilder();
+                sb.Append($"UNITY_{myVersion.Major};UNITY_{myVersion.Major}_{myVersion.Minor}");
+                if (myVersion.Build >= 0)
+                    sb.Append($";UNITY_{myVersion.Major}_{myVersion.Minor}_{myVersion.Build}");
+                return sb.ToString();
             }
         }
 
-        private string ToVersionString(UnityVersion unityVersion)
+        private static Version ToVersion(UnityVersion version)
         {
-            switch (unityVersion)
+            return version switch
             {
-                // Note that the .0 here doesn't mean e.g. Unity 2018.1.0f1, it's just the package number. The actual
-                // revision used is irrelevant, as we're interested in resolving the API, not in minor fixes
-                case UnityVersion.Unity54: return "5.4.0";
-                case UnityVersion.Unity55: return "5.5.0";
-                case UnityVersion.Unity56: return "5.6.0";
-                case UnityVersion.Unity2017_1: return "2017.1.0";
-                case UnityVersion.Unity2017_2: return "2017.2.0";
-                case UnityVersion.Unity2017_3: return "2017.3.0";
-                case UnityVersion.Unity2017_4: return "2017.4.0";
-                case UnityVersion.Unity2018_1: return "2018.1.0";
-                case UnityVersion.Unity2018_2: return "2018.2.0";
-                case UnityVersion.Unity2018_3: return "2018.3.0";
-                case UnityVersion.Unity2018_4: return "2018.4.0";
-                case UnityVersion.Unity2019_1: return "2019.1.0";
-                case UnityVersion.Unity2019_2: return "2019.2.0";
-                case UnityVersion.Unity2019_3: return "2019.3.0";
-                case UnityVersion.Unity2019_4: return "2019.4.0";
-                case UnityVersion.Unity2020_1: return "2020.1.0";
-                case UnityVersion.Unity2020_2: return "2020.2.0";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(unityVersion), unityVersion, null);
-            }
+                UnityVersion.Unity54 => new Version(5, 4),
+                UnityVersion.Unity55 => new Version(5, 5),
+                UnityVersion.Unity56 => new Version(5, 6),
+                UnityVersion.Unity2017_1 => new Version(2017, 1, 0),
+                UnityVersion.Unity2017_2 => new Version(2017, 2, 0),
+                UnityVersion.Unity2017_3 => new Version(2017, 3, 0),
+                UnityVersion.Unity2017_4 => new Version(2017, 4, 0),
+                UnityVersion.Unity2018_1 => new Version(2018, 1, 0),
+                UnityVersion.Unity2018_2 => new Version(2018, 2, 0),
+                UnityVersion.Unity2018_3 => new Version(2018, 3, 0),
+                UnityVersion.Unity2018_4 => new Version(2018, 4, 0),
+                UnityVersion.Unity2019_1 => new Version(2019, 1, 0),
+                UnityVersion.Unity2019_2 => new Version(2019, 2, 0),
+                UnityVersion.Unity2019_3 => new Version(2019, 3, 0),
+                UnityVersion.Unity2019_4 => new Version(2019, 4, 0),
+                UnityVersion.Unity2020_1 => new Version(2020, 1, 0),
+                UnityVersion.Unity2022_3 => new Version(2022, 3, 0),
+                _ => throw new ArgumentOutOfRangeException(nameof(version), version, null)
+            };
+        }
+
+        private static string ToVersionString(Version version)
+        {
+            // Note that the .0 here doesn't mean e.g. Unity 2018.1.0f1, it's just the package number. The actual
+            // revision used is irrelevant, as we're interested in resolving the API, not in minor fixes
+            return $"{version.Major}.{version.Minor}.0";
         }
 
         public string PropertyName => "DefineConstants";
@@ -194,7 +188,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
         // get reused when they shouldn't
         protected override void OnAfterTestExecute(TestAspectContext context)
         {
-            if (myVersion != UnityVersion.DefaultTestVersion)
+            if (myVersion != ourDefaultVersion)
             {
                 var solution = context.TestProject.GetSolution();
                 var targetFrameworkScopes = solution.GetComponent<ResolveContextManager>().EnumerateAllScopes();

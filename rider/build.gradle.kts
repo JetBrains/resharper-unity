@@ -23,7 +23,7 @@ plugins {
     id("org.jetbrains.changelog") version "2.0.0"
     id("org.jetbrains.intellij") version "1.13.3" // https://github.com/JetBrains/gradle-intellij-plugin/releases
     id("org.jetbrains.grammarkit") version "2022.3"
-    kotlin("jvm") version "1.8.20"
+    kotlin("jvm") version "1.9.10"
 }
 
 repositories {
@@ -91,6 +91,11 @@ val dotnetDllFiles = files(
 val debuggerDllFiles = files(
     "../resharper/build/debugger/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.dll",
     "../resharper/build/debugger/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.pdb"
+)
+
+val textureDebuggerDllFiles = files(
+    "../resharper/build/texture-debugger/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.dll",
+    "../resharper/build/texture-debugger/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.pdb"
 )
 
 val listIosUsbDevicesFiles = files(
@@ -900,6 +905,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         doLast {
             dotnetDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
             debuggerDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
+            textureDebuggerDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
             listIosUsbDevicesFiles.forEach { if (!it.exists()) error("File $it does not exist") }
             unityEditorDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
         }
@@ -908,6 +914,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
 
         dotnetDllFiles.forEach { from(it) { into("${pluginName}/dotnet") } }
         debuggerDllFiles.forEach { from(it) { into("${pluginName}/dotnetDebuggerWorker") } }
+        textureDebuggerDllFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
         listIosUsbDevicesFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
         unityEditorDllFiles.forEach { from(it) { into("${pluginName}/EditorPlugin") } }
 
@@ -927,9 +934,9 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         if (project.hasProperty("integrationTests")) {
             val testsType = project.property("integrationTests").toString()
             if (testsType == "include") {
-                include("integrationTests/**")
+                include("com/jetbrains/rider/unity/test/cases/integrationTests/**")
             } else if (testsType == "exclude") {
-                exclude("integrationTests/**")
+                exclude("com/jetbrains/rider/unity/test/cases/integrationTests/**")
             }
         }
         testLogging {

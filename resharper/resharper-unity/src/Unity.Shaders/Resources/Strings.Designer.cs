@@ -96,5 +96,16 @@
     public static string String_RiderPresentableName => ResourceManager.GetString("String_RiderPresentableName");
     public static string ShaderNameNotRevoled => ResourceManager.GetString("ShaderNameNotRevoled");
     public static string ShaderNameMultipleCandidates => ResourceManager.GetString("ShaderNameMultipleCandidates");
+    public static string ShaderSettings_t_Shader_settings => ResourceManager.GetString("ShaderSettings_t_Shader_settings");
+    public static string ShaderVariantsSettings_t_Shader_variants_settings => ResourceManager.GetString("ShaderVariantsSettings_t_Shader_variants_settings");
+    public static string ShaderVariantsSettings_e_EnabledKeywords_t_Enabled_keywords => ResourceManager.GetString("ShaderVariantsSettings_e_EnabledKeywords_t_Enabled_keywords");
+    public static string ShaderVariantsSettings_e_ShaderApi_t_Shader_API => ResourceManager.GetString("ShaderVariantsSettings_e_ShaderApi_t_Shader_API");
+    public static string ShaderVariantsSettings_e_ShaderPlatform_t_Shader_Platform => ResourceManager.GetString("ShaderVariantsSettings_e_ShaderPlatform_t_Shader_Platform");
+    public static string ActiveShaderKeyword_RiderPresentableName => ResourceManager.GetString("ActiveShaderKeyword_RiderPresentableName");
+    public static string InactiveShaderKeyword_RiderPresentableName => ResourceManager.GetString("InactiveShaderKeyword_RiderPresentableName");
+    public static string SuppressedShaderKeyword_RiderPresentableName => ResourceManager.GetString("SuppressedShaderKeyword_RiderPresentableName");
+    public static string EnableShaderKeyword_Enable_shader_keyword => ResourceManager.GetString("EnableShaderKeyword_Enable_shader_keyword");
+    public static string DisableShaderKeyword_Disable_shader_keyword => ResourceManager.GetString("DisableShaderKeyword_Disable_shader_keyword");
+    public static string UnSuppressShaderKeyword_Disable_conflicting_shader_keyword => ResourceManager.GetString("UnSuppressShaderKeyword_Disable_conflicting_shader_keyword");
   }
 }

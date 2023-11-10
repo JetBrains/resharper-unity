@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="Current" Sdk="JetBrains.Toolset.MainSolution.Sdk/20200625.1.1.2">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <ProjectGuid>{17F99E14-C5C6-47FE-BB52-E4DD4C0062DA}</ProjectGuid>
+    <AssemblyName>JetBrains.ReSharper.Plugins.Unity.DebuggerTools</AssemblyName>
+    <OutputType>Library</OutputType>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Unity.DebuggerTools</RootNamespace>
+    <Title>JetBrains .NET Public Platform Core Utilities</Title>
+  </PropertyGroup>
+  <ItemGroup Label="PackageReference">
+    <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="JetBrains.FormatRipper" />
+    <PackageReference Include="JetBrains.HabitatDetector" />
+    <PackageReference Include="JetBrains.Lifetimes" />
+    <PackageReference Include="JetBrains.RdFramework" />
+    <PackageReference Include="JetBrains.RdFramework.Reflection" />
+    <PackageReference Include="System.Buffers" />
+    <PackageReference Include="System.Collections.Immutable" />
+    <PackageReference Include="System.Text.Encoding.CodePages" />
+    <PackageReference Include="System.Memory" />
+    <PackageReference Include="System.Numerics.Vectors" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" />
+    <PackageReference Include="System.Threading.Channels" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" />
+  </ItemGroup>
+  <Import Project="ManagedProject.Generated.Targets" />
+</Project>

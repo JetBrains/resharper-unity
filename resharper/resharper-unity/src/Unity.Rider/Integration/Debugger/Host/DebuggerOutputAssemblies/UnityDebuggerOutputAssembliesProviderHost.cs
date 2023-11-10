@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Debugger.Common.OutputAssemblies;
 using JetBrains.Application.Infra;
-using JetBrains.Debugger.Host.DebuggerOutputAssemblies;
+using JetBrains.Debugger.Host.Core.DebuggerOutputAssemblies;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Utils;
@@ -65,7 +65,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Debugger.Host.Debu
                         projectLocation.Combine("Library/ScriptAssemblies").Combine(outputAssemblyName);
                     if (!unityOutputPath.IsEmpty && unityOutputPath.IsAbsolute)
                     {
-                        var assemblyNameInfo = assemblyInfoDatabase.GetAssemblyName(unityOutputPath.ToAssemblyLocation());
+                        var (assemblyNameInfo, id) = assemblyInfoDatabase.GetAssemblyNameAndId(unityOutputPath.ToAssemblyLocation());
+                        
                         if (assemblyNameInfo.IsNullOrEmpty())
                         {
                             // The file should always exist - Unity will make sure it's there, as long as there are no
@@ -76,8 +77,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Debugger.Host.Debu
                             continue;
                         }
 
-                        yield return new DebuggerOutputAssemblyInfo(assemblyNameInfo, projectLocation.FullPath,
-                            unityOutputPath.FullPath, in pathMap);
+                        yield return new DebuggerOutputAssemblyInfo(
+                            id.Mvid,
+                            assemblyNameInfo, 
+                            projectLocation.FullPath,
+                            unityOutputPath.FullPath,
+                            in pathMap);
                     }
                 }
             }

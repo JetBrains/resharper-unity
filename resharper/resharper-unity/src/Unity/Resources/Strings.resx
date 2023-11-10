@@ -149,7 +149,7 @@
         <value>Burst: Accessing managed method '{0}' from type '{1}' is not supported</value>
     </data>
     <data name="BurstAccessingManagedIndexerFromTypeIsNotSupportedMessage" xml:space="preserve">
-        <value>Burst: Managed type '{0}' doesn't support indexer operator</value>
+        <value>Burst: Managed type '{0}' doesn't support the indexer operator</value>
     </data>
     <data name="BurstBoxingIsNotSupportedMessage" xml:space="preserve">
         <value>Burst: Boxing '{0}' is not supported</value>
@@ -1296,6 +1296,9 @@ a plugin to be installed to a project.</value>
     <data name="UnityOptionsPage_AddShadersSection_Suppress_resolve_errors_of_unqualified_names" xml:space="preserve">
         <value>Suppress resolve errors of unqualified names</value>
     </data>
+    <data name="UnityOptionsPage_AddShadersSection_Preview_Shader_variants_support" xml:space="preserve">
+        <value>[Preview] Shader variants support</value>
+    </data>
     <data name="UnityOptionsPage_AddTextBasedAssetsSection_Automatically_disable_asset_indexing_for_large_solutions" xml:space="preserve">
         <value>Automatically disable asset indexing for large solutions</value>
     </data>
@@ -1398,6 +1401,9 @@ a plugin to be installed to a project.</value>
     <data name="UnitySettings_t_Suppress_resolve_errors_in_HLSL_" xml:space="preserve">
         <value>Suppress resolve errors in HLSL</value>
     </data>
+    <data name="UnitySettings_t_Shader_variants_support_Preview" xml:space="preserve">
+        <value>Shader variants support (Preview)</value>
+    </data>
     <data name="UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_" xml:space="preserve">
         <value>Suppress resolve errors in render-pipeline package in HLSL</value>
     </data>
@@ -1445,6 +1451,9 @@ a plugin to be installed to a project.</value>
     </data>
     <data name="UsingnewToInstantiateAClassDerivedFromScriptableObjectMeansThatUnityWillNotCallAnyEventFunctionsCreateANewInstanceUsingGameObjectAddComponentT" xml:space="preserve">
         <value>Using 'new' to instantiate a class derived from 'ScriptableObject' means that Unity will not call any event functions. Create a new instance using 'GameObject.AddComponent&lt;T&gt;()'.</value>
+    </data>
+    <data name="UxmlUnity_Text" xml:space="preserve">
+        <value>Uxml (Unity)</value>
     </data>
     <data name="WritingToAStaticFieldIsNotSupported" xml:space="preserve">
         <value>Writing to a static field is not supported</value>

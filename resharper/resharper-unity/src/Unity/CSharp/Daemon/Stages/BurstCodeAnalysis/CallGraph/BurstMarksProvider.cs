@@ -141,6 +141,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 return TreeNodeActionType.CONTINUE;
 
             var invocationExpression = lambdaExpression.GetContainingNode<IInvocationExpression>();
+            if (invocationExpression == null)
+                return TreeNodeActionType.CONTINUE;
+            
             if (invocationExpression.IsJobWithCodeMethod() ||
                 invocationExpression.IsEntitiesForEach())
                 return TreeNodeActionType.ACCEPT;

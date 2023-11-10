@@ -63,12 +63,7 @@ class UnityEditorListener {
         val unityProcessInfoMap = UnityRunUtil.getAllUnityProcessInfo(newProcesses, project)
         newProcesses.forEach { processInfo ->
             val unityProcessInfo = unityProcessInfoMap[processInfo.pid]
-            val editorProcess = if (!unityProcessInfo?.roleName.isNullOrEmpty()) {
-                UnityEditorHelper(processInfo.executableName, unityProcessInfo?.roleName!!, processInfo.pid, unityProcessInfo.projectName)
-            }
-            else {
-                UnityEditor(processInfo.executableName, processInfo.pid, unityProcessInfo?.projectName)
-            }
+            val editorProcess = processInfo.toUnityProcess(unityProcessInfo)
 
             logger.trace("Adding Unity editor process ${editorProcess.displayName}:${editorProcess.pid}")
 

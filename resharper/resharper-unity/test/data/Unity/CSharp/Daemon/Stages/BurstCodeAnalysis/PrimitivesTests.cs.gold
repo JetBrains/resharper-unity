@@ -170,4 +170,4 @@ namespace PrimitivesTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: Burst: Managed type 'System.String' doesn't support indexer operator
+(0): ReSharper Warning: Burst: Managed type 'System.String' doesn't support the indexer operator

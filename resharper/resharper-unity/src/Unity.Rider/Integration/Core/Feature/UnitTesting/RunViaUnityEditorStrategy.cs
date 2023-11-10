@@ -330,7 +330,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.UnitT
                                 "RunViaUnityEditorStrategy compilation failed",
                                 () =>
                                 {
-                                    var notification = new NotificationModel("Compilation failed",
+                                    var notification = new NotificationModel(mySolution.GetRdProjectId(),
+                                        "Compilation failed",
                                         "Script compilation in Unity failed, so tests were not started.", true,
                                         RdNotificationEntryType.INFO, new List<NotificationHyperlink>());
                                     myNotificationsModel.Notification(notification);

@@ -6,6 +6,8 @@ import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
 import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rider.model.nova.ide.SolutionModel.RdDocumentId
+import com.jetbrains.rider.model.nova.ide.SolutionModel.TextControlId
+import com.jetbrains.rider.model.nova.ide.SolutionModel.TextControlExtension
 import model.lib.Library
 
 // frontend <-> backend model, from point of view of frontend, meaning:
@@ -35,6 +37,21 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         +"Git"
     }
 
+    private val RdShaderApi = enum {
+        +"D3D11"
+        +"GlCore"
+        +"GlEs"
+        +"GlEs3"
+        +"Metal"
+        +"Vulkan"
+        +"D3D11L9X"
+    }
+
+    private val RdShaderPlatform = enum {
+        +"Desktop"
+        +"Mobile"
+    }
+
     private val UnityPackage = structdef {
         field("id", string)
         field("version", string)
@@ -62,6 +79,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
     }
 
     private val shaderInternScope = internScope()
+
+    // Shader Contexts
     private val shaderContextDataBase = basestruct {}
     private val autoShaderContextData = structdef extends shaderContextDataBase {}
     private val shaderContextData = structdef extends shaderContextDataBase {
@@ -71,6 +90,14 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         field("start", int)
         field("end", int)
         field("startLine", int)
+    }
+
+    private val rdShaderVariantExtension = classdef extends TextControlExtension {
+        property("info", structdef("rdShaderVariantInfo") {
+            field("enabledCount", int)
+            field("suppressedCount", int)
+            field("availableCount", int)
+        })
     }
 
     init {
@@ -98,6 +125,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
             property("enableDebuggerExtensions", bool)
             property("ignoreBreakOnUnhandledExceptionsForIl2Cpp", bool)
+            property("previewShaderVariantsSupport", bool)
         })
 
         field("playControls", Library.PlayControls)
@@ -117,6 +145,24 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         call("createSelectShaderContextInteraction", RdDocumentId, classdef("selectShaderContextDataInteraction") {
             field("items", immutableList(shaderContextData))
             source("selectItem", int) // -1 for no auto-context
+        })
+
+        // Shader variants
+        map("shaderVariantExtensions", TextControlId, rdShaderVariantExtension)
+        call("createShaderVariantInteraction", structdef("createShaderVariantInteractionArgs") {
+            field("documentId", RdDocumentId)
+            field("offset", int)
+        }, classdef("shaderVariantInteraction") {
+            field("shaderFeatures", immutableList(immutableList(string)))
+            field("enabledKeywords", immutableList(string))
+            field("shaderApi", RdShaderApi)
+            field("shaderPlatform", RdShaderPlatform)
+            field("totalKeywordsCount", int)
+            field("totalEnabledKeywordsCount", int)
+            source("enableKeyword", string)
+            source("disableKeyword", string)
+            source("setShaderApi", RdShaderApi)
+            source("setShaderPlatform", RdShaderPlatform)
         })
 
         // Actions called from the frontend to the backend (and/or indirectly, Unity)

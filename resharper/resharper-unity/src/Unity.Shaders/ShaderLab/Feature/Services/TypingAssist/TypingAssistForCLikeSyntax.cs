@@ -1,13 +1,8 @@
 #nullable enable
-using JetBrains.Application.CommandProcessing;
-using JetBrains.Application.Settings;
-using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.CodeCompletion;
-using JetBrains.ReSharper.Feature.Services.StructuralRemove;
+using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.TypingAssist;
-using JetBrains.ReSharper.Plugins.Unity.Common.Services.Tree;
+using JetBrains.ReSharper.Plugins.Unity.Common.Psi.Syntax;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CachingLexers;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
@@ -19,8 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
     {
         private readonly CLikeSyntax mySyntax;
         
-        protected TypingAssistForCLikeSyntax(CLikeSyntax cLikeSyntax, ISolution solution, ISettingsStore settingsStore, CachingLexerService cachingLexerService, ICommandProcessor commandProcessor, IPsiServices psiServices, IExternalIntellisenseHost externalIntellisenseHost, SkippingTypingAssist skippingTypingAssist, LastTypingAction lastTypingAction, StructuralRemoveManager structuralRemoveManager) : 
-            base(solution, settingsStore, cachingLexerService, commandProcessor, psiServices, externalIntellisenseHost, skippingTypingAssist, lastTypingAction, structuralRemoveManager)
+        protected TypingAssistForCLikeSyntax(CLikeSyntax cLikeSyntax, [NotNull] TypingAssistDependencies dependencies) : 
+            base(dependencies)
         {
             mySyntax = cLikeSyntax;
         }

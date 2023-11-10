@@ -21,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Feature.Services.Cod
         [TestCase("CgKeywords", ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
         [TestCase("HlslKeywords", ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
         [TestCase("HlslKeywords", CppProjectFileType.HLSL_EXTENSION)]
+        [TestCase("CgTrivialReparseContext", ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
         public void TestCompletion(string testName, string extension) => DoTestSolution(testName + extension);
     }
 }

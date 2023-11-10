@@ -1,5 +1,5 @@
 Search target
-    NewBehaviourScript3.OnJump1WithPrefab3():void
+    NewBehaviourScript3.OnJump1WithPrefab3() : void
 Found usages  (1 usage found)
     Other  (1 usage found)
         Assets  (1 usage found)

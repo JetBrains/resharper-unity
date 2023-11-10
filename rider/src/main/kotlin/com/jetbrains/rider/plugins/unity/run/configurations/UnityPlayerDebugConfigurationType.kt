@@ -6,6 +6,7 @@ import com.intellij.execution.configurations.*
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAction
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.util.startUnderBackgroundProgressAsync
@@ -55,7 +56,7 @@ class UnityAttachToPlayerFactory(type: ConfigurationType) : UnityConfigurationFa
 class UnityPlayerDebugConfigurationOptions: RunConfigurationOptions() {
 
     /**
-     * A (hopefully) unique string to identify a player
+     * A string to identify a player type on a particular host
      *
      * Can be used as part of heuristics to refresh the player's debugger host and port values.
      *
@@ -68,15 +69,30 @@ class UnityPlayerDebugConfigurationOptions: RunConfigurationOptions() {
      * * iOS USB - `iPhoneUSBPlayer({deviceId})`
      * * Android ADB - `AndroidADBPlayer({deviceId})`
      *
+     * Note that the player ID is not a unique value. It mainly identifies a player type running on a specific host, but does not identify
+     * which project the player type is running. It is possible to have multiple players of the same type, on the same host running
+     * different projects. Use [playerInstanceId] to distinguish between multiple instances/projects on the same host/player.
+     *
      * See also [UnityProcess.type].
      */
     var playerId by string("")
+
+    /**
+     * A string used to disambiguate player projects running on the same project
+     *
+     * By default, this is the same as [projectName], but that isn't available on all platforms, such as Android. In which case, the player
+     * can provide a different value. For Android, this is [packageName], if available.
+     *
+     * Note that this value was only introduced in Rider 2023.2.2, so will not be serialised with run configurations created before then.
+     */
+    var playerInstanceId by string()
 
     var host by string("localhost")
     var port by property(56000)
 
     /** The local process (Editor/editor helper) process ID */
     var pid by property(0)
+
     var roleName by string("")
 
     /** The iOS or Android ADB device ID */
@@ -93,13 +109,19 @@ class UnityPlayerDebugConfigurationOptions: RunConfigurationOptions() {
     var packageName by string("")
 
     /** The UID of the Android package */
-    var androidPackageUid: String? by string("")
+    var androidPackageUid by string("")
 
-    /** The project name, if available.
-     *
-     * Can be used as part of heuristics to refresh the player's debugger host and port values.
-     */
+    /** The project name, if available */
     var projectName by string()
+
+    /**
+     * The virtual player ID, e.g. `mppmca3577a6`
+     *
+     * This allows matching a virtual player even if the descriptive player name has changed
+     */
+    var virtualPlayerId by string()
+
+    var virtualPlayerName by string()
 }
 
 // TODO: Implement getIcon to provide a different icon per player type (default is the factory icon)?
@@ -109,6 +131,10 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
     AsyncRunConfiguration,
     WithoutOwnBeforeRunSteps,
     IRiderDebuggable {
+
+    companion object {
+        private val logger = Logger.getInstance(UnityPlayerDebugConfiguration::class.java)
+    }
 
     // I don't know why RunConfigurationBase has this as nullable
     override fun getState(): UnityPlayerDebugConfigurationOptions = options as UnityPlayerDebugConfigurationOptions
@@ -127,6 +153,7 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
             UnityCustomPlayer.TYPE -> getCustomPlayerStateAsync(environment)
             UnityEditor.TYPE -> getEditorStateAsync(environment)
             UnityEditorHelper.TYPE -> getEditorHelperStateAsync(environment)
+            UnityVirtualPlayer.TYPE -> getVirtualPlayerStateAsync(environment)
             else -> getRemotePlayerStateAsync(environment)
         }
     }
@@ -170,9 +197,17 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
             project = environment.project
         ) {
             val players = AndroidDeviceListener().getPlayersForDevice(environment.project, state.deviceId!!)
+
+            // Try to find the expected package on the current device. We use the UID which is a unique user ID that is assigned when the
+            // package is installed. If the package has been reinstalled (uninstalled + reinstalled, not just redeployed) it will have a new
+            // UID. Try again using the package name, if available. If it it's not available now, it wouldn't be available when the run
+            // config was created, so we'll match on null.
             val player = players.filterIsInstance<UnityAndroidAdbProcess>().firstOrNull {
                 it.deviceId == state.deviceId && it.packageUid == state.androidPackageUid
+            } ?: players.filterIsInstance<UnityAndroidAdbProcess>().firstOrNull {
+                it.deviceId == state.deviceId && it.packageName == state.packageName
             }
+
             if (player != null) {
                 state.host = player.host
                 state.port = player.port
@@ -186,6 +221,8 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
                 )
             }
             else {
+                logger.warn("Cannot find Android player ${state.playerId} in ${players.size} candidates")
+                players.forEach { logger.info(it.dump()) }
                 throw CantRunException(UnityBundle.message("debugging.cannot.find.android.player"))
             }
         }.toPromise()
@@ -246,6 +283,20 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
                 // a small but unlikely chance that this will return a helper for the wrong project
                 it.roleName == state.roleName && it.projectName == state.projectName
             }
+    }
+        }
+
+    private fun getVirtualPlayerStateAsync(environment: ExecutionEnvironment): Promise<RunProfileState> {
+        // Refresh the port from the process list
+        return getLocalProcessStateAsync(environment, "debugging.cannot.find.virtual.player") { processes ->
+            processes.filterIsInstance<UnityVirtualPlayer>().firstOrNull {
+                // Exact match. Previously running instance
+                it.pid == state.pid && it.projectName == state.projectName && it.playerName == state.virtualPlayerName
+            }
+            ?: processes.filterIsInstance<UnityVirtualPlayer>().firstOrNull {
+                // Try to find an editor instance that is hosting the target virtual player
+                it.virtualPlayerId == state.virtualPlayerId && it.projectName == state.projectName
+            }
         }
     }
 
@@ -275,6 +326,8 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
                 )
             }
             else {
+                logger.warn("Cannot find local process player ${state.playerId} in ${processes.size} candidates")
+                processes.forEach { logger.info(it.dump()) }
                 throw CantRunException(UnityBundle.message(errorMessage))
             }
         }.toPromise()
@@ -300,9 +353,12 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
             project = environment.project
         ) {
 
+            val candidates = mutableSetOf<String>()
+
             // Get the player. We're only interested in a player that matches the ID (e.g. 'OSXPlayer(1,Matts-macbook)')
             // and that matches the project name
             val player = UnityPlayerListener().getPlayer(environment.project) {
+                candidates.add(it.dump())
                 it.id == state.playerId && it.projectName == state.projectName
             }
 
@@ -313,6 +369,8 @@ class UnityPlayerDebugConfiguration(project: Project, factory: UnityAttachToPlay
                 return@startUnderBackgroundProgressAsync factory()
             }
             else {
+                logger.warn("Cannot find UDP player ${state.playerId} in ${candidates.size} candidates")
+                candidates.forEach { logger.info(it) }
                 throw CantRunException(UnityBundle.message("debugging.cannot.find.udp.player"))
             }
         }.toPromise()
@@ -352,19 +410,25 @@ private class UnityPlayerSettingsEditor : SettingsEditor<UnityPlayerDebugConfigu
         row(UnityBundle.message("run.configuration.player.label.address")) { address = label("").component }
         // Only available in 2019.3 and above. Not applicable to iOS or Android ADB
         row(UnityBundle.message("run.configuration.player.label.project")) { projectName = label("").component }.visibleIf(HasNonEmptyText(projectName))
+        row(UnityBundle.message("run.configuration.player.label.role")) { roleName = label("").component }.visibleIf(HasNonEmptyText(roleName))
+        row(UnityBundle.message("run.configuration.player.label.virtualPlayerName")) { virtualPlayerName = label("").component }.visibleIf(HasNonEmptyText(virtualPlayerName))
+        row(UnityBundle.message("run.configuration.player.label.virtualPlayerId")) { virtualPlayerId = label("").component }.visibleIf(HasNonEmptyText(virtualPlayerId))
         // if Android/iOS
         row(UnityBundle.message("run.configuration.player.label.deviceId")) { deviceId = label("").component }.visibleIf(HasNonEmptyText(deviceId))
         // Device name?
         row(UnityBundle.message("run.configuration.player.label.deviceName")) { deviceName = label("").component }.visibleIf(HasNonEmptyText(deviceName))
-        // if Android/UWP
+        // if Android/UWP. Might be null on Android if we've not been able to collect it
         row(UnityBundle.message("run.configuration.player.label.packageName")) { packageName = label("").component }.visibleIf(HasNonEmptyText(packageName))
 
-        // TODO: Show all players, like in the picker dialog, but readonly. Select the current player, if available
+        // It might be nice to show a list of current players, like in the "Attach to Unity Process" dialog, highlighting this player
     }
 
     private lateinit var id: JLabel
     private lateinit var address: JLabel
     private lateinit var projectName: JLabel
+    private lateinit var roleName: JLabel
+    private lateinit var virtualPlayerId: JLabel
+    private lateinit var virtualPlayerName: JLabel
     private lateinit var deviceId: JLabel
     private lateinit var deviceName: JLabel
     private lateinit var packageName: JLabel
@@ -374,9 +438,12 @@ private class UnityPlayerSettingsEditor : SettingsEditor<UnityPlayerDebugConfigu
         id.text = state.playerId
         address.text = "${state.host}:${state.port}"
         projectName.text = state.projectName
+        roleName.text = state.roleName
+        virtualPlayerId.text = state.virtualPlayerId
+        virtualPlayerName.text = state.virtualPlayerName
         deviceId.text = state.deviceId
         deviceName.text = state.deviceName
-        packageName.text = state.packageName
+        packageName.text = state.packageName + if (!state.androidPackageUid.isNullOrEmpty()) " (${state.androidPackageUid})" else ""
     }
 
     override fun applyEditorTo(config: UnityPlayerDebugConfiguration) {

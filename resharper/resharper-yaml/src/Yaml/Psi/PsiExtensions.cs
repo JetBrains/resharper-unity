@@ -1,4 +1,6 @@
-using JetBrains.Annotations;
+#nullable enable
+using System;
+using System.Text;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.Text;
 using JetBrains.Util;
@@ -8,19 +10,56 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
 {
   public static class PsiExtensions
   {
-    [CanBeNull]
-    public static string GetPlainScalarText([CanBeNull] this INode node)
+    public static string? GetScalarText(this INode? node) => node switch
     {
-      return (node as IPlainScalarNode)?.Text.GetText();
+      IPlainScalarNode plainScalarNode => plainScalarNode.Text.GetText(),
+      ISingleQuotedScalarNode singleQuotedScalarNode => GetUnquotedText(singleQuotedScalarNode.Text.GetText(), '\'', '\''),
+      IDoubleQuotedScalarNode doubleQuotedScalarNode => GetUnquotedText(doubleQuotedScalarNode.Text.GetText(), '"', '\\'),
+      _ => null
+    };
+
+    private static string? GetUnquotedText(string text, char quoteCharacter, char escapeCharacter)
+    {
+      if (text.Length < 2 || text[0] != quoteCharacter || text[^1] != quoteCharacter)
+        return null;
+      if (text.Length == 2)
+        return string.Empty;
+      var result = new StringBuilder(text.Length - 2);
+      var str = text.AsSpan(1, text.Length - 2); 
+      ProcessEscapedString(str, quoteCharacter, escapeCharacter, result);
+      return result.ToString();
     }
 
-    [CanBeNull]
-    public static IBuffer GetPlainScalarTextBuffer([CanBeNull] this INode node)
+    private static void ProcessEscapedString(ReadOnlySpan<char> str, char quoteCharacter, char escapeCharacter, StringBuilder output)
     {
-      return (node as IPlainScalarNode)?.Text.GetTextAsBuffer();
+      var inEscapeSequence = false;
+      foreach (var ch in str)
+      {
+        if (inEscapeSequence)
+        {
+          if (ch != escapeCharacter && ch != quoteCharacter)
+          {
+            output.Append(escapeCharacter);
+            output.Append(ch);
+          }
+          else
+            output.Append(ch);
+
+          inEscapeSequence = false;
+        }
+        else
+        {
+          if (ch != escapeCharacter)
+            output.Append(ch);
+          else
+            inEscapeSequence = true;
+        }
+      }
     }
 
-    public static bool MatchesPlainScalarText([CanBeNull] this INode node, string value)
+    public static IBuffer? GetPlainScalarTextBuffer(this INode? node) => (node as IPlainScalarNode)?.Text.GetTextAsBuffer();
+
+    private static bool MatchesPlainScalarText(this INode? node, string value)
     {
       if (node is IPlainScalarNode scalar)
       {
@@ -31,8 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
       return false;
     }
 
-    [CanBeNull]
-    public static IBlockMappingEntry GetMapEntry([CanBeNull] this IBlockMappingNode mapNode, string simpleKey)
+    public static IBlockMappingEntry? GetMapEntry(this IBlockMappingNode? mapNode, string simpleKey)
     {
       if (mapNode == null)
         return null;
@@ -46,8 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
       return null;
     }
 
-    [CanBeNull]
-    public static IFlowMapEntry GetMapEntry([CanBeNull] this IFlowMappingNode mapNode, string simpleKey)
+    public static IFlowMapEntry? GetMapEntry(this IFlowMappingNode? mapNode, string simpleKey)
     {
       if (mapNode == null)
         return null;
@@ -61,23 +98,14 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
       return null;
     }
 
-    [CanBeNull]
-    public static T GetMapEntryValue<T>([CanBeNull] this IBlockMappingNode mapNode, string simpleKey)
+    public static T? GetMapEntryValue<T>(this IBlockMappingNode? mapNode, string simpleKey)
       where T : class, INode
     {
       return mapNode.GetMapEntry(simpleKey)?.Content?.Value as T;
     }
 
-    [CanBeNull]
-    public static string GetMapEntryPlainScalarText([CanBeNull] this IBlockMappingNode mapNode, string simpleKey)
-    {
-      return mapNode.GetMapEntry(simpleKey)?.Content?.Value.GetPlainScalarText();
-    }
+    public static string? GetMapEntryScalarText(this IBlockMappingNode? mapNode, string simpleKey) => mapNode.GetMapEntry(simpleKey)?.Content?.Value.GetScalarText();
 
-    [CanBeNull]
-    public static string GetMapEntryPlainScalarText([CanBeNull] this IFlowMappingNode mapNode, string simpleKey)
-    {
-      return mapNode.GetMapEntry(simpleKey)?.Value.GetPlainScalarText();
-    }
+    public static string? GetMapEntryScalarText(this IFlowMappingNode? mapNode, string simpleKey) => mapNode.GetMapEntry(simpleKey)?.Value.GetScalarText();
   }
 }

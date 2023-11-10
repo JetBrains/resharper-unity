@@ -5,7 +5,7 @@ type: File
 reformat: True
 shortenReferences: True
 categories: unity
-customProperties: Extension=cs, FileName=MonoBehaviour, ValidateFileName=True
+customProperties: Extension=cs, FileName=AuthoringBehaviour, ValidateFileName=True
 scopes: UnityDotsScope
 uitag: DOTS
 parameterOrder: HEADER, (CLASS), (NAMESPACE)
@@ -18,11 +18,11 @@ NAMESPACE-expression: fileDefaultNamespace()
 
 ```
 $HEADER$namespace $NAMESPACE$ {
-  public class $CLASS$Authoring : UnityEngine.MonoBehaviour 
+  public class $CLASS$ : UnityEngine.MonoBehaviour 
   {
-    private class $CLASS$Baker : Unity.Entities.Baker<$CLASS$Authoring>
+    private class $CLASS$Baker : Unity.Entities.Baker<$CLASS$>
     {
-      public override void Bake($CLASS$Authoring authoring)
+      public override void Bake($CLASS$ authoring)
       {
       }
     }

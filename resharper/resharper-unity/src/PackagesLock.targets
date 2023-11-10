@@ -1,8 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <ItemGroup>
-        <PackageLock Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" IsDevelopmentDependency="True" />
-        <PackageLock Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="3.3.0" IsDevelopmentDependency="True" />
+        <PackageLock Include="Antlr2.Runtime" Version="2.7.7.3" />
+        <PackageLock Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="3.4.0" IsDevelopmentDependency="True" />
+        <PackageLock Include="JetBrains.Annotations" Version="2023.3.0-eap3" />
+        <PackageLock Include="JetBrains.Build.Platform.DistributedCache" Version="1.0.20230909.199" />
         <PackageLock Include="JetBrains.HabitatDetector" Version="1.0.2" IsDevelopmentDependency="True" />
+        <PackageLock Include="JetBrains.Lifetimes" Version="2023.3.0" />
+        <PackageLock Include="JetBrains.RdFramework" Version="2023.3.0" />
+        <PackageLock Include="JetBrains.ReSharper.TestRunner.Abstractions" Version="2.11.1" />
+        <PackageLock Include="JetBrains.Vestris.ResourceLib" Version="1.4.20210120.2" />
+        <PackageLock Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" IsDevelopmentDependency="True" />
+        <PackageLock Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageLock Include="NVelocity" Version="1.0.3" />
+        <PackageLock Include="System.Collections.Immutable" Version="7.0.0" />
+        <PackageLock Include="System.Memory" Version="4.5.5" />
     </ItemGroup>
 </Project>

@@ -1,13 +1,13 @@
 Search target
-    NewBehaviourScript.BoolHandler(bool value):void
+    NewBehaviourScript.BoolHandler(bool value) : void
 Found usages  (2 usages found)
     Assets  (2 usages found)
         Button (1).prefab  (1 usage found)
             Button (1)  (1 usage found)
                 MonoBehaviour  (1 usage found)
-                    m_MethodName: BoolHandler
+                     m_MethodName: BoolHandler
         SampleScene.unity  (1 usage found)
             Canvas  (1 usage found)
                 Button2  (1 usage found)
                     MonoBehaviour  (1 usage found)
-                        m_MethodName: BoolHandler
+                         m_MethodName: BoolHandler

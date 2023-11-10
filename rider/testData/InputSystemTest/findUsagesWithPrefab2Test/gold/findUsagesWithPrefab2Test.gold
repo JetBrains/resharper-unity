@@ -1,5 +1,5 @@
 Search target
-    NewBehaviourScript2.OnJump1WithPrefab2():void
+    NewBehaviourScript2.OnJump1WithPrefab2() : void
 Found usages  (1 usage found)
     Other  (1 usage found)
         Assets  (1 usage found)

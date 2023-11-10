@@ -29,17 +29,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
                  
         public bool IsUnityProjectOrHasUnityReference => IsUnityProject.HasTrueValue() || HasUnityReference.HasTrueValue();
 
-        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
-                                    bool inTests = false)
+        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime)
         {
             mySolution = solution;
-            if (inTests)
-            {
-                IsUnityProject.Value = false;
-                IsUnityProjectFolder.Value = false;
-                HasUnityReference.Value = false;
-                return;
-            }
 
             // SolutionDirectory isn't absolute in tests, and will throw an exception if we use it when we call Exists
             mySolutionDirectory = solution.SolutionDirectory;

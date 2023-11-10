@@ -1,5 +1,5 @@
 Search target
-    PlayerInput.OnClickFromPrefab():void
+    PlayerInput.OnClickFromPrefab() : void
 Found usages  (2 usages found)
-    m_MethodName: OnClickFromPrefab
-    m_MethodName: OnClickFromPrefab
+     m_MethodName: OnClickFromPrefab
+     m_MethodName: OnClickFromPrefab

@@ -5,8 +5,8 @@ using JetBrains.Application.UI.Components;
 using JetBrains.Application.UI.Options;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.OptionPages;
-using JetBrains.ReSharper.Feature.Services.OptionPages.CodeEditing;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeStyle;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting;
@@ -20,7 +20,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.F
         PID,
         "ShaderLab Formatting Style",
         typeof(PsiFeaturesUnsortedOptionsThemedIcons.Indent),
-        ParentId = CodeEditingPage.PID,
+        ParentId = UnityOptionsPage.PID,
+        HelpKeyword = "Reference__Options__ShaderLab_Formatting",
         Sequence = 0,
         FilterTags = new[] {ConfigFileUtils.EditorConfigName}, 
         NameResourceType = typeof(Strings),

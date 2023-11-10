@@ -68,6 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static readonly IClrTypeName UnityEvent = new ClrTypeName("UnityEngine.Events.UnityEventBase");
         public static readonly IClrTypeName SphericalHarmonicsL2 = new ClrTypeName("UnityEngine.Rendering.SphericalHarmonicsL2");
         public static readonly IClrTypeName LazyLoadReference = new ClrTypeName("UnityEngine.LazyLoadReference`1");
+        public static readonly IClrTypeName VisualElement = new ClrTypeName("UnityEngine.UIElements.VisualElement");
 
         // UnityEngine.Networking
         public static readonly IClrTypeName NetworkBehaviour = new ClrTypeName("UnityEngine.Networking.NetworkBehaviour");
@@ -117,6 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static readonly IClrTypeName ComponentLookup = new ClrTypeName("Unity.Entities.ComponentLookup`1");
         public static readonly IClrTypeName SystemState = new ClrTypeName("Unity.Entities.SystemState");
         public static readonly IClrTypeName SystemAPI = new ClrTypeName("Unity.Entities.SystemAPI");
+        public static readonly IClrTypeName SystemAPIQueryBuilder = new ClrTypeName("Unity.Entities.SystemAPIQueryBuilder");
         public static readonly IClrTypeName Entity = new ClrTypeName("Unity.Entities.Entity");
         public static readonly IClrTypeName RefRO = new ClrTypeName("Unity.Entities.RefRO`1");
         public static readonly IClrTypeName RefRW = new ClrTypeName("Unity.Entities.RefRW`1");
@@ -156,6 +158,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         // public static readonly IClrTypeName JobParticleSystemParallelForBatch = new ClrTypeName("UnityEngine.ParticleSystemJobs.IJobParticleSystemParallelForBatch");
         
         //Unity.Collections
+        
+        //  UnityEngine.UIElements
+        public static readonly IClrTypeName UQueryExtensions = new ClrTypeName("UnityEngine.UIElements.UQueryExtensions");
         
         //Obsolete types
         public static readonly ClrTypeName FixedString32 = new("Unity.Collections.FixedString32");

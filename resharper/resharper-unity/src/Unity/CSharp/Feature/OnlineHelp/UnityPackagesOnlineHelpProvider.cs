@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Psi;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
 {
@@ -34,15 +35,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
             var packageManager = solution.GetComponent<PackageManager>();
             var packageData = packageManager.GetOwningPackage(asmDefLocation);
 
-            var linkPart = compiledElement.GetSearchableText()!.Replace("+", ".");
-            
-            var version = new Version(packageData.PackageDetails.Version);
+            var linkPart = GetSearchableText(compiledElement)!.Replace("+", ".").Replace("`", "-");
+
+            if (!JetSemanticVersion.TryParse(packageData.PackageDetails.Version, out var version))
+                return null;
 
             var urlHost = "docs.unity3d.com";
-            if (!packageData.Id.StartsWith("com.unity.") && packageData.PackageDetails.DocumentationUrl != null && Uri.TryCreate(packageData.PackageDetails.DocumentationUrl, UriKind.Absolute, out var result)) 
+            if (!packageData.Id.StartsWith("com.unity.") 
+                && packageData.PackageDetails.DocumentationUrl != null 
+                && Uri.TryCreate(packageData.PackageDetails.DocumentationUrl, UriKind.Absolute, out var result)) 
                 urlHost = result.Host;
             
-            return new Uri($"https://{urlHost}/Packages/{packageData.Id}@{version.ToString(2)}/api/{linkPart}.html");
+            return new Uri($"https://{urlHost}/Packages/{packageData.Id}@{version.Major}.{version.Minor}/api/{linkPart}.html");
+        }
+        
+        public static string GetSearchableText(ICompiledElement compiledElement)
+        {
+            // RIDER-100677 Broken links in Unity documentation
+            
+            if (compiledElement is ITypeMember typeMemberElement)
+            {
+                var containingType = typeMemberElement.ContainingType;
+                if (containingType != null)
+                { 
+                    return containingType.GetClrName().FullName;
+                }
+            }
+
+            return compiledElement.GetSearchableText();
         }
 
         private static bool IsPublic(ICompiledElement element)
@@ -65,23 +85,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
             if (packageData == null)
                 return false;
 
-            if (packageData.Source != PackageSource.Registry)
+            // example https://docs.unity3d.com/Packages/com.unity.ugui@1.0/api/index.html is BuiltIn
+            if (packageData.Source != PackageSource.Registry && packageData.Source != PackageSource.BuiltIn)
                 return false;
 
             if (!packageData.Id.StartsWith("com.unity.") && (packageData.PackageDetails.DocumentationUrl == null ||
                 !Uri.TryCreate(packageData.PackageDetails.DocumentationUrl, UriKind.Absolute, out _)))
                 return false;
             
-            if (!Version.TryParse(packageData.PackageDetails.Version, out _)) return false;
+            if (!JetSemanticVersion.TryParse(packageData.PackageDetails.Version, out _)) return false;
 
             if (element.GetSearchableText() == null) return false;
 
             return true;
         }
 
-        // same priority as MsdnOnlineHelpProvider,
-        // but this provider only applies to Unity registry packages and MSDN only applies to Microsoft/Mono
-        public override int Priority => 10; 
+        // more preferable then UnityCompiledElementOnlineHelpProvider
+        public override int Priority => 5; 
         public override bool ShouldValidate => false;
     }
 }

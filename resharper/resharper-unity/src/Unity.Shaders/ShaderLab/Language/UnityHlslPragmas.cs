@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport;
 using JetBrains.ReSharper.Psi.Cpp.Language;
 using JetBrains.Util;
 
@@ -9,10 +10,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language
 {
     public sealed class UnityHlslPragmas : CppPragmas
     {
-        public static readonly PragmaCommand MultiCompile = new("multi_compile", PragmaCommandFlags.HasRequiredSpec);
+        public static readonly ShaderLabPragmaCommand MultiCompile = new("multi_compile", PragmaCommandFlags.HasRequiredSpec, new ShaderLabPragmaInfo { DeclaresKeywords = true });
         public static readonly PragmaCommand MultiCompileLocal = MultiCompile.WithSuffix("_local");
-        public static readonly PragmaCommand ShaderFeature = new("shader_feature", PragmaCommandFlags.HasRequiredSpec);
+        public static readonly ShaderLabPragmaCommand ShaderFeature = new("shader_feature", PragmaCommandFlags.HasRequiredSpec, new ShaderLabPragmaInfo { DeclaresKeywords = true, HasDisabledVariantForSingleKeyword = true });
         public static readonly PragmaCommand ShaderFeatureLocal = ShaderFeature.WithSuffix("_local");
+        public static readonly ShaderLabPragmaCommand DynamicBranch = new("dynamic_branch", PragmaCommandFlags.HasRequiredSpec, new ShaderLabPragmaInfo { DeclaresKeywords = true });
+        public static readonly PragmaCommand DynamicBranchLocal = DynamicBranch.WithSuffix("_local");
         public static readonly PragmaCommand EnableD3D11DebugSymbols = new("enable_d3d11_debug_symbols", PragmaCommandFlags.None);
         public static readonly PragmaCommand OnlyRenderers = new("only_renderers", PragmaCommandFlags.HasRequiredSpec);
         public static readonly PragmaCommand ExcludeRenderers = new("exclude_renderers", PragmaCommandFlags.HasRequiredSpec);
@@ -32,11 +35,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language
                     .Append(EnableD3D11DebugSymbols).Append(HlslccBytecodeDisassembly)
                     .Append(OnlyRenderers).Append(ExcludeRenderers).Append(Require)
                     .Append(SkipOptimizations).Append(DisableFastmath), PragmaCommandEx.CreateArrayWithFlags(PragmaCommandFlags.HasRequiredSpec,
-                    "target", "hardware_tier_variants", "skip_variants", "instancing_options", "dynamic_branch", "dynamic_branch_local"))
+                    "target", "hardware_tier_variants", "skip_variants", "instancing_options"))
+                .Append(DynamicBranch).Append(DynamicBranchLocal)
                 .Append(MultiCompile).Append(MultiCompileLocal).Concat(WithStageSuffixes(MultiCompile))
                 .Append(ShaderFeature).Append(ShaderFeatureLocal).Concat(WithStageSuffixes(ShaderFeature))
-                .Concat(PragmaCommandEx.CreateArrayWithFlags(PragmaCommandFlags.HasRequiredSpec | PragmaCommandFlags.HasFunctionReference, 
-                    "vertex", "fragment", "geometry", "hull", "domain", "surface"))
+                .Append(new ShaderLabPragmaCommand("geometry", PragmaCommandFlags.HasRequiredSpec | PragmaCommandFlags.HasFunctionReference, new ShaderLabPragmaInfo { ImpliesShaderTarget = HlslConstants.SHADER_TARGET_40 }))
+                .Append(new ShaderLabPragmaCommand("hull", PragmaCommandFlags.HasRequiredSpec | PragmaCommandFlags.HasFunctionReference, new ShaderLabPragmaInfo { ImpliesShaderTarget = HlslConstants.SHADER_TARGET_46 }))
+                .Append(new ShaderLabPragmaCommand("domain", PragmaCommandFlags.HasRequiredSpec | PragmaCommandFlags.HasFunctionReference, new ShaderLabPragmaInfo { ImpliesShaderTarget = HlslConstants.SHADER_TARGET_46 }))
+                .Concat(PragmaCommandEx.CreateArrayWithFlags(PragmaCommandFlags.HasRequiredSpec | PragmaCommandFlags.HasFunctionReference, "vertex", "fragment", "surface"))
         );
 
         public UnityHlslPragmas(bool includeHlslStandardPragmas) : 

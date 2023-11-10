@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity.ui.shaders
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.EDT
+import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
@@ -9,6 +10,7 @@ import com.jetbrains.rd.ide.model.TextControlId
 import com.jetbrains.rd.ide.model.TextControlModel
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.whenTrue
+import com.jetbrains.rdclient.client.frontendProjectSession
 import com.jetbrains.rdclient.editors.FrontendTextControlHost
 import com.jetbrains.rider.cpp.fileType.HlslHeaderFileType
 import com.jetbrains.rider.cpp.fileType.HlslSourceFileType
@@ -62,7 +64,7 @@ class ShaderWidgetProvider : RiderResolveContextWidgetProvider, ProjectActivity 
     }
 
     private fun adviseModel(lifetime: Lifetime, model: FrontendBackendModel, project: Project) {
-        val textControlHost = FrontendTextControlHost.getInstance(project)
+        val textControlHost = project.frontendProjectSession.appSession.service<FrontendTextControlHost>()
         model.shaderContexts.advise(lifetime) { event ->
             textControlHost.getEditorsIds(event.key).forEach { editor ->
                 RiderResolveContextWidgetManager.getWidget<ShaderWidget>(editor)?.setData(event.newValueOpt)
