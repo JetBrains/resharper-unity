@@ -1,7 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Injections;
 using JetBrains.Serialization;
 using JetBrains.Util;

@@ -105,6 +105,12 @@ public class ShaderVariantsManager : ICppChangeProvider
         }
     }
     
+    public void SetKeywordsEnabled(IEnumerable<string> keywords, bool enabled)
+    {
+        foreach (var keyword in keywords)
+            SetKeywordEnabled(keyword, enabled);
+    }
+    
     public void SetShaderApi(ShaderApi shaderApi) => myBoundSettingsStore.SetValue(static (ShaderVariantsSettings s) => s.ShaderApi, shaderApi);
     
     public void SetShaderPlatform(ShaderPlatform shaderPlatform) => myBoundSettingsStore.SetValue(static (ShaderVariantsSettings s) => s.ShaderPlatform, shaderPlatform);

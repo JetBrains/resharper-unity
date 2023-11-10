@@ -131,6 +131,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             return myProgramInfos.TryGetValue(location, out shaderProgramInfo);
         }
 
+        public bool TryGetShaderProgramInfo(VirtualFileSystemPath path, int offset, [MaybeNullWhen(false)] out ShaderProgramInfo shaderProgramInfo)
+        {
+            shaderProgramInfo = null;
+            if (!myPathToLocations.TryGetValue(path, out var countAndLocations))
+                return false;
+            
+            var result = countAndLocations.Locations.BinarySearchRo(offset, location => location.RootRange.StartOffset);
+            var index = result.NearestIndexNotAboveTargetOrMinus1;
+            if (index < 0)
+                return false;
+                
+            var location = countAndLocations.Locations[index];
+            if (offset >= location.RootRange.EndOffset)
+                return false;
+
+            shaderProgramInfo = myProgramInfos[location];
+            return true;
+        }
+
         public void ForEachKeyword(Action<string> action)
         {
             Locks.AssertReadAccessAllowed();

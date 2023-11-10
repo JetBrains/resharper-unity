@@ -162,6 +162,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
             field("totalEnabledKeywordsCount", int)
             source("enableKeyword", string)
             source("disableKeyword", string)
+            source("disableKeywords", immutableList(string))
             source("setShaderApi", RdShaderApi)
             source("setShaderPlatform", RdShaderPlatform)
         })
