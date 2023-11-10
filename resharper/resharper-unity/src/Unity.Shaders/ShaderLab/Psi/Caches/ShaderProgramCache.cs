@@ -189,8 +189,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
         public bool TryGetOrReadUpToDateProgramInfo(IPsiSourceFile sourceFile, CppFileLocation cppFileLocation, [MaybeNullWhen(false)] out ShaderProgramInfo shaderProgramInfo)
         {
             var range = cppFileLocation.RootRange;
-            Assertion.Assert(range.IsValid);
-            
+            // Only injected shader programs supported for now
+            if (!range.IsValid)
+            {
+                shaderProgramInfo = default;
+                return false;
+            }
+
             // PSI is not committed here
             // TODO: cpp global cache should calculate cache only when PSI for file with cpp injects is committed.
             if (!UpToDate(sourceFile))
