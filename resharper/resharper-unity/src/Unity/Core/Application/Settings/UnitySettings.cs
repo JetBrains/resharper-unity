@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
         [SettingsEntry(false, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Suppress_resolve_errors_in_HLSL_))]
         public bool SuppressShaderErrorHighlighting;
         
-        [SettingsEntry(false, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Shader_variants_support_Preview))]
+        [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Shader_variants_support_Preview))]
         public bool FeaturePreviewShaderVariantsSupport;
 
         [SettingsEntry(false, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_))]

@@ -25,11 +25,15 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon.Stages.Highli
         protected override PsiLanguageType? CompilerIdsLanguage => CppLanguage.Instance;
         protected override string RelativeTestDataPath => @"ShaderLab\Daemon\Stages\Highlightings";
 
-        public override void SetUp()
+        public override void TearDown()
         {
-            base.SetUp();
             myEnabledKeywords.Clear();
-            myShaderApi = ShaderApi.D3D11;
+            var shaderVariantsManager = Solution.GetComponent<ShaderVariantsManager>();
+            myShaderApi = ShaderApiDefineSymbolDescriptor.DefaultValue;
+            myShaderPlatform = ShaderPlatformDefineSymbolDescriptor.DefaultValue;
+            shaderVariantsManager.SetShaderApi(myShaderApi);
+            shaderVariantsManager.SetShaderPlatform(myShaderPlatform);
+            base.TearDown();
         }
 
         [Test]
