@@ -20,6 +20,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import icons.UnityIcons
 import org.jetbrains.annotations.Nls
+import java.awt.Point
 
 
 class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(project, editor), RiderResolveContextWidget, Disposable {
@@ -57,7 +58,7 @@ class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(proj
         isVisible = data != null
     }
 
-    override fun showPopup(showAt: RelativePoint) {
+    override fun showPopup(pointOnComponent: Point) {
         val id = editor.document.getFirstDocumentId(project) ?: return
         val host = FrontendBackendHost.getInstance(project)
         val lt = widgetLifetime.createNested()
@@ -76,7 +77,7 @@ class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(proj
                 // to work around this we add onPerformed callback for every possible action
                 for (action in actions)
                     action.onPerformed = terminateLifetime
-                popup.show(showAt)
+                popup.show(RelativePoint(this, pointOnComponent))
             } catch (t: Throwable) {
                 lt.terminate(true)
                 throw t
