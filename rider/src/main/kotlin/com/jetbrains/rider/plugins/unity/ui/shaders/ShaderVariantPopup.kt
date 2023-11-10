@@ -96,11 +96,11 @@ class ShaderVariantPopup(private val interaction: ShaderVariantInteraction, @Nls
                 border = JBUI.Borders.empty()
 
                 add(builtinDefineSymbolsComponent)
+                add(SeparatorComponent())
                 add(JBLabel(UnityBundle.message("shaderVariant.popup.keywords.label", contextName)).apply {
                     isEnabled = false
                     font = boldFont
                 })
-                add(SeparatorComponent())
                 add(shaderKeywordsComponent)
             })
         })
