@@ -1,0 +1,25 @@
+using Unity.Entities;
+
+namespace Unity.Entities
+{
+    public interface IJobEntity {}
+}
+
+public partial struct InitLocalTransformBuildingGraphicPart : IJobEntity
+{
+    public int |A|(0);
+    public int |B|(1);
+}
+
+public partial struct InitLocalTransformBuildingGraphicPart
+{
+    public int |C|(2);
+    public int |D|(3);
+}
+
+---------------------------------------------------------
+(0): ReSharper Dead Code: Field 'A' is never used
+(1): ReSharper Dead Code: Field 'B' is never used
+(2): ReSharper Dead Code: Field 'C' is never used
+(3): ReSharper Dead Code: Field 'D' is never used
+
