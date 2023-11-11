@@ -125,6 +125,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
             property("enableDebuggerExtensions", bool)
             property("ignoreBreakOnUnhandledExceptionsForIl2Cpp", bool)
+            property("forcedTimeoutForAdvanceUnityEvaluation", int)
             property("previewShaderVariantsSupport", bool)
         })
 
