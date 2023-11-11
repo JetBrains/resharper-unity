@@ -59,7 +59,7 @@ abstract class IntegrationTestWithUnityProjectBase : IntegrationTestWithGenerate
             executable = unityExecutable.canonicalPath,
             projectPath = unityProjectPath.canonicalPath,
             withCoverage = false,
-            resetEditorPrefs = true,
+            resetEditorPrefs = resetEditorPrefs,
             useRiderTestPath = useRiderTestPath,
             batchMode = batchMode,
             generateSolution = true
