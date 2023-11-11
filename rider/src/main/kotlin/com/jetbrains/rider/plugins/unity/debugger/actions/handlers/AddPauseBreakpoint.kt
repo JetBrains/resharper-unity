@@ -15,6 +15,7 @@ import com.intellij.xdebugger.breakpoints.SuspendPolicy
 import com.intellij.xdebugger.impl.XDebuggerManagerImpl
 import com.intellij.xdebugger.impl.XSourcePositionImpl
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
+import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointConstants
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
 
 class AddPauseBreakpoint : DumbAwareAction() {
@@ -32,6 +33,7 @@ class AddPauseBreakpoint : DumbAwareAction() {
                                             properties)
             .apply {
                 this.suspendPolicy = SuspendPolicy.NONE
+                this.setLogExpression(UnityPausepointConstants.pauseEditorCommand)
             }
     }
 

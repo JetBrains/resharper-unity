@@ -1193,6 +1193,9 @@
     <data name="UnityOptionsPage_AddDebuggingSection_Break_on_unhandled_exceptions__setting_for_IL2CPP_players_Comment" xml:space="preserve">
         <value>Unity's Mono 4.x runtime ignores the 'Break on unhandled exceptions' setting.
 This option applies the same behavior to IL2CPP players.</value>
+    </data>    
+    <data name="UnityOptionsPage_AddDebuggingSection_Timeout_for_Advance_Unity_Evaluation_Comment" xml:space="preserve">
+        <value>Time to wait before terminating long evaluation operations, such as texture preview</value>
     </data>
     <data name="UnityOptionsPage_AddDebuggingSection_Debugging" xml:space="preserve">
         <value>Debugging</value>
@@ -1208,6 +1211,9 @@ float values with full precision.</value>
     </data>
     <data name="UnityOptionsPage_AddDebuggingSection_Ignore__Break_on_unhandled_exceptions__setting_for_IL2CPP_players" xml:space="preserve">
         <value>Ignore 'Break on unhandled exceptions' setting for IL2CPP players</value>
+    </data>    
+    <data name="UnityOptionsPage_AddDebuggingSection_Timeout_for_Advance_Unity_Evaluation" xml:space="preserve">
+        <value>Timeout for advanced Unity evaluations, in milliseconds:</value>
     </data>
     <data name="UnityOptionsPage_AddGeneralSection_" xml:space="preserve">
         <value>Recommended. Integration features such as play/pause, log view and
@@ -1385,6 +1391,9 @@ a plugin to be installed to a project.</value>
     </data>
     <data name="UnitySettings_t_Ignore__Break_on_Unhandled_Exceptions__for_IL2CPP_players" xml:space="preserve">
         <value>Ignore 'Break on Unhandled Exceptions' for IL2CPP players</value>
+    </data>
+    <data name="UnitySettings_t_Timeout_for_Advance_Unity_Evaluation" xml:space="preserve">
+        <value>Timeout for advanced Unity evaluations, in milliseconds:</value>
     </data>
     <data name="UnitySettings_t_Merge_parameters" xml:space="preserve">
         <value>Merge parameters</value>

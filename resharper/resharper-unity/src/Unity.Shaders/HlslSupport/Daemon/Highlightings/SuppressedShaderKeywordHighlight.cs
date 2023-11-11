@@ -19,5 +19,5 @@ public class SuppressedShaderKeywordHighlight : ShaderKeywordHighlight
         SuppressorsString = !suppressors.IsEmpty ? string.Join(", ", suppressors) : null;
     }
     
-    public override /*Localized*/ string? ToolTip => SuppressorsString != null ? $"Suppressed by: {SuppressorsString}" : null;
+    public override /*Localized*/ string? ToolTip => SuppressorsString != null ? $"Suppressed because of another enabled keywords in the same shader keyword set: {SuppressorsString}.\n\nCheck multi_compile/shader_feature pragmas for conflicts." : null;
 }
