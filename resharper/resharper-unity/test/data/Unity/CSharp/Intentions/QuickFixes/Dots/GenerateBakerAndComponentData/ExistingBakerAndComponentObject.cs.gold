@@ -27,9 +27,9 @@ namespace ComponentsAndTags
 
             AddComponentObject(entity,
               new GraveyardPropertiesComponentData
-                {
-                  ScavsCount = authoring.ScavsCount, FieldDimensions = authoring.FieldDimensions
-                });
+              {
+                ScavsCount = authoring.ScavsCount, FieldDimensions = authoring.FieldDimensions
+              });
         }
     }
 

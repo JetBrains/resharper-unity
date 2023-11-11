@@ -27,11 +27,11 @@ namespace ComponentsAndTags
             var entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity,
               new GraveyardPropertiesComponentData
-                {
-                  FieldDimensions = authoring.FieldDimensions,
-                  Prefab = GetEntity(authoring.Prefab, TransformUsageFlags.Dynamic),
-                  Transform = GetEntity(authoring.Transform, TransformUsageFlags.Dynamic)
-                });
+              {
+                FieldDimensions = authoring.FieldDimensions,
+                Prefab = GetEntity(authoring.Prefab, TransformUsageFlags.Dynamic),
+                Transform = GetEntity(authoring.Transform, TransformUsageFlags.Dynamic)
+              });
           }
         }
     }

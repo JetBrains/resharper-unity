@@ -42,9 +42,9 @@ namespace ComponentsAndTags
                 });
                 AddComponentObject(entity,
                   new RandomProperties
-                    {
-                      SpawnRandom = Unity.Mathematics.Random.CreateFromIndex(authoring.SpawnRandom)
-                    });
+                  {
+                    SpawnRandom = Unity.Mathematics.Random.CreateFromIndex(authoring.SpawnRandom)
+                  });
             }
         }
     }
