@@ -6,6 +6,8 @@ import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
 import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rider.model.nova.ide.SolutionModel.RdDocumentId
+import com.jetbrains.rider.model.nova.ide.SolutionModel.TextControlId
+import com.jetbrains.rider.model.nova.ide.SolutionModel.TextControlExtension
 import model.lib.Library
 
 // frontend <-> backend model, from point of view of frontend, meaning:
@@ -33,6 +35,21 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         +"Local"
         +"LocalTarball"
         +"Git"
+    }
+
+    private val RdShaderApi = enum {
+        +"D3D11"
+        +"GlCore"
+        +"GlEs"
+        +"GlEs3"
+        +"Metal"
+        +"Vulkan"
+        +"D3D11L9X"
+    }
+
+    private val RdShaderPlatform = enum {
+        +"Desktop"
+        +"Mobile"
     }
 
     private val UnityPackage = structdef {
@@ -75,15 +92,14 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         field("startLine", int)
     }
 
-    // Shader Variants
-    private val rdShaderKeyword = structdef {
-        field("name", string.interned(shaderInternScope).attrs(KnownAttrs.NlsSafe))
+    private val rdShaderVariantExtension = classdef extends TextControlExtension {
+        property("info", structdef("rdShaderVariantInfo") {
+            field("enabledCount", int)
+            field("suppressedCount", int)
+            field("availableCount", int)
+        })
     }
-    private val rdShaderVariant = classdef {
-        set("enabledKeywords", string.interned(shaderInternScope)).readonly
-        source("enableKeyword", string)
-        source("disableKeyword", string)
-    }
+
     init {
         setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.plugins.unity.model.frontendBackend")
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.FrontendBackend")
@@ -109,6 +125,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
             property("enableDebuggerExtensions", bool)
             property("ignoreBreakOnUnhandledExceptionsForIl2Cpp", bool)
+            property("forcedTimeoutForAdvanceUnityEvaluation", int)
+            property("previewShaderVariantsSupport", bool)
         })
 
         field("playControls", Library.PlayControls)
@@ -131,13 +149,23 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         })
 
         // Shader variants
-        map("shaderKeywords", string, rdShaderKeyword).readonly
-        property("defaultShaderVariant", rdShaderVariant).readonly
+        map("shaderVariantExtensions", TextControlId, rdShaderVariantExtension)
         call("createShaderVariantInteraction", structdef("createShaderVariantInteractionArgs") {
             field("documentId", RdDocumentId)
             field("offset", int)
         }, classdef("shaderVariantInteraction") {
-            field("availableKeywords", immutableList(string))
+            field("shaderFeatures", immutableList(immutableList(string)))
+            field("enabledKeywords", immutableList(string))
+            field("shaderApi", RdShaderApi)
+            field("shaderPlatform", RdShaderPlatform)
+            field("totalKeywordsCount", int)
+            field("totalEnabledKeywordsCount", int)
+            field("availableKeywords", int)
+            source("enableKeyword", string)
+            source("disableKeyword", string)
+            source("disableKeywords", immutableList(string))
+            source("setShaderApi", RdShaderApi)
+            source("setShaderPlatform", RdShaderPlatform)
         })
 
         // Actions called from the frontend to the backend (and/or indirectly, Unity)

@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots
 {
     [SolutionComponent]
     public class DotsElementsSuperTypeDeclaredInOtherPartSuppressor : ISuperTypeDeclaredInOtherPartSuppressor
-        , IPartialTypeWithSinglePartSuppressor
+        , IPartialTypeWithSinglePartSuppressor, ISequentialStructNoDefinedOrderingSuppressor
     {
         public virtual bool SuppressInspections(IDeclaredType superType, IClassLikeDeclaration declaration,
             ITypeDeclaration otherPartDeclaration)

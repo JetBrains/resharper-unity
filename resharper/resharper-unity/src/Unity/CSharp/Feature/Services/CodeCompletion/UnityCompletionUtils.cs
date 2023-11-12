@@ -7,9 +7,9 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompletion
 {
-    internal static class UnityCompletionUtils
+    public static class UnityCompletionUtils
     {
-        internal static bool IsSpecificArgumentInSpecificMethod(CSharpCodeCompletionContext context, out ICSharpLiteralExpression? stringLiteral, out string? typeParamName,
+        public static bool IsSpecificArgumentInSpecificMethod(CSharpCodeCompletionContext context, out ICSharpLiteralExpression? stringLiteral, out string? typeParamName,
             Func<IInvocationExpression, bool> methodChecker, Func<IArgumentList, ICSharpArgument, bool> argumentChecker)
         {
             stringLiteral = null;
@@ -48,8 +48,43 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             stringLiteral = null;
             return false;
         }
+        
+        public static bool IsSpecificArgumentInConstructor(CSharpCodeCompletionContext context, Func<IObjectCreationExpression, bool> methodChecker, Func<IArgumentList, ICSharpArgument, bool> argumentChecker)
+        {
+            var nodeInFile = context.NodeInFile as ITokenNode;
+            if (nodeInFile == null)
+                return false;
+        
+            var possibleInvocationExpression = nodeInFile.Parent;
+            if (possibleInvocationExpression is ICSharpLiteralExpression literalExpression)
+            {
+                if (!literalExpression.Literal.IsAnyStringLiteral())
+                    return false;
+        
+                var argument = CSharpArgumentNavigator.GetByValue(literalExpression);
+                var argumentList = ArgumentListNavigator.GetByArgument(argument);
+                if (argument == null || argumentList == null)
+                    return false;
+        
+                if (argumentChecker(argumentList, argument))
+                {
+                    possibleInvocationExpression = ObjectCreationExpressionNavigator.GetByArgument(argument);
+                }
+            }
+        
+            if (possibleInvocationExpression is IObjectCreationExpression invocationExpression)
+            {
+                if (methodChecker(invocationExpression))
+                {
+                    return true;
+                }
+            }
+        
+            return false;
+        }
 
-        internal static Func<IArgumentList, ICSharpArgument, bool> IsCorrespondingArgument(string argumentName, int argumentIndex = 0)
+
+        public static Func<IArgumentList, ICSharpArgument, bool> IsCorrespondingArgument(string argumentName, int argumentIndex = 0)
         {
             return (argumentList, argument) =>
             {

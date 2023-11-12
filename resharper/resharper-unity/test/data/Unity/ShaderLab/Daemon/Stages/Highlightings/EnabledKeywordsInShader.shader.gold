@@ -36,7 +36,9 @@ Shader "FooBar"
 (2): ReSharper ShaderLab Disabled Shader Keyword: 
 (3): ReSharper ShaderLab Disabled Shader Keyword: 
 (4): ReSharper ShaderLab Enabled Shader Keyword: 
-(5): ReSharper ShaderLab Suppressed Shader Keyword: 
+(5): ReSharper ShaderLab Suppressed Shader Keyword: (T) 'Suppressed because of another enabled keywords in the same shader keyword set: B.
+
+Check multi_compile/shader_feature pragmas for conflicts.' (E) ''
 (6): ReSharper ShaderLab Implicitly Enabled Shader Keyword: 
 (7): ReSharper ShaderLab Disabled Shader Keyword: 
 (8): ReSharper ShaderLab Disabled Shader Keyword: 
@@ -45,7 +47,9 @@ Shader "FooBar"
 (11): ReSharper ShaderLab Disabled Shader Keyword: 
 (12): ReSharper ShaderLab Disabled Shader Keyword: 
 (13): ReSharper ShaderLab Enabled Shader Keyword: 
-(14): ReSharper ShaderLab Suppressed Shader Keyword: (T) 'Suppressed by: B' (E) ''
+(14): ReSharper ShaderLab Suppressed Shader Keyword: (T) 'Suppressed because of another enabled keywords in the same shader keyword set: B.
+
+Check multi_compile/shader_feature pragmas for conflicts.' (E) ''
 (15): ReSharper ShaderLab Implicitly Enabled Shader Keyword: 
 (16): ReSharper ShaderLab Disabled Shader Keyword: 
 (17): ReSharper ShaderLab Disabled Shader Keyword: 
@@ -54,11 +58,15 @@ Shader "FooBar"
 (20): ReSharper ShaderLab Disabled Shader Keyword: 
 (21): ReSharper ShaderLab Disabled Shader Keyword: 
 (22): ReSharper ShaderLab Enabled Shader Keyword: 
-(23): ReSharper ShaderLab Suppressed Shader Keyword: (T) 'Suppressed by: B' (E) ''
+(23): ReSharper ShaderLab Suppressed Shader Keyword: (T) 'Suppressed because of another enabled keywords in the same shader keyword set: B.
+
+Check multi_compile/shader_feature pragmas for conflicts.' (E) ''
 (24): ReSharper ShaderLab Implicitly Enabled Shader Keyword: 
 (25): ReSharper ShaderLab Disabled Shader Keyword: 
 (26): ReSharper ShaderLab Disabled Shader Keyword: 
 (27): ReSharper ShaderLab Disabled Shader Keyword: 
 (28): ReSharper ShaderLab Enabled Shader Keyword: 
-(29): ReSharper ShaderLab Suppressed Shader Keyword: (T) 'Suppressed by: B' (E) ''
+(29): ReSharper ShaderLab Suppressed Shader Keyword: (T) 'Suppressed because of another enabled keywords in the same shader keyword set: B.
+
+Check multi_compile/shader_feature pragmas for conflicts.' (E) ''
 (30): ReSharper ShaderLab Implicitly Enabled Shader Keyword: 

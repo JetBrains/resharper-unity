@@ -437,10 +437,12 @@
     public static string UnityOptionsPage_AddCSharpSection_Show_gutter_icons_for_implicit_script_usages_ => ResourceManager.GetString("UnityOptionsPage_AddCSharpSection_Show_gutter_icons_for_implicit_script_usages_");
     public static string UnityOptionsPage_AddCSharpSection_When_Code_Vision_is_disabled => ResourceManager.GetString("UnityOptionsPage_AddCSharpSection_When_Code_Vision_is_disabled");
     public static string UnityOptionsPage_AddDebuggingSection_Break_on_unhandled_exceptions__setting_for_IL2CPP_players_Comment => ResourceManager.GetString("UnityOptionsPage_AddDebuggingSection_Break_on_unhandled_exceptions__setting_for_IL2CPP_players_Comment");
+    public static string UnityOptionsPage_AddDebuggingSection_Timeout_for_Advance_Unity_Evaluation_Comment => ResourceManager.GetString("UnityOptionsPage_AddDebuggingSection_Timeout_for_Advance_Unity_Evaluation_Comment");
     public static string UnityOptionsPage_AddDebuggingSection_Debugging => ResourceManager.GetString("UnityOptionsPage_AddDebuggingSection_Debugging");
     public static string UnityOptionsPage_AddDebuggingSection_Extend_value_rendering => ResourceManager.GetString("UnityOptionsPage_AddDebuggingSection_Extend_value_rendering");
     public static string UnityOptionsPage_AddDebuggingSection_Extend_value_rendering_Comment => ResourceManager.GetString("UnityOptionsPage_AddDebuggingSection_Extend_value_rendering_Comment");
     public static string UnityOptionsPage_AddDebuggingSection_Ignore__Break_on_unhandled_exceptions__setting_for_IL2CPP_players => ResourceManager.GetString("UnityOptionsPage_AddDebuggingSection_Ignore__Break_on_unhandled_exceptions__setting_for_IL2CPP_players");
+    public static string UnityOptionsPage_AddDebuggingSection_Timeout_for_Advance_Unity_Evaluation => ResourceManager.GetString("UnityOptionsPage_AddDebuggingSection_Timeout_for_Advance_Unity_Evaluation");
     public static string UnityOptionsPage_AddGeneralSection_ => ResourceManager.GetString("UnityOptionsPage_AddGeneralSection_");
     public static string UnityOptionsPage_AddGeneralSection_Automatically_install_and_update_Rider_s_Unity_editor_plugin => ResourceManager.GetString("UnityOptionsPage_AddGeneralSection_Automatically_install_and_update_Rider_s_Unity_editor_plugin");
     public static string UnityOptionsPage_AddGeneralSection_Automatically_refresh_assets_in_Unity => ResourceManager.GetString("UnityOptionsPage_AddGeneralSection_Automatically_refresh_assets_in_Unity");
@@ -469,6 +471,7 @@
     public static string UnityOptionsPage_AddPerformanceAnalysisSubSection_Show_gutter_icons_for_frequently_called_methods => ResourceManager.GetString("UnityOptionsPage_AddPerformanceAnalysisSubSection_Show_gutter_icons_for_frequently_called_methods");
     public static string UnityOptionsPage_AddShadersSection_Shaders => ResourceManager.GetString("UnityOptionsPage_AddShadersSection_Shaders");
     public static string UnityOptionsPage_AddShadersSection_Suppress_resolve_errors_of_unqualified_names => ResourceManager.GetString("UnityOptionsPage_AddShadersSection_Suppress_resolve_errors_of_unqualified_names");
+    public static string UnityOptionsPage_AddShadersSection_Preview_Shader_variants_support => ResourceManager.GetString("UnityOptionsPage_AddShadersSection_Preview_Shader_variants_support");
     public static string UnityOptionsPage_AddTextBasedAssetsSection_Automatically_disable_asset_indexing_for_large_solutions => ResourceManager.GetString("UnityOptionsPage_AddTextBasedAssetsSection_Automatically_disable_asset_indexing_for_large_solutions");
     public static string UnityOptionsPage_AddTextBasedAssetsSection_Cache_prefab_data_to_improve_find_usage_performance => ResourceManager.GetString("UnityOptionsPage_AddTextBasedAssetsSection_Cache_prefab_data_to_improve_find_usage_performance");
     public static string UnityOptionsPage_AddTextBasedAssetsSection_Merge_parameters => ResourceManager.GetString("UnityOptionsPage_AddTextBasedAssetsSection_Merge_parameters");
@@ -498,11 +501,13 @@
     public static string UnitySettings_t_If_this_option_is_enabled__the_Rider_Unity_editor_plugin_will_be_automatically_installed_and_updated_ => ResourceManager.GetString("UnitySettings_t_If_this_option_is_enabled__the_Rider_Unity_editor_plugin_will_be_automatically_installed_and_updated_");
     public static string UnitySettings_t_If_this_option_is_enabled__UnityYamlMerge_would_be_used_to_merge_YAML_files_ => ResourceManager.GetString("UnitySettings_t_If_this_option_is_enabled__UnityYamlMerge_would_be_used_to_merge_YAML_files_");
     public static string UnitySettings_t_Ignore__Break_on_Unhandled_Exceptions__for_IL2CPP_players => ResourceManager.GetString("UnitySettings_t_Ignore__Break_on_Unhandled_Exceptions__for_IL2CPP_players");
+    public static string UnitySettings_t_Timeout_for_Advance_Unity_Evaluation => ResourceManager.GetString("UnitySettings_t_Timeout_for_Advance_Unity_Evaluation");
     public static string UnitySettings_t_Merge_parameters => ResourceManager.GetString("UnitySettings_t_Merge_parameters");
     public static string UnitySettings_t_Prefab_cache => ResourceManager.GetString("UnitySettings_t_Prefab_cache");
     public static string UnitySettings_t_Should_yaml_heuristic_be_applied_ => ResourceManager.GetString("UnitySettings_t_Should_yaml_heuristic_be_applied_");
     public static string UnitySettings_t_Show_Inspector_properties_changes_in_editor => ResourceManager.GetString("UnitySettings_t_Show_Inspector_properties_changes_in_editor");
     public static string UnitySettings_t_Suppress_resolve_errors_in_HLSL_ => ResourceManager.GetString("UnitySettings_t_Suppress_resolve_errors_in_HLSL_");
+    public static string UnitySettings_t_Shader_variants_support_Preview => ResourceManager.GetString("UnitySettings_t_Shader_variants_support_Preview");
     public static string UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_ => ResourceManager.GetString("UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_");
     public static string UnitySettings_t_Unity_highlighter_scheme_for_editor_ => ResourceManager.GetString("UnitySettings_t_Unity_highlighter_scheme_for_editor_");
     public static string UnitySettings_t_Unity_plugin_settings => ResourceManager.GetString("UnitySettings_t_Unity_plugin_settings");

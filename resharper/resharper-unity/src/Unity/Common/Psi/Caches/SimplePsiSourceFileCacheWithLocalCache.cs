@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches
             return myLocalCache.TryGetValue(sourceFile, out local);
         }
         
-        protected abstract TLocal BuildLocal(IPsiSourceFile sourceFile, TPersistent persistent);
+        protected abstract TLocal? BuildLocal(IPsiSourceFile sourceFile, TPersistent persistent);
 
         protected virtual void OnLocalRemoved(IPsiSourceFile sourceFile, TLocal local)
         {
