@@ -17,6 +17,10 @@ abstract class AbstractShaderContextSwitchAction(private val interaction: Select
         currentContext.value = data
         interaction.selectItem.fire(index)
         onPerformed?.run()
+
+        event.project?.let {
+            ShaderVariantEventLogger.logSelectContext(it)
+        }
     }
 }
 

@@ -52,6 +52,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static readonly IClrTypeName RectInt = new ClrTypeName("UnityEngine.RectInt");
         public static readonly IClrTypeName RectOffset = new ClrTypeName("UnityEngine.RectOffset");
         public static readonly IClrTypeName Resources = new ClrTypeName("UnityEngine.Resources");
+        public static readonly IClrTypeName GlobalKeyword = new ClrTypeName("UnityEngine.Rendering.GlobalKeyword");
+        public static readonly IClrTypeName LocalKeyword = new ClrTypeName("UnityEngine.Rendering.LocalKeyword");
         public static readonly IClrTypeName RuntimeInitializeOnLoadMethodAttribute = new ClrTypeName("UnityEngine.RuntimeInitializeOnLoadMethodAttribute");
         public static readonly IClrTypeName ScriptableObject = new ClrTypeName("UnityEngine.ScriptableObject");
         public static readonly IClrTypeName SerializeField = new ClrTypeName("UnityEngine.SerializeField");

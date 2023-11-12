@@ -170,13 +170,16 @@ public class ShaderVariantsHost : IChangeProvider
         {
             List<List<string>> shaderFeatures = new();
             var enabledKeywords = myShaderVariantsManager.AllEnabledKeywords.ToList();
+            var availableCount = 0;
             if (myDocumentHost.TryGetDocument(args.DocumentId) is { } document && GetShaderProgramInfo(new DocumentOffset(document, args.Offset)) is {} shaderProgramInfo) 
             {
                 foreach (var feature in shaderProgramInfo.ShaderFeatures)
                     shaderFeatures.Add(feature.Entries.Select(e => e.Keyword).ToList());
+
+                availableCount = shaderProgramInfo.Keywords.Count;
             }
             
-            return new ShaderVariantInteraction(shaderFeatures, enabledKeywords, myShaderVariantsManager.ShaderApi.AsRdShaderApi(), myShaderVariantsManager.ShaderPlatform.AsRdShaderPlatform(), myShaderVariantsManager.TotalKeywordsCount.Value, myShaderVariantsManager.TotalEnabledKeywordsCount.Value);
+            return new ShaderVariantInteraction(shaderFeatures, enabledKeywords, myShaderVariantsManager.ShaderApi.AsRdShaderApi(), myShaderVariantsManager.ShaderPlatform.AsRdShaderPlatform(), myShaderVariantsManager.TotalKeywordsCount.Value, myShaderVariantsManager.TotalEnabledKeywordsCount.Value, availableCount);
         });
         interaction.EnableKeyword.Advise(lifetime, keyword => myShaderVariantsManager.SetKeywordEnabled(keyword, true));
         interaction.DisableKeyword.Advise(lifetime, keyword => myShaderVariantsManager.SetKeywordEnabled(keyword, false));

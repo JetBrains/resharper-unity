@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
         [SettingsEntry(false, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Suppress_resolve_errors_in_HLSL_))]
         public bool SuppressShaderErrorHighlighting;
         
-        [SettingsEntry(false, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Shader_variants_support_Preview))]
+        [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Shader_variants_support_Preview))]
         public bool FeaturePreviewShaderVariantsSupport;
 
         [SettingsEntry(false, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Suppress_resolve_errors_in_render_pipeline_package_in_HLSL_))]
@@ -87,6 +87,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings
 
         [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Ignore__Break_on_Unhandled_Exceptions__for_IL2CPP_players))]
         public bool IgnoreBreakOnUnhandledExceptionsForIl2Cpp;
+        
+        [SettingsEntry(10000, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_t_Timeout_for_Advance_Unity_Evaluation))]
+        public int ForcedTimeoutForAdvanceUnityEvaluation;
         
         //Refactoring
         [SettingsEntry(true, DescriptionResourceType: typeof(Strings), DescriptionResourceName: nameof(Strings.UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property))]

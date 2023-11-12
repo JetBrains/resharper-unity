@@ -282,6 +282,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             AddBoolOption((UnitySettings s) => s.IgnoreBreakOnUnhandledExceptionsForIl2Cpp,
                 Strings.UnityOptionsPage_AddDebuggingSection_Ignore__Break_on_unhandled_exceptions__setting_for_IL2CPP_players);
             AddBetterCommentText(Strings.UnityOptionsPage_AddDebuggingSection_Break_on_unhandled_exceptions__setting_for_IL2CPP_players_Comment);
+            
+            AddIntOption((UnitySettings s) => s.ForcedTimeoutForAdvanceUnityEvaluation,
+                Strings.UnityOptionsPage_AddDebuggingSection_Timeout_for_Advance_Unity_Evaluation);
+            AddBetterCommentText(Strings.UnityOptionsPage_AddDebuggingSection_Timeout_for_Advance_Unity_Evaluation_Comment);
         }
 
         private void AddInternalSection(RunsProducts.ProductConfigurations productConfigurations)
