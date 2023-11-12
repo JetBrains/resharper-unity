@@ -37,11 +37,11 @@ namespace ComponentsAndTags
 
             AddComponent(entity,
               new GraveyardProperties
-                {
-                  NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn,
-                  FieldDimensions = authoring.FieldDimensions,
-                  TombstonePrefab = GetEntity(authoring.Prefab, TransformUsageFlags.Dynamic),
-                });
+              {
+                NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn,
+                FieldDimensions = authoring.FieldDimensions,
+                TombstonePrefab = GetEntity(authoring.Prefab, TransformUsageFlags.Dynamic),
+              });
         }
     }
 
