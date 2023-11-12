@@ -15,8 +15,8 @@ class ShaderVariantEventLogger : CounterUsagesCollector() {
 
         private val SHADER_API = EventFields.Enum<RdShaderApi>("shader_api")
         private val SHADER_PLATFORM = EventFields.Enum<RdShaderPlatform>("shader_platform")
-        val CONTEXT_COUNT = EventFields.Int("context_count")
-        val DEFINE_COUNT = EventFields.Int("define_count")
+        val CONTEXT_COUNT = EventFields.RoundedInt("context_count")
+        val DEFINE_COUNT = EventFields.RoundedInt("define_count")
 
         @JvmField
         internal val GROUP = EventLogGroup("rider.unity.shaders.variants", 1)
