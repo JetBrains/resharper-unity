@@ -131,6 +131,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
             return myProgramInfos.TryGetValue(location, out shaderProgramInfo);
         }
 
+        public bool TryGetShaderProgramInfo(VirtualFileSystemPath path, int offset, [MaybeNullWhen(false)] out ShaderProgramInfo shaderProgramInfo)
+        {
+            shaderProgramInfo = null;
+            if (!myPathToLocations.TryGetValue(path, out var countAndLocations))
+                return false;
+            
+            var result = countAndLocations.Locations.BinarySearchRo(offset, location => location.RootRange.StartOffset);
+            var index = result.NearestIndexNotAboveTargetOrMinus1;
+            if (index < 0)
+                return false;
+                
+            var location = countAndLocations.Locations[index];
+            if (offset >= location.RootRange.EndOffset)
+                return false;
+
+            shaderProgramInfo = myProgramInfos[location];
+            return true;
+        }
+
         public void ForEachKeyword(Action<string> action)
         {
             Locks.AssertReadAccessAllowed();
@@ -170,8 +189,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
         public bool TryGetOrReadUpToDateProgramInfo(IPsiSourceFile sourceFile, CppFileLocation cppFileLocation, [MaybeNullWhen(false)] out ShaderProgramInfo shaderProgramInfo)
         {
             var range = cppFileLocation.RootRange;
-            Assertion.Assert(range.IsValid);
-            
+            // Only injected shader programs supported for now
+            if (!range.IsValid)
+            {
+                shaderProgramInfo = default;
+                return false;
+            }
+
             // PSI is not committed here
             // TODO: cpp global cache should calculate cache only when PSI for file with cpp injects is committed.
             if (!UpToDate(sourceFile))
@@ -283,8 +307,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
         #region ShaderProgramInfo data
         private struct ShaderProgramInfoData
         {
-            private const string SHADER_KEYWORD_NONE = "_";
-            
             private readonly IReadOnlyDictionary<string, PragmaCommand> myPragmas;
             private StringSplitter<CharPredicates.IsWhitespacePredicate> myContentSplitter;
             private int myPragmaContentStartOffset;
@@ -358,6 +380,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                 }
             }
 
+            private bool IsNoKeywordMarker(StringSlice keyword)
+            {
+                var length = keyword.Length;
+                for (var i = 0; i < length; ++i)
+                {
+                    if (keyword[i] != '_')
+                        return false;
+                }
+                
+                return true;
+            }
+
             private bool TryReadShaderFeature(ShaderLabPragmaInfo pragmaInfo, out ShaderFeature shaderFeature)
             {
                 if (pragmaInfo.DeclaresKeywords)
@@ -366,7 +400,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Caches
                     var entries = ImmutableArray.CreateBuilder<ShaderFeature.Entry>();
                     while (myContentSplitter.TryGetNextSlice(out var keyword, out var keywordOffset))
                     {
-                        if (!keyword.Equals(SHADER_KEYWORD_NONE))
+                        if (!IsNoKeywordMarker(keyword))
                             entries.Add(new ShaderFeature.Entry(keyword.ToString(), TextRange.FromLength(myPragmaContentStartOffset + keywordOffset, keyword.Length)));
                         else
                             allowDisableAllKeywords = true;

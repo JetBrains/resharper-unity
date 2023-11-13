@@ -125,6 +125,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
             property("enableDebuggerExtensions", bool)
             property("ignoreBreakOnUnhandledExceptionsForIl2Cpp", bool)
+            property("forcedTimeoutForAdvanceUnityEvaluation", int)
             property("previewShaderVariantsSupport", bool)
         })
 
@@ -159,8 +160,10 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
             field("shaderPlatform", RdShaderPlatform)
             field("totalKeywordsCount", int)
             field("totalEnabledKeywordsCount", int)
+            field("availableKeywords", int)
             source("enableKeyword", string)
             source("disableKeyword", string)
+            source("disableKeywords", immutableList(string))
             source("setShaderApi", RdShaderApi)
             source("setShaderPlatform", RdShaderPlatform)
         })
