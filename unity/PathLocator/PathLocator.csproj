@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>1.0.6</Version>
+    <Version>1.0.7</Version>
     <authors>JetBrains</authors>
     <LangVersion>10</LangVersion>
     <PackageId>JetBrains.Rider.PathLocator</PackageId>
-    <TargetFrameworks>net35;net472;net6.0</TargetFrameworks>
+    <TargetFrameworks>net35;netstandard2.0</TargetFrameworks>
     <AssemblyName>JetBrains.Rider.PathLocator</AssemblyName>
     <RootNamespace>JetBrains.Rider.PathLocator</RootNamespace>
     <DebugType>portable</DebugType>
@@ -24,7 +24,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
   </ItemGroup>
 </Project>
