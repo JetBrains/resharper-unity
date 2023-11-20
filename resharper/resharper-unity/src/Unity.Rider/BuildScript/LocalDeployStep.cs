@@ -6,14 +6,14 @@ using JetBrains.Build;
 using JetBrains.Rider.Backend.BuildScript.Plugins;
 using JetBrains.Util;
 
-namespace JetBrains.Debugger.Worker.Plugins.Unity.BuildScript
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.BuildScript
 {
     public class LocalDeployStep
     {
         [BuildStep]
         public static IEnumerable<TransformedSubplatformFileForPackaging> DoLocalDeploy(ProductBinariesDirArtifact productBinariesDirArtifact, IEnumerable<SubplatformFileForPackaging> files, ILogger logger)
         {
-            LocalDeployUtils.DeployFiles(DebuggerProduct.SubplatformName, DebuggerProduct.PluginFolder, files, productBinariesDirArtifact, logger);
+            LocalDeployUtils.DeployFiles(UnityDebuggerProduct.SubplatformName, UnityDebuggerProduct.PluginFolder, files, productBinariesDirArtifact, logger);
             return Array.Empty<TransformedSubplatformFileForPackaging>();
         }
     }
