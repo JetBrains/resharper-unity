@@ -13,12 +13,12 @@ using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Explicit;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implicit;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 {
@@ -110,6 +110,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                                              IsImplicitlyUsedInterfaceProperty(property) ||
                                              IsAnimationEvent(solution, property) ||
                                              unityApi.IsSerialisedAutoProperty(property, useSwea:true) == SerializedFieldStatus.SerializedField:
+                    flags = ImplicitUseKindFlags.Assign;
+                    return true;
+
+                case IParameter parameter
+                    when parameter.IsRefMember() && parameter.GetContainingType().IsDotsImplicitlyUsedType():
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
             }

@@ -28,9 +28,9 @@
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.explorer.MetaTrackerInitializer"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspaceModelUpdaterInitializer"/>
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetProvider"/>
+    <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsHost"/>
 
     <rider.externalDirectoryProvider implementation="com.jetbrains.rider.plugins.unity.workspace.UnityExternalDirectoryProvider" />
-    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService"/>
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.settings.RiderUnitySettings"/>
 
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.workspace.UnityWorkspacePackageUpdater"/>
@@ -211,18 +211,18 @@
 
     <rider.action.technical.support.info.provider implementation="com.jetbrains.rider.plugins.unity.actions.UnityVersionRiderTechnicalSupportInfoProvider" />
     <rider.unityDetector implementation="com.jetbrains.rider.plugins.unity.UnityDetectorImpl"/>
-    <rider.debugger.value.presenter implementation="com.jetbrains.rider.plugins.unity.debugger.visualizers.UnityDebuggerTexturePresenter"/>
-    <rider.debugger.value.evaluator implementation="com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.UnityTextureCustomComponentEvaluator"/>
+    <rider.debugger.value.evaluator.factory implementation="com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.UnityTextureCustomComponentEvaluatorFactory"/>
     <rider.resolveContextWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetProvider" order="after projectAndFrameworkResolveContextWidget"/>
     <rider.resolveContextWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsService" order="after projectAndFrameworkResolveContextWidget"/>
 
-    <registryKey key="rider.unity.ui.shaderVariants.enabled" description="Is Shader Variants selector feature enabled?" defaultValue="false" restartRequired="false"/>
-    <iw.actionProvider implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsInspectionWidgetActionProvider" order="first" />
+    <statistics.counterUsagesCollector implementationClass="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantEventLogger"/>
+
   </extensions>
 
   <applicationListeners>
     <listener class="com.jetbrains.rider.plugins.unity.SaveAllActionListener" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
     <listener class="com.jetbrains.rider.plugins.unity.explorer.MetaTrackerListener" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
+    <listener topic="com.jetbrains.rdclient.editors.FrontendTextControlHostListener" class="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantsHost$TextControlListener" />
   </applicationListeners>
 
   <actions>
@@ -338,15 +338,12 @@
     <action id="AddPauseBreakpoint" class="com.jetbrains.rider.plugins.unity.debugger.actions.handlers.AddPauseBreakpoint">
       <add-to-group group-id="XDebugger.Hover.Breakpoint.Context.Menu"/>
     </action>
-    
-    <action id="ShaderVariantWidgetAction"
-            class="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderVariantInspectionAction"/>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- IDEA default schemes -->
-    <additionalTextAttributes file="colorSchemes/default_additional.xml" scheme="Default" />
-    <additionalTextAttributes file="colorSchemes/darcula_additional.xml" scheme="Darcula" />
+    <additionalTextAttributes file="colorSchemes/UnityDefault.xml" scheme="Default" />
+    <additionalTextAttributes file="colorSchemes/UnityDarcula.xml" scheme="Darcula" />
 
     <notificationGroup id="Unity log open" displayType="BALLOON" bundle="messages.UnityBundle"
                        key="notification.group.unity.log.open" />
@@ -358,8 +355,8 @@
                        key="notification.group.unity.connection.out.of.sync"/>
     <notificationGroup id="Unity commit failure" displayType="BALLOON" bundle="messages.UnityBundle"
                        key="notification.group.unity.unity.commit.failure"/>
-    <statistics.projectUsagesCollector implementation="com.jetbrains.rider.plugins.unity.fus.UnityProjectUsageCollector" />
     <iconMapper mappingFile="UnityIconMappings.json"/>
+    <statistics.counterUsagesCollector implementationClass="com.jetbrains.rider.plugins.unity.debugger.valueEvaluators.TextureDebuggerCollector"/>
   </extensions>
 
   <extensions defaultExtensionNs="JavaScript">

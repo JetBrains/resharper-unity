@@ -52,6 +52,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static readonly IClrTypeName RectInt = new ClrTypeName("UnityEngine.RectInt");
         public static readonly IClrTypeName RectOffset = new ClrTypeName("UnityEngine.RectOffset");
         public static readonly IClrTypeName Resources = new ClrTypeName("UnityEngine.Resources");
+        public static readonly IClrTypeName GlobalKeyword = new ClrTypeName("UnityEngine.Rendering.GlobalKeyword");
+        public static readonly IClrTypeName LocalKeyword = new ClrTypeName("UnityEngine.Rendering.LocalKeyword");
         public static readonly IClrTypeName RuntimeInitializeOnLoadMethodAttribute = new ClrTypeName("UnityEngine.RuntimeInitializeOnLoadMethodAttribute");
         public static readonly IClrTypeName ScriptableObject = new ClrTypeName("UnityEngine.ScriptableObject");
         public static readonly IClrTypeName SerializeField = new ClrTypeName("UnityEngine.SerializeField");
@@ -118,6 +120,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api
         public static readonly IClrTypeName ComponentLookup = new ClrTypeName("Unity.Entities.ComponentLookup`1");
         public static readonly IClrTypeName SystemState = new ClrTypeName("Unity.Entities.SystemState");
         public static readonly IClrTypeName SystemAPI = new ClrTypeName("Unity.Entities.SystemAPI");
+        public static readonly IClrTypeName SystemAPIQueryBuilder = new ClrTypeName("Unity.Entities.SystemAPIQueryBuilder");
         public static readonly IClrTypeName Entity = new ClrTypeName("Unity.Entities.Entity");
         public static readonly IClrTypeName RefRO = new ClrTypeName("Unity.Entities.RefRO`1");
         public static readonly IClrTypeName RefRW = new ClrTypeName("Unity.Entities.RefRW`1");

@@ -23,7 +23,7 @@ plugins {
     id("org.jetbrains.changelog") version "2.0.0"
     id("org.jetbrains.intellij") version "1.13.3" // https://github.com/JetBrains/gradle-intellij-plugin/releases
     id("org.jetbrains.grammarkit") version "2022.3"
-    kotlin("jvm") version "1.8.20"
+    kotlin("jvm") version "1.9.10"
 }
 
 repositories {
