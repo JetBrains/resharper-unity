@@ -41,4 +41,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.BuildScript
       };
     }
   }
+    
+  // Do not move to debugger worker due to dependencies
+  public class UnityDebuggerProduct
+  {
+      public static readonly SubplatformName SubplatformName = new((RelativePath)"Plugins" / "ReSharperUnity" / "debugger" / "debugger-worker");
+
+      public static readonly RelativePath PluginFolder = @"plugins\rider-unity\dotnetDebuggerWorker";
+
+      public const string ProductTechnicalName = "Unity.Debugger";
+
+      [BuildStep]
+      public static SubplatformComponentForPackagingFast[] ProductMetaDependency(AllAssembliesOnSources allassSrc)
+      {
+          if (!allassSrc.Has(SubplatformName))
+              return Array.Empty<SubplatformComponentForPackagingFast>();
+
+          return new[]
+          {
+              new SubplatformComponentForPackagingFast
+              (
+                  SubplatformName,
+                  new JetPackageMetadata
+                  {
+                      Spec = new JetSubplatformSpec
+                      {
+                          ComplementedProductName = RiderConstants.ProductTechnicalName
+                      }
+                  }
+              )
+          };
+      }
+  }
 }

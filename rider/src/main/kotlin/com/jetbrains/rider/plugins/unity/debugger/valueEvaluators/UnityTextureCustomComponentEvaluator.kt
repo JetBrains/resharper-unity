@@ -289,7 +289,7 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
 
             for (y in 0 until textureInfo.Height) {
                 for (x in 0 until textureInfo.Width) {
-                    val toInt = textureInfo.Pixels[y * textureInfo.Height + x]
+                    val toInt = textureInfo.Pixels[y * textureInfo.Width + x]
                     bufferedImage.setRGB(x, textureInfo.Height - y - 1, toInt)
                 }
             }

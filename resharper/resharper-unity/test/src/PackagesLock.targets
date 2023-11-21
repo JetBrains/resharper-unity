@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <PackageLock Include="JetBrains.Lifetimes" Version="2023.3.0" />
-    <PackageLock Include="JetBrains.NuGet.Packaging" Version="6.8.20231118.122" />
+    <PackageLock Include="JetBrains.NuGet.Packaging" Version="6.8.20231120.123" />
     <PackageLock Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <PackageLock Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" IsDevelopmentDependency="True" />
     <PackageLock Include="NUnit" Version="3.13.2" />
