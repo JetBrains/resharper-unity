@@ -29,7 +29,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * Rider: Add support for switching Shader API in shader selector ([RIDER-101057](https://youtrack.jetbrains.com/issue/RIDER-101057))
 * Rider: Selected shader context is persistent ([RIDER-99292](https://youtrack.jetbrains.com/issue/RIDER-99292))
 * Rider: Add debugger visualiser for `Texture2D` and `RenderTexture` types ([RIDER-26339](https://youtrack.jetbrains.com/issue/RIDER-26339))
-* Rider: Output tracepoint text to Unity Console ([RIDER-55799](https://youtrack.jetbrains.com/issue/RIDER-55799))
+* Rider: Output tracepoint text to Unity Console ([RIDER-55779](https://youtrack.jetbrains.com/issue/RIDER-55779))
 * Rider: Add support for multiplayer mode virtual players in "Attach to Unity" Process dialog ([RIDER-99681](https://youtrack.jetbrains.com/issue/RIDER-99681))
 * Rider: Add gutter context menu item to create a Unity pausepoint ([RIDER-100724](https://youtrack.jetbrains.com/issue/RIDER-100724))
 * Rider: Add `Unity_s.debug` as a Unity editor executable that can be debugged on Linux ([RIDER-97262](https://youtrack.jetbrains.com/issue/RIDER-97262))
@@ -62,6 +62,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * Rider: Fix context help for Unity settings page ([RIDER-98359](https://youtrack.jetbrains.com/issue/RIDER-98359))
 * Rider: Add missing Unity process details (project name, role, etc.) in Rider's attach to local process dialog ([RIDER-99743](https://youtrack.jetbrains.com/issue/RIDER-99743))
 * Rider: Fix incorrect formatting of Unity Explorer tooltip when folder contains more than 10 projects
+* Rider: Fix unresolved packages in Unity Explorer with Unity 2023.3.0a14 ([RIDER-101932](https://youtrack.jetbrains.com/issue/RIDER-101932))
 
 
 
