@@ -44,6 +44,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * Rider: Prefer opening files in main project context when player projects are generated
 * Rider: Do not show editor notification if opening a non-generated project file
 * Rider: Add "Open manifest.json" command link to Rider package update notification
+* Rider: Remove "Show in Unity" action from Unity Explorer context menu ([RIDER-102151](https://youtrack.jetbrains.com/issue/RIDER-102151))
 
 ### Fixed
 
@@ -658,7 +659,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 ### Fixed
 
 - Rider: Builtin packages are correctly resolved against the local package cache for newer Unity versions (RIDER-65196](https://youtrack.jetbrains.com/issue/RIDER-65196), [#2122](https://github.com/JetBrains/resharper-unity/issues/2122), [#2136](https://github.com/JetBrains/resharper-unity/pull/2136))
-- Rider: Support "Show in Unity" action for files from a local package ([RIDER-65128](https://youtrack.jetbrains.com/issue/RIDER-65128), [#2124](https://github.com/JetBrains/resharper-unity/pull/2124))
+- Rider: Fix "Show in Unity" action for packages from package cache ([#2137](https://github.com/JetBrains/resharper-unity/pull/2137))
 - Rider: Improve memory management when opening massive shader files ([RIDER-65080](https://youtrack.jetbrains.com/issue/RIDER-65080), [#2121](https://github.com/JetBrains/resharper-unity/pull/2121))
 - Rider: Fix UnityYAMLMerge failing to resolve conflicts in assets ([RIDER-64433](https://youtrack.jetbrains.com/issue/RIDER-64433), [#2125](https://github.com/JetBrains/resharper-unity/pull/2125))
 
