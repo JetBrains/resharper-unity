@@ -44,6 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
                 new InputSystemUnityTechnologyDescription(),
                 new BurstUnityTechnologyDescription(),
                 new OdinUnityTechnologyDescription(),
+                new PhotonUnityTechnologyDescription(),
                 new PeekUnityTechnologyDescription(),
                 new UniRxUnityTechnologyDescription(),
                 new UniTaskUnityTechnologyDescription(),

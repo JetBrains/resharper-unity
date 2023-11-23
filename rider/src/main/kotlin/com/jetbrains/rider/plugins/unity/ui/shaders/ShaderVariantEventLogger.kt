@@ -36,7 +36,7 @@ class ShaderVariantEventLogger : CounterUsagesCollector() {
             CONTEXT_COUNT
         ))
         private val SELECT_CONTEXT = GROUP.registerEvent("select_context")
-        private val LEARN_MORE = GROUP.registerEvent("learn_more")
+        private val LEARN_MORE = GROUP.registerEvent("clicked_learn_more")
 
 
         fun logShowShaderVariantPopupStarted(project: Project) : StructuredIdeActivity? {
