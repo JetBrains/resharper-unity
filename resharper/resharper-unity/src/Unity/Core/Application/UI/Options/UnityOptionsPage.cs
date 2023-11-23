@@ -266,8 +266,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
         {
             // TODO: For ReSharper, this is unavailable if the user hasn't installed ReSharper C++
             AddHeader(Strings.UnityOptionsPage_AddShadersSection_Shaders);
-            AddBoolOption((UnitySettings s) => s.SuppressShaderErrorHighlighting,
-                Strings.UnityOptionsPage_AddShadersSection_Suppress_resolve_errors_of_unqualified_names);
+            AddBoolOption((UnitySettings s) => s.SuppressShaderErrorHighlighting, Strings.UnityOptionsPage_AddShadersSection_Suppress_resolve_errors_of_unqualified_names);
+            AddBoolOption((UnitySettings s) => s.FeaturePreviewShaderVariantsSupport, Strings.UnityOptionsPage_AddShadersSection_Preview_Shader_variants_support);
         }
 
         private void AddDebuggingSection()
@@ -282,6 +282,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options
             AddBoolOption((UnitySettings s) => s.IgnoreBreakOnUnhandledExceptionsForIl2Cpp,
                 Strings.UnityOptionsPage_AddDebuggingSection_Ignore__Break_on_unhandled_exceptions__setting_for_IL2CPP_players);
             AddBetterCommentText(Strings.UnityOptionsPage_AddDebuggingSection_Break_on_unhandled_exceptions__setting_for_IL2CPP_players_Comment);
+            
+            AddIntOption((UnitySettings s) => s.ForcedTimeoutForAdvanceUnityEvaluation,
+                Strings.UnityOptionsPage_AddDebuggingSection_Timeout_for_Advance_Unity_Evaluation);
+            AddBetterCommentText(Strings.UnityOptionsPage_AddDebuggingSection_Timeout_for_Advance_Unity_Evaluation_Comment);
         }
 
         private void AddInternalSection(RunsProducts.ProductConfigurations productConfigurations)

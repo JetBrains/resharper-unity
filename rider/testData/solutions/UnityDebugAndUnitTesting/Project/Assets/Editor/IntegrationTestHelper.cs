@@ -24,6 +24,10 @@ namespace Editor
 
         public static void Start()
         {
+            Debug.Log($"Before kAutoRefresh = {EditorPrefs.GetBool("kAutoRefresh")}");
+            EditorPrefs.SetBool("kAutoRefresh", true); // false by default for some reason?
+            Debug.Log($"After kAutoRefresh = {EditorPrefs.GetBool("kAutoRefresh")}");
+
             EditorPrefs.SetInt("Rider_SelectedLoggingLevel", 6); // trace
             var commandlineParser = new CommandLineParser(Environment.GetCommandLineArgs());
             if (commandlineParser.Options.ContainsKey("-riderPath"))

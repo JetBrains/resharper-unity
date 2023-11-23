@@ -71,9 +71,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
             return ShowUnityHelp.FormatDocumentationKeyword(compiledElement.GetSearchableText());
         }
         
-        // same priority as MsdnOnlineHelpProvider,
-        // but this provider only applies to Unity* assemblies and MSDN only applies to Microsoft/Mono
-        public override int Priority => 10; 
+        // setting this to be more preferable then MsdnOnlineHelpProvider, because Unity assemblies (only compiled locally, I guess) sometimes have CompanyName = `Microsoft`
+        // https://youtrack.jetbrains.com/issue/RIDER-101136/Pressing-F1-for-UnityEngine.UI-classes-members-is-no-longer-working-properly#focus=Comments-27-8323079.0-0
+        public override int Priority => 7; 
         public override bool ShouldValidate => false;
     }
 }

@@ -7,7 +7,6 @@ import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
 import com.jetbrains.rider.test.scriptingApi.changeFileContent
 import com.jetbrains.rider.test.scriptingApi.withUtFacade
-import com.jetbrains.rider.unity.test.framework.UnityTestEnvironment
 import com.jetbrains.rider.unity.test.framework.UnityVersion
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
 import io.qameta.allure.*

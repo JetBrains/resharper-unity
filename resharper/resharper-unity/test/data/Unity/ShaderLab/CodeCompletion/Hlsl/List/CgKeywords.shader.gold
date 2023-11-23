@@ -1,4 +1,4 @@
-﻿# 334 ITEMS #
+﻿# 335 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -312,6 +312,7 @@ TextureCubeArray
 TriangleStream
 HLSL_SUPPORT_INCLUDED
 SHADER_API_D3D11
+SHADER_API_DESKTOP
 UNITY_VERSION
 fixed
 fixed1x1
@@ -335,7 +336,7 @@ fixed4x3
 fixed4x4
 tile_static
 # AUTOMATIC #
-# 334 ITEMS #
+# 335 ITEMS #
 
 + SamplerComparisonState
 SamplerState
@@ -649,6 +650,7 @@ TextureCubeArray
 TriangleStream
 HLSL_SUPPORT_INCLUDED
 SHADER_API_D3D11
+SHADER_API_DESKTOP
 UNITY_VERSION
 fixed
 fixed1x1

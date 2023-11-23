@@ -1,4 +1,4 @@
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -11,9 +11,9 @@ namespace ComponentsAndTags
           var entity = GetEntity(TransformUsageFlags.Dynamic);
           AddComponent(entity,
             new GraveyardPropertiesComponentData
-              {
-                ScavsCount = authoring.ScavsCount, FieldDimensions = authoring.FieldDimensions
-              });
+            {
+              ScavsCount = authoring.ScavsCount, FieldDimensions = authoring.FieldDimensions
+            });
         }
     }
 }

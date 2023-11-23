@@ -1,0 +1,23 @@
+Shader "FooBar"
+{
+    SubShader
+    {
+        HLSLPROGRAM
+        #pragma shader_feature |FOO|(0) |BAR|(1) |BAZ|(2)
+        #pragma fragment frag
+
+        #include "ShaderVariants.hlsl"
+        
+        void frag()
+        {
+        #if |BAR|(3)
+        #endif
+        }
+        ENDHLSL
+    }
+}
+---------------------------------------------------------
+(0): ReSharper ShaderLab Implicitly Enabled Shader Keyword: 
+(1): ReSharper ShaderLab Disabled Shader Keyword: 
+(2): ReSharper ShaderLab Disabled Shader Keyword: 
+(3): ReSharper ShaderLab Disabled Shader Keyword: 

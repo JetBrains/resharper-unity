@@ -1,29 +1,24 @@
 #nullable enable
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Daemon.Stages;
-using JetBrains.ReSharper.Psi.Cpp.Tree;
+using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Daemon.Highlightings;
 
-[StaticSeverityHighlighting(Severity.INFO, typeof(ShaderKeywordsHighlightingId), OverlapResolve = OverlapResolveKind.NONE, AttributeId = ShaderLabHighlightingAttributeIds.SHADER_KEYWORD)]
-public class ShaderKeywordHighlight : IHighlighting
+public abstract class ShaderKeywordHighlight : IHighlighting
 {
-    private readonly MacroReference myShaderVariantReference;
+    private readonly ITreeNode myShaderKeywordNode;
 
-    public ShaderKeywordHighlight(MacroReference shaderVariantReference)
+    protected ShaderKeywordHighlight(ITreeNode shaderKeywordNode)
     {
-        myShaderVariantReference = shaderVariantReference;
+        myShaderKeywordNode = shaderKeywordNode;
     }
     
-    public /*Localized*/ string? ToolTip => null;
-    public /*Localized*/ string? ErrorStripeToolTip => null;
-    public bool IsValid() => myShaderVariantReference.IsValid();
+    public string Keyword => myShaderKeywordNode.GetText();
 
-    public DocumentRange CalculateRange() => myShaderVariantReference.GetHighlightingRange();
-    
-    [RegisterStaticHighlightingsGroup("Shader Keywords Highlighting", IsVisible: true)]
-    public static class ShaderKeywordsHighlightingId
-    {
-    }
+    public virtual /*Localized*/ string? ToolTip => null;
+    public virtual /*Localized*/ string? ErrorStripeToolTip => null;
+    public bool IsValid() => myShaderKeywordNode.IsValid();
+
+    public DocumentRange CalculateRange() => myShaderKeywordNode.GetHighlightingRange();
 }

@@ -14,8 +14,9 @@ namespace Unity.Entities
     public unsafe ref struct SystemState
     {
         public void RequireForUpdate<T>() {}
-
+        public void RequireForUpdate(EntityQuery query) {}
     }
+    
     public struct Entity {}
 
     public abstract class IBaker
@@ -67,6 +68,8 @@ namespace Unity.Entities
             where T : unmanaged, IComponentData
         {
         }
+
+        public static SystemAPIQueryBuilder QueryBuilder() {return new SystemAPIQueryBuilder(); }
     }
 
     public readonly struct RefRW<T>
@@ -90,6 +93,40 @@ namespace Unity.Entities
     {
         public bool ValueRW {get;set;};
     }
+
+    public struct SystemAPIQueryBuilder
+    {
+        public SystemAPIQueryBuilder WithAll<T1>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithAll<T1, T2>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithAll<T1, T2, T3>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithAll<T1, T2, T3, T4>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithAll<T1, T2, T3, T4, T5>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithAll<T1, T2, T3, T4, T5, T6>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithAll<T1, T2, T3, T4, T5, T6, T7>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithAllRW<T1>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithAllRW<T1, T2>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithAny<T1>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithAny<T1, T2>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithAny<T1, T2, T3>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithAny<T1, T2, T3, T4>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithAny<T1, T2, T3, T4, T5>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithAny<T1, T2, T3, T4, T5, T6>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithAny<T1, T2, T3, T4, T5, T6, T7>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithAnyRW<T1>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithAnyRW<T1, T2>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithNone<T1>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithNone<T1, T2>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithNone<T1, T2, T3>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithNone<T1, T2, T3, T4>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithNone<T1, T2, T3, T4, T5>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithNone<T1, T2, T3, T4, T5, T6>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithNone<T1, T2, T3, T4, T5, T6, T7>() => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder WithOptions(EntityQueryOptions options) => throw ThrowNotBuildException();
+        public SystemAPIQueryBuilder AddAdditionalQuery() => throw ThrowNotBuildException();
+        public EntityQuery Build() => throw InternalCompilerInterface.ThrowCodeGenException();
+        static InvalidOperationException ThrowNotBuildException() => throw new InvalidOperationException("Source-generation will not run unless `.Build()` is invoked.");
+    }
+
 
 }
 

@@ -26,6 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.UsageChecking
         [Test] public void UnityEcsSystemClass() { DoNamedTest(); }
         [Test] public void UnityEcsSystemStruct() { DoNamedTest(); }
         [Test] public void UnityDotsBacker() { DoNamedTest(); }
+        [Test] public void JobEntityRefParameter() { DoNamedTest(); }
+        [Test] public void DotsSequentialStruct() { DoNamedTest(); }
 
         protected override void DoTest(Lifetime lifetime, IProject project)
         {

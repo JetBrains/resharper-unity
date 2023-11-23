@@ -31,4 +31,30 @@ file for overriding ReSharper highlighter color for Darcula editor scheme
       <option name="EFFECT_TYPE" value="1" />
     </value>
   </option>
+  <option name="ReSharper.ReSharper.ShaderLab_ENABLED_SHADER_KEYWORD">
+    <value>
+      <option name="FOREGROUND" value="ebfdde" />
+      <option name="FONT_TYPE" value="1" />
+      <option name="EFFECT_TYPE" value="1" />
+      <option name="EFFECT_COLOR" value="ebfdde" />
+    </value>
+  </option>
+  <option name="ReSharper.ReSharper.ShaderLab_IMPLICITLY_ENABLED_SHADER_KEYWORD">
+    <value>
+      <option name="FOREGROUND" value="ebfdde" />
+      <option name="FONT_TYPE" value="1" />
+    </value>
+  </option>
+  <option name="ReSharper.ReSharper.ShaderLab_DISABLED_SHADER_KEYWORD">
+    <value>
+      <option name="FOREGROUND" value="ebfdde" />
+    </value>
+  </option>
+  <option name="ReSharper.ReSharper.ShaderLab_SUPPRESSED_SHADER_KEYWORD">
+    <value>
+      <option name="FOREGROUND" value="ebfdde" />
+      <option name="EFFECT_TYPE" value="3" />
+      <option name="EFFECT_COLOR" value="ebfdde" />
+    </value>
+  </option>
 </list>

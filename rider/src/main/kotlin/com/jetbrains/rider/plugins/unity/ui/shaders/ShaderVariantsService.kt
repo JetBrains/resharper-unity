@@ -8,6 +8,7 @@ import com.jetbrains.rd.ide.model.TextControlId
 import com.jetbrains.rd.ide.model.TextControlModel
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidgetProvider
+import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 
 class ShaderVariantsService : RiderResolveContextWidgetProvider {
     override fun provideWidget(disposable: Disposable,
@@ -15,8 +16,11 @@ class ShaderVariantsService : RiderResolveContextWidgetProvider {
                                textControlId: TextControlId,
                                editorModel: TextControlModel,
                                editor: Editor
-    ): RiderResolveContextWidget? = runIf(ShaderVariantsUtils.isValidContext(editor)) {
-        ShaderVariantWidget(project, editor)
+    ): RiderResolveContextWidget? = runIf(ShaderVariantsUtils.isShaderVariantSupportEnabled(project)) {
+        val model = FrontendBackendHost.getInstance(project).model
+        model.shaderVariantExtensions[textControlId]?.let {
+            ShaderVariantWidget(project, editor, it)
+        }
     }
 
     override fun revalidateWidget(widget: RiderResolveContextWidget,
@@ -25,5 +29,5 @@ class ShaderVariantsService : RiderResolveContextWidgetProvider {
                                   textControlId: TextControlId,
                                   editorModel: TextControlModel,
                                   editor: Editor): RiderResolveContextWidget? =
-        widget.takeIf { ShaderVariantsUtils.isValidContext(editor) }
+        widget.takeIf { ShaderVariantsUtils.isShaderVariantSupportEnabled(project) && ShaderVariantsUtils.isValidContext(editor) }
 }

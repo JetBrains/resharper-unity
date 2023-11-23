@@ -8,9 +8,7 @@ using JetBrains.Application.UI.ActionSystem.Text;
 using JetBrains.DocumentModel;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.Options;
-using JetBrains.ReSharper.Feature.Services.StructuralRemove;
 using JetBrains.ReSharper.Feature.Services.TypingAssist;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services.TypingAssists;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.ProjectModel;
@@ -19,7 +17,6 @@ using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Syntax;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CachingLexers;
 using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.Cpp.Parsing;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
@@ -49,24 +46,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.T
         
         public ShaderLabTypingAssist(
             Lifetime lifetime,
-            ISolution solution,
-            IPsiServices psiServices,
-            ICommandProcessor commandProcessor,
-            ISettingsStore settingsStore,
-            InjectedHlslDummyFormatter injectedHlslDummyFormatter,
-            CachingLexerService cachingLexerService,
-            ITypingAssistManager typingAssistManager,
-            IExternalIntellisenseHost externalIntellisenseHost,
-            SkippingTypingAssist skippingTypingAssist,
-            LastTypingAction lastTypingAssistAction,
-            StructuralRemoveManager structuralRemoveManager)
-            : base(ShaderLabSyntax.CLike, solution, settingsStore, cachingLexerService, commandProcessor, psiServices,
-                externalIntellisenseHost,
-                skippingTypingAssist, lastTypingAssistAction, structuralRemoveManager)
+            TypingAssistDependencies dependencies,
+            InjectedHlslDummyFormatter injectedHlslDummyFormatter)
+            : base(ShaderLabSyntax.CLike, dependencies)
         {
-            mySolution = solution;
+            mySolution = dependencies.Solution;
             myInjectedHlslDummyFormatter = injectedHlslDummyFormatter;
 
+            var typingAssistManager = dependencies.TypingAssistManager;
             typingAssistManager.AddActionHandler(lifetime, TextControlActions.ActionIds.Enter, this, HandleEnterAction, IsActionHandlerAvailable);
             typingAssistManager.AddActionHandler(lifetime, TextControlActions.ActionIds.Backspace, this, HandleBackspaceAction, IsActionHandlerAvailable);
             typingAssistManager.AddActionHandler(lifetime, TextControlActions.ActionIds.Tab, this, HandleTabPressed,
