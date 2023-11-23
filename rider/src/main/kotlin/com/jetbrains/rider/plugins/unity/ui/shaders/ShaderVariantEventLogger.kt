@@ -19,7 +19,7 @@ class ShaderVariantEventLogger : CounterUsagesCollector() {
         val DEFINE_COUNT = EventFields.RoundedInt("define_count")
 
         @JvmField
-        internal val GROUP = EventLogGroup("rider.unity.shaders.variants", 1)
+        internal val GROUP = EventLogGroup("rider.unity.shaders.variants", 2)
 
         private val SHOW_SHADER_VARIANT_POPUP_ACTIVITY = GROUP.registerIdeActivity("show_variants", finishEventAdditionalFields = arrayOf(
             DEFINE_COUNT
@@ -36,6 +36,7 @@ class ShaderVariantEventLogger : CounterUsagesCollector() {
             CONTEXT_COUNT
         ))
         private val SELECT_CONTEXT = GROUP.registerEvent("select_context")
+        private val LEARN_MORE = GROUP.registerEvent("learn_more")
 
 
         fun logShowShaderVariantPopupStarted(project: Project) : StructuredIdeActivity? {
@@ -80,6 +81,10 @@ class ShaderVariantEventLogger : CounterUsagesCollector() {
 
         fun logSelectContext(project: Project) {
             SELECT_CONTEXT.log(project)
+        }
+
+        fun logLearnMore(project: Project) {
+            LEARN_MORE.log(project)
         }
 
     }

@@ -13,6 +13,7 @@ import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileType
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderVariantExtension
 import java.awt.Point
+import java.net.URL
 
 
 class ShaderVariantWidget(project: Project, editor: Editor, shaderVariant: RdShaderVariantExtension) : AbstractShaderWidget(project, editor), RiderResolveContextWidget, Disposable {
@@ -35,6 +36,9 @@ class ShaderVariantWidget(project: Project, editor: Editor, shaderVariant: RdSha
         editor.textControlModel?.getExtensionSafe<RdShaderVariantExtension>()
         //model.getExtension<ShaderVar>()
         super.addNotify()
-        GotItTooltip("shader_variant.widget.got.it", UnityBundle.message("shaderVariant.widget.got.it.tooltip.text"), this).show(this, GotItTooltip.TOP_MIDDLE)
+        GotItTooltip("shader_variant.widget.got.it", UnityBundle.message("shaderVariant.widget.got.it.tooltip.text"), this)
+            .withHeader(UnityBundle.message("shaderVariant.widget.got.it.tooltip.header"))
+            .withBrowserLink(UnityBundle.message("shaderVariant.widget.got.it.tooltip.learnMore"), URL("https://jb.gg/wacf2b"))
+            .show(this, GotItTooltip.TOP_MIDDLE)
     }
 }
