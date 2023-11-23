@@ -22,17 +22,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
         private readonly CgIncludeDirectoryProvider myCgIncludeDirectoryProvider;
         private readonly IReadOnlyList<IUnityHlslCustomMacrosProvider> myCustomDefinesProviders;
         private readonly ShaderProgramCache myShaderProgramCache;
+        private readonly UnityDialects myDialects;
 
-        public UnityHlslDialect HlslDialect { get; } = new();
-        public UnityShaderLabHlslDialect ShaderLabHlslDialect { get; } = new();
-        public UnityComputeHlslDialect ComputeHlslDialect { get; } = new();
-
-        public UnityHlslCppCompilationPropertiesProvider(IUnityVersion unityVersion, CgIncludeDirectoryProvider cgIncludeDirectoryProvider, IReadOnlyList<IUnityHlslCustomMacrosProvider> customDefinesProviders, ShaderProgramCache shaderProgramCache)
+        public UnityHlslCppCompilationPropertiesProvider(IUnityVersion unityVersion, CgIncludeDirectoryProvider cgIncludeDirectoryProvider, IReadOnlyList<IUnityHlslCustomMacrosProvider> customDefinesProviders, ShaderProgramCache shaderProgramCache, UnityDialects dialects)
         {
             myUnityVersion = unityVersion;
             myCgIncludeDirectoryProvider = cgIncludeDirectoryProvider;
             myCustomDefinesProviders = customDefinesProviders;
             myShaderProgramCache = shaderProgramCache;
+            myDialects = dialects;
         }
 
         public CppCompilationProperties? GetCompilationProperties(IProject project, IProjectFile? projectFile, CppFileLocation rootFile,
@@ -52,29 +50,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
                         break;
                     }
                     case CppProjectFileType.COMPUTE_EXTENSION:
-                        return GetHlslCompilationProperties(solution, project, ComputeHlslDialect);
+                        return GetHlslCompilationProperties(solution, project, rootFile, null, myDialects.ComputeHlslDialect);
                     case var _ when PsiSourceFileUtil.IsHlslFile(filePath):
-                        return GetHlslCompilationProperties(solution, project, HlslDialect);
+                        return GetHlslCompilationProperties(solution, project, rootFile, null, myDialects.HlslDialect);
                 }
             }
 
             return null;
         }
 
-        public CppCompilationProperties GetShaderLabHlslCompilationProperties(ISolution solution, IProject? project, CppFileLocation location, ShaderProgramInfo shaderProgramInfo)
-        {
-            var properties = GetHlslCompilationProperties(solution, project, ShaderLabHlslDialect);
-            if (shaderProgramInfo.ShaderType == ShaderType.Surface)
-                DefineSurfaceShaderSymbols(properties.PredefinedMacros);
-            foreach (var (name, value) in shaderProgramInfo.DefinedMacros) 
-                properties.PredefinedMacros.Add(CppPPDefineSymbolUtil.ParsePredefinedMacro($"{name}={value}"));
-            foreach (var provider in myCustomDefinesProviders)
-                properties.PredefinedMacros.AddRange(provider.ProvideCustomMacros(location, shaderProgramInfo));
-            return properties;
-        }
+        public CppCompilationProperties GetShaderLabHlslCompilationProperties(ISolution solution, IProject? project, CppFileLocation location, ShaderProgramInfo shaderProgramInfo) => 
+            GetHlslCompilationProperties(solution, project, location, shaderProgramInfo, myDialects.ShaderLabHlslDialect);
 
-        private CppCompilationProperties GetHlslCompilationProperties(ISolution solution, IProject? project, UnityHlslDialectBase dialect)
+        private CppCompilationProperties GetHlslCompilationProperties(ISolution solution, IProject? project, CppFileLocation location, ShaderProgramInfo? shaderProgramInfo, UnityHlslDialectBase dialect)
         {
+            var solutionDirectory = solution.SolutionDirectory;
+            
             var properties = new CppCompilationProperties
             {
                 OverridenDialect =  dialect,
@@ -83,18 +74,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             var path = myCgIncludeDirectoryProvider.GetCgIncludeFolderPath();
             if (!path.IsEmpty)
                 properties.HeaderSearchPaths.IncludePaths.Add(path);
-
-            var solutionDirectory = solution.SolutionDirectory;
+            properties.HeaderSearchPaths.IncludePaths.Add(solutionDirectory);
+            
             properties.ForcedIncludes.Add(solutionDirectory.Combine(Utils.ShaderConfigFile).FullPath);
+            
             DefineCommonSymbols(project, properties.PredefinedMacros);
             
-            properties.HeaderSearchPaths.IncludePaths.Add(solutionDirectory);
+            // Add macros from custom providers
+            foreach (var provider in myCustomDefinesProviders)
+                properties.PredefinedMacros.AddRange(provider.ProvideCustomMacros(location, shaderProgramInfo));
+            
+            // Add macros from shader program info (if provided)
+            if (shaderProgramInfo != null)
+            {
+                if (shaderProgramInfo.ShaderType == ShaderType.Surface)
+                    DefineSurfaceShaderSymbols(properties.PredefinedMacros);
+                foreach (var (name, value) in shaderProgramInfo.DefinedMacros)
+                    properties.PredefinedMacros.Add(CppPPDefineSymbolUtil.ParsePredefinedMacro($"{name}={value}"));
+            }
+            
             return properties;
         }
 
         private void DefineCommonSymbols(IProject? project, List<CppPPDefineSymbol> definedSymbols)
         {
-            definedSymbols.Add(CppPPDefineSymbolUtil.ParsePredefinedMacro("SHADER_API_D3D11"));
             definedSymbols.Add(CppPPDefineSymbolUtil.CreatePredefinedSymbol("UNITY_VERSION", GetHlslUnityVersion(project).ToString()));
         }
 
@@ -103,12 +106,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp
             definedSymbols.Add(CppPPDefineSymbolUtil.ParsePredefinedMacro("INTERNAL_DATA= "));
             definedSymbols.Add(CppPPDefineSymbolUtil.ParsePredefinedMacro("WorldReflectionVector(data,normal)=data.worldRefl"));
             definedSymbols.Add(CppPPDefineSymbolUtil.ParsePredefinedMacro("WorldNormalVector(data,normal)=normal"));
-        }
-
-        public void DefineSymbols(IProject? project, List<CppPPDefineSymbol> definedSymbols)
-        {
-            DefineCommonSymbols(project, definedSymbols);
-            DefineSurfaceShaderSymbols(definedSymbols);
         }
 
         private int GetHlslUnityVersion(IProject? project)

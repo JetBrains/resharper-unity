@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp
 {
@@ -108,6 +109,51 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
             return invocationExpression.InvocationExpressionReference.IsResourcesLoadMethod();
         }
         
+        public static bool IsGlobalMethodCreate(this IInvocationExpression invocationExpression)
+        {
+            return invocationExpression.InvocationExpressionReference.IsGlobalKeywordCreateMethod();
+        }
+        
+        public static bool IsLocalKeywordConstructor(this IObjectCreationExpression objectCreationExpression)
+        {
+            return IsSpecificTypeConstructor(objectCreationExpression, KnownTypes.LocalKeyword);
+
+        }
+        
+        public static bool IsGlobalKeywordConstructor(this IObjectCreationExpression objectCreationExpression)
+        {
+            return IsSpecificTypeConstructor(objectCreationExpression, KnownTypes.GlobalKeyword);
+        }
+        
+        public static bool IsSpecificTypeConstructor(this IObjectCreationExpression objectCreationExpression, IClrTypeName typeName)
+        {
+            var resolveResult = objectCreationExpression.Reference?.Resolve();
+            if (resolveResult == null)
+                return false;
+
+            var candidates = new LocalList<IDeclaredElement>();
+            if (resolveResult.DeclaredElement != null)
+            {
+                candidates.Add(resolveResult.DeclaredElement);
+            }
+            else
+            {
+                candidates.AddRange(resolveResult.Result.Candidates);
+            }
+            
+            foreach (var candidate in candidates)
+            {
+                var type = (candidate as IConstructor)?.ContainingType;
+                if (type == null)
+                    continue;
+
+                if (type.GetClrName().Equals(typeName))
+                    return true;
+            }
+            
+            return false;
+        }
+        
         public static bool IsAssetDataBaseLoadMethod(this IInvocationExpression invocationExpression)
         {
             return invocationExpression.InvocationExpressionReference.IsAssetDataBaseLoadMethod();
@@ -158,6 +204,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
         public static bool IsResourcesLoadMethod(this IInvocationExpressionReference reference)
         {
             return IsRelatedMethod(reference, IsResourcesLoad);
+        }
+        
+        public static bool IsGlobalKeywordCreateMethod(this IInvocationExpressionReference reference)
+        {
+            return IsRelatedMethod(reference, IsGlobalKeywordCreate);
         }
 
         public static bool IsAssetDataBaseLoadMethod(this IInvocationExpressionReference reference)
@@ -223,6 +274,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
         {
             return method != null &&
                    method.ShortName.StartsWith("Load") && method.ContainingType?.GetClrName().Equals(KnownTypes.Resources) == true;
+        }        
+        
+        private static bool IsGlobalKeywordCreate(IMethod method)
+        {
+            return method != null &&
+                   method.ShortName.StartsWith("Create") && method.ContainingType?.GetClrName().Equals(KnownTypes.GlobalKeyword) == true;
         }        
         
         private static bool IsAssetDataBaseLoad(IMethod method)

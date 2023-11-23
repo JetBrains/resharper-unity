@@ -4,12 +4,12 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
-import com.intellij.ui.awt.RelativePoint
 import com.jetbrains.rider.editors.resolveContextWidget.ResolveContextWidgetTheme
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
 import com.jetbrains.rider.plugins.unity.ui.borders.IconBorder
 import java.awt.BorderLayout
 import java.awt.Component
+import java.awt.Point
 import java.awt.event.MouseEvent
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -21,7 +21,7 @@ abstract class AbstractShaderWidget(val project: Project, val editor: Editor) : 
         enableEvents(MouseEvent.MOUSE_EVENT_MASK)
         label.apply {
             foreground = null
-            border = IconBorder(AllIcons.Actions.InlayDropTriangle, label.iconTextGap)
+            border = IconBorder(AllIcons.Actions.InlayDropTriangle, iconTextGap)
         }.also { add(it, BorderLayout.CENTER) }
         border = ResolveContextWidgetTheme.WIDGET_BORDER
     }
@@ -39,7 +39,7 @@ abstract class AbstractShaderWidget(val project: Project, val editor: Editor) : 
                 foreground = null
             }
             MouseEvent.MOUSE_RELEASED -> {
-                mousePosition?.let { showPopup(RelativePoint(this, it)) }
+                mousePosition?.let { showPopup(it) }
             }
         }
     }
@@ -54,7 +54,7 @@ abstract class AbstractShaderWidget(val project: Project, val editor: Editor) : 
         background = null
     }
 
-    abstract fun showPopup(showAt: RelativePoint)
+    abstract fun showPopup(pointOnComponent: Point)
 
     override fun dispose() {}
 }

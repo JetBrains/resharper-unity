@@ -50,5 +50,6 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
 
         property("showCustomRenderers", bool)
         property("ignoreBreakOnUnhandledExceptionsForIl2Cpp", bool)
+        property("forcedTimeoutForAdvanceUnityEvaluation", int)
     }
 }

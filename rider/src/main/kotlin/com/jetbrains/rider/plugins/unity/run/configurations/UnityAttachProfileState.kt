@@ -47,6 +47,8 @@ open class UnityAttachProfileState(private val remoteConfiguration: RemoteConfig
             protocolModel.unityDebuggerWorkerModel.showCustomRenderers)
         frontendBackendModel.backendSettings.ignoreBreakOnUnhandledExceptionsForIl2Cpp.flowInto(debuggerWorkerLifetime,
             protocolModel.unityDebuggerWorkerModel.ignoreBreakOnUnhandledExceptionsForIl2Cpp)
+        frontendBackendModel.backendSettings.forcedTimeoutForAdvanceUnityEvaluation.flowInto(debuggerWorkerLifetime,
+            protocolModel.unityDebuggerWorkerModel.forcedTimeoutForAdvanceUnityEvaluation)
 
         return super.createDebuggerWorker(workerCmd, protocolModel, protocolServerPort, projectLifetime).apply {
             addProcessListener(object : ProcessAdapter() {

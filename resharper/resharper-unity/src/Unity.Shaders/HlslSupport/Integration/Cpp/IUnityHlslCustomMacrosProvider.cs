@@ -8,5 +8,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Cpp;
 
 public interface IUnityHlslCustomMacrosProvider
 {
-    IEnumerable<CppPPDefineSymbol> ProvideCustomMacros(CppFileLocation location, ShaderProgramInfo shaderProgramInfo);
+    IEnumerable<CppPPDefineSymbol> ProvideCustomMacros(CppFileLocation location, ShaderProgramInfo? shaderProgramInfo);
 }

@@ -34,10 +34,10 @@ namespace ComponentsAndTags
         var entity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent(entity,
           new GraveyardProperties
-            {
-              NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn,
-              TombstonePrefab = GetEntity(authoring.TombstonePrefab, TransformUsageFlags.Dynamic)
-            });
+          {
+            NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn,
+            TombstonePrefab = GetEntity(authoring.TombstonePrefab, TransformUsageFlags.Dynamic)
+          });
       }
     }
 }

@@ -22,6 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.UnityTestComponents
             ISolutionCaches solutionCaches)
             : base(lifetime, provider, psiAssemblyFileLoader, psiModules, unitySolutionTracker, solutionAnalysisConfiguration, shellCaches, solutionCaches)
         {
+            Enabled.Value = true;
         }
 
         protected override bool IsUnitySolution => true;

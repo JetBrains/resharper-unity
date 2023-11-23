@@ -7,6 +7,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
     {
         bool ExtensionsEnabled { get; }
         bool IgnoreBreakOnUnhandledExceptionsForIl2Cpp { get; }
+        int ForcedTimeoutForAdvanceUnityEvaluation { get; }
     }
 
     [DebuggerGlobalComponent]
@@ -23,5 +24,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity
 
         public bool IgnoreBreakOnUnhandledExceptionsForIl2Cpp =>
             myHost.Model.IgnoreBreakOnUnhandledExceptionsForIl2Cpp.Value;
+        
+        public int ForcedTimeoutForAdvanceUnityEvaluation =>
+            myHost.Model.ForcedTimeoutForAdvanceUnityEvaluation.Value;
     }
 }
