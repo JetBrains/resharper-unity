@@ -26,9 +26,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
         {
             myUnitySolutionTracker = unitySolutionTracker;
             myDescriptionCollector = descriptionCollector;
-            myGroup = new EventLogGroup("dotnet.unity.state", "Packages and Assets used by Unity users", 2, featureUsageLogger);
+            myGroup = new EventLogGroup("dotnet.unity.state", "Packages and Assets used by Unity users", 3, featureUsageLogger);
             myEvent = myGroup.RegisterEvent("unityTechnology", "Unity Technology", EventFields.String("id", "Name",
-                new[] { "HDRP", "CoreRP", "URP", "ECS", "InputSystem", "Burst", "Odin", "Peek", "UniRx",
+                new[] { "HDRP", "CoreRP", "URP", "ECS", "InputSystem", "Burst", "Odin", "Photon", "Peek", "UniRx",
                     "UniTask", 
                     "TestFramework",
                     "PythonScripting",

@@ -17,7 +17,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.UsageStatistic
 
         public IEnumerable<string> GetProjectTechnology(IProject project)
         {
-            if (myUnitySolutionTracker.HasUnityReference.Value) yield return "Unity";
+            if (myUnitySolutionTracker.HasUnityReference.Value)
+            {
+                yield return "Unity";
+                yield return "GameDev";
+            }
         }
     }
 }
