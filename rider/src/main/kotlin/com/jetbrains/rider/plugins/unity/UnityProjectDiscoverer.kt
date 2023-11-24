@@ -62,6 +62,17 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
                 it.name == "ProjectVersion.txt" || it.extension == "asset"
             }
         }
+
+        fun searchUpForFolderWithUnityFileStructure(file: VirtualFile, maxSteps:Int = 10): Pair<Boolean, VirtualFile?> {
+            var dir: VirtualFile = file
+            repeat(maxSteps) {
+                if ((dir.name == "Assets" || dir.name == "Packages") && hasUnityFileStructure(dir.parent)) {
+                    return Pair(true, dir.parent)
+                }
+                dir = dir.parent
+            }
+            return Pair(false, null)
+        }
     }
 
     // When Unity has generated sln, Library folder was also created. Lets' be more strict and check it.
