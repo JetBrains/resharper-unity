@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
 import com.intellij.icons.AllIcons
+import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.util.EditorUtil
@@ -11,24 +12,17 @@ import com.intellij.openapi.ui.JBPopupMenu
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.NlsSafe
-import com.intellij.ui.CheckBoxList
-import com.intellij.ui.ListSpeedSearch
-import com.intellij.ui.RelativeFont
-import com.intellij.ui.SeparatorComponent
+import com.intellij.ui.*
 import com.intellij.ui.awt.RelativePoint
-import com.intellij.ui.components.JBLabel
-import com.intellij.ui.components.JBPanel
-import com.intellij.ui.components.JBRadioButton
-import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.components.*
 import com.intellij.ui.components.labels.LinkLabel
+import com.intellij.ui.components.panels.HorizontalLayout
 import com.intellij.ui.components.panels.ListLayout
 import com.intellij.ui.components.panels.VerticalLayout
 import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.JBUI
-import com.jetbrains.rd.framework.RdTaskResult
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rdclient.document.getFirstDocumentId
-import com.jetbrains.rider.model.Success
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.common.ui.ToggleButtonModel
@@ -38,6 +32,7 @@ import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderApi
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderPlatform
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderVariantInteraction
 import org.jetbrains.annotations.Nls
+import java.awt.Color
 import java.awt.Dimension
 import java.awt.Font
 import java.awt.event.ItemEvent
@@ -46,6 +41,8 @@ import javax.swing.*
 
 class ShaderVariantPopup(private val project: Project, private val interaction: ShaderVariantInteraction, @Nls val contextName: String) : JBPanel<ShaderVariantPopup>(VerticalLayout(5)) {
     companion object {
+
+        val ENABLED_SEPARATOR_FOREGROUND: Color = JBColor.namedColor("Group.separatorColor", JBColor(Gray.xCD, Gray.x51))
         private fun createPopup(project: Project, interaction: ShaderVariantInteraction, @Nls contextName: String): JBPopup {
             val shaderVariantPopup = ShaderVariantPopup(project, interaction, contextName)
             return JBPopupFactory.getInstance().createComponentPopupBuilder(shaderVariantPopup, shaderVariantPopup.shaderKeywordsComponent)
@@ -106,6 +103,7 @@ class ShaderVariantPopup(private val project: Project, private val interaction: 
 
         add(shaderApiComponent)
         add(shaderPlatformsComponent)
+        val mainBackground = this.background
         add(JBScrollPane().apply {
             horizontalScrollBarPolicy = JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
             maximumSize = JBDimension.size(Dimension(Int.MAX_VALUE, 500))
@@ -114,25 +112,41 @@ class ShaderVariantPopup(private val project: Project, private val interaction: 
             viewport.add(JPanel(VerticalLayout(0)).apply {
                 border = JBUI.Borders.empty()
 
+                builtinDefineSymbolsComponent.background = mainBackground
                 add(builtinDefineSymbolsComponent)
-                add(SeparatorComponent())
+                add(SeparatorComponent(ENABLED_SEPARATOR_FOREGROUND, SeparatorOrientation.HORIZONTAL).apply {
+                    setVGap(JBUI.CurrentTheme.List.buttonSeparatorInset())
+                })
+                
                 add(JBLabel(UnityBundle.message("shaderVariant.popup.keywords.label", contextName)).apply {
                     isEnabled = false
                     font = boldFont
                 })
+
+                shaderKeywordsComponent.background = mainBackground
                 add(shaderKeywordsComponent)
             })
         })
         add(otherEnabledKeywordsLabel.apply {
             isEnabled = false
         })
-        add(LinkLabel<ActionGroup>(UnityBundle.message("shaderVariant.popup.reset.link.text"), AllIcons.Actions.InlayDropTriangle).apply {
+        
+        val horizontalContainer = JBPanel<JBPanel<*>>(HorizontalLayout(5))
+
+        horizontalContainer.add(LinkLabel<ActionGroup>(UnityBundle.message("shaderVariant.popup.reset.link.text"), AllIcons.Actions.InlayDropTriangle).apply {
             horizontalTextPosition = SwingConstants.LEFT
             setListener({ linkLabel, group ->
                             val popup = ActionManager.getInstance().createActionPopupMenu("ShaderVariantWidget", group)
                             JBPopupMenu.showBelow(linkLabel, popup.component)
                         }, ResetActionGroup(this@ShaderVariantPopup))
-        })
+        }, HorizontalLayout.LEFT)
+
+        horizontalContainer.add(ActionLink(UnityBundle.message("shaderVariant.popup.learnMore")) {
+            BrowserUtil.open("https://jb.gg/wacf2b")
+            ShaderVariantEventLogger.logLearnMore(project)
+        }, HorizontalLayout.RIGHT)
+        
+        add(horizontalContainer)
     }
 
     fun getOwnKeywordsCount() = ownEnabledKeywordsCount

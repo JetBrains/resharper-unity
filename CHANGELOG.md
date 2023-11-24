@@ -14,41 +14,72 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 ### Added
 
 * Add completion for semantics in HLSL code ([RIDER-69716](https://youtrack.jetbrains.com/issue/RIDER-69716))
-* Add completion of UI elements used in UXML files for `Q` and `Query` methods
+* Add completion of UI elements used in UXML files for `Q` and `Query` methods ([RIDER-96786](https://youtrack.jetbrains.com/issue/RIDER-96786))
+* Add ctrl+click navigation, find usages and completion of UI element class names and namespaces in UXML files ([RIDER-99109](https://youtrack.jetbrains.com/issue/RIDER-99109))
 * Add completion for `-unity-font` and `-unity-font-definition`
-* Resolve `project:` and `unity-theme:` references in USS files
-* Resolve references to packages in USS files
-* Add support for `.tss` UI elements theme files
+* Resolve file references for `url` function in USS files ([RIDER-92609](https://youtrack.jetbrains.com/issue/RIDER-92609))
+* Add support for `.tss` UI elements theme files ([RIDER-98201](https://youtrack.jetbrains.com/issue/RIDER-98201))
 * Support percentage values in various USS properties ([RIDER-88190](https://youtrack.jetbrains.com/issue/RIDER-88190))
 * Support reading encoded Unicode characters from YAML asset files ([RIDER-91181](https://youtrack.jetbrains.com/issue/RIDER-91181))
+* Add highlighting of shader variant keywords in HLSL code, including active and conflicting highlights
+* Add context actions to enable/disable shader keywords ([RIDER-101060](https://youtrack.jetbrains.com/issue/RIDER-101060))
+* Add completion for shader keywords and known shader API and platform define symbols in HLSL code ([RIDER-101059](https://youtrack.jetbrains.com/issue/RIDER-101059))
+* Add completion for shader keywords for `LocalKeyword` and `GlobalKeyword`
+* Rider: Add shader variant selector as a preview feature to enable/disable shader keywords in HLSL code ([RIDER-94111](https://youtrack.jetbrains.com/issue/RIDER-94111), [RIDER-99288](https://youtrack.jetbrains.com/issue/RIDER-99288), [RIDER-99302](https://youtrack.jetbrains.com/issue/RIDER-99302))
+* Rider: Add support for switching Shader API in shader selector ([RIDER-101057](https://youtrack.jetbrains.com/issue/RIDER-101057))
+* Rider: Selected shader context is persistent ([RIDER-99292](https://youtrack.jetbrains.com/issue/RIDER-99292))
+* Rider: Add debugger visualiser for `Texture2D` and `RenderTexture` types ([RIDER-26339](https://youtrack.jetbrains.com/issue/RIDER-26339))
+* Rider: Output tracepoint text to Unity Console ([RIDER-55779](https://youtrack.jetbrains.com/issue/RIDER-55779))
 * Rider: Add support for multiplayer mode virtual players in "Attach to Unity" Process dialog ([RIDER-99681](https://youtrack.jetbrains.com/issue/RIDER-99681))
+* Rider: Add gutter context menu item to create a Unity pausepoint ([RIDER-100724](https://youtrack.jetbrains.com/issue/RIDER-100724))
 * Rider: Add `Unity_s.debug` as a Unity editor executable that can be debugged on Linux ([RIDER-97262](https://youtrack.jetbrains.com/issue/RIDER-97262))
 
 ### Changed
 
 * Add missing USS properties ([RIDER-88190](https://youtrack.jetbrains.com/issue/RIDER-88190), [RIDER-96828](https://youtrack.jetbrains.com/issue/RIDER-96828))
+* Suppress unused assignment warning in DOTS `ref` parameter ([RIDER-94389](https://youtrack.jetbrains.com/issue/RIDER-94389))
+* Suppress "no defined ordering" CS0282 warning on DOTS partial structs ([RIDER-95940](https://youtrack.jetbrains.com/issue/RIDER-95940))
 * Rider: Update Unity editor plugin to find Rider when installed with JetBrains Toolbox 2.0
 * Rider: Move shader context widget from status bar to editor breadcrumb bar ([RIDER-97381](https://youtrack.jetbrains.com/issue/RIDER-97381))
 * Rider: Prefer opening files in main project context when player projects are generated
 * Rider: Do not show editor notification if opening a non-generated project file
 * Rider: Add "Open manifest.json" command link to Rider package update notification
+* Rider: Remove "Show in Unity" action from Unity Explorer context menu ([RIDER-102151](https://youtrack.jetbrains.com/issue/RIDER-102151))
 
 ### Fixed
 
 * Fix exception while indexing ShaderLab files ([DEXP-738113](https://youtrack.jetbrains.com/issue/DEXP-738113))
 * Fix exception trying to delete line marker ([RIDER-96228](https://youtrack.jetbrains.com/issue/RIDER-96228))
+* Fix formatting of ShaderLab files created from templates ([RIDER-97873](https://youtrack.jetbrains.com/issue/RIDER-97873))
+* Fix exception calculating burst context with lambdas outside of invocation
+* Fix incorrect warning about missing `RequireForUpdate` for entities singleton used in `OnCreate` ([RIDER-99847](https://youtrack.jetbrains.com/issue/RIDER-99847))
 * Rider: Fix USS files not recognising two values for `background-style` property ([RIDER-99513](https://youtrack.jetbrains.com/issue/RIDER-99513))
+* Rider: Fix generating online documentation URL for type members in packages ([RIDER-100677](https://youtrack.jetbrains.com/issue/RIDER-100677))
 * Rider: Fix generating online documentation URL for packages with a pre-release semantic version ([RIDER-97543](https://youtrack.jetbrains.com/issue/RIDER-97543))
 * Rider: Fix generating online documentation URL for generic types ([RIDER-97543](https://youtrack.jetbrains.com/issue/RIDER-97543))
 * Rider: Fix generating online documentation search URL for generic types ([RIDER-97168](https://youtrack.jetbrains.com/issue/RIDER-97168))
+* Rider: Fix online help for Unity assemblies compiled with Microsoft as the company name ([RIDER-101136](https://youtrack.jetbrains.com/issue/RIDER-101136))
 * Rider: Fix adding non-`.cs` files to `.Player` projects to prevent shader files unexpectedly appearing in multiple projects ([RIDER-97069](https://youtrack.jetbrains.com/issue/RIDER-97069))
 * Rider: Fix context help for Unity settings page ([RIDER-98359](https://youtrack.jetbrains.com/issue/RIDER-98359))
 * Rider: Add missing Unity process details (project name, role, etc.) in Rider's attach to local process dialog ([RIDER-99743](https://youtrack.jetbrains.com/issue/RIDER-99743))
+* Rider: Fix incorrect formatting of Unity Explorer tooltip when folder contains more than 10 projects
+* Rider: Fix unresolved packages in Unity Explorer with Unity 2023.3.0a14 ([RIDER-101932](https://youtrack.jetbrains.com/issue/RIDER-101932))
+
+
+
+## 2023.2.3
+* Released: [2023-09-26](https://blog.jetbrains.com/dotnet/2023/11/03/resharper-rider-2023-2-3/)
+* Build: 2023.2.2.210
+* [No changes](https://github.com/JetBrains/resharper-unity/compare/net232-rtm-2023.2.2...net232)
 
 
 
 ## 2023.2.2
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net232-rtm-2023.2.1...net232)
+* Released: [2023-09-26](https://blog.jetbrains.com/dotnet/2023/09/26/rsrp-rd-2023-2-2-bugfix/)
+* Build: 2023.2.1.199
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net232-rtm-2023.2.1...net232-rtm-2023.2.2)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net232-rtm-2023.2.2)
+* No ReSharper release due to plugin using a new platform API introduced in this version
 
 ### Changed
 
@@ -62,7 +93,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 ## 2023.2.1
-* [Released]: [2023-08-24](https://blog.jetbrains.com/dotnet/2023/08/24/2023-2-1-bugfix/)
+* Released: [2023-08-24](https://blog.jetbrains.com/dotnet/2023/08/24/2023-2-1-bugfix/)
 * Build: 2023.2.1.165
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net232-rtm-2023.2.0...net232-rtm-2023.2.1)
 * No milestone. No longer used for development.
@@ -87,7 +118,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 ### Fixed
 
 * Fix naming policy for surface shader special structure `Input`
-* Fix auto completion popup for ShaderLab keywords and live templates
+* Fix auto completion popup for ShaderLab keywords and live templates ([RIDER-95942](https://youtrack.jetbrains.com/issue/RIDER-95942))
 * Fix occasionally missing HLSL blocks in ShaderLab Structure view
 * Fix reformat of selection inside HLSL block in ShaderLab file
 * Fix exception while processing modified ShaderLab files ([DEXP-739101](https://youtrack.jetbrains.com/issue/DEXP-739101))
@@ -101,7 +132,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 ## 2023.2.0
-* [Released]: [2023-08-02](https://blog.jetbrains.com/dotnet/2023/08/02/rider-2023-2-release/)
+* Released: [2023-08-02](https://blog.jetbrains.com/dotnet/2023/08/02/rider-2023-2-release/)
 * Build: 2023.2.0.151
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net231...net232-rtm-2023.2.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/59?closed=1) (Not used in this release)
@@ -628,7 +659,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 ### Fixed
 
 - Rider: Builtin packages are correctly resolved against the local package cache for newer Unity versions (RIDER-65196](https://youtrack.jetbrains.com/issue/RIDER-65196), [#2122](https://github.com/JetBrains/resharper-unity/issues/2122), [#2136](https://github.com/JetBrains/resharper-unity/pull/2136))
-- Rider: Support "Show in Unity" action for files from a local package ([RIDER-65128](https://youtrack.jetbrains.com/issue/RIDER-65128), [#2124](https://github.com/JetBrains/resharper-unity/pull/2124))
+- Rider: Fix "Show in Unity" action for packages from package cache ([#2137](https://github.com/JetBrains/resharper-unity/pull/2137))
 - Rider: Improve memory management when opening massive shader files ([RIDER-65080](https://youtrack.jetbrains.com/issue/RIDER-65080), [#2121](https://github.com/JetBrains/resharper-unity/pull/2121))
 - Rider: Fix UnityYAMLMerge failing to resolve conflicts in assets ([RIDER-64433](https://youtrack.jetbrains.com/issue/RIDER-64433), [#2125](https://github.com/JetBrains/resharper-unity/pull/2125))
 

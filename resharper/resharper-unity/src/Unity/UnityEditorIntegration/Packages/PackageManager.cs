@@ -543,7 +543,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
         private PackageData? GetRegistryPackage(string id, string version, string registryUrl)
         {
-            // When parsing manifest.json, version might be a version, or it might even be a URL for a git package
+            // When parsing manifest.json, version might be a version, or it might even be a URL for a git package, try
+            // and parse it to check it's valid
             var cacheFolder = RelativePath.TryParse($"{id}@{version}");
             if (cacheFolder.IsEmpty)
                 return null;
@@ -551,8 +552,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             // Unity 2018.3 introduced an additional layer of caching for registry based packages, local to the
             // project, so that any edits to the files in the package only affect this project. This is primarily
             // for the API updater, which would otherwise modify files in the product wide cache
-            var packageData = GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine(cacheFolder),
-                PackageSource.Registry);
+            // Starting with Unity 2023.3.0a14, the folder names in the PackageCache no longer include the version
+            var packageData = GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine(cacheFolder), PackageSource.Registry)
+                              ?? GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine(id), PackageSource.Registry);
             if (packageData != null)
                 return packageData;
 
@@ -573,8 +575,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             // I don't know why the files are copied - it makes sense for registry packages to be copied so that script
             // updater can run on them, or users can make (dangerously transient) changes. But built in packages are,
             // well, built in, and should be up to date as far as the script updater is concerned.
-            var localCacheFolder = myLocalPackageCacheFolder.Combine($"{id}@{version}");
-            var packageData = GetPackageDataFromFolder(id, localCacheFolder, PackageSource.BuiltIn);
+            // Starting with Unity 2023.3.0a14, the folder names in PackageCache no longer include the version.
+            var packageData = GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine($"{id}@{version}"), PackageSource.BuiltIn) ??
+                              GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine(id), PackageSource.BuiltIn);
             if (packageData == null && builtInPackagesFolder.IsNotEmpty)
                 packageData = GetPackageDataFromFolder(id, builtInPackagesFolder.Combine(id), PackageSource.BuiltIn);
             if (packageData != null)
@@ -599,7 +602,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         {
             // For older Unity versions, manifest.json will have a hash for any git based package. For newer Unity
             // versions, this is stored in packages-lock.json. If the lock file is disabled, then we don't get a hash
-            // and have to figure it out based on whatever is in Library/PackagesCache. We check the vesion as a git
+            // and have to figure it out based on whatever is in Library/PackagesCache. We check the version as a git
             // URL based on the docs: https://docs.unity3d.com/Manual/upm-git.html
             if (hash == null && !IsGitUrl(version))
                 return null;

@@ -153,6 +153,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
             yield return "Sirenix.Serialization";
         }
     }
+    
+    public class PhotonUnityTechnologyDescription : IUnityTechnologyDescription
+    {
+        public string Id => "Photon";
+
+        public IEnumerable<string> GetPossiblePackageName()
+        {
+            yield break;
+        }
+
+        public IEnumerable<string> GetPossibleAssemblyName()
+        {
+            yield return "Photon3Unity3D.dll";
+        }
+
+        public IEnumerable<string> GetPossibleProjectName()
+        {
+            yield return "PhotonUnityNetworking";
+            yield return "PhotonRealtime";
+        }
+    }
+
 
     public class PeekUnityTechnologyDescription : IUnityTechnologyDescription
     {
