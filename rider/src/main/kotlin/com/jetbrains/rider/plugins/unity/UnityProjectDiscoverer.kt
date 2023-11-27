@@ -64,12 +64,16 @@ class UnityProjectDiscoverer(private val project: Project) : LifetimedService() 
         }
 
         fun searchUpForFolderWithUnityFileStructure(file: VirtualFile, maxSteps:Int = 10): Pair<Boolean, VirtualFile?> {
-            var dir: VirtualFile = file
+            var dir: VirtualFile? = file
             repeat(maxSteps) {
-                if ((dir.name == "Assets" || dir.name == "Packages") && hasUnityFileStructure(dir.parent)) {
-                    return Pair(true, dir.parent)
+                if (dir == null) return@repeat
+
+                dir?.let{
+                    if ((it.name == "Assets" || it.name == "Packages") && hasUnityFileStructure(it.parent)) {
+                        return Pair(true, it.parent)
+                    }
+                    dir = it.parent
                 }
-                dir = dir.parent
             }
             return Pair(false, null)
         }
