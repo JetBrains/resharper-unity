@@ -89,6 +89,8 @@ namespace JetBrains.Rider.PathLocator
             var path = line.Split('"').Where((_, index) => index == 1).SingleOrDefault();
             if (string.IsNullOrEmpty(path))
               continue;
+            if (!File.Exists(path))
+              continue;
             
             installInfos.Add(new RiderInfo(this, path, false));
           }

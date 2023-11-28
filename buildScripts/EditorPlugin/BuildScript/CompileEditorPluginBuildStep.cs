@@ -59,8 +59,8 @@ public class CompileEditorPluginBuildStep
                 new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.5.6" / "bin" / "Release" / "net35" / "JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.pdb")),
                 new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.2017.3" / "bin" / "Release" / "net35" / "JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll")),
                 new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.2017.3" / "bin" / "Release" / "net35" / "JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.pdb")),
-                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.2019.2" / "bin" / "Release" / "net472" / "JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll")),
-                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.2019.2" / "bin" / "Release" / "net472" / "JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.pdb")),
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.2019.2" / "bin" / "Release" / "netstandard2.0" / "JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll")),
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.2019.2" / "bin" / "Release" / "netstandard2.0" / "JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.pdb")),
             };
         }
 
