@@ -7,6 +7,7 @@ import com.intellij.internal.statistic.eventLog.events.*
 import com.intellij.internal.statistic.service.fus.collectors.CounterUsagesCollector
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.AtomicReference
+import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureInfo
 import java.util.concurrent.TimeUnit
 
 internal class TextureDebuggerCollector : CounterUsagesCollector() {
@@ -24,7 +25,7 @@ internal class TextureDebuggerCollector : CounterUsagesCollector() {
         val TEXTURE_DEBUGGING_STAGE: VarargEventId = TEXTURE_DEBUGGING_ACTIVITY.registerStage("stage", arrayOf(STAGE_CLASS, TIME_SINCE_START, TEXTURE_WIDTH, TEXTURE_HEIGHT))
 
         fun registerStageStarted(activityAtomicReference: AtomicReference<StructuredIdeActivity?>, stage: StageType,
-                                 textureInfo: UnityTextureCustomComponentEvaluator.TextureInfo? = null) {
+                                 textureInfo: UnityTextureInfo? = null) {
 
             val activity = activityAtomicReference.get()
             if(textureInfo == null)
@@ -36,8 +37,8 @@ internal class TextureDebuggerCollector : CounterUsagesCollector() {
                 activity?.stageStarted(TEXTURE_DEBUGGING_STAGE) { listOf(
                     STAGE_CLASS.with(stage),
                     TIME_SINCE_START.with(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - activity.startedTimestamp)),
-                    TEXTURE_WIDTH.with(textureInfo.Width),
-                    TEXTURE_HEIGHT.with(textureInfo.Height)
+                    TEXTURE_WIDTH.with(textureInfo.width),
+                    TEXTURE_HEIGHT.with(textureInfo.height)
                 )}
         }
 
@@ -59,8 +60,7 @@ enum class ExecutionResult {
 }
 
 enum class StageType(val string: String) {
-    LOAD_DLL("load_dll"),
-    EVALUATE_VALUE_NAME("evaluate_value_name"),
+    REQUEST_ADDITIONAL_ACTIONS("request_additional_actions"),
     TEXTURE_PIXELS_REQUEST("texture_pixels_request"),
     PREPARE_TEXTURE_PIXELS_TO_SHOW("prepare_texture_pixels_to_show")
 }
