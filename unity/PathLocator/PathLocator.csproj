@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>1.0.7</Version>
+    <Version>1.0.8</Version>
     <authors>JetBrains</authors>
     <LangVersion>10</LangVersion>
     <PackageId>JetBrains.Rider.PathLocator</PackageId>
