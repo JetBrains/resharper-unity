@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 internal class TextureDebuggerCollector : CounterUsagesCollector() {
     companion object {
 
-        private val GROUP = EventLogGroup("rider.unity.debugger.texturevisualizers", 1)
+        private val GROUP = EventLogGroup("rider.unity.debugger.texturevisualizers", 2)
 
         private val TEXTURE_WIDTH = EventFields.Int("texture_width")
         private val TEXTURE_HEIGHT = EventFields.Int("texture_height")
