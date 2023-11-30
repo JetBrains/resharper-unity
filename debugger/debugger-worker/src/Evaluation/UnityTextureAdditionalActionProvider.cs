@@ -25,6 +25,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
         private readonly IKnownTypes<Value> myKnownTypes;
 
         private UnityDebuggingHelper? myHelper;
+        private ulong myDomainId;
 
         public UnityTextureAdditionalActionProvider(ILogger logger, IValueFactory<Value> factory,
             IKnownTypes<Value> knownTypes)
@@ -93,12 +94,15 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
         private UnityDebuggingHelper GetUnityDebuggerHelper(IStackFrame frame,
             UnityTextureAdditionalActionParams evaluationParameters, IValueFetchOptions options)
         {
-            if (myHelper != null)
+            var domainId = frame.GetAppDomainId();
+            
+            if (myHelper != null && myDomainId == domainId)
                 return myHelper;
 
             myKnownTypes.LoadAssemblyWithGetTypeCall(frame, options, evaluationParameters.HelperDllLocation,
                 UnityDebuggingHelper.RequiredType);
-            return myHelper = new UnityDebuggingHelper(myKnownTypes.ForDomain(frame.GetAppDomainId()));
+            myDomainId = domainId;
+            return myHelper = new UnityDebuggingHelper(myKnownTypes.ForDomain(domainId));
         }
     }
 }
