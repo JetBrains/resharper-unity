@@ -19,6 +19,7 @@ import com.intellij.xdebugger.frame.XValuePlace
 import com.jetbrains.rd.platform.util.toPromise
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.printlnError
+import com.jetbrains.rd.util.reactive.valueOrThrow
 import com.jetbrains.rider.RiderEnvironment
 import com.jetbrains.rider.debugger.DotNetStackFrame
 import com.jetbrains.rider.debugger.IDotNetValue
@@ -30,6 +31,8 @@ import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureAdditionalAction
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureAdditionalActionParams
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureInfo
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.projectView.solution
 import org.intellij.images.editor.impl.ImageEditorManagerImpl
 import java.awt.*
 import java.awt.event.MouseEvent
@@ -118,6 +121,7 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
             )
 
             TextureDebuggerCollector.registerStageStarted(stagedActivity, StageType.REQUEST_ADDITIONAL_ACTIONS)
+            val timeoutForAdvanceUnityEvaluation = project.solution.frontendBackendModel.backendSettings.forcedTimeoutForAdvanceUnityEvaluation.valueOrThrow
 
             val stackFrame = XDebuggerManager.getInstance(project).currentSession!!.currentStackFrame!! as DotNetStackFrame
             stackFrame.context.getObjectAdditionalOptions
@@ -127,7 +131,7 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
                     val unityTextureAdditionalAction = additionalActions.filterIsInstance<UnityTextureAdditionalAction>().firstOrNull()
                     TextureDebuggerCollector.registerStageStarted(stagedActivity, StageType.TEXTURE_PIXELS_REQUEST)
                     unityTextureAdditionalAction?.evaluateTexture
-                        ?.start(lifetime, UnityTextureAdditionalActionParams(bundledFile.absolutePath))
+                        ?.start(lifetime, UnityTextureAdditionalActionParams(bundledFile.absolutePath, timeoutForAdvanceUnityEvaluation))
                         ?.toPromise()
                         ?.onSuccess {unityTextureAdditionalActionResult ->
                             val errorMessage = unityTextureAdditionalActionResult.error //already localized error message from debugger worker
