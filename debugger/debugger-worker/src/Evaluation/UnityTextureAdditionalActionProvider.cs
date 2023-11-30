@@ -1,5 +1,4 @@
 using System;
-using JetBrains.Application.Settings;
 using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Debugger.Worker.Plugins.Unity.Resources;
 using JetBrains.Rd.Tasks;
@@ -25,7 +24,6 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
         private readonly IKnownTypes<Value> myKnownTypes;
 
         private UnityDebuggingHelper? myHelper;
-        private ulong myDomainId;
 
         public UnityTextureAdditionalActionProvider(ILogger logger, IValueFactory<Value> factory,
             IKnownTypes<Value> knownTypes)
@@ -62,22 +60,23 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             IStackFrame frame,
             UnityTextureAdditionalActionParams evaluationParameters)
         {
-            UnityDebuggingHelper helper; 
             var valueFetchOptions = options.WithOverridden(o => o.EvaluationTimeout = evaluationParameters.EvaluationTimeout);
             try
             {
                 //Loading helpers dll
-                helper = GetUnityDebuggerHelper(frame, evaluationParameters, valueFetchOptions);
+                if (myHelper == null || frame.GetAppDomainId() != myHelper.DomainTypes.AppDomainId)
+                    myHelper = CreateUnityDebuggerHelper(frame, evaluationParameters, valueFetchOptions);
             }
             catch (Exception e)
             {
+                // myHelper = null; //drop cached helper in case of esce 
                 return Error(string.Format(Strings.UnityTextureDebuggingCannotLoadDllLabel, e));
             }
 
             try
             {
                 //Loading the texture
-                var value = helper.GetPixels(softValue).Call(frame, valueFetchOptions);
+                var value = myHelper.GetPixels(softValue).Call(frame, valueFetchOptions);
                 var textureInfoJson = ((StringMirror)value).Value;
 
                 var textureInfo = JsonConvert.DeserializeObject<UnityTextureInfo>(textureInfoJson);
@@ -91,18 +90,10 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             }
         }
 
-        private UnityDebuggingHelper GetUnityDebuggerHelper(IStackFrame frame,
-            UnityTextureAdditionalActionParams evaluationParameters, IValueFetchOptions options)
+        private UnityDebuggingHelper CreateUnityDebuggerHelper(IStackFrame frame, UnityTextureAdditionalActionParams evaluationParameters, IValueFetchOptions options)
         {
-            var domainId = frame.GetAppDomainId();
-            
-            if (myHelper != null && myDomainId == domainId)
-                return myHelper;
-
-            myKnownTypes.LoadAssemblyWithGetTypeCall(frame, options, evaluationParameters.HelperDllLocation,
-                UnityDebuggingHelper.RequiredType);
-            myDomainId = domainId;
-            return myHelper = new UnityDebuggingHelper(myKnownTypes.ForDomain(domainId));
+            myKnownTypes.LoadAssemblyWithGetTypeCall(frame, options, evaluationParameters.HelperDllLocation, UnityDebuggingHelper.RequiredType);
+            return new UnityDebuggingHelper(myKnownTypes.ForDomain(frame.GetAppDomainId()));
         }
     }
 }
