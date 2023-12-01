@@ -33,6 +33,6 @@
         <value>Internal exception occurred, cannot get texture debug information:''{0}''</value>
     </data>
     <data name="UnityTextureDubuggingCannotParseTextureInfo" xml:space="preserve">
-        <value>Internal exception occurred, cannot parse texture information:''{0}''</value>
+        <value>Internal exception occurred, cannot parse texture information</value>
     </data>
 </root>
