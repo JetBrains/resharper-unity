@@ -36,8 +36,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             myKnownTypes = knownTypes;
         }
 
-        public ObjectAdditionalAction? CreateAction(IValueEntity valueEntity, IValueFetchOptions options,
-            SoftDebuggerSession session, IStackFrame frame)
+        public ObjectAdditionalAction? CreateAction(IValueEntity valueEntity, IValueFetchOptions options, IStackFrame frame)
         {
             if (valueEntity is not IValue value)
                 return null;
