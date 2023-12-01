@@ -73,6 +73,7 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
     var unityTextureAdditionalActionResult = classdef{
         field("error", string.nullable)
         field("unityTextureInfo", unityTextureInfo.nullable)
+        field("isTerminated", bool)
     }
 
     val unityTextureAdditionalAction = classdef extends DebuggerWorkerModel.objectAdditionalAction {
