@@ -124,7 +124,7 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
             val timeoutForAdvanceUnityEvaluation = project.solution.frontendBackendModel.backendSettings.forcedTimeoutForAdvanceUnityEvaluation.valueOrThrow
 
             val stackFrame = XDebuggerManager.getInstance(project).currentSession!!.currentStackFrame!! as DotNetStackFrame
-            stackFrame.context.getObjectAdditionalOptions
+            stackFrame.context.getObjectAdditionalActions
                 .start(lifetime, AdditionalActionsRequestParameter(stackFrame.frameProxy.id, dotNetValue.objectProxy.id))
                 .toPromise()
                 .onSuccess { additionalActions ->
