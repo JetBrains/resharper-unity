@@ -13,7 +13,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
         public const string AssemblyName = "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture";
         public static string RequiredTypeWithAssembly = $"{RequiredType}, {AssemblyName}";
 
-        private const string GetPixelsMethodName = "GetPixelsInString";
+        private const string GetPixelsMethodName = "GetTexturePixelsInfo";
 
         private static readonly MethodSelector ourGetPixelsMethodFilter =
             new(m => m.Name == GetPixelsMethodName && m.Parameters.Length == 1);
