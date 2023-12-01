@@ -10,7 +10,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
     public class UnityDebuggingHelper : KnownTypeBase<Value>
     {
         public const string RequiredType = "JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture.UnityTextureAdapter";
-        public static string RequiredTypeWithAssembly = $"{RequiredType}, JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture";
+        public const string AssemblyName = "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture";
+        public static string RequiredTypeWithAssembly = $"{RequiredType}, {AssemblyName}";
 
         private const string GetPixelsMethodName = "GetPixelsInString";
 
@@ -18,11 +19,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             new(m => m.Name == GetPixelsMethodName && m.Parameters.Length == 1);
 
         
-        public UnityDebuggingHelper(IDomainKnownTypes<Value> domainTypes) : base(RequiredTypeWithAssembly, domainTypes)
-        {
-        }
-
-        protected UnityDebuggingHelper(IReifiedType<Value> reifiedType, IDomainKnownTypes<Value> domainTypes) : base(reifiedType, domainTypes)
+        public UnityDebuggingHelper(IReifiedType<Value> reifiedType, IDomainKnownTypes<Value> domainTypes) : base(reifiedType, domainTypes)
         {
         }
         
