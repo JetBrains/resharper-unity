@@ -12,8 +12,11 @@ using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.MetadataLite.Services;
 using Mono.Debugging.Soft;
+using Mono.Debugging.Soft.CallStacks;
+using Mono.Debugging.TypeSystem;
 using Mono.Debugging.TypeSystem.KnownTypes;
 using Newtonsoft.Json;
+using Mono.Debugging.TypeSystem.KnownTypes.Predefined;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 {
@@ -92,8 +95,29 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
 
         private UnityDebuggingHelper CreateUnityDebuggerHelper(IStackFrame frame, UnityTextureAdditionalActionParams evaluationParameters, IValueFetchOptions options)
         {
-            myKnownTypes.LoadAssemblyWithGetTypeCall(frame, options, evaluationParameters.HelperDllLocation, UnityDebuggingHelper.RequiredType);
-            return new UnityDebuggingHelper(myKnownTypes.ForDomain(frame.GetAppDomainId()));
+            var domainId = frame.GetAppDomainId();
+            var domainKnownTypes = (IDomainKnownTypes<Value>)myKnownTypes.ForDomain(domainId);
+            
+            var debuggingHelper = domainKnownTypes.DebuggingHelper(frame, options);
+            var assembly = debuggingHelper.LoadAssemblyFromLocation(evaluationParameters.HelperDllLocation).Call(frame, options);
+
+            // force loading of the unity helper assembly
+            debuggingHelper
+                .GetTypeByAssemblyAndTypeName(UnityDebuggingHelper.AssemblyName, UnityDebuggingHelper.RequiredType)
+                .Call(frame, options);
+
+            var unityAssemblyReifiedType = domainKnownTypes.KnownTypes.TypeUniverse.GetReifiedType(frame, UnityDebuggingHelper.RequiredTypeWithAssembly);
+            if (unityAssemblyReifiedType == null)
+            {
+                myLogger.Warn("We haven't got a unity helper assembly load event, trying to force it");
+                
+                frame.GetSoftAppDomain().GetAssemblies(forceResetCache: true);
+                unityAssemblyReifiedType = domainKnownTypes.KnownTypes.TypeUniverse.GetReifiedType(frame, UnityDebuggingHelper.RequiredTypeWithAssembly);
+                if (unityAssemblyReifiedType == null)
+                    throw new Exception("Unable to call a unity helper methods as we don't have metadata of this assembly");
+            }
+
+            return new UnityDebuggingHelper((IReifiedType<Value>)unityAssemblyReifiedType, domainKnownTypes);
         }
     }
 }
