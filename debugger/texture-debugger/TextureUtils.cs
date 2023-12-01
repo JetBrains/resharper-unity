@@ -58,9 +58,21 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Presentation.Texture
 
         public static string GetPixelsInString(UnityEngine.Texture texture, Size size)
         {
+            var texturePixelsInfo = GetTexturePixelsInfo(texture, size);
+            return JsonUtility.ToJson(texturePixelsInfo, true);
+        }
+
+        // ReSharper disable once UnusedMember.Global
+        public static TexturePixelsInfo GetTexturePixelsInfo(UnityEngine.Texture texture)
+        {
+            return GetTexturePixelsInfo(texture, new Size(texture.width, texture.height));
+        }
+        
+        public static TexturePixelsInfo GetTexturePixelsInfo(UnityEngine.Texture texture, Size size)
+        {
             size = GetTextureConvertedSize(texture, size);
             var texturePixelsInfo = GetPixels(texture, size);
-            return JsonUtility.ToJson(texturePixelsInfo, true);
+            return texturePixelsInfo;
         }
 
         private static TexturePixelsInfo GetPixels(UnityEngine.Texture texture, Size size)
