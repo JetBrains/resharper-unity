@@ -135,7 +135,7 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
                         ?.toPromise()
                         ?.onSuccess {unityTextureAdditionalActionResult ->
                             val errorMessage = unityTextureAdditionalActionResult.error //already localized error message from debugger worker
-                            if (errorMessage != null) {
+                            if (!errorMessage.isNullOrEmpty()) {
                                 showErrorMessage(
                                     jbLoadingPanel,
                                     parentPanel,
@@ -158,6 +158,13 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
                                     TextureDebuggerCollector.finishActivity(stagedActivity, ExecutionResult.Succeed)
                                 }
                             }
+                        }
+                        ?.onError{
+                            showErrorMessage(
+                                jbLoadingPanel,
+                                parentPanel,
+                                UnityBundle.message("debugging.cannot.get.texture.debug.information", it)
+                            )
                         }
 
                 }
