@@ -96,6 +96,7 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
 
     companion object {
         private val LOG = thisLogger()
+        @Suppress("LABEL_NAME_CLASH")
         fun createTextureDebugView(dotNetValue: IDotNetValue,
                                    session: XDebugSession,
                                    lifetime: Lifetime,
@@ -134,6 +135,9 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
                         ?.start(lifetime, UnityTextureAdditionalActionParams(bundledFile.absolutePath, timeoutForAdvanceUnityEvaluation))
                         ?.toPromise()
                         ?.onSuccess {unityTextureAdditionalActionResult ->
+                            if(unityTextureAdditionalActionResult.isTerminated)
+                                return@onSuccess //if lifetime isNotAlive - window will be closed automatically
+
                             val errorMessage = unityTextureAdditionalActionResult.error //already localized error message from debugger worker
                             if (!errorMessage.isNullOrEmpty()) {
                                 showErrorMessage(

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Debugger.Model.Plugins.Unity;
 using JetBrains.Debugger.Worker.Plugins.Unity.Resources;
+using JetBrains.Lifetimes;
 using JetBrains.Rd.Tasks;
 using JetBrains.Rider.Model.DebuggerWorker;
 using JetBrains.Util;
@@ -48,21 +49,24 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             var objectAction = new UnityTextureAdditionalAction();
             var softValue = objectValueRole.ValueReference.GetValue(options);
 
-            objectAction.EvaluateTexture.SetSync((_, evaluationParameters) =>
-                DoTextureCalculations(softValue, options, frame, evaluationParameters));
+            objectAction.EvaluateTexture.SetSync((lifetime, evaluationParameters) =>
+                DoTextureCalculations(softValue, options, frame, evaluationParameters, lifetime));
             return objectAction;
         }
 
         private UnityTextureAdditionalActionResult Error(string errorMessage)
         {
             myLogger.Error(errorMessage);
-            return new UnityTextureAdditionalActionResult(errorMessage, null);
+            return new UnityTextureAdditionalActionResult(errorMessage, null, false);
         }
 
         private UnityTextureAdditionalActionResult DoTextureCalculations(Value softValue, IValueFetchOptions options,
             IStackFrame frame,
-            UnityTextureAdditionalActionParams evaluationParameters)
+            UnityTextureAdditionalActionParams evaluationParameters, Lifetime lifetime)
         {
+            if (lifetime.IsNotAlive)
+                return new UnityTextureAdditionalActionResult(null, null, true);
+            
             var valueFetchOptions = options.WithOverridden(o => o.EvaluationTimeout = evaluationParameters.EvaluationTimeout);
             try
             {
@@ -74,6 +78,9 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             {
                 return Error(string.Format(Strings.UnityTextureDebuggingCannotLoadDllLabel, e));
             }
+            
+            if (lifetime.IsNotAlive)
+                return new UnityTextureAdditionalActionResult(null, null, true);
 
             try
             {
@@ -92,7 +99,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                 var unityTextureInfo = GetTextureInfo(fieldReferences, valueFetchOptions);
 
                 return unityTextureInfo != null
-                    ? new UnityTextureAdditionalActionResult(string.Empty, unityTextureInfo)
+                    ? new UnityTextureAdditionalActionResult(string.Empty, unityTextureInfo, false)
                     : Error(Strings.UnityTextureDubuggingCannotParseTextureInfo);
             }
             catch (Exception e)
