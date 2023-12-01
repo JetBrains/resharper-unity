@@ -578,5 +578,6 @@
     public static string Template_Editable_U291cmNlIGZpbGUEQ => ResourceManager.GetString("Template_Editable_U291cmNlIGZpbGUEQ");
     public static string EvaluatesParentTypeName_Text => ResourceManager.GetString("EvaluatesParentTypeName_Text");
     public static string EvaluatesBakerParentTypeName_Text => ResourceManager.GetString("EvaluatesBakerParentTypeName_Text");
+    public static string UnityFixFloatingPointComparison_Text => ResourceManager.GetString("UnityFixFloatingPointComparison_Text");
   }
 }

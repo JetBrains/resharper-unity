@@ -1630,4 +1630,7 @@ a plugin to be installed to a project.</value>
     <data name="EvaluatesBakerParentTypeName_Text" xml:space="preserve">
         <value>Generate Baker name based on parent Unity type name</value>
     </data>
+    <data name="UnityFixFloatingPointComparison_Text" xml:space="preserve">
+        <value>Fix comparison with Mathf.Approximately</value>
+    </data>
 </root>

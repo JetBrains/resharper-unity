@@ -1,0 +1,29 @@
+using UnityEngine;
+using UnityEngine.Serialization;
+
+public class Test : MonoBehaviour
+{
+  public void Update()
+  {
+    float a = 1.7f;
+    float b = 4.2f;
+    if(|a == b|(0)) //Must be 2 quickfixes available
+      Debug.Log("Equals");
+      
+      
+    double c = 1.0;
+    double d = 2.0;
+    if(|c == d|(1))//Must only ONE quickfixe available
+      Debug.Log("Equals");
+    
+  }
+}
+
+------------------------------------------------
+0: Equality comparison of floating point numbers. Possible loss of precision while rounding values
+QUICKFIXES:
+Fix comparison with Mathf.Approximately
+Fix floating-point comparison
+1: Equality comparison of floating point numbers. Possible loss of precision while rounding values
+QUICKFIXES:
+Fix floating-point comparison
