@@ -96,11 +96,8 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                     return Error(Strings.UnityTextureDubuggingCannotParseTextureInfo);
                 
                 var fieldReferences = primaryRole.GetInstanceFieldReferences();
-                var unityTextureInfo = GetTextureInfo(fieldReferences, valueFetchOptions);
 
-                return unityTextureInfo != null
-                    ? new UnityTextureAdditionalActionResult(string.Empty, unityTextureInfo, false)
-                    : Error(Strings.UnityTextureDubuggingCannotParseTextureInfo);
+                return GetTextureInfo(fieldReferences, valueFetchOptions, lifetime);
             }
             catch (Exception e)
             {
@@ -108,18 +105,9 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             }
         }
 
-        private static UnityTextureInfo? GetTextureInfo(IEnumerable<IFieldValueReference<Value>> heightReferences, IValueFetchOptions valueFetchOptions)
+        private UnityTextureAdditionalActionResult GetTextureInfo(IEnumerable<IFieldValueReference<Value>> heightReferences,
+            IValueFetchOptions valueFetchOptions, Lifetime lifetime)
         {
-            T GetPrimitiveValue<T>(IValueReference<Value> valueReference, ref bool hasError)
-                where T : struct
-            {
-                if (valueReference.GetValue(valueFetchOptions) is PrimitiveValue primitiveValue) 
-                    return (T)primitiveValue.Value;
-                
-                hasError = true;
-                return default;
-            }
-
             var width = -1;
             var height = -1;
             List<int>? pixels = null;
@@ -132,6 +120,9 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
             var hasError = false;
             foreach (var valueReference in heightReferences)
             {
+                if(lifetime.IsNotAlive)
+                    return new UnityTextureAdditionalActionResult(null, null, true);
+                
                 switch (valueReference.DefaultName)
                 {
                     case nameof(UnityTextureInfo.Height):
@@ -182,10 +173,10 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                 || pixels == null
                 || originalHeight < 0 || originalWidth < 0
                 || graphicsTextureFormat == null || textureName == null)
-                return null;
+                return Error(Strings.UnityTextureDubuggingCannotParseTextureInfo);;
 
-            return new UnityTextureInfo(width, height, pixels, originalWidth, originalHeight, graphicsTextureFormat,
-                textureName, hasAlphaChannel);
+            return new UnityTextureAdditionalActionResult(null,  new UnityTextureInfo(width, height, pixels, originalWidth, originalHeight, graphicsTextureFormat,
+                textureName, hasAlphaChannel), false);
         }
         
         
@@ -193,7 +184,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
         private UnityDebuggingHelper CreateUnityDebuggerHelper(IStackFrame frame, UnityTextureAdditionalActionParams evaluationParameters, IValueFetchOptions options)
         {
             var domainId = frame.GetAppDomainId();
-            var domainKnownTypes = (IDomainKnownTypes<Value>)myKnownTypes.ForDomain(domainId);
+            var domainKnownTypes = myKnownTypes.ForDomain(domainId);
             
             var debuggingHelper = domainKnownTypes.DebuggingHelper(frame, options);
             var assembly = debuggingHelper.LoadAssemblyFromLocation(evaluationParameters.HelperDllLocation).Call(frame, options);
