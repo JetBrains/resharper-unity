@@ -135,51 +135,43 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Evaluation
                 switch (valueReference.DefaultName)
                 {
                     case nameof(UnityTextureInfo.Height):
-                        height = GetPrimitiveValue<int>(valueReference, ref hasError);    
+                        height = (int)(valueReference.AsPrimitiveSafe(valueFetchOptions)?.GetPrimitive() ?? height); 
                         break;
                     case nameof(UnityTextureInfo.Width):
-                        width = GetPrimitiveValue<int>(valueReference, ref hasError);
+                        width = (int)(valueReference.AsPrimitiveSafe(valueFetchOptions)?.GetPrimitive() ?? width);
                         break;
                     case nameof(UnityTextureInfo.OriginalHeight):
-                        originalHeight = GetPrimitiveValue<int>(valueReference, ref hasError);
+                        originalHeight = (int)(valueReference.AsPrimitiveSafe(valueFetchOptions)?.GetPrimitive() ?? originalHeight);
                         break;
                     case nameof(UnityTextureInfo.OriginalWidth):
-                        originalWidth = GetPrimitiveValue<int>(valueReference, ref hasError);
+                        originalWidth = (int)(valueReference.AsPrimitiveSafe(valueFetchOptions)?.GetPrimitive() ?? originalWidth);
                         break;
                     case nameof(UnityTextureInfo.HasAlphaChannel):
-                        hasAlphaChannel = GetPrimitiveValue<bool>(valueReference, ref hasError);
+                        hasAlphaChannel = (bool)(valueReference.AsPrimitiveSafe(valueFetchOptions)?.GetPrimitive() ?? hasAlphaChannel);
                         break;
                     case nameof(UnityTextureInfo.Pixels):
-                        if (valueReference.GetValue(valueFetchOptions) is ArrayMirror arrayMirror)
+                        var arrayValueRole = valueReference.AsArray(valueFetchOptions);
+                        var length = arrayValueRole.Dimensions[0];
+
+                        var values = (valueReference.GetValue(valueFetchOptions) as ArrayMirror)?.GetValues(0, length);
+                        if (values == null)
                         {
-                            var length = arrayMirror.GetLength(0);
-                            pixels = new List<int>(length);
-                            var values = arrayMirror.GetValues(0, length);
-                            foreach (var value in values)
-                            {
-                                if (value is PrimitiveValue primitiveValue)
-                                    pixels.Add((int)primitiveValue.Value);
-                                else
-                                {
-                                    hasError = true;
-                                    break;
-                                }
-                            }
-                        }
-                        else
                             hasError = true;
+                            break;
+                        }
+                        
+                        pixels = new List<int>(length);
+                        for (int i = 0; i < length; i++)
+                        {
+                            pixels.Add((int)((PrimitiveValue)values[i]).Value);
+                        }
+                        
                         break;
                     case nameof(UnityTextureInfo.TextureName):
-                        if (valueReference.GetValue(valueFetchOptions) is StringMirror textureNameStringMirror)
-                            textureName = textureNameStringMirror.Value;
-                        else
-                            hasError = true;
+                        textureName = valueReference.AsStringSafe(valueFetchOptions)?.GetString();
                         break;
                     case nameof(UnityTextureInfo.GraphicsTextureFormat):
-                        if (valueReference.GetValue(valueFetchOptions) is StringMirror graphicsTextureFormatStringMirror)
-                            graphicsTextureFormat = graphicsTextureFormatStringMirror.Value;
-                        else
-                            hasError = true;
+                        graphicsTextureFormat = valueReference.AsStringSafe(valueFetchOptions)?.GetString();
                         break;
                 }
             }
