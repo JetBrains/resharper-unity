@@ -4,7 +4,7 @@
     <PackageLock Include="Antlr2.Runtime" Version="2.7.7.3" />
     <PackageLock Include="JetBrains.Annotations" Version="2023.3.0" />
     <PackageLock Include="JetBrains.Build.Platform.DistributedCache" Version="1.0.20230909.199" />
-    <PackageLock Include="JetBrains.Lifetimes" Version="2023.3.0" />
+    <PackageLock Include="JetBrains.Lifetimes" Version="2024.1.1-preview7" />
     <PackageLock Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" IsDevelopmentDependency="True" />
     <PackageLock Include="NVelocity" Version="1.0.3" />
     <PackageLock Include="System.Memory" Version="4.5.5" />
