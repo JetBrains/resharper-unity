@@ -237,10 +237,10 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
             val bufferedImage = ImageUtil.createImage(dummyGraphicsConfiguration,
                                                       textureInfo.width, textureInfo.height, textureFormat)
 
-            for (y in 0 until textureInfo.Height) {
-                for (x in 0 until textureInfo.Width) {
-                    val toInt = textureInfo.Pixels[y * textureInfo.Height + x]
-                    bufferedImage.setRGB(x, textureInfo.Height - y - 1, toInt)
+            for (y in 0 until textureInfo.height) {
+                for (x in 0 until textureInfo.width) {
+                    val toInt = textureInfo.pixels[y * textureInfo.height + x]
+                    bufferedImage.setRGB(x, textureInfo.height - y - 1, toInt)
                 }
             }
 
