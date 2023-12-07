@@ -52,4 +52,31 @@ object UnityDebuggerWorkerModel : Ext(DebuggerWorkerModel) {
         property("ignoreBreakOnUnhandledExceptionsForIl2Cpp", bool)
         property("forcedTimeoutForAdvanceUnityEvaluation", int)
     }
+
+    //structure of this model must be the same as TexturePixelsInfo Plugins/ReSharperUnity/debugger/texture-debugger/TextureUtils.cs
+    val unityTextureInfo = classdef{
+        field("width", int)
+        field("height", int)
+        field("pixels", immutableList(int))
+        field("originalWidth", int)
+        field("originalHeight", int)
+        field("graphicsTextureFormat", string)
+        field("textureName", string)
+        field("hasAlphaChannel", bool)
+    }
+
+    var unityTextureAdditionalActionParams = structdef {
+        field("helperDllLocation", string)
+        field("evaluationTimeout", int)
+    }
+
+    var unityTextureAdditionalActionResult = classdef{
+        field("error", string.nullable)
+        field("unityTextureInfo", unityTextureInfo.nullable)
+        field("isTerminated", bool)
+    }
+
+    val unityTextureAdditionalAction = classdef extends DebuggerWorkerModel.objectAdditionalAction {
+        call("evaluateTexture", unityTextureAdditionalActionParams, unityTextureAdditionalActionResult)
+    }
 }
