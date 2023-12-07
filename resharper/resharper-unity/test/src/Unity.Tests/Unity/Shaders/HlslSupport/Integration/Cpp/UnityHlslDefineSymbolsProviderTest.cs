@@ -8,14 +8,15 @@ using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Symbols;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.Util;
+using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Tests.Unity.Shaders.HlslSupport.Integration.Cpp
 {
-    [TestUnity(ProvideReferences = false)]
+    [TestUnity]
     public class UnityHlslDefineSymbolsProviderTest : BaseTestWithSingleProject
     {
-        [Test, TestUnity(ProvideReferences = false)]
+        [Test, TestUnity]
         public void TestDefineSymbols() =>
             TestDefineSymbols(defineSymbols =>
             {
@@ -23,13 +24,13 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.Shaders.HlslSupport.Integratio
                 Assert.That(symbolsMap.Keys, Is.SupersetOf(new[] { "SHADER_API_D3D11", "UNITY_VERSION" }));    
             });
 
-        [Test, TestUnity(UnityVersion.Unity56, ProvideReferences = false)]
+        [Test, TestUnity(UnityVersion.Unity56)]
         public void Test5_6() => TestUnityVersion("560");
-        [Test, TestUnity(2021, 3, 0, ProvideReferences = false)]
+        [Test, TestUnity(2021, 3, 0)]
         public void Test2021_3_0() => TestUnityVersion("202130");
-        [Test, TestUnity(2021, 3, 8, ProvideReferences = false)]
+        [Test, TestUnity(2021, 3, 8)]
         public void Test2021_3_8() => TestUnityVersion("202138");
-        [Test, TestUnity(2021, 3, 21, ProvideReferences = false)]
+        [Test, TestUnity(2021, 3, 21)]
         public void Test2021_3_21() => TestUnityVersion("202139");
 
         private void TestDefineSymbols(Action<IEnumerable<CppPPDefineSymbol>> action) =>
@@ -54,6 +55,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.Shaders.HlslSupport.Integratio
             var symbolCache = solution.GetComponent<CppGlobalCacheImpl>().SymbolCache;
             var compilationProperties = solution.GetComponent<UnityHlslCppCompilationPropertiesProvider>().GetCompilationProperties(project, null, new CppFileLocation(VirtualFileSystemPath.Parse("Dummy.hlsl", solution.GetInteractionContext())), symbolCache);
             return compilationProperties?.PredefinedMacros;
+        }
+
+        protected override IEnumerable<string> GetReferencedAssemblies(TargetFrameworkId targetFrameworkId)
+        {
+            return EmptyList<string>.Enumerable;
         }
     }
 }

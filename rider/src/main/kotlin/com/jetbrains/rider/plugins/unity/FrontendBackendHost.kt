@@ -1,10 +1,12 @@
 package com.jetbrains.rider.plugins.unity
 
 import com.intellij.ide.impl.ProjectUtil
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.client.ClientProjectSession
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.util.setSuspendPreserveClientId
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.BitUtil
@@ -23,6 +25,8 @@ import com.jetbrains.rider.plugins.unity.run.configurations.attachToUnityEditor
 import com.jetbrains.rider.plugins.unity.run.configurations.isAttachedToUnityEditor
 import com.jetbrains.rider.plugins.unity.util.Utils.Companion.AllowUnitySetForegroundWindow
 import com.jetbrains.rider.projectView.solution
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.awt.Frame
 import java.io.File
 import kotlin.math.max
@@ -83,13 +87,18 @@ class FrontendBackendHost(project: Project) : LifetimedService() {
                 task
             }
 
-            model.openFileLineCol.set { _, arg ->
+            model.openFileLineCol.setSuspendPreserveClientId { _, arg ->
                 val manager = FileEditorManager.getInstance(session.project)
-                val file = VfsUtil.findFileByIoFile(File(arg.path), true) ?: return@set RdTask.fromResult(false)
-                manager.openEditor(OpenFileDescriptor(session.project, file, max(0, arg.line - 1), max(0, arg.col - 1)), true)
+                withContext(Dispatchers.IO) {
+                    val file = VfsUtil.findFileByIoFile(File(arg.path), true) ?: return@withContext
+                    val descriptor = OpenFileDescriptor(session.project, file, max(0, arg.line - 1), max(0, arg.col - 1))
+                    withContext(Dispatchers.EDT) {
+                        manager.openEditor(descriptor, true)
+                    }
+                    activateRider(session.project)
+                }
 
-                activateRider(session.project)
-                RdTask.fromResult(true)
+                true
             }
         }
     }

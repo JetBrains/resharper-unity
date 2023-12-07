@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
     // ReSharper restore InconsistentNaming
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class TestUnityAttribute : TestAspectAttribute, ITestLibraryReferencesProvider, ITestPackagesProvider,
+    public class TestUnityAttribute : TestAspectAttribute, ITestPackagesProvider,
         ITestFlavoursProvider, ITestTargetFrameworkIdProvider, ITestFileExtensionProvider, ICustomProjectPropertyAttribute
     {
         private static readonly Version ourDefaultVersion = ToVersion(UnityVersion.DefaultTestVersion);
@@ -67,7 +67,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
             myVersion = version;
         }
 
-        public bool ProvideReferences { get; set; } = true;
         public bool IncludeNetworking { get; set; }
 
         public TargetFrameworkId GetTargetFrameworkId()
@@ -99,16 +98,6 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity
         public Guid[] GetProjectTypeGuids()
         {
             return new[] {UnityProjectFlavor.UnityProjectFlavorGuid};
-        }
-
-        public IEnumerable<string> GetReferences(BaseTestNoShell test, TargetFrameworkId targetFrameworkId,
-            FileSystemPath testDataPath, NuGetPackageCache nugetPackagesCache)
-        {
-            if (!ProvideReferences)
-                return EmptyList<string>.Enumerable;
-            var names = GetPackageNames().ToArray();
-            var attribute = new TestPackagesAttribute(names);
-            return attribute.GetReferences(test, targetFrameworkId, testDataPath, nugetPackagesCache);
         }
 
         public bool Inherits => false;
