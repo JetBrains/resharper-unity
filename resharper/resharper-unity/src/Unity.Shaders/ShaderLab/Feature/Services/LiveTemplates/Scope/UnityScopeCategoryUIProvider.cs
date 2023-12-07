@@ -26,6 +26,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.L
 
         public IEnumerable<ITemplateScopePoint> GetUnityScopePoints() => myProvider.BuildAllPoints();
 
+        public bool HaveOptionsUIFor(ITemplateScopePoint point) => myProvider.HaveOptionsUIFor(point);
+
+        public IScopeOptionsUIBase? CreateUI(ITemplateScopePoint point) => myProvider.CreateUI(point);
+
         public bool TryPresent(ITemplateScopePoint scopePoint, [MaybeNullWhen(false)] out string presentation)
         {
             presentation = scopePoint switch

@@ -10,5 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
     {
         public IEnumerable<ITemplateScopePoint> GetUnityScopePoints();
         public bool TryPresent(ITemplateScopePoint scopePoint, [MaybeNullWhen(false)] out string presentation);
+        bool HaveOptionsUIFor(ITemplateScopePoint point);
+        IScopeOptionsUIBase? CreateUI(ITemplateScopePoint point);
     }
 }

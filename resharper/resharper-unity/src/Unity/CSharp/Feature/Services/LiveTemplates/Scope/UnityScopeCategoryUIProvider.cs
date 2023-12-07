@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System.Collections.Generic;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 
@@ -34,6 +35,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         }
 
         public override string CategoryCaption => "Unity";
+
+        public override bool HaveOptionsUIFor(ITemplateScopePoint point)
+        {
+            foreach (var scopePointsProvider in myScopePointsProviders)
+            {
+                if (scopePointsProvider.HaveOptionsUIFor(point))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public override IScopeOptionsUIBase? CreateUI(ITemplateScopePoint point)
+        {
+            foreach (var scopePointsProvider in myScopePointsProviders)
+            {
+                if (scopePointsProvider.CreateUI(point) is {} ui)
+                    return ui;
+            }
+
+            return null;
+        }
 
         public override string Present(ITemplateScopePoint point)
         {
