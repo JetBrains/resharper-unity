@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.BaseInfrastructure;
@@ -8,6 +9,7 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectL
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Matchers;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Presentations;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
+using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.Match;
 using JetBrains.ReSharper.Feature.Services.Cpp.CodeCompletion;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.ShaderVariants;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Language;
@@ -23,8 +25,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Feature.Services
 [Language(typeof(CppLanguage))]
 public class ShaderVariantDefineSymbolsProvider : ItemsProviderOfSpecificContext<CppCodeCompletionInsideDirectiveContext>
 {
-    public override bool IsFinal => true;
-
     protected override bool IsAvailable(CppCodeCompletionInsideDirectiveContext context) =>
         (context.BasicContext.File as CppFile)?.GetLanguageDialect() is UnityHlslDialectBase &&
         context.ReparseContext.TreeNode is CppIdentifierTokenNode && 
@@ -42,13 +42,7 @@ public class ShaderVariantDefineSymbolsProvider : ItemsProviderOfSpecificContext
         if (!shaderProgramCache.TryGetOrReadUpToDateProgramInfo(basicContext.SourceFile, location, out var shaderProgramInfo))
             return false;
 
-        var existingDefineSymbols = new HashSet<string>();
-        foreach (var item in collector.Items)
-        {
-            if ((item.Placement.Relevance & (ulong)CppCompletionRanks.Define) != 0)
-                existingDefineSymbols.Add(item.Placement.OrderString);
-        }
-
+        var existingDefineSymbols = new HashSet<string>(cppFile.InclusionContext.RootContext.AllDefines.Select(x => x.Name));
         var icon = basicContext.PsiIconManager.GetImage(CppDeclaredElementTypes.MACRO);
         foreach (var keyword in shaderProgramInfo.Keywords) 
             AddLookupItem(context, collector, icon, keyword, existingDefineSymbols);
@@ -68,11 +62,29 @@ public class ShaderVariantDefineSymbolsProvider : ItemsProviderOfSpecificContext
         var item = LookupItemFactory.CreateLookupItem(info)
             .WithPresentation(static item => new TextPresentation<TextualInfo>(item.Info, item.Info.Icon, emphasize: false))
             .WithBehavior(static item => new TextualBehavior<TextualInfo>(item.Info))
-            .WithMatcher(static item => new TextualMatcher<TextualInfo>(item.Info));
+            .WithMatcher(static item => new MyTextualMatcher(item.Info));
         collector.Add(item);
     }
+    
+    private class MyTextualMatcher : TextualMatcher<TextualInfo>
+    {
+        private readonly bool myStartsWithUnderscore;
+        
+        public MyTextualMatcher(TextualInfo info) : base(info)
+        {
+            myStartsWithUnderscore = info.Text is { Length: > 0 } text && text[0] is '_';
+        }
 
-    public class MyTextualInfo : TextualInfo
+        public override MatchingResult? Match(PrefixMatcher prefixMatcher)
+        {
+            if (myStartsWithUnderscore && prefixMatcher.Prefix.Length == 0)
+                return null;
+            
+            return base.Match(prefixMatcher);
+        }
+    }
+
+    private class MyTextualInfo : TextualInfo
     {
         public IconId? Icon { get; }
 
