@@ -27,6 +27,10 @@ class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
 
     override fun createPopupActionGroup(p0: JComponent?): DefaultActionGroup {
         return object : DefaultActionGroup(UseUnityEditLauncherAction(), UseUnityPlayLauncherAction(), UseUnityBothLauncherAction(), UseNUnitLauncherAction()) {
+            init {
+              templatePresentation.isPopupGroup = true
+            }
+
             override fun update(e: AnActionEvent) {
                 val project = e.project ?: return
 
@@ -38,10 +42,6 @@ class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
                 e.presentation.icon = AllIcons.General.Settings
 
                 super.update(e)
-            }
-
-            override fun isPopup(): Boolean {
-                return true
             }
         }
     }
