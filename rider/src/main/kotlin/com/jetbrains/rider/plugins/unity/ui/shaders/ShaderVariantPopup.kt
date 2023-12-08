@@ -4,7 +4,6 @@ import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.ex.util.EditorUtil
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
@@ -21,7 +20,8 @@ import com.intellij.ui.components.panels.ListLayout
 import com.intellij.ui.components.panels.VerticalLayout
 import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.JBUI
-import com.jetbrains.rd.util.lifetime.LifetimeDefinition
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rdclient.document.getFirstDocumentId
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.UnityBundle
@@ -50,14 +50,11 @@ class ShaderVariantPopup(private val project: Project, private val interaction: 
                 .createPopup()
         }
 
-        fun show(project: Project, editor: Editor, showAt: RelativePoint) {
+        fun show(lifetime: Lifetime, project: Project, editor: Editor, showAt: RelativePoint) {
             val id = editor.document.getFirstDocumentId(project) ?: return
             val model = FrontendBackendHost.getInstance(project).model
-            val lifetime = LifetimeDefinition()
-            EditorUtil.disposeWithEditor(editor) { lifetime.terminate() }
-
             val activity = ShaderVariantEventLogger.logShowShaderVariantPopupStarted(project)
-            model.createShaderVariantInteraction.start(lifetime, CreateShaderVariantInteractionArgs(id, editor.caretModel.offset)).result.advise(lifetime) { result ->
+            model.createShaderVariantInteraction.start(lifetime, CreateShaderVariantInteractionArgs(id, editor.caretModel.offset)).result.adviseOnce(lifetime) { result ->
                 try {
                     val contextName = editor.virtualFile?.takeIf { it.fileType !is ShaderLabFileType }?.name ?: UnityBundle.message(
                         "shaderVariant.popup.shaderProgram")

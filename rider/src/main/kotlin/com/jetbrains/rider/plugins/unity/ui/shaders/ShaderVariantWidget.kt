@@ -30,7 +30,7 @@ class ShaderVariantWidget(project: Project, editor: Editor, shaderVariant: RdSha
         }
     }
 
-    override fun showPopup(pointOnComponent: Point) = ShaderVariantPopup.show(project, editor, RelativePoint.getNorthWestOf(this))
+    override fun showPopup(pointOnComponent: Point) = ShaderVariantPopup.show(lifetime, project, editor, RelativePoint.getNorthWestOf(this))
 
     override fun addNotify() {
         editor.textControlModel?.getExtensionSafe<RdShaderVariantExtension>()
