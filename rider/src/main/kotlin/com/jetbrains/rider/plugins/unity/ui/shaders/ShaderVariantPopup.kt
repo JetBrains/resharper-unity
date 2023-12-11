@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.ui.shaders
 import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
@@ -21,16 +22,19 @@ import com.intellij.ui.components.panels.VerticalLayout
 import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.JBUI
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rdclient.document.getFirstDocumentId
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.common.ui.ToggleButtonModel
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileType
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.CreateShaderVariantInteractionArgs
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderApi
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.RdShaderPlatform
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderVariantInteraction
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.annotations.Nls
 import java.awt.Color
 import java.awt.Dimension
@@ -41,8 +45,8 @@ import javax.swing.*
 
 class ShaderVariantPopup(private val project: Project, private val interaction: ShaderVariantInteraction, @Nls val contextName: String) : JBPanel<ShaderVariantPopup>(VerticalLayout(5)) {
     companion object {
-
         val ENABLED_SEPARATOR_FOREGROUND: Color = JBColor.namedColor("Group.separatorColor", JBColor(Gray.xCD, Gray.x51))
+
         private fun createPopup(project: Project, interaction: ShaderVariantInteraction, @Nls contextName: String): JBPopup {
             val shaderVariantPopup = ShaderVariantPopup(project, interaction, contextName)
             return JBPopupFactory.getInstance().createComponentPopupBuilder(shaderVariantPopup, shaderVariantPopup.shaderKeywordsComponent)
@@ -51,14 +55,15 @@ class ShaderVariantPopup(private val project: Project, private val interaction: 
         }
 
         fun show(lifetime: Lifetime, project: Project, editor: Editor, showAt: RelativePoint) {
-            val id = editor.document.getFirstDocumentId(project) ?: return
-            val model = FrontendBackendHost.getInstance(project).model
-            val activity = ShaderVariantEventLogger.logShowShaderVariantPopupStarted(project)
-            model.createShaderVariantInteraction.start(lifetime, CreateShaderVariantInteractionArgs(id, editor.caretModel.offset)).result.adviseOnce(lifetime) { result ->
+            UnityProjectLifetimeService.getScope(project).launch(Dispatchers.EDT, CoroutineStart.UNDISPATCHED) {
+                val id = editor.document.getFirstDocumentId(project) ?: return@launch
+                val model = FrontendBackendHost.getInstance(project).model
+                val activity = ShaderVariantEventLogger.logShowShaderVariantPopupStarted(project)
                 try {
+                    val args = CreateShaderVariantInteractionArgs(id, editor.caretModel.offset)
+                    val interaction = model.createShaderVariantInteraction.startSuspending(lifetime, args)
                     val contextName = editor.virtualFile?.takeIf { it.fileType !is ShaderLabFileType }?.name ?: UnityBundle.message(
                         "shaderVariant.popup.shaderProgram")
-                    val interaction = result.unwrap()
                     createPopup(project, interaction, contextName).show(showAt)
 
                     activity?.finished {
@@ -72,7 +77,6 @@ class ShaderVariantPopup(private val project: Project, private val interaction: 
                     throw e
                 }
             }
-
         }
     }
 
@@ -145,8 +149,6 @@ class ShaderVariantPopup(private val project: Project, private val interaction: 
         
         add(horizontalContainer)
     }
-
-    fun getOwnKeywordsCount() = ownEnabledKeywordsCount
 
     private fun onCheckBoxSelectionChanged(index: Int, value: Boolean) {
         if (noNotifyKeywordChange)

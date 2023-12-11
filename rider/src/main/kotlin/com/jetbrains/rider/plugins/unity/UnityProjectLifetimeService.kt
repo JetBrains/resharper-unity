@@ -7,6 +7,7 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rd.platform.util.idea.LifetimedService
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * Simple service to act as a parent disposable for the Unity plugin
@@ -16,10 +17,11 @@ import com.jetbrains.rd.util.lifetime.LifetimeDefinition
  * to its [Lifetime], or to create a nested [LifetimeDefinition].
  */
 @Service(Service.Level.PROJECT)
-class UnityProjectLifetimeService: LifetimedService(), Disposable {
+class UnityProjectLifetimeService(val scope: CoroutineScope) : LifetimedService(), Disposable {
     companion object {
         fun getInstance(project: Project): UnityProjectLifetimeService = project.service()
         fun getLifetime(project: Project) = getInstance(project).serviceLifetime
         fun getNestedLifetimeDefinition(project: Project) = getLifetime(project).createNested()
+        fun getScope(project: Project) = getInstance(project).scope
     }
 }

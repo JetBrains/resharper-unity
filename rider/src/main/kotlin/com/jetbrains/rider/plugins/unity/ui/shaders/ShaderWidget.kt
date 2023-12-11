@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.ui.shaders
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createLifetime
@@ -10,16 +11,19 @@ import com.intellij.openapi.rd.util.lifetime
 import com.intellij.ui.awt.RelativePoint
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
-import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rdclient.document.getFirstDocumentId
 import com.jetbrains.rider.editors.resolveContextWidget.RiderResolveContextWidget
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.AutoShaderContextData
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.SelectShaderContextDataInteraction
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextData
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.ShaderContextDataBase
 import com.jetbrains.rider.plugins.unity.ui.UnityUIBundle
 import icons.UnityIcons
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.annotations.Nls
 import java.awt.Point
 
@@ -60,26 +64,26 @@ class ShaderWidget(project: Project, editor: Editor) : AbstractShaderWidget(proj
     }
 
     override fun showPopup(pointOnComponent: Point) {
-        val id = editor.document.getFirstDocumentId(project) ?: return
-        val host = FrontendBackendHost.getInstance(project)
-        val activity = ShaderVariantEventLogger.logShowShaderContextsPopupStarted(project)
-
-        host.model.createSelectShaderContextInteraction.start(widgetLifetime, id).result.adviseOnce(widgetLifetime) {
+        UnityProjectLifetimeService.getScope(project).launch(Dispatchers.EDT, CoroutineStart.UNDISPATCHED) {
+            val id = editor.document.getFirstDocumentId(project) ?: return@launch
+            val activity = ShaderVariantEventLogger.logShowShaderContextsPopupStarted(project)
             try {
-                val interaction = it.unwrap()
+                val host = FrontendBackendHost.getInstance(project)
+                val interaction = host.model.createSelectShaderContextInteraction.startSuspending(widgetLifetime, id)
                 val actions = createActions(interaction)
                 val group = DefaultActionGroup().apply {
                     addAll(actions)
                 }
 
                 val popup = ShaderContextPopup(group, SimpleDataContext.getProjectContext(project), currentContextData)
-                popup.show(RelativePoint(this, pointOnComponent))
+                popup.show(RelativePoint(this@ShaderWidget, pointOnComponent))
 
                 val count = actions.count()
                 activity?.finished {
                     listOf(ShaderVariantEventLogger.CONTEXT_COUNT with count)
                 }
-            } catch (t: Throwable) {
+            }
+            catch (t: Throwable) {
                 activity?.finished {
                     listOf(ShaderVariantEventLogger.CONTEXT_COUNT with -1)
                 }
