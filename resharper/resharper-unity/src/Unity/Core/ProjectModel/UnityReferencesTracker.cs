@@ -92,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel
             // we'll initialise our custom PSI module. We have to initialise our PSI module before Done, or the
             // PersistentIndexManager will clean out the "orphaned" external (YAML) files and we'll have to reparse all
             // files on every startup
-            scheduler.EnqueueTask(new SolutionLoadTask("Preparing Unity project", SolutionLoadTaskKinds.PreparePsiModules,
+            scheduler.EnqueueTask(new SolutionLoadTask(GetType(), "Preparing Unity project", SolutionLoadTaskKinds.PreparePsiModules,
                 OnSolutionPreparePsiModules));
         }
 
