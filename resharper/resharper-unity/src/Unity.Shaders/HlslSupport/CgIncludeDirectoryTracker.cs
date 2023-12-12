@@ -24,11 +24,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport
             scheduler.EnqueueTask(new SolutionLoadTask("InitCgIncludeDirectoryTracker", SolutionLoadTaskKinds.PreparePsiModules,
                 () =>
                 {
-                    unitySolutionTracker.HasUnityReference.AdviseOnce(lifetime, _ =>
+                    unitySolutionTracker.HasUnityReference.WhenTrue(lifetime, _ =>
                     {
                         if (solutionCaches.PersistentProperties.TryGetValue(CG_INCLUDE_DIRECTORY_PATH, out var result))
                         {
-                            var oldPath = VirtualFileSystemPath.TryParse(result, InteractionContext.SolutionContext, FileSystemPathInternStrategy.INTERN);
+                            var oldPath = VirtualFileSystemPath.TryParse(result, InteractionContext.SolutionContext);
                             var newPath = cgIncludeDirectoryProvider.GetCgIncludeFolderPath();
                             if (!oldPath.Equals(newPath))
                             {
