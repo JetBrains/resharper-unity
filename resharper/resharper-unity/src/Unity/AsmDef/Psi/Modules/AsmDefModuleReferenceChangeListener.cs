@@ -66,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
             myPsiServices = psiServices;
             myLogger = logger;
 
-            solutionLoadTasksScheduler.EnqueueTask(new SolutionLoadTask("RegisterAsmDefReferenceChangeListener",
+            solutionLoadTasksScheduler.EnqueueTask(new SolutionLoadTask(GetType(),
                 SolutionLoadTaskKinds.Done, () =>
                 {
                     changeManager.RegisterChangeProvider(lifetime, this);

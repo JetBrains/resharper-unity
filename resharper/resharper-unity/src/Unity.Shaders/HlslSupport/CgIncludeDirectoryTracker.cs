@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport
             SolutionCaches solutionCaches, IShellLocks shellLocks, ISolutionLoadTasksScheduler scheduler,
             CppGlobalCacheImpl cppGlobalCache, ILogger logger, ICgIncludeDirectoryProvider cgIncludeDirectoryProvider)
         {
-            scheduler.EnqueueTask(new SolutionLoadTask("InitCgIncludeDirectoryTracker", SolutionLoadTaskKinds.PreparePsiModules,
+            scheduler.EnqueueTask(new SolutionLoadTask(GetType(), SolutionLoadTaskKinds.PreparePsiModules,
                 () =>
                 {
                     unitySolutionTracker.HasUnityReference.AdviseOnce(lifetime, _ =>
