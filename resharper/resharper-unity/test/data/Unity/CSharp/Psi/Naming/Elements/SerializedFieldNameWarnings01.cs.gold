@@ -40,10 +40,10 @@ public class NotSerialized
 
 ---------------------------------------------------------
 (0): ReSharper Warning: Name 'SerializedField02' does not match rule 'Unity serialized field'. Suggested name is 'serializedField02'.
-(1): ReSharper Warning: Name 'mySerializedField03' does not match rule 'Unity serialized field'. Suggested name is 'serializedField03'.
+(1):<overlapped> ReSharper Warning: Name 'mySerializedField03' does not match rule 'Unity serialized field'. Suggested name is 'serializedField03'.
 (2):<overlapped> ReSharper Warning: Name 'NonSerializedField06' does not match rule 'Instance fields (private)'. Suggested name is 'myNonSerializedField06'.
 (3): ReSharper Warning: Name 'SerializedField02' does not match rule 'Unity serialized field'. Suggested name is 'serializedField02'.
-(4): ReSharper Warning: Name 'mySerializedField03' does not match rule 'Unity serialized field'. Suggested name is 'serializedField03'.
-(5): ReSharper Warning: Name 'NonSerializedField06' does not match rule 'Instance fields (private)'. Suggested name is 'myNonSerializedField06'.
+(4):<overlapped> ReSharper Warning: Name 'mySerializedField03' does not match rule 'Unity serialized field'. Suggested name is 'serializedField03'.
+(5):<overlapped> ReSharper Warning: Name 'NonSerializedField06' does not match rule 'Instance fields (private)'. Suggested name is 'myNonSerializedField06'.
 (6): ReSharper Warning: Name 'serializedField01' does not match rule 'Fields (not private)'. Suggested name is 'SerializedField01'.
 (7):<overlapped> ReSharper Warning: Name 'NonSerializedField06' does not match rule 'Instance fields (private)'. Suggested name is 'myNonSerializedField06'.
