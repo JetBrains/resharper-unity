@@ -10,7 +10,6 @@ import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotificationProvider
 import com.intellij.ui.EditorNotifications
 import com.intellij.ui.HyperlinkLabel
-import com.intellij.util.io.isDirectory
 import com.intellij.util.text.VersionComparatorUtil
 import com.jetbrains.rd.framework.RdTaskResult
 import com.intellij.openapi.rd.util.lifetime
@@ -30,6 +29,7 @@ import com.jetbrains.rider.projectView.solution
 import java.nio.file.Paths
 import java.util.function.Function
 import javax.swing.JComponent
+import kotlin.io.path.isDirectory
 import kotlin.io.path.notExists
 
 class UxmlMissingSchemaEditorNotification: EditorNotificationProvider {
