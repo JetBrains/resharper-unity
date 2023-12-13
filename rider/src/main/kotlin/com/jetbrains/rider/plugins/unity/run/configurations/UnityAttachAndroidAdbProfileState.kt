@@ -4,7 +4,6 @@ import com.intellij.execution.CantRunException
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.Project
-import com.intellij.util.io.isDirectory
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.model.debuggerWorker.DebuggerStartInfoBase
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
@@ -13,6 +12,7 @@ import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityAndroidAdbSta
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import java.nio.file.Path
+import kotlin.io.path.isDirectory
 
 /**
  * [RunProfileState] to attach to an Android device via ADB

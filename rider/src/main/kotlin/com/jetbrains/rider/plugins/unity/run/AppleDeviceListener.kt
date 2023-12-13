@@ -7,7 +7,6 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
-import com.intellij.util.io.isDirectory
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.AssemblyExecutionContext
 import com.jetbrains.rider.RiderEnvironment
@@ -17,6 +16,7 @@ import java.nio.file.Path
 import java.util.regex.Pattern
 import kotlin.concurrent.thread
 import kotlin.io.path.exists
+import kotlin.io.path.isDirectory
 
 class AppleDeviceListener(project: Project,
                           lifetime: Lifetime,
