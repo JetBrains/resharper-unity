@@ -20,6 +20,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
 #if UNITY_2017_3_OR_NEWER
       EditorApplication.playModeStateChanged += _ => Current.Value = GetPlayModeState();
+      EditorApplication.pauseStateChanged += _ => Current.Value = GetPlayModeState();
 #else
       // playmodeStateChanged was marked obsolete in 2017.1, but it's still working in 2019.4
       EditorApplication.playmodeStateChanged += () => Current.Value = GetPlayModeState();
