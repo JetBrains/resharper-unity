@@ -6,11 +6,13 @@ using JetBrains.ReSharper.Feature.Services.ExternalSources.Pdb;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Core.Feature.Services.ExternalSources
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Services.ExternalSources
 {
     // Read only packages are compiled and turned into assembly references. We show them as source in the Unity Explorer
     // but can only navigate to the symbols in the referenced assemblies. This class ensures that the External Sources
     // settings are correctly set to navigate to source from PDB files.
+    // Since ReSharper does not have a Unity Explorer view, it is harder to navigate to package sources, so we won't
+    // override the user's settings. (RIDER-90596)
     [SolutionComponent]
     public class ExternalSourcesSettingsProvider : IUnitySolutionSettingsProvider
     {
