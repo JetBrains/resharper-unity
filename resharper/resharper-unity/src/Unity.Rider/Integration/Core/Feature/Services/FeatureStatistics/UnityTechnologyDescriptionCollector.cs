@@ -99,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Servi
                 myDiscoveredTechnologies[description.Id] = false;
             }
             
-            myTasksScheduler.EnqueueTask(new SolutionLoadTask("UnityTechnologyDescriptionCollector", SolutionLoadTaskKinds.Done,
+            myTasksScheduler.EnqueueTask(new SolutionLoadTask(GetType(), "UnityTechnologyDescriptionCollector", SolutionLoadTaskKinds.Done,
                 () =>
                 {
                     if (!solutionTracker.HasUnityReference.HasTrueValue())
