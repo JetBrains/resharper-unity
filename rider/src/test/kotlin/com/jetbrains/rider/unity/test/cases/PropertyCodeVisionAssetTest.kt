@@ -1,6 +1,4 @@
 package com.jetbrains.rider.unity.test.cases
-import com.jetbrains.rider.unity.test.framework.SettingsHelper
-import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
@@ -8,17 +6,16 @@ import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.allure.Subsystem
+import com.jetbrains.rider.test.annotations.Mute
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.CodeLensTestBase
 import com.jetbrains.rider.test.env.enums.SdkVersion
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
-import io.qameta.allure.Description
-import io.qameta.allure.Epic
-import io.qameta.allure.Feature
-import io.qameta.allure.Severity
-import io.qameta.allure.SeverityLevel
+import com.jetbrains.rider.unity.test.framework.SettingsHelper
+import com.jetbrains.rider.unity.test.framework.api.prepareAssemblies
+import io.qameta.allure.*
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 import java.io.File
@@ -127,6 +124,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
     @Test(dataProvider = "assetSettings")
     @TestEnvironment(solution = "PrefabModificationTestSolution")
     @Description("Unity prefab modification code vision test")
+    @Mute("RIDER-96147", specificParameters = ["Properties"])
     fun prefabModifications04(caseName: String, showProperties: String) = doUnityTest("True",
         "Assets/Script4.cs") {
         true
