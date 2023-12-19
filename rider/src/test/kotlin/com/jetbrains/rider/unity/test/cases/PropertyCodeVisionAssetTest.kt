@@ -79,6 +79,7 @@ class PropertyCodeVisionAssetTest : CodeLensTestBase() {
         "Assets/SampleScript.cs") { false }
 
     @Test(dataProvider = "assetSettings")
+    @Mute("RIDER-96147", specificParameters = ["Properties"])
     @TestEnvironment(solution = "RiderSample")
     @Description("Unity property code vision test with yaml off and typing")
     fun propertyCodeVisionWithTypingYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
