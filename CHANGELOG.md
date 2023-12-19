@@ -8,6 +8,27 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 Since 2018.1, the version numbers and release cycle match Rider's versions and release dates. The plugin is always bundled with Rider, but is released for ReSharper separately. Sometimes the ReSharper version isn't released. This is usually because the changes are not applicable to ReSharper, but also by mistake.
 
+## 2024.1.0
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net233...net241)
+
+### Added
+
+- Add link to Unity documentation for USS properties ([RIDER-98053](https://youtrack.jetbrains.com/issue/RIDER-98053))
+- Add quick fix to use `Mathf.Approximately` for floating point comparison warning ([RIDER-43927](https://youtrack.jetbrains.com/issue/RIDER-43927))
+
+### Changed
+
+- Update API information to Unity 2023.3
+- Rider: Provide notification of missing project files when opening a subfolder of a Unity project ([RIDER-91087](https://youtrack.jetbrains.com/issue/RIDER-91087))
+
+### Fixed
+
+- Fixed exception when package is updated ([DEXP-712466](https://youtrack.jetbrains.com/issue/DEXP-712466))
+- Rider: Remove unavailable advanced integration notification from notification centre when it becomes available ([RIDER-98129](https://youtrack.jetbrains.com/issue/RIDER-98129))
+- Rider: Fix exception about running slow operations on UI thread ([DEXP-755077](https://youtrack.jetbrains.com/issue/DEXP-755077))
+
+
+
 ## 2023.3.2
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net233-rtm-2023.3.0-rtm-2023.3.1...net233)
 
