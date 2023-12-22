@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CallHierarchy.FindResults;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.BurstCodeAnalysis.ShowBurstCalls
@@ -15,7 +16,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Bu
         {
         }
 
-        public override string Text => ShowBurstCallsUtil.GetBurstShowCallsText(CallsType);
+        public override string Text
+        {
+            get
+            {
+                switch (CallsType)
+                {
+                    case ShowCallsType.INCOMING:
+                        return Strings.ShowBurstCallsBulbAction_Text_Show_incoming_Burst_calls;
+                    case ShowCallsType.OUTGOING:
+                        return Strings.ShowBurstCallsBulbAction_Text_Show_outgoing_Burst_calls;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(CallsType), CallsType, null);
+                }
+            }
+        }
 
         protected override Func<CallHierarchyFindResult, bool> GetFilter(ISolution solution)
         {

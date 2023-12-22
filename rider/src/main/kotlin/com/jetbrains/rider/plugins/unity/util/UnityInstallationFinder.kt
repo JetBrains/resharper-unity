@@ -1,20 +1,20 @@
 package com.jetbrains.rider.plugins.unity.util
 
+import com.intellij.openapi.client.ClientProjectSession
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
-import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.projectView.hasSolution
-import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rd.protocol.SolutionExtListener
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.plugins.unity.model.UnityApplicationData
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 import java.nio.file.Path
 import java.nio.file.Paths
 
-class UnityInstallationFinder(private val project: Project) {
+class UnityInstallationFinder {
 
     companion object {
-        fun getInstance(project: Project): UnityInstallationFinder {
-            return UnityInstallationFinder(project)
-        }
+        fun getInstance(project: Project): UnityInstallationFinder = project.service()
 
         fun getOsSpecificPath(path: Path): Path {
             if (SystemInfo.isMac)
@@ -22,6 +22,9 @@ class UnityInstallationFinder(private val project: Project) {
             return path
         }
     }
+
+    private var unityApplicationData: UnityApplicationData? = null
+    private var requiresRiderPackage = false
 
     fun getBuiltInPackagesRoot(): Path? {
         return getApplicationContentsPath()?.resolve("Resources/PackageManager/BuiltInPackages")
@@ -58,7 +61,7 @@ class UnityInstallationFinder(private val project: Project) {
     // Windows: C:\Program Files\Unity\Hub\Editor\2018.2.1f1\Editor\Unity.exe
     // Linux: /home/ivan/Unity-2018.1.0f2/Editor/Unity
     fun getApplicationExecutablePath(): Path? {
-        val path =  tryGetApplicationPathFromProtocol()
+        val path = tryGetApplicationPathFromProtocol()
         if (path != null)
             return getOsSpecificPath(path)
         return null
@@ -72,7 +75,7 @@ class UnityInstallationFinder(private val project: Project) {
         return getApplicationContentsPath()?.resolve("PlaybackEngines")
     }
 
-    // Additional, optional player support files are installed here, e.g. iOSSupport, AndroidSupport
+    // Additional, optional player support files are installed here, e.g. iOSSupport, AndroidPlayer
     // Mac: /Applications/Unity/Hub/Editor/2020.2.0a15/PlaybackEngines
     // Windows: C:\Program Files\Unity\Hub\Editor\2020.1.0b13\Editor\Data\PlaybackEngines
     // Linux: ???
@@ -87,38 +90,37 @@ class UnityInstallationFinder(private val project: Project) {
     }
 
     private fun getApplicationContentsPathFromProtocol(): Path? {
-        if (!project.hasSolution)
-            return null
-        return project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.let { Paths.get(it.applicationContentsPath) }
+        return unityApplicationData?.let { Paths.get(it.applicationContentsPath) }
     }
 
     // This will *usually* return a valid value. If there's a backend<->Unity connection, we'll have the correct path.
     // If not, we'll set the best guess from found installs and the (nearest) current version taken from ProjectSettings
     // This will be null for non-Unity projects, or if Unity is installed to a non-standard location
     private fun tryGetApplicationPathFromProtocol(): Path? {
-        if (!project.hasSolution)
-            return null
-        return project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.let { Paths.get(it.applicationPath) }
+        return unityApplicationData?.let { Paths.get(it.applicationPath) }
     }
 
     fun getApplicationVersion(): String? {
         return tryGetApplicationVersionFromProtocol()
     }
 
-    fun getApplicationVersion(count:Int):String? {
+    fun getApplicationVersion(count: Int): String? {
         val fullVersion = getApplicationVersion()
         return fullVersion?.split('.')?.take(count)?.joinToString(".")
     }
 
-    private fun tryGetApplicationVersionFromProtocol(): String? {
-        if (!project.hasSolution)
-            return null
-        return project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.applicationVersion
-    }
+    private fun tryGetApplicationVersionFromProtocol() = unityApplicationData?.applicationVersion
 
-    fun requiresRiderPackage(): Boolean {
-        if (!project.hasSolution)
-            return false
-        return project.solution.frontendBackendModel.requiresRiderPackage.valueOrDefault(false)
+    fun requiresRiderPackage() = requiresRiderPackage
+
+    class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
+        override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
+            model.unityApplicationData.advise(lifetime) {
+                getInstance(session.project).unityApplicationData = it
+            }
+            model.requiresRiderPackage.advise(lifetime) {
+                getInstance(session.project).requiresRiderPackage = it
+            }
+        }
     }
 }

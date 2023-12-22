@@ -76,8 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
             }
 
             var newColor = colorElement.RGBColor;
-            float h, s, v;
-            ColorUtils.ColorToHSV(newColor, out h, out s, out v);
+            ColorUtils.ColorToHSV(newColor, out var h, out var s, out var v);
 
             // Round to 2 decimal places to match the values shown in the colour palette quick fix
             h = (float) Math.Round(h, 2);
@@ -89,9 +88,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
 
             // ReSharper disable AssignNullToNotNullAttribute
             var arguments = invocationExpression.Arguments;
-            arguments[0].Value.ReplaceBy(elementFactory.CreateExpressionByConstantValue(new ConstantValue(h, module)));
-            arguments[1].Value.ReplaceBy(elementFactory.CreateExpressionByConstantValue(new ConstantValue(s, module)));
-            arguments[2].Value.ReplaceBy(elementFactory.CreateExpressionByConstantValue(new ConstantValue(v, module)));
+            arguments[0].Value.ReplaceBy(elementFactory.CreateExpressionByConstantValue(ConstantValue.Float(h, module)));
+            arguments[1].Value.ReplaceBy(elementFactory.CreateExpressionByConstantValue(ConstantValue.Float(s, module)));
+            arguments[2].Value.ReplaceBy(elementFactory.CreateExpressionByConstantValue(ConstantValue.Float(v, module)));
             // ReSharper restore AssignNullToNotNullAttribute
 
             return true;
@@ -115,18 +114,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
             if (unityColorTypes.UnityColorType != null && unityColorTypes.UnityColorType.Equals(colorType))
             {
                 // Round to 2 decimal places, to match the values shown in the colour palette quick fix
-                r = new ConstantValue((float) Math.Round(newColor.R / 255.0, 2), module);
-                g = new ConstantValue((float) Math.Round(newColor.G / 255.0, 2), module);
-                b = new ConstantValue((float) Math.Round(newColor.B / 255.0, 2), module);
-                a = new ConstantValue((float) Math.Round(newColor.A / 255.0, 2), module);
+                r = ConstantValue.Float((float) Math.Round(newColor.R / 255.0, 2), module);
+                g = ConstantValue.Float((float) Math.Round(newColor.G / 255.0, 2), module);
+                b = ConstantValue.Float((float) Math.Round(newColor.B / 255.0, 2), module);
+                a = ConstantValue.Float((float) Math.Round(newColor.A / 255.0, 2), module);
             }
             else if (unityColorTypes.UnityColor32Type != null && unityColorTypes.UnityColor32Type.Equals(colorType))
             {
                 // ReSharper formats byte constants with an explicit cast
-                r = new ConstantValue((int)newColor.R, module);
-                g = new ConstantValue((int)newColor.G, module);
-                b = new ConstantValue((int)newColor.B, module);
-                a = new ConstantValue((int)newColor.A, module);
+                r = ConstantValue.Int(newColor.R, module);
+                g = ConstantValue.Int(newColor.G, module);
+                b = ConstantValue.Int(newColor.B, module);
+                a = ConstantValue.Int(newColor.A, module);
 
                 requiresAlpha = true;
             }

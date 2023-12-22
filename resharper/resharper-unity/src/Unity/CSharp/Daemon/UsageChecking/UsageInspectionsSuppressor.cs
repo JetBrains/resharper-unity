@@ -1,22 +1,28 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application;
+using JetBrains.Application.Parts;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
-using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
+using JetBrains.ReSharper.Feature.Services.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Explicit;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implicit;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.InputActions;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 {
-    [ShellComponent]
+    [ShellComponent(Instantiation.DemandAnyThreadSafe)]
     public class UsageInspectionsSuppressor : IUsageInspectionsSuppressor
     {
         private readonly JetHashSet<IClrTypeName> myImplicitlyUsedInterfaces = new()
@@ -52,12 +58,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             switch (element)
             {
                 case IClass cls when unityApi.IsUnityType(cls) ||
-                                     unityApi.IsComponentSystemType(cls) ||
+                                     cls.IsDotsImplicitlyUsedType() ||
                                      IsUxmlFactory(cls):
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
-
-                case ITypeElement typeElement when unityApi.IsSerializableTypeDeclaration(typeElement):
+                case IStruct @struct when unityApi.IsUnityType(@struct) ||
+                                     @struct.IsDotsImplicitlyUsedType() :
+                    flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
+                    return true;
+                case ITypeElement typeElement when unityApi.IsSerializableTypeDeclaration(typeElement) == SerializedFieldStatus.SerializedField:
                     // TODO: We should only really mark it as in use if it's actually used somewhere
                     // That is, it should be used as a field in a Unity type, or another serializable type
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
@@ -85,20 +94,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     if (IsEventHandler(unityApi, method) ||
                         IsRequiredSignatureMethod(method) ||
                         IsAnimationEvent(solution, method) ||
-                        IsImplicitlyUsedInterfaceMethod(method))
+                        IsImplicitlyUsedInterfaceMethod(method) ||
+                        IsImplicitlyUsedByInputActions(solution, method))
                     {
                         flags = ImplicitUseKindFlags.Access;
                         return true;
                     }
                     break;
 
-                case IField field when unityApi.IsSerialisedField(field):
+                case IField field when unityApi.IsSerialisedField(field) == SerializedFieldStatus.SerializedField:
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
 
                 case IProperty property when IsEventHandler(unityApi, property.Setter) ||
                                              IsImplicitlyUsedInterfaceProperty(property) ||
-                                             IsAnimationEvent(solution, property):
+                                             IsAnimationEvent(solution, property) ||
+                                             unityApi.IsSerialisedAutoProperty(property, useSwea:true) == SerializedFieldStatus.SerializedField:
+                    flags = ImplicitUseKindFlags.Assign;
+                    return true;
+
+                case IParameter parameter
+                    when parameter.IsRefMember() && parameter.GetContainingType().IsDotsImplicitlyUsedType():
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
             }
@@ -107,19 +123,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             return false;
         }
 
+        private static bool IsImplicitlyUsedByInputActions(ISolution solution, IMethod method)
+        {
+            solution.GetComponent<InputActionsElementContainer>()
+                .GetUsagesCountForFast(method, out var inputActionsUsagesResult);
+            return inputActionsUsagesResult;
+        }
+
         private bool IsUxmlFactory(IClass cls)
         {
             var baseClass = cls.GetBaseClassType();
-            if (baseClass == null)
-                return false;
-            return myUxmlFactoryBaseClasses.Contains(baseClass.GetClrName());
+            return baseClass != null && myUxmlFactoryBaseClasses.Contains(baseClass.GetClrName());
         }
 
-        private static bool IsAnimationEvent(ISolution solution, IDeclaredElement property)
+        private static bool IsAnimationEvent(ISolution solution, IDeclaredElement element)
         {
             return solution
-                .GetComponent<AnimationEventUsagesContainer>()
-                .GetEventUsagesCountFor(property, out var isEstimatedResult) > 0 || isEstimatedResult;
+                .GetComponent<AnimExplicitUsagesContainer>()
+                .GetEventUsagesCountFor(element, out var isEstimatedResult) > 0 || isEstimatedResult
+                ||
+                (element is IMethod method && solution.GetComponent<AnimImplicitUsagesContainer>()
+                .LikelyUsed(method));
         }
 
         private bool IsImplicitlyUsedInterfaceType(ITypeElement typeElement)
@@ -155,7 +179,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             return false;
         }
 
-        private bool HasOptionalParameter(UnityEventFunction function)
+        private static bool HasOptionalParameter(UnityEventFunction function)
         {
             foreach (var parameter in function.Parameters)
             {
@@ -166,12 +190,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             return false;
         }
 
-        private bool IsEventHandler(UnityApi unityApi, [CanBeNull] IMethod method)
+        private static bool IsEventHandler(UnityApi unityApi, IMethod? method)
         {
             if (method == null)
                 return false;
 
-            var type = method.GetContainingType();
+            var type = method.ContainingType;
             if (!unityApi.IsUnityType(type))
                 return false;
 

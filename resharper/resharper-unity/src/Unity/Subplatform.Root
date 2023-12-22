@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SubplatformInfo xmlns="urn:schemas-jetbrains-com:build-subplatform-info" CompanyNameHuman="JetBrains" IsGitSubplatform="true">
+    <SubplatformInfo.SubplatformReferences>
+        <SubplatformReference Name="Psi.Features\src" />
+        <SubplatformReference Name="Plugins\ReSharperUnity\resharper\resharper-json\src\Json" />
+        <SubplatformReference Name="Plugins\ReSharperUnity\resharper\resharper-yaml\src\Yaml" />
+		<SubplatformReference Name="Plugins\_Unity.Pregenerated\BackendModel" />
+    </SubplatformInfo.SubplatformReferences>
+</SubplatformInfo>

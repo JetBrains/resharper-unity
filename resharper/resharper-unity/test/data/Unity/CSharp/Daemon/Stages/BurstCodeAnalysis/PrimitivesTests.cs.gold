@@ -87,7 +87,7 @@ namespace PrimitivesTests
         {
             public void ContainsWarning()
             {
-                string str2 = |"asdasd"|(0);
+                string str2 = "asdasd";
             }
 
             void NoWarnings()
@@ -135,10 +135,10 @@ namespace PrimitivesTests
             {
                 string str2 = null;
                 string str1 = null;
-                |str1|(1) = |str2|(2);
-                if (|str1|(3) != null)
+                str1 = str2;
+                if (str1 != null)
                 {
-                    char c = |str2|(4)[0]; 
+                    char c = |str2[0]|(0); 
                 }
             }
 
@@ -170,8 +170,4 @@ namespace PrimitivesTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: Burst: Loading a managed string is not supported
-(1): ReSharper Warning: Burst: Loading managed type 'String' is not supported
-(2): ReSharper Warning: Burst: Loading managed type 'String' is not supported
-(3): ReSharper Warning: Burst: Loading managed type 'String' is not supported
-(4): ReSharper Warning: Burst: Loading managed type 'String' is not supported
+(0): ReSharper Warning: Burst: Managed type 'System.String' doesn't support the indexer operator

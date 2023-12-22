@@ -1,0 +1,81 @@
+﻿       ClassInfoDictionary: 8
+       {-1603950309}  |  | IsTypeParameter:False
+       SuperClasses: 0
+
+       Inheritors: 2
+             {-1590272279} :UnityEngine.ExecuteInEditModeAttribute (1)
+             {1108216985} :UnityEngine.SerializeReference (1)
+
+       SerializeReferenceHolders: 0
+
+       --------------------------------------------------------------------
+
+       {1176812813}  | ListArrayFixedBufferTest.A | IsTypeParameter:False
+       SuperClasses: 0
+
+       Inheritors: 1
+             {192561129} :ListArrayFixedBufferTest.B (1)
+
+       SerializeReferenceHolders: 2
+             {1139733807} :ListArrayFixedBufferTest.ListHolder (1)
+             {1943640063} :ListArrayFixedBufferTest.ArrayHolder (1)
+
+       --------------------------------------------------------------------
+
+       {1943640063}  | ListArrayFixedBufferTest.ArrayHolder | IsTypeParameter:False
+       SuperClasses: 0
+
+       Inheritors: 0
+
+       SerializeReferenceHolders: 0
+
+       --------------------------------------------------------------------
+
+       {192561129}  | ListArrayFixedBufferTest.B | IsTypeParameter:False
+       SuperClasses: 1
+             {1176812813} :ListArrayFixedBufferTest.A (1)
+
+       Inheritors: 0
+
+       SerializeReferenceHolders: 0
+
+       --------------------------------------------------------------------
+
+       {1139733807}  | ListArrayFixedBufferTest.ListHolder | IsTypeParameter:False
+       SuperClasses: 0
+
+       Inheritors: 0
+
+       SerializeReferenceHolders: 0
+
+       --------------------------------------------------------------------
+
+       {-1590272279}  | UnityEngine.ExecuteInEditModeAttribute | IsTypeParameter:False
+       SuperClasses: 1
+             {-1603950309} : (1)
+
+       Inheritors: 0
+
+       SerializeReferenceHolders: 0
+
+       --------------------------------------------------------------------
+
+       {-1269842979}  | UnityEngine.MonoBehaviour | IsTypeParameter:False
+       SuperClasses: 0
+
+       Inheritors: 0
+
+       SerializeReferenceHolders: 0
+
+       --------------------------------------------------------------------
+
+       {1108216985}  | UnityEngine.SerializeReference | IsTypeParameter:False
+       SuperClasses: 1
+             {-1603950309} : (1)
+
+       Inheritors: 0
+
+       SerializeReferenceHolders: 0
+
+       --------------------------------------------------------------------
+

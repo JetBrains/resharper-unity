@@ -6,10 +6,10 @@ using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.IDE;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.DeferredCaches;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
-using JetBrains.ReSharper.Plugins.Unity.Core.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Core.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
@@ -66,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             using var subProgress = pi.CreateSubProgress();
             myElementsToRename = GetAssetOccurrence(de, subProgress)
                 .Select(t =>
-                    new UnityEventHandlerOccurrence(t.SourceFile, de.CreateElementPointer(), t.OwningElemetLocation,
+                    new UnityEventHandlerOccurrence(t.SourceFile, de.CreateElementPointer(), t.OwningElementLocation,
                         t.AssetMethodUsages, t.IsPrefabModification)).ToList();
         }
 

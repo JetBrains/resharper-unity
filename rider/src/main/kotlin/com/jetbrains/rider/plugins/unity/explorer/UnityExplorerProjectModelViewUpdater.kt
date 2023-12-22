@@ -5,19 +5,22 @@ package com.jetbrains.rider.plugins.unity.explorer
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.platform.backend.workspace.WorkspaceModelChangeListener
 import com.intellij.ui.tree.TreeVisitor
-import com.intellij.workspaceModel.ide.WorkspaceModelChangeListener
-import com.intellij.workspaceModel.ide.WorkspaceModelTopics
-import com.intellij.workspaceModel.storage.VersionedStorageChange
-import com.jetbrains.rider.plugins.unity.util.findFile
+import com.intellij.platform.backend.workspace.WorkspaceModelTopics
+import com.intellij.platform.workspace.storage.VersionedStorageChange
 import com.jetbrains.rider.plugins.unity.workspace.UnityPackageEntity
 import com.jetbrains.rider.projectView.ProjectModelViewUpdater
+import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.views.SolutionViewVisitor
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 
 class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewUpdater(project) {
 
-    private val pane: UnityExplorer? by lazy { UnityExplorer.tryGetInstance(project) }
+    private var cachePane : UnityExplorer? = null
+    private val pane get() = cachePane ?: UnityExplorer.tryGetInstance(project).apply {
+        cachePane = this
+    }
 
     init {
         val listener = object : WorkspaceModelChangeListener {
@@ -31,7 +34,7 @@ class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewU
 
                     // Only update the Packages subtree, unless it's been added/removed, then update everything
                     val hasPackagesRoot = pane?.hasPackagesRoot()
-                    val hasPackagesFolder = project.findFile("Packages")?.isDirectory
+                    val hasPackagesFolder = project.solutionDirectory.resolve("Packages").isDirectory
                     if (hasPackagesRoot != hasPackagesFolder) {
                         updateAll()
                     }
@@ -41,7 +44,7 @@ class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewU
                 }
             }
         }
-        WorkspaceModelTopics.getInstance(project).subscribeImmediately(project.messageBus.connect(project), listener)
+        project.messageBus.connect(project).subscribe(WorkspaceModelTopics.CHANGED, listener)
     }
 
     override fun update(entity: ProjectModelEntity?) {

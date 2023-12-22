@@ -19,16 +19,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
             myShowUnityHelp = showUnityHelp;
         }
 
+        public override string GetPresentableName(IDeclaredElement element)
+        {
+            if (!(element is ICompiledElement compiledElement)) 
+                return base.GetPresentableName(element);
+            
+            if (!IsUnityCompiledCode(compiledElement)) return base.GetPresentableName(element);
+            
+            if (compiledElement is ITypeMember typeMemberElement)
+            {
+                var containingType = typeMemberElement.ContainingType;
+                if (containingType is IEnum) 
+                    return ShowUnityHelp.FormatDocumentationKeyword($"{containingType.GetClrName().FullName}.{typeMemberElement.ShortName}");
+            }
+            return base.GetPresentableName(element);
+        }
+
         public override Uri GetUrl(ICompiledElement element)
         {
-            if (!element.GetSolution().HasUnityReference()) return null;
-            if (!(element.Module is IAssemblyPsiModule module)) return null;
-            var assemblyLocation = module.Assembly.Location;
-            if (assemblyLocation?.AssemblyPhysicalPath?.ExistsFile != true)
-                return null;
-
-            if (!(assemblyLocation.Name.StartsWith("UnityEngine") || assemblyLocation.Name.StartsWith("UnityEditor")))
-                return null;
+            if (!IsUnityCompiledCode(element)) return null;
 
             var searchableText = GetSearchableText(element);
             if (searchableText == null) return null;
@@ -36,27 +45,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.OnlineHelp
             return myShowUnityHelp.GetUri(searchableText);
         }
 
+        private static bool IsUnityCompiledCode(ICompiledElement element)
+        {
+            if (!element.GetSolution().HasUnityReference()) return false;
+            if (!(element.Module is IAssemblyPsiModule module)) return false;
+            var assemblyLocation = module.Assembly.Location;
+            if (assemblyLocation?.AssemblyPhysicalPath?.ExistsFile != true)
+                return false;
+
+            if (!(assemblyLocation.Name.StartsWith("UnityEngine") || assemblyLocation.Name.StartsWith("UnityEditor")))
+                return false;
+            return true;
+        }
+
         [Pure, CanBeNull]
         private static string GetSearchableText(ICompiledElement compiledElement)
         {
-            if (compiledElement is ITypeElement)
+            if (compiledElement is ITypeMember typeMemberElement)
             {
-                return compiledElement.ShortName;
+                var containingType = typeMemberElement.ContainingType;
+                if (containingType is IEnum) 
+                    return ShowUnityHelp.FormatDocumentationKeyword($"{containingType.GetClrName().FullName}.{typeMemberElement.ShortName}");
             }
-
-            if (compiledElement is IProperty property)
-            {
-                var containingType = property.GetContainingType();
-                if (containingType != null)
-                    return ShowUnityHelp.FormatDocumentationKeyword(containingType.GetClrName() + "-" + property.ShortName);
-            }
-
+            
             return ShowUnityHelp.FormatDocumentationKeyword(compiledElement.GetSearchableText());
         }
         
-        // same priority as MsdnOnlineHelpProvider,
-        // but this provider only applies to Unity* assemblies and MSDN only applies to Microsoft/Mono
-        public override int Priority => 10; 
+        // setting this to be more preferable then MsdnOnlineHelpProvider, because Unity assemblies (only compiled locally, I guess) sometimes have CompanyName = `Microsoft`
+        // https://youtrack.jetbrains.com/issue/RIDER-101136/Pressing-F1-for-UnityEngine.UI-classes-members-is-no-longer-working-properly#focus=Comments-27-8323079.0-0
+        public override int Priority => 7; 
         public override bool ShouldValidate => false;
     }
 }

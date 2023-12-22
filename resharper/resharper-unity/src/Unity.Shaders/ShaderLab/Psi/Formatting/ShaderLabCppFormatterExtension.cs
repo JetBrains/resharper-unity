@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Psi.Cpp.Parsing;
 using JetBrains.ReSharper.Psi.Cpp.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
+using JetBrains.ReSharper.Psi.Format;
 using JetBrains.ReSharper.Psi.Impl.CodeStyle;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -30,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
 
       public ShaderLabIndentingRule()
       {
-        myNodePattern = AndNodePattern.Create(new NodeTypePattern(CppCompositeNodeTypes.FILE), new PredicateNodePattern((node, _) => node.Parent is IInjectedFileHolder inject && inject.OriginalNode is ICgContent));
+        myNodePattern = AndNodePattern.Create(new NodeTypePattern(CppCompositeNodeTypes.FILE), new PredicateNodePattern((node, _) => node.Parent.NodeOrNull is IInjectedFileHolder { OriginalNode: ICgContent }));
       }
 
       public long Group { get; set; }
@@ -39,25 +40,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
 
       public IEnumerable<NodeType> GetNodeTypes() { return NodePattern.GetNodeTypes(); }
 
-      public bool MatchesPatterns(ITreeNode node, CodeFormattingContext context)
+      public bool MatchesPatterns(VirtNode node, CodeFormattingContext context)
       {
         return myNodePattern.Matches(node, context);
       }
 
-      public ITreeNode GetClosingNode(ITreeNode node, CodeFormattingContext checker)
+      public VirtNode GetClosingNode(VirtNode node, CodeFormattingContext checker)
       {
         return node;
       }
 
-      public IOptionNode GetOptionTree(ITreeNode node, CodeFormattingContext context)
+      public IOptionNode GetOptionTree(VirtNode node, CodeFormattingContext context)
       {
-        Assertion.Assert(node is CppFile, "node is CppFile");
+        Assertion.Assert(node.NodeOrNull is CppFile, "node is CppFile");
 
-        var cgProgram = (node.Parent as IInjectedFileHolder)?.OriginalNode.PrevSibling;
+        var cgProgram = (node.Parent.NodeOrNull as IInjectedFileHolder)?.OriginalNode.PrevSibling;
 
         var s = GetIndentInCgProgram(cgProgram);
         return new ConstantOptionNode(
-          new IndentOptionValue(IndentType.AfterFirstToken | IndentType.AbsoluteIndent | IndentType.NonAdjustable, 0, s));
+          new IndentOptionValue(IndentType.AfterFirstToken | IndentType.AbsoluteIndent | IndentType.NonAdjustable, 0, s.ToWhitespace(4)));
       }
 
 
@@ -83,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting
             case '\n':
               return indent.ToString();
             default:
-              indent.Append(Char.IsWhiteSpace(c) ? c : ' ');
+              indent.Append(char.IsWhiteSpace(c) ? c : ' ');
               break;
           }
         }

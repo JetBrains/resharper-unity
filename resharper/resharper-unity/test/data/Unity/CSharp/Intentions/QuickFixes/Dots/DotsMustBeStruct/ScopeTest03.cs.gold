@@ -1,0 +1,10 @@
+﻿using Unity.Entities;
+
+
+public struct BotData{caret}IJobEntity : IJobEntity
+{
+}
+
+public readonly struct IKAnimationIJobEntity : IJobEntity
+{
+}

@@ -33,39 +33,39 @@ namespace UnityTest
 }
 
 ---------------------------------------------------------
-(0): : (T) '|   | 
+(0): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
 ARGB:  255, 255, 0, 0
 HEX:  FF, FF, 0, 0' (E) ''
-(1): : (T) '|   | 
+(1): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
 ARGB:  255, 0, 255, 255
 HEX:  FF, 0, FF, FF' (E) ''
-(2): : (T) '|   | red
+(2): ReSharper Parameter Name Hint: (T) 'Color red ㅤ
 ARGB:  255, 255, 0, 0
 HEX:  FF, FF, 0, 0' (E) ''
-(3): : (T) '|   | green
+(3): ReSharper Parameter Name Hint: (T) 'Color green ㅤ
 ARGB:  255, 0, 255, 0
 HEX:  FF, 0, FF, 0' (E) ''
-(4): : (T) '|   | 
+(4): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
 ARGB:  255, 127, 127, 25
 HEX:  FF, 7F, 7F, 19' (E) ''
-(5): : (T) '|   | 
+(5): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
 ARGB:  255, 255, 0, 0
 HEX:  FF, FF, 0, 0' (E) ''
-(6): : (T) '|   | 
+(6): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
 ARGB:  255, 0, 255, 0
 HEX:  FF, 0, FF, 0' (E) ''
-(7): : (T) '|   | 
+(7): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
 ARGB:  255, 0, 0, 255
 HEX:  FF, 0, 0, FF' (E) ''
-(8): : (T) '|   | 
+(8): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
 ARGB:  255, 127, 127, 127
 HEX:  FF, 7F, 7F, 7F' (E) ''
-(9): : (T) '|   | 
+(9): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
 ARGB:  255, 255, 0, 0
 HEX:  FF, FF, 0, 0' (E) ''
-(10): : (T) '|   | 
+(10): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
 ARGB:  255, 255, 0, 0
 HEX:  FF, FF, 0, 0' (E) ''
-(11): : (T) '|   | 
+(11): ReSharper Parameter Name Hint: (T) 'Color  ㅤ
 ARGB:  127, 0, 255, 255
 HEX:  7F, 0, FF, FF' (E) ''

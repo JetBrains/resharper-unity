@@ -128,7 +128,9 @@ namespace DebugStringTests
                 int var1 = 2;
                 FixedString128 variable = "string";
 
-                |string.Format("{0} asdasd", variable)|(0);
+                string.Format("{0} asdasd", variable);
+
+                string.Format("there should be a warningn {0}", |"my warning"|(0));
             }
         }
 
@@ -137,7 +139,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                string kopa1 = |$"as{2}d{3}asd"|(1);
+                string kopa1 = $"as{2}d{3}asd";
             }
         }
 
@@ -146,7 +148,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                var fixasdfed = new FixedString128(|"variable"|(2));
+                var fixasdfed = new FixedString128("variable");
             }
         }
 
@@ -155,7 +157,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                |string.Format(|new CultureInfo(1)|(4), |""|(5), null)|(3);
+                |string.Format(|new CultureInfo(1)|(2), "", null)|(1);
             }
         }
 
@@ -164,7 +166,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                |string.Format(|toFormat|(7), 12)|(6);
+                string.Format(||toFormat|(3)|(4), 12);
             }
         }
 
@@ -173,7 +175,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                Debug.Log(|12|(8));
+                Debug.Log(|12|(5));
             }
         }
 
@@ -184,7 +186,7 @@ namespace DebugStringTests
             {
                 FixedString128 variable = "string";
 
-                var lola = |string.Format("{0} asdasd", variable)|(9);
+                var lola = |string.Format("{0} asdasd", variable)|(6);
             }
         }
 
@@ -193,20 +195,16 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                string kopa = |"asdasd"|(10);
+                string kopa = "asdasd";
             }
         }
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: Burst: Loading a managed string is not supported
-(1): ReSharper Warning: Burst: Loading a managed string is not supported
-(2): ReSharper Warning: Burst: Loading a managed string is not supported
-(3): ReSharper Warning: Burst: 'Format' signature contains managed types
-(4): ReSharper Warning: Burst: Creating a managed type 'CultureInfo' is not supported
-(5): ReSharper Warning: Burst: Loading a managed string is not supported
-(6): ReSharper Warning: Burst: Loading a managed string is not supported
-(7): ReSharper Warning: Burst: Loading managed type 'String' is not supported
-(8): ReSharper Warning: Burst: Debug logging functions accepts only strings
-(9): ReSharper Warning: Burst: Loading a managed string is not supported
-(10): ReSharper Warning: Burst: Loading a managed string is not supported
+(0): ReSharper Warning: Burst: String.Format argument with index '0' has an invalid type 'String'. Only value types are supported.
+(1): ReSharper Warning: Burst: 'Format' signature contains managed types
+(2): ReSharper Warning: Burst: Creating a managed type 'CultureInfo' is not supported
+(3): ReSharper Warning: Burst: Loading from a non-readonly static field 'DebugStringTests.toFormat' is not supported
+(4): ReSharper Warning: Burst: The 'format' argument in String.Format(format, ...) must be either a string literal or a const string
+(5): ReSharper Warning: Burst: Debug logging functions only accept strings
+(6): ReSharper Suggestion: Burst: The variable resolves to System.String, which may result in invalid managed method calls at the Burst-compiled call stack

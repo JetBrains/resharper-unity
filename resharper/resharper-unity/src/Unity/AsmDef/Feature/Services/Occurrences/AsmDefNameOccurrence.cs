@@ -1,5 +1,8 @@
-﻿using System.Text;
+﻿#nullable enable
+
+using System.Text;
 using JetBrains.Application.UI.PopupLayout;
+using JetBrains.DocumentModel;
 using JetBrains.IDE;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Navigation.NavigationExtensions;
@@ -55,8 +58,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Occurrences
         {
             // +2 for the quotes, +1 to put it after the quote
             var range = TextRange.FromLength(myDeclaredElementTreeOffset, Name.Length + 3);
-            var line = RangeOccurrenceUtil.GetTrimmedLinePossibleMultiline(SourceFile,
-                    range, null, out var occurrenceInLineRange)
+            var line = RangeOccurrenceUtil.GetTrimmedLinePossibleMultiline(
+                    new DocumentRange(SourceFile.Document, range), null, out var occurrenceInLineRange)
                 .Insert(occurrenceInLineRange.StartOffset, "|")
                 .Insert(occurrenceInLineRange.EndOffset, "|");
             var builder = new StringBuilder();

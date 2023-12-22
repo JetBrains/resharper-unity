@@ -116,24 +116,58 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             {
                 if (ourMethodNameSearcher.Find(entry.Content.GetTextAsBuffer()) >= 0)
                 {
-                    var name = entry.Key.GetPlainScalarText();
+                    var name = entry.Key.GetScalarText();
                     if (name == null)
                         continue;
-
-                    var rootMap = entry.Content.Value as IBlockMappingNode;
-                    var persistentCallsMap = rootMap.GetMapEntryValue<IBlockMappingNode>("m_PersistentCalls");
-                    var mCalls = persistentCallsMap.GetMapEntryValue<IBlockSequenceNode>("m_Calls");
-                    if (mCalls == null)
-                        continue;
-
-                    var eventTypeName = rootMap.GetMapEntryPlainScalarText("m_TypeName");
-                    var calls = GetCalls(currentAssetSourceFile, assetDocument, mCalls, name, eventTypeName);
-
-                    result.Add(new UnityEventData(name, location, scriptReference.Value, calls.ToArray()));
+                    
+                    BuildRootMappingNode(currentAssetSourceFile, assetDocument, entry.Content.Value, name, ref result, location, scriptReference);
                 }
             }
 
             return new UnityEventsBuildResult(modifications, result);
+        }
+
+        private void BuildRootMappingNode(IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument,
+            INode node, string name, ref LocalList<UnityEventData> result, LocalReference location,
+            ExternalReference? scriptReference)
+        {
+            if (node is IBlockSequenceNode blockSequenceNode)
+            {
+                var i = 0;
+                foreach (var entryContent in blockSequenceNode.Entries)
+                {
+                    if (ourMethodNameSearcher.Find(entryContent.GetTextAsBuffer()) >= 0)
+                    {
+                        BuildRootMappingNode(currentAssetSourceFile, assetDocument, entryContent.Value, $"{name}.Array.data[{i}]",
+                            ref result, location, scriptReference);
+                        i++;
+                    }
+                }
+            }
+
+            if (node is not IBlockMappingNode rootMap)
+                return;
+            
+            var persistentCallsMap = rootMap.GetMapEntryValue<IBlockMappingNode>("m_PersistentCalls");
+            if (persistentCallsMap == null)
+            {
+                foreach (var blockMappingEntry in rootMap.Entries)
+                {
+                    var entryContent = blockMappingEntry.Content;
+                    if (ourMethodNameSearcher.Find(entryContent.GetTextAsBuffer()) >= 0)
+                        BuildRootMappingNode(currentAssetSourceFile, assetDocument, entryContent.Value, $"{name}.{blockMappingEntry.Key.GetScalarText()}",
+                            ref result, location, scriptReference);
+                }
+            }
+
+            var mCalls = persistentCallsMap.GetMapEntryValue<IBlockSequenceNode>("m_Calls");
+            if (mCalls == null)
+                return;
+
+            var eventTypeName = rootMap.GetMapEntryScalarText("m_TypeName");
+            var calls = GetCalls(currentAssetSourceFile, assetDocument, mCalls, name, eventTypeName);
+
+            result.Add(new UnityEventData(name, location, scriptReference.Value, calls.ToArray()));
         }
 
         private LocalList<AssetMethodUsages> GetCalls(IPsiSourceFile currentAssetSourceFile,
@@ -153,22 +187,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     continue;
 
                 var methodNameNode = methodDescription.GetMapEntryValue<INode>("m_MethodName");
-                var methodName = methodNameNode?.GetPlainScalarText();
+                var methodName = methodNameNode?.GetScalarText();
                 if (methodName == null)
                     continue;
 
                 var methodNameRange = methodNameNode.GetTreeTextRange();
 
                 var arguments = methodDescription.GetMapEntryValue<IBlockMappingNode>("m_Arguments");
-                var modeText = methodDescription.GetMapEntryPlainScalarText("m_Mode");
-                var argMode = EventHandlerArgumentMode.EventDefined;
-                if (int.TryParse(modeText, out var mode))
-                {
-                    if (1 <= mode && mode <= 6)
-                        argMode = (EventHandlerArgumentMode)mode;
-                }
-
-                var argumentTypeName = arguments.GetMapEntryPlainScalarText("m_ObjectArgumentAssemblyTypeName");
+                var modeText = methodDescription.GetMapEntryScalarText("m_Mode");
+                var argMode = GetEventHandlerArgumentMode(modeText);
+                var argumentTypeName = arguments.GetMapEntryScalarText("m_ObjectArgumentAssemblyTypeName");
 
                 var type = argumentTypeName?.Split(',').FirstOrDefault();
                 if (argMode == EventHandlerArgumentMode.EventDefined)
@@ -185,6 +213,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             }
 
             return result;
+        }
+
+        private static EventHandlerArgumentMode GetEventHandlerArgumentMode(string modeText)
+        {
+            var argMode = EventHandlerArgumentMode.EventDefined;
+            if (int.TryParse(modeText, out var mode))
+            {
+                if (1 <= mode && mode <= 6)
+                    argMode = (EventHandlerArgumentMode)mode;
+            }
+
+            return argMode;
         }
 
         public void Drop(IPsiSourceFile currentAssetSourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElement unityAssetDataElement)
@@ -389,12 +429,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             return result;
         }
 
-        public int GetUsageCountForEvent(IField field, out bool isEstimated)
+        public int GetUsageCountForEvent(ITypeOwner typeOwner, out bool isEstimated)
         {
             myShellLocks.AssertReadAccessAllowed();
 
             isEstimated = false;
-            var containingType = field?.GetContainingType();
+            var containingType = typeOwner?.GetContainingType();
             if (containingType == null)
                 return 0;
 
@@ -403,17 +443,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 return 0;
 
             var result = 0;
-            foreach (var name in AssetUtils.GetAllNamesFor(field))
+            foreach (var name in AssetUtils.GetAllNamesFor(typeOwner))
             {
                 result += myUnityEventUsageCount.GetCount((name, guid.Value));
             }
 
-            if (myUnityEventsWithModifications.Contains(field.ShortName))
+            if (myUnityEventsWithModifications.Contains(typeOwner.ShortName))
                 isEstimated = true;
 
             if (!isEstimated)
                 isEstimated = AssetUtils.HasPossibleDerivedTypesWithMember(guid.Value, containingType,
-                    AssetUtils.GetAllNamesFor(field), myUnityEventNameHashToScriptGuids);
+                    AssetUtils.GetAllNamesFor(typeOwner), myUnityEventNameHashToScriptGuids);
 
             return result;
         }
@@ -468,7 +508,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             var symbolTable = ResolveUtil.GetSymbolTableByTypeElement(targetType, SymbolTableMode.FULL, psiModule);
 
             return symbolTable.Filter(assetMethodUsages.MethodName, IsMethodFilter.INSTANCE, OverriddenFilter.INSTANCE, new ExactNameFilter(assetMethodUsages.MethodName),
-                new StaticFilter(new NonStaticAccessContext(null)), new EventHandlerSymbolFilter(assetMethodUsages.Mode, assetMethodUsages.Type, targetType.Module));
+                new EventHandlerSymbolFilter(assetMethodUsages.Mode, assetMethodUsages.Type, targetType.Module));
         }
 
         public string Id => nameof(UnityEventsElementContainer);

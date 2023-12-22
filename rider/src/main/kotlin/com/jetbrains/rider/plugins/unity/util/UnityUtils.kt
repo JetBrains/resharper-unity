@@ -16,10 +16,9 @@ fun addPlayModeArguments(args : MutableList<String>) {
     args.add("JetBrains.Rider.Unity.Editor.StartUpMethodExecutor.EnterPlayMode")
 }
 
-fun getUnityArgs(project: Project):MutableList<String>
-{
+fun getUnityArgs(project: Project):MutableList<String> {
     val executable = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath().toString()
-    return mutableListOf<String>(executable)
+    return mutableListOf(executable)
 }
 
 fun MutableList<String>.withRiderPath() : MutableList<String> {
@@ -43,6 +42,11 @@ fun MutableList<String>.withProjectPath(project: Project) : MutableList<String> 
     return this
 }
 
+fun MutableList<String>.withProjectPath(projectPath: String) : MutableList<String> {
+    this.addAll(mutableListOf("-projectPath", projectPath))
+    return this
+}
+
 fun MutableList<String>.withBatchMode(): MutableList<String> {
     this.add("-batchmode")
     return this
@@ -53,7 +57,7 @@ fun MutableList<String>.withRunTests(): MutableList<String> {
     return this
 }
 
-fun MutableList<String>.withTestResults(project: Project) : MutableList<String> {
+fun MutableList<String>.withTestResults(): MutableList<String> {
     this.addAll(listOf("-testResults", "Logs/results.xml"))
     return this
 }

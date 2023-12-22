@@ -1,0 +1,27 @@
+{
+  "name": "com.jetbrains.from_disk",
+  "displayName": "jetbrains - package with resources from disk",
+  "version": "0.0.0",
+  "unity": "2021.3",
+  "description": "",
+  "keywords": [
+    "unity",
+	"unity3d",
+	"upm",
+    "jetbrains",
+    "utility"
+  ],
+  "homepage": "https://github.com/jetbrains/from_disk.git",
+  "bugs": {
+    "url": "https://github.com/jetbrains/from_disk/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/jetbrains/from_disk.git"
+  },
+  "license": "MIT",
+  "author": "jetbrains ()",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

@@ -1,0 +1,4 @@
+﻿#pragma vertex zzz
+
+int zzz()
+{}

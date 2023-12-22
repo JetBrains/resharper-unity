@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CallHierarchy.FindResults;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.ShowExpensiveCalls
@@ -14,7 +15,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
         {
         }
 
-        public override string Text => ShowExpensiveCallsUtil.GetExpensiveShowCallsText(CallsType);
+        public override string Text =>
+            CallsType switch
+            {
+                ShowCallsType.INCOMING => Strings.ShowExpensiveCallsBulbAction_Text_Show_incoming_Expensive_calls,
+                ShowCallsType.OUTGOING => Strings.ShowExpensiveCallsBulbAction_Text_Show_outgoing_Expensive_calls,
+                _ => throw new ArgumentOutOfRangeException(nameof(CallsType), CallsType, null)
+            };
 
         protected sealed override Func<CallHierarchyFindResult, bool> GetFilter(ISolution solution)
         {

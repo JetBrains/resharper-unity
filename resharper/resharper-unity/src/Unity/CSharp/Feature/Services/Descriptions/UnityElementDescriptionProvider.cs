@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Descriptions;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
@@ -58,9 +59,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
             {
                 var richTextBlock = new RichTextBlock(eventFunction.Description);
                 if (eventFunction.CanBeCoroutine)
-                    richTextBlock.Add("This function can be a coroutine.");
+                    richTextBlock.Add(Strings.UnityCommonIconProvider_GetEventFunctionTooltip_This_function_can_be_a_coroutine_);
                 if (eventFunction.Undocumented)
-                    richTextBlock.Add("This function is undocumented.");
+                    richTextBlock.Add(Strings.UnityElementDescriptionProvider_GetEventFunctionDescription_This_function_is_undocumented_);
                 return richTextBlock;
             }
 
@@ -100,8 +101,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
                 if (eventFunctionParameter.IsOptional)
                 {
                     richTextBlock.Add(string.IsNullOrEmpty(eventFunctionParameter.Justification)
-                        ? "This parameter is optional and can be removed if not used."
-                        : $"This parameter is optional: {eventFunctionParameter.Justification}");
+                        ? Strings.UnityElementDescriptionProvider_GetEventFunctionParameterDescription_This_parameter_is_optional_and_can_be_removed_if_not_used_
+                        : string.Format(Strings.UnityElementDescriptionProvider_GetEventFunctionParameterDescription_This_parameter_is_optional___0_, eventFunctionParameter.Justification));
                 }
 
                 return richTextBlock;
@@ -113,7 +114,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Descriptions
         [CanBeNull]
         private RichTextBlock GetSerialisedFieldDescription(IField field)
         {
-            if (!myUnityApi.IsSerialisedField(field)) return null;
+            if (myUnityApi.IsSerialisedField(field) == SerializedFieldStatus.NonSerializedField) return null;
 
             foreach (var attribute in field.GetAttributeInstances(KnownTypes.TooltipAttribute, AttributesSource.Self))
             {

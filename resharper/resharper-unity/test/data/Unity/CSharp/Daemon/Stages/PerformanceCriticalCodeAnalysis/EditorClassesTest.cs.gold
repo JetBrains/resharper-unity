@@ -23,21 +23,21 @@ public class TestPropertyDrawer : PropertyDrawer
     public override float |GetPropertyHeight|(16)(SerializedProperty property, GUIContent label) { Debug.|Log|(17)("test"); }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(0): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(2): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(2): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(4): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(4): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (5): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(6): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(6): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (7): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(8): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(8): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (9): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(10): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(10): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (11): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(12): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(12): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (13): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(14): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(14): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (15): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(16): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(16): ReSharper Unity Performance Critical Line Marker: Performance-critical context
 (17): ReSharper Unity Expensive Method Invocation: Expensive method invocation

@@ -12,10 +12,14 @@ import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.Transient
+import com.intellij.openapi.rd.util.lifetime
+import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.DotNetDebugRunner
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.isUnityClassLibraryProject
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.plugins.unity.isUnityProjectFolder
+import com.jetbrains.rider.plugins.unity.model.UnityEditorState
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
@@ -54,9 +58,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         return configuration
     }
 
-    override fun hideDisabledExecutorButtons(): Boolean {
-        return true
-    }
+    override fun hideDisabledExecutorButtons() = true
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = UnityAttachToEditorSettingsEditor(project)
 
@@ -70,9 +72,22 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                     addPlayModeArguments(args)
                 }
 
-                val processId = project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.unityProcessId ?: pid
-                return ext.executor(UnityAttachConfigurationParametersImpl(processId,
-                    finder.getApplicationExecutablePath(), args, finder.getApplicationVersion()), environment)
+                // when the process is disconnected, we would not be able to call startProfiling anyway
+                val processId = if (project.solution.frontendBackendModel.unityEditorState.valueOrDefault(UnityEditorState.Disconnected) != UnityEditorState.Disconnected)
+                    project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.unityProcessId ?: pid
+                else null
+
+                val res = ext.executor(UnityAttachConfigurationParametersImpl(processId,
+                                                                              finder.getApplicationExecutablePath(), args,
+                                                                              finder.getApplicationVersion()), environment) { _, _, _ ->
+                    run {
+                        if (executorId == "dotTrace Profiler") {
+                            project.solution.frontendBackendModel.startProfiling.start(project.lifetime, play)
+                        }
+                    }
+                }
+
+                return res
             }
         }
 
@@ -118,7 +133,8 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
 
             val isClassLibraryProject = project.isUnityClassLibraryProject()
             if (!project.isUnityProjectFolder() && (isClassLibraryProject == null || isClassLibraryProject)) {
-                throw RuntimeConfigurationError("Unable to automatically discover correct Unity Editor to debug")
+                throw RuntimeConfigurationError(
+                    UnityBundle.message("dialog.message.unable.to.automatically.discover.correct.unity.editor.to.debug"))
             }
         }
         super.checkRunnerSettings(runner, runnerSettings, configurationPerRunnerSettings)
@@ -191,7 +207,8 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         else {
             // We're a class library project in a standalone directory. We can't guess the project name, and it's best
             // not to attach to a random editor
-            throw RuntimeConfigurationError("Unable to automatically discover correct Unity Editor to debug")
+            throw RuntimeConfigurationError(
+                UnityBundle.message("dialog.message.unable.to.automatically.discover.correct.unity.editor.to.debug"))
         }
     }
 

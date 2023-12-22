@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         {
             Assert.True(JetSemanticVersionRange.TryParse("[1.2.3]", out var range));
             Assert.NotNull(range);
-            Assert.AreEqual("x = 1.2.3", range.ToString());
+            Assert.AreEqual("x = 1.2.3", range!.ToString());
             Assert.False(range.IsValid(JetSemanticVersion.Parse("1.2.2")));
             Assert.True(range.IsValid(JetSemanticVersion.Parse("1.2.3")));
             Assert.False(range.IsValid(JetSemanticVersion.Parse("1.2.4")));
@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         {
             Assert.True(JetSemanticVersionRange.TryParse("1.2.3", out var range));
             Assert.NotNull(range);
-            Assert.AreEqual("x >= 1.2.3", range.ToString());
+            Assert.AreEqual("x >= 1.2.3", range!.ToString());
             Assert.False(range.IsValid(JetSemanticVersion.Parse("1.2.2")));
             Assert.True(range.IsValid(JetSemanticVersion.Parse("1.2.3")));
             Assert.True(range.IsValid(JetSemanticVersion.Parse("1.2.4")));
@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         {
             Assert.True(JetSemanticVersionRange.TryParse("[1.2.3,1.4.5]", out var range));
             Assert.NotNull(range);
-            Assert.AreEqual("1.2.3 <= x <= 1.4.5", range.ToString());
+            Assert.AreEqual("1.2.3 <= x <= 1.4.5", range!.ToString());
             Assert.False(range.IsValid(JetSemanticVersion.Parse("1.2.2")));
             Assert.True(range.IsValid(JetSemanticVersion.Parse("1.2.3")));
             Assert.True(range.IsValid(JetSemanticVersion.Parse("1.2.4")));
@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         {
             Assert.True(JetSemanticVersionRange.TryParse("(1.2.3,1.4.5)", out var range));
             Assert.NotNull(range);
-            Assert.AreEqual("1.2.3 < x < 1.4.5", range.ToString());
+            Assert.AreEqual("1.2.3 < x < 1.4.5", range!.ToString());
             Assert.False(range.IsValid(JetSemanticVersion.Parse("1.2.2")));
             Assert.False(range.IsValid(JetSemanticVersion.Parse("1.2.3")));
             Assert.True(range.IsValid(JetSemanticVersion.Parse("1.2.4")));
@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         {
             Assert.True(JetSemanticVersionRange.TryParse("[1.2.3,1.4.5)", out var range));
             Assert.NotNull(range);
-            Assert.AreEqual("1.2.3 <= x < 1.4.5", range.ToString());
+            Assert.AreEqual("1.2.3 <= x < 1.4.5", range!.ToString());
         }
 
         [Test]
@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.UnityEditorIntegration.Version
         {
             Assert.True(JetSemanticVersionRange.TryParse("(1.2.3,1.4.5]", out var range));
             Assert.NotNull(range);
-            Assert.AreEqual("1.2.3 < x <= 1.4.5", range.ToString());
+            Assert.AreEqual("1.2.3 < x <= 1.4.5", range!.ToString());
         }
 
         [Test]

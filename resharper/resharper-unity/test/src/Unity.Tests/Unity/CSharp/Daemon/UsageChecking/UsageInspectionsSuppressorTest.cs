@@ -14,8 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.UsageChecking
     public class UsageInspectionsSuppressorTest : UsageCheckBaseTest
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\UsageChecking";
-        private Action<IProject> myOnProjectStarted;
-        private Action<IProject> myOnProjectFinished;
+        private Action<IProject>? myOnProjectStarted;
+        private Action<IProject>? myOnProjectFinished;
 
         [Test] public void MonoBehaviourMethods01() { DoNamedTest(); }
         [Test] public void MonoBehaviourFields01() { DoNamedTest(); }
@@ -23,6 +23,11 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.UsageChecking
         [Test] public void PreprocessBuildInterface01() { DoNamedTest(); }
         [Test] public void PreprocessBuildInterface02() { DoNamedTest(); }
         [Test] public void MethodWithAttributeWithRequiredSignature() { DoNamedTest(); }
+        [Test] public void UnityEcsSystemClass() { DoNamedTest(); }
+        [Test] public void UnityEcsSystemStruct() { DoNamedTest(); }
+        [Test] public void UnityDotsBacker() { DoNamedTest(); }
+        [Test] public void JobEntityRefParameter() { DoNamedTest(); }
+        [Test] public void DotsSequentialStruct() { DoNamedTest(); }
 
         protected override void DoTest(Lifetime lifetime, IProject project)
         {

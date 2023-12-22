@@ -6,7 +6,7 @@ reformat: True
 shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=CustomEditor, ValidateFileName=True
-scopes: UnityFileTemplateSectionMarker;InUnityCSharpEditorFolder
+scopes: InUnityCSharpEditorFolder;MustBeInProjectWithMaximumUnityVersion(version=2022.1)
 uitag: Unity Script
 parameterOrder: HEADER, (CLASS), (NAMESPACE), TYPE
 HEADER-expression: fileheader()
@@ -15,7 +15,7 @@ NAMESPACE-expression: fileDefaultNamespace()
 TYPE-expression: complete()
 ---
 
-# Custom Editor
+# Custom Editor (IMGUI)
 
 ```
 $HEADER$namespace $NAMESPACE$ {

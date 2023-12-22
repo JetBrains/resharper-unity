@@ -6,6 +6,8 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
@@ -39,9 +41,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 return;
             
             var items = myBurstCodeInsights.GetBurstActions(methodDeclaration, context);
-            var gutterMark = new UnityGutterMarkInfo(items, methodDeclaration, BurstCodeAnalysisUtil.BURST_TOOLTIP);
+            
+            // Skip methods explicitly marked with BurstCompile attribute
+            if(HasBurstAttributeInstance(methodDeclaration))
+                return;
+            
+            var gutterMark = new UnityGutterMarkInfo(items, methodDeclaration, BurstCodeAnalysisUtil.BurstTooltip);
           
             consumer.AddHighlighting(gutterMark);
+        }
+
+        protected static bool HasBurstAttributeInstance(IMethodDeclaration methodDeclaration)
+        {
+            var hasAttributeInstance =
+                methodDeclaration.DeclaredElement?.HasAttributeInstance(KnownTypes.BurstCompileAttribute,
+                    AttributesSource.Self) ?? true;
+            return hasAttributeInstance;
         }
     }
 }

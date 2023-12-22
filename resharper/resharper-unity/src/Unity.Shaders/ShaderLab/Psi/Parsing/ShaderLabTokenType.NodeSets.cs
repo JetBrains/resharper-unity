@@ -5,6 +5,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
     public partial class ShaderLabTokenType
     {
         public static readonly NodeTypeSet KEYWORDS;
+        public static readonly NodeTypeSet BLOCK_COMMAND_KEYWORDS;
 
         static ShaderLabTokenType()
         {
@@ -16,10 +17,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
                 FALLBACK_KEYWORD,
                 CUSTOM_EDITOR_KEYWORD,
                 DEPENDENCY_KEYWORD,
+                PACKAGE_REQUIREMENTS_KEYWORD,
 
                 COLOR_KEYWORD,
                 FLOAT_KEYWORD,
                 INT_KEYWORD,
+                INTEGER_KEYWORD,
                 RANGE_KEYWORD,
                 VECTOR_KEYWORD,
 
@@ -140,8 +143,70 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Parsing
                 TRUE_KEYWORD,
                 FALSE_KEYWORD,
                 ON_KEYWORD,
-                OFF_KEYWORD
+                OFF_KEYWORD,
+                
+                ADD_KEYWORD,
+                SUB_KEYWORD,
+                REV_SUB_KEYWORD,
+                MIN_KEYWORD,
+                MAX_KEYWORD,
+                LOGICAL_CLEAR_KEYWORD,
+                LOGICAL_SET_KEYWORD,
+                LOGICAL_COPY_KEYWORD,
+                LOGICAL_COPY_INVERTED_KEYWORD,
+                LOGICAL_NOOP_KEYWORD,
+                LOGICAL_INVERT_KEYWORD,
+                LOGICAL_AND_KEYWORD,
+                LOGICAL_NAND_KEYWORD,
+                LOGICAL_OR_KEYWORD,
+                LOGICAL_NOR_KEYWORD,
+                LOGICAL_XOR_KEYWORD,
+                LOGICAL_EQUIV_KEYWORD,
+                LOGICAL_AND_REVERSE_KEYWORD,
+                LOGICAL_AND_INVERTED_KEYWORD,
+                LOGICAL_OR_REVERSE_KEYWORD,
+                LOGICAL_OR_INVERTED_KEYWORD,
+                MULTIPLY_KEYWORD,
+                SCREEN_KEYWORD,
+                OVERLAY_KEYWORD,
+                DARKEN_KEYWORD,
+                LIGHTEN_KEYWORD,
+                COLOR_DODGE_KEYWORD,
+                COLOR_BURN_KEYWORD,
+                HARD_LIGHT_KEYWORD,
+                SOFT_LIGHT_KEYWORD,
+                DIFFERENCE_KEYWORD,
+                EXCLUSION_KEYWORD,
+                HSL_HUE_KEYWORD,
+                HSL_SATURATION_KEYWORD,
+                HSL_COLOR_KEYWORD,
+                HSL_LUMINOSITY_KEYWORD,
+
+                SRC_COLOR_KEYWORD,
+                SRC_ALPHA_KEYWORD,
+                SRC_ALPHA_SATURATE_KEYWORD,
+                DST_COLOR_KEYWORD,
+                DST_ALPHA_KEYWORD,
+                ONE_MINUS_SRC_COLOR_KEYWORD,
+                ONE_MINUS_SRC_ALPHA_KEYWORD,
+                ONE_MINUS_DST_COLOR_KEYWORD,
+                ONE_MINUS_DST_ALPHA_KEYWORD
               );
+            BLOCK_COMMAND_KEYWORDS = new NodeTypeSet(
+                SHADER_KEYWORD,
+                PROPERTIES_KEYWORD,
+                CATEGORY_KEYWORD,
+                SUB_SHADER_KEYWORD,
+                TAGS_KEYWORD,
+                STENCIL_KEYWORD,
+                MATERIAL_KEYWORD,
+                SET_TEXTURE_KEYWORD,
+                FOG_KEYWORD,
+                BIND_CHANNELS_KEYWORD,
+                GRABPASS_KEYWORD,
+                PASS_KEYWORD,
+                PACKAGE_REQUIREMENTS_KEYWORD
+            );
         }
     }
 }

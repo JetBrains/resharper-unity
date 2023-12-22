@@ -56,6 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
     public class PackageManager
     {
         private const string DefaultRegistryUrl = "https://packages.unity.com";
+        public const string UnityEntitiesPackageName = "com.unity.entities";
 
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
@@ -72,6 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
         private VirtualFileSystemPath? myLastReadGlobalManifestPath;
         private EditorManifestJson? myGlobalManifest;
+        private readonly FileSystemPathTrie<PackageData> myFileSystemPathTrie;
 
         public PackageManager(Lifetime lifetime, ISolution solution, ILogger logger,
                               UnitySolutionTracker unitySolutionTracker,
@@ -91,15 +93,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 "Unity::PackageManager::WaitForPackagesLockJson", TimeSpan.FromMilliseconds(2000), Rgc.Guarded,
                 DoRefresh);
 
-            myPackagesById = new DictionaryEvents<string, PackageData>(lifetime, "Unity::PackageManager");
+            myPackagesById = new DictionaryEvents<string, PackageData>("Unity::PackageManager");
             myPackageLifetimes = new Dictionary<string, LifetimeDefinition>();
 
             myPackagesFolder = mySolution.SolutionDirectory.Combine("Packages");
             myPackagesLockPath = myPackagesFolder.Combine("packages-lock.json");
             myManifestPath = myPackagesFolder.Combine("manifest.json");
-            myLocalPackageCacheFolder = mySolution.SolutionDirectory.Combine("Library/PackageCache");
+            myLocalPackageCacheFolder = UnityCachesFinder.GetLocalPackageCacheFolder(mySolution.SolutionDirectory);
 
-            Updating = new Property<bool?>(lifetime, "PackageManger::Update");
+            Updating = new Property<bool?>("PackageManager::Update");
 
             // use IsUnityProjectFolder, otherwise frontend would not have packages information, when folder is opened
             // and incorrect notification text might be displayed
@@ -109,12 +111,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
                 ScheduleRefresh();
 
-                // Track changes to the Packages folder, non-recursively. This will handle manifest.json,
-                // packages-lock.json and any folders that are added/deleted/renamed
-                fileSystemTracker.AdviseDirectoryChanges(lifetime, myPackagesFolder, false, OnPackagesFolderUpdate);
+                // Track changes to the Packages folder. This will handle manifest.json,
+                // packages-lock.json and package.json in the local packages
+                fileSystemTracker.AdviseDirectoryChanges(lifetime, myPackagesFolder, true, OnPackagesFolderUpdate);
 
                 // We're all set up, terminate the advise
                 return true;
+            });
+            myFileSystemPathTrie = new FileSystemPathTrie<PackageData>(false);
+
+            Packages.AddRemove.Advise(lifetime, args =>
+            {
+                var packageData = args.Value.Value;
+                if(packageData.PackageFolder.IsNullOrEmpty())
+                    return;
+
+                if (args.IsAdding)
+                    myFileSystemPathTrie.Add(packageData.PackageFolder, packageData);
+
+                if (args.IsRemoving)
+                    myFileSystemPathTrie.Remove(packageData.PackageFolder);
             });
         }
 
@@ -126,19 +142,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         // context, so all callbacks also happen within the guarded reentrancy context
         public IReadonlyCollectionEvents<KeyValuePair<string, PackageData>> Packages => myPackagesById;
 
-        public PackageData? GetPackageById(string id) =>
+        public virtual PackageData? GetPackageById(string id) =>
             myPackagesById.TryGetValue(id, out var packageData) ? packageData : null;
 
-        public PackageData? GetOwningPackage(VirtualFileSystemPath path)
-        {
-            foreach (var packageData in myPackagesById.Values)
-            {
-                if (packageData.PackageFolder != null && packageData.PackageFolder.IsPrefixOf(path))
-                    return packageData;
-            }
+        public bool HasPackage(string id) => GetPackageById(id) != null;
 
-            return null;
-        }
+        public PackageData? GetOwningPackage(VirtualFileSystemPath path) =>
+            myFileSystemPathTrie.FindLongestPrefix(path);
+
+        public bool IsLocalPackageCacheFile(VirtualFileSystemPath path) => path.StartsWith(myLocalPackageCacheFolder);
 
         public void RefreshPackages() => ScheduleRefresh();
 
@@ -180,7 +192,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 myWaitForPackagesLockJsonGroupingEvent.CancelIncoming();
                 myDoRefreshGroupingEvent.FireIncoming();
             }
-            else
+            else if (change.GetChildren().Any(a=>a.GetChildren().Any(b=>b.NewPath.Name == "package.json")))
             {
                 myLogger.Trace("Other file modification in Packages folder. Scheduling normal refresh");
                 myDoRefreshGroupingEvent.FireIncoming();
@@ -211,11 +223,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 var existingPackages = myPackagesById.Keys.ToJetHashSet();
                 foreach (var packageData in newPackages)
                 {
-                    // If the package.json file has been updated, remove the entry and add the new one. This should
+                    // 1. If the package.json file has been updated, remove the entry and add the new one. This should
                     // capture all changes to data + metadata. We don't care too much about duplicates, as this is
-                    // invalid JSON and Unity complains. Last write wins, but at least we won't crash
+                    // invalid JSON and Unity complains. Last write wins, but at least we won't crash.
+                    // 2. If package was drag-n-dropped from registry to local or smth similar, remove the old one and add a new one
                     if (myPackagesById.TryGetValue(packageData.Id, out var existingPackageData)
-                        && existingPackageData.PackageJsonTimestamp != packageData.PackageJsonTimestamp)
+                        && (existingPackageData.PackageJsonTimestamp != packageData.PackageJsonTimestamp
+                        || existingPackageData.Source != packageData.Source)
+                        )
                     {
                         RemovePackage(packageData.Id);
                     }
@@ -245,7 +260,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                 // Remove any left overs
                 foreach (var id in existingPackages)
                     RemovePackage(id);
-
             }
             finally
             {
@@ -262,8 +276,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
         private List<PackageData>? GetPackages()
         {
-            return LogEx.WhenVerbose(myLogger).DoCalculation("GetPackages", null,
-                () => GetPackagesFromPackagesLockJson() ?? GetPackagesFromManifestJson(),
+            return myLogger.WhenVerbose().DoCalculation("GetPackages", null,
+                () =>
+                {
+                    if (!myManifestPath.ExistsFile)
+                    {
+                        // This is not really expected, unless we're on an older Unity that doesn't support package manager
+                        myLogger.Info("manifest.json does not exist");
+                        return GetPackagesFromPackagesLockJson();
+                    }
+
+                    var projectManifest = Logger.CatchSilent(() => ManifestJson.FromJson(myManifestPath.ReadAllText2().Text));
+
+                    if (projectManifest == null)
+                    {
+                        myLogger.Info("failed to parse manifest.json");
+                        return GetPackagesFromPackagesLockJson();
+                    }
+
+                    // special case, when the lock file is disabled, but maybe present on the disk
+                    if (projectManifest.EnableLockFile.HasValue && !projectManifest.EnableLockFile.Value)
+                    {
+                        myLogger.Info("packages-lock.json is disabled in the manifest.json");
+                        return GetPackagesFromManifestJson(projectManifest);
+                    }
+
+                    return GetPackagesFromPackagesLockJson() ?? GetPackagesFromManifestJson(projectManifest);
+                },
                 p => p != null ? $"{p.Count} packages" : "Null list of packages. Something went wrong");
         }
 
@@ -287,11 +326,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             myLogger.Verbose("Getting packages from packages-lock.json");
 
             var appPath = myUnityVersion.GetActualAppPathForSolution();
-            var builtInPackagesFolder = UnityInstallationFinder.GetBuiltInPackagesFolder(appPath);
+            var builtInPackagesFolder = UnityCachesFinder.GetBuiltInPackagesFolder(appPath);
 
             return myLogger.CatchSilent(() =>
             {
-                var packagesLockJson = PackagesLockJson.FromJson(myPackagesLockPath.ReadAllText2().Text);
+                var packageLockJson = myPackagesLockPath.ReadAllText2().Text;
+                myLogger.Trace("package json test:\n{0}", packageLockJson);
+                var packagesLockJson = PackagesLockJson.FromJson(packageLockJson);
 
                 var packages = new List<PackageData>();
                 foreach (var (id, details) in packagesLockJson.Dependencies)
@@ -301,26 +342,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             });
         }
 
-        private List<PackageData>? GetPackagesFromManifestJson()
+        private List<PackageData>? GetPackagesFromManifestJson(ManifestJson projectManifest)
         {
-            if (!myManifestPath.ExistsFile)
-            {
-                // This is not really expected, unless we're on an older Unity that doesn't support package manager
-                myLogger.Info("manifest.json does not exist");
-                return null;
-            }
-
             myLogger.Verbose("Getting packages from manifest.json");
 
             try
             {
-                var projectManifest = ManifestJson.FromJson(myManifestPath.ReadAllText2().Text);
-
                 // Now we've deserialised manifest.json, log why we skipped packages-lock.json
                 LogWhySkippedPackagesLock(projectManifest);
 
                 var appPath = myUnityVersion.GetActualAppPathForSolution();
-                var builtInPackagesFolder = UnityInstallationFinder.GetBuiltInPackagesFolder(appPath);
+                var builtInPackagesFolder = UnityCachesFinder.GetBuiltInPackagesFolder(appPath);
 
                 // Read the editor's default manifest, which gives us the minimum versions for various packages
                 var globalManifestPath = UnityInstallationFinder.GetPackageManagerDefaultManifest(appPath);
@@ -416,8 +448,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                     myLogger.Info(
                         "packages-lock.json is not supported by this version of Unity. Perhaps the file is from a newer version?");
                 }
-
-                myLogger.Info("packages-lock.json out of date. Most likely reason: Unity not running");
+                else
+                {
+                    myLogger.Info("packages-lock.json out of date. Most likely reason: Unity not running");
+                }
             }
         }
 
@@ -509,7 +543,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
         private PackageData? GetRegistryPackage(string id, string version, string registryUrl)
         {
-            // When parsing manifest.json, version might be a version, or it might even be a URL for a git package
+            // When parsing manifest.json, version might be a version, or it might even be a URL for a git package, try
+            // and parse it to check it's valid
             var cacheFolder = RelativePath.TryParse($"{id}@{version}");
             if (cacheFolder.IsEmpty)
                 return null;
@@ -517,8 +552,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             // Unity 2018.3 introduced an additional layer of caching for registry based packages, local to the
             // project, so that any edits to the files in the package only affect this project. This is primarily
             // for the API updater, which would otherwise modify files in the product wide cache
-            var packageData = GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine(cacheFolder),
-                PackageSource.Registry);
+            // Starting with Unity 2023.3.0a14, the folder names in the PackageCache no longer include the version
+            var packageData = GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine(cacheFolder), PackageSource.Registry)
+                              ?? GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine(id), PackageSource.Registry);
             if (packageData != null)
                 return packageData;
 
@@ -539,8 +575,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             // I don't know why the files are copied - it makes sense for registry packages to be copied so that script
             // updater can run on them, or users can make (dangerously transient) changes. But built in packages are,
             // well, built in, and should be up to date as far as the script updater is concerned.
-            var localCacheFolder = myLocalPackageCacheFolder.Combine($"{id}@{version}");
-            var packageData = GetPackageDataFromFolder(id, localCacheFolder, PackageSource.BuiltIn);
+            // Starting with Unity 2023.3.0a14, the folder names in PackageCache no longer include the version.
+            var packageData = GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine($"{id}@{version}"), PackageSource.BuiltIn) ??
+                              GetPackageDataFromFolder(id, myLocalPackageCacheFolder.Combine(id), PackageSource.BuiltIn);
             if (packageData == null && builtInPackagesFolder.IsNotEmpty)
                 packageData = GetPackageDataFromFolder(id, builtInPackagesFolder.Combine(id), PackageSource.BuiltIn);
             if (packageData != null)
@@ -565,7 +602,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         {
             // For older Unity versions, manifest.json will have a hash for any git based package. For newer Unity
             // versions, this is stored in packages-lock.json. If the lock file is disabled, then we don't get a hash
-            // and have to figure it out based on whatever is in Library/PackagesCache. We check the vesion as a git
+            // and have to figure it out based on whatever is in Library/PackagesCache. We check the version as a git
             // URL based on the docs: https://docs.unity3d.com/Manual/upm-git.html
             if (hash == null && !IsGitUrl(version))
                 return null;
@@ -791,11 +828,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             // Some package types take precedence over any requests for another version. Basically any package that is
             // built in or pointing at actual files
             return resolvedPackages.TryGetValue(id, out var packageData) &&
-                   (packageData.Source == PackageSource.Embedded
-                   || packageData.Source == PackageSource.BuiltIn
-                   || packageData.Source == PackageSource.Git
-                   || packageData.Source == PackageSource.Local
-                   || packageData.Source == PackageSource.LocalTarball);
+                   packageData.Source is PackageSource.Embedded or PackageSource.BuiltIn or PackageSource.Git
+                       or PackageSource.Local or PackageSource.LocalTarball;
         }
 
         private static JetSemanticVersion GetCurrentMaxVersion(
@@ -806,13 +840,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 
         private JetSemanticVersion GetMinimumVersion(string id)
         {
-            // Note: do not inline this into the TryGetValue call, because net5's C# compiler complains, and that's what
-            // we use for CI. Presumably this because it would not be initialised if myGlobalManifest is null. net6's
-            // compiler doesn't complain.
-            // error CS0165: Use of unassigned local variable 'editorPackageDetails'
-            EditorPackageDetails? editorPackageDetails = null;
-            if (myGlobalManifest?.Packages.TryGetValue(id, out editorPackageDetails) == true
-                && JetSemanticVersion.TryParse(editorPackageDetails?.MinimumVersion, out var version))
+            // TODO: Use conditional access when the monorepo build uses a more modern C# compiler
+            // Currently (as of 01/2023) the monorepo build for Unity uses C#9 compiler, which will complain that the
+            // out variable is uninitialised when we use conditional access
+            // See also https://youtrack.jetbrains.com/issue/RSRP-489147
+            if (myGlobalManifest != null && myGlobalManifest.Packages.TryGetValue(id, out var editorPackageDetails) &&
+                JetSemanticVersion.TryParse(editorPackageDetails?.MinimumVersion, out var version))
             {
                 return version;
             }

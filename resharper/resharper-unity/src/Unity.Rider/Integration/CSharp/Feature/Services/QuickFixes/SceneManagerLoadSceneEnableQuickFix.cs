@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using JetBrains.Application.I18n;
 using JetBrains.Application.Progress;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
@@ -7,6 +8,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.UnityEditorIntegration;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
@@ -51,13 +53,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Ser
                 if (scene == null)
                     continue;
 
-                var path = GetUnityScenePathRepresentation(scene.GetMapEntryPlainScalarText("path")
+                var path = GetUnityScenePathRepresentation(scene.GetMapEntryScalarText("path")
                     .NotNull("EditorBuildSettings.scenes[x].path"));
                 var simple = path.Split('/').Last();
                 var isEnabledNode = scene.GetMapEntryValue<IPlainScalarNode>("enabled")
                     .NotNull("EditorBuildSettings.scenes[x].enabled");
-                var isEnabled = isEnabledNode.GetPlainScalarText()
-                    .NotNull("isEnabledNode.GetPlainScalarText() != null")
+                var isEnabled = isEnabledNode.GetScalarText()
+                    .NotNull("isEnabledNode.GetScalarText() != null")
                     .Equals("1");
                 if (!isEnabled && (path.Equals(sceneName) || simple.Equals(sceneName)))
                 {
@@ -71,14 +73,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.CSharp.Feature.Ser
                     }
                 }
 
-                solution.GetComponent<IDaemon>().Invalidate();
+                solution.GetComponent<IDaemon>().Invalidate("SceneManagerLoadSceneEnableQuickFix.ExecutePsiTransaction".NON_LOCALIZABLE());
                 solution.GetComponent<UnityRefresher>().StartRefresh(RefreshType.Normal);
             }
 
             return null;
         }
 
-        public override string Text => "Enable scene in build settings";
+        public override string Text => Strings.SceneManagerLoadSceneEnableQuickFix_Text_Enable_scene_in_build_settings;
 
         public override bool IsAvailable(IUserDataHolder cache)
         {

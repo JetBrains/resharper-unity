@@ -1,0 +1,45 @@
+﻿Provided elements:
+ 0: FieldDimensions:Unity.Mathematics.float2
+ 1: Prefab:UnityEngine.GameObject
+ 2: Transform:UnityEngine.Transform
+
+// ${KIND:Unity.GenerateBakerAndComponent}
+// ${SELECT0:FieldDimensions:Unity.Mathematics.float2}
+// ${SELECT1:Prefab:UnityEngine.GameObject}
+// ${SELECT2:Transform:UnityEngine.Transform}
+
+using Unity.Entities;
+using Unity.Mathematics;
+using UnityEngine;
+
+namespace ComponentsAndTags
+{
+    public class Graveyard{caret}PropertiesAuthoring : MonoBehaviour
+    {
+        public float2 FieldDimensions;
+        public GameObject Prefab;
+        public Transform Transform;
+
+        public class GraveyardPropertiesAuthoringBaker : Baker<GraveyardPropertiesAuthoring>
+        {
+          public override void Bake(GraveyardPropertiesAuthoring authoring)
+          {
+            var entity = GetEntity(TransformUsageFlags.Dynamic);
+            AddComponent(entity,
+              new GraveyardPropertiesComponentData
+              {
+                FieldDimensions = authoring.FieldDimensions,
+                Prefab = GetEntity(authoring.Prefab, TransformUsageFlags.Dynamic),
+                Transform = GetEntity(authoring.Transform, TransformUsageFlags.Dynamic)
+              });
+          }
+        }
+    }
+
+    public struct GraveyardPropertiesComponentData : IComponentData
+    {
+      public float2 FieldDimensions;
+      public Entity Prefab;
+      public Entity Transform;
+    }
+}

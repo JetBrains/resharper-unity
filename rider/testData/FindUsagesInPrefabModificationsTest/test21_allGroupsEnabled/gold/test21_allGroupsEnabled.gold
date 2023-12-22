@@ -1,22 +1,22 @@
 Search target
-    DefaultNamespace.Script5.TestMe:string
+    DefaultNamespace.Script5.TestMe : string
 Found usages  (5 usages found)
     Assets  (5 usages found)
         Ex5  (5 usages found)
             Ex5.unity  (4 usages found)
                 GameObject  (2 usages found)
                     Script5  (2 usages found)
-                        TestMe = "Test"
-                        TestMe = "Test2"
+                         TestMe = "Test"
+                         TestMe = "Test2"
                 Root  (2 usages found)
                     Left  (1 usage found)
                         Script5  (1 usage found)
-                            TestMe = "Right"
+                             TestMe = "Right"
                     Right  (1 usage found)
                         Script5  (1 usage found)
-                            TestMe = "Left"
+                             TestMe = "Left"
             Root Variant.prefab  (1 usage found)
                 Root Variant  (1 usage found)
                     Left  (1 usage found)
                         Script5  (1 usage found)
-                            TestMe = "InsideVariant"
+                             TestMe = "InsideVariant"

@@ -3,23 +3,31 @@ package com.jetbrains.rider.plugins.unity.notifications
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.notification.*
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.client.ClientProjectSession
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
+import com.jetbrains.rd.platform.util.idea.LifetimedService
+import com.intellij.openapi.rd.util.lifetime
+import com.jetbrains.rd.protocol.SolutionExtListener
+import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNullOnce
-import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.projectView.solution
-import javax.swing.event.HyperlinkEvent
+import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rider.plugins.unity.model.frontendBackend.FrontendBackendModel
 
-class AssetModeForceTextNotification(project: Project): ProtocolSubscribedProjectComponent(project) {
+class AssetModeForceTextNotification(private val project: Project): LifetimedService() {
 
     companion object {
         private const val settingName = "do_not_show_unity_asset_mode_notification"
         private val notificationGroupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity Asset Mode")
+        fun getInstance(project: Project): AssetModeForceTextNotification = project.service()
     }
 
-    init {
-        project.solution.frontendBackendModel.notifyAssetModeForceText.adviseNotNullOnce(projectComponentLifetime){
-            showNotificationIfNeeded()
+    class ProtocolListener : SolutionExtListener<FrontendBackendModel> {
+        override fun extensionCreated(lifetime: Lifetime, session: ClientProjectSession, model: FrontendBackendModel) {
+            model.notifyAssetModeForceText.adviseNotNullOnce(session.project.lifetime) {
+                getInstance(session.project).showNotificationIfNeeded()
+            }
         }
     }
 
@@ -27,29 +35,23 @@ class AssetModeForceTextNotification(project: Project): ProtocolSubscribedProjec
 
         if (PropertiesComponent.getInstance(project).getBoolean(settingName)) return
 
-        val message = """Some advanced integration features are unavailable when the Unity asset serialisation mode is not set to “Force Text”. Enable text serialisation to allow Rider to learn more about the structure of your scenes and assets.
-            <ul style="margin-left:10px">
-              <li><a href="LearnMoreNavigateAction">Learn more</a></li>
-              <li><a href="doNotShow">Do not show</a> this notification for this solution.</li>
-            </ul>
-            """
-        val assetModeNotification = Notification(notificationGroupId.displayId, "Recommend switching to text asset serialisation mode", message, NotificationType.WARNING)
-        assetModeNotification.setListener { notification, hyperlinkEvent ->
-            if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED)
-                return@setListener
+        val message = UnityBundle.message("AssetModeForceTextNotification.notification.message.some.advanced.integration.unavailable")
+        val assetModeNotification = Notification(notificationGroupId.displayId,
+                                                 UnityBundle.message("notification.title.recommend.switching.to.text.asset.serialisation.mode"), message, NotificationType.WARNING)
 
-            if (hyperlinkEvent.description == "LearnMoreNavigateAction"){
-                BrowserUtil.browse("https://github.com/JetBrains/resharper-unity/wiki/Asset-serialization-mode")
-                notification.hideBalloon()
+        assetModeNotification.addAction(object : NotificationAction(
+            UnityBundle.message("read.more")) {
+            override fun actionPerformed(e: AnActionEvent, notification: Notification) {
+                val url = "https://github.com/JetBrains/resharper-unity/wiki/Asset-serialization-mode"
+                BrowserUtil.browse(url)
             }
-
-            if (hyperlinkEvent.description == "doNotShow"){
+        })
+        assetModeNotification.addAction(object : NotificationAction(
+            UnityBundle.message("link.label.do.not.show.again")) {
+            override fun actionPerformed(e: AnActionEvent, notification: Notification) {
                 PropertiesComponent.getInstance(project).setValue(settingName, true)
-                notification.hideBalloon()
             }
-        }
-
-
+        })
         Notifications.Bus.notify(assetModeNotification, project)
     }
 }

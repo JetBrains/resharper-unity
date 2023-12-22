@@ -6,7 +6,9 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Explicit;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Anim.Implicit;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -20,16 +22,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     public class EventHandlerDetector : UnityDeclarationHighlightingProviderBase
     {
         protected readonly UnityEventsElementContainer UnityEventsElementContainer;
-        private readonly AnimationEventUsagesContainer myAnimationEventUsagesContainer;
-        
+        private readonly AnimExplicitUsagesContainer myAnimExplicitUsagesContainer;
+        [NotNull] private readonly AnimImplicitUsagesContainer myAnimImplicitUsagesContainer;
+
         public EventHandlerDetector(ISolution solution, IApplicationWideContextBoundSettingStore settingsStore,
                                     UnityEventsElementContainer unityEventsElementContainer,
                                     PerformanceCriticalContextProvider contextProvider,
-                                    [NotNull] AnimationEventUsagesContainer animationEventUsagesContainer)
+                                    [NotNull] AnimExplicitUsagesContainer animExplicitUsagesContainer,
+                                    [NotNull] AnimImplicitUsagesContainer animImplicitUsagesContainer)
             : base(solution, settingsStore, contextProvider)
         {
             UnityEventsElementContainer = unityEventsElementContainer;
-            myAnimationEventUsagesContainer = animationEventUsagesContainer;
+            myAnimExplicitUsagesContainer = animExplicitUsagesContainer;
+            myAnimImplicitUsagesContainer = animImplicitUsagesContainer;
         }
 
         public override bool AddDeclarationHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer,
@@ -54,7 +59,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                                                                        IReadOnlyCallGraphContext context,
                                                                        IDeclaredElement method)
         {
-            var isAnimationEvent = myAnimationEventUsagesContainer.GetEventUsagesCountFor(method, out _) > 0;
+            var isAnimationEvent = myAnimExplicitUsagesContainer.GetEventUsagesCountFor(method, out _) > 0 || 
+                                   myAnimImplicitUsagesContainer.GetEventUsagesCountFor(method, out var expected) > 0 || expected;
             if (isAnimationEvent) AddAnimationEventHighlighting(treeNode, consumer, context);
             return isAnimationEvent;
         }
@@ -65,46 +71,45 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                                                                        IProperty property)
         {
             var getter = property.Getter;
-            if (getter != null && myAnimationEventUsagesContainer.GetEventUsagesCountFor(getter, out _) > 0)
+            if (getter != null && myAnimExplicitUsagesContainer.GetEventUsagesCountFor(getter, out _) > 0)
             {
                 AddAnimationEventHighlighting(treeNode, consumer, context);
             }
         }
 
         private bool TryAddMethodHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer, IReadOnlyCallGraphContext context,
-                                              IMethod method)
+            IMethod method)
         {
-            var eventHandlersCount = UnityEventsElementContainer.GetAssetUsagesCount(method, out _);
-            var animationEventsCount = myAnimationEventUsagesContainer.GetEventUsagesCountFor(method, out _);
-            if (eventHandlersCount + animationEventsCount <= 0) return false;
-            if (eventHandlersCount != 0 && animationEventsCount == 0)
-                AddEventHandlerHighlighting(treeNode, consumer, context);
-            if (eventHandlersCount == 0 && animationEventsCount != 0)
+            var eventHandlersCount = UnityEventsElementContainer.GetAssetUsagesCount(method, out var estimated);
+            var animExplicitCount = myAnimExplicitUsagesContainer.GetEventUsagesCountFor(method, out var estimated2);
+            var animImplicitCount = myAnimImplicitUsagesContainer.GetEventUsagesCountFor(method, out var estimated3);
+            if (eventHandlersCount == 0 && (animExplicitCount != 0 || animImplicitCount != 0))
+            {
                 AddAnimationEventHighlighting(treeNode, consumer, context);
-            AddAnimationEventAndEventHandlerHighlighting(treeNode, consumer, context);
-            return true;
+                return true;
+            }
+
+            if (estimated || estimated2 || estimated3 || animExplicitCount + eventHandlersCount + animImplicitCount > 0)
+            {
+                AddEventHandlerHighlighting(treeNode, consumer, context);
+                return true;
+            }
+            
+            return false;
         }
 
         private void AddEventHandlerHighlighting([NotNull] ITreeNode treeNode,
                                                  [NotNull] IHighlightingConsumer consumer,
                                                  IReadOnlyCallGraphContext context)
         {
-            AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Event handler", "Unity event handler", context);
+            AddHighlighting(consumer, treeNode as ICSharpDeclaration, Strings.EventHandlerDetector_AddEventHandlerHighlighting_Text, Strings.EventHandlerDetector_AddEventHandlerHighlighting_Tooltip, context);
         }
 
         private void AddAnimationEventHighlighting([NotNull] ITreeNode treeNode,
                                                    [NotNull] IHighlightingConsumer consumer,
                                                    IReadOnlyCallGraphContext context)
         {
-            AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Animation event", "Unity animation event", context);
-        }
-        
-        private void AddAnimationEventAndEventHandlerHighlighting([NotNull] ITreeNode treeNode,
-                                                                  [NotNull] IHighlightingConsumer consumer,
-                                                                  IReadOnlyCallGraphContext context)
-        {
-            AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Animation event and event handler",
-                "Unity animation event and Unity animation event", context);
+            AddHighlighting(consumer, treeNode as ICSharpDeclaration, Strings.EventHandlerDetector_AddAnimationEventHighlighting_Text, Strings.EventHandlerDetector_AddAnimationEventHighlighting_Tooltip, context);
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,

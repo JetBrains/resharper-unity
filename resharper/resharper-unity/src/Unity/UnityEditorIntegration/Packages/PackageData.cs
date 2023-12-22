@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Util;
+using JetBrains.Util.Logging;
 using Newtonsoft.Json;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -11,6 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
 {
     public class PackageData
     {
+        private static readonly ILogger ourLogger = Logger.GetLogger<PackageData>();
+        
         [NotNull] public readonly string Id;
         [CanBeNull] public readonly VirtualFileSystemPath PackageFolder;
         public readonly DateTime PackageJsonTimestamp;
@@ -42,9 +45,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         public static PackageData CreateUnknown(string id, string version,
                                                 PackageSource packageSource = PackageSource.Unknown)
         {
+            ourLogger.Info($"Creation of unknown package {nameof(id)}:{id}, {nameof(version)}:{version}, {nameof(packageSource)}:{packageSource}");
+            
             return new PackageData(id, null, DateTime.MinValue,
                 new PackageDetails(id, $"{id}@{version}", version,
                     $"Cannot resolve package '{id}' with version '{version}'",
+                    null,
                     new Dictionary<string, string>()), packageSource, null, null);
         }
     }
@@ -58,13 +64,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         [NotNull] public readonly string DisplayName;
         [NotNull] public readonly string Version;
         [CanBeNull] public readonly string Description;
+        [CanBeNull] public readonly string DocumentationUrl;
         // [CanBeNull] public readonly string Author;  // Author might actually be a dictionary
         [NotNull] public readonly Dictionary<string, string> Dependencies;
 
         public PackageDetails([NotNull] string canonicalName,
                               [NotNull] string displayName,
                               [NotNull] string version,
-                              [CanBeNull] string description,
+                              [CanBeNull] string description, 
+                              [CanBeNull] string documentationUrl,
                               [NotNull] Dictionary<string, string> dependencies)
         {
             CanonicalName = canonicalName;
@@ -72,6 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
             Version = version;
             Description = description;
             Dependencies = dependencies;
+            DocumentationUrl = documentationUrl;
         }
 
         [NotNull]
@@ -79,7 +88,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         {
             var name = packageJson.Name ?? packageFolder.Name;
             return new PackageDetails(name, packageJson.DisplayName ?? name, packageJson.Version ?? string.Empty,
-                packageJson.Description, packageJson.Dependencies);
+                packageJson.Description, packageJson.DocumentationUrl, packageJson.Dependencies);
         }
     }
 
@@ -156,6 +165,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
         [CanBeNull] public readonly string DisplayName;
         [CanBeNull] public readonly string Version;
         [CanBeNull] public readonly string Description;
+        [CanBeNull] public readonly string DocumentationUrl;
         // [CanBeNull] public readonly string Author; // TODO: Author might be a map<string, string>, e.g. author[name]
         [NotNull] public readonly Dictionary<string, string> Dependencies;
 
@@ -164,12 +174,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages
                             [CanBeNull] string displayName,
                             [CanBeNull] string version,
                             [CanBeNull] string description,
+                            [CanBeNull] string documentationUrl,
                             [CanBeNull] Dictionary<string, string> dependencies)
         {
             Name = name;
             DisplayName = displayName;
             Version = version;
             Description = description;
+            DocumentationUrl = documentationUrl;
             Dependencies = dependencies ?? new Dictionary<string, string>();
         }
 

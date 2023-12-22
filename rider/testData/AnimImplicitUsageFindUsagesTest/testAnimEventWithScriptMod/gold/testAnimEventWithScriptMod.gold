@@ -1,0 +1,9 @@
+Search target
+    AnimEventHolderWithScriptMod.AnimEventWithScriptMod() : void
+Found usages  (1 usage found)
+    Other  (1 usage found)
+        Assets  (1 usage found)
+            Anim  (1 usage found)
+                WithScriptMod  (1 usage found)
+                    WithScriptMod.anim  (1 usage found)
+                        [1484, Assets/Anim/WithScriptMod/WithScriptMod.anim] (62: 17)  functionName: AnimEventWithScriptMod

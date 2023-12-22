@@ -1,12 +1,13 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JetBrains.Annotations;
 using JetBrains.Collections;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
-using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
@@ -22,35 +23,41 @@ using JetBrains.Serialization;
 using JetBrains.Text;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
+using JetBrains.Util.dataStructures;
 using JetBrains.Util.Maths;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 {
     public static class AssetUtils
     {
-        private static readonly StringSearcher ourMonoBehaviourCheck = new StringSearcher("!u!114 ", true);
-        private static readonly StringSearcher ourFileIdCheck = new StringSearcher("fileID:", false);
-        private static readonly StringSearcher ourPrefabModificationSearcher = new StringSearcher("!u!1001 ", true);
-        private static readonly StringSearcher ourTransformSearcher = new StringSearcher("!u!4 ", true);
-        private static readonly StringSearcher ourRectTransformSearcher = new StringSearcher("!u!224 ", true);
-        private static readonly StringSearcher ourGameObjectSearcher = new StringSearcher("!u!1 ", true);
-        private static readonly StringSearcher ourAnimatorStateSearcher = new StringSearcher("!u!1102", true);
-        private static readonly StringSearcher ourAnimatorStateMachineSearcher = new StringSearcher("!u!1107", true);
-        private static readonly StringSearcher ourStrippedSearcher = new StringSearcher(" stripped", true);
-        private static readonly StringSearcher ourGameObjectFieldSearcher = new StringSearcher("m_GameObject:", true);
-        private static readonly StringSearcher ourGameObjectNameSearcher = new StringSearcher("m_Name:", true);
-        private static readonly StringSearcher ourRootIndexSearcher = new StringSearcher("m_RootOrder:", true);
-        private static readonly StringSearcher ourPrefabInstanceSearcher = new StringSearcher("m_PrefabInstance:", true);
-        private static readonly StringSearcher ourPrefabInstanceSearcher2017 = new StringSearcher("m_PrefabInternal:", true);
-        private static readonly StringSearcher ourCorrespondingObjectSearcher = new StringSearcher("m_CorrespondingSourceObject:", true);
-        private static readonly StringSearcher ourCorrespondingObjectSearcher2017 = new StringSearcher("m_PrefabParentObject:", true);
-        private static readonly StringSearcher ourSourcePrefabSearcher = new StringSearcher("m_SourcePrefab:", true);
-        private static readonly StringSearcher ourSourcePrefab2017Searcher = new StringSearcher("m_ParentPrefab:", true);
-        private static readonly StringSearcher ourFatherSearcher = new StringSearcher("m_Father:", true);
-        private static readonly StringSearcher ourBracketSearcher = new StringSearcher("}", true);
-        private static readonly StringSearcher ourEndLineSearcher = new StringSearcher("\n", true);
-        private static readonly StringSearcher ourEndLine2Searcher = new StringSearcher("\r", true);
-        private static readonly StringSearcher ourColumnSearcher = new StringSearcher(":", true);
+        private static readonly StringSearcher ourMonoBehaviourCheck = new("!u!114 ", true);
+        private static readonly StringSearcher ourFileIdCheck = new("fileID:", false);
+        private static readonly StringSearcher ourPrefabModificationSearcher = new("!u!1001 ", true);
+        private static readonly StringSearcher ourTransformSearcher = new("!u!4 ", true);
+        private static readonly StringSearcher ourRectTransformSearcher = new("!u!224 ", true);
+        private static readonly StringSearcher ourGameObjectSearcher = new("!u!1 ", true);
+        private static readonly StringSearcher ourAnimatorStateSearcher = new("!u!1102", true);
+        private static readonly StringSearcher ourAnimatorStateMachineSearcher = new("!u!1107", true);
+        private static readonly StringSearcher ourAnimatorSearcher = new("!u!95 ", true);
+        private static readonly StringSearcher ourStrippedSearcher = new(" stripped", true);
+        private static readonly StringSearcher ourGameObjectFieldSearcher = new("m_GameObject:", true);
+        private static readonly StringSearcher ourActionsSearcher = new("m_Actions:", true);
+        private static readonly StringSearcher ourMotionSearcher = new("m_Motion:", true);
+        private static readonly StringSearcher ourGameObjectNameSearcher = new("m_Name:", true);
+        private static readonly StringSearcher ourRootOrderSearcher = new("m_RootOrder:", true);
+        private static readonly StringSearcher ourPrefabInstanceSearcher = new("m_PrefabInstance:", true);
+        private static readonly StringSearcher ourPrefabInstanceSearcher2017 = new("m_PrefabInternal:", true);
+        private static readonly StringSearcher ourCorrespondingObjectSearcher = new("m_CorrespondingSourceObject:", true);
+        private static readonly StringSearcher ourCorrespondingObjectSearcher2017 = new("m_PrefabParentObject:", true);
+        private static readonly StringSearcher ourSourcePrefabSearcher = new("m_SourcePrefab:", true);
+        private static readonly StringSearcher ourSourcePrefab2017Searcher = new("m_ParentPrefab:", true);
+        private static readonly StringSearcher ourFatherSearcher = new("m_Father:", true);
+        private static readonly StringSearcher ourChildrenSearcher = new("m_Children:", true);
+        private static readonly StringSearcher ourChildSearcher = new("-", true);
+        private static readonly StringSearcher ourBracketSearcher = new("}", true);
+        private static readonly StringSearcher ourEndLineSearcher = new("\n", true);
+        private static readonly StringSearcher ourEndLine2Searcher = new("\r", true);
+        private static readonly StringSearcher ourColumnSearcher = new(":", true);
 
         public static bool IsMonoBehaviourDocument(IBuffer buffer) =>
             ourMonoBehaviourCheck.Find(buffer, 0, Math.Min(buffer.Length, 20)) >= 0;
@@ -76,6 +83,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         public static bool IsAnimatorStateMachine(IBuffer buffer) =>
             ourAnimatorStateMachineSearcher.Find(buffer, 0, Math.Min(buffer.Length, 30)) >= 0;
+
+        public static bool IsAnimator(IBuffer buffer) =>
+            ourAnimatorSearcher.Find(buffer, 0, Math.Min(buffer.Length, 30)) >= 0;
 
         public static long? GetAnchorFromBuffer(IBuffer buffer)
         {
@@ -106,25 +116,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         }
 
 
-        [CanBeNull]
-        public static IHierarchyReference GetGameObjectReference(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
+        public static IHierarchyReference? GetGameObjectReference(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourGameObjectFieldSearcher);
 
-        [CanBeNull]
-        public static IHierarchyReference GetTransformFather(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
+        public static IHierarchyReference? GetInputActionsReference(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
+            GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourActionsSearcher);
+
+        public static IHierarchyReference? GetAnimReference(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
+            GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourMotionSearcher);
+
+        public static IHierarchyReference? GetTransformFather(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourFatherSearcher);
 
-        [CanBeNull]
-        public static IHierarchyReference GetSourcePrefab(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
+        public static IHierarchyReference? GetSourcePrefab(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourSourcePrefabSearcher) ??
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourSourcePrefab2017Searcher);
 
-        public static int GetRootIndex(IBuffer assetDocumentBuffer)
+        public static int GetRootOrder(IBuffer assetDocumentBuffer)
         {
-            var start = ourRootIndexSearcher.Find(assetDocumentBuffer, 0, assetDocumentBuffer.Length);
+            var start = ourRootOrderSearcher.Find(assetDocumentBuffer, 0, assetDocumentBuffer.Length);
             if (start < 0)
                 return 0;
-            start += "m_RootIndex:".Length;
+            start += "m_RootOrder:".Length;
             while (start < assetDocumentBuffer.Length)
             {
                 if (assetDocumentBuffer[start].IsPureWhitespace())
@@ -137,7 +150,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
             while (start < assetDocumentBuffer.Length)
             {
-                if (char.IsDigit(assetDocumentBuffer[start]))
+                if (assetDocumentBuffer[start] == '-' || char.IsDigit(assetDocumentBuffer[start])) // "-1" is possible
                 {
                     result.Append(assetDocumentBuffer[start]);
                     start++;
@@ -150,17 +163,87 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
             return int.TryParse(result.ToString(), out var index) ? index : 0;
         }
-
-        [CanBeNull]
-        public static string GetGameObjectName(IBuffer buffer)
+        
+        public static long[] GetChildren(IPsiSourceFile assetSourceFile, IBuffer buffer)
         {
-            var start = ourGameObjectNameSearcher.Find(buffer, 0, buffer.Length);
+            var start = ourChildrenSearcher.Find(buffer, 0, buffer.Length);
             if (start < 0)
-                return null;
+                return Array.Empty<long>();
+            start += "m_Children:".Length;
+            
+            // one possibility:
+            //   m_Children: []
+            // other possibility: 
+            //   m_Children:
+            //   - {fileID: 191985400}
+            //   - {fileID: 1435803377}
+            
+            while (start < buffer.Length)
+            {
+                if (buffer[start].IsPureWhitespace())
+                    start++;
+                else if (buffer[start] == '[')
+                    return Array.Empty<long>();
+                else
+                    break;
+            }
+            
+            var headerLineEnd = FindEndOfLine(buffer, start);
+            if (headerLineEnd < 0)
+                return Array.Empty<long>();
+            start = headerLineEnd + 1;
 
+            var results = new FrugalLocalList<long>();
+            var pos = start;
+            while (pos < buffer.Length)
+            {
+                if (buffer[pos].IsPureWhitespace())
+                {
+                    pos++;
+                    continue;
+                }
+
+                if (buffer[pos] == '-')
+                {
+                    var eol = FindEndOfLine(buffer, pos);
+                    
+                    var childBuffer = ProjectedBuffer.Create(buffer, new TextRange(pos + 1, eol));
+                    var lexer = new YamlLexer(childBuffer, false, false);
+                    var parser = new YamlParser(lexer.ToCachingLexer());
+                    var document = parser.ParseDocument();
+                    
+                    if (document.Body.BlockNode is not IFlowMappingNode flowMappingNode) continue;
+                    var localDocumentAnchor = flowMappingNode.GetMapEntryScalarText("fileID");
+                    if (localDocumentAnchor != null && long.TryParse(localDocumentAnchor, out var result))
+                        results.Add(result);
+                    
+                    pos = eol + 1;
+                    continue;
+                }
+
+                break;
+            }
+
+            return results.ToArray();
+        }
+
+        private static int FindEndOfLine(IBuffer buffer, int start)
+        {
             var eol = ourEndLineSearcher.Find(buffer, start, buffer.Length);
             if (eol < 0)
                 eol = ourEndLine2Searcher.Find(buffer, start, buffer.Length);
+            return eol;
+        }
+
+        public static string? GetGameObjectName(IBuffer buffer) => GetUnicodeText(buffer, ourGameObjectNameSearcher);
+
+        public static string? GetUnicodeText(IBuffer buffer, StringSearcher searcher)
+        {
+            var start = searcher.Find(buffer, 0, buffer.Length);
+            if (start < 0)
+                return null;
+
+            var eol = FindEndOfLine(buffer, start);
             if (eol < 0)
                 return null;
 
@@ -169,22 +252,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             var parser = new YamlParser(lexer.ToCachingLexer());
             var document = parser.ParseDocument();
 
-            return (document.Body.BlockNode as IBlockMappingNode)?.Entries.FirstOrDefault()?.Content.Value
-                .GetPlainScalarText();
+            return (document.Body.BlockNode as IBlockMappingNode)?.Entries.FirstOrDefault()?.Content.Value.GetUnicodeText();
         }
 
-        [CanBeNull]
-        public static IHierarchyReference GetPrefabInstance(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
+        public static IHierarchyReference? GetPrefabInstance(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourPrefabInstanceSearcher) ??
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourPrefabInstanceSearcher2017);
 
-        [CanBeNull]
-        public static IHierarchyReference GetCorrespondingSourceObject(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
+        public static IHierarchyReference? GetCorrespondingSourceObject(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourCorrespondingObjectSearcher) ??
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourCorrespondingObjectSearcher2017);
 
-        [CanBeNull]
-        public static IHierarchyReference GetReferenceBySearcher(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer, StringSearcher searcher)
+        public static IHierarchyReference? GetReferenceBySearcher(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer, StringSearcher searcher)
         {
             var start = searcher.Find(assetDocumentBuffer, 0, assetDocumentBuffer.Length);
             if (start < 0)
@@ -201,33 +280,55 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return (document.Body.BlockNode as IBlockMappingNode)?.Entries.FirstOrDefault()?.Content.Value.ToHierarchyReference(assetSourceFile);
         }
 
-        [CanBeNull]
-        public static IBlockMappingNode GetPrefabModification(IYamlDocument yamlDocument)
+        public static IBlockMappingNode? GetPrefabModification(IYamlDocument yamlDocument)
         {
             // Prefab instance has a map of modifications, that stores delta of instance and prefab
             return yamlDocument.GetUnityObjectPropertyValue<IBlockMappingNode>(UnityYamlConstants.ModificationProperty);
         }
 
-        public static IEnumerable<string> GetAllNamesFor(IField field)
+        public static IEnumerable<string> GetAllNamesFor(ITypeOwner typeOwner)
         {
-            yield return field.ShortName;
-
-            foreach (var attribute in field.GetAttributeInstances(KnownTypes.FormerlySerializedAsAttribute, false))
+            string shortName;
+            IList<IAttributeInstance>? attributeInstances;
+            
+            switch (typeOwner)
             {
-                var result = attribute.PositionParameters().FirstOrDefault()?.ConstantValue.Value as string;
-                if (result == null)
-                    continue;
-                yield return result;
+                case IField field:
+                    attributeInstances = field.GetAttributeInstances(KnownTypes.FormerlySerializedAsAttribute, false);
+                    shortName = field.ShortName;
+                    break;
+                case IProperty property:
+                    attributeInstances = property.GetAttributeInstances(KnownTypes.FormerlySerializedAsAttribute, false);
+                    shortName = $"{StandardMemberNames.BackingFieldPrefix}{property.ShortName}{StandardMemberNames.BackingFieldSuffix}";
+                    break;
+                default:
+                    attributeInstances = EmptyList<IAttributeInstance>.Instance;
+                    shortName = string.Empty;
+                    break;
+            }
+            
+            if(string.IsNullOrEmpty(shortName))
+                yield break;
+
+            yield return shortName;
+
+            foreach (var attribute in attributeInstances)
+            {
+                var constantValue = attribute.PositionParameters().FirstOrDefault()?.ConstantValue;
+                if (constantValue == null) continue;
+                if (!constantValue.IsString(out var stringValue)) continue;
+                if (stringValue == null) continue;
+                yield return stringValue;
             }
         }
 
-        public static string GetRawComponentName(IBuffer assetDocumentBuffer)
+        public static string? GetRawComponentName(IBuffer assetDocumentBuffer)
         {
-            var pos = ourColumnSearcher.Find(assetDocumentBuffer) - 1;
+            var pos = ourColumnSearcher.Find(assetDocumentBuffer);
             if (pos < 0)
                 return null;
 
-            var startPos = pos--;
+            var startPos = pos;
             while (startPos >= 0)
             {
                 if (assetDocumentBuffer[startPos] == '\r')
@@ -238,7 +339,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 startPos--;
             }
 
-            return assetDocumentBuffer.GetText(new TextRange(startPos, pos));
+            return assetDocumentBuffer.GetText(new TextRange(startPos + 1, pos));
         }
 
         public static string GetComponentName(MetaFileGuidCache metaFileGuidCache, IComponentHierarchy componentHierarchy)
@@ -253,8 +354,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return componentHierarchy.Name;
         }
 
-        [CanBeNull]
-        public static ITypeElement GetTypeElementFromScriptAssetGuid(ISolution solution, [CanBeNull] Guid? assetGuid)
+        public static ITypeElement? GetTypeElementFromScriptAssetGuid(ISolution solution, Guid? assetGuid)
         {
             if (assetGuid == null)
                 return null;
@@ -303,6 +403,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 if (sourceFile == null || !sourceFile.IsValid())
                     continue;
 
+                // this might be problematic - RIDER-87515 Support multiple MonoBehaviors classes in file
                 if (!typeElement.ShortName.Equals(sourceFile.GetLocation().NameWithoutExtension))
                     continue;
 
@@ -340,7 +441,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 {
                     var service = containingType.GetSolution().GetComponent<SolutionAnalysisService>();
                     var id = service.GetElementId(containingType);
-                    if (id.HasValue && service.UsageChecker is IGlobalUsageChecker checker)
+                    if (id.HasValue && service.UsageChecker is { } checker)
                     {
                         // no inheritors
                         if (checker.GetDerivedTypeElementsCount(id.Value) == 0)
@@ -370,12 +471,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return source;
         }
 
-        public static void WriteOWORD(OWORD oword, UnsafeWriter unsafeWriter)
+        // ReSharper disable once InconsistentNaming
+        // ReSharper disable once IdentifierTypo
+        public static void WriteOWORD(OWORD value, UnsafeWriter unsafeWriter)
         {
-            unsafeWriter.Write(oword.loqword);
-            unsafeWriter.Write(oword.hiqword);
+            unsafeWriter.Write(value.loqword);
+            unsafeWriter.Write(value.hiqword);
         }
 
+        // ReSharper disable once InconsistentNaming
+        // ReSharper disable once IdentifierTypo
         public static OWORD ReadOWORD(UnsafeReader unsafeReader)
         {
             return new OWORD(unsafeReader.ReadULong(), unsafeReader.ReadULong());

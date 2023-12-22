@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Linq;
 using JetBrains.Application.changes;
@@ -16,10 +18,7 @@ using JetBrains.ReSharper.Psi.Transactions;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
-
 using ProjectExtensions = JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.ProjectExtensions;
-
-#nullable enable
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
 {
@@ -67,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
             myPsiServices = psiServices;
             myLogger = logger;
 
-            solutionLoadTasksScheduler.EnqueueTask(new SolutionLoadTask("RegisterAsmDefReferenceChangeListener",
+            solutionLoadTasksScheduler.EnqueueTask(new SolutionLoadTask(GetType(),
                 SolutionLoadTaskKinds.Done, () =>
                 {
                     changeManager.RegisterChangeProvider(lifetime, this);
@@ -106,9 +105,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                 // Note that an asmdef name will usually match the name of the project being added. The only exception
                 // is for player projects. The returned addedAsmDefName here is the asmdef name/non-player project name
                 var ownerProject = addedReference.OwnerModule;
+                if (!ownerProject.IsValid()) return; // https://youtrack.jetbrains.com/issue/DEXP-678810
                 var addedReferenceName = addedReference.Name;
-                var (_, ownerAsmDefLocation) = GetAsmDefLocationForProject(ownerProject.Name);
-                var (addedAsmDefName, addedAsmDefLocation) = GetAsmDefLocationForProject(addedReferenceName);
+                var (_, ownerAsmDefLocation) = myAsmDefCache.TryGetAsmDefLocationForProject(ownerProject.Name);
+                var (addedAsmDefName, addedAsmDefLocation) = myAsmDefCache.TryGetAsmDefLocationForProject(addedReferenceName);
 
                 switch (addedReference)
                 {
@@ -122,7 +122,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                         break;
 
                     default:
-                        var ownerProjectKind = GetProjectKind(ownerProject.Name, ownerAsmDefLocation);
+                        var ownerProjectKind = GetProjectKind(ownerProject.GetSolution(), ownerProject.Name,
+                            ownerAsmDefLocation);
                         if (ownerProjectKind != ProjectKind.Custom)
                         {
                             // This is an unexpected reference modification (COM? SDK? Unresolved assembly?) to either
@@ -138,9 +139,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
             foreach (var removedReference in collector.RemovedReferences)
             {
                 var ownerProject = removedReference.OwnerModule;
+                if (!ownerProject.IsValid()) return;
                 var removedReferenceName = removedReference.Name;
-                var (_, ownerAsmDefLocation) = GetAsmDefLocationForProject(ownerProject.Name);
-                var (removedAsmDefName, removedAsmDefLocation) = GetAsmDefLocationForProject(removedReferenceName);
+                var (_, ownerAsmDefLocation) = myAsmDefCache.TryGetAsmDefLocationForProject(ownerProject.Name);
+                var (removedAsmDefName, removedAsmDefLocation) = myAsmDefCache.TryGetAsmDefLocationForProject(removedReferenceName);
 
                 switch (removedReference)
                 {
@@ -154,7 +156,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                         break;
 
                     default:
-                        var ownerProjectKind = GetProjectKind(ownerProject.Name, ownerAsmDefLocation);
+                        var ownerProjectKind = GetProjectKind(ownerProject.GetSolution(), ownerProject.Name,
+                            ownerAsmDefLocation);
                         if (ownerProjectKind != ProjectKind.Custom)
                         {
                             // This is an unexpected reference modification (COM? SDK? Unresolved assembly?) to either
@@ -174,52 +177,77 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                                              VirtualFileSystemPath ownerAsmDefLocation,
                                              VirtualFileSystemPath addedAsmDefLocation)
         {
-            var ownerProjectKind = GetProjectKind(ownerProject.Name, ownerAsmDefLocation);
-            var addedProjectKind = GetProjectKind(addedProjectName, addedAsmDefLocation);
-
-            if (ownerProjectKind == ProjectKind.Custom)
-            {
-                // Unsupported scenario. The user is modifying a custom project. Do nothing - Unity won't regenerate the
-                // project that's being modified, so there will be no data loss, so there's no need to notify the user.
-                // Unity will regenerate teh solution, which will remove the custom project. If we want to notify the
-                // user, it would be better to notify them when initially adding the custom project.
-                myLogger.Info("{0} project {1} added as a reference to {2} project {3}. Ignoring change",
-                    addedProjectKind, addedProjectName, ownerProjectKind, ownerProject.Name);
-                return;
-            }
-
-            if (addedProjectKind == ProjectKind.Custom)
-            {
-                // Unsupported scenario. The user is trying to modify a generated project by adding a reference to a
-                // custom project. Changes will be lost the next time Unity regenerates the projects
-                myLogger.Warn(
-                    "Unsupported reference modification. Added reference to unknown project will be lost when Unity regenerates projects");
-
-                // TODO: Notify user that modifying a generated project will lose changes
-                return;
-            }
-
-            if (addedProjectKind == ProjectKind.Predefined)
-            {
-                // Weird scenario, shouldn't happen
-                myLogger.Warn("Adding {0} project {1} as a reference to {2} project {3}?! Weird!", addedProjectKind,
-                    addedProjectName, ownerProjectKind, ownerProject.Name);
-                return;
-            }
+            var solution = ownerProject.GetSolution();
+            var ownerProjectKind = GetProjectKind(solution, ownerProject.Name, ownerAsmDefLocation);
+            var addedProjectKind = GetProjectKind(solution, addedProjectName, addedAsmDefLocation);
 
             switch (ownerProjectKind, addedProjectKind)
             {
+                case (ProjectKind.Custom, _):
+                    // Don't care. The user is modifying a custom project. Do nothing - Unity won't regenerate the
+                    // project that's being modified, which means there will be no data loss, so there's no need to
+                    // notify the user. Unity will regenerate the solution, which will remove the custom project. If we
+                    // want to notify the user, it would be better to notify them when initially adding the custom
+                    // project.
+                    myLogger.Info("{0} project {1} added as a reference to {2} project {3}. Ignoring change",
+                        addedProjectKind, addedProjectName, ownerProjectKind, ownerProject.Name);
+                    break;
+
+                case (ProjectKind.RegistryPackage, _):
+                    // Unsupported scenario. Registry packages don't usually have projects - they're precompiled and
+                    // typically automatically added as references to all generated projects. The user can generate
+                    // projects for registry packages (I wish they wouldn't), and this scenario is the user modifying
+                    // that project. The change will be discarded the next time Unity regenerates packages.
+                    myLogger.Warn(
+                        "Unsupported reference modification. Added registry package project reference {0} to {1} project {2} will be lost when Unity regenerates projects",
+                        addedProjectName, ownerProjectKind, ownerProject.Name);
+
+                    // TODO: Notify the user
+                    break;
+
+                case (_, ProjectKind.Custom):
+                    // Unsupported scenario. The user is trying to modify a generated project by adding a reference to a
+                    // custom project. Changes will be lost the next time Unity regenerates the projects
+                    myLogger.Warn(
+                        "Unsupported reference modification. Added reference to unknown project will be lost when Unity regenerates projects");
+
+                    // TODO: Notify user that modifying a generated project will lose changes
+                    break;
+
+                case (_, ProjectKind.Predefined):
+                    // Predefined projects reference all asmdef and registry projects by default. We shouldn't be able
+                    // to add a predefined project to anything other than custom, which is handled above. This scenario
+                    // should never happen
+                    myLogger.Warn("Adding {0} project {1} as a reference to {2} project {3}?! Weird!", addedProjectKind,
+                        addedProjectName, ownerProjectKind, ownerProject.Name);
+                    break;
+
+                case (_, ProjectKind.RegistryPackage):
+                    // Registry packages are usually precompiled assembly references, and automatically referenced by
+                    // all asmdef/predefined projects (if `overrideReferences` is `false`/unset). These will be reported
+                    // as assembly references, and most likely ignored. If the user generates projects for registry
+                    // packages (please don't, there's really no need), then we'll see these assembly references
+                    // converted into project references. Unless `overrideReferences` is explicitly set to true, we
+                    // can ignore these notifications
+                    // TODO: How to handle referencing registry packages if overrideReferences is true?
+                    myLogger.Info("Adding registry package project {0} as a reference to {1} project {2}. Ignoring change",
+                        addedProjectName, ownerProjectKind, ownerProject.Name);
+                    return;
+
                 case (ProjectKind.AsmDef, ProjectKind.AsmDef):
                     AddAsmDefReference(ownerProject, ownerAsmDefLocation, addedAsmDefName, addedAsmDefLocation);
                     break;
 
                 case (ProjectKind.Predefined, ProjectKind.AsmDef):
-                    // Predefined projects reference all asmdef projects by default. An asmdef can opt out by setting
-                    // "autoReferenced" to false.
+                    // Predefined projects reference all asmdef projects by default, so the asmdef project should
+                    // already be referenced. However, the asmdef project might have set `autoReferenced` to false,
+                    // in which case, it won't be automatically referenced, and the owning project needs to explicitly
+                    // reference it.
+                    // TODO: How should we reference a non-autoReferenced asmdef?
+                    // Set autoReferenced to true? For UnityEngine.TestRunner, we might need to add "TestAssemblies" to
+                    // optionalUnityReferences
                     myLogger.Info(
                         "Adding asmdef reference to predefined project. Should already be referenced. Check 'autoReferenced' value in asmdef");
-
-                    // TODO: Set "autoReferenced" to true
                     break;
             }
         }
@@ -235,6 +263,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
             if (rootObject == null)
                 return;
 
+            // If the location of the added asmdef is under Library/PackageCache, it's from a read only, registry
+            // package. If the current project's `overrideReferences` is set to the default `false`, then the registry
+            // package is automatically referenced by the current project. We ignore any such notification because we
+            // don't support adding asmdef references to arbitrary assemblies. But if the user has enabled generation of
+            // projects for registry packages, then we'll get a notification of a project to project reference, where
+            // the target/referenced project should be a precompiled assembly.
+            // So, if the added asmdef is under Library/PackageCache, and the current asmdef has the default value for
+            // `overrideReferences`, do not add the reference to the asmdef.
+            // Yet another reason to hate the "generate registry packages" setting
+            // TODO: How do we add a reference explicitly? Is it by asset GUID or assembly name?
+
+            if (addedAsmDefLocation.StartsWith(ownerProject.GetSolution().SolutionDirectory
+                    .Combine("Library/PackageCache")))
+            {
+                // TODO: We should check if overrideReferences is set to true, and figure out what to do in this case
+                // Add a reference to
+                myLogger.Info("Adding");
+            }
+
             var guid = myMetaFileGuidCache.GetAssetGuid(addedAsmDefLocation);
             if (guid == null)
                 myLogger.Warn("Cannot find asset GUID for added asmdef {0}! Can only add as name", addedAsmDefLocation);
@@ -248,6 +295,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                 myLogger.Verbose("Reference {0} already exists in asmdef {1}", addedAsmDefName, ownerAsmDefLocation);
                 return;
             }
+
+            myLogger.Info("Adding reference {0} to asmdef {1}", addedAsmDefName, ownerAsmDefLocation);
 
             using (new PsiTransactionCookie(myPsiServices, DefaultAction.Commit, "AddAsmDefReference"))
             {
@@ -270,7 +319,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
         private void OnAddedAssemblyReference(IProject ownerProject, string addedAssemblyName,
                                               VirtualFileSystemPath ownerAsmDefLocation)
         {
-            var ownerProjectKind = GetProjectKind(ownerProject.Name, ownerAsmDefLocation);
+            var ownerProjectKind = GetProjectKind(ownerProject.GetSolution(), ownerProject.Name, ownerAsmDefLocation);
 
             switch (ownerProjectKind)
             {
@@ -281,16 +330,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                     // initially added
                     myLogger.Info("Adding assembly {0} to custom project {1}. Ignoring change", addedAssemblyName,
                         ownerProject.Name);
-                    return;
+                    break;
+
+                case ProjectKind.RegistryPackage:
+                    // The user has generated projects for registry packages and has added a reference to it. This will
+                    // get removed the next time Unity regenerates the solution.
+                    // TODO: Notify the user
+                    myLogger.Warn(
+                        "Unsupported reference modification. Added assembly reference {0} to registry package project {1} will be lost when Unity regenerates project files",
+                        addedAssemblyName, ownerProject.Name);
+                    break;
 
                 case ProjectKind.Predefined:
                     // Unsupported scenario. Custom assemblies should live in Assets and requires regenerating the
                     // project file
+                    // TODO: Support adding assemblies to predefined projects
                     myLogger.Warn(
-                        "Unsupported reference modification. Added assembly reference will be lost when Unity regenerates project files");
+                        "Unsupported reference modification. Added assembly reference {0} to predefined project {1} will be lost when Unity regenerates project files",
+                        addedAssemblyName, ownerProject.Name);
 
                     // TODO: Notify the user
-                    return;
+                    break;
 
                 case ProjectKind.AsmDef:
                     // AsmDef can only reference custom assemblies if that assembly is a plugin (i.e. it's an asset,
@@ -306,7 +366,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                     // TODO: All of the above ^^
 
                     myLogger.Warn(
-                        "Unsupported reference modification. Added assembly reference will be lost when Unity regenerates project files");
+                        "Unsupported reference modification. Added assembly reference {0} to asmdef based project {1} will be lost when Unity regenerates project files",
+                        addedAssemblyName, ownerProject.Name);
                     break;
             }
         }
@@ -317,51 +378,58 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                                                VirtualFileSystemPath ownerAsmDefLocation,
                                                VirtualFileSystemPath removedAsmDefLocation)
         {
-            var ownerProjectKind = GetProjectKind(ownerProject.Name, ownerAsmDefLocation);
-            var removedProjectKind = GetProjectKind(removedProjectName, removedAsmDefLocation);
-
-            if (ownerProjectKind == ProjectKind.Custom)
-            {
-                // Unsupported scenario. The user is modifying a custom project. Do nothing - Unity won't regenerate the
-                // project that's being modified, so there will be no data loss, so there's no need to notify the user.
-                // Unity will regenerate teh solution, which will remove the custom project. If we want to notify the
-                // user, it's best to notify them when initially adding the custom project.
-                myLogger.Info("{0} project {1} removed as a reference from {2} project {3}. Ignoring change",
-                    removedProjectKind, removedProjectName, ownerProjectKind, ownerProject.Name);
-                return;
-            }
-
-            if (removedProjectKind == ProjectKind.Custom)
-            {
-                // Unsupported scenario. The user is trying to modify a generated project by adding a reference to a
-                // custom project.
-                myLogger.Warn(
-                    "Unsupported reference modification. Added assembly reference will be lost when Unity regenerates project files");
-
-                // TODO: Notify user that modifying a generated project will lose changes
-                return;
-            }
-
-            if (removedProjectKind == ProjectKind.Predefined)
-            {
-                // Weird scenario, shouldn't happen
-                myLogger.Warn("Removing {0} project {1} reference from {2} project {3}?! Weird!", removedProjectKind,
-                    removedProjectName, ownerProjectKind, ownerProject.Name);
-                return;
-            }
+            var solution = ownerProject.GetSolution();
+            var ownerProjectKind = GetProjectKind(solution, ownerProject.Name, ownerAsmDefLocation);
+            var removedProjectKind = GetProjectKind(solution, removedProjectName, removedAsmDefLocation);
 
             switch (ownerProjectKind, removedProjectKind)
             {
-               case (ProjectKind.AsmDef, ProjectKind.AsmDef):
-                   RemoveAsmDefReference(ownerProject, ownerAsmDefLocation, removedAsmDefName, removedAsmDefLocation);
-                   break;
+                case (ProjectKind.Custom, _):
+                    // The user is modifying a custom project. Do nothing - Unity won't regenerate the project that's
+                    // being modified, so there will be no data loss, so there's no need to notify the user. Unity will
+                    // regenerate the solution, which will remove the custom project. If we want to notify the user,
+                    // it's best to notify them when initially adding the custom project.
+                    myLogger.Info("{0} project {1} removed as a reference from {2} project {3}. Ignoring change",
+                        removedProjectKind, removedProjectName, ownerProjectKind, ownerProject.Name);
+                    break;
 
-               case (ProjectKind.Predefined, ProjectKind.AsmDef):
-                   myLogger.Info(
-                       "Removing asmdef reference from predefined project. Check 'autoReferenced' value in asmdef");
+                case (ProjectKind.RegistryPackage, _):
+                    // Unsupported scenario. The user is trying to modify a registry package project. They shouldn't do
+                    // this
+                    myLogger.Warn(
+                        "Unsupported reference modification. Removed assembly reference {0} from registry package project {1}. Change will be lost when Unity regenerates project files",
+                        removedProjectName, ownerProject.Name);
 
-                   // TODO: Should set "autoReferenced" to false in the removed asmdef project. Should this prompt?
-                   break;
+                    // TODO: Notify user that modifying a generated project will lose changes
+                    break;
+
+                case (_, ProjectKind.Custom):
+                    // Unsupported scenario. The user is trying to modify a generated project by adding a reference to a
+                    // custom project.
+                    myLogger.Warn(
+                        "Unsupported reference modification. Removed assembly reference {0} from project {1} will be lost when Unity regenerates project files",
+                        removedProjectName, ownerProject.Name);
+
+                    // TODO: Notify user that modifying a generated project will lose changes
+                    break;
+
+                case (_, ProjectKind.Predefined):
+                    // Removing a reference to a predefined project is weird. Nothing should be referencing them
+                    myLogger.Warn("Removing {0} project {1} reference from {2} project {3}?! Weird!",
+                        removedProjectKind, removedProjectName, ownerProjectKind, ownerProject.Name);
+                    break;
+
+                case (ProjectKind.AsmDef, ProjectKind.AsmDef):
+                    RemoveAsmDefReference(ownerProject, ownerAsmDefLocation, removedAsmDefName, removedAsmDefLocation);
+                    break;
+
+                case (ProjectKind.Predefined, ProjectKind.AsmDef):
+                    myLogger.Info(
+                        "Removing asmdef reference {0} from predefined project {1}. Check 'autoReferenced' value in asmdef",
+                        removedProjectName, ownerProject.Name);
+
+                    // TODO: Should set "autoReferenced" to false in the removed asmdef project. Should this prompt?
+                    break;
             }
         }
 
@@ -376,7 +444,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
 
             var guid = myMetaFileGuidCache.GetAssetGuid(removedAsmDefLocation);
             if (guid == null)
-                myLogger.Warn("Cannot find asset for added asmdef {0}! Can only add as name", removedAsmDefLocation);
+                myLogger.Warn("Cannot find asset GUID for removed asmdef {0}!", removedAsmDefLocation);
             var removedAsmDefGuid = guid == null ? null : AsmDefUtils.FormatGuidReference(guid.Value);
 
             // "references" might be missing if we've already removed all references and Unity isn't running to refresh
@@ -384,7 +452,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
             var referencesProperty = rootObject.GetFirstPropertyValue<IJsonNewArray>("references");
             if (referencesProperty == null)
             {
-                myLogger.Verbose("Cannot find 'references' property. Nothing to remove");
+                myLogger.Verbose("Cannot find 'references' property in {0}. Nothing to remove", ownerAsmDefLocation);
                 return;
             }
 
@@ -407,7 +475,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
         private void OnRemovedAssemblyReference(IProject ownerProject, string removedAssemblyName,
                                                 VirtualFileSystemPath ownerAsmDefLocation)
         {
-            var ownerProjectKind = GetProjectKind(ownerProject.Name, ownerAsmDefLocation);
+            var ownerProjectKind = GetProjectKind(ownerProject.GetSolution(), ownerProject.Name, ownerAsmDefLocation);
 
             switch (ownerProjectKind)
             {
@@ -420,10 +488,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                         ownerProject.Name);
                     return;
 
+                case ProjectKind.RegistryPackage:
+                    // Unsupported scenario. User is modifying a project generated for a read only registry package.
+                    // They shouldn't be modifying it, and changes will be lost when Unity regenerates projects.
+                    myLogger.Warn(
+                        "Unsupported reference modification. Removing assembly {0} from registry package project {1}. Change will be lost when Unity regenerates project files",
+                        removedAssemblyName, ownerProject.Name);
+
+                    // TODO: Notify the  user
+                    return;
+
                 case ProjectKind.Predefined:
                     // Unsupported scenario. Custom assemblies should live in Assets and requires regenerating the
                     // project file
-                    myLogger.Warn("Unsupported reference modification. Change will be lost when Unity regenerates project files");
+                    myLogger.Warn(
+                        "Unsupported reference modification. Removing assembly {0} from project {1}. Change will be lost when Unity regenerates project files",
+                        removedAssemblyName, ownerProject.Name);
 
                     // TODO: Notify the user
                     return;
@@ -439,14 +519,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
                     // TODO: All of the above ^^
 
                     myLogger.Warn(
-                        "Unsupported reference modification. Changes will be lost when Unity regenerates project files");
+                        "Unsupported reference modification. Removing assembly {0} from project {1}. Change will be lost when Unity regenerates project files",
+                        removedAssemblyName, ownerProject.Name);
                     break;
             }
         }
 
-        private static ProjectKind GetProjectKind(string projectName, VirtualFileSystemPath asmDefLocation)
+        private static ProjectKind GetProjectKind(ISolution solution, string projectName,
+                                                  VirtualFileSystemPath asmDefLocation)
         {
-            if (asmDefLocation.IsNotEmpty) return ProjectKind.AsmDef;
+            if (asmDefLocation.IsNotEmpty)
+            {
+                if (asmDefLocation.StartsWith(solution.SolutionDirectory.Combine("Library/PackageCache")))
+                    return ProjectKind.RegistryPackage;
+                return ProjectKind.AsmDef;
+            }
+
             if (ProjectExtensions.IsOneOfPredefinedUnityProjects(projectName, true)) return ProjectKind.Predefined;
             return ProjectKind.Custom;
         }
@@ -481,17 +569,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
             return results;
         }
 
-        private (string, VirtualFileSystemPath) GetAsmDefLocationForProject(string projectName)
-        {
-            // Assembly name and project name are the same for asmdef projects, unless it's a .Player project. We want
-            // to return the actual name of the asmdef reference we'll be adding
-            var location = myAsmDefCache.GetAsmDefLocationByAssemblyName(projectName);
-            if (location.IsNotEmpty)
-                return (projectName, location);
-            projectName = ProjectExtensions.StripPlayerSuffix(projectName);
-            return (projectName, myAsmDefCache.GetAsmDefLocationByAssemblyName(projectName));
-        }
-
         private class ReferenceChangeCollector : RecursiveProjectModelChangeDeltaVisitor
         {
             public FrugalLocalList<IProjectToModuleReference> AddedReferences;
@@ -504,7 +581,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
 
                 if (change.IsAdded)
                     AddedReferences.Add(change.ProjectToModuleReference);
-                else if (change.IsRemoved) RemovedReferences.Add(change.ProjectToModuleReference);
+
+                // TODO: Safely handle a removed reference
+                // False positives when adding a reference are safe - we won't get a notification unless the reference
+                // actually has been added, in which case it's always safe to modify the .asmdef file.
+                // Removing references is different, and is not safe. If we get a notification for anything other than
+                // explicitly removing a reference, we'll incorrectly modify the .asmdef file. And we can get into this
+                // scenario easily:
+                // 1) A referenced project is unloaded. As far as the project model is concerned, this is the same as
+                //    removing a reference, even though it still exists in the project file. We would need to check that
+                //    the project being referenced has been unloaded instead of removed, and I don't know if there's an
+                //    API for that.
+                // 2) If a .asmdef file is disabled, e.g. by adding an unmet constraint in defineConstraints, then Unity
+                //    will generate an "empty" project file - no C# files, minimal references and various other files
+                //    (.txt, .asmdef, .shader, ...). If the modification happens when the project is open, reloading
+                //    project file will trigger reference remove notifications, which are valid, because the references
+                //    no longer exist in the project file. We could check to see if the referencing project has any C#
+                //    files. If yes, then the .asmdef file is valid and it (should be) a genuine reference removal. If
+                //    no, then it's an "empty" project and we should not edit the .asmdef file.
+                //    (We could also change the project generation to not generate the "empty" project. It's only
+                //    generated so that .shader files work. We could add any .shader file to the external files project.
+                //    But we'd still have to support the current version, so we'd still have to handle "empty" projects)
+                // It's too late in the 221 cycle to fix this, so let's disable removing references from .asmdef for now
+                //
+                // else if (change.IsRemoved)
+                    // RemovedReferences.Add(change.ProjectToModuleReference);
             }
 
             public void RemoveProblematicChangeEvents()
@@ -539,6 +640,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Modules
         {
             Predefined,
             AsmDef,
+            RegistryPackage,
             Custom
         }
     }

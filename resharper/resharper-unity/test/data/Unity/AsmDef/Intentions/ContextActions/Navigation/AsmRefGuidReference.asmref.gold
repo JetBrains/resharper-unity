@@ -1,5 +1,5 @@
 ﻿## FindReferencedCodeProvider activity:
-  Tooltip was shown: Referenced code in 'assembly definition FirstProject' were not found.
+  Tooltip was shown: Referenced code in 'assembly definition FirstProject' were not found
 
 ## FindUsagesAdvancedProvider activity:
   Immediate result:
@@ -21,7 +21,7 @@
 
 
 ## GoToUnityUsagesProvider activity:
-  Tooltip was shown: Usages of 'FirstProject' were not found.
+  Tooltip was shown: Usages of 'FirstProject' were not found
 
 ## HighlightUsagesProvider activity:
   Immediate result:

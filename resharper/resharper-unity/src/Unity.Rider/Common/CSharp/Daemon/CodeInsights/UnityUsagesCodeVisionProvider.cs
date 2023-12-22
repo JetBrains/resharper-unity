@@ -19,6 +19,8 @@ using JetBrains.ReSharper.Feature.Services.Navigation.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Resources;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.ReSharper.Psi.Tree;
@@ -39,20 +41,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             myActionManager = shell.GetComponent<IActionManager>();
             myContexts = shell.GetComponent<DataContexts>();
         }
-
-        protected string Noun(int count, bool estimatedResult) => "asset usage" + (count == 1 && !estimatedResult ? "" : "s");
-
+        
         public bool IsAvailableIn(ISolution solution)
         {
             return solution.GetComponent<UnitySolutionTracker>().IsUnityProject.HasTrueValue();
         }
 
-        public void OnClick(CodeInsightsHighlighting highlighting, ISolution solution)
+        public void OnClick(CodeInsightHighlightInfo highlightInfo, ISolution solution)
         {
             var rules = new List<IDataRule>();
             rules.AddRule("Solution", ProjectModelDataConstants.SOLUTION, solution);
 
-            var declaredElement = highlighting.DeclaredElement;
+            var declaredElement = highlightInfo.CodeInsightsHighlighting.DeclaredElement;
             rules.AddRule("DeclaredElement", PsiDataConstants.DECLARED_ELEMENTS_FROM_ALL_CONTEXTS, new[] {  declaredElement });
 
             using (ReadLockCookie.Create())
@@ -61,11 +61,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
                     return;
 
                 // Document constant is required for non-empty IFinderSearchRoot
-                rules.AddRule("Document", DocumentModelDataConstants.DOCUMENT, highlighting.Range.Document);
+                rules.AddRule("Document", DocumentModelDataConstants.DOCUMENT, highlightInfo.CodeInsightsHighlighting.Range.Document);
 
-                rules.AddRule("DocumentEditorContext", DocumentModelDataConstants.EDITOR_CONTEXT, new DocumentEditorContext(highlighting.Range));
+                rules.AddRule("DocumentEditorContext", DocumentModelDataConstants.EDITOR_CONTEXT, new DocumentEditorContext(highlightInfo.CodeInsightsHighlighting.Range));
                 rules.AddRule("PopupWindowSourceOverride", UIDataConstants.PopupWindowContextSource,
-                    new PopupWindowContextSource(lt => new RiderEditorOffsetPopupWindowContext(highlighting.Range.StartOffset.Offset)));
+                    new PopupWindowContextSource(lt => new RiderEditorOffsetPopupWindowContext(highlightInfo.CodeInsightsHighlighting.Range.StartOffset.Offset)));
 
                 rules.AddRule("DontNavigateImmediatelyToSingleUsage", NavigationSettings.DONT_NAVIGATE_IMMEDIATELY_TO_SINGLE_USAGE, new object());
 
@@ -76,16 +76,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
             }
         }
 
-        public void OnExtraActionClick(CodeInsightsHighlighting highlighting, string actionId, ISolution solution)
+        public void OnExtraActionClick(CodeInsightHighlightInfo highlightInfo, string actionId, ISolution solution)
         {
         }
 
         public string ProviderId => "Unity Assets Usage";
-        public string DisplayName => "Unity assets usage";
-        public CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Top;
+        public string DisplayName => Strings.UnityUsagesCodeVisionProvider_DisplayName_Unity_assets_usage;
+        public CodeVisionAnchorKind DefaultAnchor => CodeVisionAnchorKind.Top;
 
-        public ICollection<CodeLensRelativeOrdering> RelativeOrderings =>
-            new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingBefore(ReferencesCodeInsightsProvider.Id)};
+        public ICollection<CodeVisionRelativeOrdering> RelativeOrderings =>
+            new CodeVisionRelativeOrdering[] {new CodeVisionRelativeOrderingBefore(ReferencesCodeInsightsProvider.Id)};
         protected IconId IconId => InsightUnityIcons.InsightUnity.Id;
 
         public void AddHighlighting(IHighlightingConsumer consumer, IDeclaration declaration,
@@ -98,11 +98,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Common.CSharp.Daemon.CodeInsig
 
         private string GetText(int count, bool estimatedResult)
         {
-            if (count == 0 && !estimatedResult)
-                return "No asset usages";
-
-            var countText = count + (estimatedResult ? "+" : "");
-            return $"{countText} {Noun(count, estimatedResult)}";
+            return NounUtilEx.ToEmptyPluralOrSingularQuick(count, estimatedResult,
+                Strings.UnityUsagesCodeVisionProvider_GetText_No_asset_usages,
+                Strings.UnityUsagesCodeVisionProvider_Noun_asset_usage,
+                Strings.UnityUsagesCodeVisionProvider_Noun_asset_usages);
         }
     }
 }

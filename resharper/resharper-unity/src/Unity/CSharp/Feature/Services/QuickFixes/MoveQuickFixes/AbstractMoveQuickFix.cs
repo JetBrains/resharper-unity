@@ -17,6 +17,7 @@ using JetBrains.ReSharper.Psi.Naming.Settings;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
 using JetBrains.Util;
+using Strings = JetBrains.ReSharper.Plugins.Unity.Resources.Strings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.MoveQuickFixes
 {
@@ -115,7 +116,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                 return null;
             }
 
-            public override string Text => $"Introduce field and initialise in '{myMethodName}'";
+            public override string Text => string.Format(Strings.MoveAction_Text_Introduce_field_and_initialise_in___0__, myMethodName);
         }
 
         public class MoveFromLoopAction : BulbActionBase
@@ -150,7 +151,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
                 return null;
             }
 
-            public override string Text => "Move outside of loop";
+            public override string Text => Strings.MoveFromLoopAction_Text_Move_outside_of_loop;
         }
     }
 }

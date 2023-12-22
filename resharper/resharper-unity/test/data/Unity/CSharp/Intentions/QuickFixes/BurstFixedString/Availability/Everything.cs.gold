@@ -1,0 +1,78 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.Jobs.LowLevel.Unsafe;
+using Unity.UnityEngine;
+
+namespace Unity
+{
+    namespace Jobs
+    {
+        [JobProducerType]
+        public interface IJob
+        {
+            void Execute();
+        }
+
+        namespace LowLevel
+        {
+            namespace Unsafe
+            {
+                public class JobProducerTypeAttribute : Attribute
+                {
+                }
+            }
+        }
+    }
+
+    namespace Burst
+    {
+        public class BurstCompileAttribute : Attribute
+        {
+        }
+
+        public class BurstDiscardAttribute : Attribute
+        {
+        }
+    }
+
+    namespace UnityEngine
+    {
+        public class Debug
+        {
+            public static void Log(object message)
+            {
+            }
+        }
+    }
+
+}
+
+namespace BurstFixedStringTests
+{
+    public class BurstFixedStringTests
+    {
+        [BurstCompile]
+        struct BurstFixedString1 : IJob
+        {
+            public void Execute()
+            {
+                var str = |"Escalope de la Trk"|(0)
+            }
+        }
+    }
+}
+
+------------------------------------------------
+0: Burst: The variable resolves to System.String, which may result in invalid managed method calls at the Burst-compiled call stack
+QUICKFIXES:
+Specify FixedString type explicitly
+--Specify FixedString32Bytes type explicitly
+--Specify FixedString64Bytes type explicitly
+--Specify FixedString128Bytes type explicitly
+--Specify FixedString512Bytes type explicitly
+--Specify FixedString4096Bytes type explicitly

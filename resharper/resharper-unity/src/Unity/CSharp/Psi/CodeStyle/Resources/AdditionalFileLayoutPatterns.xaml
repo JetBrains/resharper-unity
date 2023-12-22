@@ -1,10 +1,11 @@
 <Patterns xmlns="urn:schemas-jetbrains-com:member-reordering-patterns"
           xmlns:unity="urn:schemas-jetbrains-com:member-reordering-patterns-unity">
 
-  <!-- Pattern to match classes used by Unity that contain serialised fields and event
-       function methods. Based on the standard "Default Pattern", this will also order
-       event functions before normal methods, and does not reorder serialised fields,
-       as this order is reflected in the Unity editor's Inspector -->
+  <!-- Pattern to match classes used by Unity that contain serialised fields
+       and event function methods. Based on the standard "Default Pattern",
+       this will also order event functions before normal methods, and does
+       not reorder serialised fields, as this order is reflected in the Unity
+       editor's Inspector -->
   <TypePattern DisplayName="Unity classes" Priority="100">
     <TypePattern.Match>
       <unity:SerializableClass />
@@ -59,7 +60,13 @@
 
     <Entry DisplayName="Serialized Fields">
       <Entry.Match>
-        <unity:SerializedField />
+        <!-- Keep serialised fields and auto-properties with serialised backing
+             fields together, unsorted, to maintain order in the Inspector
+             window -->
+        <Or>
+          <unity:SerializedField />
+          <unity:AutoPropertyWithSerializedBackingField />
+        </Or>
       </Entry.Match>
 
       <!-- No sorting -->
@@ -106,7 +113,8 @@
       </Entry.Match>
 
       <Entry.SortBy>
-        <!-- Prioritises common event functions. For alphabetical, replace with <Name /> -->
+        <!-- Prioritises common event functions. For alphabetical, replace with
+             <Name /> -->
         <unity:EventFunctionName />
       </Entry.SortBy>
     </Entry>

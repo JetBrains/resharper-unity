@@ -19,110 +19,116 @@ IShaderLabFile
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:        ) spaces: "        "
             IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IColorMaskCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:COLOR_MASK_KEYWORD, text:ColorMask)
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
                     Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IColorMaskValue
-                      IColorMaskRgbaFlags
-                        IShaderLabIdentifier
-                          Identifier(type:IDENTIFIER, text:A)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
-            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-            IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IColorMaskCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:COLOR_MASK_KEYWORD, text:ColorMask)
-                    Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IColorMaskValue
-                      IColorMaskRgbaFlags
-                        IShaderLabIdentifier
-                          Identifier(type:IDENTIFIER, text:RGB)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
-            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-            IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IColorMaskCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:COLOR_MASK_KEYWORD, text:ColorMask)
-                    Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IColorMaskValue
-                      IColorMaskRgbaFlags
-                        IShaderLabIdentifier
-                          Identifier(type:IDENTIFIER, text:AGBR)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
-            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-            IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IColorMaskCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:COLOR_MASK_KEYWORD, text:ColorMask)
-                    Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IColorMaskValue
-                      IColorMaskRgbaFlags
-                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
-            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-            IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IColorMaskCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:COLOR_MASK_KEYWORD, text:ColorMask)
-                    Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IColorMaskValue
-                      ShaderLabTokenType+KeywordTokenElement(type:FALSE_KEYWORD, text:False)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
-            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-            IPass
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                Whitespace(type:WHITESPACE, text: ) spaces: " "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
-                  Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IColorMaskCommand
-                    ShaderLabTokenType+KeywordTokenElement(type:COLOR_MASK_KEYWORD, text:ColorMask)
-                    Whitespace(type:WHITESPACE, text: ) spaces: " "
-                    IColorMaskValue
-                      IColorMaskRgbaFlags
-                        IShaderLabIdentifier
-                          Identifier(type:IDENTIFIER, text:RGB)
+                    IColorMaskCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:COLOR_MASK_KEYWORD, text:ColorMask)
                       Whitespace(type:WHITESPACE, text: ) spaces: " "
-                      ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:2)
+                      IColorMaskValue
+                        IColorMaskRgbaFlags
+                          IShaderLabIdentifier
+                            Identifier(type:IDENTIFIER, text:A)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+            IPass
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    IColorMaskCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:COLOR_MASK_KEYWORD, text:ColorMask)
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      IColorMaskValue
+                        IColorMaskRgbaFlags
+                          IShaderLabIdentifier
+                            Identifier(type:IDENTIFIER, text:RGB)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+            IPass
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+                  Whitespace(type:WHITESPACE, text: ) spaces: " "
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    IColorMaskCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:COLOR_MASK_KEYWORD, text:ColorMask)
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      IColorMaskValue
+                        IColorMaskRgbaFlags
+                          IShaderLabIdentifier
+                            Identifier(type:IDENTIFIER, text:AGBR)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+            IPass
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+                  Whitespace(type:WHITESPACE, text: ) spaces: " "
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    IColorMaskCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:COLOR_MASK_KEYWORD, text:ColorMask)
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      IColorMaskValue
+                        IColorMaskRgbaFlags
+                          ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+            IPass
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+                  Whitespace(type:WHITESPACE, text: ) spaces: " "
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    IColorMaskCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:COLOR_MASK_KEYWORD, text:ColorMask)
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      IColorMaskValue
+                        ShaderLabTokenType+KeywordTokenElement(type:FALSE_KEYWORD, text:False)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+            NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+            Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+            IPass
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
+                  Whitespace(type:WHITESPACE, text: ) spaces: " "
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    IColorMaskCommand
+                      ShaderLabTokenType+KeywordTokenElement(type:COLOR_MASK_KEYWORD, text:ColorMask)
+                      Whitespace(type:WHITESPACE, text: ) spaces: " "
+                      IColorMaskValue
+                        IColorMaskRgbaFlags
+                          IShaderLabIdentifier
+                            Identifier(type:IDENTIFIER, text:RGB)
+                        Whitespace(type:WHITESPACE, text: ) spaces: " "
+                        ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:2)
+                    Whitespace(type:WHITESPACE, text: ) spaces: " "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:    ) spaces: "    "
             ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

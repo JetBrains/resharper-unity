@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         private readonly IEnumerable<IAssetInspectorValueDeserializer> myAssetInspectorValueDeserializers;
 
         private readonly ConcurrentDictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myAssetDocumentsHierarchy =
-            new ConcurrentDictionary<IPsiSourceFile, IUnityAssetDataElementPointer>();
+            new();
 
         public AssetDocumentHierarchyElementContainer(IPersistentIndexManager manager, PrefabImportCache prefabImportCache, IShellLocks shellLocks,
             UnityExternalFilesModuleFactory psiModuleProvider, MetaFileGuidCache metaFileGuidCache, IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializers)
@@ -91,13 +91,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 }
             } else if (gameObject != null && AssetUtils.IsTransform(assetDocument.Buffer))
             {
-                var father = AssetUtils.GetTransformFather(currentAssetSourceFile, assetDocument.Buffer) as LocalReference?;
-                if (father == null)
+                if (AssetUtils.GetTransformFather(currentAssetSourceFile, assetDocument.Buffer) is not LocalReference father)
                     return null;
 
-                var rootIndex = AssetUtils.GetRootIndex(assetDocument.Buffer);
-                return new TransformHierarchy(location, gameObject.Value, father.Value, rootIndex);
-            } else if (AssetUtils.IsGameObject(assetDocument.Buffer))
+                var rootOrder = AssetUtils.GetRootOrder(assetDocument.Buffer);
+                var children = AssetUtils.GetChildren(currentAssetSourceFile, assetDocument.Buffer);
+                return new TransformHierarchy(location, gameObject.Value, father, rootOrder, children);
+            }
+            else if (AssetUtils.IsGameObject(assetDocument.Buffer))
             {
                 var name = AssetUtils.GetGameObjectName(assetDocument.Buffer);
                 if (name != null)
@@ -108,9 +109,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             {
                 var modification = AssetUtils.GetPrefabModification(assetDocument.Document);
                 var parentTransform =
-                    modification?.GetMapEntryValue<INode>("m_TransformParent")
+                    modification?.GetMapEntryValue<INode>(UnityYamlConstants.TransformParentProperty)
                         ?.ToHierarchyReference(currentAssetSourceFile) as LocalReference? ?? LocalReference.Null;
-                var modifications = modification?.GetMapEntryValue<IBlockSequenceNode>("m_Modifications");
+                var modifications = modification?.GetMapEntryValue<IBlockSequenceNode>(UnityYamlConstants.ModificationsProperty);
                 var result = new List<PrefabModification>();
                 if (modifications != null)
                 {
@@ -118,16 +119,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                     {
                         var map = entry.Value as IBlockMappingNode;
 
-                        var target = map?.GetMapEntryValue<INode>("target")
+                        var target = map?.GetMapEntryValue<INode>(UnityYamlConstants.TargetProperty)
                             .ToHierarchyReference(currentAssetSourceFile);
                         if (target == null)
                             continue;
 
-                        var name = map.GetMapEntryPlainScalarText("propertyPath");
+                        var name = map.GetMapEntryScalarText(UnityYamlConstants.PropertyPathProperty);
                         if (name == null)
                             continue;
 
-                        var valueNode = map.GetMapEntry("value")?.Content;
+                        var valueNode = map.GetMapEntry(UnityYamlConstants.ValueProperty)?.Content;
                         if (valueNode == null)
                             continue;
 
@@ -140,7 +141,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
                         var objectReference = map.GetMapEntryValue<INode>("objectReference").ToHierarchyReference(currentAssetSourceFile);
 
-                        var valueRange = valueNode.GetTreeTextRange();
+                        var valueRange = valueNode.Value.GetTreeTextRange();
 
                         result.Add(new PrefabModification(target, name, value,
                             new TextRange(assetDocument.StartOffset + valueRange.StartOffset.Offset,
@@ -190,7 +191,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             if (sourceFile == null || guid == null)
                 return null;
 
-            var element = myAssetDocumentsHierarchy[sourceFile].GetElement(sourceFile, Id) as AssetDocumentHierarchyElement;
+            // we could have reference to asset which is ignored by asset heuristic, e.g too large
+            if (!myAssetDocumentsHierarchy.TryGetValue(sourceFile, out var hierarchy))
+                return null;
+            
+            var element = hierarchy.GetElement(sourceFile, Id) as AssetDocumentHierarchyElement;
             if (element == null)
                 return null;
 

@@ -1,41 +1,41 @@
 before change
-Inline 131 InlineCodeVisionListRenderer
+Inline 131 InlineCodeVisionInlayRenderer
 Right
     Visible
         Text RdTextRange(startOffset=121, endOffset=130) Changed in 0+ assets
     Hidden
-Inline 169 InlineCodeVisionListRenderer
+Inline 169 InlineCodeVisionInlayRenderer
 Right
     Visible
         Text RdTextRange(startOffset=158, endOffset=168) Changed in 0+ assets
     Hidden
-Inline 199 InlineCodeVisionListRenderer
+Inline 199 InlineCodeVisionInlayRenderer
 Right
     Visible
         Text RdTextRange(startOffset=192, endOffset=198) Changed in 0+ assets
     Hidden
-Block 66 BlockCodeVisionListRenderer
+Block 66 BlockCodeVisionInlayRenderer
 Top
     Visible
         Text RdTextRange(startOffset=66, endOffset=73) 4 asset usages
     Hidden
 after change
-Inline 131 InlineCodeVisionListRenderer
+Inline 131 InlineCodeVisionInlayRenderer
 Right
     Visible
         Text RdTextRange(startOffset=121, endOffset=130) Changed in 0+ assets
     Hidden
-Inline 169 InlineCodeVisionListRenderer
+Inline 169 InlineCodeVisionInlayRenderer
 Right
     Visible
         Text RdTextRange(startOffset=158, endOffset=168) Changed in 0+ assets
     Hidden
-Inline 199 InlineCodeVisionListRenderer
+Inline 199 InlineCodeVisionInlayRenderer
 Right
     Visible
         Text RdTextRange(startOffset=192, endOffset=198) Changed in 0+ assets
     Hidden
-Block 66 BlockCodeVisionListRenderer
+Block 66 BlockCodeVisionInlayRenderer
 Top
     Visible
         Text RdTextRange(startOffset=66, endOffset=73) 4 asset usages

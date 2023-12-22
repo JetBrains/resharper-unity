@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Feature.Services.Intentions.DataProviders;
 using JetBrains.ReSharper.Feature.Services.Intentions.Impl.DeclarationBuilders;
 using JetBrains.ReSharper.Feature.Services.Intentions.Impl.TemplateFieldHolders;
 using JetBrains.ReSharper.Intentions.CreateFromUsage;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -25,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             myClassLikeDeclaration = ClassLikeDeclarationNavigator.GetByAttribute(attribute);
         }
 
-        public override string Text => $"Create static constructor '{myClassLikeDeclaration.DeclaredName}'";
+        public override string Text => string.Format(Strings.CreateStaticConstructorFromUsageAction_Text_Create_static_constructor___0__, myClassLikeDeclaration.DeclaredName);
 
         public override ICreatedElementConsistencyGroup GetConsistencyGroup() => AlwaysConsistentGroup.Instance;
 

@@ -70,11 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.Refactorings
             {
                 foreach (var sortedReference in LanguageUtil.GetSortedReferences(pair.Value))
                 {
-                    // TODO: Update once interruption set refactoring is complete
-                    // ProgressIndicator should already have been added to the interruption set. This is the
-                    // responsibility of the refactoring subsystem, but it's not clear that this has yet been done
-                    // - other rename refactorings are still using this overload
-                    InterruptableActivityCookie.CheckAndThrow(pi);
+                    Interruption.Current.CheckAndThrow();
 
                     var referenceRange = sortedReference.GetDocumentRange();
 

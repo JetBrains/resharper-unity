@@ -1,7 +1,10 @@
-﻿using JetBrains.DataFlow;
+﻿#nullable enable
+
+using JetBrains.DataFlow;
 using JetBrains.IDE.UI.Extensions;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.Rider.Model.UIAutomation;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings.Rename
@@ -11,13 +14,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         private readonly SerializedFieldRenameModel myModel;
         private readonly BeGrid myContent;
         private readonly IProperty<bool> myShouldAddFormerlySerializedAs;
+        private readonly IProperty<bool> myDontShowPopup;
 
         public FormerlySerializedAsRefactoringPage(Lifetime lifetime, SerializedFieldRenameModel model)
             : base(lifetime)
         {
             myModel = model;
-            myShouldAddFormerlySerializedAs = new Property<bool>(lifetime, "ShouldAddAttribute", myModel.ShouldAddFormerlySerializedAs);
-            myContent = myShouldAddFormerlySerializedAs.GetBeCheckBox(lifetime, "Add _FormerlySerializedAs attribute").InAutoGrid();
+            myShouldAddFormerlySerializedAs = new Property<bool>(Strings.UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property, myModel.ShouldAddFormerlySerializedAs);
+            myContent = myShouldAddFormerlySerializedAs.GetBeCheckBox(lifetime, Strings.UnitySettings_Refactoring_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property).InAutoGrid();
+
+            myDontShowPopup = new Property<bool>(Strings.UnitySettings_Refactoring_Dont_shot_popup_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property, myModel.DontShowPopup);
+            myContent.AddElement(myDontShowPopup
+                .GetBeCheckBox(lifetime, Strings.UnitySettings_Refactoring_Dont_shot_popup_Add_Formally_Serialized_As_Attribute_while_renaming_Serialized_Property));
         }
 
 #if RESHARPER
@@ -35,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
         public override void Commit()
         {
-            myModel.Commit(myShouldAddFormerlySerializedAs.Value);
+            myModel.Commit(myShouldAddFormerlySerializedAs.Value, myDontShowPopup.Value);
         }
     }
 }

@@ -1,11 +1,13 @@
+#nullable enable
+
 using System;
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -50,12 +52,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             myTypeName = warning.TypeName;
         }
 
-        protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+        protected override Action<ITextControl>? ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
             var factory = CSharpElementFactory.GetInstance(myInvocationExpression);
 
             //  try find declaration where string to id conversation is done. If we don't find it, create in top-level class
-            var idDeclaration = TryFindDeclaration(myInvocationExpression, myGraphicsPropertyName, myTypeName, myMapFunction, out var name);
+            var idDeclaration = TryFindDeclaration(myInvocationExpression, myGraphicsPropertyName, myTypeName, myMapFunction);
             if (idDeclaration == null)
             {
                 var psiModule = myInvocationExpression.PsiModule;
@@ -64,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                     myMapFunction,
                     myArgumentExpression.Copy());
 
-                name = NamingUtil.GetUniqueName( myInvocationExpression, myFieldName, NamedElementKinds.PrivateStaticReadonly).NotNull();
+                var name = NamingUtil.GetUniqueName( myInvocationExpression, myFieldName, NamedElementKinds.PrivateStaticReadonly).NotNull();
                 var newDeclaration = factory.CreateFieldDeclaration(psiModule.GetPredefinedType().Int, name);
                 idDeclaration = newDeclaration.DeclaredElement;
                 if (idDeclaration == null)
@@ -78,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 // TODO: [C#8] default interface implementations
                 // interface is not good place to add field declaration
                 var classDeclaration = GetTopLevelClassLikeDeclaration(myInvocationExpression);
-                classDeclaration.AddClassMemberDeclaration(newDeclaration);
+                classDeclaration?.AddClassMemberDeclaration(newDeclaration);
             }
 
             // replace argument
@@ -89,17 +91,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             return null;
         }
 
-        [CanBeNull]
-        private static IDeclaredElement TryFindIdDeclarationInClassLikeDeclaration(IClassLikeDeclaration declaration, string propertyName,
-            string requiredTypeName, string requiredMethodName, out string name)
+        private static IDeclaredElement? TryFindIdDeclarationInClassLikeDeclaration(IClassLikeDeclaration declaration, string propertyName,
+            string requiredTypeName, string requiredMethodName)
         {
-            name = null;
-
             var classDeclaredElement = declaration.DeclaredElement;
             if (classDeclaredElement == null)
                 return null;
 
-            var members = classDeclaredElement.GetMembers().Where(x => x is IField || x is IProperty)
+            var members = classDeclaredElement.GetMembers().Where(x => x is IField or IProperty)
                 .SelectNotNull(x => x.GetDeclarations().SingleOrDefault());
 
             foreach (var member in members)
@@ -107,11 +106,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 switch (member)
                 {
                     case IFieldDeclaration field:
-                        if (HandleField(field, propertyName, requiredTypeName, requiredMethodName, out name))
+                        if (HandleField(field, propertyName, requiredTypeName, requiredMethodName))
                             return field.DeclaredElement;
                         break;
                     case IPropertyDeclaration property:
-                        if (HandleProperty(property, propertyName, requiredTypeName, requiredMethodName, out name))
+                        if (HandleProperty(property, propertyName, requiredTypeName, requiredMethodName))
                         {
                             return property.DeclaredElement;
                         }
@@ -122,9 +121,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             return null;
         }
 
-        private static bool HandleProperty(IPropertyDeclaration property, string propertyName, string requiredTypeName, string requiredMethodName, out string name)
+        private static bool HandleProperty(IPropertyDeclaration property, string propertyName, string requiredTypeName, string requiredMethodName)
         {
-            name = null;
             if (!property.IsStatic)
                 return false;
 
@@ -139,17 +137,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 return false;
 
             var initializer = property.Initial;
-            if (initializer is IExpressionInitializer exprInit && exprInit.Value is IInvocationExpression invocation)
-            {
-                return HandleInvocation(invocation, propertyName, requiredTypeName, requiredMethodName, out name);
-            }
-
-            return false;
+            return initializer is IExpressionInitializer { Value: IInvocationExpression invocation } &&
+                   HandleInvocation(invocation, propertyName, requiredTypeName, requiredMethodName);
         }
 
-        private static bool HandleField(IFieldDeclaration field, string propertyName, string requiredTypeName, string requiredMethodName, out string name)
+        private static bool HandleField(IFieldDeclaration field, string propertyName, string requiredTypeName, string requiredMethodName)
         {
-            name = null;
             if (!field.IsStatic || !field.IsReadonly)
                 return false;
 
@@ -157,51 +150,45 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 return false;
 
             var initializer = field.Initial;
-            if (initializer is IExpressionInitializer exprInit && exprInit.Value is IInvocationExpression invocation)
-            {
-                return HandleInvocation(invocation, propertyName, requiredTypeName, requiredMethodName, out name);
-            }
-
-            return false;
+            return initializer is IExpressionInitializer { Value: IInvocationExpression invocation } &&
+                   HandleInvocation(invocation, propertyName, requiredTypeName, requiredMethodName);
         }
 
         private static bool HandleInvocation(IInvocationExpression invocation, string propertyName, string requiredTypeName,
-            string requiredMethodName, out string name)
+            string requiredMethodName)
         {
-            name = null;
-
-            var method = invocation.Reference?.Resolve().DeclaredElement as IMethod;
+            var method = invocation.Reference.Resolve().DeclaredElement as IMethod;
 
             if (method == null) return false;
             if (!method.ShortName.Equals(requiredMethodName)) return false;
 
-            var containingType = method.GetContainingType();
+            var containingType = method.ContainingType;
             if (containingType == null) return false;
 
             if (!containingType.GetClrName().FullName.Equals(requiredTypeName)) return false;
 
             var arguments = invocation.Arguments;
 
-            if (arguments.Count == 1)
+            if (arguments.Count == 1 && arguments[0].Value != null)
             {
                 var constantValue = arguments[0].Value.ConstantValue(new UniversalContext(invocation));
-                if (constantValue.Value?.Equals(propertyName) == true)
+                if (constantValue.IsString(out var stringValue) && stringValue?.Equals(propertyName) == true)
                     return true;
             }
 
             return false;
         }
 
-        private static IDeclaredElement TryFindDeclaration([NotNull]IInvocationExpression expression, [NotNull]string propertyName,
-            [NotNull]string requiredTypeName, [NotNull]string requiredMethodName, out string name)
+        private static IDeclaredElement? TryFindDeclaration(IInvocationExpression expression, string propertyName,
+                                                            string requiredTypeName, string requiredMethodName)
         {
-            name = null;
             var baseClass = expression.GetContainingNode<IClassLikeDeclaration>();
             if (baseClass == null)
             {
                 return null;
             }
-            var result = TryFindIdDeclarationInClassLikeDeclaration(baseClass, propertyName, requiredTypeName, requiredMethodName, out name);
+
+            var result = TryFindIdDeclarationInClassLikeDeclaration(baseClass, propertyName, requiredTypeName, requiredMethodName);
             if (result != null)
                 return result;
 
@@ -209,7 +196,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             while (next != null)
             {
                 baseClass = next;
-                result = TryFindIdDeclarationInClassLikeDeclaration(baseClass, propertyName, requiredTypeName, requiredMethodName, out name);
+                result = TryFindIdDeclarationInClassLikeDeclaration(baseClass, propertyName, requiredTypeName, requiredMethodName);
                 if (result != null)
                     return result;
 
@@ -219,7 +206,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             return null;
         }
 
-        private static IClassLikeDeclaration GetTopLevelClassLikeDeclaration([NotNull]IInvocationExpression expression)
+        private static IClassLikeDeclaration? GetTopLevelClassLikeDeclaration(IInvocationExpression expression)
         {
             var baseClass = expression.GetContainingNode<IClassLikeDeclaration>();
             if (baseClass == null)
@@ -238,7 +225,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         // TODO: Show different text
         // "Introduce field to cache property index"
         // "Use cached property index"
-        public override string Text => "Use cached property index";
+        public override string Text => Strings.PreferAddressByIdToGraphicsParamsQuickFix_Text_Use_cached_property_index;
 
         public override bool IsAvailable(IUserDataHolder cache)
         {

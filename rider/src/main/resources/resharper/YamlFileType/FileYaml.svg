@@ -1,19 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-  <title>YAML(Gray)</title>
-  <g>
-    <rect width="16" height="16" fill="#ffd3ff" opacity="0"/>
-    <g>
-      <g>
-        <polygon points="14 7 14 4 11 4 11 1 2 1 2 5 5 5 5 8 8 8 8 14 16 14 16 7 14 7" fill="#f4f4f4"/>
-        <rect x="3" y="2" width="7" height="2" fill="#388a34"/>
-        <rect x="6" y="5" width="7" height="2" fill="#388a34"/>
-        <rect x="9" y="8" width="6" height="2" fill="#323232"/>
-        <rect x="9" y="11" width="6" height="2" fill="#323232"/>
-      </g>
-      <g>
-        <polygon points="4.201 7 3.487 8.496 2.773 7 0 7 0 8.26 2 12.297 2 15 4.975 15 4.975 12.297 6.975 8.26 6.975 7 4.201 7" fill="#f4f4f4"/>
-        <polygon points="4.832 8 3.487 10.818 2.143 8 0.987 8 2.854 11.769 2.854 14 4.121 14 4.121 11.769 5.987 8 4.832 8" fill="#323232"/>
-      </g>
-    </g>
-  </g>
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <path fill="#62b543" d="M3 2h7v2H3zm3 3h7v2H6z"/>
+  <path fill="#9aa7b0" d="M9 8h6v2H9zm0 3h6v2H9zM4.832 8l-1.345 2.818L2.143 8H.987l1.867 3.769V14h1.267v-2.231L5.987 8H4.832z"/>
 </svg>

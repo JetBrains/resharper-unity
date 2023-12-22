@@ -1,0 +1,162 @@
+Shader "MyShader"
+{
+    SubShader
+    {
+        Blend One One
+        
+        HLSLPROGRAM
+        void |abc|()
+        {
+        }
+
+        void abc2()
+        {
+        }
+        ENDHLSL
+    }
+}
+---------------------------------------------------------
+Shader "MyShader"
+{
+    SubShader
+    {
+        Blend One One
+        
+        HLSLPROGRAM
+        void |abc()|
+        {
+        }
+
+        void abc2()
+        {
+        }
+        ENDHLSL
+    }
+}
+---------------------------------------------------------
+Shader "MyShader"
+{
+    SubShader
+    {
+        Blend One One
+        
+        HLSLPROGRAM
+        |void abc()|
+        {
+        }
+
+        void abc2()
+        {
+        }
+        ENDHLSL
+    }
+}
+---------------------------------------------------------
+Shader "MyShader"
+{
+    SubShader
+    {
+        Blend One One
+        
+        HLSLPROGRAM
+        |void abc()
+        {
+        }|
+
+        void abc2()
+        {
+        }
+        ENDHLSL
+    }
+}
+---------------------------------------------------------
+Shader "MyShader"
+{
+    SubShader
+    {
+        Blend One One
+        
+        HLSLPROGRAM|
+        void abc()
+        {
+        }
+
+        void abc2()
+        {
+        }
+        |ENDHLSL
+    }
+}
+---------------------------------------------------------
+Shader "MyShader"
+{
+    SubShader
+    {
+        Blend One One
+        
+|        HLSLPROGRAM
+        void abc()
+        {
+        }
+
+        void abc2()
+        {
+        }
+        ENDHLSL
+|    }
+}
+---------------------------------------------------------
+Shader "MyShader"
+{
+    SubShader
+    {
+|        Blend One One
+        
+        HLSLPROGRAM
+        void abc()
+        {
+        }
+
+        void abc2()
+        {
+        }
+        ENDHLSL
+|    }
+}
+---------------------------------------------------------
+Shader "MyShader"
+{
+|    SubShader
+    {
+        Blend One One
+        
+        HLSLPROGRAM
+        void abc()
+        {
+        }
+
+        void abc2()
+        {
+        }
+        ENDHLSL
+    }
+|}
+---------------------------------------------------------
+|Shader "MyShader"
+{
+    SubShader
+    {
+        Blend One One
+        
+        HLSLPROGRAM
+        void abc()
+        {
+        }
+
+        void abc2()
+        {
+        }
+        ENDHLSL
+    }
+}|
+---------------------------------------------------------

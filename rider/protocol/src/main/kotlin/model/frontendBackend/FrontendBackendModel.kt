@@ -1,11 +1,13 @@
 package model.frontendBackend
 
-import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
 import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
+import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rider.model.nova.ide.SolutionModel.RdDocumentId
+import com.jetbrains.rider.model.nova.ide.SolutionModel.TextControlId
+import com.jetbrains.rider.model.nova.ide.SolutionModel.TextControlExtension
 import model.lib.Library
 
 // frontend <-> backend model, from point of view of frontend, meaning:
@@ -35,6 +37,21 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         +"Git"
     }
 
+    private val RdShaderApi = enum {
+        +"D3D11"
+        +"GlCore"
+        +"GlEs"
+        +"GlEs3"
+        +"Metal"
+        +"Vulkan"
+        +"D3D11L9X"
+    }
+
+    private val RdShaderPlatform = enum {
+        +"Desktop"
+        +"Mobile"
+    }
+
     private val UnityPackage = structdef {
         field("id", string)
         field("version", string)
@@ -62,17 +79,26 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
     }
 
     private val shaderInternScope = internScope()
-    private val shaderContextDataBase = baseclass {}
-    private val autoShaderContextData = classdef extends shaderContextDataBase {}
-    private val shaderContextData = classdef extends shaderContextDataBase {
-        field("path", string.interned(shaderInternScope))
-        field("name", string.interned(shaderInternScope))
-        field("folder", string.interned(shaderInternScope))
+
+    // Shader Contexts
+    private val shaderContextDataBase = basestruct {}
+    private val autoShaderContextData = structdef extends shaderContextDataBase {}
+    private val shaderContextData = structdef extends shaderContextDataBase {
+        field("path", string.interned(shaderInternScope).attrs(KnownAttrs.NlsSafe))
+        field("name", string.interned(shaderInternScope).attrs(KnownAttrs.NlsSafe))
+        field("folder", string.interned(shaderInternScope).attrs(KnownAttrs.NlsSafe))
         field("start", int)
         field("end", int)
         field("startLine", int)
     }
 
+    private val rdShaderVariantExtension = classdef extends TextControlExtension {
+        property("info", structdef("rdShaderVariantInfo") {
+            field("enabledCount", int)
+            field("suppressedCount", int)
+            field("availableCount", int)
+        })
+    }
 
     init {
         setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.plugins.unity.model.frontendBackend")
@@ -99,6 +125,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
             property("enableDebuggerExtensions", bool)
             property("ignoreBreakOnUnhandledExceptionsForIl2Cpp", bool)
+            property("forcedTimeoutForAdvanceUnityEvaluation", int)
+            property("previewShaderVariantsSupport", bool)
         })
 
         field("playControls", Library.PlayControls)
@@ -114,14 +142,30 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("unitTestPreference", UnitTestLaunchPreference.nullable).documentation = "Selected unit testing mode. Everything is handled by the backend, but this setting is from a frontend combobox"
 
         // Shader contexts
-        call("requestShaderContexts", RdDocumentId, immutableList(shaderContextDataBase))
-        call("requestCurrentContext", RdDocumentId, shaderContextDataBase)
-        source("setAutoShaderContext", RdDocumentId)
-        source("changeContext", structdef ("contextInfo"){
-            field("target", RdDocumentId)
-            field("path", string.interned(shaderInternScope))
-            field("start", int)
-            field("end", int)
+        map("shaderContexts", RdDocumentId, shaderContextDataBase).readonly
+        call("createSelectShaderContextInteraction", RdDocumentId, classdef("selectShaderContextDataInteraction") {
+            field("items", immutableList(shaderContextData))
+            source("selectItem", int) // -1 for no auto-context
+        })
+
+        // Shader variants
+        map("shaderVariantExtensions", TextControlId, rdShaderVariantExtension)
+        call("createShaderVariantInteraction", structdef("createShaderVariantInteractionArgs") {
+            field("documentId", RdDocumentId)
+            field("offset", int)
+        }, classdef("shaderVariantInteraction") {
+            field("shaderFeatures", immutableList(immutableList(string)))
+            field("enabledKeywords", immutableList(string))
+            field("shaderApi", RdShaderApi)
+            field("shaderPlatform", RdShaderPlatform)
+            field("totalKeywordsCount", int)
+            field("totalEnabledKeywordsCount", int)
+            field("availableKeywords", int)
+            source("enableKeyword", string)
+            source("disableKeyword", string)
+            source("disableKeywords", immutableList(string))
+            source("setShaderApi", RdShaderApi)
+            source("setShaderPlatform", RdShaderPlatform)
         })
 
         // Actions called from the frontend to the backend (and/or indirectly, Unity)
@@ -131,6 +175,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         source("installEditorPlugin", void)
         source("showFileInUnity", string).documentation = "Focus Unity, focus the Project window and select and ping the given file path"
         call("generateUIElementsSchema", void, bool).documentation = "Tell the Unity backend to generate UIElement schema"
+        call("hasUnsavedState", void, bool).documentation = "Returns true if the currently open Unity editor has any unsaved state, such as scenes, prefabs, etc."
+        call("getAndroidSdkRoot", void, string.nullable).async.documentation = "Get the currently configured Android SDK root location, if available"
 
         // Actions called from the backend to the frontend
         sink("activateRider", void).documentation = "Tell Rider to bring itself to the foreground. Called when opening a file from Unity"
@@ -146,10 +192,15 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("riderFrontendTests", bool)
         call("runMethodInUnity", Library.RunMethodData, Library.RunMethodResult)
         property("isDeferredCachesCompletedOnce", bool)
-
-        call ("hasUnsavedScenes", void, bool)
+        property("isUnityPackageManagerInitiallyIndexFinished", bool)
 
         // Actions called from Unity to the backend
         callback("openFileLineCol", RdOpenFileArgs, bool).documentation = "Called from Unity to quickly open a file in an existing Rider instance"
+
+        // profiler
+        call("startProfiling", bool, void).documentation = "Start profiling and enter PlayMode, depending on the param"
+
+        // debug
+        call("getScriptingBackend", void, int).documentation = "Mono, IL2CPP, WinRTDotNET"
     }
 }

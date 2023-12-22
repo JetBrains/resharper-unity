@@ -1,11 +1,14 @@
+#nullable enable
+
 using System;
-using JetBrains.Application.Threading;
+using System.Linq;
 using JetBrains.Collections.Viewable;
+using JetBrains.Core;
 using JetBrains.Diagnostics;
-using JetBrains.IDE;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
+using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
 using JetBrains.ReSharper.Resources.Shell;
@@ -20,25 +23,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
     [SolutionComponent]
     public class PassthroughHost
     {
-        private readonly ISolution mySolution;
-        private readonly IThreading myThreading;
-        private readonly IEditorManager myEditorManager;
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly FrontendBackendHost myFrontendBackendHost;
         private readonly ILogger myLogger;
 
         public PassthroughHost(Lifetime lifetime,
-                               ISolution solution,
-                               IThreading threading,
-                               IEditorManager editorManager,
                                UnitySolutionTracker unitySolutionTracker,
                                BackendUnityHost backendUnityHost,
                                FrontendBackendHost frontendBackendHost,
                                ILogger logger)
         {
-            mySolution = solution;
-            myThreading = threading;
-            myEditorManager = editorManager;
             myBackendUnityHost = backendUnityHost;
             myFrontendBackendHost = frontendBackendHost;
             myLogger = logger;
@@ -57,8 +51,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
                     // This allows us to populate the protocol on reconnection before other subscribes start to advise
                     using (Signal.PriorityAdviseCookie.Create())
                     {
-                        backendUnityHost.BackendUnityModel.ViewNotNull(unityProjectLifetime,
-                            AdviseUnityToFrontendModel);
+                        // TODO: ReactiveEx.ViewNotNull isn't NRT ready
+                        backendUnityHost.BackendUnityModel!.ViewNotNull<BackendUnityModel>(unityProjectLifetime,
+                            (l, backendUnityModel) =>
+                            {
+                                Assertion.AssertNotNull(backendUnityModel);
+                                AdviseUnityToFrontendModel(l, backendUnityModel);
+                            });
                     }
 
                     backendUnityHost.BackendUnityModel.Advise(lifetime, backendUnityModel =>
@@ -95,7 +94,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 
             // Called from frontend to generate the UIElements schema files
             frontendBackendModel.GenerateUIElementsSchema.Set((l, u) =>
-                backendUnityModelProperty.Maybe.ValueOrDefault?.GenerateUIElementsSchema.Start(l, u).ToRdTask(l));
+            {
+                var model = backendUnityModelProperty.Maybe.ValueOrDefault;
+                return model != null
+                    ? model.GenerateUIElementsSchema.Start(l, u).ToRdTask(l)
+                    : RdTask.Successful(false);
+            });
+
+            frontendBackendModel.GetAndroidSdkRoot.SetAsync(async (l, u) =>
+            {
+                var model = backendUnityModelProperty.Maybe.ValueOrDefault;
+                return model == null ? null : await model.GetAndroidSdkRoot.Start(l, u).AsTask();
+            });
 
             // Signalled from frontend to select and ping the object in the Project view
             frontendBackendModel.ShowFileInUnity.Advise(lifetime, file =>
@@ -110,17 +120,45 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
             {
                 var backendUnityModel = backendUnityModelProperty.Maybe.ValueOrDefault;
                 return backendUnityModel == null
-                    ? Rd.Tasks.RdTask<RunMethodResult>.Cancelled()
+                    ? RdTask.Cancelled<RunMethodResult>()
                     : backendUnityModel.RunMethodInUnity.Start(l, data).ToRdTask(l);
             });
 
-            frontendBackendModel.HasUnsavedScenes.Set((l, u) =>
+            frontendBackendModel.HasUnsavedState.Set((l, u) =>
             {
                 var backendUnityModel = backendUnityModelProperty.Maybe.ValueOrDefault;
                 return backendUnityModel == null
-                    ? Rd.Tasks.RdTask<bool>.Cancelled()
-                    : backendUnityModel.HasUnsavedScenes.Start(l, u).ToRdTask(l);
+                    ? RdTask.Cancelled<bool>()
+                    : backendUnityModel.HasUnsavedState.Start(l, u).ToRdTask(l);
             });
+
+            frontendBackendModel.StartProfiling.Set((l, play) =>
+            {
+                var backendUnityModel = backendUnityModelProperty.Maybe.ValueOrDefault;
+                var profilerApiPath = GetProfilerApiPath();
+                return backendUnityModel == null || profilerApiPath == null
+                    ? RdTask.Cancelled<Unit>()
+                    : backendUnityModel.StartProfiling.Start(l, new ProfilingData(play, profilerApiPath, false)).ToRdTask(l);
+            });
+        }
+
+        private string? GetProfilerApiPath()
+        {
+            var etwAssemblyShorName = "JetBrains.Etw";
+            var etwAssemblyLocation = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name.Equals(etwAssemblyShorName))?.Location;
+            if (etwAssemblyLocation == null)
+            {
+                myLogger.Error($"{etwAssemblyShorName} was not found.");
+                return null;
+            }
+            var unityProfilerApiPath = FileSystemPath.Parse(etwAssemblyLocation).Parent
+                .Combine("JetBrains.Etw.UnityProfilerApi.dll");
+            if (!unityProfilerApiPath.ExistsFile)
+            {
+                myLogger.Error($"{unityProfilerApiPath} doesn't exist.");
+                return null;
+            }
+            return unityProfilerApiPath.FullPath;
         }
 
         private void AdviseUnityToFrontendModel(Lifetime lifetime, BackendUnityModel backendUnityModel)
@@ -205,7 +243,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
         {
             backendUnityModel.OpenFileLineCol.Set((lf, args) =>
             {
-                Rd.Tasks.RdTask<bool> result = new Rd.Tasks.RdTask<bool>();
+                RdTask<bool> result = new RdTask<bool>();
                 using (ReadLockCookie.Create())
                 {
                     try

@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
+import com.intellij.openapi.util.NlsSafe
 import java.awt.Color
 import java.util.*
 
@@ -76,26 +77,13 @@ class UnityLogTokenizer {
                 }
             }
             else if (token.type == UnityLogTokenType.Color) {
-                for (x in tokens.count() - 1 downTo i) {
-                    if (tokens[x].type == UnityLogTokenType.ColorEnd && !tokens[x].used) {
-                        token.used = true
-                        tokens[x].used = true
-
-                        val color = this.parseColor(getTokenValue(token.token))
-                        for (y in i until x) {
-                            tokens[y].color = color
-                        }
-                        break
-                    }
-                }
+                colorizeTokens(i, tokens, token)
             }
-            else if(token.type == UnityLogTokenType.Quad)
-            {
+            else if (token.type == UnityLogTokenType.Quad) {
                 token.used = true
             }
-            else if(validTokens.containsValue(token.type))
-            {
-                if(!startToEndMapping.containsKey(token.type))
+            else if (validTokens.containsValue(token.type)) {
+                if (!startToEndMapping.containsKey(token.type))
                     continue
 
                 val endToken = startToEndMapping[token.type]
@@ -105,6 +93,28 @@ class UnityLogTokenizer {
                         tokens[x].used = true
                     }
                 }
+            }
+        }
+    }
+
+    private fun colorizeTokens(i: Int,
+                               tokens: MutableList<Token>,
+                               token: Token) {
+        for (x in i+1 until tokens.count()) {
+            if (tokens[x].type == UnityLogTokenType.Color && !tokens[x].used) {
+                colorizeTokens(x, tokens, tokens[x])
+            }
+
+            if (tokens[x].type == UnityLogTokenType.ColorEnd && !tokens[x].used) {
+                token.used = true
+                tokens[x].used = true
+
+                val color = this.parseColor(getTokenValue(token.token))
+                for (y in i until x) {
+                    if (tokens[y].color == null)
+                        tokens[y].color = color
+                }
+                break
             }
         }
     }
@@ -188,6 +198,7 @@ class UnityLogTokenizer {
     }
 
     data class Token(
+        @NlsSafe
         val token: String,
         val type: UnityLogTokenType,
         var bold: Boolean = false,

@@ -1,0 +1,17 @@
+﻿# 6 ITEMS #
+
++ Category(Braces)
+CustomEditor(Space)
+Dependency(Space)
+Fallback(Space)
+Properties(Braces)
+SubShader(Braces)
+# AUTOMATIC #
+# 6 ITEMS #
+
++ Category(Braces)
+CustomEditor(Space)
+Dependency(Space)
+Fallback(Space)
+Properties(Braces)
+SubShader(Braces)

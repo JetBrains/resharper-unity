@@ -19,7 +19,7 @@ class ConvertToPausepointPopupActionProvider : IDotNetLineBreakpointPopupActions
         return emptyList()
     }
 
-    private class ConvertToPausepointAction(private val breakpoint: XLineBreakpoint<*>): DumbAwareAction(UnityPausepointConstants.convertToPausepointText) {
+    private class ConvertToPausepointAction(private val breakpoint: XLineBreakpoint<*>): DumbAwareAction(UnityPausepointConstants.convertToPausepointActionText) {
         override fun update(e: AnActionEvent) {
             e.presentation.isVisible = e.project?.let { UnityProjectDiscoverer.getInstance(it).isUnityProject } == true
         }

@@ -14,6 +14,7 @@ using JetBrains.Util;
 using JetBrains.Util.Collections;
 using JetBrains.Util.Extension;
 using static JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityProjectSettingsUtils;
+using ProjectExtensions = JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel.ProjectExtensions;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
@@ -22,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
     {
         private readonly AssetSerializationMode myAssetSerializationMode;
         private readonly IEnumerable<IProjectSettingsAssetHandler> myProjectSettingsAssetHandlers;
+        private readonly ISolution mySolution;
         private readonly ProjectSettingsCacheItem myLocalCache = new();
 
         private readonly CountingSet<string> myShortNameAtBuildSettings = new();
@@ -32,13 +34,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                                          IShellLocks shellLocks,
                                          IPersistentIndexManager persistentIndexManager,
                                          AssetSerializationMode assetSerializationMode,
-                                         IEnumerable<IProjectSettingsAssetHandler> projectSettingsAssetHandlers)
+                                         IEnumerable<IProjectSettingsAssetHandler> projectSettingsAssetHandlers,
+                                         ISolution solution)
             : base(lifetime, shellLocks, persistentIndexManager, ProjectSettingsCacheItem.Marshaller)
         {
             myAssetSerializationMode = assetSerializationMode;
             myProjectSettingsAssetHandlers = projectSettingsAssetHandlers;
+            mySolution = solution;
 
-            myLocalCache.Tags.AddItems("Untagged", "Respawn", "Finish", "EditorOnly", "MainCamera", "Player", "GameController");
+            myLocalCache.Tags.AddItems("Finish", "Player", "Respawn", "Untagged", "EditorOnly", "MainCamera", "GameController");
         }
 
         public bool IsAvailable() => myAssetSerializationMode.IsForceText;
@@ -54,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 return null;
 
             var cacheItem = new ProjectSettingsCacheItem();
-            if (sourceFile.IsScene())
+            if (sourceFile.IsScene() && mySolution.SolutionDirectory.Combine(ProjectExtensions.AssetsFolder).IsPrefixOf(sourceFile.GetLocation())) // todo: maybe consider RIDER-94615 Support Scenes in the local packages
                 cacheItem.Scenes.SceneNames.Add(GetUnityPathFor(sourceFile));
 
             foreach (var projectSettingsAssetHandler in myProjectSettingsAssetHandlers)

@@ -1,47 +1,77 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
+import com.intellij.openapi.observable.properties.AtomicProperty
+import com.intellij.ui.dsl.builder.Align
+import com.intellij.ui.dsl.builder.Row
+import com.intellij.ui.dsl.builder.bindText
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.gridLayout.UnscaledGaps
+import com.jetbrains.rider.plugins.unity.UnityBundle
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
+import javax.swing.JPanel
 
-class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel)
-    : com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorFormLayout() {
+class UnityAttachToEditorForm(viewModel: UnityAttachToEditorViewModel) {
+    private var rootPanel: JPanel? = null
+    private lateinit var commentRow: Row
+    private lateinit var usingProcessRow: Row
+    private lateinit var editorInstanceJsonInfoRow: Row
+    private var processIdInfo = AtomicProperty("")
+    private var editorInstanceJsonError = AtomicProperty("")
+
+    val panel: JPanel
+        get() = rootPanel!!
 
     init {
-        editorInstanceJsonErrorPanel.isVisible = false
-        editorInstanceJsonInfoPanel.isVisible = false
-
+        val processesList = ProcessesPanel()
         processesList.init(viewModel)
 
-        viewModel.editorInstanceJsonStatus.advise(viewModel.lifetime) {
-            editorInstanceJsonError.text = when (it) {
-                EditorInstanceJsonStatus.Error -> "Error reading Library/EditorInstance.json"
-                EditorInstanceJsonStatus.Missing -> "Cannot read Library/EditorInstance.json - file is missing"
-                EditorInstanceJsonStatus.Outdated -> "Outdated process ID from Library/EditorInstance.json"
-                else -> ""
+        rootPanel = panel {
+            editorInstanceJsonInfoRow = row {
+                label(UnityBundle.message("editorinstance.error")).bindText(editorInstanceJsonError)
             }
 
-            editorInstanceJsonErrorPanel.isVisible = it != null && it != EditorInstanceJsonStatus.Valid
-            editorInstanceJsonInfoPanel.isVisible = it == EditorInstanceJsonStatus.Valid
+            indent {
+                commentRow = row {
+                    label("").customize(UnscaledGaps.Companion.EMPTY)
+                        .comment(UnityBundle.message(
+                        "comment.label.text.editorinstance.json.file.required.to.automatically.configure.run.configuration"))
+                }
+            }
+
+            usingProcessRow = row {
+                label(UnityBundle.message("using.process")).bindText(processIdInfo)
+            }
+
+            row {
+                cell(processesList)
+                    .customize(UnscaledGaps(50, 0))
+                    .align(Align.FILL)
+            }
+        }
+
+        viewModel.editorInstanceJsonStatus.advise(viewModel.lifetime) {
+            editorInstanceJsonError.set(when (it) {
+                                                EditorInstanceJsonStatus.Error -> UnityBundle.message("error.text.error.reading.library.editorinstance.json")
+                                                EditorInstanceJsonStatus.Missing -> UnityBundle.message("error.text.cannot.read.library.editorinstance.json.file.is.missing")
+                                                EditorInstanceJsonStatus.Outdated -> UnityBundle.message("error.text.outdated.process.id.from.library.editorinstance.json")
+                                                else -> ""
+                                            })
+
+            commentRow.visible(it != EditorInstanceJsonStatus.Valid)
+            usingProcessRow.visible(it == EditorInstanceJsonStatus.Valid)
 
             // EditorInstance.json always takes priority of manually choosing
             processesList.isEnabled = it != EditorInstanceJsonStatus.Valid
         }
 
         viewModel.pid.advise(viewModel.lifetime) {
-
-            val value = it?.toString() ?: ""
-
-            // This text is only shown when editorInstanceJsonInfoPanel is visible
-            processIdInfo.text = "Using process ID $value from Library/EditorInstance.json"
-
-            // This is the sound of me giving up. Changing the selection of the JTable doesn't
-            // mark the SettingsEditor as modified - whoever is interested subscribes to the
-            // events from this#getPanel() and children, but excludes JTable. I've tried raising
-            // SettingsEditor#fireEditorStateChanged, but that class is usually wrapped, and
-            // the wrapper doesn't forward those events. The UI event subscription works, though,
-            // because the wrapper is also a parent to this panel, and it subscribes to all
-            // children recursively. So this is a complete cheat, and I'll stuff the value in a
-            // hidden text field so that the UI events catch it. Ho hum.
-            textField1.text = value
+            val value = it?.toString()
+            if (value == null)
+                processIdInfo.set("")
+            else
+            {
+                processIdInfo.set( UnityBundle.message("using.process.id.0.from.library.editorinstance.json", value))
+            }
         }
     }
 }

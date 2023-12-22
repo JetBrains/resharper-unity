@@ -1,5 +1,5 @@
 Search target
-    DefaultNamespace.MethodsContainer4.VoidHandler4_b_1():void
+    DefaultNamespace.MethodsContainer4.VoidHandler4_b_1() : void
 Found usages  (2 usages found)
     <Assembly-CSharp>  (1 usage found)
         Assets  (1 usage found)
@@ -15,4 +15,4 @@ Found usages  (2 usages found)
                     VariantBranchA  (1 usage found)
                         VariantLeafA  (1 usage found)
                             Script4  (1 usage found)
-                                m_MethodName: VoidHandler4_b_1
+                                 m_MethodName: VoidHandler4_b_1

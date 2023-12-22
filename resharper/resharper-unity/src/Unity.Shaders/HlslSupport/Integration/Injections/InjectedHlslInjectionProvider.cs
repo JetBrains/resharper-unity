@@ -1,3 +1,4 @@
+#nullable enable
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Injections;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Tree;
@@ -24,6 +25,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.HlslSupport.Integration.Inje
         public override bool IsApplicableToNode(ITreeNode node, IInjectedFileContext context)
         {
             return node is ICgContent;
+        }
+
+        public override IInjectedNodeContext? CreateInjectedNodeContext(IInjectedFileContext fileContext, ITreeNode originalNode)
+        {
+            var context = base.CreateInjectedNodeContext(fileContext, originalNode);
+            if (originalNode.Parent is IIncludeBlock)
+                context?.GeneratedNode.UserData.PutKey(IsInjectedHeaderKey);
+            return context;
         }
 
         public override IInjectedNodeContext Regenerate(IndependentInjectedNodeContext nodeContext)

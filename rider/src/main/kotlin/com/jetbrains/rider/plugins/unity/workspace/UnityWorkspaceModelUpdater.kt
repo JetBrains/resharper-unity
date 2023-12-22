@@ -2,34 +2,39 @@
 
 package com.jetbrains.rider.plugins.unity.workspace
 
+import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.util.withUiContext
+import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.util.application
+import com.intellij.platform.backend.workspace.WorkspaceModel
 import com.intellij.workspaceModel.ide.getInstance
-import com.intellij.workspaceModel.storage.MutableEntityStorage
-import com.intellij.workspaceModel.storage.bridgeEntities.addContentRootEntityWithCustomEntitySource
-import com.intellij.workspaceModel.storage.impl.url.toVirtualFileUrl
-import com.intellij.workspaceModel.storage.url.VirtualFileUrl
-import com.intellij.workspaceModel.storage.url.VirtualFileUrlManager
+import com.intellij.platform.workspace.storage.MutableEntityStorage
+import com.intellij.platform.workspace.storage.impl.url.toVirtualFileUrl
+import com.intellij.platform.workspace.storage.url.VirtualFileUrl
+import com.intellij.platform.workspace.storage.url.VirtualFileUrlManager
 import com.jetbrains.rider.plugins.unity.isUnityProject
 import com.jetbrains.rider.projectView.solutionDirectory
 import com.jetbrains.rider.projectView.workspace.RiderEntitySource
-import com.jetbrains.rider.projectView.workspace.getOrCreateRiderModuleEntity
-import com.jetbrains.rider.projectView.workspace.impl.WorkspaceModelEditingFacade
+import com.jetbrains.rider.workspaceModel.getOrCreateRiderModuleEntity
 
-class UnityWorkspaceModelUpdater(private val project: Project) {
-    init {
-        application.invokeLater {
-            if (project.isDisposed)
-                return@invokeLater
-
-            if (project.isUnityProject()) {
-                rebuildWorkspaceModel()
-            }
+class UnityWorkspaceModelUpdaterInitializer : ProjectActivity {
+    override suspend fun execute(project: Project) {
+        if (!project.isDisposed && project.isUnityProject()) {
+            withUiContext { UnityWorkspaceModelUpdater.getInstance(project).rebuildModel() }
         }
+    }
+}
+
+@Service(Service.Level.PROJECT)
+class UnityWorkspaceModelUpdater(private val project: Project) {
+    companion object {
+        fun getInstance(project: Project):UnityWorkspaceModelUpdater =  project.service()
     }
 
     @Suppress("UnstableApiUsage")
-    private fun rebuildWorkspaceModel() {
+    fun rebuildModel() {
         application.assertIsDispatchThread()
         if (!project.isUnityProject()) return
 
@@ -45,14 +50,14 @@ class UnityWorkspaceModelUpdater(private val project: Project) {
         val excludedUrls = emptyList<VirtualFileUrl>()
         val excludedPatterns = UNITY_EXCLUDED_PATTERNS
 
-        builder.addContentRootEntityWithCustomEntitySource(
+        builder.addContentRootEntity(
             project.solutionDirectory.resolve("Packages").toVirtualFileUrl(virtualFileUrlManager),
             excludedUrls,
             excludedPatterns,
             packagesModuleEntity,
             RiderUnityEntitySource)
 
-        builder.addContentRootEntityWithCustomEntitySource(
+        builder.addContentRootEntity(
             project.solutionDirectory.resolve("ProjectSettings").toVirtualFileUrl(virtualFileUrlManager),
             excludedUrls,
             excludedPatterns,
@@ -60,8 +65,9 @@ class UnityWorkspaceModelUpdater(private val project: Project) {
             RiderUnityEntitySource)
 
         application.runWriteAction {
-            val workspaceModel = WorkspaceModelEditingFacade.getInstance(project).getWorkspaceModelForEditing()
-            workspaceModel.updateProjectModel { x -> x.replaceBySource({ it is RiderUnityEntitySource }, builder) }
+            WorkspaceModel.getInstance(project).updateProjectModel("Unity: update workspace model") {
+                x -> x.replaceBySource({ it is RiderUnityEntitySource }, builder)
+            }
         }
     }
 

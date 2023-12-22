@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "com.jetbrains.from_disk": "file:../LoadFromDiskPackages/from_disk",
+    "com.jetbrains.from_git": "ssh://git@git.jetbrains.team/george-l-sandbox/unity-resources-package.git"
+  }
+}

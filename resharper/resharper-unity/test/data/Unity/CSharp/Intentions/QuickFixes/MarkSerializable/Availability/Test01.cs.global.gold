@@ -1,0 +1,19 @@
+﻿using UnityEngine;
+
+public class NotSerialized
+{
+    public string NotSerializedField1;
+    [|SerializeField|(0)] public string SerializedField2;
+}
+
+------------------------------------------------
+0: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Make type 'NotSerialized' serializable
+Remove redundant attribute
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution

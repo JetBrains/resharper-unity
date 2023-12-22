@@ -18,5 +18,5 @@ public class Test2 : MonoBehaviour
 
 public struct Tes3
 {
-  public int Bar;
+    [SerializeField, FormerlySerializedAs("Foo")] public int Bar;
 }

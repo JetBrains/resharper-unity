@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public abstract class ShaderLabHighlightingTestBase<T> : HighlightingTestBase
     {
-        protected override PsiLanguageType CompilerIdsLanguage => ShaderLabLanguage.Instance;
+        protected override PsiLanguageType? CompilerIdsLanguage => ShaderLabLanguage.Instance;
 
         protected sealed override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
             IContextBoundSettingsStore settingsStore)

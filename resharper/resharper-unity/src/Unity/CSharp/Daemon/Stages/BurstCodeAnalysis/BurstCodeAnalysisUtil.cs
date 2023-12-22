@@ -1,11 +1,11 @@
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
-using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis
 {
@@ -13,20 +13,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         private static readonly IClrTypeName[] ourFixedStrings =
         {
-            new ClrTypeName("Unity.Collections.FixedString32"),
-            new ClrTypeName("Unity.Collections.FixedString64"),
-            new ClrTypeName("Unity.Collections.FixedString128"),
-            new ClrTypeName("Unity.Collections.FixedString512"),
-            new ClrTypeName("Unity.Collections.FixedString4096"),
-            new ClrTypeName("Unity.Collections.FixedString32Bytes"),
-            new ClrTypeName("Unity.Collections.FixedString64Bytes"),
-            new ClrTypeName("Unity.Collections.FixedString128Bytes"),
-            new ClrTypeName("Unity.Collections.FixedString512Bytes"),
-            new ClrTypeName("Unity.Collections.FixedString4096Bytes")
+            KnownTypes.FixedString32, 
+            KnownTypes.FixedString64,
+            KnownTypes.FixedString128,
+            KnownTypes.FixedString512,
+            KnownTypes.FixedString4096,
+            KnownTypes.FixedString32Bytes,
+            KnownTypes.FixedString64Bytes,
+            KnownTypes.FixedString128Bytes,
+            KnownTypes.FixedString512Bytes,
+            KnownTypes.FixedString4096Bytes
         };
-        
-        public const string BURST_DISPLAY_NAME = BURST_TOOLTIP;
-        public const string BURST_TOOLTIP = "Burst compiled code";
+
+        public static readonly string BurstDisplayName = Strings.BurstCompiledCode_Text;
+        public static readonly string BurstTooltip = Strings.BurstCompiledCode_Text;
 
         /// <summary>
         /// Type can be freely used anywhere in Burst context without satisfying any constraints
@@ -51,6 +51,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 case not null when type.IsPointerType():
                 case not null when type.IsOpenType:
                 case not null when IsFixedString(type):
+                    return true;
+                case not null when type.IsString(): //string type is partially supported by the Burst
                     return true;
                 default:
                     return false;
@@ -165,7 +167,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
         public static bool IsBurstProhibitedObjectMethod([NotNull] IMethod method)
         {
-            var containingTypeElement = method.GetContainingType();
+            var containingTypeElement = method.ContainingType;
 
             // GetHashCode permitted in burst only if no boxing happens i.e. calling base.GetHashCode
             // Equals is prohibited because it works through System.Object and require boxing, which 

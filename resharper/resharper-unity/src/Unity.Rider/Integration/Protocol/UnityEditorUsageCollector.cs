@@ -4,17 +4,24 @@ using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.FeaturesStatistics;
+using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Services.FeatureStatistics;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.UsageStatistics.FUS.EventLog;
 using JetBrains.UsageStatistics.FUS.EventLog.Events;
 using JetBrains.UsageStatistics.FUS.EventLog.Fus;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 {
     [SolutionComponent]
     public class UnityEditorUsageCollector : SolutionUsagesCollector
     {
+        private readonly UnitySolutionTracker mySolutionTracker;
+
         private enum ScriptingRuntime
         {
             Net35,
@@ -27,8 +34,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
 
         private IViewableProperty<bool> IsReady { get; } = new ViewableProperty<bool>(false);
 
-        public UnityEditorUsageCollector(FeatureUsageLogger featureUsageLogger)
+        public UnityEditorUsageCollector(UnitySolutionTracker solutionTracker, FeatureUsageLogger featureUsageLogger)
         {
+            mySolutionTracker = solutionTracker;
             myGroup = new EventLogGroup("dotnet.unity.unityeditor", "Connected Unity Editor Information", 1, featureUsageLogger);
             
             myConnectedUnityEvent = myGroup.RegisterEvent("version", "Project Unity Version", 
@@ -56,29 +64,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Protocol
             else
                 myScriptingRuntime = ScriptingRuntime.Net46;
             
-            (myUnityVersion, myUnityVersionCustom) = UnityProjectInformationUsageCollector.GetUnityVersion(unityVersion);
+            (myUnityVersion, myUnityVersionCustom) = UnityVersionUtils.GetUnityVersion(unityVersion);
 
             IsReady.Value = true;
         }
 
-        public override Task<ISet<MetricEvent>> GetMetricsAsync(Lifetime lifetime)
+        public override async Task<ISet<MetricEvent>> GetMetricsAsync(Lifetime lifetime)
         {
-            var tcs = lifetime.CreateTaskCompletionSource<ISet<MetricEvent>>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            IsReady.AdviseUntil(lifetime, v =>
+            if (!mySolutionTracker.IsUnityProject.HasTrueValue())
+                return EmptySet<MetricEvent>.Instance;
+                
+            return await lifetime.StartMainReadAsync(async () =>
             {
-                if (v)
+                await IsReady.NextTrueValueAsync(lifetime);
+                var hashSet = new HashSet<MetricEvent>
                 {
-                    var hashSet = new HashSet<MetricEvent>();
-                    hashSet.Add(myConnectedUnityEvent.Metric(myUnityVersion, myUnityVersionCustom, myScriptingRuntime));
-                    tcs.TrySetResult(hashSet);
-                    return true;
-                }
-
-                return false;
+                    myConnectedUnityEvent.Metric(myUnityVersion, myUnityVersionCustom, myScriptingRuntime)
+                };
+                
+                return hashSet;
             });
-            
-            return tcs.Task;
         }
     }
 }

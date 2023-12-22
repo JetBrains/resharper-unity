@@ -10,8 +10,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         public bool IsPrefabModification { get; }
 
         public UnityEventHandlerFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, AssetMethodUsages assetMethodUsages,
-            LocalReference owningElemetLocation, bool isPrefabModification)
-            : base(sourceFile, declaredElement, owningElemetLocation)
+            LocalReference owningElementLocation, bool isPrefabModification)
+            : base(sourceFile, declaredElement, owningElementLocation)
         {
             AssetMethodUsages = assetMethodUsages;
             IsPrefabModification = isPrefabModification;

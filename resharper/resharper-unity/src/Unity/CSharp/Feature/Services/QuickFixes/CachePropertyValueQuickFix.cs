@@ -7,6 +7,7 @@ using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -168,7 +169,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             return namesSuggestion.FirstName();
         }
 
-        public override string Text => "Introduce variable";
+        public override string Text => Strings.CachePropertyValueQuickFix_Text_Introduce_variable;
 
         public override bool IsAvailable(IUserDataHolder cache)
         {

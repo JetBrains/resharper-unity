@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net35</TargetFramework>
+    <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin</AssemblyName>
+    <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>UNITY_4_7;UNITY_4_7_OR_NEWER;RIDER_EDITOR_PLUGIN;CAN_BE_LOADED_FROM_ASSETS</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsNotAsErrors>CS0618</WarningsNotAsErrors>
+    <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
+    <PackageReference Include="JetBrains.Unity.Libs.Ref.4.7.2f1" Version="2020.6.10" />
+    <PackageReference Include="JetBrains.Build.ILRepack" Version="0.0.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)Newtonsoft.Json.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)AsyncBridge.Net35.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)System.Threading.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Rider.PathLocator.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="SinceUnity.5.6\**" />
+    <None Remove="SinceUnity.5.6\**" />
+    <EmbeddedResource Remove="SinceUnity.5.6\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PathLocator\PathLocator.csproj" />
+  </ItemGroup>
+  <Import Project="ILRepack.targets" />
+  <Import Project="Model.targets" />
+  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="!$(InternalBuild)" />
+</Project>

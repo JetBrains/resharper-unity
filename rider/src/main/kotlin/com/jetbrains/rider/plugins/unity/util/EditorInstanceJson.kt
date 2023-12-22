@@ -11,6 +11,7 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.projectView.solutionDirectory
+import java.io.File
 import java.io.FileReader
 import java.io.IOException
 
@@ -26,6 +27,7 @@ data class EditorInstanceJson(val status: EditorInstanceJsonStatus, val contents
         private val logger = Logger.getInstance(EditorInstanceJson::class.java)
         private val INSTANCE_KEY: Key<EditorInstanceJson> = Key("Unity::EditorInstanceJson")
         private val LISTENER_KEY: Key<AsyncFileListener> = Key("Unity::EditorInstanceJson::Listener")
+        private const val editorInstanceJsonRelPath = "Library/EditorInstance.json"
 
         fun getInstance(project: Project): EditorInstanceJson {
             initFileListener(project)
@@ -46,7 +48,7 @@ data class EditorInstanceJson(val status: EditorInstanceJsonStatus, val contents
                 return empty(EditorInstanceJsonStatus.Missing)
 
             // Canonical path will always be true for a Rider project
-            val file = project.solutionDirectory.resolve("Library/EditorInstance.json")
+            val file = project.solutionDirectory.resolve(editorInstanceJsonRelPath)
             if (!file.exists()) {
                 return empty(EditorInstanceJsonStatus.Missing)
             }
@@ -54,7 +56,13 @@ data class EditorInstanceJson(val status: EditorInstanceJsonStatus, val contents
             return try {
                 FileReader(file).use {
                     val contents = Gson().fromJson(it, EditorInstanceJsonContents::class.java)
-                    EditorInstanceJson(EditorInstanceJsonStatus.Valid, contents)
+                    if (contents != null)
+                        EditorInstanceJson(EditorInstanceJsonStatus.Valid, contents)
+                    else
+                    {
+                        logger.error("Error reading EditorInstance.json")
+                        empty(EditorInstanceJsonStatus.Error)
+                    }
                 }
             } catch (e: IOException) {
                 logger.error("Error reading EditorInstance.json", e)
@@ -68,6 +76,7 @@ data class EditorInstanceJson(val status: EditorInstanceJsonStatus, val contents
         private fun empty(status: EditorInstanceJsonStatus) = EditorInstanceJson(status, null)
 
         private fun initFileListener(project: Project) {
+            val fullEditorInstancePath = project.solutionDirectory.resolve(editorInstanceJsonRelPath)
 
             var listener = project.getUserData(LISTENER_KEY)
             if (listener == null) {
@@ -83,7 +92,7 @@ data class EditorInstanceJson(val status: EditorInstanceJsonStatus, val contents
                     }
 
                     private fun isEditorInstanceJson(path: String): Boolean {
-                        return path.endsWith("Library/EditorInstance.json", true)
+                        return fullEditorInstancePath == File(path)
                     }
                 }
 

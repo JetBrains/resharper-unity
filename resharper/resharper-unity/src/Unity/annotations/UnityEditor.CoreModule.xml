@@ -1,13 +1,316 @@
 <assembly name="UnityEditor.CoreModule">
+
+  <!-- Load assets -->
+  <member name="M:UnityEditor.AssetDatabase.LoadAllAssetsAtPath(System.String)">
+    <parameter name="assetPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.LoadMainAssetAtPath(System.String)">
+    <parameter name="assetPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.IsMainAssetAtPathLoaded(System.String)">
+    <parameter name="assetPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.LoadAllAssetRepresentationsAtPath(System.String)">
+    <parameter name="assetPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.LoadObjectAsync(System.String,System.Int64)">
+    <parameter name="assetPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.LoadAssetAtPath(System.String,System.Type)">
+    <parameter name="assetPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.LoadAssetAtPath``1(System.String)">
+    <parameter name="assetPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.AddObjectToAsset(UnityEngine.Object,System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.AssetPathToGUID(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.AssetPathToGUID(System.String,UnityEditor.AssetPathToGUIDOptions)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.CanOpenForEdit(System.String)">
+    <parameter name="assetOrMetaFilePath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.CanOpenForEdit(System.String,UnityEditor.StatusQueryOptions)">
+    <parameter name="assetOrMetaFilePath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.CanOpenForEdit(System.String,System.String@)">
+    <parameter name="assetOrMetaFilePath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member
+    name="M:UnityEditor.AssetDatabase.CanOpenForEdit(System.String,System.String@,UnityEditor.StatusQueryOptions)">
+    <parameter name="assetOrMetaFilePath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.ClearImporterOverride(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.CopyAsset(System.String,System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+    <parameter name="newPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.CreateAsset(UnityEngine.Object,System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.CreateFolder(System.String,System.String)">
+    <parameter name="parentFolder">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.DeleteAsset(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GenerateUniqueAssetPath(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetAssetDependencyHash(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetAssetPathFromTextMetaFilePath(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetAvailableImporters(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetAvailableImporterTypes(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetBuiltinExtraResource(System.Type,System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetBuiltinExtraResource``1(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetCachedIcon(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetDefaultImporter(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetDependencies(System.String)">
+    <parameter name="pathName">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetDependencies(System.String,System.Boolean)">
+    <parameter name="pathName">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetImplicitAssetBundleName(System.String)">
+    <parameter name="assetPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetImplicitAssetBundleVariantName(System.String)">
+    <parameter name="assetPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetDependencies(System.String)">
+    <parameter name="pathName">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetDependencies(System.String,System.Boolean)">
+    <parameter name="pathName">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetImporterOverride(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetImporterOverride(System.String)">
+    <parameter name="assetPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetMainAssetTypeAtPath(System.String)">
+    <parameter name="assetPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetSubFolders(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetTextMetaDataPathFromAssetPath(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetTextMetaFilePathFromAssetPath(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GetTypeFromPathAndFileID(System.String,System.Int64)">
+    <parameter name="assetPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.GUIDFromAssetPath(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.AssetPathToGUID(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.ImportAsset(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.ImportAsset(System.String,UnityEditor.ImportAssetOptions)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.IsOpenForEdit(System.String)">
+    <parameter name="assetOrMetaFilePath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.IsOpenForEdit(System.String,UnityEditor.StatusQueryOptions)">
+    <parameter name="assetOrMetaFilePath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.IsOpenForEdit(System.String,System.String@)">
+    <parameter name="assetOrMetaFilePath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.IsOpenForEdit(System.String,System.String@,UnityEditor.StatusQueryOptions)">
+    <parameter name="assetOrMetaFilePath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.IsValidFolder(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.MakeEditable(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.MoveAsset(System.String,System.String)">
+    <parameter name="oldPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+    <parameter name="newPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.MoveAssetToTrash(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.RenameAsset(System.String,System.String)">
+    <parameter name="pathName">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.SetImporterOverride``1(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.SetMainObject(UnityEngine.Object,System.String)">
+    <parameter name="assetPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.ValidateMoveAsset(System.String,System.String)">
+    <parameter name="oldPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+    <parameter name="newPath">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+  <member name="M:UnityEditor.AssetDatabase.WriteImportSettingsIfDirty(System.String)">
+    <parameter name="path">
+      <attribute ctor="M:JetBrains.Annotations.AssetPathAttribute.#ctor"/>
+    </parameter>
+  </member>
+
   <!-- Nullness -->
   <member name="P:UnityEditor.Editor.serializedObject">
-    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor"/>
   </member>
 
   <!-- Attribute usage. Grouped by namespace -->
   <!-- N:UnityEditor -->
   <member name="T:UnityEditor.CallbackOrderAttribute">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
   </member>
   <member name="T:UnityEditor.CanEditMultipleObjects">
     <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
@@ -25,60 +328,60 @@
     </attribute>
   </member>
   <member name="T:UnityEditor.CustomPreviewAttribute">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
     <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
       <argument>UnityEditor.ObjectPreview</argument>
     </attribute>
   </member>
   <member name="T:UnityEditor.CustomPropertyDrawer">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
     <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
       <argument>UnityEditor.GUIDrawer</argument>
     </attribute>
   </member>
   <member name="T:UnityEditor.DrawGizmo">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
   </member>
   <member name="T:UnityEditor.InitializeOnEnterPlayModeAttribute">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
   </member>
   <member name="T:UnityEditor.InitializeOnLoadAttribute">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
   </member>
   <member name="T:UnityEditor.InitializeOnLoadMethodAttribute">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
   </member>
   <member name="T:UnityEditor.LightingExplorerExtensionAttribute">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
     <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
       <argument>UnityEditor.ILightingExplorerExtension</argument>
     </attribute>
   </member>
   <member name="T:UnityEditor.MenuItem">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
   </member>
   <member name="T:UnityEditor.PreferenceItem">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
   </member>
 
   <!-- N:UnityEditor.Callbacks -->
   <member name="T:UnityEditor.Callbacks.DidReloadScripts">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
   </member>
   <member name="T:UnityEditor.Callbacks.OnOpenAssetAttribute">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
   </member>
   <member name="T:UnityEditor.Callbacks.PostProcessBuildAttribute">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
   </member>
   <member name="T:UnityEditor.Callbacks.PostProcessSceneAttribute">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
   </member>
 
 
   <!-- N:UnityEditor.EditorTools -->
   <member name="T:UnityEditor.EditorTools.EditorToolAttribute">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
     <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
       <argument>UnityEditor.EditorTools.EditorTool</argument>
     </attribute>
@@ -86,25 +389,41 @@
 
   <!-- N:UnityEditor.Experimental -->
   <member name="T:UnityEditor.Experimental.AssetImporters.CollectImportedDependenciesAttribute">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
   </member>
   <member name="T:UnityEditor.Experimental.AssetImporters.ScriptedImporterAttribute">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
     <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
       <argument>UnityEditor.Experimental.AssetImporters.ScriptedImporter</argument>
     </attribute>
   </member>
 
+  <!-- N:UnityEditor.Overlays -->
+  <member name="T:UnityEditor.Overlays.OverlayAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEditor.Overlays.Overlay</argument>
+    </attribute>
+  </member>
+
   <!-- N:UnityEditor.Rendering -->
   <member name="T:UnityEditor.Rendering.ScriptableRenderPipelineExtensionAttribute">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
   </member>
 
   <!-- N:UnityEditor.ShortcutManagement -->
   <member name="T:UnityEditor.ShortcutManagement.ShortcutAttribute">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
   </member>
   <member name="T:UnityEditor.ShortcutManagement.ClutchShortcutAttribute">
-    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
+  </member>
+
+  <!-- N:UnityEditor.Toolbars -->
+  <member name="T:UnityEditor.Toolbars.EditorToolbarElementAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.UIElements.VisualElement</argument>
+    </attribute>
   </member>
 </assembly>

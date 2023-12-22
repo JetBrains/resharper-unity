@@ -1,15 +1,23 @@
 using System.Collections.Generic;
+using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services;
+using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dots;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate.Dots;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Api;
+using JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration.Packages;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
@@ -22,6 +30,7 @@ using JetBrains.TextControl.CodeWithMe;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
     [SolutionComponent]
+    [ZoneMarker(typeof(ICodeEditingZone))]
     public class TypeDetector : UnityDeclarationHighlightingProviderBase
     {
         private readonly UnityApi myUnityApi;
@@ -42,23 +51,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             {
                 if (typeElement.DerivesFromMonoBehaviour())
                 {
-                    AddMonoBehaviourHighlighting(consumer, element, "Script", "Unity script", context);
+                    AddMonoBehaviourHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_Script, Strings.TypeDetector_AddDeclarationHighlighting_Unity_script, context);
                 }
                 else if (typeElement.DerivesFrom(KnownTypes.Editor) || typeElement.DerivesFrom(KnownTypes.EditorWindow))
                 {
-                    AddEditorHighlighting(consumer, element, "Editor", "Custom Unity Editor", context);
+                    AddEditorHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_Editor, Strings.TypeDetector_AddDeclarationHighlighting_Custom_Unity_editor, context);
                 }
                 else if (typeElement.DerivesFromScriptableObject())
                 {
-                    AddMonoBehaviourHighlighting(consumer, element, "Scriptable object", "Scriptable Object", context);
+                    AddMonoBehaviourHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_Scriptable_object, Strings.TypeDetector_AddDeclarationHighlighting_Unity_scriptable_object, context);
                 }
                 else if (myUnityApi.IsUnityType(typeElement))
                 {
-                    AddUnityTypeHighlighting(consumer, element, "Unity type", "Custom Unity type", context);
+                    AddUnityTypeHighlighting(consumer, element, Strings.TypeDetector_AddDeclarationHighlighting_Unity_type, Strings.TypeDetector_AddDeclarationHighlighting_Custom_Unity_type, context);
                 }
-                else if (myUnityApi.IsComponentSystemType(typeElement))
+                else if (typeElement.IsDotsImplicitlyUsedType())
                 {
-                    AddUnityECSHighlighting(consumer, element, "Unity ECS", "Unity entity component system object",
+                    var tooltip = string.Format(Strings.TypeDetector_AddDeclarationHighlighting_Unity_entities,
+                        typeElement.GetDotsCLRBaseTypeName()!.ShortName);
+                    AddUnityDOTSHighlighting(consumer, element, 
+                        Strings.TypeDetector_AddDeclarationHighlighting_DOTS,
+                        tooltip,
                         context);
                 }
 
@@ -83,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             AddHighlighting(consumer, declaration, text, tooltip, context);
         }
 
-        protected virtual void AddUnityECSHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, IReadOnlyCallGraphContext context)
+        protected virtual void AddUnityDOTSHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, IReadOnlyCallGraphContext context)
         {
             AddHighlighting(consumer, declaration, text, tooltip, context);
         }
@@ -104,13 +117,52 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             var result = new List<BulbMenuItem>();
             var textControl = Solution.GetComponent<ITextControlManager>().LastFocusedTextControlPerClient
                 .ForCurrentClient();
-            if (declaration is IClassLikeDeclaration classLikeDeclaration &&
-                textControl != null && myUnityApi.IsUnityType(classLikeDeclaration.DeclaredElement))
+            if (declaration is IClassLikeDeclaration classLikeDeclaration && textControl != null)
             {
-                var fix = new GenerateUnityEventFunctionsFix(classLikeDeclaration);
-                result.Add(new IntentionAction(fix, "Generate Unity event functions",
-                        PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
-                    .ToBulbMenuItem(Solution, textControl));
+                var declaredElement = classLikeDeclaration.DeclaredElement;
+                if (myUnityApi.IsUnityType(declaredElement))
+                {
+                    var fix = new GenerateUnityEventFunctionsFix(classLikeDeclaration);
+                    result.Add(new IntentionAction(fix, Strings.TypeDetector_GetActions_Generate_Unity_event_functions,
+                            PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems)
+                        .ToBulbMenuItem(Solution, textControl));
+                }
+
+                if (classLikeDeclaration.GetContainingNode<IMethodDeclaration>() == null &&
+                    classLikeDeclaration.GetContainingNode<IPropertyDeclaration>() == null
+                   )
+                {
+                    IBulbAction? fix = null;
+                    var title = string.Empty;
+
+                    if (declaredElement.DerivesFrom(KnownTypes.IComponentData))
+                    {
+                        fix = new GenerateBakerAndAuthoringActionFix(classLikeDeclaration);
+                        title = Strings.UnityDots_GenerateBakerAndAuthoring_Unity_Component_Fields_WindowTitle;
+                    }
+                    else if (declaredElement.DerivesFrom(KnownTypes.Component))
+                    {
+                        if (Solution.HasEntitiesPackage())
+                        {
+                            fix = new GenerateBakerAndComponentActionFix(classLikeDeclaration);
+                            title = Strings.UnityDots_GenerateBakerAndComponent_Unity_MonoBehaviour_Fields_WindowTitle;
+                        }
+                    }
+                    
+                    if(fix != null)
+                        result.Add(new IntentionAction(fix, title, PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id, BulbMenuAnchors.FirstClassContextItems).ToBulbMenuItem(Solution, textControl));
+                }
+                
+                if (classLikeDeclaration.IsPartial
+                    && declaredElement.IsDotsImplicitlyUsedType()
+                    && !classLikeDeclaration.GetSourceFile().IsSourceGeneratedFile()
+                    && declaredElement.GetDeclarations().Count > 1)
+                {
+                    var bulbAction = new OpenDotsSourceGeneratedFileBulbAction(Strings.UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode, classLikeDeclaration);
+                    result.Add(new IntentionAction(bulbAction,
+                        Strings.UnityDots_PartialClassesGeneratedCode_ShowGeneratedCode, PsiFeaturesUnsortedThemedIcons.Navigate.Id,
+                        BulbMenuAnchors.FirstClassContextItems).ToBulbMenuItem(Solution, textControl));
+                }
             }
 
             return result;

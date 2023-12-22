@@ -4,6 +4,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 {
     public interface IGameObjectConsumer
     {
-        bool AddGameObject(AssetDocumentHierarchyElement owner, IGameObjectHierarchy gameObject);
+        bool AddGameObject(AssetDocumentHierarchyElement owner, IGameObjectHierarchy gameObject, AssetDocumentHierarchyElementContainer container, bool importPrefab);
     }
 }

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences;
 using JetBrains.Util;
-using MetadataLite.API;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend.Values;
 using Mono.Debugging.Backend.Values.Render.ChildrenRenderers;
@@ -10,6 +10,7 @@ using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
+using Mono.Debugging.MetadataLite.API;
 using Mono.Debugging.Soft;
 
 namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderers
@@ -100,7 +101,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.Render.ChildrenRenderer
 
             private bool TryInvokeGetIterator(IObjectValueRole<TValue> serializedObjectRole,
                                               IValueFetchOptions options,
-                                              out IObjectValueRole<TValue> returnedSerializedPropertyRole)
+                                              [NotNullWhen(true)] out IObjectValueRole<TValue>? returnedSerializedPropertyRole)
             {
                 returnedSerializedPropertyRole = null;
 

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="metadata">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" use="required" type="xsd:string" />
+                            <xsd:attribute name="type" type="xsd:string" />
+                            <xsd:attribute name="mimetype" type="xsd:string" />
+                            <xsd:attribute ref="xml:space" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="assembly">
+                        <xsd:complexType>
+                            <xsd:attribute name="alias" type="xsd:string" />
+                            <xsd:attribute name="name" type="xsd:string" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+                            <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+                            <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+                            <xsd:attribute ref="xml:space" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" />
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="AssetPostprocessor_OnGeneratedCSProjectFiles_Description" xml:space="preserve">
+        <value>This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or just completely replace them). Hopefully we'll never need this.</value>
+    </data>
+    <data name="AssetPostprocessor_OnPreGeneratingCSProjectFiles_Description" xml:space="preserve">
+        <value>This callback is used by UnityVS to take over project generation from Unity</value>
+    </data>
+    <data name="AssetPostprocessor_OnGeneratedCSProject_Description" xml:space="preserve">
+        <value>This callback is used by C# code editors to modify the .csproj files.</value>
+    </data>
+    <data name="AssetPostprocessor_OnGeneratedSlnSolution_Description" xml:space="preserve">
+        <value>This callback is used by C# code editors to modify the .sln file</value>
+    </data>
+    <data name="AssetPostprocessor_OnPostprocessAllAssets_Description" xml:space="preserve">
+        <value>This is called after importing of any number of assets is complete (when the Assets progress bar has reached the end).</value>
+    </data>
+    <data name="MonoBehaviour_OnRectTransformDimensionsChange_Description" xml:space="preserve">
+        <value>This callback is called if an associated RectTransform has its dimensions changed.</value>
+    </data>
+    <data name="ScriptableObject_OnValidate_Description" xml:space="preserve">
+        <value>This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only).</value>
+    </data>
+    <data name="Editor_OnPreSceneGUI_Description" xml:space="preserve">
+        <value>Called before the Scene view is drawn.</value>
+    </data>
+    <data name="Editor_OnSceneDrag_Description" xml:space="preserve">
+        <value>Called for each object dragged onto the scene view</value>
+    </data>
+    <data name="Editor_OnSceneDrag_sceneView_Description" xml:space="preserve">
+        <value>The current scene view</value>
+    </data>
+    <data name="Editor_OnSceneDrag_index_Description" xml:space="preserve">
+        <value>The index into the DragAndDrop.objectReferences array</value>
+    </data>
+    <data name="Editor_HasFrameBounds_Description" xml:space="preserve">
+        <value>Validates whether custom bounds can be calculated for this editor.</value>
+    </data>
+    <data name="Editor_OnGetFrameBounds_Description" xml:space="preserve">
+        <value>Gets custom bounds for the target of this editor.</value>
+    </data>
+    <data name="EditorWindow_ModifierKeysChanged_Description" xml:space="preserve">
+        <value>Called when the modifier keys are changed. Automatically registers and de-registers the EditorApplication.modifierKeysChanged event</value>
+    </data>
+    <data name="EditorWindow_ShowButton_Description" xml:space="preserve">
+        <value>Allow Editor panes to show a small button next to the generic menu (e.g. inspector lock icon)</value>
+    </data>
+    <data name="EditorWindow_OnBecameVisible_Description" xml:space="preserve">
+        <value>Called when an editor window has been opened</value>
+    </data>
+    <data name="EditorWindow_OnBecameInvisible_Description" xml:space="preserve">
+        <value>Called when an editor window has been closed</value>
+    </data>
+    <data name="EditorWindow_OnDidOpenScene_Description" xml:space="preserve">
+        <value>Called when a scene has been opened</value>
+    </data>
+    <data name="EditorWindow_OnAddedAsTab_Description" xml:space="preserve">
+        <value>Called when the editor window is added as a tab</value>
+    </data>
+    <data name="EditorWindow_OnBeforeRemovedAsTab_Description" xml:space="preserve">
+        <value>Called before an editor window is removed as a tab</value>
+    </data>
+    <data name="EditorWindow_OnTabDetached_Description" xml:space="preserve">
+        <value>Called during drag and drop, when an editor window tab is detached</value>
+    </data>
+    <data name="EditorWindow_OnMainWindowMove_Description" xml:space="preserve">
+        <value>Called when the main window is moved</value>
+    </data>
+    <data name="ScriptableObject_Reset_Description" xml:space="preserve">
+        <value>Reset to default values.</value>
+    </data>
+    <data name="EditorWindow_ShowButton_rect_Description" xml:space="preserve">
+        <value>Position to draw the button</value>
+        <comment>Don't localize</comment>
+    </data>
+</root>

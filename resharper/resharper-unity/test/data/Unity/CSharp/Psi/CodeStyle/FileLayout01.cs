@@ -34,6 +34,8 @@ public class MyMonoBehaviour : MonoBehaviour
   {
   }
 
+  [field: SerializeField] public int MyAutoPropertyWithSerializedBackingField;
+
   public void AaaaaMethod()
   {
   }

@@ -1,11 +1,12 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using JetBrains.Diagnostics;
 using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  public static class UIElementsSupport
+  internal static class UIElementsSupport
   {
     private static readonly ILog ourLogger = Log.GetLog("UIElementsSupport");
 
@@ -39,7 +40,8 @@ namespace JetBrains.Rider.Unity.Editor
       try
       {
         ourLogger.Verbose("Found reflection types, starting to generate UXML schema");
-        updateSchemaFiles.Invoke(null, null);
+        var parameters = updateSchemaFiles.GetParameters().Length;
+        updateSchemaFiles.Invoke(null, parameters > 0 ? Enumerable.Repeat(Type.Missing, parameters).ToArray() : null);
         ourLogger.Verbose("Successfully generated UXML schema");
         return true;
       }

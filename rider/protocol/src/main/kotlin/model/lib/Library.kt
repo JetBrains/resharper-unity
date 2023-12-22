@@ -86,4 +86,10 @@ object Library : Root() {
         property("lastPlayTime", long)
         property("lastInitTime", long)
     }
+
+    val ProfilingData = structdef {
+        field("enterPlayMode", bool)
+        field("unityProfilerApiPath", string)
+        field("needRestartScripts", bool)
+    }
 }

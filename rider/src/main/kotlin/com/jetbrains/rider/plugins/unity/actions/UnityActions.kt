@@ -59,9 +59,7 @@ class PauseInUnityAction : ToggleAction(), DumbAware {
             return
         }
 
-        e.handleUpdateForUnityConnection {
-            it.playControls.play.valueOrDefault(false)
-        }
+        e.handleUpdateForUnityConnection()
         super.update(e)
     }
 }

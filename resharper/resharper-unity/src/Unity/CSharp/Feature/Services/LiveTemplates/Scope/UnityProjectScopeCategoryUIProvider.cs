@@ -14,10 +14,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
             // UnityCSharp requires its own icon rather than the generic C# icon because it's used as the group icon
             // for the UITag "Unity Class" menu item
             TemplateImage.Register("UnityCSharp", UnityFileTypeThemedIcons.FileUnity.Id);
-            TemplateImage.Register("UnityShaderLab", ShaderFileTypeThemedIcons.FileShader.Id);
 
-            // TODO: Proper icon (see RIDER-68006)
-            TemplateImage.Register("UnityAsmDef", UnityFileTypeThemedIcons.FileUnity.Id);
+            TemplateImage.Register("UnityAsmDef", UnityFileTypeThemedIcons.Asmdef.Id);
+            TemplateImage.Register("UnityAsmRef", UnityFileTypeThemedIcons.Asmref.Id);
+            TemplateImage.Register("UnityInputActions", UnityFileTypeThemedIcons.InputActions.Id);
         }
 
         // Needs to be less than other priorities in R#'s built in ScopeCategoryUIProvider
@@ -34,12 +34,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
 
         public override IEnumerable<ITemplateScopePoint> BuildAllPoints()
         {
-            // TODO: Remove this once RIDER-10132 is fixed
-            // Exposing this simply allows custom templates to be included in the same group (and "Unity Class" UITag)
-            // as the default templates.
-            yield return new UnityFileTemplateSectionMarker();
-
             yield return new InUnityCSharpProject();
+            yield return new UnityDotsScope();
+
             yield return new InUnityCSharpAssetsFolder();
 
             yield return new InUnityCSharpEditorFolder();

@@ -1,9 +1,9 @@
 Search target
-    Base.F12231():void
+    Base.F12231() : void
 Found usages  (2 usages found)
     Assets  (2 usages found)
         AttackIn.anim  (2 usages found)
             AttackIn at 0:12  (1 usage found)
-                F12231():void
+                 F12231() : void
             AttackIn at 0:15  (1 usage found)
-                F12231():void
+                 F12231() : void

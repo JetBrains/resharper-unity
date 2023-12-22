@@ -12,8 +12,8 @@ public class Foo
     {
     }
 
-    [SerializeField]
-    public string Field;
+    [SerializeField] public string Field;
+    [SerializeField] private int PrivateField;
 
     [SerializeField]
     public const string ConstField = "Hello world";
@@ -21,6 +21,18 @@ public class Foo
     [SerializeField]
     [field: SerializeField]
     public string Property { get; set; }
+
+    [field: SerializeField]
+    public string Property2 { get; private set; }
+
+    [field: SerializeField]
+    public string Property3 { get; }
+
+    [field: SerializeField]
+    public string Property4 { get; init; }
+
+    [field: SerializeField]
+    public static string Property5 { get; set; }
 
     [SerializeField]
     [return: SerializeField]

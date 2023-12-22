@@ -6,6 +6,12 @@ Add folders
   References
   -Scenes
    SampleScene.unity
+  -UI
+   -Elements
+    ui_btn_menus.png
+   TitleScreen.png
+  -Uxml
+   Menu.uss
   NewBehaviourScript.cs
 
 
@@ -37,6 +43,12 @@ Show tilde folders
    Class1.cs, tooltip=This file is not imported into the asset database
   -Scenes
    SampleScene.unity
+  -UI
+   -Elements
+    ui_btn_menus.png
+   TitleScreen.png
+  -Uxml
+   Menu.uss
   NewBehaviourScript.cs
 
 
@@ -66,18 +78,27 @@ Show All Files
 -Project
  -Assets
   References
-  .NewFolder1, tooltip=This folder is not imported into the asset database
+  -.NewFolder1, tooltip=This folder is not imported into the asset database
+   Class1.cs, tooltip=This file is not imported into the asset database
   -NewFolder1~, tooltip=This folder is not imported into the asset database
    Class1.cs, tooltip=This file is not imported into the asset database
-   Class1.cs.meta, tooltip=This file is not imported into the asset database
    Class2.cs, tooltip=This file is not imported into the asset database
-   Class2.cs.meta, tooltip=This file is not imported into the asset database
   -Scenes
    SampleScene.unity
    SampleScene.unity.meta, tooltip=This file is not imported into the asset database
+  -UI
+   -Elements
+    ui_btn_menus.png
+    ui_btn_menus.png.meta, tooltip=This file is not imported into the asset database
+   TitleScreen.png
+   TitleScreen.png.meta, tooltip=This file is not imported into the asset database
+  -Uxml
+   Menu.uss
+   Menu.uss.meta, tooltip=This file is not imported into the asset database
   NewBehaviourScript.cs
   NewBehaviourScript.cs.meta, tooltip=This file is not imported into the asset database
   Scenes.meta, tooltip=This file is not imported into the asset database
+  Uxml.meta, tooltip=This file is not imported into the asset database
 
 
 
@@ -111,6 +132,12 @@ Hide all
   References
   -Scenes
    SampleScene.unity
+  -UI
+   -Elements
+    ui_btn_menus.png
+   TitleScreen.png
+  -Uxml
+   Menu.uss
   Class1.cs
   NewBehaviourScript.cs
 

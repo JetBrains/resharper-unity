@@ -1,0 +1,4 @@
+/JetTestPackages/
+/%JET_TEST_PACKAGES_DIR%/
+/JET_TEST_PACKAGES_DIR/
+NuGetLocks/

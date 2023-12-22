@@ -57,6 +57,6 @@ Shader "Unlit/SingleColor"
 (2): ReSharper Underlined Error Highlighting: Another error!
 (3): ReSharper Warning: And another warning!
 (4): ReSharper Warning: This is not a valid name!
-(5): ReSharper Dead Code: Ignored character. Consider inserting new line for clarity
+(5): ReSharper Dead Code: Suspicious non-digit character in '#line' directive
 (6): ReSharper Underlined Error Highlighting: #error not terminated
 (7): ReSharper Underlined Error Highlighting: #warning not terminated

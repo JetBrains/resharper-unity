@@ -1,4 +1,6 @@
-﻿using JetBrains.Collections.Viewable;
+﻿#nullable enable
+
+using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Json.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Core.ProjectModel;
@@ -20,12 +22,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
         {
             myUnitySolutionTracker = unitySolutionTracker;
 
-            // ReSharper disable once AssignNullToNotNullAttribute
-            Changed = new DataFlow.Signal<IReferenceProviderFactory>(lifetime, GetType().FullName);
+            Changed = new DataFlow.Signal<IReferenceProviderFactory>(GetType().FullName);
         }
 
-        public IReferenceFactory CreateFactory(IPsiSourceFile sourceFile, IFile file, IWordIndex wordIndexForChecks)
+        public IReferenceFactory? CreateFactory(IPsiSourceFile sourceFile, IFile file, IWordIndex? wordIndexForChecks)
         {
+            // Make sure the source file is still valid. It's not clear why it would be invalid, but we get it
+            // See DEXP-672670
+            if (!sourceFile.IsValid())
+                return null;
+
             // The source file might be in the external files module, so we can't look at what project it belongs to
             if (!sourceFile.GetSolution().HasUnityReference() && !myUnitySolutionTracker.IsUnityProject.HasTrueValue())
                 return null;

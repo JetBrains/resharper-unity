@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Docum
 
             var projectFile = myDocumentToProjectFileMappingStorage.TryGetProjectFile(document);
             var isUnitySharedProjectFile = projectFile != null
-                                           && myUnitySolutionTracker.IsUnityGeneratedProject.Value
+                                           && myUnitySolutionTracker.IsUnityProject.Value
                                            && projectFile.IsShared();
 
             if (isUnitySharedProjectFile)
@@ -74,7 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Docum
             if (modifiedProjectFile == null)
                 return false;
 
-            var documentModel = modifiedProjectFile.GetData(DocumentHostBase.DocumentModelKey);
+            var documentModel = modifiedProjectFile.GetDocumentIdAndModel()?.documentModel;
             return documentModel != null && !documentModel.TextControls.IsEmpty();
         }
     }

@@ -1,9 +1,8 @@
 using System.Linq;
 using JetBrains.Application;
-using JetBrains.Application.BuildScript.Application.Zones;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.ProjectsHost;
 using JetBrains.ProjectModel.Properties.Managed;
-using JetBrains.RdBackend.Common.Env;
 using JetBrains.RdBackend.Common.Features.ProjectModel.View;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Documents.View
@@ -11,11 +10,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Docum
     [ShellComponent]
     public class UnityAndroidDetector: ProjectModelViewPresenterExtension
     {
-        public override bool TryAddUserData(IProjectFile projectFile, out string name, out string value)
+        public override bool TryAddUserData(IProjectMark projectMark, IProject project, out string name, out string value)
         {
-            var project = projectFile.GetProject();
             if (project == null)
-                return base.TryAddUserData(projectFile, out name, out value);
+                return base.TryAddUserData(projectMark, null, out name, out value);
 
             foreach (var configuration in project.ProjectProperties.ActiveConfigurations.Configurations.OfType<IManagedProjectConfiguration>())
             {
@@ -30,7 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Integration.Core.Feature.Docum
 
             name = null;
             value = null;
-            return base.TryAddUserData(projectFile, out name, out value);
+            
+            return base.TryAddUserData(projectMark, project, out name, out value);
         }
     }
 }

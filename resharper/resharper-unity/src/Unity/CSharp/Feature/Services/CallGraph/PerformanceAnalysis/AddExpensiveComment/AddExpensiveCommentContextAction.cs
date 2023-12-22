@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.Core.Application.Settings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
+using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
@@ -16,8 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
 {
     [ContextAction(
         Group = UnityContextActions.GroupID,
-        Name = AddExpensiveCommentUtil.MESSAGE,
-        Description = AddExpensiveCommentUtil.MESSAGE,
+        ResourceType = typeof(Strings), NameResourceName = nameof(Strings.AddExpensiveCommentContextAction_Name), DescriptionResourceName = nameof(Strings.AddExpensiveCommentContextAction_Name),
         Disabled = false,
         AllowedInNonUserFiles = false,
         Priority = 1)]

@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values.Render;
@@ -8,7 +7,7 @@ namespace JetBrains.Debugger.Worker.Plugins.Unity.Values.ValueReferences
     internal class CalculatedValueReferenceDecorator<TValue> : ValueReferenceDecoratorBase<TValue>
         where TValue : class
     {
-        public CalculatedValueReferenceDecorator([NotNull] IValueReference<TValue> valueReferenceImplementation,
+        public CalculatedValueReferenceDecorator(IValueReference<TValue> valueReferenceImplementation,
                                                  IValueRoleFactory<TValue> roleFactory,
                                                  string name,
                                                  bool allowNameInValue = true,

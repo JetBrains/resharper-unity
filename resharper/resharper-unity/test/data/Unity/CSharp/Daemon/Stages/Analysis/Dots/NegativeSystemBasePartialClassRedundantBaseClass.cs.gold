@@ -1,0 +1,11 @@
+﻿using Unity.Entities;
+
+namespace Systems
+{
+    public partial class Foo : |SystemBase|(0)
+    {
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Dead Code: Base type 'SystemBase' is already specified in other parts

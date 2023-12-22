@@ -1,0 +1,10 @@
+#ifdef |FOO|(0)
+void foo() { }
+#endif
+
+#ifdef |BAR|(1)
+void bar() { }
+#endif
+---------------------------------------------------------
+(0): ReSharper ShaderLab Implicitly Enabled Shader Keyword: 
+(1): ReSharper ShaderLab Disabled Shader Keyword: 

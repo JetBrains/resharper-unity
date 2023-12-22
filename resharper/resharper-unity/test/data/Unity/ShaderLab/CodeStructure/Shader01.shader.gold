@@ -1,0 +1,19 @@
+﻿File: Shader01.shader
+ Shader "Unlit/NewUnlitShader"
+  Properties
+  SubShader
+   Tags
+   LOD
+   Pass
+    CGPROGRAM
+     appdata, (355 - 451)
+      vertex -> float4, (386 - 411)
+      uv -> float2, (420 - 442)
+     v2f, (459 - 582)
+      uv -> float2, (486 - 508)
+      <anonymous struct field>, (517 - 534)
+      vertex -> float4, (545 - 573)
+     _MainTex -> sampler2D, (590 - 609)
+     _MainTex_ST -> float4, (616 - 635)
+     vert(appdata v) -> v2f, (643 - 849)
+     frag(v2f i) -> fixed4, (857 - 1,060)

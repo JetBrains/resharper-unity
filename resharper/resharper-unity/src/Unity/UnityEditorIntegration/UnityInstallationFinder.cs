@@ -6,6 +6,7 @@ using System.Linq;
 using System.Xml;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
+using JetBrains.HabitatDetector;
 using JetBrains.Util;
 using JetBrains.Util.Interop;
 using JetBrains.Util.Logging;
@@ -79,24 +80,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
             switch (PlatformUtil.RuntimePlatform)
             {
-                    case PlatformUtil.Platform.MacOsX:
+                    case JetPlatform.MacOsX:
+                        // /Applications/Unity/Hub/Editor/202x.x.xf1/Unity.app/Contents
+                        // Note that this path is inside the Unity app, and cannot contain files that can be installed
+                        // as separate modules, such as documentation or optional playback engines, as these changes
+                        // would break code signing. However, Unity.app/Contents/Documentation is a symlink to
+                        // Unity.app/../Documentation and optional playback engines live at Unity.app/../PlaybackEngines
+                        // (Unity.app/Content/PlaybackEngines contains MacStandaloneSupport by default)
                         return applicationPath.Combine("Contents");
-                    case PlatformUtil.Platform.Linux:
-                    case PlatformUtil.Platform.Windows:
+                    case JetPlatform.Linux:
+                    case JetPlatform.Windows:
+                        // C:\Program Files\Unity\Hub\Editor\202x.x.xf1\Editor\Data
                         return applicationPath.Directory.Combine("Data");
             }
             ourLogger.Error("Unknown runtime platform");
             return VirtualFileSystemPath.GetEmptyPathFor(InteractionContext.SolutionContext);
-        }
-
-        // TODO: We shouldn't have to pass in appPath here
-        // But appPath is being calculated by UnityVersion, not UnityInstallationFinder
-        [NotNull]
-        public static VirtualFileSystemPath GetBuiltInPackagesFolder([NotNull] VirtualFileSystemPath applicationPath)
-        {
-            return applicationPath.IsEmpty
-                ? applicationPath
-                : GetApplicationContentsPath(applicationPath).Combine("Resources/PackageManager/BuiltInPackages");
         }
 
         [NotNull]
@@ -121,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
         {
             switch (PlatformUtil.RuntimePlatform)
             {
-                case PlatformUtil.Platform.MacOsX:
+                case JetPlatform.MacOsX:
                 {
                     var appsHome = VirtualFileSystemPath.Parse("/Applications", InteractionContext.SolutionContext);
                     var unityApps = appsHome.GetChildDirectories("Unity*").Select(a=>a.Combine("Unity.app")).ToList();
@@ -145,7 +143,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
                     return unityApps.Where(a=>a.ExistsDirectory).Distinct().OrderBy(b=>b.FullPath).ToList();
                 }
-                case PlatformUtil.Platform.Linux:
+                case JetPlatform.Linux:
                 {
                     var unityApps = new List<VirtualFileSystemPath>();
                     var homeEnv = Environment.GetEnvironmentVariable("HOME");
@@ -179,7 +177,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
                     return unityApps.Where(a=>a.ExistsFile).Distinct().OrderBy(b=>b.FullPath).ToList();
                 }
 
-                case PlatformUtil.Platform.Windows:
+                case JetPlatform.Windows:
                 {
                     var unityApps = new List<VirtualFileSystemPath>();
 
@@ -270,15 +268,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             {
                 switch (PlatformUtil.RuntimePlatform)
                 {
-                    case PlatformUtil.Platform.Windows:
+                    case JetPlatform.Windows:
                     {
                         return GoUpForUnityExecutable(filePath,"Unity.exe");
                     }
-                    case PlatformUtil.Platform.Linux:
+                    case JetPlatform.Linux:
                     {
                         return GoUpForUnityExecutable(filePath,"Unity");
                     }
-                    case PlatformUtil.Platform.MacOsX:
+                    case JetPlatform.MacOsX:
                     {
                         var appPath = filePath;
                         while (!appPath.Name.Equals("Contents"))
@@ -327,17 +325,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
 
             switch (PlatformUtil.RuntimePlatform)
             {
-                case PlatformUtil.Platform.MacOsX:
+                case JetPlatform.MacOsX:
                     Assertion.Assert(path.ExistsDirectory, "path.ExistsDirectory");
                     Assertion.Assert(path.FullPath.EndsWith(".app", StringComparison.OrdinalIgnoreCase),
                         "path.FullPath.EndsWith('.app', StringComparison.OrdinalIgnoreCase)");
                     break;
-                case PlatformUtil.Platform.Windows:
+                case JetPlatform.Windows:
                     Assertion.Assert(path.ExistsFile, "path.ExistsFile");
                     Assertion.Assert(path.FullPath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase),
                         "path.FullPath.EndsWith('.exe', StringComparison.OrdinalIgnoreCase)");
                     break;
-                case PlatformUtil.Platform.Linux:
+                case JetPlatform.Linux:
                     Assertion.Assert(path.ExistsFile, "path.ExistsFile");
                     break;
                 default:
@@ -353,14 +351,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityEditorIntegration
             {
                 // dotTrace team uses these constants to detect unity's mono.
                 // If you want change any constant, please notify dotTrace team
-                case PlatformUtil.Platform.MacOsX:
+                case JetPlatform.MacOsX:
                 {
                     var monoFolders = possibleApplicationPaths.Select(a => a.Combine("Contents/MonoBleedingEdge")).ToList();
                     monoFolders.AddRange(possibleApplicationPaths.Select(a => a.Combine("Contents/Frameworks/MonoBleedingEdge")));
                     return monoFolders;
                 }
-                case PlatformUtil.Platform.Linux:
-                case PlatformUtil.Platform.Windows:
+                case JetPlatform.Linux:
+                case JetPlatform.Windows:
                 {
                     return possibleApplicationPaths.Select(a => a.Directory.Combine(@"Data/MonoBleedingEdge")).ToList();
                 }

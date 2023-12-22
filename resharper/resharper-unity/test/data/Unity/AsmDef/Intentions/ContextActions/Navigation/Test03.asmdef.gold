@@ -1,5 +1,5 @@
 ﻿## FindReferencedCodeProvider activity:
-  Tooltip was shown: Referenced code in 'assembly definition Ref1' were not found.
+  Tooltip was shown: Referenced code in 'assembly definition Ref1' were not found
 
 ## FindUsagesAdvancedProvider activity:
   FindResults window with 2 results
@@ -18,7 +18,7 @@
 
 
 ## GoToUnityUsagesProvider activity:
-  Tooltip was shown: Usages of 'Ref1' were not found.
+  Tooltip was shown: Usages of 'Ref1' were not found
 
 ## HighlightUsagesProvider activity:
   Immediate result:
@@ -30,8 +30,8 @@
   Async context menu shown `Usages of 'Ref1'`:
     TO: [O] "references": [ "|Ref1|" ] RANGE: (39,43) @ Ref2.asmdef
     Menu item (enabled) :
-      icon: UsageOther
-      text: Ref2.asmdef      <font color="FF8B0000">"references": [ "**Ref1**" ]</font><font color="06C"> (3)</font>
+      icon: UsageAsmdef
+      text: Ref2.asmdef      <font color="FFD5A286">"references": [ "**Ref1**" ]</font><font color="06C"> (3)</font>
       tail: <font color="FF6D6D6D">in <TestProject></font>
       tooltip: "references": [ "**Ref1**" ]
     Navigation result:
@@ -46,8 +46,8 @@
 
     TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test03.asmdef
     Menu item (enabled) :
-      icon: UsageOther
-      text: Test03.asmdef      <font color="FF8B0000">"references": [ "**Ref1**" ]</font><font color="06C"> (3)</font>
+      icon: UsageAsmdef
+      text: Test03.asmdef      <font color="FFD5A286">"references": [ "**Ref1**" ]</font><font color="06C"> (3)</font>
       tail: <font color="FF6D6D6D">in <TestProject></font>
       tooltip: "references": [ "**Ref1**" ]
     Navigation result:

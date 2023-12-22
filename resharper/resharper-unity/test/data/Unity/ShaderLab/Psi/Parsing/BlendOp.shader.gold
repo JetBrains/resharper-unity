@@ -97,8 +97,7 @@ IShaderLabFile
                 ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IBlendOpValue
-                  IShaderLabIdentifier
-                    Identifier(type:IDENTIFIER, text:Min)
+                  ShaderLabTokenType+KeywordTokenElement(type:MIN_KEYWORD, text:Min)
               Whitespace(type:WHITESPACE, text:	) spaces: "	"
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
@@ -135,16 +134,14 @@ IShaderLabFile
                     ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IShaderLabIdentifier
-                    Identifier(type:IDENTIFIER, text:Min)
+                  ShaderLabTokenType+KeywordTokenElement(type:MIN_KEYWORD, text:Min)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
               IBlendOpCommand
                 ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IBlendOpValue
-                  IShaderLabIdentifier
-                    Identifier(type:IDENTIFIER, text:Min)
+                  ShaderLabTokenType+KeywordTokenElement(type:MIN_KEYWORD, text:Min)
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IVariableReference
@@ -159,12 +156,10 @@ IShaderLabFile
                 ShaderLabTokenType+KeywordTokenElement(type:BLEND_OP_KEYWORD, text:BlendOp)
                 Whitespace(type:WHITESPACE, text: ) spaces: " "
                 IBlendOpValue
-                  IShaderLabIdentifier
-                    Identifier(type:IDENTIFIER, text:Min)
+                  ShaderLabTokenType+KeywordTokenElement(type:MIN_KEYWORD, text:Min)
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IShaderLabIdentifier
-                    Identifier(type:IDENTIFIER, text:Min)
+                  ShaderLabTokenType+KeywordTokenElement(type:MIN_KEYWORD, text:Min)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
@@ -204,8 +199,7 @@ IShaderLabFile
                     ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IShaderLabIdentifier
-                    Identifier(type:IDENTIFIER, text:Min)
+                  ShaderLabTokenType+KeywordTokenElement(type:MIN_KEYWORD, text:Min)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
               IBlendOpCommand
@@ -214,8 +208,7 @@ IShaderLabFile
                 IBlendOpValue
                   ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IShaderLabIdentifier
-                    Identifier(type:IDENTIFIER, text:Min)
+                  ShaderLabTokenType+KeywordTokenElement(type:MIN_KEYWORD, text:Min)
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
                   IVariableReference
@@ -232,12 +225,10 @@ IShaderLabFile
                 IBlendOpValue
                   ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IShaderLabIdentifier
-                    Identifier(type:IDENTIFIER, text:Min)
+                  ShaderLabTokenType+KeywordTokenElement(type:MIN_KEYWORD, text:Min)
                   ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IShaderLabIdentifier
-                    Identifier(type:IDENTIFIER, text:Min)
+                  ShaderLabTokenType+KeywordTokenElement(type:MIN_KEYWORD, text:Min)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:	    ) spaces: "	    "
               IBlendOpCommand
@@ -260,20 +251,20 @@ IShaderLabFile
                 IBlendOpValue
                   ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
                   Whitespace(type:WHITESPACE, text: ) spaces: " "
-                  IShaderLabIdentifier
-                    Identifier(type:IDENTIFIER, text:Min)
+                  ShaderLabTokenType+KeywordTokenElement(type:MIN_KEYWORD, text:Min)
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
               Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-              ITexturePassDef
-                ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
-                NewLine(type:NEW_LINE, text:\n) spaces: "\n"
-                Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-                ITexturePassValue
-                  ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+              ITexturePassDeclaration
+                ITexturePassDef
+                  ShaderLabTokenType+KeywordTokenElement(type:PASS_KEYWORD, text:Pass)
                   NewLine(type:NEW_LINE, text:\n) spaces: "\n"
                   Whitespace(type:WHITESPACE, text:        ) spaces: "        "
-                  ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+                  ITexturePassValue
+                    ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+                    NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+                    Whitespace(type:WHITESPACE, text:        ) spaces: "        "
+                    ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
             NewLine(type:NEW_LINE, text:\n) spaces: "\n"
             Whitespace(type:WHITESPACE, text:    ) spaces: "    "
             ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})

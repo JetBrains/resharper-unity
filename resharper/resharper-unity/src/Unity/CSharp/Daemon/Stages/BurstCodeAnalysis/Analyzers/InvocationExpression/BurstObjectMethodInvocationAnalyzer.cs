@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
 
             consumer?.AddHighlighting(new BurstAccessingManagedMethodWarning(invocationExpression,
-                invokedMethod.ShortName, invokedMethod.GetContainingType()?.ShortName));
+                invokedMethod.ShortName, invokedMethod.ContainingType?.ShortName));
 
             return BurstProblemSubAnalyzerStatus.WARNING_PLACED_STOP;
         }

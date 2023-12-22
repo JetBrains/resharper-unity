@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.ShaderLab.Daemon
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabSyntaxErrorHighlightingTest : HighlightingTestBase
     {
-        protected override PsiLanguageType CompilerIdsLanguage => ShaderLabLanguage.Instance;
+        protected override PsiLanguageType? CompilerIdsLanguage => ShaderLabLanguage.Instance;
         protected override string RelativeTestDataPath => @"ShaderLab\Daemon\SyntaxHighlighting";
 
         [Test] public void TestSyntax01() { DoNamedTest2(); }

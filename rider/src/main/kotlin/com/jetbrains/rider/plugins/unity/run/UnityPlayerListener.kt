@@ -1,17 +1,19 @@
 package com.jetbrains.rider.plugins.unity.run
 
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.project.Project
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.plugins.unity.UnityProjectLifetimeService
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
+import kotlinx.coroutines.delay
 import java.net.*
 import java.nio.ByteBuffer
 import java.nio.channels.DatagramChannel
 import java.nio.channels.SelectionKey
 import java.nio.channels.Selector
-import java.util.*
 import java.util.regex.Pattern
 
-class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
-                          private val onPlayerRemoved: (UnityProcess) -> Unit) {
+class UnityPlayerListener {
 
     companion object {
         private val logger = Logger.getInstance(UnityPlayerListener::class.java)
@@ -51,6 +53,16 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
   (\s\[ProjectName]\s(?<projectName>.*))
 )?
 """, Pattern.COMMENTS)
+
+        @Suppress("unused")
+        enum class UnityPlayerConnectionFlags(val value: Int) {
+            RequestImmediateConnect(1 shl 0),
+            SupportsProfile(1 shl 1),
+            CustomMessage(1 shl 2),
+            UseAlternateIP(1 shl 3);
+
+            fun isSet(value: Int): Boolean = this.value and value != 0
+        }
     }
 
     // Refresh once a second. If a player hasn't been seen for 3 iterations, remove it from the list
@@ -64,14 +76,52 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
     private val unityPlayerDescriptorsHeartbeats = mutableMapOf<String, Int>()
     private val unityProcesses = mutableMapOf<String, UnityProcess>()
 
-    private val refreshTimer: Timer
     private val syncLock = Object()
 
-    init {
+    // Invoked on the UI thread
+    fun startListening(lifetime: Lifetime,
+                       onPlayerAdded: (UnityProcess) -> Unit,
+                       onPlayerRemoved: (UnityProcess) -> Unit) {
 
+        startListeningUdp(lifetime)
+
+        val refreshTimer = kotlin.concurrent.timer("Listen for Unity Players", true, 0L, refreshPeriod) {
+            refreshUnityPlayersList(onPlayerAdded, onPlayerRemoved)
+        }
+        lifetime.onTermination { refreshTimer.cancel() }
+    }
+
+    // Invoked on a background thread
+    suspend fun getPlayer(project: Project, predicate: (UnityProcess) -> Boolean): UnityProcess? {
+        val lifetime = UnityProjectLifetimeService.getLifetime(project).createNested()
+        try {
+            startListeningUdp(lifetime)
+
+            val players = mutableListOf<UnityProcess>()
+
+            // Give all players the chance to broadcast, and keep going until we find our player, or we time out.
+            // We repeat 30 times, with a 100ms delay, so we'll wait 3 second for the player
+            for (i in 1..30) {
+                refreshUnityPlayersList({ players.add(it) }, { players.remove(it) })
+                val player = players.firstOrNull(predicate)
+                if (player != null) {
+                    return player
+                }
+
+                delay(100)
+            }
+
+            return null
+        }
+        finally {
+            lifetime.terminate()
+        }
+    }
+
+    private fun startListeningUdp(lifetime: Lifetime) {
         for (networkInterface in NetworkInterface.getNetworkInterfaces()) {
             if (!networkInterface.isUp || !networkInterface.supportsMulticast()
-                    || !networkInterface.inetAddresses.asSequence().any { it is Inet4Address }) {
+                || !networkInterface.inetAddresses.asSequence().any { it is Inet4Address }) {
                 continue
             }
 
@@ -91,49 +141,47 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
             }
         }
 
-        refreshTimer = kotlin.concurrent.timer("Listen for Unity Players", true, 0L, refreshPeriod) {
-            refreshUnityPlayersList()
-        }
-    }
-
-    fun stop() {
-        refreshTimer.cancel()
-
-        synchronized(syncLock) {
-            selector.keys().forEach {
-                try {
-                    // Close the channel. This will cancel the selection key and removes multicast group membership. It
-                    // doesn't close the socket, as there are still selector registrations active
-                    it.channel().close()
-                } catch (e: Throwable) {
-                    logger.warn(e)
+        lifetime.onTermination {
+            synchronized(syncLock) {
+                selector.keys().forEach {
+                    try {
+                        // Close the channel. This will cancel the selection key and removes multicast group membership.
+                        // It doesn't close the socket, as there are still selector registrations active
+                        it.channel().close()
+                    } catch (e: Throwable) {
+                        logger.warn(e)
+                    }
                 }
-            }
 
-            // Close the selector. This deregisters the selector from all channels, and then kills the socket attached to
-            // the already closed channel
-            selector.close()
+                // Close the selector. This de-registers the selector from all channels, and then kills the socket
+                // attached to the already closed channel
+                selector.close()
+            }
         }
     }
 
-    private fun parseUnityPlayer(unityPlayerDescriptor: String, hostAddress: InetAddress): UnityProcess? {
+    private fun parseUnityPlayer(unityPlayerDescriptor: String, packetSourceAddress: InetAddress): UnityProcess? {
         try {
             val matcher = unityPlayerDescriptorRegex.matcher(unityPlayerDescriptor)
             if (matcher.find()) {
+                val ipInMessage = matcher.group("ip")
                 val id = matcher.group("id")
+                val flags = matcher.group("flags").toInt()
                 val allowDebugging = matcher.group("debug").startsWith("1")
                 val guid = matcher.group("guid").toLong()
                 val debuggerPort = matcher.group("debuggerPort")?.toIntOrNull() ?: convertPidToDebuggerPort(guid)
                 val packageName: String? = matcher.group("packageName")
                 val projectName: String? = matcher.group("projectName")
 
-                // We use hostAddress instead of ip because this is the address we actually received the multicast from.
-                // This is more accurate than what we're told, because the Unity process might be reporting the IP
-                // address of an interface that isn't reachable. For example, the iPhone player can report the local IP
-                // address of the mobile data network, which we can't reach from the current network (if we disable
-                // mobile data it works as expected)
+                // If UseAlternateIP is set that means we should use the IP in the broadcast message rather than the
+                // packet source address
+                val hostAddress = when {
+                    UnityPlayerConnectionFlags.UseAlternateIP.isSet(flags) -> InetAddress.getByName(ipInMessage)
+                    else -> packetSourceAddress
+                }
+
                 return if (isLocalAddress(hostAddress)) {
-                    if (id.startsWith("UWPPlayer") && packageName != null) {
+                    if (id.startsWith(UnityLocalUwpPlayer.TYPE) && packageName != null) {
                         UnityLocalUwpPlayer(id, hostAddress.hostAddress, debuggerPort, allowDebugging, projectName, packageName)
                     }
                     else {
@@ -161,7 +209,10 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
         }
     }
 
-    private fun refreshUnityPlayersList() {
+    private fun refreshUnityPlayersList(
+        onPlayerAdded: (UnityProcess) -> Unit,
+        onPlayerRemoved: (UnityProcess) -> Unit
+    ) {
         synchronized(syncLock) {
 
             val start = System.currentTimeMillis()

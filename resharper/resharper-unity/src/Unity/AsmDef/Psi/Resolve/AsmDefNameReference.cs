@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Resolve
 
         public override ResolveResultWithInfo ResolveWithoutCache()
         {
-            var resolveResultWithInfo = CheckedReferenceImplUtil.Resolve(this, GetReferenceSymbolTable(true));
+            var resolveResultWithInfo = CheckedReferenceImplUtil.Resolve(this, GetReferenceSymbolTable(true).Filter(GetSymbolFilters()));
             if (!resolveResultWithInfo.Result.IsEmpty)
                 return resolveResultWithInfo;
 

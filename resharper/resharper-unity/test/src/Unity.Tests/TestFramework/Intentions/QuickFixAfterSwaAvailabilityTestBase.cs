@@ -1,7 +1,9 @@
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.SolutionAnalysis;
 using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
+using JetBrains.ReSharper.Plugins.Tests.Unity;
 
 namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
 {
@@ -14,9 +16,16 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework.Intentions
             var swea = Solution.GetComponent<SolutionAnalysisService>();
 
             using (swea.RunAnalysisCookie())
+            using (UnityProjectCookie.RunUnitySolutionCookie(Solution))
             {
-                base.DoTest(lifetime, testProject);
+                foreach (var file in swea.GetFilesToAnalyze())
+                    swea.AnalyzeInvisibleFile(file);
+
+                swea.AllFilesAnalyzed();
+                using (SyncReanalyzeCookie.Create(Solution.Locks, SolutionAnalysisManager.GetInstance(Solution)))
+                    base.DoTest(lifetime, testProject);
             }
         }
+
     }
 }

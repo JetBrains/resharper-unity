@@ -5,8 +5,9 @@ using JetBrains.Application.UI.Components;
 using JetBrains.Application.UI.Options;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.OptionPages;
-using JetBrains.ReSharper.Feature.Services.OptionPages.CodeEditing;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeStyle;
+using JetBrains.ReSharper.Plugins.Unity.Core.Application.UI.Options;
+using JetBrains.ReSharper.Plugins.Unity.Shaders.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Psi.Formatting;
 using JetBrains.ReSharper.Psi;
@@ -19,9 +20,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.F
         PID,
         "ShaderLab Formatting Style",
         typeof(PsiFeaturesUnsortedOptionsThemedIcons.Indent),
-        ParentId = CodeEditingPage.PID,
+        ParentId = UnityOptionsPage.PID,
+        HelpKeyword = "Reference__Options__ShaderLab_Formatting",
         Sequence = 0,
-        FilterTags = new[] {ConfigFileUtils.EditorConfigName})]
+        FilterTags = new[] {ConfigFileUtils.EditorConfigName}, 
+        NameResourceType = typeof(Strings),
+        NameResourceName = nameof(Strings.ShaderLabFormattingStylePageSchema_PageName_ShaderLab_Formatting_Style))]
     public class ShaderLabFormattingStylePage : CodeStylePage
     {
         public const string PID = "ShaderLabFormattingStylePage";
@@ -56,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.F
             base.Describe(builder);
 
             builder
-                .Category("Brace rules")
+                .Category(Strings.ShaderLabFormattingStylePageSchema_Describe_Brace_rules)
 
                 .ItemFor(
                     key => key.BraceStyle,
@@ -65,6 +69,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Shaders.ShaderLab.Feature.Services.F
         }
 
         public override KnownLanguage Language => ShaderLabLanguage.Instance;
-        public override string PageName => "ShaderLab Formatting Style";
+        public override string PageName => Strings.ShaderLabFormattingStylePageSchema_PageName_ShaderLab_Formatting_Style;
     }
 }

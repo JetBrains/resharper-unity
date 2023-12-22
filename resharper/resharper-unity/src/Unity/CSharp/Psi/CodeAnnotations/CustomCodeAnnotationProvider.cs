@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
@@ -76,9 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
             // The ctorArguments lambda result is not cached, so let's allocate everything up front
             var args = new[]
             {
-                new AttributeValue(
-                    new ConstantValue("Coroutine will not continue if return value is ignored",
-                        predefinedType.String))
+                new AttributeValue(ConstantValue.String("Coroutine will not continue if return value is ignored", method.Module))
             };
             collection = new[]
             {
@@ -110,7 +107,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
 
                 // The ctorArguments lambda result is not cached, so let's allocate everything up front
                 var flagsType = myKnownTypesCache.GetByClrTypeName(ourImplicitUseTargetFlags, element.Module);
-                var args = new[] {new AttributeValue(new ConstantValue(3, flagsType))};
+                var args = new[]
+                {
+                    new AttributeValue(ConstantValue.Enum(ConstantValue.Int(3, element.Module), flagsType))
+                };
                 collection = new[]
                 {
                     new SpecialAttributeInstance(ourUsedImplicitlyAttributeFullName, GetModule(element), () => args)
@@ -154,7 +154,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
 
             if (!(element is IField field) || !element.IsFromUnityProject()) return false;
 
-            if (!myUnityApi.IsSerialisedField(field))
+            if (myUnityApi.IsSerialisedField(field) == SerializedFieldStatus.NonSerializedField)
                 return false;
 
             // Integer value analysis only works on integers, but it will make use of annotations applied to values that
@@ -175,18 +175,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
                 var unityFrom = attributeInstance.PositionParameter(0);
                 var unityTo = attributeInstance.PositionParameter(1);
 
-                if (!unityFrom.IsConstant || !unityFrom.ConstantValue.IsFloat() ||
-                    !unityTo.IsConstant || !unityTo.ConstantValue.IsFloat())
-                {
+                if (!unityFrom.ConstantValue.IsFloat() || !unityTo.ConstantValue.IsFloat())
                     continue;
-                }
 
                 // The check above means this is not null. We take the floor, because that's how Unity works.
                 // E.g. Unity's Inspector treats [Range(1.7f, 10.9f)] as between 1 and 10 inclusive
-                var from = Convert.ToInt64(Math.Floor((float) unityFrom.ConstantValue.Value.NotNull()));
-                var to = Convert.ToInt64(Math.Floor((float) unityTo.ConstantValue.Value.NotNull()));
+                var from = Convert.ToInt64(Math.Floor(unityFrom.ConstantValue.FloatValue));
+                var to = Convert.ToInt64(Math.Floor(unityTo.ConstantValue.FloatValue));
 
-                collection = CreateRangeAttributeInstance(element, predefinedType, from, to);
+                collection = CreateRangeAttributeInstance(element, from, to);
                 return true;
             }
 
@@ -194,33 +191,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
             {
                 var unityMinValue = attributeInstance.PositionParameter(0);
 
-                if (!unityMinValue.IsConstant || !unityMinValue.ConstantValue.IsFloat())
+                if (!unityMinValue.ConstantValue.IsFloat())
                     continue;
 
                 // Even though the constructor for ValueRange takes long, it only works with int.MaxValue
-                var min = Convert.ToInt64(Math.Floor((float) unityMinValue.ConstantValue.Value.NotNull()));
+                var min = Convert.ToInt64(Math.Floor(unityMinValue.ConstantValue.FloatValue));
                 var max = int.MaxValue;
 
-                collection = CreateRangeAttributeInstance(element, predefinedType, min, max);
+                collection = CreateRangeAttributeInstance(element, min, max);
                 return true;
             }
 
             return false;
         }
 
-        private IAttributeInstance[] CreateRangeAttributeInstance(IClrDeclaredElement element,
-                                                                  PredefinedType predefinedType,
-                                                                  long from, long to)
+        private IAttributeInstance[] CreateRangeAttributeInstance(IClrDeclaredElement element, long from, long to)
         {
             var args = new[]
             {
-                new AttributeValue(new ConstantValue(from, predefinedType.Long)),
-                new AttributeValue(new ConstantValue(to, predefinedType.Long))
+                new AttributeValue(ConstantValue.Long(from, element.Module)),
+                new AttributeValue(ConstantValue.Long(to, element.Module))
             };
 
             // We need a project for the resolve context. It's not actually used, but we still need it. The requested
             // element will be a source element, so it will definitely have a project
-            if (!(element.Module.ContainingProjectModule is IProject project))
+            if (element.Module.ContainingProjectModule is not IProject project)
                 return EmptyArray<IAttributeInstance>.Instance;
 
             return new IAttributeInstance[]

@@ -1,0 +1,34 @@
+﻿Provided elements:
+ 0: ScavsCount:System.Int32
+
+// ${KIND:Unity.GenerateBakerAndComponent}
+// ${SELECT0:ScavsCount:System.Int32}
+// ${GLOBAL0:SelectedComponent=ComponentsAndTags.GraveyardPropertiesComponentData}
+
+using Unity.Entities;
+using Unity.Mathematics;
+using UnityEngine;
+
+namespace ComponentsAndTags
+{
+    public class Graveyard{caret}PropertiesAuthoring : MonoBehaviour
+    {
+        public int ScavsCount;
+
+        public class GraveyardPropertiesAuthoringBaker : Baker<GraveyardPropertiesAuthoring>
+        {
+          public override void Bake(GraveyardPropertiesAuthoring authoring)
+          {
+            var entity = GetEntity(TransformUsageFlags.Dynamic);
+            AddComponent(entity, new GraveyardPropertiesComponentData { Count = authoring.ScavsCount });
+          }
+        }
+    }
+
+    public struct GraveyardPropertiesComponentData : IComponentData
+    {
+        public float2 FieldDimensions;
+        public float2 ScavsCount;
+        public int Count;
+    }
+}

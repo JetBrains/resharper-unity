@@ -1,41 +1,41 @@
 before change
-Inline 232 InlineCodeVisionListRenderer
+Inline 232 InlineCodeVisionInlayRenderer
 Right
     Visible
         Text RdTextRange(startOffset=221, endOffset=231) Serializable
     Hidden
-Inline 262 InlineCodeVisionListRenderer
+Inline 262 InlineCodeVisionInlayRenderer
 Right
     Visible
         Text RdTextRange(startOffset=255, endOffset=261) Serializable
     Hidden
-Inline 314 InlineCodeVisionListRenderer
+Inline 314 InlineCodeVisionInlayRenderer
 Right
     Visible
         Text RdTextRange(startOffset=295, endOffset=313) Serializable
     Hidden
-Block 156 BlockCodeVisionListRenderer
+Block 156 BlockCodeVisionInlayRenderer
 Top
     Visible
         Text RdTextRange(startOffset=156, endOffset=176) 2 asset usages
     Hidden
 after change
-Inline 232 InlineCodeVisionListRenderer
+Inline 232 InlineCodeVisionInlayRenderer
 Right
     Visible
         Text RdTextRange(startOffset=221, endOffset=231) Serializable
     Hidden
-Inline 262 InlineCodeVisionListRenderer
+Inline 262 InlineCodeVisionInlayRenderer
 Right
     Visible
         Text RdTextRange(startOffset=255, endOffset=261) Serializable
     Hidden
-Inline 314 InlineCodeVisionListRenderer
+Inline 314 InlineCodeVisionInlayRenderer
 Right
     Visible
         Text RdTextRange(startOffset=295, endOffset=313) Serializable
     Hidden
-Block 156 BlockCodeVisionListRenderer
+Block 156 BlockCodeVisionInlayRenderer
 Top
     Visible
         Text RdTextRange(startOffset=156, endOffset=176) 2 asset usages

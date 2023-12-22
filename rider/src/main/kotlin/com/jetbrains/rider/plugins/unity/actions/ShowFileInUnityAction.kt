@@ -51,8 +51,3 @@ open class ShowFileInUnityAction : DumbAwareAction() {
         }
     }
 }
-
-class ShowFileInUnityFromExplorerAction: ShowFileInUnityAction() {
-    // This action should be used in Explorers (Solution/FileSystem/UnityExplorer) where we do not want to have 'open in' IDEA action group
-    // See RiderRevealFileAction and RIDER-52651
-}

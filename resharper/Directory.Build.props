@@ -1,9 +1,9 @@
 <Project>
-    
+
   <PropertyGroup>
       <ImportGuard-DirectoryBuildProps>True</ImportGuard-DirectoryBuildProps>
   </PropertyGroup>
-    
+
   <PropertyGroup>
     <!-- Use a per project obj folder in a common build folder. Each project needs its own obj folder, as this contains
          e.g. nuget import files and generated files, and can't be shared across all projects.
@@ -57,12 +57,11 @@
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
-  <!-- Set default constants to enable asserts and exceptions in debug mode -->
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE</DefineConstants>
+  <!-- Set default constants to enable asserts and exceptions in debug mode. The internal build will set this via
+       JetSdkProjectParameterFilePath when building with the internal SDK. We're not currently using the internal SDK,
+       so make sure to allow this property for internal builds too -->
+  <PropertyGroup Condition="'$(Configuration)' != 'Release' and '$(JetSdkProjectParameterFilePath)' == ''">
+    <DefineConstants>$(DefineConstants);JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS</DefineConstants>
   </PropertyGroup>
 
   <!-- Do not try to auto-unify referenced assembly versions. The SDK has a couple of clashes that are not easily
