@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using JetBrains.Application.BuildScript;
 using JetBrains.Application.BuildScript.Compile;
 using JetBrains.Application.BuildScript.Solution;
@@ -13,9 +12,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.EditorPlugin.BuildScript;
 public class CompileEditorPluginBuildStep
 {
     [BuildStep]
-    public static async Task<IEnumerable<SubplatformFileForPackaging>> CompileEditorPlugin(AllAssembliesOnEverything allass , ProductHomeDirArtifact homeDirArtifact, ILogger logger)
+    public static IEnumerable<SubplatformFileForPackaging> CompileEditorPlugin(
+        AllAssembliesOnEverything allAss, ProductHomeDirArtifact homeDirArtifact, ILogger logger)
     {
-        if (allass.FindSubplatformByClass<CompileEditorPluginBuildStep>() is SubplatformOnSources subplatform)
+        if (allAss.FindSubplatformByClass<CompileEditorPluginBuildStep>() is SubplatformOnSources subplatform)
         {
             var dotnetSdkScript = homeDirArtifact.ProductHomeDir / "DevKit" / "Scripts" / "dotnet-sdk.cmd";
             logger.Info($"Path to dotnet-sdk: {dotnetSdkScript.FullPath}, exists: {dotnetSdkScript.ExistsFile}");
@@ -25,7 +25,8 @@ public class CompileEditorPluginBuildStep
             if (PlatformUtil.IsRunningUnderWindows)
                 processBuilder.AppendSwitch("/C");
 
-            var solution = homeDirArtifact.ProductHomeDir / "Plugins" / "ReSharperUnity" / "unity" / "JetBrains.Rider.Unity.Editor.sln";
+            var solution = homeDirArtifact.ProductHomeDir 
+                           / "Plugins" / "ReSharperUnity" / "unity" / "JetBrains.Rider.Unity.Editor.sln";
             processBuilder.AppendFileName(dotnetSdkScript.FullPath)
                 .AppendSwitch("build")
                 .AppendSwitch("-c")
@@ -53,14 +54,22 @@ public class CompileEditorPluginBuildStep
             
             return new SubplatformFileForPackaging[]
             {
-                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.4.7" / "bin" / "Release" / "net35" / "JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")),
-                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.4.7" / "bin" / "Release" / "net35" / "JetBrains.Rider.Unity.Editor.Plugin.Repacked.pdb")),
-                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.5.6" / "bin" / "Release" / "net35" / "JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.dll")),
-                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.5.6" / "bin" / "Release" / "net35" / "JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.pdb")),
-                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.2017.3" / "bin" / "Release" / "net35" / "JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll")),
-                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.2017.3" / "bin" / "Release" / "net35" / "JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.pdb")),
-                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.2019.2" / "bin" / "Release" / "netstandard2.0" / "JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll")),
-                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.2019.2" / "bin" / "Release" / "netstandard2.0" / "JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.pdb")),
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.4.7"
+                    / "bin" / "Release" / "net35" / "JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")),
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.4.7"
+                    / "bin" / "Release" / "net35" / "JetBrains.Rider.Unity.Editor.Plugin.Repacked.pdb")),
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.5.6"
+                    / "bin" / "Release" / "net35" / "JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.dll")),
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.5.6"
+                    / "bin" / "Release" / "net35" / "JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.pdb")),
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.2017.3"
+                    / "bin" / "Release" / "net35" / "JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll")),
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.2017.3"
+                    / "bin" / "Release" / "net35" / "JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.pdb")),
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.2019.2"
+                    / "bin" / "Release" / "netstandard2.0" / "JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll")),
+                new(subplatform.Name, ImmutableFileItem.CreateFromDisk(outputFolder / "EditorPlugin.SinceUnity.2019.2"
+                    / "bin" / "Release" / "netstandard2.0" / "JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.pdb")),
             };
         }
 

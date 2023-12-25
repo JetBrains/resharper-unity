@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using JetBrains.Application.BuildScript;
 using JetBrains.Application.BuildScript.Compile;
 using JetBrains.Application.BuildScript.Solution;
@@ -13,9 +12,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.DebuggerTools.BuildScript;
 public class CompileDebuggerToolsBuildStep
 {
     [BuildStep]
-    public static async Task<IEnumerable<SubplatformFileForPackaging>> CompileEditorPlugin(AllAssembliesOnEverything allass , ProductHomeDirArtifact homeDirArtifact, ILogger logger)
+    public static IEnumerable<SubplatformFileForPackaging> CompileEditorPlugin(AllAssembliesOnEverything allAss , ProductHomeDirArtifact homeDirArtifact, ILogger logger)
     {
-        if (allass.FindSubplatformByClass<CompileDebuggerToolsBuildStep>() is SubplatformOnSources subplatform)
+        if (allAss.FindSubplatformByClass<CompileDebuggerToolsBuildStep>() is SubplatformOnSources subplatform)
         {
             var dotnetSdkScript = homeDirArtifact.ProductHomeDir / "DevKit" / "Scripts" / "dotnet-sdk.cmd";
             logger.Info($"Path to dotnet-sdk: {dotnetSdkScript.FullPath}, exists: {dotnetSdkScript.ExistsFile}");
