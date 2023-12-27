@@ -69,6 +69,7 @@ open class UnityAttachProfileState(private val remoteConfiguration: RemoteConfig
     override suspend fun createModelStartInfo(lifetime: Lifetime): DebuggerStartInfoBase {
         return UnityStartInfo(remoteConfiguration.address,
             remoteConfiguration.port,
-            remoteConfiguration.listenPortForConnections)
+            remoteConfiguration.listenPortForConnections,
+            getUnityBundlesList())
     }
 }

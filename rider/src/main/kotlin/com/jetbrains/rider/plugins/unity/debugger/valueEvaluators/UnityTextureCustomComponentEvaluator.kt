@@ -136,8 +136,7 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
             try {
                 withContext(Dispatchers.EDT) {
                     additionalActionResult = unityTextureAdditionalAction.evaluateTexture
-                        .startSuspending(lifetime, UnityTextureAdditionalActionParams(getTextureDebuggerBundle().absolutePath,
-                                                                                      timeoutForAdvanceUnityEvaluation))
+                        .startSuspending(lifetime, UnityTextureAdditionalActionParams(timeoutForAdvanceUnityEvaluation))
                 }
                 return additionalActionResult
             }
@@ -235,14 +234,6 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
             }
 
             return parentPanel
-        }
-
-        private fun getTextureDebuggerBundle(): File {
-            val bundledFile = RiderEnvironment.getBundledFile(
-                "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.dll",
-                pluginClass = this::class.java
-            )
-            return bundledFile
         }
 
         private fun showTexture(textureInfo: UnityTextureInfo,

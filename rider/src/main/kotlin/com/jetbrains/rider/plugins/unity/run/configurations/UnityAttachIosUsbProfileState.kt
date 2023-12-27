@@ -34,6 +34,7 @@ class UnityAttachIosUsbProfileState(private val project: Project, private val re
             deviceId,
             remoteConfiguration.address,
             remoteConfiguration.port,
-            false)
+            false,
+            getUnityBundlesList())
     }
 }
