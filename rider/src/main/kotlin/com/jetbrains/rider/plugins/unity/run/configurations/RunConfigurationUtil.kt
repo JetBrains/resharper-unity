@@ -163,9 +163,12 @@ private fun startDebugRunConfiguration(
 
 
 fun getUnityBundlesList(): List<UnityBundleInfo> {
+    val pausePointAssemblyName = "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper"
+    val pauseBreakpointBundle = UnityPluginEnvironment.getBundledFile("$pausePointAssemblyName.dll", "DotFiles")
 
     val textureHelperAssemblyName = "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture"
     val textureHelperBundle = UnityPluginEnvironment.getBundledFile("$textureHelperAssemblyName.dll", "DotFiles")
 
-    return listOf(UnityBundleInfo(textureHelperAssemblyName, textureHelperBundle.absolutePath))
+    return listOf(UnityBundleInfo(pausePointAssemblyName, pauseBreakpointBundle.absolutePath),
+                  UnityBundleInfo(textureHelperAssemblyName, textureHelperBundle.absolutePath))
 }

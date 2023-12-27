@@ -98,6 +98,11 @@ val textureDebuggerDllFiles = files(
     "../resharper/build/texture-debugger/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.pdb"
 )
 
+val pausePointDllFiles = files(
+    "../resharper/build/pausepoint-helper/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper.dll",
+    "../resharper/build/pausepoint-helper/bin/$buildConfiguration/net472/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.PausePoint.Helper.pdb"
+)
+
 val listIosUsbDevicesFiles = files(
     "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net7.0/JetBrains.Rider.Unity.ListIosUsbDevices.dll",
     "../resharper/build/ios-list-usb-devices/bin/$buildConfiguration/net7.0/JetBrains.Rider.Unity.ListIosUsbDevices.pdb",
@@ -906,6 +911,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
             dotnetDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
             debuggerDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
             textureDebuggerDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
+            pausePointDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
             listIosUsbDevicesFiles.forEach { if (!it.exists()) error("File $it does not exist") }
             unityEditorDllFiles.forEach { if (!it.exists()) error("File $it does not exist") }
         }
@@ -915,6 +921,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
         dotnetDllFiles.forEach { from(it) { into("${pluginName}/dotnet") } }
         debuggerDllFiles.forEach { from(it) { into("${pluginName}/dotnetDebuggerWorker") } }
         textureDebuggerDllFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
+        pausePointDllFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
         listIosUsbDevicesFiles.forEach { from(it) { into("${pluginName}/DotFiles") } }
         unityEditorDllFiles.forEach { from(it) { into("${pluginName}/EditorPlugin") } }
 
