@@ -10,7 +10,7 @@ import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.UnityVersion
-import com.jetbrains.rider.unity.test.framework.api.attachDebuggerToUnityEditorAndPlay
+import com.jetbrains.rider.unity.test.framework.api.*
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
 import io.qameta.allure.*
 import org.testng.annotations.AfterMethod
@@ -51,6 +51,19 @@ class DebuggerTest2023 : IntegrationTestWithUnityProjectBase() {
                 dumpFullCurrentData()
                 resumeSession()
             }, testGoldFile)
+    }
+
+    @Test
+    @Description("Check pausepoints with Unity2023")
+    fun checkUnityPausePoint() {
+        attachDebuggerToUnityEditorAndPlay(
+            test = {
+                waitForUnityEditorPlayMode()
+                toggleUnityPausepoint(project, "NewBehaviourScript.cs", 14)
+                waitForUnityEditorPauseMode()
+                removeAllUnityPausepoints()
+                unpause()
+            })
     }
 
     @AfterMethod(alwaysRun = true)

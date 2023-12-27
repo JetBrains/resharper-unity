@@ -17,7 +17,7 @@ import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.unity.test.framework.UnityVersion
-import com.jetbrains.rider.unity.test.framework.api.attachDebuggerToUnityEditorAndPlay
+import com.jetbrains.rider.unity.test.framework.api.*
 import com.jetbrains.rider.unity.test.framework.base.IntegrationTestWithUnityProjectBase
 import io.qameta.allure.*
 import kotlinx.coroutines.launch
@@ -67,14 +67,14 @@ class DebuggerTest2022 : IntegrationTestWithUnityProjectBase() {
     @Description("Check Texture debugging with Unity2022")
     fun checkTextureDebugging() {
         attachDebuggerToUnityEditorAndPlay(
-            {
+            beforeRun = {
                 toggleBreakpoint("TextureDebuggingScript.cs", 13)
             },
-            {
+            test = {
                 waitForPause()
                 dumpFullCurrentData()
                 try {
-                    val stackFrame = (session.currentStackFrame  as DotNetStackFrame)
+                    val stackFrame = (session.currentStackFrame as DotNetStackFrame)
 
                     assertNotNull(stackFrame)
                     val value = stackFrame.getNamedValue("texture2D")
@@ -91,7 +91,6 @@ class DebuggerTest2022 : IntegrationTestWithUnityProjectBase() {
                         textureInfo = getUnityTextureInfo(stackFrame, value.objectProxy.id, lifetime, 10000, null) {
                             fail(it)
                         }
-
                     }
 
                     pumpMessages(DebugTestExecutionContext.waitForStopTimeout) {
@@ -102,7 +101,20 @@ class DebuggerTest2022 : IntegrationTestWithUnityProjectBase() {
                 }
                 finally {
                 }
-            }, testGoldFile)
+            }, goldFile = testGoldFile)
+    }
+
+    @Test
+    @Description("Check pausepoints with Unity2022")
+    fun checkUnityPausePoint() {
+        attachDebuggerToUnityEditorAndPlay(
+            test = {
+                waitForUnityEditorPlayMode()
+                toggleUnityPausepoint(project, "NewBehaviourScript.cs", 14)
+                waitForUnityEditorPauseMode()
+                removeAllUnityPausepoints()
+                unpause()
+            })
     }
 
     @AfterMethod(alwaysRun = true)
