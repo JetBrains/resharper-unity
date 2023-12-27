@@ -1,5 +1,7 @@
 package com.jetbrains.rider.plugins.unity.debugger.valueEvaluators
 
+import com.intellij.internal.statistic.StructuredIdeActivity
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
@@ -16,7 +18,7 @@ import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.frame.XValueNode
 import com.intellij.xdebugger.frame.XValuePlace
-import com.jetbrains.rd.platform.util.toPromise
+import com.jetbrains.rd.util.AtomicReference
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.printlnError
 import com.jetbrains.rd.util.reactive.valueOrThrow
@@ -26,19 +28,26 @@ import com.jetbrains.rider.debugger.IDotNetValue
 import com.jetbrains.rider.debugger.evaluators.RiderCustomComponentEvaluator
 import com.jetbrains.rider.debugger.visualizers.RiderDebuggerValuePresenter
 import com.jetbrains.rider.model.debuggerWorker.AdditionalActionsRequestParameter
+import com.jetbrains.rider.model.debuggerWorker.ObjectAdditionalAction
 import com.jetbrains.rider.model.debuggerWorker.ObjectPropertiesBase
 import com.jetbrains.rider.plugins.unity.UnityBundle
+import com.jetbrains.rider.plugins.unity.UnityPluginScopeService
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureAdditionalAction
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureAdditionalActionParams
+import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureAdditionalActionResult
 import com.jetbrains.rider.plugins.unity.model.debuggerWorker.UnityTextureInfo
 import com.jetbrains.rider.plugins.unity.model.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.intellij.images.editor.impl.ImageEditorManagerImpl
 import java.awt.*
 import java.awt.event.MouseEvent
 import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
 import java.awt.image.ColorModel
+import java.io.File
 import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.SwingConstants
@@ -96,6 +105,87 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
 
     companion object {
         private val LOG = thisLogger()
+
+        private suspend fun getAdditionalAction(stackFrame: DotNetStackFrame,
+                                        dotNetValueId: Int,
+                                        lifetime: Lifetime,
+                                        onErrorCallback: (String) -> Unit): UnityTextureAdditionalAction? {
+
+            val additionalActions: List<ObjectAdditionalAction>
+            try {
+                withContext(Dispatchers.EDT) {
+                    additionalActions = stackFrame.context.getObjectAdditionalActions
+                        .startSuspending(lifetime, AdditionalActionsRequestParameter(stackFrame.frameProxy.id, dotNetValueId))
+                }
+            }
+            catch (t: Throwable) {
+                onErrorCallback(t.toString())
+                return null
+            }
+
+            return additionalActions.filterIsInstance<UnityTextureAdditionalAction>().firstOrNull()
+        }
+
+        private suspend fun unityTextureAdditionalActionResult(unityTextureAdditionalAction: UnityTextureAdditionalAction,
+                                                               lifetime: Lifetime,
+                                                               timeoutForAdvanceUnityEvaluation: Int,
+                                                               onErrorCallback: (String) -> Unit): UnityTextureAdditionalActionResult? {
+
+            val additionalActionResult: UnityTextureAdditionalActionResult
+
+            try {
+                withContext(Dispatchers.EDT) {
+                    additionalActionResult = unityTextureAdditionalAction.evaluateTexture
+                        .startSuspending(lifetime, UnityTextureAdditionalActionParams(getTextureDebuggerBundle().absolutePath,
+                                                                                      timeoutForAdvanceUnityEvaluation))
+                }
+                return additionalActionResult
+            }
+            catch (t: Throwable) {
+                onErrorCallback(t.toString())
+                return null
+            }
+        }
+
+        suspend fun getUnityTextureInfo(stackFrame: DotNetStackFrame,
+                                        dotNetValueId: Int,
+                                        lifetime: Lifetime,
+                                        timeoutForAdvanceUnityEvaluation: Int,
+                                        stagedActivity: AtomicReference<StructuredIdeActivity?>?,
+                                        errorCallback: (String) -> Unit
+        ): UnityTextureInfo? {
+            val unityTextureAdditionalAction = getAdditionalAction(stackFrame, dotNetValueId, lifetime, errorCallback)
+
+            if (unityTextureAdditionalAction == null) {
+                errorCallback("unityTextureAdditionalAction == null")
+                return null
+            }
+
+            if(stagedActivity != null)
+                TextureDebuggerCollector.registerStageStarted(stagedActivity, StageType.TEXTURE_PIXELS_REQUEST)
+
+            val unityTextureAdditionalActionResult = unityTextureAdditionalActionResult(unityTextureAdditionalAction, lifetime,
+                                                                                        timeoutForAdvanceUnityEvaluation, errorCallback)
+
+            if(unityTextureAdditionalActionResult == null) {
+                errorCallback("unityTextureAdditionalActionResult == null")
+                return null
+            }
+
+            if (unityTextureAdditionalActionResult.isTerminated)  //Terminated in case of lifetime is not alive
+                return null //if lifetime isNotAlive - window will be closed automatically
+
+            val errorMessage = unityTextureAdditionalActionResult.error //already localized error message from debugger worker
+            if (!errorMessage.isNullOrEmpty()) {
+                withContext(Dispatchers.EDT) {
+                    errorCallback(errorMessage)
+                }
+                return null
+            }
+
+            return unityTextureAdditionalActionResult.unityTextureInfo
+        }
+
         @Suppress("LABEL_NAME_CLASH")
         fun createTextureDebugView(dotNetValue: IDotNetValue,
                                    session: XDebugSession,
@@ -116,89 +206,71 @@ class UnityTextureCustomComponentEvaluator(node: XValueNode,
             parentPanel.repaint()
 
 
-            val bundledFile = RiderEnvironment.getBundledFile(
-                "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.dll",
-                pluginClass = this::class.java
-            )
-
             TextureDebuggerCollector.registerStageStarted(stagedActivity, StageType.REQUEST_ADDITIONAL_ACTIONS)
             val timeoutForAdvanceUnityEvaluation = project.solution.frontendBackendModel.backendSettings.forcedTimeoutForAdvanceUnityEvaluation.valueOrThrow
 
             val stackFrame = XDebuggerManager.getInstance(project).currentSession!!.currentStackFrame!! as DotNetStackFrame
-            stackFrame.context.getObjectAdditionalActions
-                .start(lifetime, AdditionalActionsRequestParameter(stackFrame.frameProxy.id, dotNetValue.objectProxy.id))
-                .toPromise()
-                .onSuccess { additionalActions ->
-                    val unityTextureAdditionalAction = additionalActions.filterIsInstance<UnityTextureAdditionalAction>().firstOrNull()
-                    TextureDebuggerCollector.registerStageStarted(stagedActivity, StageType.TEXTURE_PIXELS_REQUEST)
-                    unityTextureAdditionalAction?.evaluateTexture
-                        ?.start(lifetime, UnityTextureAdditionalActionParams(bundledFile.absolutePath, timeoutForAdvanceUnityEvaluation))
-                        ?.toPromise()
-                        ?.onSuccess {unityTextureAdditionalActionResult ->
-                            if(unityTextureAdditionalActionResult.isTerminated)
-                                return@onSuccess //if lifetime isNotAlive - window will be closed automatically
+            fun errorCallback(it: String) {
+                showErrorMessage(
+                    jbLoadingPanel,
+                    parentPanel,
+                    UnityBundle.message("debugging.cannot.get.texture.debug.information", it)
+                )
+                TextureDebuggerCollector.finishActivity(stagedActivity, ExecutionResult.Failed)
 
-                            val errorMessage = unityTextureAdditionalActionResult.error //already localized error message from debugger worker
-                            if (!errorMessage.isNullOrEmpty()) {
-                                showErrorMessage(
-                                    jbLoadingPanel,
-                                    parentPanel,
-                                    errorMessage
-                                )
-                                TextureDebuggerCollector.finishActivity(stagedActivity, ExecutionResult.Failed)
-                            }
-                            else {
-                                val unityTextureInfo = unityTextureAdditionalActionResult.unityTextureInfo
-                                if (unityTextureInfo == null)
-                                    showErrorMessage(
-                                        jbLoadingPanel,
-                                        parentPanel,
-                                        UnityBundle.message("debugging.cannot.get.texture.debug.information", "textureInfo is null")
-                                    )
-                                else {
-                                    TextureDebuggerCollector.registerStageStarted(stagedActivity, StageType.PREPARE_TEXTURE_PIXELS_TO_SHOW,
-                                                                                  unityTextureInfo)
-                                    showTexture(unityTextureInfo, jbLoadingPanel, parentPanel)
-                                    TextureDebuggerCollector.finishActivity(stagedActivity, ExecutionResult.Succeed)
-                                }
-                            }
+            }
+
+            UnityPluginScopeService.getScope().launch {
+                when (val unityTextureInfo = getUnityTextureInfo(stackFrame, dotNetValue.objectProxy.id, lifetime, timeoutForAdvanceUnityEvaluation, stagedActivity, ::errorCallback)) {
+                    null -> errorCallback("textureInfo is null")
+                    else -> {
+                        TextureDebuggerCollector.registerStageStarted(stagedActivity, StageType.PREPARE_TEXTURE_PIXELS_TO_SHOW,
+                                                                      unityTextureInfo)
+                        withContext(Dispatchers.EDT) {
+                            showTexture(unityTextureInfo, jbLoadingPanel, parentPanel)
                         }
-                        ?.onError{
-                            showErrorMessage(
-                                jbLoadingPanel,
-                                parentPanel,
-                                UnityBundle.message("debugging.cannot.get.texture.debug.information", it)
-                            )
-                        }
-
+                        TextureDebuggerCollector.finishActivity(stagedActivity, ExecutionResult.Succeed)
+                    }
                 }
-                .onError {
-                    showErrorMessage(
-                        jbLoadingPanel,
-                        parentPanel,
-                        UnityBundle.message("debugging.cannot.get.texture.debug.information", it)
-                    )
-
-                    TextureDebuggerCollector.finishActivity(stagedActivity, ExecutionResult.Failed)
-                }
+            }
 
             return parentPanel
+        }
+
+        private fun getTextureDebuggerBundle(): File {
+            val bundledFile = RiderEnvironment.getBundledFile(
+                "JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Presentation.Texture.dll",
+                pluginClass = this::class.java
+            )
+            return bundledFile
         }
 
         private fun showTexture(textureInfo: UnityTextureInfo,
                                 jbLoadingPanel: JBLoadingPanel,
                                 parentPanel: JBPanel<JBPanel<*>>) {
-            LOG.trace("Preparing texture to show:\"${textureInfo.textureName}\"")
 
-            val texturePanel = createPanelWithImage(textureInfo)
-            jbLoadingPanel.stopLoading()
+            try {
+                LOG.trace("Preparing texture to show:\"${textureInfo.textureName}\"")
 
-            texturePanel.background = parentPanel.background
-            parentPanel.apply {
-                remove(jbLoadingPanel)
-                layout = VerticalLayout(5)
-                add(texturePanel)
+                val texturePanel = createPanelWithImage(textureInfo)
+                jbLoadingPanel.stopLoading()
+
+                texturePanel.background = parentPanel.background
+                parentPanel.apply {
+                    remove(jbLoadingPanel)
+                    layout = VerticalLayout(5)
+                    add(texturePanel)
+                }
             }
+            catch (t: Throwable)
+            {
+                showErrorMessage(
+                    jbLoadingPanel,
+                    parentPanel,
+                    UnityBundle.message("debugging.cannot.get.texture.debug.information", t)
+                )
+            }
+
 
             parentPanel.revalidate()
             parentPanel.repaint()
