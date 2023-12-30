@@ -3,7 +3,6 @@ using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
-using JetBrains.ReSharper.Daemon.Impl;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
@@ -43,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.Unity.CSharp.Daemon.Stages.Analysis
                         if (IsTestFile(file))
                         {
                             var process = new TestHighlightingDumperWithOverridenStages(file, writer,
-                                DaemonStageManager.GetInstance(Solution).Stages, HighlightingPredicate,
+                                stages: null, HighlightingPredicate,
                                 CSharpLanguage.Instance);
                             process.DoHighlighting(DaemonProcessKind.VISIBLE_DOCUMENT);
                             process.DoHighlighting(DaemonProcessKind.GLOBAL_WARNINGS);

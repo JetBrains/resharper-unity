@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Tests.TestFramework
                         if (!pf.Location.Name.EndsWith(".cs")) continue;
 
                         var process = new TestHighlightingDumper(file, writer,
-                            DaemonStageManager.GetInstance(Solution).Stages,
+                            DaemonStagesManager.GetInstance(Solution).AllRegisteredStages,
                             (highlighting, psiSourceFile, settingsStore) =>
                             {
                                 if (highlighting is IHighlightingTestBehaviour { IsSuppressed: true }) return false;
